@@ -1,0 +1,22 @@
+name: idps-web-aws
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: studen-postges
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 7777
+      POSTGRES_DB: student_db
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - idps_web_aws_postgres_data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
+volumes:
+  idps_web_aws_postgres_data:
