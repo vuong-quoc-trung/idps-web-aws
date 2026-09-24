@@ -8,11 +8,12 @@
 		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<groupId>com.pbl4</groupId>
+<artifactId>student-web</artifactId>
+<version>0.0.1-SNAPSHOT</version>
+
+<name>student-web</name>
+<description>Student Management Web for PBL4 IDS/IPS</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -30,27 +31,57 @@
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc</artifactId>
-		</dependency>
 
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!-- REST API / Web -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+
+    <!-- JPA / Hibernate - Code First -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- PostgreSQL -->
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+
+    <!-- Validation -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-crypto</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-webmvc-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+</dependencies>
 
 	<build>
 		<plugins>
