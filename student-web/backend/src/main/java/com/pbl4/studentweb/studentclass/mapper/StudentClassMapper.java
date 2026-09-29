@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class StudentClassMapper {
     public StudentClassSummary toSummary(StudentClass e) {
-        return new StudentClassSummary(e.getId(), e.getClassCode(), e.getClassName(), e.getMajor().getId(), e.isActive());
+        return new StudentClassSummary(e.getId(), e.getClassCode(), e.getClassName(), e.getMajor().getId(), e.getProgram() == null ? null : e.getProgram().getId(), e.getCohort(), e.getAcademicYear(), e.isActive());
     }
 }

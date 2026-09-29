@@ -5,4 +5,5 @@ import com.pbl4.studentweb.studentaddress.entity.StudentAddress;
 
 public interface StudentAddressRepository extends JpaRepository<StudentAddress, Long> {
     java.util.List<StudentAddress> findByStudentId(Long studentId);
+    java.util.Optional<StudentAddress> findByIdAndStudentId(Long id, Long studentId);
 }

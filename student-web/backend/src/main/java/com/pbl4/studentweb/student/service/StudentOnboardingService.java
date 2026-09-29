@@ -12,6 +12,8 @@ import com.pbl4.studentweb.user.entity.*;
 import com.pbl4.studentweb.user.repository.UserRepository;
 import com.pbl4.studentweb.user.service.PasswordSetupService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import com.pbl4.studentweb.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,23 +33,26 @@ public class StudentOnboardingService {
 
     // Internal operation. Future controller must require ADMIN/STAFF authorization.
     @Transactional
-    public StudentOnboardingResult create(@Valid CreateStudentRequest r) {
-        var major = majors.findById(r.majorId()).orElseThrow(() -> new IllegalArgumentException("Major not found"));
-        var studentClass = classes.findById(r.classId()).orElseThrow(() -> new IllegalArgumentException("Class not found"));
+    public StudentOnboardingResult create(@NotNull @Valid CreateStudentRequest r) {
+        String code = r.studentCode().trim();
+        if (students.existsByStudentCode(code) || users.existsByUsername(code))
+            throw new IllegalStateException("Student code or username already exists");
+        var major = majors.findById(r.majorId()).orElseThrow(() -> new ResourceNotFoundException("Major"));
+        var studentClass = classes.findById(r.classId()).orElseThrow(() -> new ResourceNotFoundException("Class"));
         if (!major.isActive() || !studentClass.isActive() || !studentClass.getMajor().getId().equals(major.getId()))
             throw new IllegalArgumentException("Class must belong to the selected active major");
         TrainingProgram program = r.trainingProgramId() == null ? studentClass.getProgram() : program(r.trainingProgramId());
         if (program != null && (!program.isActive() || !program.getMajor().getId().equals(major.getId())))
             throw new IllegalArgumentException("Primary program must belong to the selected active major");
         User user = new User();
-        user.setUsername(r.studentCode());
+        user.setUsername(code);
         user.setRole(UserRole.STUDENT);
         String token = passwords.prepareNewAccount(user);
         users.save(user);
         Student s = new Student();
         s.setUser(user);
-        s.setStudentCode(r.studentCode());
-        s.setFullName(r.fullName());
+        s.setStudentCode(code);
+        s.setFullName(r.fullName().trim());
         s.setDateOfBirth(r.dateOfBirth());
         s.setGender(r.gender());
         s.setCitizenId(blankToNull(r.citizenId()));
@@ -57,12 +62,12 @@ public class StudentOnboardingService {
         if (r.secondaryProgramId() != null) s.setSecondaryProgram(program(r.secondaryProgramId()));
         s.setSchoolEmail(blankToNull(r.schoolEmail()));
         s.setFamilyPhoneNumber(blankToNull(r.familyPhoneNumber()));
-        return new StudentOnboardingResult(mapper.toSummary(students.save(s)), token);
+        return new StudentOnboardingResult(mapper.toSummary(students.saveAndFlush(s)), token);
     }
 
     private TrainingProgram program(Long id) {
-        var p = programs.findById(id).orElseThrow(() -> new IllegalArgumentException("Program not found"));
-        if (!p.isActive()) throw new IllegalArgumentException("Program is inactive");
+        var p = programs.findById(id).orElseThrow(() -> new ResourceNotFoundException("Program"));
+        if (!p.isActive() || !p.getMajor().isActive()) throw new IllegalArgumentException("Program is inactive");
         return p;
     }
     private String blankToNull(String value) { return value == null || value.isBlank() ? null : value.trim(); }

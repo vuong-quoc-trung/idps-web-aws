@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostGraduationContactMapper {
     public PostGraduationContactSummary toSummary(PostGraduationContact e) {
-        return new PostGraduationContactSummary(e.getId(), e.getStudent().getId());
+        return new PostGraduationContactSummary(e.getId(), e.getStudent().getId(), e.getFullName(), e.getPhoneNumber(), e.getEmail(), e.getAddress());
     }
 }

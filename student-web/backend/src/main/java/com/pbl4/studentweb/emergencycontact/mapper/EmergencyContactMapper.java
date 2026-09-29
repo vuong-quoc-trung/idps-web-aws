@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmergencyContactMapper {
     public EmergencyContactSummary toSummary(EmergencyContact e) {
-        return new EmergencyContactSummary(e.getId(), e.getStudent().getId());
+        return new EmergencyContactSummary(e.getId(), e.getStudent().getId(), e.getFullName(), e.getRelationship(), e.getPhoneNumber(), e.getAddress(), e.getPriority());
     }
 }

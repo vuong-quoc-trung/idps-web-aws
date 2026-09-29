@@ -1,3 +1,6 @@
 package com.pbl4.studentweb.accesslog.dto;
 
-public record AccessLogSummary(Long id, String method, String path, Integer statusCode) {}
+import java.time.LocalDateTime;
+
+public record AccessLogSummary(Long id, Long userId, String clientIp, String method, String path,
+        Integer statusCode, String action, Long requestTimeMs, LocalDateTime createdAt) {}

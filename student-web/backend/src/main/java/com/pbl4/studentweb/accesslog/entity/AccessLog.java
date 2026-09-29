@@ -3,6 +3,9 @@ package com.pbl4.studentweb.accesslog.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import lombok.Getter;
 import lombok.Setter;
 import com.pbl4.studentweb.common.entity.*;
@@ -38,7 +41,7 @@ public class AccessLog extends BaseEntity {
     @Column(name = "request_time_ms")
     private Long requestTimeMs;
 
-    @org.hibernate.annotations.CreationTimestamp
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class FamilyMemberMapper {
     public FamilyMemberSummary toSummary(FamilyMember e) {
-        return new FamilyMemberSummary(e.getId(), e.getStudent().getId());
+        return new FamilyMemberSummary(e.getId(), e.getStudent().getId(), e.getRelationship(), e.getFullName(), e.getDateOfBirth(), e.isHasCollegeDegree(), e.isUnavailable(), e.getPhoneNumber());
     }
 }

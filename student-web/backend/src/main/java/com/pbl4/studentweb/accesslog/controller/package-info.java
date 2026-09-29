@@ -1,4 +1,2 @@
-/**
- * AccessLog controller layer. HTTP endpoints are deferred until authentication is implemented.
- */
+/** REST endpoints for the accesslog module; access is configured in SecurityConfiguration. */
 package com.pbl4.studentweb.accesslog.controller;

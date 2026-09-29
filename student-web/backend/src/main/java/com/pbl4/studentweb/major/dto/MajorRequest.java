@@ -1,0 +1,8 @@
+package com.pbl4.studentweb.major.dto;
+
+import jakarta.validation.constraints.*;
+
+/** Full replacement of editable catalog fields. */
+public record MajorRequest(@NotBlank @Size(max = 20) String code,
+        @NotBlank @Size(max = 150) String name,
+        @Size(max = 5000) String description, @NotNull Boolean active) {}

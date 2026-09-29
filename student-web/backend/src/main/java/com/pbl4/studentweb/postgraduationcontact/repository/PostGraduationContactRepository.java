@@ -5,4 +5,5 @@ import com.pbl4.studentweb.postgraduationcontact.entity.PostGraduationContact;
 
 public interface PostGraduationContactRepository extends JpaRepository<PostGraduationContact, Long> {
     java.util.List<PostGraduationContact> findByStudentId(Long studentId);
+    java.util.Optional<PostGraduationContact> findByIdAndStudentId(Long id, Long studentId);
 }

@@ -48,6 +48,19 @@ public class PasswordSetupService {
         user.setActivationExpiresAt(null);
     }
 
+    /** Admin-only issuance; does not reset passwords on already activated accounts. */
+    @Transactional
+    public String reissueActivation(Long userId) {
+        var user = users.findForUpdate(userId).orElseThrow(() ->
+                new com.pbl4.studentweb.common.exception.ResourceNotFoundException("User"));
+        if (!user.isEnabled() || !user.isPasswordSetupRequired())
+            throw new IllegalStateException("Only enabled accounts awaiting password setup can receive a new activation token");
+        String token = randomToken();
+        user.setActivationTokenHash(hash(token));
+        user.setActivationExpiresAt(LocalDateTime.now().plusHours(24));
+        return token;
+    }
+
     private String randomToken() {
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);

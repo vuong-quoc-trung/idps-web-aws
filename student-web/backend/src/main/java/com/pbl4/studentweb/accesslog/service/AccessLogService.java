@@ -20,4 +20,9 @@ public class AccessLogService {
     public Page<AccessLogSummary> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toSummary);
     }
+
+    public AccessLogSummary findById(Long id) {
+        return mapper.toSummary(repository.findById(id).orElseThrow(() ->
+                new com.pbl4.studentweb.common.exception.ResourceNotFoundException("Access log")));
+    }
 }

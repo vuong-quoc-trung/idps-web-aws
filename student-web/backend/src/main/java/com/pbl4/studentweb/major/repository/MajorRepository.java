@@ -4,4 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.pbl4.studentweb.major.entity.Major;
 
 public interface MajorRepository extends JpaRepository<Major, Long> {
+    boolean existsByMajorCode(String code);
+    boolean existsByMajorCodeAndIdNot(String code, Long id);
 }

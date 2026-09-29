@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TrainingProgramMapper {
     public TrainingProgramSummary toSummary(TrainingProgram e) {
-        return new TrainingProgramSummary(e.getId(), e.getProgramCode(), e.getProgramName(), e.getMajor().getId(), e.isActive());
+        return new TrainingProgramSummary(e.getId(), e.getProgramCode(), e.getProgramName(), e.getMajor().getId(), e.getCohort(), e.getDegreeType(), e.isActive());
     }
 }

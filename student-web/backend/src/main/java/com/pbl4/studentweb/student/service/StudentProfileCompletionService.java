@@ -25,7 +25,24 @@ public class StudentProfileCompletionService {
 
     @Transactional
     public ProfileCompletionResult refresh(Long studentId) {
-        Student s = students.findById(studentId).orElseThrow(() -> new IllegalArgumentException("Student not found"));
+        Student s = students.findById(studentId).orElseThrow(() -> new com.pbl4.studentweb.common.exception.ResourceNotFoundException("Student"));
+        var result = evaluate(s);
+        ProfileStatus status = result.status();
+        s.setProfileStatus(status);
+        if (status == ProfileStatus.INCOMPLETE) s.setProfileCompletedAt(null);
+        else if (s.getProfileCompletedAt() == null) s.setProfileCompletedAt(LocalDateTime.now());
+        return result;
+    }
+
+
+    @Transactional(readOnly = true)
+    public ProfileCompletionResult check(Long studentId) {
+        Student s = students.findById(studentId).orElseThrow(() -> new com.pbl4.studentweb.common.exception.ResourceNotFoundException("Student"));
+        return evaluate(s);
+    }
+
+    private ProfileCompletionResult evaluate(Student s) {
+        Long studentId = s.getId();
         List<String> missing = new ArrayList<>();
         need(missing, "dateOfBirth", s.getDateOfBirth());
         need(missing, "gender", s.getGender());
@@ -55,9 +72,6 @@ public class StudentProfileCompletionService {
         if (emergency.findByStudentId(studentId).stream().noneMatch(e -> present(e.getFullName())
                 && present(e.getPhoneNumber()) && e.getPriority() > 0)) missing.add("emergencyContact");
         ProfileStatus status = missing.isEmpty() ? ProfileStatus.COMPLETE : ProfileStatus.INCOMPLETE;
-        s.setProfileStatus(status);
-        if (status == ProfileStatus.INCOMPLETE) s.setProfileCompletedAt(null);
-        else if (s.getProfileCompletedAt() == null) s.setProfileCompletedAt(LocalDateTime.now());
         return new ProfileCompletionResult(status, missing);
     }
 
