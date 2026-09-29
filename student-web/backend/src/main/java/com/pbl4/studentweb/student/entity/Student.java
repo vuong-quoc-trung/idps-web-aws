@@ -75,8 +75,8 @@ public class Student extends AuditedEntity {
     @JoinColumn(name = "class_id", nullable = false)
     private StudentClass studentClass;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "training_program_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "training_program_id", nullable = false)
     private TrainingProgram trainingProgram;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)

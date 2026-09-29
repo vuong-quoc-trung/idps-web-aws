@@ -41,6 +41,13 @@ class StudentDatabaseTests {
     @Autowired StudentRepository students;
     @Autowired UserRepository users;
     @Autowired MajorRepository majors;
+    @Autowired com.pbl4.studentweb.faculty.repository.FacultyRepository faculties;
+    com.pbl4.studentweb.faculty.entity.Faculty faculty;
+
+    @org.junit.jupiter.api.BeforeEach void createFaculty() {
+        faculty = new com.pbl4.studentweb.faculty.entity.Faculty();
+        faculty.setFacultyCode("TEST_FAC"); faculty.setFacultyName("Test faculty"); faculties.saveAndFlush(faculty);
+    }
     @Autowired StudentClassRepository classes;
     @Autowired TrainingProgramRepository programs;
     @Autowired StudentAddressRepository addresses;
@@ -50,7 +57,7 @@ class StudentDatabaseTests {
     @Autowired JdbcTemplate jdbc;
 
     StudentOnboardingResult create() {
-        Major m = new Major(); m.setMajorCode("TEST"); m.setMajorName("Test major"); majors.save(m);
+        Major m = new Major(); m.setMajorCode("TEST"); m.setMajorName("Test major"); m.setFaculty(faculty); majors.save(m);
         TrainingProgram p = new TrainingProgram(); p.setProgramCode("TEST24"); p.setProgramName("Test program");
         p.setMajor(m); programs.save(p);
         StudentClass c = new StudentClass(); c.setClassCode("TEST_CLASS"); c.setMajor(m); c.setProgram(p); classes.save(c);
@@ -60,10 +67,10 @@ class StudentDatabaseTests {
 
     @Test void generatesAllTablesAndForeignKeys() {
         assertThat(jdbc.queryForList("select table_name from information_schema.tables where table_schema = 'PUBLIC'", String.class))
-                .contains("USERS", "MAJORS", "TRAINING_PROGRAMS", "CLASSES", "STUDENTS", "STUDENT_ADDRESSES",
+                .contains("USERS", "FACULTIES", "MAJORS", "TRAINING_PROGRAMS", "CLASSES", "STUDENTS", "STUDENT_ADDRESSES",
                         "FAMILY_MEMBERS", "EMERGENCY_CONTACTS", "POST_GRADUATION_CONTACTS", "ACCESS_LOGS");
         assertThat(jdbc.queryForObject("select count(*) from information_schema.table_constraints where constraint_type = 'FOREIGN KEY' and table_schema = 'PUBLIC'", Integer.class))
-                .isEqualTo(13);
+                .isEqualTo(14);
         assertThat(jdbc.queryForList("select column_name from information_schema.columns where table_name = 'STUDENTS'", String.class))
                 .doesNotContain("PASSWORD", "PASSWORD_HASH", "OFFICE365_INITIAL_PASSWORD");
     }
@@ -123,10 +130,49 @@ class StudentDatabaseTests {
 
     @Test void rejectsClassFromAnotherMajorAndRollsBackAccountCreation() {
         create();
-        Major other = new Major(); other.setMajorCode("OTHER"); other.setMajorName("Other"); majors.save(other);
+        Major other = new Major(); other.setMajorCode("OTHER"); other.setMajorName("Other"); other.setFaculty(faculty); majors.save(other);
         var c = classes.findAll().getFirst();
         assertThatThrownBy(() -> onboarding.create(new CreateStudentRequest("TEST002", "Test Student", null,
                 null, null, other.getId(), c.getId(), null, null, null, null))).isInstanceOf(IllegalArgumentException.class);
         assertThat(users.count()).isEqualTo(1);
     }
+
+    @Test void academicParentColumnsAreRequiredInTheSchema() {
+        for (String[] column : new String[][] {
+                {"MAJORS", "FACULTY_ID"}, {"TRAINING_PROGRAMS", "MAJOR_ID"}, {"CLASSES", "PROGRAM_ID"},
+                {"STUDENTS", "CLASS_ID"}, {"STUDENTS", "TRAINING_PROGRAM_ID"}, {"STUDENTS", "MAJOR_ID"}}) {
+            assertThat(jdbc.queryForObject(
+                    "select is_nullable from information_schema.columns where table_schema = 'PUBLIC' and table_name = ? and column_name = ?",
+                    String.class, column[0], column[1])).isEqualTo("NO");
+        }
+    }
+    @Test void databaseRejectsInvalidAcademicNumbersWithoutApiValidation() {
+        create();
+        for (String assignment : new String[]{
+                "number_of_semesters = 0", "number_of_semesters = -1",
+                "total_credits = -1", "required_credits = -1", "elective_credits = -1",
+                "total_credits = 10, required_credits = 11",
+                "total_credits = 10, elective_credits = 11",
+                "total_credits = 10, required_credits = 6, elective_credits = 3",
+                "total_credits = 10, required_credits = 6, elective_credits = 5",
+                "total_credits = 2147483647, required_credits = 2147483647, elective_credits = 2147483647"}) {
+            assertThatThrownBy(() -> jdbc.update("update training_programs set " + assignment))
+                    .as(assignment).isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        }
+        assertThat(jdbc.update("update training_programs set number_of_semesters = 1, total_credits = 0, required_credits = 0, elective_credits = 0"))
+                .isEqualTo(1);
+        assertThat(jdbc.update("update training_programs set total_credits = 140, required_credits = 110, elective_credits = 30"))
+                .isEqualTo(1);
+    }
+
+    @Test void databaseEnforcesUniqueMajorAndProgramCodes() {
+        create();
+        assertThatThrownBy(() -> jdbc.update(
+                "insert into majors (major_code, major_name, faculty_id, active) select major_code, major_name, faculty_id, active from majors"))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> jdbc.update(
+                "insert into training_programs (program_code, program_name, major_id, active) select program_code, program_name, major_id, active from training_programs"))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+    }
+
 }

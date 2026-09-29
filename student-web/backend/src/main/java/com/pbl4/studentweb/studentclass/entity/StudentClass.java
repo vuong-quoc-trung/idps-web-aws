@@ -24,8 +24,8 @@ public class StudentClass extends BaseEntity {
     @JoinColumn(name = "major_id", nullable = false)
     private Major major;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "program_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "program_id", nullable = false)
     private TrainingProgram program;
 
     @Column(name = "cohort")

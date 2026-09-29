@@ -24,7 +24,6 @@ public class StudentClassService {
     private final StudentClassRepository repository;
     private final StudentClassMapper mapper;
     private final StudentRepository students;
-    private final com.pbl4.studentweb.major.repository.MajorRepository majors;
     private final com.pbl4.studentweb.trainingprogram.repository.TrainingProgramRepository programs;
 
     public Page<StudentClassSummary> findAll(Pageable pageable) {
@@ -60,14 +59,17 @@ public class StudentClassService {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("StudentClass"));
     }
     private void apply(StudentClass e, StudentClassRequest r) {
-        var major = majors.findById(r.majorId()).orElseThrow(() -> new ResourceNotFoundException("Major"));
-        var program = r.programId() == null ? null : programs.findById(r.programId())
+        var program = programs.findById(r.programId())
                 .orElseThrow(() -> new ResourceNotFoundException("Program"));
-        if (r.active() && !major.isActive()) throw new IllegalArgumentException("Major is inactive");
-        if (program != null && (!program.getMajor().getId().equals(major.getId()) || (r.active() && !program.isActive())))
-            throw new IllegalArgumentException("Program must belong to the selected major and be active for an active class");
-        if (e.getId() != null && !e.getMajor().getId().equals(major.getId()) && students.existsByStudentClassId(e.getId()))
-            throw new IllegalStateException("Cannot change the major of a class in use");
+        var major = program.getMajor();
+        if (r.majorId() != null && !r.majorId().equals(major.getId()))
+            throw new IllegalArgumentException("Major must match the selected program");
+        boolean changedProgram = e.getId() != null
+                && (e.getProgram() == null || !e.getProgram().getId().equals(program.getId()));
+        if ((e.getId() == null || changedProgram || r.active()) && (!major.isActive() || !program.isActive() || !major.getFaculty().isActive()))
+            throw new IllegalArgumentException("Program, major and faculty must be active");
+        if (changedProgram && students.existsByStudentClassId(e.getId()))
+            throw new IllegalStateException("Cannot change the program of a class in use; transfer students first");
         e.setMajor(major);
         e.setProgram(program);
         e.setCohort(r.cohort());

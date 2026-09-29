@@ -5,16 +5,22 @@ Java 25, Spring Boot 4.1.1, PostgreSQL 16. Hibernate tạo/cập nhật schema t
 ## Cấu trúc theo chức năng
 
 `src/main/java/com/pbl4/studentweb/` có các module:
-`user`, `major`, `trainingprogram`, `studentclass`, `student`, `studentaddress`,
+`user`, `faculty`, `major`, `trainingprogram`, `studentclass`, `student`, `studentaddress`,
 `familymember`, `emergencycontact`, `postgraduationcontact`, `accesslog`.
 Mỗi module có `controller`, `dto`, `entity`, `mapper`, `repository`, `service`.
 `common/entity` chứa ID và timestamp; `configuration` chứa BCrypt encoder.
 
-Backend có REST API CRUD cho ngành, chương trình đào tạo, lớp, sinh viên và các phần
+Backend có REST API CRUD cho khoa, ngành, chương trình đào tạo, lớp, sinh viên và các phần
 hồ sơ liên quan. Xác thực dùng Spring Security, session cookie và CSRF, với ba vai trò
 ADMIN / STAFF / STUDENT. Giao diện frontend chưa nằm trong phần triển khai này.
 
 Xem [hướng dẫn API, phân quyền và ví dụ request](docs/API.md).
+
+Quan hệ bắt buộc: **Khoa → Ngành → Chương trình đào tạo → Lớp → Sinh viên**.
+Tạo ngành cần `facultyId`; tạo chương trình cần `majorId`; tạo lớp cần `programId`; tạo sinh viên chỉ cần `classId`
+cùng MSSV và họ tên. Với database cũ, xem [hướng dẫn chuyển đổi dữ liệu](docs/ACADEMIC_HIERARCHY.md)
+trước khi chạy bản mới vì các liên kết khoa/chương trình trước đây chưa bắt buộc nay phải có giá trị,
+và `degreeType` chỉ nhận `BACHELOR`, `ENGINEER`, `MASTER` hoặc null.
 
 ## Chạy tạo bảng
 
@@ -35,9 +41,9 @@ Mặc định `DDL_AUTO=update` dành cho DEV; khi triển khai production dùng
 và `DDL_AUTO=validate`. `open-in-view=false`; chuyển entity sang DTO trong transaction.
 
 Trong DBeaver: kết nối `localhost:5432/student_db`, schema `public`, refresh Tables.
-Có 10 bảng: `users`, `majors`, `training_programs`, `classes`, `students`,
+Có 11 bảng: `users`, `faculties`, `majors`, `training_programs`, `classes`, `students`,
 `student_addresses`, `family_members`, `emergency_contacts`,
-`post_graduation_contacts`, `access_logs`. Có 13 khóa ngoại; enum lưu tên,
+`post_graduation_contacts`, `access_logs`. Có 14 khóa ngoại; enum lưu tên,
 ID identity, unique và index theo đặc tả. Không cascade xóa bảng danh mục.
 
 ```sql
@@ -50,13 +56,14 @@ WHERE table_schema = 'public' AND constraint_type = 'FOREIGN KEY';
 
 Theo các ô xám trong ảnh, `CreateStudentRequest` dành cho admin gồm MSSV (cũng là
 username), họ tên, ngày sinh, giới tính, CCCD, ngành, lớp, chương trình chính/phụ,
-email trường và điện thoại gia đình. MSSV, họ tên, ngành, lớp là bắt buộc khi tạo;
-các thông tin khác có thể bổ sung sau. Nếu không chọn chương trình chính, lấy
-chương trình mặc định của lớp. Service kiểm tra lớp/chương trình chính cùng ngành.
+email trường và điện thoại gia đình. MSSV, họ tên và lớp là bắt buộc khi tạo;
+backend lấy ngành và chương trình chính từ lớp. Lớp phải có chương trình, chương trình
+phải có ngành và cả ba phải đang hoạt động. Nếu request còn gửi ID ngành/chương trình,
+chúng phải khớp với lớp. PUT đổi lớp cũng cập nhật đồng thời ngành và chương trình chính.
 CCCD và điện thoại gia đình tạm thuộc admin theo màu ô ảnh, có thể điều chỉnh DTO
 nếu quy định thực tế khác. Tài khoản ngân hàng do ADMIN/STAFF cập nhật qua `UpdateStudentRequest`.
 MSSV và username không đổi sau khi tạo. PUT thay toàn bộ nhóm trường của request;
-trường tùy chọn bỏ trống sẽ bị xóa về NULL.
+trường tùy chọn bỏ trống sẽ bị xóa về NULL; riêng ngành/chương trình chính luôn suy ra từ lớp.
 
 `StudentOnboardingService.create` tạo User và Student trong cùng transaction,
 role STUDENT, status ACTIVE, profile INCOMPLETE. Không lấy dữ liệu cá nhân thật từ ảnh

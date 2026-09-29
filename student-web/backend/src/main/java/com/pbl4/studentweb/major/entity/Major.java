@@ -10,13 +10,17 @@ import com.pbl4.studentweb.common.entity.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "majors")
+@Table(name = "majors", indexes = @Index(name = "idx_majors_faculty_id", columnList = "faculty_id"))
 public class Major extends BaseEntity {
     @Column(name = "major_code", length = 20, nullable = false, unique = true)
     private String majorCode;
 
     @Column(name = "major_name", length = 150, nullable = false)
     private String majorName;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "faculty_id", nullable = false, foreignKey = @ForeignKey(name = "fk_majors_faculty"))
+    private com.pbl4.studentweb.faculty.entity.Faculty faculty;
 
     @Column(name = "description", columnDefinition = "text")
     private String description;

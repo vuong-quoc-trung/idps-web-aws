@@ -36,7 +36,7 @@ csrf = await fetch('/api/auth/csrf', { credentials: 'same-origin' }).then(r => r
 
 | Chức năng | ADMIN | STAFF | STUDENT |
 | --- | --- | --- | --- |
-| Xem danh mục ngành/lớp/chương trình | Có | Có | Có |
+| Xem danh mục khoa/ngành/lớp/chương trình | Có | Có | Có |
 | Thêm/sửa/xóa danh mục | Có | Có | Không |
 | Danh sách, tạo, cập nhật, ngừng hoạt động sinh viên | Có | Có | Không |
 | Quản lý địa chỉ/nhân thân/liên hệ của sinh viên | Có | Có | Chỉ của mình qua `/me` |
@@ -50,6 +50,7 @@ Sinh viên chưa hoàn thiện hồ sơ vẫn được dùng các API bổ sung 
 
 | Resource | Danh sách | Chi tiết | Thêm | Sửa | Xóa |
 | --- | --- | --- | --- | --- | --- |
+| `/faculties` | GET | GET `/{id}` | POST | PUT `/{id}` | DELETE `/{id}` |
 | `/majors` | GET | GET `/{id}` | POST | PUT `/{id}` | DELETE `/{id}` |
 | `/training-programs` | GET | GET `/{id}` | POST | PUT `/{id}` | DELETE `/{id}` |
 | `/classes` | GET | GET `/{id}` | POST | PUT `/{id}` | DELETE `/{id}` |
@@ -61,26 +62,41 @@ Kết quả: `{ "content": [], "page": 0, "size": 20, "totalElements": 0, "total
 `status` (`ACTIVE`, `GRADUATED`, `SUSPENDED`, `INACTIVE`). Dữ liệu ngừng hoạt động vẫn có trong
 kết quả nếu không truyền `status`. Tìm kiếm coi `%`/`_` là ký tự thường, không phải wildcard.
 
-Payload danh mục dùng chung cho POST/PUT:
+Payload danh mục dùng chung cho POST/PUT, theo thứ tự khoa → ngành → chương trình → lớp:
 
 ```json
-{ "code": "CNTT", "name": "Công nghệ thông tin", "description": "", "active": true }
+{ "code": "K_CNTT", "name": "Khoa Công nghệ thông tin", "description": "", "active": true }
 ```
 
 ```json
-{ "code": "CNTT2026", "name": "Chương trình CNTT", "majorId": 1, "cohort": 2026, "degreeType": "Kỹ sư", "active": true }
+{ "code": "CNTT", "name": "Công nghệ thông tin", "facultyId": 1, "description": "", "active": true }
 ```
 
 ```json
-{ "code": "26T1", "name": "Lớp 26T1", "majorId": 1, "programId": 1, "cohort": 2026, "academicYear": "2026-2031", "active": true }
+{
+  "code": "CNTT2026", "name": "Chương trình CNTT", "majorId": 1, "cohort": 2026,
+  "degreeType": "ENGINEER", "numberOfSemesters": 10, "totalCredits": 150,
+  "requiredCredits": 120, "electiveCredits": 30, "active": true
+}
+```
+
+```json
+{ "code": "26T1", "name": "Lớp 26T1", "programId": 1, "cohort": 2026, "academicYear": "2026-2031", "active": true }
 ```
 
 ID trong ví dụ phải thay bằng ID thật. `code` và tên ngành/chương trình bắt buộc;
-`majorId` bắt buộc cho chương trình/lớp; `active` bắt buộc. Tên lớp và các trường mô tả
-có thể bỏ trống. Chương trình của lớp phải cùng ngành. Xóa danh mục đang được tham chiếu
-trả `409`; có thể PUT `active=false` để ngừng sử dụng. Không chuyển ngành của lớp/chương
-trình đang được sử dụng. Đổi chương trình mặc định của lớp không tự chuyển chương trình
-của các sinh viên đã tồn tại.
+`facultyId` bắt buộc cho ngành; `majorId` bắt buộc cho chương trình; `programId` bắt buộc cho lớp; `active` bắt buộc.
+Khoa/ngành/chương trình cha phải tồn tại. Lớp tự lấy ngành từ chương trình; nếu gửi thêm
+`majorId` thì phải khớp. Tên lớp và các trường mô tả có thể bỏ trống.
+Xóa danh mục đang được tham chiếu trả `409`; có thể PUT `active=false` để ngừng sử dụng.
+Không đổi khoa của ngành đang được sử dụng; không đổi ngành của chương trình đang được sử dụng; không đổi chương trình của lớp
+đã có sinh viên, kể cả đổi sang chương trình cùng ngành.
+
+`degreeType` là enum lưu bằng tên: `BACHELOR`, `ENGINEER`, `MASTER` (có thể null nếu chưa bổ sung).
+Bốn trường học kỳ/tín chỉ là số nguyên tùy chọn: `numberOfSemesters` phải > 0; `totalCredits` phải >= 0;
+`requiredCredits` và `electiveCredits` phải >= 0. Khi có tổng, mỗi phần không được vượt tổng;
+khi có đủ cả ba, tổng phải bằng bắt buộc + tự chọn. PUT thay toàn bộ trường, giá trị tùy chọn
+bỏ trống sẽ thành null. Response trả đủ enum và bốn trường này.
 
 Tạo sinh viên:
 
@@ -88,13 +104,15 @@ Tạo sinh viên:
 {
   "studentCode": "SV001", "fullName": "Sinh viên mẫu",
   "dateOfBirth": "2006-01-01", "gender": "OTHER", "citizenId": "TEST001",
-  "majorId": 1, "classId": 1, "trainingProgramId": 1, "secondaryProgramId": null,
+  "classId": 1, "secondaryProgramId": null,
   "schoolEmail": "sv001@example.invalid", "familyPhoneNumber": "0900000000"
 }
 ```
 
-MSSV, họ tên, ngành và lớp bắt buộc. Nếu không truyền chương trình chính khi tạo, lấy
-chương trình mặc định của lớp. Tạo thành công trả `201`, header `Location`, body
+MSSV, họ tên và `classId` bắt buộc. Backend luôn lấy ngành và chương trình chính từ lớp;
+lớp phải có chương trình và cả lớp/chương trình/ngành/khoa phải đang hoạt động.
+Không cần gửi `majorId` hay `trainingProgramId`. Nếu gửi, phải khớp với lớp đã chọn.
+Chương trình phụ vẫn tùy chọn, không thay thế chương trình chính. Tạo thành công trả `201`, header `Location`, body
 `{ "student": {...}, "activationToken": "..." }`. User + Student được tạo trong một
 transaction. Người quản lý chuyển token qua kênh đã xác minh cho sinh viên.
 
@@ -106,8 +124,11 @@ qua `/auth/csrf` trước khi gọi.
 PUT `/students/{id}` gồm họ tên, ngày sinh, giới tính, CCCD, ngành/lớp/chương trình,
 email trường, điện thoại gia đình như POST, thêm `bankAccountNumber`, `bankName`,
 `status` bắt buộc; không nhận `studentCode`. MSSV và username không đổi sau khi tạo.
-PUT thay toàn bộ nhóm trường: trường tùy chọn bị bỏ trống sẽ thành NULL, bao gồm
-chương trình chính; PUT không tự lấy chương trình mặc định từ lớp.
+PUT bắt buộc có `classId`. Ngành và chương trình chính luôn được lấy từ lớp, kể cả khi
+bỏ trống/gửi null hai ID đó. Đổi lớp cập nhật đồng thời ngành và chương trình chính.
+Các trường tùy chọn khác bị bỏ trống sẽ thành NULL. Không chuyển sang lớp có chuỗi cha
+ngừng hoạt động; vẫn cho sửa hồ sơ giữ nguyên lớp cũ sau khi danh mục ngừng hoạt động.
+Xem [quan hệ và chuyển đổi database cũ](ACADEMIC_HIERARCHY.md).
 
 DELETE sinh viên đặt `status=INACTIVE`, khóa tài khoản và hủy token kích hoạt; giữ
 hồ sơ, liên hệ và nhật ký. `SUSPENDED`/`INACTIVE` trong PUT cũng khóa tài khoản.

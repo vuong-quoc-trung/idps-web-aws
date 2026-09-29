@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class MajorMapper {
     public MajorSummary toSummary(Major e) {
-        return new MajorSummary(e.getId(), e.getMajorCode(), e.getMajorName(), e.getDescription(), e.isActive());
+        return new MajorSummary(e.getId(), e.getMajorCode(), e.getMajorName(), e.getDescription(), e.getFaculty().getId(), e.isActive());
     }
 }

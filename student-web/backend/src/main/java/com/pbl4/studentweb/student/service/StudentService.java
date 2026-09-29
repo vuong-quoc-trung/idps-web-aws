@@ -5,8 +5,6 @@ import com.pbl4.studentweb.student.dto.*;
 import com.pbl4.studentweb.student.entity.*;
 import com.pbl4.studentweb.student.mapper.StudentMapper;
 import com.pbl4.studentweb.student.repository.StudentRepository;
-import com.pbl4.studentweb.major.repository.MajorRepository;
-import com.pbl4.studentweb.studentclass.repository.StudentClassRepository;
 import com.pbl4.studentweb.trainingprogram.repository.TrainingProgramRepository;
 import com.pbl4.studentweb.trainingprogram.entity.TrainingProgram;
 import jakarta.persistence.criteria.Predicate;
@@ -30,8 +28,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 public class StudentService {
     private final StudentRepository students;
     private final StudentMapper mapper;
-    private final MajorRepository majors;
-    private final StudentClassRepository classes;
+    private final StudentAcademicAssignment academicAssignment;
     private final TrainingProgramRepository programs;
     private final StudentProfileCompletionService completion;
 
@@ -59,18 +56,12 @@ public class StudentService {
     @Transactional
     public StudentDetail update(Long id, @NotNull @Valid UpdateStudentRequest r) {
         var s = require(id);
-        var major = majors.findById(r.majorId()).orElseThrow(() -> new ResourceNotFoundException("Major"));
-        var studentClass = classes.findById(r.classId()).orElseThrow(() -> new ResourceNotFoundException("Class"));
-        if (!studentClass.getMajor().getId().equals(major.getId()))
-            throw new IllegalArgumentException("Class must belong to the selected major");
-        // Existing inactive catalogs remain readable/editable; new assignments must be active.
-        if ((!s.getMajor().getId().equals(major.getId()) && !major.isActive())
-                || (!s.getStudentClass().getId().equals(studentClass.getId()) && (!studentClass.isActive() || !major.isActive())))
-            throw new IllegalArgumentException("New major and class assignments must be active");
-        var primary = r.trainingProgramId() == null ? null : program(r.trainingProgramId(), s.getTrainingProgram());
+        boolean changingClass = !s.getStudentClass().getId().equals(r.classId());
+        // Editing existing records remains possible after catalogs are deactivated.
+        var studentClass = academicAssignment.resolve(r.classId(), r.majorId(), r.trainingProgramId(), changingClass);
+        var primary = studentClass.getProgram();
+        var major = primary.getMajor();
         var secondary = r.secondaryProgramId() == null ? null : program(r.secondaryProgramId(), s.getSecondaryProgram());
-        if (primary != null && !primary.getMajor().getId().equals(major.getId()))
-            throw new IllegalArgumentException("Primary program must belong to the selected major");
         String citizen = optional(r.citizenId());
         String email = optional(r.schoolEmail());
         if ((citizen != null && students.existsByCitizenIdAndIdNot(citizen, id))
@@ -110,7 +101,7 @@ public class StudentService {
     }
     private TrainingProgram program(Long id, TrainingProgram current) {
         var p = programs.findById(id).orElseThrow(() -> new ResourceNotFoundException("Program"));
-        if ((current == null || !current.getId().equals(id)) && (!p.isActive() || !p.getMajor().isActive()))
+        if ((current == null || !current.getId().equals(id)) && (!p.isActive() || !p.getMajor().isActive() || !p.getMajor().getFaculty().isActive()))
             throw new IllegalArgumentException("New program assignment must be active");
         return p;
     }

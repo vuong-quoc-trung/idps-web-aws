@@ -23,6 +23,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 public class MajorService {
     private final MajorRepository repository;
     private final MajorMapper mapper;
+    private final com.pbl4.studentweb.faculty.repository.FacultyRepository faculties;
     private final StudentRepository students;
     private final com.pbl4.studentweb.studentclass.repository.StudentClassRepository classes;
     private final com.pbl4.studentweb.trainingprogram.repository.TrainingProgramRepository programs;
@@ -60,6 +61,14 @@ public class MajorService {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Major"));
     }
     private void apply(Major e, MajorRequest r) {
+        var faculty = faculties.findById(r.facultyId()).orElseThrow(() -> new ResourceNotFoundException("Faculty"));
+        boolean changedFaculty = e.getId() != null && !e.getFaculty().getId().equals(faculty.getId());
+        if ((e.getId() == null || changedFaculty || r.active()) && !faculty.isActive())
+            throw new IllegalArgumentException("Faculty is inactive");
+        if (changedFaculty && (programs.existsByMajorId(e.getId())
+                || classes.existsByMajorId(e.getId()) || students.existsByMajorId(e.getId())))
+            throw new IllegalStateException("Cannot change the faculty of a major in use");
+        e.setFaculty(faculty);
         e.setDescription(optional(r.description()));
         e.setMajorCode(r.code().trim());
         e.setMajorName(optional(r.name()));

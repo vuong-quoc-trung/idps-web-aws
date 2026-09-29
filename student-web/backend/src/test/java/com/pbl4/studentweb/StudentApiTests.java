@@ -47,6 +47,8 @@ class StudentApiTests {
     @Autowired UserRepository users;
     @Autowired StudentRepository students;
     @Autowired MajorRepository majors;
+    @Autowired com.pbl4.studentweb.faculty.repository.FacultyRepository faculties;
+    com.pbl4.studentweb.faculty.entity.Faculty faculty;
     @Autowired StudentClassRepository classes;
     @Autowired TrainingProgramRepository programs;
     @Autowired EmergencyContactRepository contacts;
@@ -58,6 +60,8 @@ class StudentApiTests {
 
     @BeforeEach void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+        faculty = new com.pbl4.studentweb.faculty.entity.Faculty();
+        faculty.setFacultyCode("FAC"); faculty.setFacultyName("Test faculty"); faculties.saveAndFlush(faculty);
         hash = encoder.encode(PASSWORD);
         admin = account("admin-test", UserRole.ADMIN);
         account("staff-test", UserRole.STAFF);
@@ -69,7 +73,7 @@ class StudentApiTests {
     }
     StudentClass catalog() {
         if (studentClass != null) return studentClass;
-        var major = new Major(); major.setMajorCode("CS"); major.setMajorName("Computer science"); majors.save(major);
+        var major = new Major(); major.setMajorCode("CS"); major.setMajorName("Computer science"); major.setFaculty(faculty); majors.save(major);
         var program = new TrainingProgram(); program.setProgramCode("CS2026"); program.setProgramName("Program");
         program.setMajor(major); programs.save(program);
         studentClass = new StudentClass(); studentClass.setClassCode("CS26"); studentClass.setMajor(major);
@@ -158,7 +162,7 @@ class StudentApiTests {
         mvc.perform(get("/api/students").session(studentSession)).andExpect(status().isForbidden());
         mvc.perform(get("/api/users").session(studentSession)).andExpect(status().isForbidden());
         mvc.perform(get("/api/access-logs").session(studentSession)).andExpect(status().isForbidden());
-        send(post("/api/majors"), studentSession, "{\"code\":\"BAD\",\"name\":\"Bad\",\"active\":true}", 403);
+        send(post("/api/majors"), studentSession, "{\"facultyId\":" + faculty.getId() + ",\"code\":\"BAD\",\"name\":\"Bad\",\"active\":true}", 403);
         mvc.perform(get("/api/students/" + s.getId() + "/addresses").session(studentSession)).andExpect(status().isForbidden());
         var staff = login("staff-test");
         mvc.perform(get("/api/students").session(staff)).andExpect(status().isOk());
@@ -180,10 +184,10 @@ class StudentApiTests {
     @Test void catalogCrudChecksUniquenessReferencesAndDeletion() throws Exception {
         var session = login("admin-test");
         long majorId = body(send(post("/api/majors"), session,
-                "{\"code\":\"NEW\",\"name\":\"New major\",\"description\":\"Description\",\"active\":true}", 201)).get("id").asLong();
+                "{\"facultyId\":" + faculty.getId() + ",\"code\":\"NEW\",\"name\":\"New major\",\"description\":\"Description\",\"active\":true}", 201)).get("id").asLong();
         send(put("/api/majors/" + majorId), session,
-                "{\"code\":\"NEW\",\"name\":\"Renamed\",\"active\":true}", 200);
-        send(post("/api/majors"), session, "{\"code\":\"NEW\",\"name\":\"Duplicate\",\"active\":true}", 409);
+                "{\"facultyId\":" + faculty.getId() + ",\"code\":\"NEW\",\"name\":\"Renamed\",\"active\":true}", 200);
+        send(post("/api/majors"), session, "{\"facultyId\":" + faculty.getId() + ",\"code\":\"NEW\",\"name\":\"Duplicate\",\"active\":true}", 409);
         String program = "{\"code\":\"NEWP\",\"name\":\"New program\",\"majorId\":" + majorId + ",\"active\":true}";
         long programId = body(send(post("/api/training-programs"), session, program, 201)).get("id").asLong();
         String group = "{\"code\":\"NEWC\",\"majorId\":" + majorId + ",\"programId\":" + programId + ",\"active\":true}";
@@ -199,20 +203,22 @@ class StudentApiTests {
     @Test void rejectsIncompatibleClassAndMovingCatalogsInUse() throws Exception {
         var s = student("LINKED"); var session = login("admin-test");
         long other = body(send(post("/api/majors"), session,
-                "{\"code\":\"OTHER\",\"name\":\"Other major\",\"active\":true}", 201)).get("id").asLong();
+                "{\"facultyId\":" + faculty.getId() + ",\"code\":\"OTHER\",\"name\":\"Other major\",\"active\":true}", 201)).get("id").asLong();
         String wrongClass = "{\"code\":\"WRONG\",\"majorId\":" + other + ",\"programId\":" + s.getTrainingProgram().getId() + ",\"active\":true}";
         send(post("/api/classes"), session, wrongClass, 400);
         String move = "{\"code\":\"CS2026\",\"name\":\"Program\",\"majorId\":" + other + ",\"active\":true}";
         send(put("/api/training-programs/" + s.getTrainingProgram().getId()), session, move, 409);
-        String moveClass = "{\"code\":\"CS26\",\"majorId\":" + other + ",\"active\":true}";
+        var otherProgram = body(send(post("/api/training-programs"), session,
+                json.writeValueAsString(java.util.Map.of("code", "OTHERP", "name", "Other program", "majorId", other, "active", true)), 201));
+        String moveClass = json.writeValueAsString(java.util.Map.of("code", "CS26", "programId", otherProgram.get("id").asLong(), "active", true));
         send(put("/api/classes/" + s.getStudentClass().getId()), session, moveClass, 409);
     }
 
     @Test void validatesRequestsPaginationAndCsrf() throws Exception {
         var session = login("admin-test");
-        send(post("/api/majors"), session, "{\"code\":\" \",\"name\":\"Invalid\",\"active\":true}", 400);
-        send(post("/api/majors"), session, "{\"code\":\"BAD\",\"name\":\"Invalid\"}", 400);
-        send(post("/api/majors"), session, "{\"code\":\"BAD\",\"name\":\"Invalid\",\"active\":true,\"role\":\"ADMIN\"}", 400);
+        send(post("/api/majors"), session, "{\"facultyId\":" + faculty.getId() + ",\"code\":\" \",\"name\":\"Invalid\",\"active\":true}", 400);
+        send(post("/api/majors"), session, "{\"facultyId\":" + faculty.getId() + ",\"code\":\"BAD\",\"name\":\"Invalid\"}", 400);
+        send(post("/api/majors"), session, "{\"facultyId\":" + faculty.getId() + ",\"code\":\"BAD\",\"name\":\"Invalid\",\"active\":true,\"role\":\"ADMIN\"}", 400);
         mvc.perform(get("/api/students").session(session).param("size", "101")).andExpect(status().isBadRequest());
         mvc.perform(get("/api/students").session(session).param("page", "-1")).andExpect(status().isBadRequest());
         mvc.perform(get("/api/students/no-id").session(session)).andExpect(status().isBadRequest());
@@ -323,4 +329,241 @@ class StudentApiTests {
         mvc.perform(post("/api/users/" + id + "/activation-token").session(session).with(csrf()))
                 .andExpect(status().isConflict());
     }
+
+    String jsonBody(Object... pairs) {
+        var values = new java.util.LinkedHashMap<String, Object>();
+        for (int i = 0; i < pairs.length; i += 2) values.put((String) pairs[i], pairs[i + 1]);
+        return json.writeValueAsString(values);
+    }
+
+    @Test void createsHierarchyWithOnlyImmediateParentIds() throws Exception {
+        var session = login("admin-test");
+        long majorId = body(send(post("/api/majors"), session,
+                jsonBody("facultyId", faculty.getId(), "code", "CHAIN", "name", "Chain major", "active", true), 201)).get("id").asLong();
+        for (int i = 1; i <= 2; i++) {
+            long programId = body(send(post("/api/training-programs"), session,
+                    jsonBody("code", "CHAINP" + i, "name", "Program " + i, "majorId", majorId, "active", true), 201))
+                    .get("id").asLong();
+            for (int j = 1; j <= 2; j++) {
+                var group = body(send(post("/api/classes"), session,
+                        jsonBody("code", "CLASS" + i + j, "programId", programId, "active", true), 201));
+                long classId = group.get("id").asLong();
+                assertThat(group.get("majorId").asLong()).isEqualTo(majorId);
+                var created = body(send(post("/api/students"), session,
+                        jsonBody("studentCode", "CHAIN" + i + j, "fullName", "Chain student", "classId", classId), 201));
+                long studentId = created.get("student").get("id").asLong();
+                mvc.perform(get("/api/students/" + studentId).session(session))
+                        .andExpect(status().isOk()).andExpect(jsonPath("$.majorId").value(majorId))
+                        .andExpect(jsonPath("$.classId").value(classId))
+                        .andExpect(jsonPath("$.trainingProgramId").value(programId));
+            }
+        }
+    }
+
+    @Test void rejectsMissingAndUnknownParentsBeforeCreatingAccounts() throws Exception {
+        var session = login("admin-test");
+        long before = users.count();
+        send(post("/api/training-programs"), session, jsonBody("code", "NO_MAJOR", "name", "Program", "active", true), 400);
+        send(post("/api/training-programs"), session,
+                jsonBody("code", "BAD_MAJOR", "name", "Program", "majorId", 999999L, "active", true), 404);
+        send(post("/api/classes"), session, jsonBody("code", "NO_PROGRAM", "active", true), 400);
+        send(post("/api/classes"), session, jsonBody("code", "BAD_PROGRAM", "programId", 999999L, "active", true), 404);
+        send(post("/api/students"), session, jsonBody("studentCode", "NO_CLASS", "fullName", "Student"), 400);
+        send(post("/api/students"), session,
+                jsonBody("studentCode", "BAD_CLASS", "fullName", "Student", "classId", 999999L), 404);
+        assertThat(users.count()).isEqualTo(before);
+        assertThat(students.count()).isZero();
+    }
+
+    @Test void rejectsConflictingStudentIdsEvenForProgramsInTheSameMajor() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        long otherProgram = body(send(post("/api/training-programs"), session,
+                jsonBody("code", "SAME_MAJOR", "name", "Other program", "majorId", c.getMajor().getId(), "active", true), 201))
+                .get("id").asLong();
+        long before = users.count();
+        send(post("/api/students"), session,
+                jsonBody("studentCode", "MISMATCH", "fullName", "Student", "classId", c.getId(), "trainingProgramId", otherProgram), 400);
+        send(post("/api/students"), session,
+                jsonBody("studentCode", "MISMATCH", "fullName", "Student", "classId", c.getId(), "majorId", 999999L), 400);
+        assertThat(users.count()).isEqualTo(before);
+        var s = student("EDIT_LINK");
+        send(put("/api/students/" + s.getId()), session,
+                jsonBody("fullName", "Student", "classId", c.getId(), "trainingProgramId", otherProgram, "status", "ACTIVE"), 400);
+        assertThat(s.getTrainingProgram().getId()).isEqualTo(c.getProgram().getId());
+        send(put("/api/classes/" + c.getId()), session,
+                jsonBody("code", c.getClassCode(), "programId", otherProgram, "active", true), 409);
+    }
+
+    @Test void transferringStudentDerivesBothMajorAndProgramAndPutCannotClearThem() throws Exception {
+        var s = student("TRANSFER"); var session = login("admin-test");
+        long major = body(send(post("/api/majors"), session,
+                jsonBody("facultyId", faculty.getId(), "code", "DEST", "name", "Destination", "active", true), 201)).get("id").asLong();
+        long program = body(send(post("/api/training-programs"), session,
+                jsonBody("code", "DESTP", "name", "Destination program", "majorId", major, "active", true), 201)).get("id").asLong();
+        long group = body(send(post("/api/classes"), session,
+                jsonBody("code", "DESTC", "programId", program, "active", true), 201)).get("id").asLong();
+        var updated = body(send(put("/api/students/" + s.getId()), session,
+                jsonBody("fullName", "Transferred", "classId", group, "status", "ACTIVE"), 200));
+        assertThat(updated.get("majorId").asLong()).isEqualTo(major);
+        assertThat(updated.get("trainingProgramId").asLong()).isEqualTo(program);
+        var repeated = body(send(put("/api/students/" + s.getId()), session,
+                jsonBody("fullName", "Transferred", "classId", group, "majorId", null, "trainingProgramId", null, "status", "ACTIVE"), 200));
+        assertThat(repeated.get("trainingProgramId").asLong()).isEqualTo(program);
+        assertThat(repeated.get("majorId").asLong()).isEqualTo(major);
+    }
+
+    @Test void rejectsNewStudentsForAnyInactiveParentButAllowsExistingProfileEdits() throws Exception {
+        var s = student("EXISTING"); var c = s.getStudentClass(); var session = login("admin-test");
+        String request = jsonBody("studentCode", "NEW_STUDENT", "fullName", "Student", "classId", c.getId());
+        c.setActive(false);
+        send(post("/api/students"), session, request, 400);
+        c.setActive(true); c.getProgram().setActive(false);
+        send(post("/api/students"), session, request, 400);
+        c.getProgram().setActive(true); c.getMajor().setActive(false);
+        send(post("/api/students"), session, request, 400);
+        send(put("/api/students/" + s.getId()), session,
+                jsonBody("fullName", "Edited", "classId", c.getId(), "status", "ACTIVE"), 200);
+        assertThat(users.existsByUsername("NEW_STUDENT")).isFalse();
+    }
+
+    @Test void unusedClassCanMoveProgramsAndItsMajorIsDerived() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        long major = body(send(post("/api/majors"), session,
+                jsonBody("facultyId", faculty.getId(), "code", "NEW_PARENT", "name", "New parent", "active", true), 201)).get("id").asLong();
+        long program = body(send(post("/api/training-programs"), session,
+                jsonBody("code", "NEW_PARENT_P", "name", "Program", "majorId", major, "active", true), 201)).get("id").asLong();
+        var updated = body(send(put("/api/classes/" + c.getId()), session,
+                jsonBody("code", c.getClassCode(), "programId", program, "active", true), 200));
+        assertThat(updated.get("majorId").asLong()).isEqualTo(major);
+        assertThat(updated.get("programId").asLong()).isEqualTo(program);
+    }
+
+    @Test void facultyCrudAndAuthorization() throws Exception {
+        var session = login("staff-test");
+        String payload = jsonBody("code", "FNEW", "name", "New faculty", "description", "Description", "active", true);
+        long id = body(send(post("/api/faculties"), session, payload, 201)).get("id").asLong();
+        send(post("/api/faculties"), session, payload, 409);
+        send(put("/api/faculties/" + id), session,
+                jsonBody("code", "FNEW", "name", "Updated faculty", "active", true), 200);
+        mvc.perform(get("/api/faculties/" + id).session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated faculty"));
+        student("FAC_READER"); var self = login("FAC_READER");
+        mvc.perform(get("/api/faculties").session(self)).andExpect(status().isOk());
+        send(post("/api/faculties"), self, payload, 403);
+        send(put("/api/faculties/" + id), self, payload, 403);
+        mvc.perform(delete("/api/faculties/" + id).session(self).with(csrf())).andExpect(status().isForbidden());
+        mvc.perform(delete("/api/faculties/" + id).session(session).with(csrf())).andExpect(status().isNoContent());
+        mvc.perform(get("/api/faculties/" + id).session(session)).andExpect(status().isNotFound());
+    }
+
+    @Test void majorsRequireExistingFacultyAndFacultyCanHaveSeveralMajors() throws Exception {
+        var session = login("admin-test");
+        send(post("/api/majors"), session, jsonBody("code", "MISSING_F", "name", "Missing", "active", true), 400);
+        send(post("/api/majors"), session,
+                jsonBody("code", "UNKNOWN_F", "name", "Unknown", "facultyId", 999999L, "active", true), 404);
+        for (int i = 0; i < 2; i++) {
+            var major = body(send(post("/api/majors"), session,
+                    jsonBody("code", "MULTI" + i, "name", "Major " + i, "facultyId", faculty.getId(), "active", true), 201));
+            assertThat(major.get("facultyId").asLong()).isEqualTo(faculty.getId());
+        }
+        mvc.perform(delete("/api/faculties/" + faculty.getId()).session(session).with(csrf())).andExpect(status().isConflict());
+        var c = catalog();
+        long other = body(send(post("/api/faculties"), session,
+                jsonBody("code", "OTHERF", "name", "Other faculty", "active", true), 201)).get("id").asLong();
+        send(put("/api/majors/" + c.getMajor().getId()), session,
+                jsonBody("code", "CS", "name", "Computer science", "facultyId", other, "active", true), 409);
+    }
+
+    @Test void inactiveFacultyBlocksNewAcademicAssignments() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        faculty.setActive(false); faculties.flush();
+        send(post("/api/majors"), session,
+                jsonBody("code", "BLOCKED", "name", "Major", "facultyId", faculty.getId(), "active", true), 400);
+        send(post("/api/training-programs"), session,
+                jsonBody("code", "BLOCKED", "name", "Program", "majorId", c.getMajor().getId(), "active", true), 400);
+        send(post("/api/classes"), session,
+                jsonBody("code", "BLOCKED", "programId", c.getProgram().getId(), "active", true), 400);
+        send(post("/api/students"), session,
+                jsonBody("studentCode", "BLOCKED", "fullName", "Student", "classId", c.getId()), 400);
+        assertThat(users.existsByUsername("BLOCKED")).isFalse();
+    }
+
+    @Test void persistsDegreeEnumAndAllCreditFieldsAndAllowsReplacingThem() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        for (String degree : new String[]{"BACHELOR", "ENGINEER", "MASTER"}) {
+            var program = body(send(post("/api/training-programs"), session,
+                    jsonBody("code", degree, "name", "Degree program", "majorId", c.getMajor().getId(),
+                            "degreeType", degree, "numberOfSemesters", 8, "totalCredits", 140,
+                            "requiredCredits", 110, "electiveCredits", 30, "active", true), 201));
+            long id = program.get("id").asLong();
+            assertThat(program.get("degreeType").asText()).isEqualTo(degree);
+            assertThat(program.get("numberOfSemesters").asInt()).isEqualTo(8);
+            assertThat(program.get("totalCredits").asInt()).isEqualTo(140);
+            assertThat(program.get("requiredCredits").asInt()).isEqualTo(110);
+            assertThat(program.get("electiveCredits").asInt()).isEqualTo(30);
+            assertThat(programs.findById(id).orElseThrow().getDegreeType().name()).isEqualTo(degree);
+            mvc.perform(get("/api/training-programs/" + id).session(session)).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.degreeType").value(degree));
+            var updated = body(send(put("/api/training-programs/" + id), session,
+                    jsonBody("code", degree, "name", "Updated", "majorId", c.getMajor().getId(),
+                            "degreeType", "MASTER", "numberOfSemesters", 4, "totalCredits", 60,
+                            "requiredCredits", 45, "electiveCredits", 15, "active", true), 200));
+            assertThat(updated.get("numberOfSemesters").asInt()).isEqualTo(4);
+            assertThat(updated.get("totalCredits").asInt()).isEqualTo(60);
+        }
+    }
+
+    @Test void rejectsInvalidDegreesSemestersAndCreditTotals() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        var payload = new java.util.LinkedHashMap<String, Object>();
+        payload.put("code", "INVALID"); payload.put("name", "Program");
+        payload.put("majorId", c.getMajor().getId()); payload.put("active", true);
+        for (var entry : java.util.Map.<String, Object>of("degreeType", "DOCTOR", "numberOfSemesters", 0,
+                "totalCredits", -1, "requiredCredits", -1, "electiveCredits", -1).entrySet()) {
+            payload.put(entry.getKey(), entry.getValue());
+            send(post("/api/training-programs"), session, json.writeValueAsString(payload), 400);
+            send(put("/api/training-programs/" + c.getProgram().getId()), session, json.writeValueAsString(payload), 400);
+            payload.remove(entry.getKey());
+        }
+        payload.put("totalCredits", 100); payload.put("requiredCredits", 110);
+        send(post("/api/training-programs"), session, json.writeValueAsString(payload), 400);
+        payload.put("requiredCredits", 80); payload.put("electiveCredits", 30);
+        send(post("/api/training-programs"), session, json.writeValueAsString(payload), 400);
+        payload.put("electiveCredits", 10);
+        send(post("/api/training-programs"), session, json.writeValueAsString(payload), 400);
+        payload.put("requiredCredits", 100); payload.put("electiveCredits", 0);
+        send(post("/api/training-programs"), session, json.writeValueAsString(payload), 201);
+    }
+    @Test void acceptsZeroCreditsAndRejectsInvalidSumOnUpdate() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        var created = body(send(post("/api/training-programs"), session,
+                jsonBody("code", "ZERO", "name", "Program", "majorId", c.getMajor().getId(),
+                        "numberOfSemesters", 1, "totalCredits", 0, "requiredCredits", 0,
+                        "electiveCredits", 0, "active", true), 201));
+        send(put("/api/training-programs/" + created.get("id").asLong()), session,
+                jsonBody("code", "ZERO", "name", "Program", "majorId", c.getMajor().getId(),
+                        "totalCredits", 100, "requiredCredits", 60, "electiveCredits", 30, "active", true), 400);
+        send(put("/api/training-programs/" + created.get("id").asLong()), session,
+                jsonBody("code", "ZERO", "name", "Program", "majorId", c.getMajor().getId(),
+                        "totalCredits", Integer.MAX_VALUE, "requiredCredits", Integer.MAX_VALUE,
+                        "electiveCredits", Integer.MAX_VALUE, "active", true), 400);
+    }
+
+    @Test void catalogCodesRemainUniqueOnCreateAndUpdate() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        for (String endpoint : new String[]{"majors", "training-programs"}) {
+            String parent = endpoint.equals("majors") ? "facultyId" : "majorId";
+            long parentId = endpoint.equals("majors") ? faculty.getId() : c.getMajor().getId();
+            String url = "/api/" + endpoint;
+            var first = body(send(post(url), session,
+                    jsonBody("code", "UNIQUE_A", "name", "A", parent, parentId, "active", true), 201));
+            var second = body(send(post(url), session,
+                    jsonBody("code", "UNIQUE_B", "name", "B", parent, parentId, "active", true), 201));
+            String duplicate = jsonBody("code", " UNIQUE_A ", "name", "Updated", parent, parentId, "active", true);
+            send(post(url), session, duplicate, 409);
+            send(put(url + "/" + second.get("id").asLong()), session, duplicate, 409);
+            send(put(url + "/" + first.get("id").asLong()), session, duplicate, 200);
+        }
+    }
+
 }

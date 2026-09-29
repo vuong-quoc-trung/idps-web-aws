@@ -65,12 +65,29 @@ public class TrainingProgramService {
                 && (classes.existsByProgramId(e.getId())
                     || students.existsByTrainingProgramIdOrSecondaryProgramId(e.getId(), e.getId())))
             throw new IllegalStateException("Cannot change the major of a program in use");
-        if (r.active() && !major.isActive()) throw new IllegalArgumentException("Major is inactive");
+        if ((e.getId() == null || !e.getMajor().getId().equals(major.getId()) || r.active())
+                && (!major.isActive() || !major.getFaculty().isActive()))
+            throw new IllegalArgumentException("Major and faculty must be active");
+        validateCredits(r);
         e.setMajor(major);
         e.setCohort(r.cohort());
-        e.setDegreeType(optional(r.degreeType()));
+        e.setDegreeType(r.degreeType());
+        e.setNumberOfSemesters(r.numberOfSemesters());
+        e.setTotalCredits(r.totalCredits());
+        e.setRequiredCredits(r.requiredCredits());
+        e.setElectiveCredits(r.electiveCredits());
         e.setProgramCode(r.code().trim());
         e.setProgramName(optional(r.name()));
         e.setActive(r.active());
+    }
+
+    private void validateCredits(TrainingProgramRequest r) {
+        if (r.totalCredits() == null) return;
+        if ((r.requiredCredits() != null && r.requiredCredits() > r.totalCredits())
+                || (r.electiveCredits() != null && r.electiveCredits() > r.totalCredits()))
+            throw new IllegalArgumentException("Component credits cannot exceed total credits");
+        if (r.requiredCredits() != null && r.electiveCredits() != null
+                && (long) r.requiredCredits() + r.electiveCredits() != r.totalCredits())
+            throw new IllegalArgumentException("Total credits must equal required plus elective credits");
     }
 }
