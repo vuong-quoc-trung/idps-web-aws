@@ -1,0 +1,14 @@
+/* LoginPage.css — Kept minimal; all shared styles are in index.css */
+
+/* Brand icon gradient */
+.brand-icon-login {
+  background: linear-gradient(135deg, #007acc, #005f9e);
+}
+
+/* Active input highlight on autofocus */
+.field-input:autofill {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
+  box-shadow: 0 0 0 40px var(--bg-input) inset !important;
+}
