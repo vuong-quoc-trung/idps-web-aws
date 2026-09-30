@@ -75,6 +75,8 @@ export const programApi = {
 export const classApi = {
   list: (page = 0) =>
     apiGet<Page<StudentClass>>('/classes', { page, size: PAGE_SIZE }),
+  listAll: () =>
+    apiGet<Page<StudentClass>>('/classes', { page: 0, size: 500 }),
   get: (id: number) =>
     apiGet<StudentClass>(`/classes/${id}`),
   create: (payload: StudentClassPayload) =>

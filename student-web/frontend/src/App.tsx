@@ -2,10 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import LoginPage     from './pages/LoginPage';
-import ActivatePage  from './pages/ActivatePage';
-import DashboardPage from './pages/DashboardPage';
-import CatalogPage   from './pages/CatalogPage';
+import LoginPage          from './pages/LoginPage';
+import ActivatePage       from './pages/ActivatePage';
+import DashboardPage      from './pages/DashboardPage';
+import CatalogPage        from './pages/CatalogPage';
+import StudentsPage       from './pages/StudentsPage';
+import StudentDetailPage  from './pages/students/StudentDetailPage';
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/catalog" element={<CatalogPage />} />
+              <Route path="/students" element={<StudentsPage />} />
+              <Route path="/students/:id" element={<StudentDetailPage />} />
             </Route>
 
             {/* Fallback */}
