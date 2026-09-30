@@ -112,9 +112,12 @@ export default function AppHeader() {
 
         {/* Nav */}
         <nav className="header-nav" aria-label="Điều hướng chính">
-          <a href="/" className="nav-link active" id="nav-home">Trang chủ</a>
+          <a href="/" className="nav-link" id="nav-home">Trang chủ</a>
           {(user.role === 'ADMIN' || user.role === 'STAFF') && (
-            <a href="/students" className="nav-link" id="nav-students">Sinh viên</a>
+            <>
+              <a href="/catalog" className="nav-link" id="nav-catalog">Danh mục học vụ</a>
+              <a href="/students" className="nav-link" id="nav-students">Sinh viên</a>
+            </>
           )}
           {user.role === 'STUDENT' && (
             <a href="/profile" className="nav-link" id="nav-profile">Hồ sơ của tôi</a>

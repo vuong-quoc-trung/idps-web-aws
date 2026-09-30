@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage     from './pages/LoginPage';
 import ActivatePage  from './pages/ActivatePage';
 import DashboardPage from './pages/DashboardPage';
+import CatalogPage   from './pages/CatalogPage';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/catalog" element={<CatalogPage />} />
             </Route>
 
             {/* Fallback */}
