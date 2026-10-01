@@ -3,7 +3,7 @@
  * Tabs: Khoa | Ngành | Chương trình đào tạo | Lớp
  * Access: ADMIN + STAFF only (ProtectedRoute handles this)
  */
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, type JSX } from 'react';
 import AppHeader from '../components/AppHeader';
 import './CatalogPage.css';
 
