@@ -35,6 +35,7 @@ export interface StudentDetail {
   citizenId?: string;
   citizenIdIssueDate?: string;
   placeOfBirth?: string;
+  oldPlaceOfBirth?: string;
   ethnicity?: string;
   nationality?: string;
   religion?: string;
@@ -57,10 +58,28 @@ export interface StudentDetail {
 
 // ---- Profile completion ----
 export interface CompletionStatus {
-  complete: boolean;
+  status?: 'INCOMPLETE' | 'COMPLETE';
+  complete?: boolean;
   percentage?: number;
   missingFields: string[];
   sections?: Record<string, boolean>;
+}
+
+// ---- Student self-update profile payload (/api/me/profile) ----
+export interface UpdateStudentProfilePayload {
+  avatarUrl?: string | null;
+  placeOfBirth?: string | null;
+  oldPlaceOfBirth?: string | null;
+  ethnicity?: string | null;
+  nationality?: string | null;
+  religion?: string | null;
+  citizenIdIssueDate?: string | null;
+  healthInsuranceNumber?: string | null;
+  healthInsuranceExpiry?: string | null;
+  freeHealthInsurance?: boolean;
+  personalEmail?: string | null;
+  phoneNumber?: string | null;
+  facebookUrl?: string | null;
 }
 
 // ---- Create student payload ----
