@@ -1,0 +1,149 @@
+/* DashboardPage.css */
+
+.dashboard-main {
+  flex: 1;
+  padding: var(--space-8) var(--space-6);
+}
+
+.dashboard-content {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: fade-up 0.4s ease;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Welcome card ---- */
+.welcome-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  overflow: hidden;
+}
+
+.welcome-glow {
+  position: absolute;
+  top: -80px; left: -80px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, var(--accent-glow-lg) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.welcome-body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-avatar {
+  width: 56px; height: 56px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-btn), var(--clr-blue-700, #0a4f7e));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-brand-lg);
+}
+
+.welcome-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0 0 4px;
+}
+.welcome-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ---- Info grid ---- */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+.info-card:hover { transform: translateY(-2px); }
+
+.info-card-blue:hover  { border-color: var(--border-brand); }
+.info-card-green:hover { border-color: rgba(26,127,55,0.3); }
+.info-card-red:hover   { border-color: rgba(181,32,13,0.3); }
+.info-card-purple:hover{ border-color: rgba(111,66,193,0.3); }
+[data-theme="dark"] .info-card-green:hover { border-color: rgba(137,209,133,0.3); }
+[data-theme="dark"] .info-card-red:hover   { border-color: rgba(244,135,113,0.3); }
+[data-theme="dark"] .info-card-purple:hover{ border-color: rgba(197,120,221,0.3); }
+
+.info-icon {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.info-card-blue   .info-icon { background: var(--accent-glow);           color: var(--accent); }
+.info-card-green  .info-icon { background: rgba(26,127,55,0.1);          color: var(--text-success); }
+.info-card-red    .info-icon { background: rgba(181,32,13,0.1);          color: var(--text-error); }
+.info-card-purple .info-icon { background: rgba(111,66,193,0.1);         color: #6f42c1; }
+[data-theme="dark"] .info-card-green  .info-icon { background: rgba(137,209,133,0.1); }
+[data-theme="dark"] .info-card-red    .info-icon { background: rgba(244,135,113,0.1); }
+[data-theme="dark"] .info-card-purple .info-icon { background: rgba(197,120,221,0.1); color: var(--role-admin-text); }
+
+.info-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0 0 3px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.info-value {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ---- Note ---- */
+.dashboard-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--accent-glow);
+  border: 1px solid var(--border-brand);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.dashboard-note svg { color: var(--accent); flex-shrink: 0; }
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .dashboard-main { padding: var(--space-4); }
+  .welcome-body   { flex-direction: column; text-align: center; }
+  .welcome-card   { padding: var(--space-5); }
+}
