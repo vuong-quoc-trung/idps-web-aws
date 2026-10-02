@@ -1,10 +1,11 @@
 /**
  * ProfilePage — Student self-service profile management
- * Features:
- *   - View full profile (read-only immutable fields)
- *   - Edit personal contact/demographic info
- *   - CRUD: Addresses, Family members, Emergency contacts, Post-grad contacts
- *   - Completion widget
+ * Fixed according to backend Spring Security contracts:
+ *   - Uses /api/me/profile, /api/me/completion, and /api/me/* sub-resources
+ *   - Solves 403 Forbidden for role STUDENT (no longer accesses /api/students/**)
+ *   - Fixes fail-on-unknown-properties: separates school-managed bank info from editable personal fields
+ *   - Adds editable demographic fields needed to reach 100% completion (placeOfBirth, nationality, citizenIdIssueDate...)
+ *   - Maps completion missing fields to user-friendly Vietnamese labels
  */
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,24 +13,62 @@ import AppHeader from '../components/AppHeader';
 import Modal from '../components/Modal';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  fetchMyStudent, updateMyProfile,
-  addressApi, familyApi, emergencyApi, postGradApi, studentApi,
+  myProfileApi,
+  myAddressApi,
+  myFamilyApi,
+  myEmergencyApi,
+  myPostGradApi,
+  type UpdateStudentProfilePayload,
 } from '../api/profileApi';
 import type {
-  StudentDetail, CompletionStatus,
-  Address, AddressPayload,
-  FamilyMember, FamilyMemberPayload,
-  EmergencyContact, EmergencyContactPayload,
-  PostGradContact, PostGradContactPayload,
+  StudentDetail,
+  CompletionStatus,
+  Address,
+  AddressPayload,
+  FamilyMember,
+  FamilyMemberPayload,
+  EmergencyContact,
+  EmergencyContactPayload,
+  PostGradContact,
+  PostGradContactPayload,
 } from '../types/student';
 import './ProfilePage.css';
 
 const GENDER_LABELS: Record<string, string> = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 const STATUS_LABELS: Record<string, string> = {
-  ACTIVE: 'Đang học', GRADUATED: 'Tốt nghiệp', SUSPENDED: 'Đình chỉ', INACTIVE: 'Ngừng HĐ',
+  ACTIVE: 'Đang học',
+  GRADUATED: 'Tốt nghiệp',
+  SUSPENDED: 'Đình chỉ',
+  INACTIVE: 'Ngừng HĐ',
 };
+
+const MISSING_FIELD_LABELS: Record<string, string> = {
+  dateOfBirth: 'Ngày sinh',
+  gender: 'Giới tính',
+  placeOfBirth: 'Nơi sinh',
+  oldPlaceOfBirth: 'Quê quán',
+  ethnicity: 'Dân tộc',
+  nationality: 'Quốc tịch',
+  citizenId: 'Số CCCD',
+  citizenIdIssueDate: 'Ngày cấp CCCD',
+  healthInsuranceNumber: 'Số thẻ BHYT',
+  healthInsuranceExpiry: 'Hạn thẻ BHYT',
+  trainingProgram: 'Chương trình đào tạo',
+  personalEmail: 'Email cá nhân',
+  phoneNumber: 'Số điện thoại',
+  currentAddress: 'Địa chỉ thường trú hiện tại',
+  permanentOrFamilyAddress: 'Hộ khẩu hoặc nhà gia đình',
+  father: 'Thông tin Bố (tên, ngày sinh hoặc đánh dấu đã mất)',
+  mother: 'Thông tin Mẹ (tên, ngày sinh hoặc đánh dấu đã mất)',
+  emergencyContact: 'Liên hệ khẩn cấp (tên, SĐT, ưu tiên)',
+};
+
 type TabId = 'overview' | 'personal' | 'addresses' | 'family' | 'emergency' | 'postgrad';
-interface Tab { id: TabId; label: string; icon: ReactNode; }
+interface Tab {
+  id: TabId;
+  label: string;
+  icon: ReactNode;
+}
 
 function initials(name: string) {
   return name.split(' ').map(p => p[0]).slice(-2).join('').toUpperCase();
@@ -74,12 +113,6 @@ const IcoShield = () => (
     <path d="M5 7l1.5 1.5L9 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
-const IcoBank = () => (
-  <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-    <path d="M1.5 5.5h11M2.5 3L7 1.5 11.5 3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-    <path d="M3 5.5v5M5.5 5.5v5M8.5 5.5v5M11 5.5v5M1.5 10.5h11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-  </svg>
-);
 const IcoPhone = () => (
   <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
     <path d="M12 9.5l-2 2a1 1 0 01-1 0C7.5 10.5 3.5 6.5 2.5 5a1 1 0 010-1l2-2 1 1L4 5.5S6 9 8.5 10l2-1.5L12 9.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
@@ -87,41 +120,61 @@ const IcoPhone = () => (
 );
 
 const TABS: Tab[] = [
-  { id: 'overview', label: 'Tổng quan', icon: (
-    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-      <rect x="1.5" y="1.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
-      <rect x="8.5" y="1.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
-      <rect x="1.5" y="8.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
-      <rect x="8.5" y="8.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
-    </svg>
-  )},
-  { id: 'personal', label: 'Thông tin cá nhân', icon: (
-    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-      <circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
-      <path d="M1.5 12.5c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-    </svg>
-  )},
-  { id: 'addresses', label: 'Địa chỉ', icon: (
-    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-      <path d="M7 1.5C4.791 1.5 3 3.291 3 5.5c0 3.375 4 7 4 7s4-3.625 4-7c0-2.209-1.791-4-4-4z" stroke="currentColor" strokeWidth="1.25"/>
-      <circle cx="7" cy="5.5" r="1.25" stroke="currentColor" strokeWidth="1.25"/>
-    </svg>
-  )},
-  { id: 'family', label: 'Nhân thân', icon: (
-    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-      <circle cx="4" cy="4.5" r="1.75" stroke="currentColor" strokeWidth="1.25"/>
-      <circle cx="10" cy="4.5" r="1.75" stroke="currentColor" strokeWidth="1.25"/>
-      <path d="M0.5 12.5c0-1.933 1.567-3.5 3.5-3.5s3.5 1.567 3.5 3.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-      <path d="M6.5 12.5c0-1.933 1.567-3.5 3.5-3.5s3.5 1.567 3.5 3.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-    </svg>
-  )},
+  {
+    id: 'overview',
+    label: 'Tổng quan',
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <rect x="1.5" y="1.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
+        <rect x="8.5" y="1.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
+        <rect x="1.5" y="8.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
+        <rect x="8.5" y="8.5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.25"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'personal',
+    label: 'Cập nhật cá nhân',
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
+        <path d="M1.5 12.5c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'addresses',
+    label: 'Địa chỉ',
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1.5C4.791 1.5 3 3.291 3 5.5c0 3.375 4 7 4 7s4-3.625 4-7c0-2.209-1.791-4-4-4z" stroke="currentColor" strokeWidth="1.25"/>
+        <circle cx="7" cy="5.5" r="1.25" stroke="currentColor" strokeWidth="1.25"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'family',
+    label: 'Nhân thân',
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <circle cx="4" cy="4.5" r="1.75" stroke="currentColor" strokeWidth="1.25"/>
+        <circle cx="10" cy="4.5" r="1.75" stroke="currentColor" strokeWidth="1.25"/>
+        <path d="M0.5 12.5c0-1.933 1.567-3.5 3.5-3.5s3.5 1.567 3.5 3.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+        <path d="M6.5 12.5c0-1.933 1.567-3.5 3.5-3.5s3.5 1.567 3.5 3.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
   { id: 'emergency', label: 'Khẩn cấp', icon: <IcoWarn/> },
-  { id: 'postgrad', label: 'Sau tốt nghiệp', icon: (
-    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-      <path d="M7 1L1.5 4.5 7 8l5.5-3.5L7 1z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
-      <path d="M1.5 4.5v4.5M7 8v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-    </svg>
-  )},
+  {
+    id: 'postgrad',
+    label: 'Sau tốt nghiệp',
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1L1.5 4.5 7 8l5.5-3.5L7 1z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+        <path d="M1.5 4.5v4.5M7 8v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ];
 
 /* ---- Shared helpers ---- */
@@ -135,37 +188,45 @@ function InfoItem({ label, value, mono }: { label: string; value?: string | null
 }
 
 function CompletionWidget({ completion, loading }: { completion: CompletionStatus | null; loading: boolean }) {
-  if (loading) return (
-    <div className="completion-widget">
-      <div style={{ display:'flex', alignItems:'center', gap:8, color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>
-        <span className="spinner" style={{ width:14, height:14, borderWidth:2 }}/>
-        Đang tải tiến độ...
+  if (loading) {
+    return (
+      <div className="completion-widget">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
+          <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }}/>
+          Đang kiểm tra tiến độ hoàn thiện hồ sơ...
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
   if (!completion) return null;
-  const pct = completion.complete ? 100
-    : completion.percentage != null ? Math.round(completion.percentage)
-    : Math.max(0, Math.round(100 - (completion.missingFields.length / Math.max(1, completion.missingFields.length + 1)) * 100));
-  const displayPct = completion.complete ? 100 : Math.min(pct, 99);
+
+  const isComplete = completion.status === 'COMPLETE' || completion.complete === true || (completion.missingFields && completion.missingFields.length === 0);
+  const missingCount = completion.missingFields?.length ?? 0;
+  const totalFields = 17;
+  const pct = isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
+  const displayPct = isComplete ? 100 : pct;
+
   return (
     <div className="completion-widget">
       <div className="completion-widget-header">
         <div className="completion-widget-left">
           <span className="completion-widget-title"><IcoCheck/> Mức độ hoàn thiện hồ sơ</span>
           <span className="completion-widget-sub">
-            {completion.complete ? 'Hồ sơ đã được hoàn thiện đầy đủ' : `Còn thiếu ${completion.missingFields.length} trường thông tin`}
+            {isComplete ? 'Hồ sơ đã được hoàn thiện đầy đủ theo quy định của nhà trường' : `Còn thiếu ${missingCount} mục thông tin cần bổ sung`}
           </span>
         </div>
-        <span className={`completion-pct-badge ${completion.complete ? 'complete' : ''}`}>{displayPct}%</span>
+        <span className={`completion-pct-badge ${isComplete ? 'complete' : ''}`}>{displayPct}%</span>
       </div>
       <div className="completion-progress-track">
-        <div className={`completion-progress-fill ${completion.complete ? 'complete' : ''}`} style={{ width:`${displayPct}%` }}/>
+        <div className={`completion-progress-fill ${isComplete ? 'complete' : ''}`} style={{ width: `${displayPct}%` }}/>
       </div>
-      {completion.missingFields.length > 0 && (
+      {missingCount > 0 && (
         <div className="completion-missing-tags">
           {completion.missingFields.map(f => (
-            <span key={f} className="missing-field-tag"><IcoInfo/>{f}</span>
+            <span key={f} className="missing-field-tag" title={`Cần bổ sung: ${f}`}>
+              <IcoInfo/>
+              {MISSING_FIELD_LABELS[f] ?? f}
+            </span>
           ))}
         </div>
       )}
@@ -174,15 +235,21 @@ function CompletionWidget({ completion, loading }: { completion: CompletionStatu
 }
 
 function DeleteConfirmModal({ open, onClose, onConfirm, deleting, error }:
-  { open:boolean; onClose:()=>void; onConfirm:()=>void; deleting:boolean; error:string|null }) {
+  { open: boolean; onClose: () => void; onConfirm: () => void; deleting: boolean; error: string | null }) {
   return (
-    <Modal open={open} title="Xác nhận xóa" size="sm" onClose={onClose}
-      footer={<>
-        <button className="btn-cancel" onClick={onClose} disabled={deleting}>Hủy</button>
-        <button className="btn-danger" onClick={onConfirm} disabled={deleting}>
-          {deleting && <span className="spinner spinner-sm"/>} Xóa
-        </button>
-      </>}
+    <Modal
+      open={open}
+      title="Xác nhận xóa"
+      size="sm"
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn-cancel" onClick={onClose} disabled={deleting}>Hủy</button>
+          <button className="btn-danger" onClick={onConfirm} disabled={deleting}>
+            {deleting && <span className="spinner spinner-sm"/>} Xóa
+          </button>
+        </>
+      }
     >
       <div className="profile-delete-confirm">
         <div className="profile-delete-icon">
@@ -192,16 +259,16 @@ function DeleteConfirmModal({ open, onClose, onConfirm, deleting, error }:
         </div>
         <h3>Xóa bản ghi này?</h3>
         <p>Hành động này không thể hoàn tác.</p>
-        {error && <div className="profile-alert-error" style={{ width:'100%' }}>{error}</div>}
+        {error && <div className="profile-alert-error" style={{ width: '100%' }}>{error}</div>}
       </div>
     </Modal>
   );
 }
 
 /* ============================================================
-   ADDRESS TAB
+   ADDRESS TAB (/api/me/addresses)
    ============================================================ */
-function AddressTab({ studentId }: { studentId: number }) {
+function AddressTab({ onModified }: { onModified?: () => void }) {
   const [items, setItems] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -211,22 +278,35 @@ function AddressTab({ studentId }: { studentId: number }) {
   const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try { setLoading(true); setItems(await addressApi.list(studentId)); }
-    finally { setLoading(false); }
-  }, [studentId]);
+    try {
+      setLoading(true);
+      setItems(await myAddressApi.list());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => { reload(); }, [reload]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true); setDeleteErr(null);
-    try { await addressApi.remove(studentId, deleteTarget.id); await reload(); setDeleteTarget(null); }
-    catch (e) { setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa'); }
-    finally { setDeleting(false); }
+    try {
+      await myAddressApi.remove(deleteTarget.id);
+      await reload();
+      setDeleteTarget(null);
+      onModified?.();
+    } catch (e) {
+      setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa địa chỉ');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   const ADDR_LABELS: Record<string, string> = {
-    CURRENT: 'Thường trú', PERMANENT: 'Hộ khẩu thường trú', FAMILY_HOME: 'Nhà gia đình',
+    CURRENT: 'Thường trú',
+    PERMANENT: 'Hộ khẩu thường trú',
+    FAMILY_HOME: 'Nhà gia đình',
   };
 
   return (
@@ -244,7 +324,7 @@ function AddressTab({ studentId }: { studentId: number }) {
         </button>
       </div>
       {loading ? (
-        <div className="profile-empty-state"><span className="spinner" style={{ width:20, height:20, borderWidth:2.5 }}/></div>
+        <div className="profile-empty-state"><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2.5 }}/></div>
       ) : items.length === 0 ? (
         <div className="profile-empty-state">
           <div className="profile-empty-icon">
@@ -253,7 +333,7 @@ function AddressTab({ studentId }: { studentId: number }) {
               <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
             </svg>
           </div>
-          <p>Chưa có địa chỉ nào. Hãy thêm địa chỉ để hoàn thiện hồ sơ.</p>
+          <p>Chưa có địa chỉ nào. Hãy thêm địa chỉ thường trú và địa chỉ hiện tại để hoàn thiện hồ sơ.</p>
         </div>
       ) : (
         <div className="profile-sub-grid" style={{ marginTop: 'var(--space-3)' }}>
@@ -261,12 +341,27 @@ function AddressTab({ studentId }: { studentId: number }) {
             <div key={addr.id} className="profile-sub-card">
               <span className="profile-sub-card-type-badge">
                 {ADDR_LABELS[addr.addressType] ?? addr.addressType}
-                {addr.current && <span style={{ marginLeft:4, color:'var(--text-success)' }}>• Hiện tại</span>}
+                {addr.current && <span style={{ marginLeft: 4, color: 'var(--text-success)' }}>• Hiện tại</span>}
               </span>
               {addr.addressLine && <div className="profile-sub-card-title">{addr.addressLine}</div>}
-              {addr.provinceCity && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Tỉnh/TP:</span><span>{addr.provinceCity}</span></div>}
-              {addr.wardCommune && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Xã/Phường:</span><span>{addr.wardCommune}</span></div>}
-              {addr.residenceRelation && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Quan hệ:</span><span>{addr.residenceRelation}</span></div>}
+              {addr.provinceCity && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Tỉnh/TP:</span>
+                  <span>{addr.provinceCity}</span>
+                </div>
+              )}
+              {addr.wardCommune && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Xã/Phường:</span>
+                  <span>{addr.wardCommune}</span>
+                </div>
+              )}
+              {addr.residenceRelation && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Quan hệ:</span>
+                  <span>{addr.residenceRelation}</span>
+                </div>
+              )}
               <div className="profile-sub-card-actions">
                 <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(addr); setShowModal(true); }}><IcoEdit/></button>
                 <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(addr)}><IcoTrash/></button>
@@ -275,44 +370,85 @@ function AddressTab({ studentId }: { studentId: number }) {
           ))}
         </div>
       )}
-      {showModal && <AddressModal studentId={studentId} item={editItem} open={showModal} onClose={() => setShowModal(false)} onSaved={() => { setShowModal(false); reload(); }}/>}
-      <DeleteConfirmModal open={!!deleteTarget} onClose={() => { setDeleteTarget(null); setDeleteErr(null); }} onConfirm={handleDelete} deleting={deleting} error={deleteErr}/>
+      {showModal && (
+        <AddressModal
+          item={editItem}
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onSaved={() => {
+            setShowModal(false);
+            reload();
+            onModified?.();
+          }}
+        />
+      )}
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onClose={() => { setDeleteTarget(null); setDeleteErr(null); }}
+        onConfirm={handleDelete}
+        deleting={deleting}
+        error={deleteErr}
+      />
     </div>
   );
 }
 
-function AddressModal({ studentId, item, open, onClose, onSaved }:
-  { studentId:number; item:Address|null; open:boolean; onClose:()=>void; onSaved:()=>void }) {
-  const [form, setForm] = useState<AddressPayload>({ addressType:'CURRENT', current:false });
+function AddressModal({ item, open, onClose, onSaved }:
+  { item: Address | null; open: boolean; onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState<AddressPayload>({ addressType: 'CURRENT', current: false });
   const [submitting, setSubmitting] = useState(false);
-  const [err, setErr] = useState<string|null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (item) setForm({ addressType:item.addressType, addressLine:item.addressLine??'', provinceCity:item.provinceCity??'', wardCommune:item.wardCommune??'', residenceRelation:item.residenceRelation??'', current:item.current });
-    else setForm({ addressType:'CURRENT', addressLine:'', provinceCity:'', wardCommune:'', residenceRelation:'', current:false });
+    if (item) {
+      setForm({
+        addressType: item.addressType,
+        addressLine: item.addressLine ?? '',
+        provinceCity: item.provinceCity ?? '',
+        wardCommune: item.wardCommune ?? '',
+        residenceRelation: item.residenceRelation ?? '',
+        current: item.current,
+      });
+    } else {
+      setForm({ addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
+    }
     setErr(null);
   }, [item, open]);
 
   async function save() {
     setSubmitting(true); setErr(null);
     try {
-      if (item) await addressApi.update(studentId, item.id, form);
-      else await addressApi.create(studentId, form);
+      if (item) await myAddressApi.update(item.id, form);
+      else await myAddressApi.create(form);
       onSaved();
-    } catch(e) { setErr(e instanceof Error ? e.message : 'Lỗi'); }
-    finally { setSubmitting(false); }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Lỗi lưu địa chỉ');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <Modal open={open} title={item ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới'} size="md" onClose={onClose}
-      footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{submitting && <span className="spinner spinner-sm"/>}{item ? 'Lưu thay đổi' : 'Thêm mới'}</button></>}
+    <Modal
+      open={open}
+      title={item ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới'}
+      size="md"
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
+          <button className="btn-submit" onClick={save} disabled={submitting}>
+            {submitting && <span className="spinner spinner-sm"/>}
+            {item ? 'Lưu thay đổi' : 'Thêm mới'}
+          </button>
+        </>
+      }
     >
-      {err && <div className="profile-alert-error" style={{ marginBottom:12 }}>{err}</div>}
-      <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-3)' }}>
+      {err && <div className="profile-alert-error" style={{ marginBottom: 12 }}>{err}</div>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-group">
           <label className="profile-form-label">Loại địa chỉ</label>
-          <select className="profile-form-input" value={form.addressType} onChange={e => setForm(f => ({ ...f, addressType:e.target.value as AddressPayload['addressType'] }))}>
+          <select className="profile-form-input" value={form.addressType} onChange={e => setForm(f => ({ ...f, addressType: e.target.value as AddressPayload['addressType'] }))}>
             <option value="CURRENT">Thường trú</option>
             <option value="PERMANENT">Hộ khẩu thường trú</option>
             <option value="FAMILY_HOME">Nhà gia đình</option>
@@ -320,24 +456,24 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
         </div>
         <div className="profile-form-group">
           <label className="profile-form-label">Số nhà, đường, phường/xã</label>
-          <input className="profile-form-input" value={form.addressLine??''} onChange={e => setForm(f => ({ ...f, addressLine:e.target.value }))} placeholder="VD: 123 Nguyễn Văn A, Phường 1"/>
+          <input className="profile-form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} placeholder="VD: 123 Nguyễn Văn A, Phường 1"/>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
             <label className="profile-form-label">Tỉnh / Thành phố</label>
-            <input className="profile-form-input" value={form.provinceCity??''} onChange={e => setForm(f => ({ ...f, provinceCity:e.target.value }))}/>
+            <input className="profile-form-input" value={form.provinceCity ?? ''} onChange={e => setForm(f => ({ ...f, provinceCity: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label">Xã / Phường</label>
-            <input className="profile-form-input" value={form.wardCommune??''} onChange={e => setForm(f => ({ ...f, wardCommune:e.target.value }))}/>
+            <input className="profile-form-input" value={form.wardCommune ?? ''} onChange={e => setForm(f => ({ ...f, wardCommune: e.target.value }))}/>
           </div>
         </div>
         <div className="profile-form-group">
           <label className="profile-form-label">Quan hệ với nơi ở</label>
-          <input className="profile-form-input" placeholder="VD: Chủ hộ, Thuê nhà..." value={form.residenceRelation??''} onChange={e => setForm(f => ({ ...f, residenceRelation:e.target.value }))}/>
+          <input className="profile-form-input" placeholder="VD: Chủ hộ, Thuê nhà..." value={form.residenceRelation ?? ''} onChange={e => setForm(f => ({ ...f, residenceRelation: e.target.value }))}/>
         </div>
         <label className="profile-toggle-row">
-          <input type="checkbox" className="profile-checkbox" checked={form.current} onChange={e => setForm(f => ({ ...f, current:e.target.checked }))}/>
+          <input type="checkbox" className="profile-checkbox" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))}/>
           <span className="profile-toggle-label">Đây là địa chỉ hiện tại đang cư trú</span>
         </label>
       </div>
@@ -346,32 +482,43 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
 }
 
 /* ============================================================
-   FAMILY TAB
+   FAMILY TAB (/api/me/family-members)
    ============================================================ */
-const REL_LABELS: Record<string, string> = { MOTHER:'Mẹ', FATHER:'Bố', GUARDIAN:'Người giám hộ', OTHER:'Khác' };
+const REL_LABELS: Record<string, string> = { MOTHER: 'Mẹ', FATHER: 'Bố', GUARDIAN: 'Người giám hộ', OTHER: 'Khác' };
 
-function FamilyTab({ studentId }: { studentId: number }) {
+function FamilyTab({ onModified }: { onModified?: () => void }) {
   const [items, setItems] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editItem, setEditItem] = useState<FamilyMember|null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<FamilyMember|null>(null);
+  const [editItem, setEditItem] = useState<FamilyMember | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<FamilyMember | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [deleteErr, setDeleteErr] = useState<string|null>(null);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try { setLoading(true); setItems(await familyApi.list(studentId)); }
-    finally { setLoading(false); }
-  }, [studentId]);
+    try {
+      setLoading(true);
+      setItems(await myFamilyApi.list());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => { reload(); }, [reload]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true); setDeleteErr(null);
-    try { await familyApi.remove(studentId, deleteTarget.id); await reload(); setDeleteTarget(null); }
-    catch(e) { setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa'); }
-    finally { setDeleting(false); }
+    try {
+      await myFamilyApi.remove(deleteTarget.id);
+      await reload();
+      setDeleteTarget(null);
+      onModified?.();
+    } catch (e) {
+      setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa thông tin nhân thân');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -391,7 +538,7 @@ function FamilyTab({ studentId }: { studentId: number }) {
         </button>
       </div>
       {loading ? (
-        <div className="profile-empty-state"><span className="spinner" style={{ width:20, height:20, borderWidth:2.5 }}/></div>
+        <div className="profile-empty-state"><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2.5 }}/></div>
       ) : items.length === 0 ? (
         <div className="profile-empty-state">
           <div className="profile-empty-icon">
@@ -401,7 +548,7 @@ function FamilyTab({ studentId }: { studentId: number }) {
               <path d="M17 11v6M14 14h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </div>
-          <p>Chưa có thông tin nhân thân. Thêm để hoàn thiện hồ sơ.</p>
+          <p>Chưa có thông tin nhân thân. Thêm thông tin cha và mẹ để hoàn thiện hồ sơ.</p>
         </div>
       ) : (
         <div className="profile-sub-grid" style={{ marginTop: 'var(--space-3)' }}>
@@ -415,7 +562,7 @@ function FamilyTab({ studentId }: { studentId: number }) {
                 <span className="profile-sub-card-label">Bằng ĐH:</span>
                 <span style={{ color: m.hasCollegeDegree ? 'var(--text-success)' : 'var(--text-muted)' }}>{m.hasCollegeDegree ? 'Có' : 'Không'}</span>
               </div>
-              {m.unavailable && <div className="profile-sub-card-row"><span style={{ color:'var(--text-muted)', fontStyle:'italic', fontSize:'var(--text-xs)' }}>Đã mất / Không liên lạc được</span></div>}
+              {m.unavailable && <div className="profile-sub-card-row"><span style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>Đã mất / Không liên lạc được</span></div>}
               <div className="profile-sub-card-actions">
                 <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(m); setShowModal(true); }}><IcoEdit/></button>
                 <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(m)}><IcoTrash/></button>
@@ -424,46 +571,92 @@ function FamilyTab({ studentId }: { studentId: number }) {
           ))}
         </div>
       )}
-      {showModal && <FamilyModal studentId={studentId} item={editItem} open={showModal} onClose={() => setShowModal(false)} onSaved={() => { setShowModal(false); reload(); }}/>}
-      <DeleteConfirmModal open={!!deleteTarget} onClose={() => { setDeleteTarget(null); setDeleteErr(null); }} onConfirm={handleDelete} deleting={deleting} error={deleteErr}/>
+      {showModal && (
+        <FamilyModal
+          item={editItem}
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onSaved={() => {
+            setShowModal(false);
+            reload();
+            onModified?.();
+          }}
+        />
+      )}
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onClose={() => { setDeleteTarget(null); setDeleteErr(null); }}
+        onConfirm={handleDelete}
+        deleting={deleting}
+        error={deleteErr}
+      />
     </div>
   );
 }
 
-function FamilyModal({ studentId, item, open, onClose, onSaved }:
-  { studentId:number; item:FamilyMember|null; open:boolean; onClose:()=>void; onSaved:()=>void }) {
-  const [form, setForm] = useState<FamilyMemberPayload>({ relationship:'OTHER', hasCollegeDegree:false, unavailable:false });
+function FamilyModal({ item, open, onClose, onSaved }:
+  { item: FamilyMember | null; open: boolean; onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState<FamilyMemberPayload>({ relationship: 'OTHER', hasCollegeDegree: false, unavailable: false });
   const [submitting, setSubmitting] = useState(false);
-  const [err, setErr] = useState<string|null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (item) setForm({ relationship:item.relationship, fullName:item.fullName??'', dateOfBirth:item.dateOfBirth??'', hasCollegeDegree:item.hasCollegeDegree, unavailable:item.unavailable, phoneNumber:item.phoneNumber??'' });
-    else setForm({ relationship:'OTHER', fullName:'', dateOfBirth:'', hasCollegeDegree:false, unavailable:false, phoneNumber:'' });
+    if (item) {
+      setForm({
+        relationship: item.relationship,
+        fullName: item.fullName ?? '',
+        dateOfBirth: item.dateOfBirth ?? '',
+        hasCollegeDegree: item.hasCollegeDegree,
+        unavailable: item.unavailable,
+        phoneNumber: item.phoneNumber ?? '',
+      });
+    } else {
+      setForm({ relationship: 'OTHER', fullName: '', dateOfBirth: '', hasCollegeDegree: false, unavailable: false, phoneNumber: '' });
+    }
     setErr(null);
   }, [item, open]);
 
   async function save() {
     setSubmitting(true); setErr(null);
     try {
-      const payload = { ...form, fullName:form.fullName||undefined, dateOfBirth:form.dateOfBirth||undefined, phoneNumber:form.phoneNumber||undefined };
-      if (item) await familyApi.update(studentId, item.id, payload);
-      else await familyApi.create(studentId, payload);
+      const payload = {
+        ...form,
+        fullName: form.fullName?.trim() || undefined,
+        dateOfBirth: form.dateOfBirth || undefined,
+        phoneNumber: form.phoneNumber?.trim() || undefined,
+      };
+      if (item) await myFamilyApi.update(item.id, payload);
+      else await myFamilyApi.create(payload);
       onSaved();
-    } catch(e) { setErr(e instanceof Error ? e.message : 'Lỗi'); }
-    finally { setSubmitting(false); }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Lỗi lưu thông tin nhân thân');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <Modal open={open} title={item ? 'Cập nhật nhân thân' : 'Thêm thành viên nhân thân'} size="md" onClose={onClose}
-      footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{submitting && <span className="spinner spinner-sm"/>}{item ? 'Lưu' : 'Thêm mới'}</button></>}
+    <Modal
+      open={open}
+      title={item ? 'Cập nhật nhân thân' : 'Thêm thành viên nhân thân'}
+      size="md"
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
+          <button className="btn-submit" onClick={save} disabled={submitting}>
+            {submitting && <span className="spinner spinner-sm"/>}
+            {item ? 'Lưu' : 'Thêm mới'}
+          </button>
+        </>
+      }
     >
-      {err && <div className="profile-alert-error" style={{ marginBottom:12 }}>{err}</div>}
-      <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-3)' }}>
+      {err && <div className="profile-alert-error" style={{ marginBottom: 12 }}>{err}</div>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Quan hệ <span style={{color:'var(--text-error)'}}>*</span></label>
-            <select className="profile-form-input" value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship:e.target.value as FamilyMemberPayload['relationship'] }))}>
+            <label className="profile-form-label">Quan hệ <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <select className="profile-form-input" value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship: e.target.value as FamilyMemberPayload['relationship'] }))}>
               <option value="MOTHER">Mẹ</option>
               <option value="FATHER">Bố</option>
               <option value="GUARDIAN">Người giám hộ</option>
@@ -472,26 +665,26 @@ function FamilyModal({ studentId, item, open, onClose, onSaved }:
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label">Họ và tên</label>
-            <input className="profile-form-input" value={form.fullName??''} onChange={e => setForm(f => ({ ...f, fullName:e.target.value }))}/>
+            <input className="profile-form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
           </div>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
             <label className="profile-form-label">Ngày sinh</label>
-            <input className="profile-form-input" type="date" value={form.dateOfBirth??''} onChange={e => setForm(f => ({ ...f, dateOfBirth:e.target.value }))}/>
+            <input className="profile-form-input" type="date" value={form.dateOfBirth ?? ''} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label">Số điện thoại</label>
-            <input className="profile-form-input" value={form.phoneNumber??''} onChange={e => setForm(f => ({ ...f, phoneNumber:e.target.value }))}/>
+            <input className="profile-form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
         </div>
-        <div style={{ display:'flex', gap:24 }}>
+        <div style={{ display: 'flex', gap: 24 }}>
           <label className="profile-toggle-row">
-            <input type="checkbox" className="profile-checkbox" checked={form.hasCollegeDegree} onChange={e => setForm(f => ({ ...f, hasCollegeDegree:e.target.checked }))}/>
+            <input type="checkbox" className="profile-checkbox" checked={form.hasCollegeDegree} onChange={e => setForm(f => ({ ...f, hasCollegeDegree: e.target.checked }))}/>
             <span className="profile-toggle-label">Có bằng đại học</span>
           </label>
           <label className="profile-toggle-row">
-            <input type="checkbox" className="profile-checkbox" checked={form.unavailable} onChange={e => setForm(f => ({ ...f, unavailable:e.target.checked }))}/>
+            <input type="checkbox" className="profile-checkbox" checked={form.unavailable} onChange={e => setForm(f => ({ ...f, unavailable: e.target.checked }))}/>
             <span className="profile-toggle-label">Đã mất / Không liên lạc</span>
           </label>
         </div>
@@ -501,30 +694,41 @@ function FamilyModal({ studentId, item, open, onClose, onSaved }:
 }
 
 /* ============================================================
-   EMERGENCY TAB
+   EMERGENCY TAB (/api/me/emergency-contacts)
    ============================================================ */
-function EmergencyTab({ studentId }: { studentId: number }) {
+function EmergencyTab({ onModified }: { onModified?: () => void }) {
   const [items, setItems] = useState<EmergencyContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editItem, setEditItem] = useState<EmergencyContact|null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<EmergencyContact|null>(null);
+  const [editItem, setEditItem] = useState<EmergencyContact | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<EmergencyContact | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [deleteErr, setDeleteErr] = useState<string|null>(null);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try { setLoading(true); setItems(await emergencyApi.list(studentId)); }
-    finally { setLoading(false); }
-  }, [studentId]);
+    try {
+      setLoading(true);
+      setItems(await myEmergencyApi.list());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => { reload(); }, [reload]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true); setDeleteErr(null);
-    try { await emergencyApi.remove(studentId, deleteTarget.id); await reload(); setDeleteTarget(null); }
-    catch(e) { setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa'); }
-    finally { setDeleting(false); }
+    try {
+      await myEmergencyApi.remove(deleteTarget.id);
+      await reload();
+      setDeleteTarget(null);
+      onModified?.();
+    } catch (e) {
+      setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa liên hệ');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   const sorted = [...items].sort((a, b) => a.priority - b.priority);
@@ -538,7 +742,7 @@ function EmergencyTab({ studentId }: { studentId: number }) {
         </button>
       </div>
       {loading ? (
-        <div className="profile-empty-state"><span className="spinner" style={{ width:20, height:20, borderWidth:2.5 }}/></div>
+        <div className="profile-empty-state"><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2.5 }}/></div>
       ) : sorted.length === 0 ? (
         <div className="profile-empty-state">
           <div className="profile-empty-icon">
@@ -546,22 +750,32 @@ function EmergencyTab({ studentId }: { studentId: number }) {
               <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
             </svg>
           </div>
-          <p>Chưa có liên hệ khẩn cấp. Thêm ít nhất 1 liên hệ để bảo đảm an toàn.</p>
+          <p>Chưa có liên hệ khẩn cấp. Thêm ít nhất 1 liên hệ có tên, SĐT và thứ tự ưu tiên &ge; 1 để bảo đảm an toàn.</p>
         </div>
       ) : (
         <div className="profile-sub-grid" style={{ marginTop: 'var(--space-3)' }}>
           {sorted.map(c => (
             <div key={c.id} className="profile-sub-card">
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:'var(--space-2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--space-2)' }}>
                 <span className="priority-badge">{c.priority}</span>
-                <div className="profile-sub-card-title" style={{ margin:0 }}>{c.fullName}</div>
+                <div className="profile-sub-card-title" style={{ margin: 0 }}>{c.fullName}</div>
               </div>
-              {c.relationship && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Quan hệ:</span><span>{c.relationship}</span></div>}
+              {c.relationship && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Quan hệ:</span>
+                  <span>{c.relationship}</span>
+                </div>
+              )}
               <div className="profile-sub-card-row">
                 <span className="profile-sub-card-label">SĐT:</span>
-                <span style={{ fontFamily:'var(--font-mono)', fontSize:'0.8rem', color:'var(--accent)' }}>{c.phoneNumber}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent)' }}>{c.phoneNumber}</span>
               </div>
-              {c.address && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Địa chỉ:</span><span>{c.address}</span></div>}
+              {c.address && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Địa chỉ:</span>
+                  <span>{c.address}</span>
+                </div>
+              )}
               <div className="profile-sub-card-actions">
                 <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(c); setShowModal(true); }}><IcoEdit/></button>
                 <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(c)}><IcoTrash/></button>
@@ -570,21 +784,41 @@ function EmergencyTab({ studentId }: { studentId: number }) {
           ))}
         </div>
       )}
-      {showModal && <EmergencyModal studentId={studentId} item={editItem} open={showModal} onClose={() => setShowModal(false)} onSaved={() => { setShowModal(false); reload(); }}/>}
-      <DeleteConfirmModal open={!!deleteTarget} onClose={() => { setDeleteTarget(null); setDeleteErr(null); }} onConfirm={handleDelete} deleting={deleting} error={deleteErr}/>
+      {showModal && (
+        <EmergencyModal
+          item={editItem}
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onSaved={() => {
+            setShowModal(false);
+            reload();
+            onModified?.();
+          }}
+        />
+      )}
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onClose={() => { setDeleteTarget(null); setDeleteErr(null); }}
+        onConfirm={handleDelete}
+        deleting={deleting}
+        error={deleteErr}
+      />
     </div>
   );
 }
 
-function EmergencyModal({ studentId, item, open, onClose, onSaved }:
-  { studentId:number; item:EmergencyContact|null; open:boolean; onClose:()=>void; onSaved:()=>void }) {
-  const [form, setForm] = useState<EmergencyContactPayload>({ fullName:'', phoneNumber:'', priority:1 });
+function EmergencyModal({ item, open, onClose, onSaved }:
+  { item: EmergencyContact | null; open: boolean; onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState<EmergencyContactPayload>({ fullName: '', phoneNumber: '', priority: 1 });
   const [submitting, setSubmitting] = useState(false);
-  const [err, setErr] = useState<string|null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (item) setForm({ fullName:item.fullName, relationship:item.relationship??'', phoneNumber:item.phoneNumber, address:item.address??'', priority:item.priority });
-    else setForm({ fullName:'', relationship:'', phoneNumber:'', address:'', priority:1 });
+    if (item) {
+      setForm({ fullName: item.fullName, relationship: item.relationship ?? '', phoneNumber: item.phoneNumber, address: item.address ?? '', priority: item.priority });
+    } else {
+      setForm({ fullName: '', relationship: '', phoneNumber: '', address: '', priority: 1 });
+    }
     setErr(null);
   }, [item, open]);
 
@@ -594,44 +828,58 @@ function EmergencyModal({ studentId, item, open, onClose, onSaved }:
     if (!form.priority || form.priority < 1) { setErr('Thứ tự ưu tiên phải ≥ 1'); return; }
     setSubmitting(true); setErr(null);
     try {
-      const payload = { ...form, relationship:form.relationship||undefined, address:form.address||undefined };
-      if (item) await emergencyApi.update(studentId, item.id, payload);
-      else await emergencyApi.create(studentId, payload);
+      const payload = { ...form, relationship: form.relationship?.trim() || undefined, address: form.address?.trim() || undefined };
+      if (item) await myEmergencyApi.update(item.id, payload);
+      else await myEmergencyApi.create(payload);
       onSaved();
-    } catch(e) { setErr(e instanceof Error ? e.message : 'Lỗi'); }
-    finally { setSubmitting(false); }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Lỗi lưu liên hệ khẩn cấp');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <Modal open={open} title={item ? 'Cập nhật liên hệ khẩn cấp' : 'Thêm liên hệ khẩn cấp'} size="md" onClose={onClose}
-      footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{submitting && <span className="spinner spinner-sm"/>}{item ? 'Lưu' : 'Thêm mới'}</button></>}
+    <Modal
+      open={open}
+      title={item ? 'Cập nhật liên hệ khẩn cấp' : 'Thêm liên hệ khẩn cấp'}
+      size="md"
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
+          <button className="btn-submit" onClick={save} disabled={submitting}>
+            {submitting && <span className="spinner spinner-sm"/>}
+            {item ? 'Lưu' : 'Thêm mới'}
+          </button>
+        </>
+      }
     >
-      {err && <div className="profile-alert-error" style={{ marginBottom:12 }}>{err}</div>}
-      <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-3)' }}>
+      {err && <div className="profile-alert-error" style={{ marginBottom: 12 }}>{err}</div>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Họ và tên <span style={{color:'var(--text-error)'}}>*</span></label>
-            <input className="profile-form-input" value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName:e.target.value }))}/>
+            <label className="profile-form-label">Họ và tên <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại <span style={{color:'var(--text-error)'}}>*</span></label>
-            <input className="profile-form-input" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber:e.target.value }))}/>
+            <label className="profile-form-label">Số điện thoại <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
             <label className="profile-form-label">Mối quan hệ</label>
-            <input className="profile-form-input" placeholder="VD: Cha, Mẹ, Anh/Chị..." value={form.relationship??''} onChange={e => setForm(f => ({ ...f, relationship:e.target.value }))}/>
+            <input className="profile-form-input" placeholder="VD: Cha, Mẹ, Anh/Chị..." value={form.relationship ?? ''} onChange={e => setForm(f => ({ ...f, relationship: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Thứ tự ưu tiên <span style={{color:'var(--text-error)'}}>*</span></label>
-            <input className="profile-form-input" type="number" min={1} value={form.priority} onChange={e => setForm(f => ({ ...f, priority:Number(e.target.value) }))}/>
+            <label className="profile-form-label">Thứ tự ưu tiên <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" type="number" min={1} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: Number(e.target.value) }))}/>
           </div>
         </div>
         <div className="profile-form-group">
           <label className="profile-form-label">Địa chỉ</label>
-          <input className="profile-form-input" value={form.address??''} onChange={e => setForm(f => ({ ...f, address:e.target.value }))}/>
+          <input className="profile-form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}/>
         </div>
       </div>
     </Modal>
@@ -639,30 +887,40 @@ function EmergencyModal({ studentId, item, open, onClose, onSaved }:
 }
 
 /* ============================================================
-   POST-GRAD TAB
+   POST-GRAD TAB (/api/me/post-graduation-contacts)
    ============================================================ */
-function PostGradTab({ studentId }: { studentId: number }) {
+function PostGradTab() {
   const [items, setItems] = useState<PostGradContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editItem, setEditItem] = useState<PostGradContact|null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<PostGradContact|null>(null);
+  const [editItem, setEditItem] = useState<PostGradContact | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PostGradContact | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [deleteErr, setDeleteErr] = useState<string|null>(null);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    try { setLoading(true); setItems(await postGradApi.list(studentId)); }
-    finally { setLoading(false); }
-  }, [studentId]);
+    try {
+      setLoading(true);
+      setItems(await myPostGradApi.list());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => { reload(); }, [reload]);
 
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true); setDeleteErr(null);
-    try { await postGradApi.remove(studentId, deleteTarget.id); await reload(); setDeleteTarget(null); }
-    catch(e) { setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa'); }
-    finally { setDeleting(false); }
+    try {
+      await myPostGradApi.remove(deleteTarget.id);
+      await reload();
+      setDeleteTarget(null);
+    } catch (e) {
+      setDeleteErr(e instanceof Error ? e.message : 'Lỗi xóa liên hệ');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -680,7 +938,7 @@ function PostGradTab({ studentId }: { studentId: number }) {
         </button>
       </div>
       {loading ? (
-        <div className="profile-empty-state"><span className="spinner" style={{ width:20, height:20, borderWidth:2.5 }}/></div>
+        <div className="profile-empty-state"><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2.5 }}/></div>
       ) : items.length === 0 ? (
         <div className="profile-empty-state">
           <div className="profile-empty-icon">
@@ -696,9 +954,24 @@ function PostGradTab({ studentId }: { studentId: number }) {
           {items.map(c => (
             <div key={c.id} className="profile-sub-card">
               <div className="profile-sub-card-title">{c.fullName ?? '(Chưa có tên)'}</div>
-              {c.phoneNumber && <div className="profile-sub-card-row"><span className="profile-sub-card-label">SĐT:</span><span style={{ fontFamily:'var(--font-mono)', fontSize:'0.8rem' }}>{c.phoneNumber}</span></div>}
-              {c.email && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Email:</span><span style={{ color:'var(--accent)' }}>{c.email}</span></div>}
-              {c.address && <div className="profile-sub-card-row"><span className="profile-sub-card-label">Địa chỉ:</span><span>{c.address}</span></div>}
+              {c.phoneNumber && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">SĐT:</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{c.phoneNumber}</span>
+                </div>
+              )}
+              {c.email && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Email:</span>
+                  <span style={{ color: 'var(--accent)' }}>{c.email}</span>
+                </div>
+              )}
+              {c.address && (
+                <div className="profile-sub-card-row">
+                  <span className="profile-sub-card-label">Địa chỉ:</span>
+                  <span>{c.address}</span>
+                </div>
+              )}
               <div className="profile-sub-card-actions">
                 <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(c); setShowModal(true); }}><IcoEdit/></button>
                 <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(c)}><IcoTrash/></button>
@@ -707,61 +980,97 @@ function PostGradTab({ studentId }: { studentId: number }) {
           ))}
         </div>
       )}
-      {showModal && <PostGradModal studentId={studentId} item={editItem} open={showModal} onClose={() => setShowModal(false)} onSaved={() => { setShowModal(false); reload(); }}/>}
-      <DeleteConfirmModal open={!!deleteTarget} onClose={() => { setDeleteTarget(null); setDeleteErr(null); }} onConfirm={handleDelete} deleting={deleting} error={deleteErr}/>
+      {showModal && (
+        <PostGradModal
+          item={editItem}
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onSaved={() => {
+            setShowModal(false);
+            reload();
+          }}
+        />
+      )}
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        onClose={() => { setDeleteTarget(null); setDeleteErr(null); }}
+        onConfirm={handleDelete}
+        deleting={deleting}
+        error={deleteErr}
+      />
     </div>
   );
 }
 
-function PostGradModal({ studentId, item, open, onClose, onSaved }:
-  { studentId:number; item:PostGradContact|null; open:boolean; onClose:()=>void; onSaved:()=>void }) {
+function PostGradModal({ item, open, onClose, onSaved }:
+  { item: PostGradContact | null; open: boolean; onClose: () => void; onSaved: () => void }) {
   const [form, setForm] = useState<PostGradContactPayload>({});
   const [submitting, setSubmitting] = useState(false);
-  const [err, setErr] = useState<string|null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (item) setForm({ fullName:item.fullName??'', phoneNumber:item.phoneNumber??'', email:item.email??'', address:item.address??'' });
-    else setForm({ fullName:'', phoneNumber:'', email:'', address:'' });
+    if (item) {
+      setForm({ fullName: item.fullName ?? '', phoneNumber: item.phoneNumber ?? '', email: item.email ?? '', address: item.address ?? '' });
+    } else {
+      setForm({ fullName: '', phoneNumber: '', email: '', address: '' });
+    }
     setErr(null);
   }, [item, open]);
 
   async function save() {
     setSubmitting(true); setErr(null);
     try {
-      const payload = { fullName:form.fullName||undefined, phoneNumber:form.phoneNumber||undefined, email:form.email||undefined, address:form.address||undefined };
-      if (item) await postGradApi.update(studentId, item.id, payload);
-      else await postGradApi.create(studentId, payload);
+      const payload = {
+        fullName: form.fullName?.trim() || undefined,
+        phoneNumber: form.phoneNumber?.trim() || undefined,
+        email: form.email?.trim() || undefined,
+        address: form.address?.trim() || undefined,
+      };
+      if (item) await myPostGradApi.update(item.id, payload);
+      else await myPostGradApi.create(payload);
       onSaved();
-    } catch(e) { setErr(e instanceof Error ? e.message : 'Lỗi'); }
-    finally { setSubmitting(false); }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Lỗi lưu liên hệ');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <Modal open={open} title={item ? 'Cập nhật liên hệ sau TN' : 'Thêm liên hệ sau tốt nghiệp'} size="md" onClose={onClose}
-      footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{submitting && <span className="spinner spinner-sm"/>}{item ? 'Lưu' : 'Thêm mới'}</button></>}
+    <Modal
+      open={open}
+      title={item ? 'Cập nhật liên hệ sau TN' : 'Thêm liên hệ sau tốt nghiệp'}
+      size="md"
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
+          <button className="btn-submit" onClick={save} disabled={submitting}>
+            {submitting && <span className="spinner spinner-sm"/>}
+            {item ? 'Lưu' : 'Thêm mới'}
+          </button>
+        </>
+      }
     >
-      {err && <div className="profile-alert-error" style={{ marginBottom:12 }}>{err}</div>}
-      <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-3)' }}>
-        <div className="profile-form-row">
-          <div className="profile-form-group">
-            <label className="profile-form-label">Họ và tên</label>
-            <input className="profile-form-input" value={form.fullName??''} onChange={e => setForm(f => ({ ...f, fullName:e.target.value }))}/>
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại</label>
-            <input className="profile-form-input" value={form.phoneNumber??''} onChange={e => setForm(f => ({ ...f, phoneNumber:e.target.value }))}/>
-          </div>
+      {err && <div className="profile-alert-error" style={{ marginBottom: 12 }}>{err}</div>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        <div className="profile-form-group">
+          <label className="profile-form-label">Họ và tên</label>
+          <input className="profile-form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Email</label>
-            <input className="profile-form-input" type="email" value={form.email??''} onChange={e => setForm(f => ({ ...f, email:e.target.value }))}/>
+            <label className="profile-form-label">Số điện thoại</label>
+            <input className="profile-form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Địa chỉ</label>
-            <input className="profile-form-input" value={form.address??''} onChange={e => setForm(f => ({ ...f, address:e.target.value }))}/>
+            <label className="profile-form-label">Email</label>
+            <input className="profile-form-input" type="email" value={form.email ?? ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}/>
           </div>
+        </div>
+        <div className="profile-form-group">
+          <label className="profile-form-label">Địa chỉ</label>
+          <input className="profile-form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}/>
         </div>
       </div>
     </Modal>
@@ -769,42 +1078,67 @@ function PostGradModal({ studentId, item, open, onClose, onSaved }:
 }
 
 /* ============================================================
-   PERSONAL INFO EDIT TAB
+   PERSONAL INFO EDIT TAB (/api/me/profile)
    ============================================================ */
-function PersonalTab({ student, onUpdated }: { student: StudentDetail; onUpdated: (s: StudentDetail) => void }) {
+function PersonalTab({
+  student,
+  onUpdated,
+}: {
+  student: StudentDetail;
+  onUpdated: (s: StudentDetail, comp?: CompletionStatus) => void;
+}) {
   const [form, setForm] = useState({
     personalEmail: student.personalEmail ?? '',
     phoneNumber: student.phoneNumber ?? '',
+    facebookUrl: student.facebookUrl ?? '',
+    avatarUrl: student.avatarUrl ?? '',
+    placeOfBirth: student.placeOfBirth ?? '',
+    oldPlaceOfBirth: student.oldPlaceOfBirth ?? '',
     ethnicity: student.ethnicity ?? '',
+    nationality: student.nationality ?? 'Việt Nam',
     religion: student.religion ?? '',
+    citizenIdIssueDate: student.citizenIdIssueDate ?? '',
     healthInsuranceNumber: student.healthInsuranceNumber ?? '',
     healthInsuranceExpiry: student.healthInsuranceExpiry ?? '',
     freeHealthInsurance: student.freeHealthInsurance ?? false,
-    facebookUrl: student.facebookUrl ?? '',
-    bankAccountNumber: student.bankAccountNumber ?? '',
-    bankName: student.bankName ?? '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [err, setErr] = useState<string|null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     setForm({
-      personalEmail:student.personalEmail??'', phoneNumber:student.phoneNumber??'',
-      ethnicity:student.ethnicity??'', religion:student.religion??'',
-      healthInsuranceNumber:student.healthInsuranceNumber??'', healthInsuranceExpiry:student.healthInsuranceExpiry??'',
-      freeHealthInsurance:student.freeHealthInsurance??false, facebookUrl:student.facebookUrl??'',
-      bankAccountNumber:student.bankAccountNumber??'', bankName:student.bankName??'',
+      personalEmail: student.personalEmail ?? '',
+      phoneNumber: student.phoneNumber ?? '',
+      facebookUrl: student.facebookUrl ?? '',
+      avatarUrl: student.avatarUrl ?? '',
+      placeOfBirth: student.placeOfBirth ?? '',
+      oldPlaceOfBirth: student.oldPlaceOfBirth ?? '',
+      ethnicity: student.ethnicity ?? '',
+      nationality: student.nationality ?? 'Việt Nam',
+      religion: student.religion ?? '',
+      citizenIdIssueDate: student.citizenIdIssueDate ?? '',
+      healthInsuranceNumber: student.healthInsuranceNumber ?? '',
+      healthInsuranceExpiry: student.healthInsuranceExpiry ?? '',
+      freeHealthInsurance: student.freeHealthInsurance ?? false,
     });
   }, [student]);
 
   function reset() {
     setForm({
-      personalEmail:student.personalEmail??'', phoneNumber:student.phoneNumber??'',
-      ethnicity:student.ethnicity??'', religion:student.religion??'',
-      healthInsuranceNumber:student.healthInsuranceNumber??'', healthInsuranceExpiry:student.healthInsuranceExpiry??'',
-      freeHealthInsurance:student.freeHealthInsurance??false, facebookUrl:student.facebookUrl??'',
-      bankAccountNumber:student.bankAccountNumber??'', bankName:student.bankName??'',
+      personalEmail: student.personalEmail ?? '',
+      phoneNumber: student.phoneNumber ?? '',
+      facebookUrl: student.facebookUrl ?? '',
+      avatarUrl: student.avatarUrl ?? '',
+      placeOfBirth: student.placeOfBirth ?? '',
+      oldPlaceOfBirth: student.oldPlaceOfBirth ?? '',
+      ethnicity: student.ethnicity ?? '',
+      nationality: student.nationality ?? 'Việt Nam',
+      religion: student.religion ?? '',
+      citizenIdIssueDate: student.citizenIdIssueDate ?? '',
+      healthInsuranceNumber: student.healthInsuranceNumber ?? '',
+      healthInsuranceExpiry: student.healthInsuranceExpiry ?? '',
+      freeHealthInsurance: student.freeHealthInsurance ?? false,
     });
     setErr(null); setSuccess(false);
   }
@@ -812,125 +1146,162 @@ function PersonalTab({ student, onUpdated }: { student: StudentDetail; onUpdated
   async function save() {
     setSubmitting(true); setErr(null); setSuccess(false);
     try {
-      const updated = await updateMyProfile(student.id, student, {
-        personalEmail:form.personalEmail||null, phoneNumber:form.phoneNumber||null,
-        ethnicity:form.ethnicity||null, religion:form.religion||null,
-        healthInsuranceNumber:form.healthInsuranceNumber||null, healthInsuranceExpiry:form.healthInsuranceExpiry||null,
-        freeHealthInsurance:form.freeHealthInsurance,
-        facebookUrl:form.facebookUrl||null,
-        bankAccountNumber:form.bankAccountNumber||null, bankName:form.bankName||null,
-      });
-      onUpdated(updated);
+      const payload: UpdateStudentProfilePayload = {
+        avatarUrl: form.avatarUrl.trim() || null,
+        placeOfBirth: form.placeOfBirth.trim() || null,
+        oldPlaceOfBirth: form.oldPlaceOfBirth.trim() || null,
+        ethnicity: form.ethnicity.trim() || null,
+        nationality: form.nationality.trim() || null,
+        religion: form.religion.trim() || null,
+        citizenIdIssueDate: form.citizenIdIssueDate || null,
+        healthInsuranceNumber: form.healthInsuranceNumber.trim() || null,
+        healthInsuranceExpiry: form.healthInsuranceExpiry || null,
+        freeHealthInsurance: form.freeHealthInsurance,
+        personalEmail: form.personalEmail.trim() || null,
+        phoneNumber: form.phoneNumber.trim() || null,
+        facebookUrl: form.facebookUrl.trim() || null,
+      };
+
+      const comp = await myProfileApi.updateProfile(payload);
+      const updated = await myProfileApi.getProfile();
+      onUpdated(updated, comp);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 4000);
-    } catch(e) { setErr(e instanceof Error ? e.message : 'Lỗi cập nhật'); }
-    finally { setSubmitting(false); }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Lỗi cập nhật hồ sơ cá nhân');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
     <div className="profile-edit-section">
       <div className="profile-immutable-notice">
         <IcoInfo/>
-        <span>Các trường như họ tên, MSSV, ngày sinh, số CCCD, email trường và lớp học được quản lý bởi nhà trường và không thể tự chỉnh sửa.</span>
+        <span>
+          Các thông tin như Họ tên, MSSV, Ngày sinh, Giới tính, Số CCCD, Ngành/Lớp và Tài khoản ngân hàng do Nhà trường quản lý và xác thực.
+          Bạn có thể tự cập nhật các thông tin liên lạc, nơi sinh, dân tộc, BHYT bên dưới.
+        </span>
       </div>
 
-      {/* Contact */}
+      {/* Liên lạc */}
       <div>
-        <div className="profile-section-header" style={{ marginBottom:'var(--space-3)' }}>
+        <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
           <span className="profile-section-title"><IcoPhone/> Thông tin liên lạc cá nhân</span>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Email cá nhân</label>
-            <input className="profile-form-input" type="email" placeholder="example@gmail.com" value={form.personalEmail} onChange={e => setForm(f => ({ ...f, personalEmail:e.target.value }))}/>
+            <label className="profile-form-label">Email cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" type="email" placeholder="example@gmail.com" value={form.personalEmail} onChange={e => setForm(f => ({ ...f, personalEmail: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại</label>
-            <input className="profile-form-input" type="tel" placeholder="0912 345 678" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber:e.target.value }))}/>
+            <label className="profile-form-label">Số điện thoại cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" type="tel" placeholder="0912 345 678" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
         </div>
-        <div style={{ marginTop:'var(--space-3)' }}>
+        <div style={{ marginTop: 'var(--space-3)' }}>
           <div className="profile-form-group">
             <label className="profile-form-label">Facebook / Mạng xã hội</label>
-            <input className="profile-form-input" placeholder="https://facebook.com/..." value={form.facebookUrl} onChange={e => setForm(f => ({ ...f, facebookUrl:e.target.value }))}/>
+            <input className="profile-form-input" placeholder="https://facebook.com/..." value={form.facebookUrl} onChange={e => setForm(f => ({ ...f, facebookUrl: e.target.value }))}/>
           </div>
         </div>
       </div>
 
       <div className="profile-form-divider"/>
 
-      {/* Demographics */}
+      {/* Nơi sinh & nhân khẩu */}
       <div>
-        <div className="profile-section-header" style={{ marginBottom:'var(--space-3)' }}>
+        <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
           <span className="profile-section-title">
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
               <path d="M7 1.5C4.515 1.5 2.5 3.515 2.5 6S4.515 10.5 7 10.5 11.5 8.485 11.5 6 9.485 1.5 7 1.5z" stroke="currentColor" strokeWidth="1.25"/>
               <path d="M4 12.5c0-1.657 1.343-3 3-3s3 1.343 3 3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
             </svg>
-            Dân tộc, tôn giáo
+            Nơi sinh, dân tộc, tôn giáo
           </span>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Dân tộc</label>
-            <input className="profile-form-input" placeholder="VD: Kinh, Tày, Nùng..." value={form.ethnicity} onChange={e => setForm(f => ({ ...f, ethnicity:e.target.value }))}/>
+            <label className="profile-form-label">Nơi sinh <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" placeholder="VD: Đà Nẵng, Quảng Nam..." value={form.placeOfBirth} onChange={e => setForm(f => ({ ...f, placeOfBirth: e.target.value }))}/>
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">Quê quán (nơi sinh trước đây)</label>
+            <input className="profile-form-input" placeholder="VD: Tam Kỳ, Quảng Nam..." value={form.oldPlaceOfBirth} onChange={e => setForm(f => ({ ...f, oldPlaceOfBirth: e.target.value }))}/>
+          </div>
+        </div>
+        <div className="profile-form-row" style={{ marginTop: 'var(--space-3)' }}>
+          <div className="profile-form-group">
+            <label className="profile-form-label">Dân tộc <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" placeholder="VD: Kinh, Tày, Nùng..." value={form.ethnicity} onChange={e => setForm(f => ({ ...f, ethnicity: e.target.value }))}/>
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">Quốc tịch <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" placeholder="VD: Việt Nam" value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label">Tôn giáo</label>
-            <input className="profile-form-input" placeholder="VD: Không, Phật giáo, Cơ đốc..." value={form.religion} onChange={e => setForm(f => ({ ...f, religion:e.target.value }))}/>
+            <input className="profile-form-input" placeholder="VD: Không, Phật giáo, Công giáo..." value={form.religion} onChange={e => setForm(f => ({ ...f, religion: e.target.value }))}/>
           </div>
         </div>
       </div>
 
       <div className="profile-form-divider"/>
 
-      {/* Health insurance */}
+      {/* CCCD bổ sung */}
       <div>
-        <div className="profile-section-header" style={{ marginBottom:'var(--space-3)' }}>
+        <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
+          <span className="profile-section-title">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.25"/>
+              <circle cx="5" cy="6" r="1.5" fill="currentColor"/>
+              <path d="M8 5h3M8 7h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+            Căn cước công dân
+          </span>
+        </div>
+        <div className="profile-form-row">
+          <div className="profile-form-group">
+            <label className="profile-form-label">Số CCCD (Nhà trường quản lý)</label>
+            <input className="profile-form-input mono" value={student.citizenId ?? 'Chưa cập nhật'} disabled style={{ opacity: 0.7 }}/>
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">Ngày cấp CCCD <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" type="date" value={form.citizenIdIssueDate} onChange={e => setForm(f => ({ ...f, citizenIdIssueDate: e.target.value }))}/>
+          </div>
+        </div>
+      </div>
+
+      <div className="profile-form-divider"/>
+
+      {/* BHYT */}
+      <div>
+        <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
           <span className="profile-section-title"><IcoShield/> Bảo hiểm y tế (BHYT)</span>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Số thẻ BHYT</label>
-            <input className="profile-form-input" placeholder="VD: HS4010..." value={form.healthInsuranceNumber} onChange={e => setForm(f => ({ ...f, healthInsuranceNumber:e.target.value }))}/>
+            <label className="profile-form-label">Số thẻ BHYT <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input mono" placeholder="VD: HS4010..." value={form.healthInsuranceNumber} onChange={e => setForm(f => ({ ...f, healthInsuranceNumber: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Ngày hết hạn BHYT</label>
-            <input className="profile-form-input" type="date" value={form.healthInsuranceExpiry} onChange={e => setForm(f => ({ ...f, healthInsuranceExpiry:e.target.value }))}/>
+            <label className="profile-form-label">Ngày hết hạn BHYT <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input className="profile-form-input" type="date" value={form.healthInsuranceExpiry} onChange={e => setForm(f => ({ ...f, healthInsuranceExpiry: e.target.value }))}/>
           </div>
         </div>
-        <label className="profile-toggle-row" style={{ marginTop:'var(--space-2)' }}>
-          <input type="checkbox" className="profile-checkbox" checked={form.freeHealthInsurance} onChange={e => setForm(f => ({ ...f, freeHealthInsurance:e.target.checked }))}/>
-          <span className="profile-toggle-label">Được cấp BHYT miễn phí (diện từ thiện, chính sách...)</span>
+        <label className="profile-toggle-row" style={{ marginTop: 'var(--space-2)' }}>
+          <input type="checkbox" className="profile-checkbox" checked={form.freeHealthInsurance} onChange={e => setForm(f => ({ ...f, freeHealthInsurance: e.target.checked }))}/>
+          <span className="profile-toggle-label">Được cấp BHYT miễn phí (diện hộ nghèo, chính sách xã hội...)</span>
         </label>
       </div>
 
-      <div className="profile-form-divider"/>
-
-      {/* Bank */}
-      <div>
-        <div className="profile-section-header" style={{ marginBottom:'var(--space-3)' }}>
-          <span className="profile-section-title"><IcoBank/> Tài khoản ngân hàng</span>
-        </div>
-        <div className="profile-form-row">
-          <div className="profile-form-group">
-            <label className="profile-form-label">Số tài khoản</label>
-            <input className="profile-form-input" placeholder="VD: 0123456789" value={form.bankAccountNumber} onChange={e => setForm(f => ({ ...f, bankAccountNumber:e.target.value }))}/>
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Tên ngân hàng</label>
-            <input className="profile-form-input" placeholder="VD: Vietcombank, Techcombank..." value={form.bankName} onChange={e => setForm(f => ({ ...f, bankName:e.target.value }))}/>
-          </div>
-        </div>
-      </div>
-
-      {success && <div className="profile-alert-success"><IcoCheck/> Cập nhật thông tin cá nhân thành công!</div>}
-      {err && <div className="profile-alert-error">{err}</div>}
+      {success && <div className="profile-alert-success"><IcoCheck/> Cập nhật thông tin cá nhân thành công! Mức độ hoàn thiện hồ sơ đã được đồng bộ.</div>}
+      {err && <div className="profile-alert-error"><IcoWarn/> {err}</div>}
 
       <div className="profile-save-bar">
         <button className="btn-profile-cancel" onClick={reset} disabled={submitting}>Đặt lại</button>
         <button className="btn-profile-save" onClick={save} disabled={submitting}>
-          {submitting ? <><span className="spinner spinner-sm"/>  Đang lưu...</> : <><IcoCheck/> Lưu thay đổi</>}
+          {submitting ? <><span className="spinner spinner-sm"/> Đang lưu...</> : <><IcoCheck/> Lưu thay đổi</>}
         </button>
       </div>
     </div>
@@ -942,15 +1313,16 @@ function PersonalTab({ student, onUpdated }: { student: StudentDetail; onUpdated
    ============================================================ */
 function OverviewTab({ student }: { student: StudentDetail }) {
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-6)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+      {/* Thông tin học vụ do trường quản lý */}
       <div>
-        <div className="profile-section-header" style={{ marginBottom:'var(--space-3)' }}>
+        <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
           <span className="profile-section-title">
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
               <rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.25"/>
               <path d="M4 6h6M4 8h4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
             </svg>
-            Thông tin cơ bản (do nhà trường quản lý)
+            Thông tin định danh &amp; học vụ (do nhà trường quản lý)
           </span>
         </div>
         <div className="profile-info-grid">
@@ -958,29 +1330,38 @@ function OverviewTab({ student }: { student: StudentDetail }) {
           <InfoItem label="Họ và tên" value={student.fullName}/>
           <InfoItem label="Ngày sinh" value={student.dateOfBirth}/>
           <InfoItem label="Giới tính" value={student.gender ? GENDER_LABELS[student.gender] : undefined}/>
-          <InfoItem label="Số CCCD/CMND" value={student.citizenId} mono/>
-          <InfoItem label="Nơi sinh" value={student.placeOfBirth}/>
+          <InfoItem label="Số CCCD" value={student.citizenId} mono/>
           <InfoItem label="Email trường" value={student.schoolEmail} mono/>
           <InfoItem label="SĐT gia đình" value={student.familyPhoneNumber}/>
+          <InfoItem label="Số tài khoản NH" value={student.bankAccountNumber} mono/>
+          <InfoItem label="Ngân hàng" value={student.bankName}/>
+          <InfoItem
+            label="Trạng thái hồ sơ"
+            value={student.profileStatus === 'COMPLETE' ? 'Hoàn thiện' : 'Chưa hoàn thiện'}
+          />
         </div>
       </div>
+
+      {/* Thông tin cá nhân sinh viên tự khai */}
       <div>
-        <div className="profile-section-header" style={{ marginBottom:'var(--space-3)' }}>
+        <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
           <span className="profile-section-title">
-            <IcoCheck/> Thông tin tự khai (do sinh viên cập nhật)
+            <IcoCheck/> Thông tin cá nhân (sinh viên tự khai báo)
           </span>
         </div>
         <div className="profile-info-grid">
-          <InfoItem label="Email cá nhân" value={student.personalEmail}/>
-          <InfoItem label="Số điện thoại" value={student.phoneNumber}/>
+          <InfoItem label="Nơi sinh" value={student.placeOfBirth}/>
+          <InfoItem label="Quê quán" value={student.oldPlaceOfBirth}/>
           <InfoItem label="Dân tộc" value={student.ethnicity}/>
+          <InfoItem label="Quốc tịch" value={student.nationality}/>
           <InfoItem label="Tôn giáo" value={student.religion}/>
+          <InfoItem label="Ngày cấp CCCD" value={student.citizenIdIssueDate}/>
+          <InfoItem label="Email cá nhân" value={student.personalEmail} mono/>
+          <InfoItem label="Số điện thoại" value={student.phoneNumber} mono/>
+          <InfoItem label="Facebook" value={student.facebookUrl}/>
           <InfoItem label="Số thẻ BHYT" value={student.healthInsuranceNumber} mono/>
           <InfoItem label="Hạn BHYT" value={student.healthInsuranceExpiry}/>
-          {student.freeHealthInsurance && <InfoItem label="BHYT miễn phí" value="Có"/>}
-          <InfoItem label="Facebook" value={student.facebookUrl}/>
-          <InfoItem label="Số tài khoản" value={student.bankAccountNumber} mono/>
-          <InfoItem label="Ngân hàng" value={student.bankName}/>
+          <InfoItem label="BHYT miễn phí" value={student.freeHealthInsurance ? 'Có' : 'Không'}/>
         </div>
       </div>
     </div>
@@ -988,62 +1369,90 @@ function OverviewTab({ student }: { student: StudentDetail }) {
 }
 
 /* ============================================================
-   MAIN PAGE
+   MAIN PROFILE PAGE
    ============================================================ */
 export default function ProfilePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [student, setStudent] = useState<StudentDetail|null>(null);
-  const [completion, setCompletion] = useState<CompletionStatus|null>(null);
+  const [student, setStudent] = useState<StudentDetail | null>(null);
+  const [completion, setCompletion] = useState<CompletionStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [completionLoading, setCompletionLoading] = useState(true);
-  const [loadErr, setLoadErr] = useState<string|null>(null);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
+
+  const refreshCompletion = useCallback(async () => {
+    try {
+      const comp = await myProfileApi.getCompletion();
+      setCompletion(comp);
+    } catch {
+      /* ignore background refresh failure */
+    }
+  }, []);
 
   const loadProfile = useCallback(async () => {
-    if (!user?.studentCode) return;
-    setLoading(true); setLoadErr(null);
+    setLoading(true);
+    setLoadErr(null);
+    setCompletionLoading(true);
     try {
-      const sv = await fetchMyStudent(user.studentCode);
+      const [sv, comp] = await Promise.all([
+        myProfileApi.getProfile(),
+        myProfileApi.getCompletion().catch(() => null),
+      ]);
       setStudent(sv);
-      setCompletionLoading(true);
-      studentApi.completion(sv.id)
-        .then(c => setCompletion(c))
-        .catch(() => {})
-        .finally(() => setCompletionLoading(false));
-    } catch(e) {
-      setLoadErr(e instanceof Error ? e.message : 'Lỗi tải hồ sơ');
-    } finally { setLoading(false); }
-  }, [user]);
-
-  useEffect(() => { loadProfile(); }, [loadProfile]);
+      setCompletion(comp);
+    } catch (e) {
+      setLoadErr(e instanceof Error ? e.message : 'Lỗi tải hồ sơ sinh viên');
+    } finally {
+      setLoading(false);
+      setCompletionLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (user && user.role !== 'STUDENT') navigate('/', { replace:true });
+    loadProfile();
+  }, [loadProfile]);
+
+  useEffect(() => {
+    if (user && user.role !== 'STUDENT') {
+      navigate('/', { replace: true });
+    }
   }, [user, navigate]);
 
   if (!user) return null;
 
-  if (loading) return (
-    <div className="profile-page">
-      <AppHeader/>
-      <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
-        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'var(--space-3)', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>
-          <span className="spinner" style={{ width:28, height:28, borderWidth:3, borderTopColor:'var(--accent)' }}/>
-          Đang tải hồ sơ...
+  if (loading) {
+    return (
+      <div className="profile-page">
+        <AppHeader/>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
+            <span className="spinner" style={{ width: 28, height: 28, borderWidth: 3, borderTopColor: 'var(--accent)' }}/>
+            Đang tải hồ sơ sinh viên...
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 
-  if (loadErr || !student) return (
-    <div className="profile-page">
-      <AppHeader/>
-      <div className="profile-inner">
-        <div className="profile-alert-error"><IcoInfo/> {loadErr ?? 'Không tìm thấy hồ sơ sinh viên.'}</div>
+  if (loadErr || !student) {
+    return (
+      <div className="profile-page">
+        <AppHeader/>
+        <div className="profile-inner">
+          <div className="profile-alert-error">
+            <IcoInfo/>
+            <div>
+              <strong>Không thể tải hồ sơ:</strong> {loadErr ?? 'Không tìm thấy dữ liệu sinh viên.'}
+            </div>
+          </div>
+          <button className="btn-secondary" style={{ width: 'fit-content' }} onClick={loadProfile}>
+            Thử lại
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="profile-page">
@@ -1068,10 +1477,10 @@ export default function ProfilePage() {
                     {student.studentCode}
                   </span>
                   <span className={`profile-chip profile-status-badge profile-status-${student.status}`}>
-                    <span style={{ width:6, height:6, borderRadius:'50%', background:'currentColor', display:'inline-block' }}/>
-                    {STATUS_LABELS[student.status]}
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/>
+                    {STATUS_LABELS[student.status] ?? student.status}
                   </span>
-                  {student.gender && <span className="profile-chip">{GENDER_LABELS[student.gender]}</span>}
+                  {student.gender && <span className="profile-chip">{GENDER_LABELS[student.gender] ?? student.gender}</span>}
                   {student.schoolEmail && (
                     <span className="profile-chip">
                       <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
@@ -1107,18 +1516,28 @@ export default function ProfilePage() {
               </button>
             ))}
           </div>
-          <div id={`profile-tabpanel-${activeTab}`} className="profile-tab-panel" role="tabpanel" aria-labelledby={`profile-tab-${activeTab}`}>
+
+          <div
+            id={`profile-tabpanel-${activeTab}`}
+            className="profile-tab-panel"
+            role="tabpanel"
+            aria-labelledby={`profile-tab-${activeTab}`}
+          >
             {activeTab === 'overview' && <OverviewTab student={student}/>}
             {activeTab === 'personal' && (
-              <PersonalTab student={student} onUpdated={s => {
-                setStudent(s);
-                studentApi.completion(s.id).then(setCompletion).catch(() => {});
-              }}/>
+              <PersonalTab
+                student={student}
+                onUpdated={(updatedStudent, updatedCompletion) => {
+                  setStudent(updatedStudent);
+                  if (updatedCompletion) setCompletion(updatedCompletion);
+                  else refreshCompletion();
+                }}
+              />
             )}
-            {activeTab === 'addresses' && <AddressTab studentId={student.id}/>}
-            {activeTab === 'family' && <FamilyTab studentId={student.id}/>}
-            {activeTab === 'emergency' && <EmergencyTab studentId={student.id}/>}
-            {activeTab === 'postgrad' && <PostGradTab studentId={student.id}/>}
+            {activeTab === 'addresses' && <AddressTab onModified={refreshCompletion}/>}
+            {activeTab === 'family' && <FamilyTab onModified={refreshCompletion}/>}
+            {activeTab === 'emergency' && <EmergencyTab onModified={refreshCompletion}/>}
+            {activeTab === 'postgrad' && <PostGradTab/>}
           </div>
         </div>
       </div>
