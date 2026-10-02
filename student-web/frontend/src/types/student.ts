@@ -65,7 +65,6 @@ export interface CompletionStatus {
 
 // ---- Create student payload ----
 export interface CreateStudentPayload {
-  studentCode: string;
   fullName: string;
   dateOfBirth?: string;
   gender?: Gender;

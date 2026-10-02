@@ -7,12 +7,12 @@ import type { Page } from '../../api/client';
 import Modal from '../Modal';
 import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
-const EMPTY: MajorPayload = { code: '', name: '', description: '', active: true, facultyId: 0 };
+const EMPTY: MajorPayload = { shortCode: '', name: '', description: '', active: true, facultyId: 0 };
 
 function validate(f: MajorPayload): Partial<Record<keyof MajorPayload, string>> {
   const e: Partial<Record<keyof MajorPayload, string>> = {};
-  if (!f.code.trim()) e.code = 'Mã ngành là bắt buộc';
-  else if (!/^[\w\-]+$/.test(f.code.trim())) e.code = 'Mã chỉ gồm chữ, số, gạch dưới, gạch ngang';
+  if (!f.shortCode.trim()) e.shortCode = 'Mã ngành là bắt buộc';
+  else if (!/^[A-Z][A-Z0-9]{0,9}$/i.test(f.shortCode.trim())) e.shortCode = 'Mã viết tắt gồm 1–10 chữ/số, bắt đầu bằng chữ';
   if (!f.name.trim()) e.name = 'Tên ngành là bắt buộc';
   if (!f.facultyId) e.facultyId = 'Phải chọn khoa';
   return e;
@@ -52,7 +52,7 @@ export default function MajorTab() {
 
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: Major) {
-    setForm({ code: item.code, name: item.name, description: item.description ?? '', active: item.active, facultyId: item.facultyId });
+    setForm({ shortCode: item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active, facultyId: item.facultyId });
     setFieldErr({}); setFormErr(null); setModal({ mode: 'edit', item });
   }
   function closeModal() { setModal(null); }
@@ -117,11 +117,11 @@ export default function MajorTab() {
         <div className="catalog-form">
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Mã ngành <span className="required">*</span></label>
-              <input className={`form-input ${fieldErr.code ? 'invalid' : ''}`} placeholder="Vd: CNTT"
-                value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
-                disabled={submitting || modal?.mode === 'edit'} />
-              {fieldErr.code && <p className="form-error-text">{fieldErr.code}</p>}
+              <label className="form-label">Mã viết tắt ngành <span className="required">*</span></label>
+              <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`} placeholder="Vd: IT"
+                value={form.shortCode} onChange={e => setForm(f => ({ ...f, shortCode: e.target.value }))}
+                disabled={submitting} />
+              {fieldErr.shortCode && <p className="form-error-text">{fieldErr.shortCode}</p>}
             </div>
             <div className="form-group">
               <label className="form-label">Tên ngành <span className="required">*</span></label>
@@ -137,7 +137,7 @@ export default function MajorTab() {
               onChange={e => setForm(f => ({ ...f, facultyId: Number(e.target.value) }))}
               disabled={submitting || (modal?.mode === 'edit')}>
               <option value={0}>— Chọn khoa —</option>
-              {faculties.map(f => <option key={f.id} value={f.id}>{f.name} ({f.code})</option>)}
+              {faculties.map(f => <option key={f.id} value={f.id}>{f.name} ({f.shortCode})</option>)}
             </select>
             {fieldErr.facultyId && <p className="form-error-text">{fieldErr.facultyId}</p>}
             {modal?.mode === 'edit' && <p className="form-hint">Không thể thay đổi khoa nếu ngành đang được sử dụng</p>}

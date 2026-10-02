@@ -21,6 +21,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MajorService {
+    private final com.pbl4.studentweb.common.code.CodeGenerationService codes;
     private final MajorRepository repository;
     private final MajorMapper mapper;
     private final com.pbl4.studentweb.faculty.repository.FacultyRepository faculties;
@@ -35,7 +36,7 @@ public class MajorService {
 
     @Transactional
     public MajorSummary create(@NotNull @Valid MajorRequest request) {
-        if (repository.existsByMajorCode(request.code().trim())) throw new IllegalStateException("Code already exists");
+        if (repository.existsByMajorCode(codes.major(request.shortCode()))) throw new IllegalStateException("Code already exists");
         var entity = new Major();
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
@@ -44,7 +45,7 @@ public class MajorService {
     @Transactional
     public MajorSummary update(Long id, @NotNull @Valid MajorRequest request) {
         var entity = require(id);
-        if (repository.existsByMajorCodeAndIdNot(request.code().trim(), id)) throw new IllegalStateException("Code already exists");
+        if (repository.existsByMajorCodeAndIdNot(codes.major(request.shortCode()), id)) throw new IllegalStateException("Code already exists");
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
     }
@@ -68,9 +69,14 @@ public class MajorService {
         if (changedFaculty && (programs.existsByMajorId(e.getId())
                 || classes.existsByMajorId(e.getId()) || students.existsByMajorId(e.getId())))
             throw new IllegalStateException("Cannot change the faculty of a major in use");
+        if (e.getId() != null && e.getShortCode() != null
+                && !e.getShortCode().equals(codes.normalizeShortCode(r.shortCode()))
+                && (programs.existsByMajorId(e.getId()) || classes.existsByMajorId(e.getId()) || students.existsByMajorId(e.getId())))
+            throw new IllegalStateException("Cannot change shortCode of a major in use");
         e.setFaculty(faculty);
         e.setDescription(optional(r.description()));
-        e.setMajorCode(r.code().trim());
+        e.setShortCode(codes.normalizeShortCode(r.shortCode()));
+        e.setMajorCode(codes.major(r.shortCode()));
         e.setMajorName(optional(r.name()));
         e.setActive(r.active());
     }

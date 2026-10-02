@@ -14,7 +14,7 @@ const DEGREE_OPTIONS: { value: DegreeType; label: string }[] = [
 ];
 
 const EMPTY: TrainingProgramPayload = {
-  code: '', name: '', active: true, majorId: 0,
+  name: '', active: true, majorId: 0,
   cohort: null, degreeType: null,
   numberOfSemesters: null, totalCredits: null,
   requiredCredits: null, electiveCredits: null,
@@ -22,9 +22,9 @@ const EMPTY: TrainingProgramPayload = {
 
 function validate(f: TrainingProgramPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
-  if (!f.code.trim()) e.code = 'Mã chương trình là bắt buộc';
-  else if (!/^[\w\-]+$/.test(f.code.trim())) e.code = 'Mã chỉ gồm chữ, số, gạch dưới, gạch ngang';
   if (!f.name.trim()) e.name = 'Tên chương trình là bắt buộc';
+  if (!f.cohort || !Number.isInteger(f.cohort) || f.cohort < 1000 || f.cohort > 9999) e.cohort = 'Khóa phải là năm có 4 chữ số';
+  if (!f.degreeType) e.degreeType = 'Phải chọn loại bằng';
   if (!f.majorId) e.majorId = 'Phải chọn ngành';
   if (f.numberOfSemesters != null && f.numberOfSemesters <= 0) e.numberOfSemesters = 'Số học kỳ phải > 0';
   if (f.totalCredits != null && f.totalCredits < 0) e.totalCredits = 'Tổng tín chỉ phải ≥ 0';
@@ -74,7 +74,7 @@ export default function ProgramTab() {
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: TrainingProgram) {
     setForm({
-      code: item.code, name: item.name, active: item.active, majorId: item.majorId,
+      name: item.name, active: item.active, majorId: item.majorId,
       cohort: item.cohort ?? null, degreeType: item.degreeType ?? null,
       numberOfSemesters: item.numberOfSemesters ?? null, totalCredits: item.totalCredits ?? null,
       requiredCredits: item.requiredCredits ?? null, electiveCredits: item.electiveCredits ?? null,
@@ -154,13 +154,7 @@ export default function ProgramTab() {
         <div className="catalog-form">
           {/* Row 1: code + name */}
           <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Mã chương trình <span className="required">*</span></label>
-              <input className={`form-input ${fv.code ? 'invalid' : ''}`} placeholder="Vd: CNTT2026"
-                value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
-                disabled={submitting || modal?.mode === 'edit'} />
-              {fv.code && <p className="form-error-text">{fv.code}</p>}
-            </div>
+            <p className="form-hint">Mã được hệ thống tự sinh.</p>
             <div className="form-group">
               <label className="form-label">Tên chương trình <span className="required">*</span></label>
               <input className={`form-input ${fv.name ? 'invalid' : ''}`} placeholder="Vd: Chương trình CNTT CLC"
@@ -184,9 +178,10 @@ export default function ProgramTab() {
               <label className="form-label">Loại bằng (degreeType)</label>
               <select className="form-select" value={form.degreeType ?? ''} disabled={submitting}
                 onChange={e => setForm(f => ({ ...f, degreeType: (e.target.value as DegreeType) || null }))}>
-                <option value="">— Không xác định —</option>
+                <option value="">— Chọn loại bằng —</option>
                 {DEGREE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
+              {fv.degreeType && <p className="form-error-text">{fv.degreeType}</p>}
             </div>
           </div>
           {/* Row 3: cohort + numberOfSemesters */}
@@ -195,6 +190,7 @@ export default function ProgramTab() {
               <label className="form-label">Khoá (cohort)</label>
               <input className="form-input" type="number" placeholder="Vd: 2026"
                 value={form.cohort ?? ''} onChange={e => setNum('cohort', e.target.value)} disabled={submitting} />
+              {fv.cohort && <p className="form-error-text">{fv.cohort}</p>}
             </div>
             <div className="form-group">
               <label className="form-label">Số học kỳ</label>

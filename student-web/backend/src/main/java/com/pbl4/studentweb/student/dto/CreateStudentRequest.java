@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 /** Class determines the primary program and major; optional IDs are consistency assertions. */
 public record CreateStudentRequest(
-        @NotBlank @Size(max = 20) String studentCode,
         @NotBlank @Size(max = 120) String fullName,
         @Past LocalDate dateOfBirth, Gender gender,
         @Size(max = 20) String citizenId,

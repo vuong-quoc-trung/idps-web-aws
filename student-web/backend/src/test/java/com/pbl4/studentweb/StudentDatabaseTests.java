@@ -57,11 +57,11 @@ class StudentDatabaseTests {
     @Autowired JdbcTemplate jdbc;
 
     StudentOnboardingResult create() {
-        Major m = new Major(); m.setMajorCode("TEST"); m.setMajorName("Test major"); m.setFaculty(faculty); majors.save(m);
+        Major m = new Major(); m.setMajorCode("TEST"); m.setShortCode("TEST"); m.setMajorName("Test major"); m.setFaculty(faculty); majors.save(m);
         TrainingProgram p = new TrainingProgram(); p.setProgramCode("TEST24"); p.setProgramName("Test program");
-        p.setMajor(m); programs.save(p);
-        StudentClass c = new StudentClass(); c.setClassCode("TEST_CLASS"); c.setMajor(m); c.setProgram(p); classes.save(c);
-        return onboarding.create(new CreateStudentRequest("TEST001", "Test Student", LocalDate.of(2006, 1, 1),
+        p.setMajor(m); p.setCohort(2024); programs.save(p);
+        StudentClass c = new StudentClass(); c.setClassCode("TEST_CLASS"); c.setCohort(2024); c.setMajor(m); c.setProgram(p); classes.save(c);
+        return onboarding.create(new CreateStudentRequest("Test Student", LocalDate.of(2006, 1, 1),
                 Gender.OTHER, "TEST_CITIZEN", m.getId(), c.getId(), p.getId(), null, null, null));
     }
 
@@ -132,7 +132,7 @@ class StudentDatabaseTests {
         create();
         Major other = new Major(); other.setMajorCode("OTHER"); other.setMajorName("Other"); other.setFaculty(faculty); majors.save(other);
         var c = classes.findAll().getFirst();
-        assertThatThrownBy(() -> onboarding.create(new CreateStudentRequest("TEST002", "Test Student", null,
+        assertThatThrownBy(() -> onboarding.create(new CreateStudentRequest("Test Student", null,
                 null, null, other.getId(), c.getId(), null, null, null, null))).isInstanceOf(IllegalArgumentException.class);
         assertThat(users.count()).isEqualTo(1);
     }

@@ -21,6 +21,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class TrainingProgramService {
+    private final com.pbl4.studentweb.common.code.CodeGenerationService codes;
     private final TrainingProgramRepository repository;
     private final TrainingProgramMapper mapper;
     private final StudentRepository students;
@@ -34,7 +35,6 @@ public class TrainingProgramService {
 
     @Transactional
     public TrainingProgramSummary create(@NotNull @Valid TrainingProgramRequest request) {
-        if (repository.existsByProgramCode(request.code().trim())) throw new IllegalStateException("Code already exists");
         var entity = new TrainingProgram();
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
@@ -43,7 +43,6 @@ public class TrainingProgramService {
     @Transactional
     public TrainingProgramSummary update(Long id, @NotNull @Valid TrainingProgramRequest request) {
         var entity = require(id);
-        if (repository.existsByProgramCodeAndIdNot(request.code().trim(), id)) throw new IllegalStateException("Code already exists");
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
     }
@@ -69,6 +68,13 @@ public class TrainingProgramService {
                 && (!major.isActive() || !major.getFaculty().isActive()))
             throw new IllegalArgumentException("Major and faculty must be active");
         validateCredits(r);
+        if (e.getId() != null && e.getCohort() != null && !java.util.Objects.equals(e.getCohort(), r.cohort())
+                && (classes.existsByProgramId(e.getId()) || students.existsByTrainingProgramIdOrSecondaryProgramId(e.getId(), e.getId())))
+            throw new IllegalStateException("Cannot change cohort of a program in use");
+        String code = codes.program(major, r.cohort(), r.degreeType());
+        if (e.getId() == null ? repository.existsByProgramCode(code) : repository.existsByProgramCodeAndIdNot(code, e.getId()))
+            throw new IllegalStateException("Program code already exists");
+        e.setProgramCode(code);
         e.setMajor(major);
         e.setCohort(r.cohort());
         e.setDegreeType(r.degreeType());
@@ -76,7 +82,7 @@ public class TrainingProgramService {
         e.setTotalCredits(r.totalCredits());
         e.setRequiredCredits(r.requiredCredits());
         e.setElectiveCredits(r.electiveCredits());
-        e.setProgramCode(r.code().trim());
+
         e.setProgramName(optional(r.name()));
         e.setActive(r.active());
     }

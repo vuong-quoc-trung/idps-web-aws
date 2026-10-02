@@ -8,14 +8,12 @@ import Modal from '../Modal';
 import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
 const EMPTY: StudentClassPayload = {
-  code: '', name: '', active: true, programId: 0,
-  cohort: null, academicYear: '',
+  name: '', active: true, programId: 0,
+  academicYear: '',
 };
 
 function validate(f: StudentClassPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
-  if (!f.code.trim()) e.code = 'Mã lớp là bắt buộc';
-  else if (!/^[\w\-]+$/.test(f.code.trim())) e.code = 'Mã chỉ gồm chữ, số, gạch dưới, gạch ngang';
   if (!f.programId) e.programId = 'Phải chọn chương trình đào tạo';
   if (f.academicYear && !/^\d{4}-\d{4}$/.test(f.academicYear.trim()))
     e.academicYear = 'Định dạng năm học: YYYY-YYYY (Vd: 2026-2031)';
@@ -53,8 +51,8 @@ export default function ClassTab() {
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: StudentClass) {
     setForm({
-      code: item.code, name: item.name ?? '', active: item.active,
-      programId: item.programId, cohort: item.cohort ?? null,
+      name: item.name ?? '', active: item.active,
+      programId: item.programId,
       academicYear: item.academicYear ?? '',
     });
     setFieldErr({}); setFormErr(null); setModal({ mode: 'edit', item });
@@ -70,7 +68,6 @@ export default function ClassTab() {
         ...form,
         programId: Number(form.programId),
         name: form.name || undefined,
-        cohort: form.cohort,
         academicYear: form.academicYear || undefined,
       };
       if (modal?.mode === 'add') await classApi.create(payload);
@@ -131,13 +128,7 @@ export default function ClassTab() {
         {formErr && <div className="form-alert" style={{ marginBottom: 16 }}><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>{formErr}</div>}
         <div className="catalog-form">
           <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Mã lớp <span className="required">*</span></label>
-              <input className={`form-input ${fv.code ? 'invalid' : ''}`} placeholder="Vd: 26T1"
-                value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
-                disabled={submitting || modal?.mode === 'edit'} />
-              {fv.code && <p className="form-error-text">{fv.code}</p>}
-            </div>
+            <p className="form-hint">Mã được hệ thống tự sinh.</p>
             <div className="form-group">
               <label className="form-label">Tên lớp</label>
               <input className="form-input" placeholder="Vd: Lớp 26T1 CNTT CLC"
@@ -155,11 +146,7 @@ export default function ClassTab() {
             {fv.programId && <p className="form-error-text">{fv.programId}</p>}
           </div>
           <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Khoá nhập học</label>
-              <input className="form-input" type="number" placeholder="Vd: 2026"
-                value={form.cohort ?? ''} onChange={e => setForm(f => ({ ...f, cohort: e.target.value ? parseInt(e.target.value) : null }))} disabled={submitting} />
-            </div>
+            <p className="form-hint">Khóa được lấy từ chương trình đào tạo đã chọn.</p>
             <div className="form-group">
               <label className="form-label">Năm học</label>
               <input className={`form-input ${fv.academicYear ? 'invalid' : ''}`} placeholder="Vd: 2026-2031"

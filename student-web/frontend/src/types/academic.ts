@@ -5,6 +5,7 @@
 export type DegreeType = 'BACHELOR' | 'ENGINEER' | 'MASTER';
 
 export interface Faculty {
+  shortCode?: string;
   id: number;
   code: string;
   name: string;
@@ -13,6 +14,7 @@ export interface Faculty {
 }
 
 export interface Major {
+  shortCode?: string;
   id: number;
   code: string;
   name: string;
@@ -50,14 +52,14 @@ export interface StudentClass {
 
 // ---- Request payloads ----
 export interface FacultyPayload {
-  code: string;
+  shortCode: string;
   name: string;
   description?: string;
   active: boolean;
 }
 
 export interface MajorPayload {
-  code: string;
+  shortCode: string;
   name: string;
   description?: string;
   active: boolean;
@@ -65,7 +67,6 @@ export interface MajorPayload {
 }
 
 export interface TrainingProgramPayload {
-  code: string;
   name: string;
   active: boolean;
   majorId: number;
@@ -78,7 +79,6 @@ export interface TrainingProgramPayload {
 }
 
 export interface StudentClassPayload {
-  code: string;
   name?: string;
   active: boolean;
   programId: number;

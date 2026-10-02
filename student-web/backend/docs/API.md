@@ -65,26 +65,28 @@ kết quả nếu không truyền `status`. Tìm kiếm coi `%`/`_` là ký tự
 Payload danh mục dùng chung cho POST/PUT, theo thứ tự khoa → ngành → chương trình → lớp:
 
 ```json
-{ "code": "K_CNTT", "name": "Khoa Công nghệ thông tin", "description": "", "active": true }
+{ "shortCode": "IT", "name": "Khoa Công nghệ thông tin", "description": "", "active": true }
 ```
 
 ```json
-{ "code": "CNTT", "name": "Công nghệ thông tin", "facultyId": 1, "description": "", "active": true }
+{ "shortCode": "IT", "name": "Công nghệ thông tin", "facultyId": 1, "description": "", "active": true }
 ```
 
 ```json
 {
-  "code": "CNTT2026", "name": "Chương trình CNTT", "majorId": 1, "cohort": 2026,
+  "name": "Chương trình CNTT", "majorId": 1, "cohort": 2026,
   "degreeType": "ENGINEER", "numberOfSemesters": 10, "totalCredits": 150,
   "requiredCredits": 120, "electiveCredits": 30, "active": true
 }
 ```
 
 ```json
-{ "code": "26T1", "name": "Lớp 26T1", "programId": 1, "cohort": 2026, "academicYear": "2026-2031", "active": true }
+{ "name": "Lớp 26T1", "programId": 1, "cohort": 2026, "academicYear": "2026-2031", "active": true }
 ```
 
-ID trong ví dụ phải thay bằng ID thật. `code` và tên ngành/chương trình bắt buộc;
+ID trong ví dụ phải thay bằng ID thật. Khoa/ngành nhận `shortCode`, không nhận `code`.
+Chương trình/lớp/sinh viên được backend sinh mã; xem [quy ước mã](CODE_GENERATION.md).
+Tên ngành/chương trình bắt buộc;
 `facultyId` bắt buộc cho ngành; `majorId` bắt buộc cho chương trình; `programId` bắt buộc cho lớp; `active` bắt buộc.
 Khoa/ngành/chương trình cha phải tồn tại. Lớp tự lấy ngành từ chương trình; nếu gửi thêm
 `majorId` thì phải khớp. Tên lớp và các trường mô tả có thể bỏ trống.
@@ -92,7 +94,7 @@ Xóa danh mục đang được tham chiếu trả `409`; có thể PUT `active=f
 Không đổi khoa của ngành đang được sử dụng; không đổi ngành của chương trình đang được sử dụng; không đổi chương trình của lớp
 đã có sinh viên, kể cả đổi sang chương trình cùng ngành.
 
-`degreeType` là enum lưu bằng tên: `BACHELOR`, `ENGINEER`, `MASTER` (có thể null nếu chưa bổ sung).
+`degreeType` là enum lưu bằng tên: `BACHELOR`, `ENGINEER`, `MASTER`; `degreeType` và `cohort` (năm 4 chữ số) bắt buộc cho chương trình.
 Bốn trường học kỳ/tín chỉ là số nguyên tùy chọn: `numberOfSemesters` phải > 0; `totalCredits` phải >= 0;
 `requiredCredits` và `electiveCredits` phải >= 0. Khi có tổng, mỗi phần không được vượt tổng;
 khi có đủ cả ba, tổng phải bằng bắt buộc + tự chọn. PUT thay toàn bộ trường, giá trị tùy chọn
@@ -102,14 +104,14 @@ Tạo sinh viên:
 
 ```json
 {
-  "studentCode": "SV001", "fullName": "Sinh viên mẫu",
+  "fullName": "Sinh viên mẫu",
   "dateOfBirth": "2006-01-01", "gender": "OTHER", "citizenId": "TEST001",
   "classId": 1, "secondaryProgramId": null,
   "schoolEmail": "sv001@example.invalid", "familyPhoneNumber": "0900000000"
 }
 ```
 
-MSSV, họ tên và `classId` bắt buộc. Backend luôn lấy ngành và chương trình chính từ lớp;
+Họ tên và `classId` bắt buộc; MSSV do backend sinh. Backend luôn lấy ngành và chương trình chính từ lớp;
 lớp phải có chương trình và cả lớp/chương trình/ngành/khoa phải đang hoạt động.
 Không cần gửi `majorId` hay `trainingProgramId`. Nếu gửi, phải khớp với lớp đã chọn.
 Chương trình phụ vẫn tùy chọn, không thay thế chương trình chính. Tạo thành công trả `201`, header `Location`, body

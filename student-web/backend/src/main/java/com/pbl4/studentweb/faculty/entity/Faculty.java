@@ -10,6 +10,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "faculties")
 public class Faculty extends BaseEntity {
+    @Column(name = "short_code", length = 10, unique = true)
+    private String shortCode;
+
     @Column(name = "faculty_code", length = 20, nullable = false, unique = true)
     private String facultyCode;
     @Column(name = "faculty_name", length = 150, nullable = false)

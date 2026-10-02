@@ -167,7 +167,7 @@ interface DeleteConfirmProps {
   error: string | null;
 }
 
-export function DeleteConfirm({ icon, title, description, error }: DeleteConfirmProps) {
+export function DeleteConfirm({ title, description, error }: DeleteConfirmProps) {
   return (
     <div className="delete-confirm">
       <div className="delete-confirm-icon">

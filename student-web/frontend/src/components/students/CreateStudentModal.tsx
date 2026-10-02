@@ -11,14 +11,13 @@ import type { CreateStudentPayload, CreateStudentResponse, Gender } from '../../
 import type { StudentClass } from '../../types/academic';
 
 const EMPTY: CreateStudentPayload = {
-  studentCode: '', fullName: '', dateOfBirth: '', gender: undefined,
+  fullName: '', dateOfBirth: '', gender: undefined,
   citizenId: '', classId: 0, secondaryProgramId: null,
   schoolEmail: '', familyPhoneNumber: '',
 };
 
 function validate(f: CreateStudentPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
-  if (!f.studentCode.trim()) e.studentCode = 'MSSV là bắt buộc';
   if (!f.fullName.trim()) e.fullName = 'Họ tên là bắt buộc';
   if (!f.classId) e.classId = 'Phải chọn lớp';
   if (f.schoolEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.schoolEmail)) e.schoolEmail = 'Email không hợp lệ';
@@ -135,12 +134,7 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
       <div className="catalog-form">
         {/* Row 1: MSSV + Họ tên */}
         <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">MSSV <span className="required">*</span></label>
-            <input className={`form-input ${fv.studentCode ? 'invalid' : ''}`} placeholder="Vd: SV001"
-              value={form.studentCode} onChange={e => setForm(f => ({ ...f, studentCode: e.target.value }))} disabled={submitting} />
-            {fv.studentCode && <p className="form-error-text">{fv.studentCode}</p>}
-          </div>
+          <p className="form-hint">Mã sinh viên được tự sinh theo khóa của lớp và giữ nguyên khi chuyển lớp.</p>
           <div className="form-group">
             <label className="form-label">Họ và tên <span className="required">*</span></label>
             <input className={`form-input ${fv.fullName ? 'invalid' : ''}`} placeholder="Vd: Nguyễn Văn A"

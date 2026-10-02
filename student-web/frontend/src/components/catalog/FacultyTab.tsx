@@ -8,13 +8,13 @@ import Modal from '../Modal';
 import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
 // ---- Empty form state ----
-const EMPTY: FacultyPayload = { code: '', name: '', description: '', active: true };
+const EMPTY: FacultyPayload = { shortCode: '', name: '', description: '', active: true };
 
 // ---- Validation ----
 function validate(f: FacultyPayload): Partial<Record<keyof FacultyPayload, string>> {
   const e: Partial<Record<keyof FacultyPayload, string>> = {};
-  if (!f.code.trim()) e.code = 'Mã khoa là bắt buộc';
-  else if (!/^[\w\-]+$/.test(f.code.trim())) e.code = 'Mã chỉ gồm chữ, số, gạch dưới, gạch ngang';
+  if (!f.shortCode.trim()) e.shortCode = 'Mã khoa là bắt buộc';
+  else if (!/^[A-Z][A-Z0-9]{0,9}$/i.test(f.shortCode.trim())) e.shortCode = 'Mã viết tắt gồm 1–10 chữ/số, bắt đầu bằng chữ';
   if (!f.name.trim()) e.name = 'Tên khoa là bắt buộc';
   return e;
 }
@@ -46,7 +46,7 @@ export default function FacultyTab() {
 
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: Faculty) {
-    setForm({ code: item.code, name: item.name, description: item.description ?? '', active: item.active });
+    setForm({ shortCode: item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active });
     setFieldErr({}); setFormErr(null);
     setModal({ mode: 'edit', item });
   }
@@ -136,12 +136,12 @@ export default function FacultyTab() {
         <div className="catalog-form">
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Mã khoa <span className="required">*</span></label>
-              <input className={`form-input ${fieldErr.code ? 'invalid' : ''}`}
-                placeholder="Vd: K_CNTT" value={form.code}
-                onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
-                disabled={submitting || modal?.mode === 'edit'} />
-              {fieldErr.code && <p className="form-error-text">{fieldErr.code}</p>}
+              <label className="form-label">Mã viết tắt khoa <span className="required">*</span></label>
+              <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`}
+                placeholder="Vd: IT" value={form.shortCode}
+                onChange={e => setForm(f => ({ ...f, shortCode: e.target.value }))}
+                disabled={submitting} />
+              {fieldErr.shortCode && <p className="form-error-text">{fieldErr.shortCode}</p>}
               {modal?.mode === 'edit' && <p className="form-hint">Mã không thể thay đổi sau khi tạo</p>}
             </div>
             <div className="form-group">

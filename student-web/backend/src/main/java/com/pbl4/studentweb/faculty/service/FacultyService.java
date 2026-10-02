@@ -21,6 +21,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FacultyService {
+    private final com.pbl4.studentweb.common.code.CodeGenerationService codes;
     private final FacultyRepository repository;
     private final FacultyMapper mapper;
     private final MajorRepository majors;
@@ -32,7 +33,7 @@ public class FacultyService {
 
     @Transactional
     public FacultySummary create(@NotNull @Valid FacultyRequest request) {
-        if (repository.existsByFacultyCode(request.code().trim())) throw new IllegalStateException("Code already exists");
+        if (repository.existsByFacultyCode(codes.faculty(request.shortCode()))) throw new IllegalStateException("Code already exists");
         var entity = new Faculty();
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
@@ -41,7 +42,7 @@ public class FacultyService {
     @Transactional
     public FacultySummary update(Long id, @NotNull @Valid FacultyRequest request) {
         var entity = require(id);
-        if (repository.existsByFacultyCodeAndIdNot(request.code().trim(), id)) throw new IllegalStateException("Code already exists");
+        if (repository.existsByFacultyCodeAndIdNot(codes.faculty(request.shortCode()), id)) throw new IllegalStateException("Code already exists");
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
     }
@@ -59,7 +60,8 @@ public class FacultyService {
     }
     private void apply(Faculty e, FacultyRequest r) {
         e.setDescription(optional(r.description()));
-        e.setFacultyCode(r.code().trim());
+        e.setShortCode(codes.normalizeShortCode(r.shortCode()));
+        e.setFacultyCode(codes.faculty(r.shortCode()));
         e.setFacultyName(optional(r.name()));
         e.setActive(r.active());
     }

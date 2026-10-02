@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @RequiredArgsConstructor
 public class StudentOnboardingService {
+    private final com.pbl4.studentweb.common.code.CodeGenerationService codes;
     private final StudentRepository students;
     private final UserRepository users;
     private final StudentAcademicAssignment academicAssignment;
@@ -31,13 +32,11 @@ public class StudentOnboardingService {
     // Invoked by the ADMIN/STAFF student API. All academic links are checked before account creation.
     @Transactional
     public StudentOnboardingResult create(@NotNull @Valid CreateStudentRequest r) {
-        String code = r.studentCode().trim();
-        if (students.existsByStudentCode(code) || users.existsByUsername(code))
-            throw new IllegalStateException("Student code or username already exists");
         var studentClass = academicAssignment.resolve(r.classId(), r.majorId(), r.trainingProgramId(), true);
         var program = studentClass.getProgram();
         var major = program.getMajor();
         var secondary = r.secondaryProgramId() == null ? null : program(r.secondaryProgramId());
+        String code = codes.student(studentClass.getCohort());
         User user = new User();
         user.setUsername(code);
         user.setRole(UserRole.STUDENT);

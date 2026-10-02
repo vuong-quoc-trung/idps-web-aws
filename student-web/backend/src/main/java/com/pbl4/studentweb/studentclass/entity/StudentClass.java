@@ -14,7 +14,7 @@ import com.pbl4.studentweb.trainingprogram.entity.TrainingProgram;
 @Entity
 @Table(name = "classes")
 public class StudentClass extends BaseEntity {
-    @Column(name = "class_code", length = 30, nullable = false, unique = true)
+    @Column(name = "class_code", length = 60, nullable = false, unique = true)
     private String classCode;
 
     @Column(name = "class_name", length = 100)

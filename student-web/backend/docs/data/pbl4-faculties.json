@@ -1,0 +1,98 @@
+[
+  {
+    "shortCode": "ME",
+    "name": "Khoa Cơ khí",
+    "description": "English name: Faculty of Mechanical Engineering",
+    "active": true
+  },
+  {
+    "shortCode": "IT",
+    "name": "Khoa Công nghệ Thông tin",
+    "description": "English name: Faculty of Information Technology",
+    "active": true
+  },
+  {
+    "shortCode": "TEE",
+    "name": "Khoa Cơ khí Giao thông và Năng lượng",
+    "description": "English name: Faculty of Transportation and Energy Engineering",
+    "active": true
+  },
+  {
+    "shortCode": "TEEN",
+    "name": "Khoa Cơ khí Giao thông và Năng lượng (N)",
+    "description": "English name: Faculty of Transportation and Energy Engineering (N)",
+    "active": true
+  },
+  {
+    "shortCode": "EE",
+    "name": "Khoa Điện",
+    "description": "English name: Faculty of Electrical Engineering",
+    "active": true
+  },
+  {
+    "shortCode": "EAI",
+    "name": "Khoa Điện tử và Trí tuệ nhân tạo",
+    "description": "English name: Faculty of Electronics and Artificial Intelligence",
+    "active": true
+  },
+  {
+    "shortCode": "CELS",
+    "name": "Khoa Hóa, Môi trường và Khoa học sự sống",
+    "description": "English name: Faculty of Chemical, Environmental and Life Sciences",
+    "active": true
+  },
+  {
+    "shortCode": "TEESK",
+    "name": "Khoa Cơ khí Giao thông và Năng lượng (SK)",
+    "description": "English name: Faculty of Transportation and Energy Engineering (SK)",
+    "active": true
+  },
+  {
+    "shortCode": "CEX3",
+    "name": "Khoa Xây dựng (X3)",
+    "description": "English name: Faculty of Civil Engineering (X3)",
+    "active": true
+  },
+  {
+    "shortCode": "CE",
+    "name": "Khoa Xây dựng",
+    "description": "English name: Faculty of Civil Engineering",
+    "active": true
+  },
+  {
+    "shortCode": "CEX2",
+    "name": "Khoa Xây dựng (X2)",
+    "description": "English name: Faculty of Civil Engineering (X2)",
+    "active": true
+  },
+  {
+    "shortCode": "CELSMT",
+    "name": "Khoa Hóa, Môi trường và Khoa học sự sống (MT)",
+    "description": "English name: Faculty of Chemical, Environmental and Life Sciences (MT)",
+    "active": true
+  },
+  {
+    "shortCode": "PIM",
+    "name": "Khoa Quản lý dự án và Công nghiệp",
+    "description": "English name: Faculty of Project and Industrial Management",
+    "active": true
+  },
+  {
+    "shortCode": "ARCH",
+    "name": "Khoa Kiến trúc",
+    "description": "English name: Faculty of Architecture",
+    "active": true
+  },
+  {
+    "shortCode": "EAI122",
+    "name": "Khoa Điện tử và Trí tuệ nhân tạo (122)",
+    "description": "English name: Faculty of Electronics and Artificial Intelligence (122)",
+    "active": true
+  },
+  {
+    "shortCode": "EAI123",
+    "name": "Khoa Điện tử và Trí tuệ nhân tạo (123)",
+    "description": "English name: Faculty of Electronics and Artificial Intelligence (123)",
+    "active": true
+  }
+]

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class FacultyMapper {
     public FacultySummary toSummary(Faculty e) {
-        return new FacultySummary(e.getId(), e.getFacultyCode(), e.getFacultyName(), e.getDescription(), e.isActive());
+        return new FacultySummary(e.getId(), e.getFacultyCode(), e.getShortCode(), e.getFacultyName(), e.getDescription(), e.isActive());
     }
 }

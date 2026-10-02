@@ -195,7 +195,6 @@ export default function StudentDetailPage() {
               <InfoItem label="Ngày sinh" value={student.dateOfBirth} />
               <InfoItem label="Giới tính" value={student.gender ? GENDER_LABELS[student.gender] : undefined} />
               <InfoItem label="Số CCCD" value={student.citizenId} mono />
-              <InfoItem label="Tên đăng nhập" value={student.username} mono />
               <InfoItem label="Email trường" value={student.schoolEmail} mono />
               <InfoItem label="SĐT gia đình" value={student.familyPhoneNumber} />
             </div>
@@ -235,7 +234,6 @@ export default function StudentDetailPage() {
         <SubResourceSection
           title="📍 Địa chỉ"
           items={addresses}
-          onAdd={() => addressApi.create(studentId, { addressType: 'CURRENT', current: false })}
           onRefresh={async () => setAddresses(await addressApi.list(studentId))}
           renderItem={(addr: Address) => (
             <div key={addr.id} className="sub-card">
@@ -264,7 +262,6 @@ export default function StudentDetailPage() {
         <SubResourceSection
           title="👨‍👩‍👦 Nhân thân"
           items={family}
-          onAdd={() => familyApi.create(studentId, { relationship: 'OTHER', hasCollegeDegree: false, unavailable: false })}
           onRefresh={async () => setFamily(await familyApi.list(studentId))}
           renderItem={(m: FamilyMember) => (
             <div key={m.id} className="sub-card">
@@ -293,7 +290,6 @@ export default function StudentDetailPage() {
         <SubResourceSection
           title="🆘 Liên hệ khẩn cấp"
           items={emergency}
-          onAdd={() => emergencyApi.create(studentId, { fullName: '', phoneNumber: '', priority: 1 })}
           onRefresh={async () => setEmergency(await emergencyApi.list(studentId))}
           renderItem={(c: EmergencyContact) => (
             <div key={c.id} className="sub-card">
@@ -320,7 +316,6 @@ export default function StudentDetailPage() {
         <SubResourceSection
           title="🎯 Liên hệ sau tốt nghiệp"
           items={postGrad}
-          onAdd={() => postGradApi.create(studentId, {})}
           onRefresh={async () => setPostGrad(await postGradApi.list(studentId))}
           renderItem={(c: PostGradContact) => (
             <div key={c.id} className="sub-card">

@@ -21,6 +21,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StudentClassService {
+    private final com.pbl4.studentweb.common.code.CodeGenerationService codes;
     private final StudentClassRepository repository;
     private final StudentClassMapper mapper;
     private final StudentRepository students;
@@ -33,7 +34,6 @@ public class StudentClassService {
 
     @Transactional
     public StudentClassSummary create(@NotNull @Valid StudentClassRequest request) {
-        if (repository.existsByClassCode(request.code().trim())) throw new IllegalStateException("Code already exists");
         var entity = new StudentClass();
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
@@ -42,7 +42,6 @@ public class StudentClassService {
     @Transactional
     public StudentClassSummary update(Long id, @NotNull @Valid StudentClassRequest request) {
         var entity = require(id);
-        if (repository.existsByClassCodeAndIdNot(request.code().trim(), id)) throw new IllegalStateException("Code already exists");
         apply(entity, request);
         return mapper.toSummary(repository.saveAndFlush(entity));
     }
@@ -70,11 +69,16 @@ public class StudentClassService {
             throw new IllegalArgumentException("Program, major and faculty must be active");
         if (changedProgram && students.existsByStudentClassId(e.getId()))
             throw new IllegalStateException("Cannot change the program of a class in use; transfer students first");
+        int cohort = codes.cohort(program.getCohort());
+        if (r.cohort() != null && r.cohort() != cohort)
+            throw new IllegalArgumentException("Class cohort must match the program");
+        if (e.getId() == null || changedProgram || !java.util.Objects.equals(e.getCohort(), cohort))
+            e.setClassCode(codes.studentClass(major, cohort));
         e.setMajor(major);
         e.setProgram(program);
-        e.setCohort(r.cohort());
+        e.setCohort(cohort);
         e.setAcademicYear(optional(r.academicYear()));
-        e.setClassCode(r.code().trim());
+
         e.setClassName(optional(r.name()));
         e.setActive(r.active());
     }

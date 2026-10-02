@@ -9,7 +9,6 @@ interface SubResourceSectionProps<T extends { id: number }> {
   title: string;
   items: T[];
   renderItem: (item: T) => React.ReactNode;
-  onAdd: () => Promise<void>;
   onRefresh: () => Promise<void>;
   AddEditModal: (props: { open: boolean; item: T | null; onClose: () => void }) => React.ReactNode;
   onDelete: (item: T) => Promise<void>;
