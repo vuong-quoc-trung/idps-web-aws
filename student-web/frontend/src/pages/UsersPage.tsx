@@ -8,13 +8,14 @@
  *   - Re-issue activation token for pending (passwordSetupRequired) accounts
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import Modal from '../components/Modal';
 import { useAuth } from '../contexts/AuthContext';
 import { userApi } from '../api/userApi';
 import type { UserSummary, CreateUserPayload } from '../api/userApi';
 import type { Page } from '../api/client';
+import AccessLogsTab from '../components/admin/AccessLogsTab';
 import './UsersPage.css';
 
 /* ---- SVG micro-icons ---- */
@@ -87,6 +88,12 @@ const IcoChevLeft = () => (
 const IcoChevRight = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
     <path d="M4.5 2L8 6l-3.5 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+const IcoShieldLog = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -336,6 +343,16 @@ const PAGE_SIZE = 20;
 export default function UsersPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'logs' ? 'logs' : 'users';
+
+  const handleTabChange = (t: 'users' | 'logs') => {
+    if (t === 'logs') {
+      setSearchParams({ tab: 'logs' });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   // ---- Data state ----
   const [data, setData] = useState<Page<UserSummary> | null>(null);
@@ -445,23 +462,57 @@ export default function UsersPage() {
           <div>
             <div className="users-page-title">
               <div className="users-page-title-icon">
-                <IcoUsers/>
+                {activeTab === 'users' ? <IcoUsers/> : <IcoShieldLog/>}
               </div>
               <div>
-                <h1>Quản trị tài khoản</h1>
-                <div className="users-page-subtitle">Dành riêng cho ADMIN — quản lý tài khoản hệ thống</div>
+                <h1>{activeTab === 'users' ? 'Quản trị tài khoản' : 'Nhật ký truy cập hệ thống'}</h1>
+                <div className="users-page-subtitle">
+                  {activeTab === 'users'
+                    ? 'Dành riêng cho ADMIN — quản lý tài khoản và phân quyền hệ thống'
+                    : 'Dành riêng cho ADMIN — kiểm toán và theo dõi các yêu cầu bảo mật'}
+                </div>
               </div>
             </div>
           </div>
+          {activeTab === 'users' && (
+            <button
+              className="btn-create-user"
+              onClick={() => setShowCreate(true)}
+              id="open-create-user-modal-btn"
+            >
+              <IcoPlus/> Tạo tài khoản
+            </button>
+          )}
+        </div>
+
+        {/* Admin Navigation Tabs */}
+        <div className="admin-tabs" role="tablist" aria-label="Điều hướng quản trị">
           <button
-            className="btn-create-user"
-            onClick={() => setShowCreate(true)}
-            id="open-create-user-modal-btn"
+            type="button"
+            role="tab"
+            id="admin-tab-users"
+            aria-selected={activeTab === 'users'}
+            className={`admin-tab-btn ${activeTab === 'users' ? 'active' : ''}`}
+            onClick={() => handleTabChange('users')}
           >
-            <IcoPlus/> Tạo tài khoản
+            <IcoUsers/> Quản lý tài khoản
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="admin-tab-logs"
+            aria-selected={activeTab === 'logs'}
+            className={`admin-tab-btn ${activeTab === 'logs' ? 'active' : ''}`}
+            onClick={() => handleTabChange('logs')}
+          >
+            <IcoShieldLog/> Nhật ký truy cập (Audit Trail)
           </button>
         </div>
 
+        {activeTab === 'logs' ? (
+          <AccessLogsTab />
+        ) : (
+          <>
         {/* Stats */}
         <div className="users-stats-bar">
           <span className="users-stat-chip total">
@@ -666,6 +717,8 @@ export default function UsersPage() {
             </>
           )}
         </div>
+          </>
+        )}
       </div>
 
       {/* Modals */}

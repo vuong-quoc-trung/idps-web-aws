@@ -24,6 +24,45 @@
   gap: var(--space-6);
 }
 
+/* ---- Admin Navigation Tabs ---- */
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.admin-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  margin-bottom: -1px;
+}
+
+.admin-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.admin-tab-btn.active {
+  color: var(--accent);
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+  border-bottom-color: var(--bg-surface);
+  font-weight: 600;
+}
+
 /* ---- Page header ---- */
 .users-page-header {
   display: flex;
