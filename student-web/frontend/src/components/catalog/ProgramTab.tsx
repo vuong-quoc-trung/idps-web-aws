@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { programApi, majorApi } from '../../api/academicApi';
 import { ApiError } from '../../api/client';
+import { useAuth } from '../../contexts/AuthContext';
 import type { TrainingProgram, TrainingProgramPayload, Major, DegreeType } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
@@ -44,6 +45,8 @@ function numOrNull(v: string): number | null {
 }
 
 export default function ProgramTab() {
+  const { user } = useAuth();
+  const readOnly = user?.role === 'STUDENT';
   const [data, setData]         = useState<Page<TrainingProgram> | null>(null);
   const [page, setPage]         = useState(0);
   const [loading, setLoading]   = useState(false);
@@ -136,7 +139,7 @@ export default function ProgramTab() {
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
         emptyText="Chưa có chương trình đào tạo nào." addLabel="Thêm chương trình"
-        onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} />
+        onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} readOnly={readOnly} />
       {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal} size="lg"

@@ -1,7 +1,7 @@
-/** MajorTab — CRUD for /api/majors (requires facultyId) */
 import { useState, useEffect, useCallback } from 'react';
 import { majorApi, facultyApi } from '../../api/academicApi';
 import { ApiError } from '../../api/client';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Major, MajorPayload, Faculty } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
@@ -19,6 +19,8 @@ function validate(f: MajorPayload): Partial<Record<keyof MajorPayload, string>> 
 }
 
 export default function MajorTab() {
+  const { user } = useAuth();
+  const readOnly = user?.role === 'STUDENT';
   const [data, setData]         = useState<Page<Major> | null>(null);
   const [page, setPage]         = useState(0);
   const [loading, setLoading]   = useState(false);
@@ -100,7 +102,7 @@ export default function MajorTab() {
     <>
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
-        emptyText="Chưa có ngành nào." addLabel="Thêm ngành" onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} />
+        emptyText="Chưa có ngành nào." addLabel="Thêm ngành" onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} readOnly={readOnly} />
       {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal} title={modal?.mode === 'add' ? 'Thêm ngành mới' : `Chỉnh sửa: ${modal?.item?.name}`}

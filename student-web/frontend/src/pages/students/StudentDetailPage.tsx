@@ -27,6 +27,26 @@ const STATUS_LABELS: Record<string, string> = {
   ACTIVE: 'Đang học', GRADUATED: 'Tốt nghiệp', SUSPENDED: 'Đình chỉ', INACTIVE: 'Ngừng HĐ',
 };
 
+const MISSING_FIELD_LABELS: Record<string, string> = {
+  dateOfBirth: 'Ngày sinh',
+  gender: 'Giới tính',
+  placeOfBirth: 'Nơi sinh',
+  oldPlaceOfBirth: 'Quê quán',
+  ethnicity: 'Dân tộc',
+  nationality: 'Quốc tịch',
+  citizenId: 'Số CCCD',
+  citizenIdIssueDate: 'Ngày cấp CCCD',
+  healthInsuranceNumber: 'Số thẻ BHYT',
+  healthInsuranceExpiry: 'Hạn thẻ BHYT',
+  trainingProgram: 'Chương trình đào tạo',
+  personalEmail: 'Email cá nhân',
+  phoneNumber: 'Số điện thoại',
+  currentAddress: 'Địa chỉ thường trú',
+  permanentOrFamilyAddress: 'Hộ khẩu / Nhà gia đình',
+  emergencyContact: 'Liên hệ khẩn cấp',
+  familyMember: 'Nhân thân gia đình',
+};
+
 function initials(name: string) {
   return name.split(' ').map(p => p[0]).slice(-2).join('').toUpperCase();
 }
@@ -113,11 +133,11 @@ export default function StudentDetailPage() {
     </div>
   );
 
-  const pct = completion
-    ? Math.round(100 - (completion.missingFields.length / Math.max(1, (completion.missingFields.length + (completion.complete ? 1 : 0)))) * 100)
-    : 0;
-
-  const displayPct = completion?.complete ? 100 : Math.min(pct, 99);
+  const isComplete = completion?.status === 'COMPLETE' || completion?.complete === true || (completion?.missingFields && completion.missingFields.length === 0);
+  const missingCount = completion?.missingFields?.length ?? 0;
+  const totalFields = 17;
+  const pct = isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
+  const displayPct = isComplete ? 100 : pct;
 
   return (
     <div className="student-detail-page">
@@ -163,19 +183,19 @@ export default function StudentDetailPage() {
           <div className="completion-card">
             <div className="completion-header">
               <span className="completion-title">📋 Mức độ hoàn thiện hồ sơ</span>
-              <span className="completion-pct" style={{ color: completion.complete ? '#16a34a' : 'var(--accent)' }}>
-                {completion.complete ? '✓ Hoàn thiện' : `${displayPct}%`}
+              <span className="completion-pct" style={{ color: isComplete ? '#16a34a' : 'var(--accent)' }}>
+                {isComplete ? '✓ Hoàn thiện' : `${displayPct}%`}
               </span>
             </div>
             <div className="completion-bar">
-              <div className={`completion-fill ${completion.complete ? 'complete' : ''}`} style={{ width: `${displayPct}%` }} />
+              <div className={`completion-fill ${isComplete ? 'complete' : ''}`} style={{ width: `${displayPct}%` }} />
             </div>
-            {completion.missingFields.length > 0 && (
+            {missingCount > 0 && (
               <div className="missing-fields">
                 {completion.missingFields.map(f => (
-                  <span key={f} className="missing-tag">
+                  <span key={f} className="missing-tag" title={f}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v4M5 8h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                    {f}
+                    {MISSING_FIELD_LABELS[f] ?? f}
                   </span>
                 ))}
               </div>
@@ -226,6 +246,33 @@ export default function StudentDetailPage() {
             <div className="info-grid">
               <InfoItem label="Số tài khoản" value={student.bankAccountNumber} mono />
               <InfoItem label="Ngân hàng" value={student.bankName} />
+            </div>
+          </div>
+        </div>
+
+        {/* Personal & Demographic declared info */}
+        <div className="detail-section">
+          <div className="detail-section-header">
+            <span className="detail-section-title">📋 Thông tin nhân khẩu & Khai báo cá nhân</span>
+          </div>
+          <div className="detail-section-body">
+            <div className="info-grid">
+              <InfoItem label="Nơi sinh" value={student.placeOfBirth} />
+              <InfoItem label="Quê quán" value={student.oldPlaceOfBirth} />
+              <InfoItem label="Dân tộc" value={student.ethnicity} />
+              <InfoItem label="Quốc tịch" value={student.nationality} />
+              <InfoItem label="Tôn giáo" value={student.religion} />
+              <InfoItem label="Ngày cấp CCCD" value={student.citizenIdIssueDate} />
+              <InfoItem label="Số thẻ BHYT" value={student.healthInsuranceNumber} mono />
+              <InfoItem label="Hạn thẻ BHYT" value={student.healthInsuranceExpiry} />
+              <InfoItem label="BHYT miễn phí" value={student.freeHealthInsurance ? '✓ Có' : 'Không'} />
+              <InfoItem label="Email cá nhân" value={student.personalEmail} mono />
+              <InfoItem label="SĐT cá nhân" value={student.phoneNumber} />
+              <InfoItem label="Facebook URL" value={student.facebookUrl} />
+              <InfoItem label="Trạng thái hồ sơ" value={student.profileStatus === 'COMPLETE' ? '✓ Đã hoàn thiện' : 'Chưa hoàn thiện'} />
+              {student.profileCompletedAt && (
+                <InfoItem label="Thời gian hoàn thiện" value={student.profileCompletedAt.replace('T', ' ')} />
+              )}
             </div>
           </div>
         </div>

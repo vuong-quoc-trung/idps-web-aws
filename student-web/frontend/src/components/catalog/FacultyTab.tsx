@@ -1,7 +1,7 @@
-/** FacultyTab — CRUD for /api/faculties */
 import { useState, useEffect, useCallback } from 'react';
 import { facultyApi } from '../../api/academicApi';
 import { ApiError } from '../../api/client';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Faculty, FacultyPayload } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
@@ -20,6 +20,8 @@ function validate(f: FacultyPayload): Partial<Record<keyof FacultyPayload, strin
 }
 
 export default function FacultyTab() {
+  const { user } = useAuth();
+  const readOnly = user?.role === 'STUDENT';
   const [data, setData]       = useState<Page<Faculty> | null>(null);
   const [page, setPage]       = useState(0);
   const [loading, setLoading] = useState(false);
@@ -106,6 +108,7 @@ export default function FacultyTab() {
         addLabel="Thêm khoa"
         onEdit={openEdit}
         onDelete={setDeleteTarget}
+        readOnly={readOnly}
       />
 
       {data && data.totalPages > 1 && (

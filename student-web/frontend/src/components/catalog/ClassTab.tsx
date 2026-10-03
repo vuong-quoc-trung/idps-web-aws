@@ -1,7 +1,7 @@
-/** ClassTab — CRUD for /api/classes */
 import { useState, useEffect, useCallback } from 'react';
 import { classApi, programApi } from '../../api/academicApi';
 import { ApiError } from '../../api/client';
+import { useAuth } from '../../contexts/AuthContext';
 import type { StudentClass, StudentClassPayload, TrainingProgram } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
@@ -9,18 +9,23 @@ import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './Catalog
 
 const EMPTY: StudentClassPayload = {
   name: '', active: true, programId: 0,
+  cohort: null,
   academicYear: '',
 };
 
 function validate(f: StudentClassPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
   if (!f.programId) e.programId = 'Phải chọn chương trình đào tạo';
+  if (f.cohort != null && (f.cohort < 1000 || f.cohort > 9999))
+    e.cohort = 'Khóa học phải là năm gồm 4 chữ số (Vd: 2026)';
   if (f.academicYear && !/^\d{4}-\d{4}$/.test(f.academicYear.trim()))
     e.academicYear = 'Định dạng năm học: YYYY-YYYY (Vd: 2026-2031)';
   return e;
 }
 
 export default function ClassTab() {
+  const { user } = useAuth();
+  const readOnly = user?.role === 'STUDENT';
   const [data, setData]         = useState<Page<StudentClass> | null>(null);
   const [page, setPage]         = useState(0);
   const [loading, setLoading]   = useState(false);
@@ -53,6 +58,7 @@ export default function ClassTab() {
     setForm({
       name: item.name ?? '', active: item.active,
       programId: item.programId,
+      cohort: item.cohort ?? null,
       academicYear: item.academicYear ?? '',
     });
     setFieldErr({}); setFormErr(null); setModal({ mode: 'edit', item });
@@ -67,6 +73,7 @@ export default function ClassTab() {
       const payload: StudentClassPayload = {
         ...form,
         programId: Number(form.programId),
+        cohort: form.cohort ? Number(form.cohort) : undefined,
         name: form.name || undefined,
         academicYear: form.academicYear || undefined,
       };
@@ -111,7 +118,7 @@ export default function ClassTab() {
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
         emptyText="Chưa có lớp nào." addLabel="Thêm lớp"
-        onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} />
+        onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} readOnly={readOnly} />
       {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal}
@@ -146,7 +153,13 @@ export default function ClassTab() {
             {fv.programId && <p className="form-error-text">{fv.programId}</p>}
           </div>
           <div className="form-row">
-            <p className="form-hint">Khóa được lấy từ chương trình đào tạo đã chọn.</p>
+            <div className="form-group">
+              <label className="form-label">Khóa tuyển sinh</label>
+              <input className={`form-input ${fv.cohort ? 'invalid' : ''}`} placeholder="Vd: 2026"
+                type="number" min={1000} max={9999}
+                value={form.cohort ?? ''} onChange={e => setForm(f => ({ ...f, cohort: e.target.value === '' ? null : Number(e.target.value) }))} disabled={submitting} />
+              {fv.cohort && <p className="form-error-text">{fv.cohort}</p>}
+            </div>
             <div className="form-group">
               <label className="form-label">Năm học</label>
               <input className={`form-input ${fv.academicYear ? 'invalid' : ''}`} placeholder="Vd: 2026-2031"

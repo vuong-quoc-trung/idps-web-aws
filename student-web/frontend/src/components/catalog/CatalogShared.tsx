@@ -22,44 +22,49 @@ interface TableProps<T extends { id: number }> {
   rows: T[];
   loading: boolean;
   emptyText: string;
-  addLabel: string;
-  onAdd: () => void;
-  onEdit: (row: T) => void;
-  onDelete: (row: T) => void;
+  addLabel?: string;
+  onAdd?: () => void;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
+  readOnly?: boolean;
 }
 
 export function CatalogTable<T extends { id: number }>({
-  columns, rows, loading, emptyText, addLabel, onAdd, onEdit, onDelete,
+  columns, rows, loading, emptyText, addLabel, onAdd, onEdit, onDelete, readOnly = false,
 }: TableProps<T>) {
+  const totalCols = columns.length + (readOnly ? 0 : 1);
+
   return (
     <div className="catalog-table-wrap">
       {/* Table header row with Add button */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>
-        <button className="btn-add" id={`btn-add-${addLabel}`} onClick={onAdd}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          {addLabel}
-        </button>
-      </div>
+      {!readOnly && onAdd && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>
+          <button className="btn-add" id={`btn-add-${addLabel ?? 'new'}`} onClick={onAdd}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            {addLabel}
+          </button>
+        </div>
+      )}
 
       <table className="catalog-table">
         <thead>
           <tr>
             {columns.map(c => <th key={c.key} className={c.cls}>{c.label}</th>)}
-            <th className="col-actions">Thao tác</th>
+            {!readOnly && <th className="col-actions">Thao tác</th>}
           </tr>
         </thead>
         <tbody>
           {loading ? (
-            <tr><td colSpan={columns.length + 1}>
+            <tr><td colSpan={totalCols}>
               <div className="table-state">
                 <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />
                 <p>Đang tải…</p>
               </div>
             </td></tr>
           ) : rows.length === 0 ? (
-            <tr><td colSpan={columns.length + 1}>
+            <tr><td colSpan={totalCols}>
               <div className="table-state">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ color: 'var(--text-muted)' }}>
                   <rect x="4" y="6" width="24" height="20" rx="3" stroke="currentColor" strokeWidth="1.5"/>
@@ -76,20 +81,26 @@ export function CatalogTable<T extends { id: number }>({
                   {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}
                 </td>
               ))}
-              <td className="col-actions">
-                <div className="row-actions">
-                  <button className="action-btn" id={`edit-${row.id}`} onClick={() => onEdit(row)} title="Chỉnh sửa">
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                      <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  <button className="action-btn delete" id={`delete-${row.id}`} onClick={() => onDelete(row)} title="Xóa">
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                      <path d="M2 4h10M5 4V3h4v1M5.5 6.5v4M8.5 6.5v4M3 4l.75 8h6.5L11 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              </td>
+              {!readOnly && (
+                <td className="col-actions">
+                  <div className="row-actions">
+                    {onEdit && (
+                      <button className="action-btn" id={`edit-${row.id}`} onClick={() => onEdit(row)} title="Chỉnh sửa">
+                        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                          <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button className="action-btn delete" id={`delete-${row.id}`} onClick={() => onDelete(row)} title="Xóa">
+                        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                          <path d="M2 4h10M5 4V3h4v1M5.5 6.5v4M8.5 6.5v4M3 4l.75 8h6.5L11 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
