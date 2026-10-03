@@ -21,13 +21,25 @@ export default function App() {
             <Route path="/login"    element={<LoginPage />} />
             <Route path="/activate" element={<ActivatePage />} />
 
-            {/* Protected routes */}
+            {/* All authenticated users */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/catalog" element={<CatalogPage />} />
+            </Route>
+
+            {/* Admin and Staff only */}
+            <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'STAFF']} />}>
               <Route path="/students" element={<StudentsPage />} />
               <Route path="/students/:id" element={<StudentDetailPage />} />
+            </Route>
+
+            {/* Student only */}
+            <Route element={<ProtectedRoute allowedRoles={['STUDENT']} />}>
               <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+
+            {/* Admin only */}
+            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
               <Route path="/admin" element={<UsersPage />} />
             </Route>
 

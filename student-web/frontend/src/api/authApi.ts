@@ -7,6 +7,7 @@
  *  4. Include CSRF header on all mutating requests
  */
 import type { CsrfToken, CurrentUser } from '../types/auth';
+import { clearCsrfCache } from './client';
 
 const BASE = '/api';
 
@@ -79,6 +80,7 @@ export async function logout(): Promise<void> {
     headers: csrfHeaders(csrf),
   });
   csrfCache = null;
+  clearCsrfCache();
 }
 
 /**

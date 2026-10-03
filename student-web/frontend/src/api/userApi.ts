@@ -9,7 +9,7 @@
  *   PATCH /users/{id}/enabled            → enable/disable
  *   POST /users/{id}/activation-token    → re-issue token (pending accounts only)
  */
-import { apiGet, apiPost } from './client';
+import { apiGet, apiPost, apiPatch } from './client';
 import type { Page } from './client';
 
 export type UserRole = 'ADMIN' | 'STAFF' | 'STUDENT';
@@ -47,25 +47,6 @@ export interface ReissueTokenResponse {
 export interface UserListParams {
   page?: number;
   size?: number;
-}
-
-// ---- PATCH helper ----
-async function apiPatch<T>(path: string, body: unknown): Promise<T> {
-  const csrfRes = await fetch('/api/auth/csrf', { credentials: 'same-origin' });
-  const csrf = await csrfRes.json() as { headerName: string; token: string };
-  const res = await fetch(`/api${path}`, {
-    method: 'PATCH',
-    credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', [csrf.headerName]: csrf.token },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    let msg = `HTTP ${res.status}`;
-    try { const b = await res.json() as { message?: string }; if (b.message) msg = b.message; } catch { /* ignore */ }
-    throw new Error(msg);
-  }
-  if (res.status === 204 || res.headers.get('content-length') === '0') return null as T;
-  return res.json() as Promise<T>;
 }
 
 export const userApi = {

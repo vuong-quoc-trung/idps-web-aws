@@ -22,7 +22,7 @@ export const facultyApi = {
   list: (page = 0) =>
     apiGet<Page<Faculty>>('/faculties', { page, size: PAGE_SIZE }),
   listAll: () =>
-    apiGet<Page<Faculty>>('/faculties', { page: 0, size: 200 }),
+    apiGet<Page<Faculty>>('/faculties', { page: 0, size: 100 }),
   get: (id: number) =>
     apiGet<Faculty>(`/faculties/${id}`),
   create: (payload: FacultyPayload) =>
@@ -40,7 +40,7 @@ export const majorApi = {
   list: (page = 0) =>
     apiGet<Page<Major>>('/majors', { page, size: PAGE_SIZE }),
   listAll: () =>
-    apiGet<Page<Major>>('/majors', { page: 0, size: 500 }),
+    apiGet<Page<Major>>('/majors', { page: 0, size: 100 }),
   get: (id: number) =>
     apiGet<Major>(`/majors/${id}`),
   create: (payload: MajorPayload) =>
@@ -58,7 +58,7 @@ export const programApi = {
   list: (page = 0) =>
     apiGet<Page<TrainingProgram>>('/training-programs', { page, size: PAGE_SIZE }),
   listAll: () =>
-    apiGet<Page<TrainingProgram>>('/training-programs', { page: 0, size: 500 }),
+    apiGet<Page<TrainingProgram>>('/training-programs', { page: 0, size: 100 }),
   get: (id: number) =>
     apiGet<TrainingProgram>(`/training-programs/${id}`),
   create: (payload: TrainingProgramPayload) =>
@@ -76,7 +76,7 @@ export const classApi = {
   list: (page = 0) =>
     apiGet<Page<StudentClass>>('/classes', { page, size: PAGE_SIZE }),
   listAll: () =>
-    apiGet<Page<StudentClass>>('/classes', { page: 0, size: 500 }),
+    apiGet<Page<StudentClass>>('/classes', { page: 0, size: 100 }),
   get: (id: number) =>
     apiGet<StudentClass>(`/classes/${id}`),
   create: (payload: StudentClassPayload) =>

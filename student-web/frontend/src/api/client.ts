@@ -79,6 +79,19 @@ export async function apiPut<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
+  const csrf = await ensureCsrf();
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'PATCH',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', [csrf.headerName]: csrf.token },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await toError(res);
+  if (res.status === 204 || res.headers.get('content-length') === '0') return null as T;
+  return res.json() as Promise<T>;
+}
+
 export async function apiDelete(path: string): Promise<void> {
   const csrf = await ensureCsrf();
   const res = await fetch(`${BASE}${path}`, {

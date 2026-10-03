@@ -1410,8 +1410,10 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    if (user?.role === 'STUDENT') {
+      loadProfile();
+    }
+  }, [user, loadProfile]);
 
   useEffect(() => {
     if (user && user.role !== 'STUDENT') {

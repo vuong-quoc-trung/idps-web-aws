@@ -32,6 +32,7 @@ export interface StudentDetail {
   gender?: Gender;
   status: StudentStatus;
   profileStatus?: string;
+  profileCompletedAt?: string;
   citizenId?: string;
   citizenIdIssueDate?: string;
   placeOfBirth?: string;

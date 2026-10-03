@@ -1,8 +1,5 @@
-/* ============================================================
-   AppHeader — top navigation bar
-   ============================================================ */
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import type { CurrentUser } from '../types/auth';
@@ -58,6 +55,7 @@ function ThemeToggleBtn() {
 export default function AppHeader() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -89,11 +87,13 @@ export default function AppHeader() {
 
   if (!user) return null;
 
+  const pathname = location.pathname;
+
   return (
     <header className="app-header" id="app-header">
       <div className="header-inner">
         {/* Logo */}
-        <a href="/" className="header-logo" id="header-logo" aria-label="Trang chủ">
+        <Link to="/" className="header-logo" id="header-logo" aria-label="Trang chủ">
           <div className="header-logo-icon">
             <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
               <rect width="32" height="32" rx="7" fill="url(#hg2)"/>
@@ -108,22 +108,64 @@ export default function AppHeader() {
             </svg>
           </div>
           <span className="header-logo-text">Student Web</span>
-        </a>
+        </Link>
 
         {/* Nav */}
         <nav className="header-nav" aria-label="Điều hướng chính">
-          <a href="/" className="nav-link" id="nav-home">Trang chủ</a>
+          <Link
+            to="/"
+            className={`nav-link ${pathname === '/' ? 'active' : ''}`}
+            id="nav-home"
+          >
+            Trang chủ
+          </Link>
+
           {(user.role === 'ADMIN' || user.role === 'STAFF') && (
             <>
-              <a href="/catalog" className="nav-link" id="nav-catalog">Danh mục học vụ</a>
-              <a href="/students" className="nav-link" id="nav-students">Sinh viên</a>
+              <Link
+                to="/catalog"
+                className={`nav-link ${pathname.startsWith('/catalog') ? 'active' : ''}`}
+                id="nav-catalog"
+              >
+                Danh mục học vụ
+              </Link>
+              <Link
+                to="/students"
+                className={`nav-link ${pathname.startsWith('/students') ? 'active' : ''}`}
+                id="nav-students"
+              >
+                Sinh viên
+              </Link>
             </>
           )}
+
           {user.role === 'STUDENT' && (
-            <a href="/profile" className="nav-link" id="nav-profile">Hồ sơ của tôi</a>
+            <>
+              <Link
+                to="/profile"
+                className={`nav-link ${pathname === '/profile' ? 'active' : ''}`}
+                id="nav-profile"
+              >
+                Hồ sơ của tôi
+              </Link>
+              <Link
+                to="/catalog"
+                className={`nav-link ${pathname.startsWith('/catalog') ? 'active' : ''}`}
+                id="nav-catalog"
+              >
+                Chương trình & Lớp
+              </Link>
+            </>
           )}
+
           {user.role === 'ADMIN' && (
-            <a href="/admin" className="nav-link" id="nav-admin">Quản trị</a>
+            <Link
+              to="/admin"
+              className={`nav-link ${pathname.startsWith('/admin') ? 'active' : ''}`}
+              id="nav-admin"
+            >
+              Quản trị
+            </Link>
           )}
         </nav>
 
@@ -171,22 +213,34 @@ export default function AppHeader() {
 
               <div className="dropdown-section">
                 {user.role === 'STUDENT' && (
-                  <a href="/profile" className="dropdown-item" id="menu-profile" role="menuitem">
+                  <Link
+                    to="/profile"
+                    className="dropdown-item"
+                    id="menu-profile"
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                  >
                     <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                       <circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
                       <path d="M1.5 12.5c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
                     </svg>
                     Hồ sơ cá nhân
-                  </a>
+                  </Link>
                 )}
                 {user.role === 'ADMIN' && (
-                  <a href="/admin" className="dropdown-item" id="menu-admin" role="menuitem">
+                  <Link
+                    to="/admin"
+                    className="dropdown-item"
+                    id="menu-admin"
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                  >
                     <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                       <path d="M7 1l1.5 3 3.5.5-2.5 2.5.5 3.5L7 9l-3 1.5.5-3.5L2 4.5 5.5 4z"
                         stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
                     </svg>
                     Quản trị hệ thống
-                  </a>
+                  </Link>
                 )}
               </div>
 
