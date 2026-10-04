@@ -81,6 +81,7 @@ class StudentApiTests {
     }
     Student student(String code) {
         var group = catalog(); var student = new Student();
+        student.setSchoolEmail(code.toLowerCase(java.util.Locale.ROOT).replace("-", "") + "@sv.pbl4.edu.vn");
         student.setStudentCode(code); student.setFullName("Student " + code); student.setUser(account(code, UserRole.STUDENT));
         student.setMajor(group.getMajor()); student.setStudentClass(group); student.setTrainingProgram(group.getProgram());
         student.setDateOfBirth(LocalDate.of(2006, 1, 1)); student.setGender(Gender.OTHER); student.setCitizenId("ID-" + code);
@@ -394,6 +395,44 @@ class StudentApiTests {
                 jsonBody("programId", otherProgram, "active", true), 409);
     }
 
+    @Test void conflictingLegacyEmailRejectsOnboardingWithoutCreatingAccount() throws Exception {
+        var existing = student("LEGACYMAIL");
+        existing.getStudentClass().setCohort(2199);
+        existing.setSchoolEmail("stu2199000001@sv.pbl4.edu.vn");
+        students.flush();
+        long userCount = users.count(), studentCount = students.count();
+        var session = login("admin-test");
+        send(post("/api/students"), session,
+                jsonBody("fullName", "New Student", "classId", existing.getStudentClass().getId()), 409);
+        assertThat(users.count()).isEqualTo(userCount);
+        assertThat(students.count()).isEqualTo(studentCount);
+    }
+
+    @Test void schoolEmailIsGeneratedReturnedAndCannotBeSuppliedByClients() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        var created = body(send(post("/api/students"), session,
+                jsonBody("fullName", "Same Name", "classId", c.getId()), 201)).get("student");
+        String code = created.get("studentCode").asString();
+        String email = code.replace("-", "").toLowerCase(java.util.Locale.ROOT) + "@sv.pbl4.edu.vn";
+        assertThat(created.get("schoolEmail").asString()).isEqualTo(email);
+        long id = created.get("id").asLong();
+        var second = body(send(post("/api/students"), session,
+                jsonBody("fullName", "Same Name", "classId", c.getId()), 201)).get("student");
+        assertThat(second.get("schoolEmail").asString()).isNotEqualTo(email);
+        send(post("/api/students"), session,
+                jsonBody("fullName", "Injected", "classId", c.getId(), "schoolEmail", "manual@example.com"), 400);
+        send(put("/api/students/" + id), session,
+                jsonBody("fullName", "Renamed", "classId", c.getId(), "status", "ACTIVE", "schoolEmail", "manual@example.com"), 400);
+        send(put("/api/students/" + id), session,
+                jsonBody("fullName", "Renamed", "classId", c.getId(), "status", "ACTIVE", "studentCode", "OTHER"), 400);
+        var updated = body(send(put("/api/students/" + id), session,
+                jsonBody("fullName", "Renamed", "classId", c.getId(), "status", "ACTIVE", "secondaryProgramId", c.getProgram().getId()), 200));
+        assertThat(updated.get("schoolEmail").asString()).isEqualTo(email);
+        assertThat(updated.get("studentCode").asString()).isEqualTo(code);
+        mvc.perform(get("/api/students/" + id).session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.schoolEmail").value(email));
+    }
+
     @Test void transferringStudentDerivesBothMajorAndProgramAndPutCannotClearThem() throws Exception {
         var s = student("TRANSFER"); var session = login("admin-test");
         long major = body(send(post("/api/majors"), session,
@@ -404,6 +443,8 @@ class StudentApiTests {
                 jsonBody("programId", program, "active", true), 201)).get("id").asLong();
         var updated = body(send(put("/api/students/" + s.getId()), session,
                 jsonBody("fullName", "Transferred", "classId", group, "status", "ACTIVE"), 200));
+        assertThat(updated.get("studentCode").asString()).isEqualTo("TRANSFER");
+        assertThat(updated.get("schoolEmail").asString()).isEqualTo("transfer@sv.pbl4.edu.vn");
         assertThat(updated.get("majorId").asLong()).isEqualTo(major);
         assertThat(updated.get("trainingProgramId").asLong()).isEqualTo(program);
         var repeated = body(send(put("/api/students/" + s.getId()), session,
@@ -548,6 +589,35 @@ class StudentApiTests {
                 jsonBody("degreeType", "ENGINEER", "cohort", 2024, "name", "Program", "majorId", c.getMajor().getId(),
                         "totalCredits", Integer.MAX_VALUE, "requiredCredits", Integer.MAX_VALUE,
                         "electiveCredits", Integer.MAX_VALUE, "active", true), 400);
+    }
+
+    @Test void programVariantsCoexistAndRoundTripWithoutAllowingDuplicateCodes() throws Exception {
+        var c = catalog(); var session = login("admin-test");
+        long majorId = c.getMajor().getId();
+        var regular = body(send(post("/api/training-programs"), session,
+                jsonBody("name", "Regular", "majorId", majorId, "cohort", 2020,
+                        "degreeType", "ENGINEER", "active", true), 201));
+        var clc = body(send(post("/api/training-programs"), session,
+                jsonBody("name", "CLC", "majorId", majorId, "cohort", 2020,
+                        "degreeType", "ENGINEER", "variantCode", " clc ", "active", true), 201));
+        assertThat(regular.get("code").asString()).isEqualTo("PRG-CS-2020-ENG");
+        assertThat(clc.get("code").asString()).isEqualTo("PRG-CS-2020-ENG-CLC");
+        long id = clc.get("id").asLong();
+        mvc.perform(get("/api/training-programs/" + id).session(session))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.variantCode").value("CLC"));
+        send(post("/api/training-programs"), session,
+                jsonBody("name", "Duplicate", "majorId", majorId, "cohort", 2020,
+                        "degreeType", "ENGINEER", "variantCode", "CLC", "active", true), 409);
+        send(put("/api/training-programs/" + id), session,
+                jsonBody("name", "Edited CLC", "majorId", majorId, "cohort", 2020,
+                        "degreeType", "ENGINEER", "variantCode", "CLC", "active", true), 200);
+        send(put("/api/training-programs/" + id), session,
+                jsonBody("name", "Collision", "majorId", majorId, "cohort", 2020,
+                        "degreeType", "ENGINEER", "active", true), 409);
+        for (String invalid : new String[]{"TOOLONG", "1CLC", "CLC-EN", "ĐT"})
+            send(post("/api/training-programs"), session,
+                    jsonBody("name", "Invalid", "majorId", majorId, "cohort", 2020,
+                            "degreeType", "ENGINEER", "variantCode", invalid, "active", true), 400);
     }
 
     @Test void catalogCodesRemainUniqueOnCreateAndUpdate() throws Exception {

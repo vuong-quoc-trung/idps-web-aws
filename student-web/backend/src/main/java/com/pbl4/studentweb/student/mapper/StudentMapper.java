@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class StudentMapper {
     public StudentSummary toSummary(Student s) {
         return new StudentSummary(s.getId(), s.getStudentCode(), s.getFullName(),
-                s.getMajor().getId(), s.getStudentClass().getId(), s.getProfileStatus(), s.getStatus());
+                s.getMajor().getId(), s.getStudentClass().getId(), s.getProfileStatus(), s.getStatus(), s.getSchoolEmail());
     }
 
     public com.pbl4.studentweb.student.dto.StudentDetail toDetail(Student s) {

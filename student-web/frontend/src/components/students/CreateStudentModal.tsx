@@ -13,14 +13,13 @@ import type { StudentClass } from '../../types/academic';
 const EMPTY: CreateStudentPayload = {
   fullName: '', dateOfBirth: '', gender: undefined,
   citizenId: '', classId: 0, secondaryProgramId: null,
-  schoolEmail: '', familyPhoneNumber: '',
+  familyPhoneNumber: '',
 };
 
 function validate(f: CreateStudentPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
   if (!f.fullName.trim()) e.fullName = 'Họ tên là bắt buộc';
   if (!f.classId) e.classId = 'Phải chọn lớp';
-  if (f.schoolEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.schoolEmail)) e.schoolEmail = 'Email không hợp lệ';
   if (f.dateOfBirth && !/^\d{4}-\d{2}-\d{2}$/.test(f.dateOfBirth)) e.dateOfBirth = 'Định dạng YYYY-MM-DD';
   return e;
 }
@@ -61,7 +60,6 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         dateOfBirth: form.dateOfBirth || undefined,
         gender: form.gender || undefined,
         citizenId: form.citizenId || undefined,
-        schoolEmail: form.schoolEmail || undefined,
         familyPhoneNumber: form.familyPhoneNumber || undefined,
         secondaryProgramId: form.secondaryProgramId || null,
       };
@@ -182,9 +180,7 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Email trường</label>
-            <input className={`form-input ${fv.schoolEmail ? 'invalid' : ''}`} placeholder="Vd: sv@school.edu.vn"
-              type="email" value={form.schoolEmail} onChange={e => setForm(f => ({ ...f, schoolEmail: e.target.value }))} disabled={submitting} />
-            {fv.schoolEmail && <p className="form-error-text">{fv.schoolEmail}</p>}
+            <p className="form-hint">Email trường được tự sinh từ mã sinh viên.</p>
           </div>
           <div className="form-group">
             <label className="form-label">SĐT gia đình</label>

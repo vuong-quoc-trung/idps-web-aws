@@ -11,5 +11,4 @@ public record CreateStudentRequest(
         @Size(max = 20) String citizenId,
         @Positive Long majorId, @NotNull @Positive Long classId,
         @Positive Long trainingProgramId, @Positive Long secondaryProgramId,
-        @Email @Size(max = 150) String schoolEmail,
         @Size(max = 20) String familyPhoneNumber) {}

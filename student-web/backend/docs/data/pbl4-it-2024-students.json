@@ -1,0 +1,265 @@
+{
+  "targetClassCode": "CLS-IT-2024-01",
+  "students": [
+    {
+      "sourceStudentCode": "102240124",
+      "fullName": "Trần Hoài An",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240125",
+      "fullName": "Lê Thị Ánh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240126",
+      "fullName": "Văn Gia Bảo",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240127",
+      "fullName": "Nguyễn Mạnh Cường",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240128",
+      "fullName": "Hoàng Văn Dũng",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240129",
+      "fullName": "Trần Trung Dũng",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240130",
+      "fullName": "Phan Thanh Duy",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240131",
+      "fullName": "Nguyễn Hữu Trần Đại",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240132",
+      "fullName": "Nguyễn Tiến Đạt",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240133",
+      "fullName": "Nguyễn Bá Giàu",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240134",
+      "fullName": "Lê Thị Hiền",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240135",
+      "fullName": "Nguyễn Hoàng Hiếu",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240136",
+      "fullName": "Nguyễn Tất Hoàng",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240137",
+      "fullName": "Nguyễn Doãn Hùng",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240139",
+      "fullName": "Võ Phi Nhật Huy",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240140",
+      "fullName": "Phạm Quốc Hưng",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240141",
+      "fullName": "Đinh Huỳnh Nguyên Khang",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240142",
+      "fullName": "Lê Nam Khánh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240143",
+      "fullName": "Nguyễn Đăng Khoa",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240144",
+      "fullName": "Phan Đăng Khôi",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240145",
+      "fullName": "Trần Kim Lanh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240146",
+      "fullName": "Mai Quang Linh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240147",
+      "fullName": "Trần Nguyễn Thành Long",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240148",
+      "fullName": "Trần Tấn Lộc",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240149",
+      "fullName": "Phan Thành Lương",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240150",
+      "fullName": "Phan Xuân Mạnh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240151",
+      "fullName": "Phạm Thanh Minh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240152",
+      "fullName": "Huỳnh Hiếu Nghĩa",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240153",
+      "fullName": "Hoàng Ngọc Nguyên",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240154",
+      "fullName": "Trần Thị Hạnh Nguyên",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240155",
+      "fullName": "Nguyễn Minh Nhật",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240156",
+      "fullName": "Đinh Khang Ninh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240157",
+      "fullName": "Lê Nhật Phong",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240158",
+      "fullName": "Trần Quang Phước",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240159",
+      "fullName": "Trần Ngọc Thiện Quang",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240161",
+      "fullName": "Võ Thanh Quân",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240162",
+      "fullName": "Trần Xuân Quý",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240164",
+      "fullName": "Lê Văn Tân",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240165",
+      "fullName": "Nguyễn Văn Thắng",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240166",
+      "fullName": "Phan Gia Thịnh",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240167",
+      "fullName": "Lê Viết Thương",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240168",
+      "fullName": "Lê Văn Tiến",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240169",
+      "fullName": "Nguyễn Thái Toàn",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240170",
+      "fullName": "Lê Minh Trí",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240171",
+      "fullName": "Võ Minh Triết",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240172",
+      "fullName": "Ngô Quốc Hoàng Trung",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240173",
+      "fullName": "Vương Quốc Trung",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240174",
+      "fullName": "Bùi Đức Tuấn",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240175",
+      "fullName": "Hồ Đức Việt",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240176",
+      "fullName": "Lê Khắc Việt",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240177",
+      "fullName": "Trần Lưu Hoàng Vũ",
+      "sourceClass": "24T_DT3"
+    },
+    {
+      "sourceStudentCode": "102240178",
+      "fullName": "Hoàng Như Ý",
+      "sourceClass": "24T_DT3"
+    }
+  ]
+}

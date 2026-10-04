@@ -36,6 +36,14 @@ class CodeGenerationTests {
         assertThatThrownBy(() -> codes.student(24)).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test void generatesSchoolEmailFromCodeOnly() {
+        assertThat(codes.schoolEmail(" STU-2024-000001 ")).isEqualTo("stu2024000001@sv.pbl4.edu.vn");
+        assertThat(codes.schoolEmail("STU-2024-000002")).isEqualTo("stu2024000002@sv.pbl4.edu.vn");
+        assertThat(codes.schoolEmail("STU-2025-000001")).isEqualTo("stu2025000001@sv.pbl4.edu.vn");
+        for (String invalid : new String[]{null, "", "---", "STU @bad"})
+            assertThatThrownBy(() -> codes.schoolEmail(invalid)).isInstanceOf(IllegalArgumentException.class);
+    }
+
     @Test void allocatesUniqueStudentCodesDuringConcurrentFirstUse() throws Exception {
         var start = new CountDownLatch(1);
         try (var pool = Executors.newFixedThreadPool(8)) {

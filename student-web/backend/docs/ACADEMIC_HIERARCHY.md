@@ -26,23 +26,23 @@ Không cần thêm collection `OneToMany` vào entity cha để tạo được q
 Ví dụ tối thiểu (thay ID bằng kết quả tạo thực tế):
 
 ```json
-{ "code": "K_CNTT", "name": "Khoa Công nghệ thông tin", "active": true }
+{ "shortCode": "IT", "name": "Khoa Công nghệ thông tin", "active": true }
 ```
 
 ```json
-{ "code": "CNTT", "name": "Công nghệ thông tin", "facultyId": 1, "active": true }
+{ "shortCode": "IT", "name": "Công nghệ thông tin", "facultyId": 1, "active": true }
 ```
 
 ```json
-{ "code": "CNTT2026", "name": "Chương trình CNTT 2026", "majorId": 1, "active": true }
+{ "name": "Chương trình CNTT 2026", "majorId": 1, "cohort": 2026, "degreeType": "ENGINEER", "active": true }
 ```
 
 ```json
-{ "code": "26T1", "name": "Lớp 26T1", "programId": 1, "active": true }
+{ "name": "Lớp 26T1", "programId": 1, "active": true }
 ```
 
 ```json
-{ "studentCode": "SV2026001", "fullName": "Nguyễn Văn An", "classId": 1 }
+{ "fullName": "Nguyễn Văn An", "classId": 1 }
 ```
 
 Response lớp vẫn có `majorId`, `programId`; chi tiết sinh viên vẫn có `majorId`, `classId`,
@@ -154,3 +154,6 @@ Database tạo mới bằng Hibernate có CHECK tương ứng trong entity.
 vượt tổng, và khi có đủ ba giá trị thì `requiredCredits + electiveCredits = totalCredits`.
 Các trường vẫn cho phép null để bổ sung sau. `programCode` và `majorCode` vẫn
 unique ở database và được kiểm tra trùng (sau trim) khi tạo/cập nhật qua API.
+
+Danh mục mẫu [Khoa Cơ khí](MECHANICAL_CATALOG.md) dùng mã custom và `variantCode`
+để phân biệt chương trình thường/CLC/HTDN/tài năng cùng ngành, khóa và loại bằng.

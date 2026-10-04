@@ -16,7 +16,7 @@ const DEGREE_OPTIONS: { value: DegreeType; label: string }[] = [
 
 const EMPTY: TrainingProgramPayload = {
   name: '', active: true, majorId: 0,
-  cohort: null, degreeType: null,
+  cohort: null, degreeType: null, variantCode: null,
   numberOfSemesters: null, totalCredits: null,
   requiredCredits: null, electiveCredits: null,
 };
@@ -26,6 +26,7 @@ function validate(f: TrainingProgramPayload): Partial<Record<string, string>> {
   if (!f.name.trim()) e.name = 'Tên chương trình là bắt buộc';
   if (!f.cohort || !Number.isInteger(f.cohort) || f.cohort < 1000 || f.cohort > 9999) e.cohort = 'Khóa phải là năm có 4 chữ số';
   if (!f.degreeType) e.degreeType = 'Phải chọn loại bằng';
+  if (f.variantCode?.trim() && !/^[A-Z][A-Z0-9]{0,5}$/i.test(f.variantCode.trim())) e.variantCode = 'Nhập 1–6 chữ cái hoặc số, bắt đầu bằng chữ';
   if (!f.majorId) e.majorId = 'Phải chọn ngành';
   if (f.numberOfSemesters != null && f.numberOfSemesters <= 0) e.numberOfSemesters = 'Số học kỳ phải > 0';
   if (f.totalCredits != null && f.totalCredits < 0) e.totalCredits = 'Tổng tín chỉ phải ≥ 0';
@@ -78,7 +79,7 @@ export default function ProgramTab() {
   function openEdit(item: TrainingProgram) {
     setForm({
       name: item.name, active: item.active, majorId: item.majorId,
-      cohort: item.cohort ?? null, degreeType: item.degreeType ?? null,
+      cohort: item.cohort ?? null, degreeType: item.degreeType ?? null, variantCode: item.variantCode ?? null,
       numberOfSemesters: item.numberOfSemesters ?? null, totalCredits: item.totalCredits ?? null,
       requiredCredits: item.requiredCredits ?? null, electiveCredits: item.electiveCredits ?? null,
     });
@@ -185,6 +186,16 @@ export default function ProgramTab() {
                 {DEGREE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
               {fv.degreeType && <p className="form-error-text">{fv.degreeType}</p>}
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Mã phân biệt chương trình</label>
+              <input className={`form-input ${fv.variantCode ? 'invalid' : ''}`} maxLength={6}
+                placeholder="CLC, HTDN, TALENT" value={form.variantCode ?? ''} disabled={submitting}
+                onChange={e => setForm(f => ({ ...f, variantCode: e.target.value.toUpperCase() || null }))} />
+              <p className="form-hint">Để trống với chương trình thường. Dùng để phân biệt các chương trình cùng ngành, khóa và loại bằng.</p>
+              {fv.variantCode && <p className="form-error-text">{fv.variantCode}</p>}
             </div>
           </div>
           {/* Row 3: cohort + numberOfSemesters */}

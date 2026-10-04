@@ -83,7 +83,7 @@ public class Student extends AuditedEntity {
     @JoinColumn(name = "secondary_program_id", nullable = true)
     private TrainingProgram secondaryProgram;
 
-    @Column(name = "school_email", length = 150, unique = true)
+    @Column(name = "school_email", length = 150, nullable = false, unique = true)
     private String schoolEmail;
 
     @Column(name = "personal_email", length = 150)

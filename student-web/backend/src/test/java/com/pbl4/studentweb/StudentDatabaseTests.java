@@ -62,7 +62,21 @@ class StudentDatabaseTests {
         p.setMajor(m); p.setCohort(2024); programs.save(p);
         StudentClass c = new StudentClass(); c.setClassCode("TEST_CLASS"); c.setCohort(2024); c.setMajor(m); c.setProgram(p); classes.save(c);
         return onboarding.create(new CreateStudentRequest("Test Student", LocalDate.of(2006, 1, 1),
-                Gender.OTHER, "TEST_CITIZEN", m.getId(), c.getId(), p.getId(), null, null, null));
+                Gender.OTHER, "TEST_CITIZEN", m.getId(), c.getId(), p.getId(), null, null));
+    }
+
+    @Test void schoolEmailIsRequiredAndUniqueAtDatabaseLevel() {
+        var result = create();
+        Long id = result.student().id();
+        String email = result.student().schoolEmail();
+        assertThat(email).isEqualTo(result.student().studentCode().replace("-", "").toLowerCase(java.util.Locale.ROOT) + "@sv.pbl4.edu.vn");
+        assertThatThrownBy(() -> jdbc.update("update students set school_email = null where id = ?", id))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        var c = classes.findAll().getFirst();
+        var second = onboarding.create(new CreateStudentRequest("Another Student", null, null, null,
+                null, c.getId(), null, null, null));
+        assertThatThrownBy(() -> jdbc.update("update students set school_email = ? where id = ?", email, second.student().id()))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
     }
 
     @Test void generatesAllTablesAndForeignKeys() {
@@ -133,7 +147,7 @@ class StudentDatabaseTests {
         Major other = new Major(); other.setMajorCode("OTHER"); other.setMajorName("Other"); other.setFaculty(faculty); majors.save(other);
         var c = classes.findAll().getFirst();
         assertThatThrownBy(() -> onboarding.create(new CreateStudentRequest("Test Student", null,
-                null, null, other.getId(), c.getId(), null, null, null, null))).isInstanceOf(IllegalArgumentException.class);
+                null, null, other.getId(), c.getId(), null, null, null))).isInstanceOf(IllegalArgumentException.class);
         assertThat(users.count()).isEqualTo(1);
     }
 

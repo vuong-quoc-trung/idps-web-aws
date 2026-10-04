@@ -33,6 +33,7 @@ export interface TrainingProgram {
   majorName?: string;
   cohort?: number;
   degreeType?: DegreeType | null;
+  variantCode?: string | null;
   numberOfSemesters?: number | null;
   totalCredits?: number | null;
   requiredCredits?: number | null;
@@ -72,6 +73,7 @@ export interface TrainingProgramPayload {
   majorId: number;
   cohort?: number | null;
   degreeType?: DegreeType | null;
+  variantCode?: string | null;
   numberOfSemesters?: number | null;
   totalCredits?: number | null;
   requiredCredits?: number | null;

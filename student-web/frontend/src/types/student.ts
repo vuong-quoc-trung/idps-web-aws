@@ -91,7 +91,6 @@ export interface CreateStudentPayload {
   citizenId?: string;
   classId: number;
   secondaryProgramId?: number | null;
-  schoolEmail?: string;
   familyPhoneNumber?: string;
 }
 
@@ -109,7 +108,6 @@ export interface UpdateStudentPayload {
   citizenId?: string | null;
   classId: number;
   secondaryProgramId?: number | null;
-  schoolEmail?: string | null;
   familyPhoneNumber?: string | null;
   bankAccountNumber?: string | null;
   bankName?: string | null;

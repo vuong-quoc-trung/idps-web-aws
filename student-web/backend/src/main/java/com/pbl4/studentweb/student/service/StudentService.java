@@ -63,10 +63,8 @@ public class StudentService {
         var major = primary.getMajor();
         var secondary = r.secondaryProgramId() == null ? null : program(r.secondaryProgramId(), s.getSecondaryProgram());
         String citizen = optional(r.citizenId());
-        String email = optional(r.schoolEmail());
-        if ((citizen != null && students.existsByCitizenIdAndIdNot(citizen, id))
-                || (email != null && students.existsBySchoolEmailAndIdNot(email, id)))
-            throw new IllegalStateException("Citizen ID or school email already exists");
+        if (citizen != null && students.existsByCitizenIdAndIdNot(citizen, id))
+            throw new IllegalStateException("Citizen ID already exists");
         s.setFullName(r.fullName().trim());
         s.setDateOfBirth(r.dateOfBirth());
         s.setGender(r.gender());
@@ -75,7 +73,6 @@ public class StudentService {
         s.setStudentClass(studentClass);
         s.setTrainingProgram(primary);
         s.setSecondaryProgram(secondary);
-        s.setSchoolEmail(email);
         s.setFamilyPhoneNumber(optional(r.familyPhoneNumber()));
         s.setBankAccountNumber(optional(r.bankAccountNumber()));
         s.setBankName(optional(r.bankName()));

@@ -107,7 +107,7 @@ Tạo sinh viên:
   "fullName": "Sinh viên mẫu",
   "dateOfBirth": "2006-01-01", "gender": "OTHER", "citizenId": "TEST001",
   "classId": 1, "secondaryProgramId": null,
-  "schoolEmail": "sv001@example.invalid", "familyPhoneNumber": "0900000000"
+  "familyPhoneNumber": "0900000000"
 }
 ```
 
@@ -195,3 +195,32 @@ ADMIN có:
 Lỗi nghiệp vụ/validation có dạng `{ "status": 400, "message": "Invalid request data" }`;
 không trả nội dung input bị từ chối, SQL hoặc stack trace. Kiểm thử chạy trên H2;
 chưa xác minh runtime trên PostgreSQL/Nginx của máy ảo.
+
+### Phân biệt chương trình cùng ngành, khóa, bằng
+
+POST/PUT `/api/training-programs` nhận thêm `variantCode` tùy chọn (1–6 chữ/số
+ASCII, bắt đầu bằng chữ; trim và uppercase). Response trả cùng field.
+Ví dụ `variantCode: "CLC"` tạo mã `PRG-MTE-2020-ENG-CLC`.
+Null/chuỗi trắng giữ định dạng không hậu tố. PUT phải gửi lại `variantCode`
+để giữ biến thể; trùng toàn bộ mã trả 409. Không nhận mã CTĐT gốc qua field `code`.
+Xem [MECHANICAL_CATALOG.md](MECHANICAL_CATALOG.md) cho dữ liệu mẫu Khoa Cơ khí.
+
+### Email trường của sinh viên
+
+`schoolEmail` chỉ có trong response (danh sách, chi tiết và `student` trong kết quả tạo).
+POST/PUT Student không nhận `schoolEmail` hoặc `studentCode`; gửi các field này trả 400.
+Backend cấp mã sinh viên trước, sau đó trim mã, bỏ toàn bộ `-`, lowercase bằng
+`Locale.ROOT` và nối `@sv.pbl4.edu.vn`. Ví dụ `STU-2024-000001` →
+`stu2024000001@sv.pbl4.edu.vn`. Không dùng họ tên hoặc quan hệ học thuật để tạo email.
+
+Email được kiểm tra tồn tại trước khi tạo tài khoản; UNIQUE của database bảo vệ
+cả khi có request đồng thời. Trùng trả 409 và rollback tài khoản/sinh viên.
+Tên đăng nhập, mã sinh viên và email trường không được tạo lại khi cập nhật,
+chuyển lớp/ngành/chương trình chính hoặc phụ. Email cá nhân vẫn sửa như trước.
+
+Dừng backend, chạy [012_student_school_email.sql](sql/012_student_school_email.sql)
+trước khi khởi động phiên bản mới trên database cũ. Script chỉ điền email trống,
+giữ email đã có và mã sinh viên; dữ liệu cũ chưa đúng định dạng không tự đổi.
+Script kiểm tra trùng trước khi cập nhật, thêm NOT NULL và UNIQUE nếu chưa có;
+có thể chạy lại. Mã cũ không hợp lệ hoặc xung đột thì rollback để đối chiếu.
+Việc sinh địa chỉ email không tạo mailbox trên dịch vụ email.

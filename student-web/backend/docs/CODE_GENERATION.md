@@ -12,6 +12,7 @@ Response giữ `code`/`studentCode`; khoa/ngành trả thêm `shortCode`.
 | TrainingProgram | PRG-IT-2024-ENG | majorId, cohort, degreeType |
 | StudentClass | CLS-IT-2024-01 | programId |
 | Student | STU-2024-000001 | classId |
+| School Email | stu2024000001@sv.pbl4.edu.vn | studentCode |
 
 `shortCode` trim và uppercase bằng Locale.ROOT, 1–10 ký tự ASCII chữ/số,
 bắt đầu bằng chữ. Không nhận prefix FAC-/MAJ-. `cohort` là năm 4 chữ số.
@@ -63,7 +64,7 @@ Không reset counter khi xóa dữ liệu. Không dùng mã làm PK hay suy lu�
 
 Mã sinh viên và username không đổi khi chuyển lớp/ngành. Mã lớp giữ nguyên khi
 sửa tên/năm học; đổi chương trình hợp lệ thì backend cấp mã lớp mới. Mã chương
-trình được tính lại từ dữ liệu; tổ hợp ngành + khóa + loại bằng bị trùng trả 409.
+trình được tính lại từ dữ liệu; tổ hợp ngành + khóa + loại bằng + variantCode bị trùng trả 409.
 Không đổi shortCode ngành đã có chương trình/lớp/sinh viên. Không đổi cohort
 đã có của chương trình đang được sử dụng để tránh làm lệch cohort của lớp.
 Các quy tắc kiểm tra quan hệ, tín chỉ và phân quyền trước đây vẫn được giữ.
@@ -81,3 +82,28 @@ Không chuyển đổi studentCode cũ: giữ nguyên định danh/tên đăng n
 
 Frontend đã chuyển form tương ứng; với dữ liệu cũ hãy bổ sung từ khoa -> ngành
 -> chương trình -> lớp trước khi tạo sinh viên.
+
+## Biến thể chương trình và dữ liệu Khoa Cơ khí
+
+`variantCode` tùy chọn, trim/uppercase, 1–6 chữ/số ASCII bắt đầu bằng chữ.
+Null hoặc chuỗi trắng giữ mã cũ; có giá trị thì thêm `-{variantCode}` sau loại bằng.
+Ví dụ `PRG-MTE-2020-ENG` và `PRG-MTE-2020-ENG-CLC` cùng tồn tại.
+Không suy biến thể từ tên. POST/PUT nhận và response trả `variantCode`;
+PUT là thay thế đầy đủ, nên phải gửi lại biến thể khi sửa chương trình đặc biệt.
+Độ dài tối đa của mã là 30 ký tự, vừa cột hiện tại.
+
+Chạy [007_program_variants.sql](sql/007_program_variants.sql) trước khi dùng backend mới.
+Xem [danh mục Khoa Cơ khí](MECHANICAL_CATALOG.md) để đối chiếu 3 ngành, 55 dòng nguồn,
+21 chương trình đã rõ loại bằng và 34 dòng chờ xác nhận.
+
+Danh mục bổ sung: [CNTT, Giao thông/Năng lượng và Nhiệt](ADDITIONAL_CATALOGS.md),
+seed 009–011 gồm 6 ngành và 66 CTĐT đã rõ bằng; 120 dòng nguồn chờ xác nhận.
+
+## School Email
+
+`CodeGenerationService.schoolEmail(studentCode)` trim, bỏ dấu `-`, lowercase với
+`Locale.ROOT`, nối `@sv.pbl4.edu.vn`. Email chỉ sinh lúc onboarding sau khi cấp mã.
+Không có trong request tạo/cập nhật, nhưng có trong response. Mã và email giữ
+nguyên khi đổi tên hoặc quan hệ học thuật. Database bắt buộc NOT NULL, UNIQUE.
+Chạy migration [012](sql/012_student_school_email.sql) cho database đã có dữ liệu;
+email cũ không trống được giữ nguyên, chỉ backfill email thiếu từ mã sinh viên.

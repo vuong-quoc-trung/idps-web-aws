@@ -71,10 +71,12 @@ public class TrainingProgramService {
         if (e.getId() != null && e.getCohort() != null && !java.util.Objects.equals(e.getCohort(), r.cohort())
                 && (classes.existsByProgramId(e.getId()) || students.existsByTrainingProgramIdOrSecondaryProgramId(e.getId(), e.getId())))
             throw new IllegalStateException("Cannot change cohort of a program in use");
-        String code = codes.program(major, r.cohort(), r.degreeType());
+        String variant = codes.normalizeProgramVariant(r.variantCode());
+        String code = codes.program(major, r.cohort(), r.degreeType(), variant);
         if (e.getId() == null ? repository.existsByProgramCode(code) : repository.existsByProgramCodeAndIdNot(code, e.getId()))
             throw new IllegalStateException("Program code already exists");
         e.setProgramCode(code);
+        e.setVariantCode(variant);
         e.setMajor(major);
         e.setCohort(r.cohort());
         e.setDegreeType(r.degreeType());

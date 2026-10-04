@@ -37,6 +37,9 @@ public class StudentOnboardingService {
         var major = program.getMajor();
         var secondary = r.secondaryProgramId() == null ? null : program(r.secondaryProgramId());
         String code = codes.student(studentClass.getCohort());
+        String schoolEmail = codes.schoolEmail(code);
+        if (students.existsBySchoolEmail(schoolEmail))
+            throw new IllegalStateException("School email already exists");
         User user = new User();
         user.setUsername(code);
         user.setRole(UserRole.STUDENT);
@@ -53,7 +56,7 @@ public class StudentOnboardingService {
         s.setStudentClass(studentClass);
         s.setTrainingProgram(program);
         s.setSecondaryProgram(secondary);
-        s.setSchoolEmail(blankToNull(r.schoolEmail()));
+        s.setSchoolEmail(schoolEmail);
         s.setFamilyPhoneNumber(blankToNull(r.familyPhoneNumber()));
         return new StudentOnboardingResult(mapper.toSummary(students.saveAndFlush(s)), token);
     }

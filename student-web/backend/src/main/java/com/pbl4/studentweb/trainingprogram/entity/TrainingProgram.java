@@ -33,6 +33,9 @@ public class TrainingProgram extends BaseEntity {
     @JoinColumn(name = "major_id", nullable = false)
     private Major major;
 
+    @Column(name = "variant_code", length = 6)
+    private String variantCode;
+
     @Column(name = "cohort")
     private Integer cohort;
 

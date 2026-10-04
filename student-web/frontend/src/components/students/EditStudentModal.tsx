@@ -24,7 +24,6 @@ function toForm(s: StudentDetail): UpdateStudentPayload {
     citizenId: s.citizenId ?? '',
     classId: s.classId ?? 0,
     secondaryProgramId: s.secondaryProgramId ?? null,
-    schoolEmail: s.schoolEmail ?? '',
     familyPhoneNumber: s.familyPhoneNumber ?? '',
     bankAccountNumber: s.bankAccountNumber ?? '',
     bankName: s.bankName ?? '',
@@ -37,7 +36,6 @@ function validate(f: UpdateStudentPayload): Partial<Record<string, string>> {
   if (!f.fullName.trim()) e.fullName = 'Họ tên là bắt buộc';
   if (!f.classId) e.classId = 'Phải chọn lớp';
   if (!f.status) e.status = 'Trạng thái là bắt buộc';
-  if (f.schoolEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.schoolEmail)) e.schoolEmail = 'Email không hợp lệ';
   if (f.dateOfBirth && !/^\d{4}-\d{2}-\d{2}$/.test(f.dateOfBirth)) e.dateOfBirth = 'Định dạng YYYY-MM-DD';
   return e;
 }
@@ -79,7 +77,6 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         dateOfBirth: form.dateOfBirth || null,
         gender: form.gender || null,
         citizenId: form.citizenId || null,
-        schoolEmail: form.schoolEmail || null,
         familyPhoneNumber: form.familyPhoneNumber || null,
         bankAccountNumber: form.bankAccountNumber || null,
         bankName: form.bankName || null,
@@ -178,9 +175,7 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Email trường</label>
-            <input className={`form-input ${fv.schoolEmail ? 'invalid' : ''}`} type="email"
-              value={f.schoolEmail ?? ''} onChange={e => set('schoolEmail', e.target.value)} disabled={submitting} />
-            {fv.schoolEmail && <p className="form-error-text">{fv.schoolEmail}</p>}
+            <p className="form-hint">{student?.schoolEmail ?? '—'}</p>
           </div>
           <div className="form-group">
             <label className="form-label">SĐT gia đình</label>

@@ -43,3 +43,6 @@ Chạy lại không thêm khoa trùng hoặc lặp phần mô tả tiếng Anh.
 `docs/data/pbl4-faculties.json` chứa payload POST /api/faculties từng khoa;
 chỉ dùng cách này cho khoa chưa tồn tại (API tạo trùng trả 409).
 Không cần chạy cả seed SQL và POST lại cùng danh sách.
+
+Danh mục bổ sung: [CNTT, Giao thông/Năng lượng và Nhiệt](ADDITIONAL_CATALOGS.md),
+seed 009–011 gồm 6 ngành và 66 CTĐT đã rõ bằng; 120 dòng nguồn chờ xác nhận.
