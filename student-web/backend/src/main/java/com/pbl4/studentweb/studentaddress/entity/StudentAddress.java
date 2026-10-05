@@ -24,6 +24,10 @@ public class StudentAddress extends AuditedEntity {
     @Column(name = "address_line", length = 255)
     private String addressLine;
 
+    @org.hibernate.annotations.ColumnDefault("'VN'")
+    @Column(name = "country_code", length = 2, nullable = false)
+    private String countryCode = "VN";
+
     @Column(name = "province_city", length = 100)
     private String provinceCity;
 

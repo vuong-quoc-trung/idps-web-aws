@@ -69,7 +69,7 @@ public class EmergencyContactService {
     private void apply(EmergencyContact e, EmergencyContactRequest r) {
         e.setFullName(optional(r.fullName()));
         e.setRelationship(optional(r.relationship()));
-        e.setPhoneNumber(optional(r.phoneNumber()));
+        e.setPhoneNumber(com.pbl4.studentweb.common.validation.ContactValues.phone(r.phoneNumber()));
         e.setAddress(optional(r.address()));
         e.setPriority(r.priority());
     }

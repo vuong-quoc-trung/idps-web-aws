@@ -68,7 +68,7 @@ public class PostGraduationContactService {
     }
     private void apply(PostGraduationContact e, PostGraduationContactRequest r) {
         e.setFullName(optional(r.fullName()));
-        e.setPhoneNumber(optional(r.phoneNumber()));
+        e.setPhoneNumber(com.pbl4.studentweb.common.validation.ContactValues.phone(r.phoneNumber()));
         e.setEmail(optional(r.email()));
         e.setAddress(optional(r.address()));
     }

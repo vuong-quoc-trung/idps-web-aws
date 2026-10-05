@@ -33,6 +33,8 @@ import type {
   PostGradContactPayload,
 } from '../types/student';
 import './ProfilePage.css';
+import { AddressLocationFields, countryLabel, CatalogSelect, CountrySelect, ProvinceField, useProfileOptions } from '../components/profile/ProfileFields';
+import { validPhone, validEmail, PHONE_ERROR, EMAIL_ERROR } from '../utils/contactValidation';
 
 const GENDER_LABELS: Record<string, string> = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 const STATUS_LABELS: Record<string, string> = {
@@ -344,6 +346,7 @@ function AddressTab({ onModified }: { onModified?: () => void }) {
                 {addr.current && <span style={{ marginLeft: 4, color: 'var(--text-success)' }}>• Hiện tại</span>}
               </span>
               {addr.addressLine && <div className="profile-sub-card-title">{addr.addressLine}</div>}
+              <div className="profile-sub-card-row"><span className="profile-sub-card-label">Quốc gia:</span><span>{countryLabel(addr.countryCode)}</span></div>
               {addr.provinceCity && (
                 <div className="profile-sub-card-row">
                   <span className="profile-sub-card-label">Tỉnh/TP:</span>
@@ -402,7 +405,7 @@ function AddressModal({ item, open, onClose, onSaved }:
   useEffect(() => {
     if (item) {
       setForm({
-        addressType: item.addressType,
+        addressType: item.addressType, countryCode: item.countryCode ?? 'VN',
         addressLine: item.addressLine ?? '',
         provinceCity: item.provinceCity ?? '',
         wardCommune: item.wardCommune ?? '',
@@ -410,7 +413,7 @@ function AddressModal({ item, open, onClose, onSaved }:
         current: item.current,
       });
     } else {
-      setForm({ addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
+      setForm({ countryCode: 'VN', addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
     }
     setErr(null);
   }, [item, open]);
@@ -455,23 +458,10 @@ function AddressModal({ item, open, onClose, onSaved }:
           </select>
         </div>
         <div className="profile-form-group">
-          <label className="profile-form-label">Số nhà, đường, phường/xã</label>
-          <input className="profile-form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} placeholder="VD: 123 Nguyễn Văn A, Phường 1"/>
+          <label className="profile-form-label">Số nhà, đường</label>
+          <input className="profile-form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} placeholder="VD: 123 Nguyễn Văn A"/>
         </div>
-        <div className="profile-form-row">
-          <div className="profile-form-group">
-            <label className="profile-form-label">Tỉnh / Thành phố</label>
-            <input className="profile-form-input" value={form.provinceCity ?? ''} onChange={e => setForm(f => ({ ...f, provinceCity: e.target.value }))}/>
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Xã / Phường</label>
-            <input className="profile-form-input" value={form.wardCommune ?? ''} onChange={e => setForm(f => ({ ...f, wardCommune: e.target.value }))}/>
-          </div>
-        </div>
-        <div className="profile-form-group">
-          <label className="profile-form-label">Quan hệ với nơi ở</label>
-          <input className="profile-form-input" placeholder="VD: Chủ hộ, Thuê nhà..." value={form.residenceRelation ?? ''} onChange={e => setForm(f => ({ ...f, residenceRelation: e.target.value }))}/>
-        </div>
+        <AddressLocationFields form={form} onChange={setForm} />
         <label className="profile-toggle-row">
           <input type="checkbox" className="profile-checkbox" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))}/>
           <span className="profile-toggle-label">Đây là địa chỉ hiện tại đang cư trú</span>
@@ -617,6 +607,7 @@ function FamilyModal({ item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
     setSubmitting(true); setErr(null);
     try {
       const payload = {
@@ -823,6 +814,7 @@ function EmergencyModal({ item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
     if (!form.fullName.trim()) { setErr('Họ tên là bắt buộc'); return; }
     if (!form.phoneNumber.trim()) { setErr('Số điện thoại là bắt buộc'); return; }
     if (!form.priority || form.priority < 1) { setErr('Thứ tự ưu tiên phải ≥ 1'); return; }
@@ -1018,6 +1010,8 @@ function PostGradModal({ item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validEmail(form.email)) { setErr(EMAIL_ERROR); return; }
     setSubmitting(true); setErr(null);
     try {
       const payload = {
@@ -1087,6 +1081,7 @@ function PersonalTab({
   student: StudentDetail;
   onUpdated: (s: StudentDetail, comp?: CompletionStatus) => void;
 }) {
+  const { options, error: catalogError, retry: retryCatalog } = useProfileOptions();
   const [form, setForm] = useState({
     personalEmail: student.personalEmail ?? '',
     phoneNumber: student.phoneNumber ?? '',
@@ -1096,6 +1091,8 @@ function PersonalTab({
     oldPlaceOfBirth: student.oldPlaceOfBirth ?? '',
     ethnicity: student.ethnicity ?? '',
     nationality: student.nationality ?? 'Việt Nam',
+      birthCountryCode: student.birthCountryCode ?? 'VN',
+      originCountryCode: student.originCountryCode ?? 'VN',
     religion: student.religion ?? '',
     citizenIdIssueDate: student.citizenIdIssueDate ?? '',
     healthInsuranceNumber: student.healthInsuranceNumber ?? '',
@@ -1116,6 +1113,8 @@ function PersonalTab({
       oldPlaceOfBirth: student.oldPlaceOfBirth ?? '',
       ethnicity: student.ethnicity ?? '',
       nationality: student.nationality ?? 'Việt Nam',
+      birthCountryCode: student.birthCountryCode ?? 'VN',
+      originCountryCode: student.originCountryCode ?? 'VN',
       religion: student.religion ?? '',
       citizenIdIssueDate: student.citizenIdIssueDate ?? '',
       healthInsuranceNumber: student.healthInsuranceNumber ?? '',
@@ -1134,6 +1133,8 @@ function PersonalTab({
       oldPlaceOfBirth: student.oldPlaceOfBirth ?? '',
       ethnicity: student.ethnicity ?? '',
       nationality: student.nationality ?? 'Việt Nam',
+      birthCountryCode: student.birthCountryCode ?? 'VN',
+      originCountryCode: student.originCountryCode ?? 'VN',
       religion: student.religion ?? '',
       citizenIdIssueDate: student.citizenIdIssueDate ?? '',
       healthInsuranceNumber: student.healthInsuranceNumber ?? '',
@@ -1144,10 +1145,14 @@ function PersonalTab({
   }
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validEmail(form.personalEmail)) { setErr(EMAIL_ERROR); return; }
     setSubmitting(true); setErr(null); setSuccess(false);
     try {
       const payload: UpdateStudentProfilePayload = {
         avatarUrl: form.avatarUrl.trim() || null,
+        birthCountryCode: form.birthCountryCode,
+        originCountryCode: form.originCountryCode,
         placeOfBirth: form.placeOfBirth.trim() || null,
         oldPlaceOfBirth: form.oldPlaceOfBirth.trim() || null,
         ethnicity: form.ethnicity.trim() || null,
@@ -1240,29 +1245,26 @@ function PersonalTab({
             Nơi sinh, dân tộc, tôn giáo
           </span>
         </div>
+        {catalogError && <div role="alert">{catalogError} <button type="button" onClick={retryCatalog}>Thử lại</button></div>}
         <div className="profile-form-row">
-          <div className="profile-form-group">
-            <label className="profile-form-label">Nơi sinh <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" placeholder="VD: Đà Nẵng, Quảng Nam..." value={form.placeOfBirth} onChange={e => setForm(f => ({ ...f, placeOfBirth: e.target.value }))}/>
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Quê quán (nơi sinh trước đây)</label>
-            <input className="profile-form-input" placeholder="VD: Tam Kỳ, Quảng Nam..." value={form.oldPlaceOfBirth} onChange={e => setForm(f => ({ ...f, oldPlaceOfBirth: e.target.value }))}/>
-          </div>
+          <CountrySelect label="Quốc gia nơi sinh" value={form.birthCountryCode} countries={options?.countries ?? []}
+            onChange={birthCountryCode => setForm(f => ({ ...f, birthCountryCode, placeOfBirth: '' }))} />
+          <ProvinceField label="Nơi sinh *" value={form.placeOfBirth} countryCode={form.birthCountryCode} options={options}
+            onChange={placeOfBirth => setForm(f => ({ ...f, placeOfBirth }))} />
+        </div>
+        <div className="profile-form-row">
+          <CountrySelect label="Quốc gia quê quán" value={form.originCountryCode} countries={options?.countries ?? []}
+            onChange={originCountryCode => setForm(f => ({ ...f, originCountryCode, oldPlaceOfBirth: '' }))} />
+          <ProvinceField label="Quê quán / nơi sinh trước đây" value={form.oldPlaceOfBirth} countryCode={form.originCountryCode} options={options} historical
+            onChange={oldPlaceOfBirth => setForm(f => ({ ...f, oldPlaceOfBirth }))} />
         </div>
         <div className="profile-form-row" style={{ marginTop: 'var(--space-3)' }}>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Dân tộc <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" placeholder="VD: Kinh, Tày, Nùng..." value={form.ethnicity} onChange={e => setForm(f => ({ ...f, ethnicity: e.target.value }))}/>
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Quốc tịch <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" placeholder="VD: Việt Nam" value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}/>
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">Tôn giáo</label>
-            <input className="profile-form-input" placeholder="VD: Không, Phật giáo, Công giáo..." value={form.religion} onChange={e => setForm(f => ({ ...f, religion: e.target.value }))}/>
-          </div>
+          <CatalogSelect label="Dân tộc *" value={form.ethnicity} options={options?.ethnicities ?? []} disabled={!options}
+            onChange={ethnicity => setForm(f => ({ ...f, ethnicity }))} />
+          <CatalogSelect label="Quốc tịch *" value={form.nationality} options={options?.countries.map(c => c.name) ?? []} disabled={!options}
+            onChange={nationality => setForm(f => ({ ...f, nationality }))} />
+          <CatalogSelect label="Tôn giáo" value={form.religion} options={options?.religions ?? []} disabled={!options}
+            onChange={religion => setForm(f => ({ ...f, religion }))} />
         </div>
       </div>
 
@@ -1370,6 +1372,7 @@ function OverviewTab({ student }: { student: StudentDetail }) {
           </span>
         </div>
         <div className="profile-info-grid">
+          <InfoItem label="Quốc gia nơi sinh" value={countryLabel(student.birthCountryCode)}/>
           <InfoItem label="Nơi sinh" value={student.placeOfBirth}/>
           <InfoItem label="Quê quán" value={student.oldPlaceOfBirth}/>
           <InfoItem label="Dân tộc" value={student.ethnicity}/>

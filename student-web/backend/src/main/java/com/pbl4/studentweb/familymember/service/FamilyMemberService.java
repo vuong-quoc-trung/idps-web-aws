@@ -72,6 +72,6 @@ public class FamilyMemberService {
         e.setDateOfBirth(r.dateOfBirth());
         e.setHasCollegeDegree(r.hasCollegeDegree());
         e.setUnavailable(r.unavailable());
-        e.setPhoneNumber(optional(r.phoneNumber()));
+        e.setPhoneNumber(com.pbl4.studentweb.common.validation.ContactValues.phone(r.phoneNumber()));
     }
 }

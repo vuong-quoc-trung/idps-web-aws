@@ -1,3 +1,5 @@
+import { validPhone, validEmail, PHONE_ERROR, EMAIL_ERROR } from '../../utils/contactValidation';
+import { AddressLocationFields, countryLabel } from '../../components/profile/ProfileFields';
 /**
  * StudentDetailPage — xem chi tiết sinh viên, completion status,
  * và quản lý sub-resources: địa chỉ, nhân thân, liên hệ khẩn cấp, liên hệ sau TN
@@ -298,6 +300,7 @@ export default function StudentDetailPage() {
             <div key={addr.id} className="sub-card">
               <div className="sub-card-title">{addr.addressType === 'CURRENT' ? '🏠 Thường trú' : addr.addressType === 'PERMANENT' ? '🏡 Hộ khẩu' : '🏘 Gia đình'}</div>
               <div className="sub-card-row"><span className="sub-card-label">Địa chỉ:</span><span>{addr.addressLine ?? '—'}</span></div>
+              <div className="sub-card-row"><span className="sub-card-label">Quốc gia:</span><span>{countryLabel(addr.countryCode)}</span></div>
               <div className="sub-card-row"><span className="sub-card-label">Tỉnh/TP:</span><span>{addr.provinceCity ?? '—'}</span></div>
               <div className="sub-card-row"><span className="sub-card-label">Xã/Phường:</span><span>{addr.wardCommune ?? '—'}</span></div>
               {addr.residenceRelation && <div className="sub-card-row"><span className="sub-card-label">Quan hệ:</span><span>{addr.residenceRelation}</span></div>}
@@ -439,8 +442,8 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (item) setForm({ addressType: item.addressType, addressLine: item.addressLine ?? '', provinceCity: item.provinceCity ?? '', wardCommune: item.wardCommune ?? '', residenceRelation: item.residenceRelation ?? '', current: item.current });
-    else setForm({ addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
+    if (item) setForm({ countryCode: item.countryCode ?? 'VN', addressType: item.addressType, addressLine: item.addressLine ?? '', provinceCity: item.provinceCity ?? '', wardCommune: item.wardCommune ?? '', residenceRelation: item.residenceRelation ?? '', current: item.current });
+    else setForm({ countryCode: 'VN', addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
     setErr(null);
   }, [item, open]);
 
@@ -470,23 +473,10 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
           </select>
         </div>
         <div className="form-group">
-          <label className="form-label">Số nhà, đường, phường/xã</label>
+          <label className="form-label">Số nhà, đường</label>
           <input className="form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} />
         </div>
-        <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">Tỉnh/Thành phố</label>
-            <input className="form-input" value={form.provinceCity ?? ''} onChange={e => setForm(f => ({ ...f, provinceCity: e.target.value }))} />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Xã/Phường</label>
-            <input className="form-input" value={form.wardCommune ?? ''} onChange={e => setForm(f => ({ ...f, wardCommune: e.target.value }))} />
-          </div>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Quan hệ với nơi ở</label>
-          <input className="form-input" placeholder="Vd: Chủ hộ, Thuê nhà…" value={form.residenceRelation ?? ''} onChange={e => setForm(f => ({ ...f, residenceRelation: e.target.value }))} />
-        </div>
+        <AddressLocationFields form={form} onChange={setForm} />
         <label className="toggle-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <input type="checkbox" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))} />
           <span className="form-label" style={{ margin: 0 }}>Đây là địa chỉ hiện tại</span>
@@ -509,6 +499,7 @@ function FamilyModal({ studentId, item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
     setSubmitting(true); setErr(null);
     try {
       const payload = { ...form, fullName: form.fullName || undefined, dateOfBirth: form.dateOfBirth || undefined, phoneNumber: form.phoneNumber || undefined };
@@ -579,6 +570,7 @@ function EmergencyModal({ studentId, item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
     if (!form.fullName.trim()) { setErr('Họ tên là bắt buộc'); return; }
     if (!form.phoneNumber.trim()) { setErr('Số điện thoại là bắt buộc'); return; }
     if (!form.priority || form.priority < 1) { setErr('Thứ tự ưu tiên phải ≥ 1'); return; }
@@ -641,6 +633,8 @@ function PostGradModal({ studentId, item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
+    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validEmail(form.email)) { setErr(EMAIL_ERROR); return; }
     setSubmitting(true); setErr(null);
     try {
       const payload = { fullName: form.fullName || undefined, phoneNumber: form.phoneNumber || undefined, email: form.email || undefined, address: form.address || undefined };

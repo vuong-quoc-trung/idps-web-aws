@@ -73,7 +73,7 @@ public class StudentService {
         s.setStudentClass(studentClass);
         s.setTrainingProgram(primary);
         s.setSecondaryProgram(secondary);
-        s.setFamilyPhoneNumber(optional(r.familyPhoneNumber()));
+        s.setFamilyPhoneNumber(com.pbl4.studentweb.common.validation.ContactValues.phone(r.familyPhoneNumber()));
         s.setBankAccountNumber(optional(r.bankAccountNumber()));
         s.setBankName(optional(r.bankName()));
         s.setStatus(r.status());

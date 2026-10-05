@@ -10,4 +10,4 @@ public record StudentAddressRequest(@NotNull AddressType addressType,
         @Size(max = 100) String provinceCity,
         @Size(max = 100) String wardCommune,
         @Size(max = 50) String residenceRelation,
-        @NotNull Boolean current) {}
+        @NotNull Boolean current, @Size(max = 2) String countryCode) {}

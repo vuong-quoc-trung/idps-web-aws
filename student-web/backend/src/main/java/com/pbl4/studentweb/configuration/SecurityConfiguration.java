@@ -19,9 +19,7 @@ public class SecurityConfiguration {
     UserDetailsService userDetailsService(UserRepository users) {
         return username -> {
             var user = users.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Invalid credentials"));
-            return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
-                    .password(user.getPasswordHash()).roles(user.getRole().name())
-                    .disabled(!user.isEnabled() || user.isPasswordSetupRequired()).build();
+            return new AccountPrincipal(user);
         };
     }
 
@@ -30,7 +28,9 @@ public class SecurityConfiguration {
         // Default session-backed CSRF tokens are obtained from /api/auth/csrf and sent in the returned header.
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/activate").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/profile-options").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/activate", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/change-password").hasRole("STUDENT")
                 .requestMatchers("/api/auth/me", "/api/auth/logout").authenticated()
                 .requestMatchers("/api/users/**", "/api/access-logs/**").hasRole("ADMIN")
                 .requestMatchers("/api/students/**").hasAnyRole("ADMIN", "STAFF")

@@ -1,3 +1,4 @@
+import { validPhone, PHONE_ERROR } from '../../utils/contactValidation';
 /**
  * EditStudentModal — cập nhật thông tin sinh viên (status, lớp, ngân hàng…)
  */
@@ -33,6 +34,7 @@ function toForm(s: StudentDetail): UpdateStudentPayload {
 
 function validate(f: UpdateStudentPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
+  if (!validPhone(f.familyPhoneNumber)) e.familyPhoneNumber = PHONE_ERROR;
   if (!f.fullName.trim()) e.fullName = 'Họ tên là bắt buộc';
   if (!f.classId) e.classId = 'Phải chọn lớp';
   if (!f.status) e.status = 'Trạng thái là bắt buộc';
@@ -199,6 +201,7 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
             <label className="form-label">SĐT gia đình</label>
             <input className="form-input" value={f.familyPhoneNumber ?? ''}
               onChange={e => set('familyPhoneNumber', e.target.value)} disabled={submitting} />
+            {fv.familyPhoneNumber && <p className="form-error-text">{fv.familyPhoneNumber}</p>}
           </div>
         </div>
         {/* Row: Ngân hàng */}

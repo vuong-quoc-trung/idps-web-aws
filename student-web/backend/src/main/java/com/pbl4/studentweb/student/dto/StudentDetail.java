@@ -12,4 +12,4 @@ public record StudentDetail(
         Long majorId, Long classId, Long trainingProgramId, Long secondaryProgramId,
         String schoolEmail, String personalEmail, String phoneNumber, String familyPhoneNumber,
         String facebookUrl, String bankAccountNumber, String bankName,
-        ProfileStatus profileStatus, LocalDateTime profileCompletedAt, StudentStatus status) {}
+        ProfileStatus profileStatus, LocalDateTime profileCompletedAt, StudentStatus status, String birthCountryCode, String originCountryCode) {}

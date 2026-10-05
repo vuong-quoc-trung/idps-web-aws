@@ -24,6 +24,8 @@ export interface StudentSummary {
 
 // ---- Student detail (GET /students/{id}) ----
 export interface StudentDetail {
+  birthCountryCode?: string;
+  originCountryCode?: string;
   id: number;
   userId?: number;
   studentCode: string;
@@ -68,6 +70,8 @@ export interface CompletionStatus {
 
 // ---- Student self-update profile payload (/api/me/profile) ----
 export interface UpdateStudentProfilePayload {
+  birthCountryCode?: string;
+  originCountryCode?: string;
   avatarUrl?: string | null;
   placeOfBirth?: string | null;
   oldPlaceOfBirth?: string | null;
@@ -116,6 +120,7 @@ export interface UpdateStudentPayload {
 
 // ---- Address ----
 export interface Address {
+  countryCode?: string;
   id: number;
   addressType: AddressType;
   addressLine?: string;
@@ -125,6 +130,7 @@ export interface Address {
   current: boolean;
 }
 export interface AddressPayload {
+  countryCode?: string;
   addressType: AddressType;
   addressLine?: string;
   provinceCity?: string;

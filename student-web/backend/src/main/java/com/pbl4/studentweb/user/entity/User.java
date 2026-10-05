@@ -38,4 +38,20 @@ public class User extends AuditedEntity {
 
     @Column(name = "activation_expires_at")
     private LocalDateTime activationExpiresAt;
+
+    @org.hibernate.annotations.ColumnDefault("0")
+    @Column(name = "credential_version", nullable = false)
+    private long credentialVersion;
+
+    @Column(name = "reset_code_hash", length = 255)
+    private String resetCodeHash;
+    private LocalDateTime resetExpiresAt;
+    private LocalDateTime resetSentAt;
+    private LocalDateTime resetWindowStartedAt;
+    @org.hibernate.annotations.ColumnDefault("0")
+    @Column(nullable = false)
+    private int resetAttempts;
+    @org.hibernate.annotations.ColumnDefault("0")
+    @Column(nullable = false)
+    private int resetSendCount;
 }

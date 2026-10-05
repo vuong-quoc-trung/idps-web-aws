@@ -21,6 +21,6 @@ public class StudentMapper {
                 s.getSecondaryProgram() == null ? null : s.getSecondaryProgram().getId(),
                 s.getSchoolEmail(), s.getPersonalEmail(), s.getPhoneNumber(), s.getFamilyPhoneNumber(),
                 s.getFacebookUrl(), s.getBankAccountNumber(), s.getBankName(),
-                s.getProfileStatus(), s.getProfileCompletedAt(), s.getStatus());
+                s.getProfileStatus(), s.getProfileCompletedAt(), s.getStatus(), s.getBirthCountryCode(), s.getOriginCountryCode());
     }
 }

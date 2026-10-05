@@ -1,3 +1,4 @@
+import { validPhone, PHONE_ERROR } from '../../utils/contactValidation';
 /**
  * CreateStudentModal — form tạo sinh viên mới
  * Sau khi tạo thành công hiển thị activation token để admin copy.
@@ -18,6 +19,7 @@ const EMPTY: CreateStudentPayload = {
 
 function validate(f: CreateStudentPayload): Partial<Record<string, string>> {
   const e: Partial<Record<string, string>> = {};
+  if (!validPhone(f.familyPhoneNumber)) e.familyPhoneNumber = PHONE_ERROR;
   if (!f.fullName.trim()) e.fullName = 'Họ tên là bắt buộc';
   if (!f.classId) e.classId = 'Phải chọn lớp';
   if (f.dateOfBirth && !/^\d{4}-\d{2}-\d{2}$/.test(f.dateOfBirth)) e.dateOfBirth = 'Định dạng YYYY-MM-DD';
@@ -196,6 +198,7 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
             <label className="form-label">SĐT gia đình</label>
             <input className="form-input" placeholder="Vd: 0900123456"
               value={form.familyPhoneNumber} onChange={e => setForm(f => ({ ...f, familyPhoneNumber: e.target.value }))} disabled={submitting} />
+            {fv.familyPhoneNumber && <p className="form-error-text">{fv.familyPhoneNumber}</p>}
           </div>
         </div>
         {/* Row 5: Chương trình phụ */}

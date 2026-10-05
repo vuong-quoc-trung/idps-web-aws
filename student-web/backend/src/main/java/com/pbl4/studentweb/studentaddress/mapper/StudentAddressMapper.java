@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class StudentAddressMapper {
     public StudentAddressSummary toSummary(StudentAddress e) {
-        return new StudentAddressSummary(e.getId(), e.getStudent().getId(), e.getAddressType(), e.getAddressLine(), e.getProvinceCity(), e.getWardCommune(), e.getResidenceRelation(), e.isCurrent());
+        return new StudentAddressSummary(e.getId(), e.getStudent().getId(), e.getAddressType(), e.getAddressLine(), e.getProvinceCity(), e.getWardCommune(), e.getResidenceRelation(), e.isCurrent(), e.getCountryCode());
     }
 }

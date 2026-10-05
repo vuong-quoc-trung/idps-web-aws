@@ -53,6 +53,8 @@ class StudentApiTests {
     @Autowired TrainingProgramRepository programs;
     @Autowired EmergencyContactRepository contacts;
     @Autowired PasswordEncoder encoder;
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    com.pbl4.studentweb.user.service.PasswordResetMailService resetMail;
     MockMvc mvc;
     String hash;
     User admin;
@@ -111,6 +113,127 @@ class StudentApiTests {
                 """.formatted(name, s.getCitizenId(), s.getMajor().getId(), s.getStudentClass().getId(),
                         s.getTrainingProgram().getId(), status);
     }
+
+
+
+    @Test void resetMailConfigurationEligibilityAndHourlyLimitAreEnforced() throws Exception {
+        var student = student("STU-2024-000903"); var u = student.getUser();
+        String body = jsonBody("studentCode", student.getStudentCode());
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isServiceUnavailable());
+        org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
+        u.setPasswordSetupRequired(true); users.saveAndFlush(u);
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isAccepted());
+        u.setPasswordSetupRequired(false); u.setEnabled(false); users.saveAndFlush(u);
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isAccepted());
+        u.setEnabled(true); u.setResetWindowStartedAt(java.time.LocalDateTime.now()); u.setResetSendCount(5); users.saveAndFlush(u);
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isAccepted());
+        org.mockito.Mockito.verify(resetMail, org.mockito.Mockito.never()).send(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+        u.setResetWindowStartedAt(java.time.LocalDateTime.now().minusHours(2)); users.saveAndFlush(u);
+        org.mockito.Mockito.doThrow(new org.springframework.mail.MailSendException("SMTP failure"))
+            .when(resetMail).send(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isAccepted());
+        assertThat(u.getResetSendCount()).isEqualTo(1);
+        assertThat(u.getResetCodeHash()).isNull();
+    }
+
+    @Test void studentCanResetPasswordOnlyWithDeliveredSingleUseCode() throws Exception {
+        var student = student("STU-2024-000900");
+        var oldSession = login(student.getStudentCode());
+        org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("studentCode", student.getStudentCode()))).andExpect(status().isAccepted());
+        var code = org.mockito.ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(resetMail).send(org.mockito.ArgumentMatchers.eq(student.getSchoolEmail()), code.capture());
+        assertThat(code.getValue()).matches("[0-9]{6}");
+        assertThat(users.findById(student.getUser().getId()).orElseThrow().getResetCodeHash()).isNotEqualTo(code.getValue());
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("studentCode", student.getStudentCode()))).andExpect(status().isAccepted());
+        org.mockito.Mockito.verify(resetMail, org.mockito.Mockito.times(1)).send(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+        String reset = jsonBody("studentCode", student.getStudentCode(), "code", code.getValue(), "newPassword", "Another-good-password");
+        mvc.perform(post("/api/auth/reset-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(reset)).andExpect(status().isNoContent());
+        mvc.perform(post("/api/auth/reset-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(reset)).andExpect(status().isBadRequest());
+        mvc.perform(get("/api/auth/me").session(oldSession)).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/auth/login").with(csrf()).param("username", student.getStudentCode()).param("password", PASSWORD)).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/auth/login").with(csrf()).param("username", student.getStudentCode()).param("password", "Another-good-password")).andExpect(status().isNoContent());
+    }
+
+    @Test void resetRejectsExpiredAndLockedCodesAndDoesNotDiscloseUnknownAccounts() throws Exception {
+        var student = student("STU-2024-000901");
+        org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("studentCode", "UNKNOWN"))).andExpect(status().isAccepted());
+        org.mockito.Mockito.verify(resetMail, org.mockito.Mockito.never()).send(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+        var u = student.getUser();
+        u.setResetCodeHash(encoder.encode("123456")); u.setResetExpiresAt(java.time.LocalDateTime.now().plusMinutes(10)); users.saveAndFlush(u);
+        for (int i = 0; i < 5; i++)
+            mvc.perform(post("/api/auth/reset-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody("studentCode", student.getStudentCode(), "code", "000000", "newPassword", "Another-good-password"))).andExpect(status().isBadRequest());
+        assertThat(users.findById(u.getId()).orElseThrow().getResetCodeHash()).isNull();
+        mvc.perform(post("/api/auth/reset-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("studentCode", student.getStudentCode(), "code", "123456", "newPassword", "Another-good-password"))).andExpect(status().isBadRequest());
+        u.setResetCodeHash(encoder.encode("123456")); u.setResetAttempts(0); u.setResetExpiresAt(java.time.LocalDateTime.now().minusSeconds(1)); users.saveAndFlush(u);
+        mvc.perform(post("/api/auth/reset-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("studentCode", student.getStudentCode(), "code", "123456", "newPassword", "Another-good-password"))).andExpect(status().isBadRequest());
+        assertThat(encoder.matches(PASSWORD, u.getPasswordHash())).isTrue();
+    }
+
+    @Test void passwordChangeRequiresCurrentPasswordCsrfAndStudentRole() throws Exception {
+        var student = student("STU-2024-000902"); var session = login(student.getStudentCode());
+        String valid = jsonBody("currentPassword", PASSWORD, "newPassword", "Changed-good-password");
+        mvc.perform(post("/api/auth/change-password").session(session).contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isForbidden());
+        send(post("/api/auth/change-password"), session, jsonBody("currentPassword", "wrong-password", "newPassword", "Changed-good-password"), 400);
+        send(post("/api/auth/change-password"), session, jsonBody("currentPassword", PASSWORD, "newPassword", "短".repeat(30)), 400);
+        send(post("/api/auth/change-password"), login("admin-test"), valid, 403);
+        send(post("/api/auth/change-password"), session, valid, 204);
+        mvc.perform(get("/api/auth/me").session(session)).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/auth/login").with(csrf()).param("username", student.getStudentCode()).param("password", "Changed-good-password")).andExpect(status().isNoContent());
+    }
+
+    @Test void profileOptionsAndAddressHierarchyAreValidatedOnTheServer() throws Exception {
+        student("OPTIONS"); var session = login("OPTIONS");
+        mvc.perform(get("/api/profile-options")).andExpect(status().isUnauthorized());
+        var options = body(mvc.perform(get("/api/profile-options").session(session)).andExpect(status().isOk()).andReturn());
+        assertThat(options.get("divisions").get("provinces").size()).isEqualTo(34);
+        var provinces = options.get("divisions").get("provinces");
+        String province = provinces.get(0).get("name").asString();
+        String ward = provinces.get(0).get("wards").get(0).get("name").asString();
+        String wrongWard = provinces.get(1).get("wards").get(0).get("name").asString();
+        send(post("/api/me/addresses"), session,
+            jsonBody("addressType", "CURRENT", "current", true, "countryCode", "VN", "provinceCity", province, "wardCommune", wrongWard), 400);
+        send(post("/api/me/addresses"), session,
+            jsonBody("addressType", "CURRENT", "current", true, "countryCode", "VN", "provinceCity", "Fake", "wardCommune", ward), 400);
+        var created = body(send(post("/api/me/addresses"), session,
+            jsonBody("addressType", "CURRENT", "current", true, "countryCode", "VN", "provinceCity", province, "wardCommune", ward, "residenceRelation", "Thuê nhà"), 201));
+        send(put("/api/me/addresses/" + created.get("id").asLong()), session,
+            jsonBody("addressType", "CURRENT", "current", true, "countryCode", "VN", "provinceCity", provinces.get(1).get("name").asString(), "wardCommune", ward), 400);
+        var foreign = body(send(post("/api/me/addresses"), session,
+            jsonBody("addressType", "CURRENT", "current", true, "countryCode", "US", "provinceCity", "California", "wardCommune", "San Jose"), 201));
+        assertThat(foreign.get("countryCode").asString()).isEqualTo("US");
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "birthCountryCode", "VN", "placeOfBirth", "Fake"), 400);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "birthCountryCode", "US", "placeOfBirth", "California", "nationality", "Việt Nam", "ethnicity", "Kinh", "religion", "Không"), 200);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "ethnicity", "Anything"), 400);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "religion", "Anything"), 400);
+    }
+
+    @Test void everyContactEndpointRejectsMalformedPhoneAndEmailAndNormalizesPhone() throws Exception {
+        var student = student("CONTACTVALID"); var session = login("CONTACTVALID");
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "phoneNumber", "12345"), 400);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "personalEmail", "a@gmail"), 400);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "personalEmail", " test+tag@gmail.com ", "phoneNumber", "0912 345 678"), 200);
+        assertThat(students.findById(student.getId()).orElseThrow().getPhoneNumber()).isEqualTo("0912345678");
+        assertThat(students.findById(student.getId()).orElseThrow().getPersonalEmail()).isEqualTo("test+tag@gmail.com");
+        send(post("/api/me/family-members"), session,
+            jsonBody("relationship", "MOTHER", "hasCollegeDegree", false, "unavailable", false, "phoneNumber", "abc"), 400);
+        send(post("/api/me/emergency-contacts"), session,
+            jsonBody("fullName", "Contact", "priority", 1, "phoneNumber", "123"), 400);
+        send(post("/api/me/post-graduation-contacts"), session, jsonBody("email", "a@@gmail.com"), 400);
+        send(post("/api/me/post-graduation-contacts"), session, jsonBody("phoneNumber", "123"), 400);
+        var adminSession = login("admin-test");
+        send(post("/api/students"), adminSession, jsonBody("fullName", "Student", "classId", student.getStudentClass().getId(), "familyPhoneNumber", "123"), 400);
+        send(put("/api/students/" + student.getId()), adminSession,
+            jsonBody("fullName", "Student", "classId", student.getStudentClass().getId(), "status", "ACTIVE", "familyPhoneNumber", "123"), 400);
+    }
+
 
     @Test void realSessionLoginCsrfLogoutAndSafeAccountResponse() throws Exception {
         mvc.perform(get("/api/students")).andExpect(status().isUnauthorized());
@@ -231,13 +354,13 @@ class StudentApiTests {
     @Test void refreshesCompletionWhenRelatedDataIsCreatedUpdatedAndDeleted() throws Exception {
         var student = student("COMPLETE"); var session = login("COMPLETE");
         send(put("/api/me/profile"), session, """
-                {"placeOfBirth":"City","ethnicity":"Test","nationality":"Test","citizenIdIssueDate":"2022-01-01",
+                {"placeOfBirth":"City","birthCountryCode":"US","ethnicity":"Kinh","nationality":"Việt Nam","citizenIdIssueDate":"2022-01-01",
                  "healthInsuranceNumber":"TEST","healthInsuranceExpiry":"2030-01-01","personalEmail":"test@example.invalid",
                  "phoneNumber":"0900000000","freeHealthInsurance":false}
                 """, 200);
         for (String type : new String[]{"CURRENT", "PERMANENT"})
             send(post("/api/me/addresses"), session, """
-                    {"addressType":"%s","addressLine":"Street","provinceCity":"City","wardCommune":"Ward","current":true}
+                    {"addressType":"%s","addressLine":"Street","provinceCity":"City","wardCommune":"Ward","countryCode":"US","current":true}
                     """.formatted(type), 201);
         for (String role : new String[]{"MOTHER", "FATHER"})
             send(post("/api/me/family-members"), session, """

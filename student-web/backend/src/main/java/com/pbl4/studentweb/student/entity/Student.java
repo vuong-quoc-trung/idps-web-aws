@@ -36,6 +36,14 @@ public class Student extends AuditedEntity {
     @Column(name = "gender", length = 10)
     private Gender gender;
 
+    @org.hibernate.annotations.ColumnDefault("'VN'")
+    @Column(name = "birth_country_code", length = 2, nullable = false)
+    private String birthCountryCode = "VN";
+
+    @org.hibernate.annotations.ColumnDefault("'VN'")
+    @Column(name = "origin_country_code", length = 2, nullable = false)
+    private String originCountryCode = "VN";
+
     @Column(name = "place_of_birth", length = 150)
     private String placeOfBirth;
 
@@ -45,7 +53,7 @@ public class Student extends AuditedEntity {
     @Column(name = "ethnicity", length = 50)
     private String ethnicity;
 
-    @Column(name = "nationality", length = 50)
+    @Column(name = "nationality", length = 150)
     private String nationality;
 
     @Column(name = "religion", length = 50)

@@ -57,7 +57,7 @@ public class StudentOnboardingService {
         s.setTrainingProgram(program);
         s.setSecondaryProgram(secondary);
         s.setSchoolEmail(schoolEmail);
-        s.setFamilyPhoneNumber(blankToNull(r.familyPhoneNumber()));
+        s.setFamilyPhoneNumber(com.pbl4.studentweb.common.validation.ContactValues.phone(r.familyPhoneNumber()));
         return new StudentOnboardingResult(mapper.toSummary(students.saveAndFlush(s)), token);
     }
 

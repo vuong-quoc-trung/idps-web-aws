@@ -22,7 +22,8 @@ final class ActiveAccountFilter extends OncePerRequestFilter {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             var account = users.findByUsername(auth.getName());
-            boolean active = account.filter(u -> u.isEnabled() && !u.isPasswordSetupRequired()
+            long sessionVersion = auth.getPrincipal() instanceof AccountPrincipal p ? p.credentialVersion() : 0L;
+            boolean active = account.filter(u -> u.isEnabled() && !u.isPasswordSetupRequired() && u.getCredentialVersion() == sessionVersion
                     && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + u.getRole().name())))
                     .isPresent();
             if (!active) {

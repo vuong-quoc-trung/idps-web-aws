@@ -23,6 +23,7 @@ import static com.pbl4.studentweb.common.validation.TextValues.optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StudentAddressService {
+    private final com.pbl4.studentweb.common.catalog.ProfileCatalogService catalogs;
     private final StudentAddressRepository repository;
     private final StudentAddressMapper mapper;
     private final StudentRepository students;
@@ -69,9 +70,16 @@ public class StudentAddressService {
     private void apply(StudentAddress e, StudentAddressRequest r) {
         e.setAddressType(r.addressType());
         e.setAddressLine(optional(r.addressLine()));
-        e.setProvinceCity(optional(r.provinceCity()));
-        e.setWardCommune(optional(r.wardCommune()));
-        e.setResidenceRelation(optional(r.residenceRelation()));
+        String country = catalogs.country(r.countryCode());
+        String province = catalogs.province(r.provinceCity(), country, false,
+                country.equals(e.getCountryCode()) ? e.getProvinceCity() : null);
+        String ward = catalogs.ward(r.wardCommune(), province, country, e.getWardCommune(),
+                country.equals(e.getCountryCode()) && java.util.Objects.equals(province,
+                    catalogs.province(e.getProvinceCity(), country, false, e.getProvinceCity())));
+        e.setCountryCode(country);
+        e.setProvinceCity(province);
+        e.setWardCommune(ward);
+        e.setResidenceRelation(catalogs.choice(r.residenceRelation(), catalogs.catalog().residenceRelations(), e.getResidenceRelation(), "Quan hệ với nơi ở"));
         e.setCurrent(r.current());
     }
 }

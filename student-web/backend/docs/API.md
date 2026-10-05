@@ -224,3 +224,7 @@ giữ email đã có và mã sinh viên; dữ liệu cũ chưa đúng định d�
 Script kiểm tra trùng trước khi cập nhật, thêm NOT NULL và UNIQUE nếu chưa có;
 có thể chạy lại. Mã cũ không hợp lệ hoặc xung đột thì rollback để đối chiếu.
 Việc sinh địa chỉ email không tạo mailbox trên dịch vụ email.
+
+### Đổi và quên mật khẩu sinh viên
+
+Xem [STUDENT_PASSWORDS.md](STUDENT_PASSWORDS.md) cho API `/auth/forgot-password`, `/auth/reset-password`, `/auth/change-password`, CSRF, giới hạn OTP và cấu hình SMTP. Chạy migration `016_student_password_reset.sql` trước khi triển khai.
