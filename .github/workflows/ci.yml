@@ -41,12 +41,8 @@ jobs:
       - name: Install dependencies (clean install)
         run: npm ci
 
-      # Bật continue-on-error: true để CI không bị gãy trong khi bạn đang hoàn thiện UI
-      # (hiện tại có cảnh báo react-hooks/set-state-in-effect của React 19).
-      # Khi nào refactor xong useEffect, bạn có thể xóa dòng này để chặn code lỗi nghiêm ngặt.
       - name: Run ESLint
         run: npm run lint
-        continue-on-error: true
 
       - name: Type check (TypeScript) & Build Vite bundle
         run: npm run build
