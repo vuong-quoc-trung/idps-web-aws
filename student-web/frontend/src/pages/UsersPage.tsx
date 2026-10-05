@@ -13,12 +13,18 @@ import AppHeader from '../components/AppHeader';
 import Modal from '../components/Modal';
 import { useAuth } from '../contexts/AuthContext';
 import { userApi } from '../api/userApi';
-import type { UserSummary, CreateUserPayload } from '../api/userApi';
+import type { UserSummary, UserDetail, CreateUserPayload } from '../api/userApi';
 import type { Page } from '../api/client';
 import AccessLogsTab from '../components/admin/AccessLogsTab';
 import './UsersPage.css';
 
 /* ---- SVG micro-icons ---- */
+const IcoEye = () => (
+  <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+    <path d="M1.5 7S4 2.5 7 2.5 12.5 7 12.5 7 10 11.5 7 11.5 1.5 7 1.5z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.25"/>
+  </svg>
+);
 const IcoUsers = () => (
   <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
     <circle cx="7" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
@@ -336,6 +342,134 @@ function ConfirmReissueModal({ open, onClose, onConfirm, user, loading, err }: {
 }
 
 /* ============================================================
+   USER DETAIL MODAL (GET /api/users/{id})
+   ============================================================ */
+function UserDetailModal({
+  userId,
+  currentUserId,
+  onClose,
+  onToggle,
+  onReissue,
+}: {
+  userId: number | null;
+  currentUserId?: number;
+  onClose: () => void;
+  onToggle: (u: UserSummary) => void;
+  onReissue: (u: UserSummary) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [detail, setDetail]   = useState<UserDetail | null>(null);
+  const [err, setErr]         = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!userId) {
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    setErr(null);
+    userApi.get(userId)
+      .then(res => { if (active) setDetail(res); })
+      .catch(e => { if (active) setErr(e instanceof Error ? e.message : 'Lỗi tải chi tiết người dùng'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [userId]);
+
+  if (!userId) return null;
+
+  return (
+    <Modal open={!!userId} title={detail ? `Chi tiết tài khoản: @${detail.username}` : 'Chi tiết tài khoản'} size="md" onClose={onClose}
+      footer={<button className="btn-cancel-users" onClick={onClose}>Đóng</button>}
+    >
+      {loading ? (
+        <div style={{ padding: 36, textAlign: 'center', color: 'var(--text-muted)' }}>
+          <span className="spinner-u" style={{ margin: '0 auto 8px', display: 'block', width: 22, height: 22 }} />
+          Đang tải dữ liệu chi tiết...
+        </div>
+      ) : err || !detail ? (
+        <div className="users-alert-error"><IcoInfo /> {err ?? 'Không tìm thấy người dùng'}</div>
+      ) : (
+        <div className="user-detail-content">
+          <div className="user-detail-header-card">
+            <div className={`user-avatar role-${roleClass(detail.role)}`} style={{ width: 44, height: 44, fontSize: 16 }}>
+              {roleAvatarInitial(detail.username)}
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 600 }}>@{detail.username}</h3>
+              <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                {detail.fullName ? `${detail.fullName} · ` : ''}ID: #{detail.id}
+              </p>
+            </div>
+          </div>
+
+          <div className="user-detail-grid">
+            <div className="user-detail-item">
+              <span className="user-detail-label">Vai trò:</span>
+              <span className={`role-badge ${roleClass(detail.role)}`}>{ROLE_LABEL[detail.role]}</span>
+            </div>
+            <div className="user-detail-item">
+              <span className="user-detail-label">Trạng thái:</span>
+              <span className={`status-badge ${detail.enabled ? 'enabled' : 'disabled'}`}>
+                <span className="status-dot" />
+                {detail.enabled ? 'Đang hoạt động' : 'Bị vô hiệu hóa'}
+              </span>
+            </div>
+            <div className="user-detail-item">
+              <span className="user-detail-label">Mật khẩu:</span>
+              <span>
+                {detail.passwordSetupRequired ? (
+                  <span className="pending-badge"><IcoKey /> Chờ kích hoạt</span>
+                ) : (
+                  <span style={{ color: 'var(--clr-success-500)', fontWeight: 500 }}>✓ Đã kích hoạt</span>
+                )}
+              </span>
+            </div>
+            {detail.studentCode && (
+              <div className="user-detail-item">
+                <span className="user-detail-label">Mã sinh viên:</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{detail.studentCode}</span>
+              </div>
+            )}
+            {detail.createdAt && (
+              <div className="user-detail-item">
+                <span className="user-detail-label">Ngày tạo:</span>
+                <span style={{ fontSize: 'var(--text-xs)' }}>{new Date(detail.createdAt).toLocaleString('vi-VN')}</span>
+              </div>
+            )}
+            {detail.lastLoginAt && (
+              <div className="user-detail-item">
+                <span className="user-detail-label">Đăng nhập gần nhất:</span>
+                <span style={{ fontSize: 'var(--text-xs)' }}>{new Date(detail.lastLoginAt).toLocaleString('vi-VN')}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Action buttons inside detail */}
+          <div className="user-detail-actions">
+            {detail.id !== currentUserId && (
+              <button
+                className={`btn-toggle-action ${detail.enabled ? 'disable' : 'enable'}`}
+                onClick={() => { onClose(); onToggle(detail); }}
+              >
+                {detail.enabled ? <><IcoLock /> Khóa tài khoản</> : <><IcoUnlock /> Bật tài khoản</>}
+              </button>
+            )}
+            {detail.passwordSetupRequired && detail.enabled && (
+              <button
+                className="btn-reissue-action"
+                onClick={() => { onClose(); onReissue(detail); }}
+              >
+                <IcoKey /> Cấp lại token kích hoạt
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+/* ============================================================
    MAIN PAGE
    ============================================================ */
 const PAGE_SIZE = 20;
@@ -369,6 +503,7 @@ export default function UsersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [tokenInfo, setTokenInfo] = useState<{ token: string; username: string; isReissue?: boolean } | null>(null);
 
+  const [detailUserId, setDetailUserId] = useState<number | null>(null);
   const [toggleTarget, setToggleTarget] = useState<UserSummary | null>(null);
   const [toggling, setToggling] = useState(false);
   const [toggleErr, setToggleErr] = useState<string | null>(null);
@@ -657,6 +792,16 @@ export default function UsersPage() {
                         {/* Actions */}
                         <td>
                           <div className="users-actions" style={{ justifyContent: 'flex-end' }}>
+                            {/* View details */}
+                            <button
+                              id={`view-user-${u.id}-btn`}
+                              className="users-action-btn view"
+                              title="Xem chi tiết tài khoản"
+                              onClick={() => setDetailUserId(u.id)}
+                            >
+                              <IcoEye/>
+                            </button>
+
                             {/* Toggle enable / disable (can't self-disable) */}
                             {u.id !== user.id && (
                               <button
@@ -758,6 +903,14 @@ export default function UsersPage() {
         user={reissueTarget}
         loading={reissuing}
         err={reissueErr}
+      />
+
+      <UserDetailModal
+        userId={detailUserId}
+        currentUserId={user.id}
+        onClose={() => setDetailUserId(null)}
+        onToggle={(u) => { setToggleErr(null); setToggleTarget(u); }}
+        onReissue={(u) => { setReissueErr(null); setReissueTarget(u); }}
       />
     </div>
   );

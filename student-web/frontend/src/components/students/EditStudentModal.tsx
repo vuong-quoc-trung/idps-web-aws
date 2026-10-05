@@ -4,10 +4,10 @@
 import { useState, useEffect } from 'react';
 import Modal from '../Modal';
 import { studentApi } from '../../api/studentApi';
-import { classApi } from '../../api/academicApi';
+import { classApi, programApi } from '../../api/academicApi';
 import { ApiError } from '../../api/client';
 import type { StudentDetail, UpdateStudentPayload, Gender, StudentStatus } from '../../types/student';
-import type { StudentClass } from '../../types/academic';
+import type { StudentClass, TrainingProgram } from '../../types/academic';
 
 const STATUS_OPTIONS: { value: StudentStatus; label: string }[] = [
   { value: 'ACTIVE',    label: '● Đang học' },
@@ -53,6 +53,7 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
   const [formErr, setFormErr]   = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [classes, setClasses]   = useState<StudentClass[]>([]);
+  const [programs, setPrograms] = useState<TrainingProgram[]>([]);
 
   useEffect(() => {
     if (student) setForm(toForm(student));
@@ -60,7 +61,13 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
   }, [student]);
 
   useEffect(() => {
-    classApi.listAll().then(r => setClasses(r.content)).catch(() => {});
+    Promise.all([
+      classApi.listAll(),
+      programApi.listAll(),
+    ]).then(([clsRes, prgRes]) => {
+      setClasses(clsRes.content);
+      setPrograms(prgRes.content);
+    }).catch(() => {});
   }, []);
 
   if (!form || !student) return null;
@@ -170,6 +177,17 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
             </select>
             {fv.classId && <p className="form-error-text">{fv.classId}</p>}
           </div>
+        </div>
+        {/* Row: Chương trình phụ */}
+        <div className="form-group full">
+          <label className="form-label">Chương trình đào tạo phụ (song ngành)</label>
+          <select className="form-select" value={f.secondaryProgramId ?? ''}
+            onChange={e => set('secondaryProgramId', e.target.value ? Number(e.target.value) : null)}
+            disabled={submitting}>
+            <option value="">— Không đăng ký CT phụ (để trống) —</option>
+            {programs.map(p => <option key={p.id} value={p.id}>{p.name} ({p.code})</option>)}
+          </select>
+          <p className="form-hint">Dành cho sinh viên đăng ký học song bằng / chương trình thứ hai (tùy chọn).</p>
         </div>
         {/* Row: Email + SĐT */}
         <div className="form-row">

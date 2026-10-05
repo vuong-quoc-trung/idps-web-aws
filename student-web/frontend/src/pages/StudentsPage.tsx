@@ -2,7 +2,7 @@
  * StudentsPage — danh sách sinh viên với search/filter/pagination
  * ADMIN và STAFF có thể xem + quản lý
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import Modal from '../components/Modal';
@@ -21,10 +21,6 @@ const STATUS_LABELS: Record<StudentStatus, string> = {
   GRADUATED: '🎓 Tốt nghiệp',
   SUSPENDED: '⏸ Đình chỉ',
   INACTIVE: '✕ Ngừng',
-};
-
-const GENDER_LABELS: Record<string, string> = {
-  MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác',
 };
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -50,6 +46,7 @@ export default function StudentsPage() {
   const [majorId, setMajorId]     = useState<number | ''>('');
   const [classId, setClassId]     = useState<number | ''>('');
   const [status, setStatus]       = useState<StudentStatus | ''>('');
+  const [profileStatus, setProfileStatus] = useState<string>('');
 
   const debouncedSearch = useDebounce(search, 400);
 
@@ -119,10 +116,17 @@ export default function StudentsPage() {
   }
 
   function clearFilters() {
-    setSearch(''); setMajorId(''); setClassId(''); setStatus('');
+    setSearch(''); setMajorId(''); setClassId(''); setStatus(''); setProfileStatus('');
   }
 
-  const hasFilters = !!search || !!majorId || !!classId || !!status;
+  const hasFilters = !!search || !!majorId || !!classId || !!status || !!profileStatus;
+
+  // Filter content by profileStatus if selected
+  const displayedStudents = useMemo(() => {
+    const list = data?.content ?? [];
+    if (!profileStatus) return list;
+    return list.filter(sv => sv.profileStatus === profileStatus);
+  }, [data, profileStatus]);
 
   // Stats from current page data (rough counts from pagination)
   const totalElements = data?.totalElements ?? 0;
@@ -181,6 +185,12 @@ export default function StudentsPage() {
             <option value="SUSPENDED">Đình chỉ</option>
             <option value="INACTIVE">Ngừng HĐ</option>
           </select>
+          <select className="filter-select" id="sv-filter-profile-status" value={profileStatus}
+            onChange={e => setProfileStatus(e.target.value)}>
+            <option value="">Tất cả tiến độ hồ sơ</option>
+            <option value="COMPLETE">Đã hoàn thiện</option>
+            <option value="INCOMPLETE">Chưa hoàn thiện</option>
+          </select>
           {hasFilters && (
             <button className="filter-clear" onClick={clearFilters}>✕ Xóa bộ lọc</button>
           )}
@@ -201,24 +211,23 @@ export default function StudentsPage() {
               <tr>
                 <th style={{ width: 50 }}>ID</th>
                 <th>Sinh viên</th>
-                <th style={{ width: 70 }}>Giới tính</th>
-                <th>Ngày sinh</th>
                 <th>Lớp</th>
                 <th>Ngành</th>
                 <th>Email trường</th>
+                <th style={{ width: 130 }}>Hồ sơ</th>
                 <th style={{ width: 120 }}>Trạng thái</th>
                 <th style={{ width: 90 }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9}>
+                <tr><td colSpan={8}>
                   <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
                     <span className="spinner" style={{ margin: '0 auto', display: 'block', width: 20, height: 20, borderWidth: 2 }} />
                   </div>
                 </td></tr>
-              ) : (data?.content ?? []).length === 0 ? (
-                <tr><td colSpan={9}>
+              ) : displayedStudents.length === 0 ? (
+                <tr><td colSpan={8}>
                   <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ margin: '0 auto 12px', display: 'block' }}>
                       <circle cx="14" cy="14" r="9" stroke="currentColor" strokeWidth="1.5"/>
@@ -228,7 +237,7 @@ export default function StudentsPage() {
                     {hasFilters ? 'Không tìm thấy sinh viên phù hợp bộ lọc.' : 'Chưa có sinh viên nào.'}
                   </div>
                 </td></tr>
-              ) : (data?.content ?? []).map(sv => (
+              ) : displayedStudents.map(sv => (
                 <tr key={sv.id} onClick={() => navigate(`/students/${sv.id}`)}>
                   <td data-label="ID" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{sv.id}</td>
                   <td data-label="Sinh viên">
@@ -237,13 +246,14 @@ export default function StudentsPage() {
                       <span className="sv-code">{sv.studentCode}</span>
                     </div>
                   </td>
-                  <td data-label="Giới tính"><span className="gender-chip">{sv.gender ? GENDER_LABELS[sv.gender] : '—'}</span></td>
-                  <td data-label="Ngày sinh" style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-                    {sv.dateOfBirth ?? '—'}
-                  </td>
                   <td data-label="Lớp" style={{ fontSize: 'var(--text-sm)' }}>{sv.classId ? (classMap[sv.classId] ?? `Lớp #${sv.classId}`) : '—'}</td>
                   <td data-label="Ngành" style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>{sv.majorId ? (majorMap[sv.majorId] ?? `Ngành #${sv.majorId}`) : '—'}</td>
                   <td data-label="Email" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{sv.schoolEmail ?? '—'}</td>
+                  <td data-label="Hồ sơ">
+                    <span className={`profile-badge ${sv.profileStatus === 'COMPLETE' ? 'complete' : 'incomplete'}`}>
+                      {sv.profileStatus === 'COMPLETE' ? '✓ Hoàn thiện' : '⚠ Chưa xong'}
+                    </span>
+                  </td>
                   <td data-label="Trạng thái">
                     <span className={`status-badge status-${sv.status}`}>{STATUS_LABELS[sv.status]}</span>
                   </td>

@@ -1184,10 +1184,30 @@ function PersonalTab({
         </span>
       </div>
 
-      {/* Liên lạc */}
+      {/* Liên lạc & Ảnh đại diện */}
       <div>
         <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
-          <span className="profile-section-title"><IcoPhone/> Thông tin liên lạc cá nhân</span>
+          <span className="profile-section-title"><IcoPhone/> Ảnh đại diện & Thông tin liên lạc cá nhân</span>
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center', marginBottom: 'var(--space-4)', padding: 'var(--space-3)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--accent-btn)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-brand)', position: 'relative' }}>
+            {form.avatarUrl ? (
+              <img src={form.avatarUrl} alt="Xem trước avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }} />
+            ) : null}
+            <span style={{ color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600 }}>{student.fullName.slice(0, 2).toUpperCase()}</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <label className="profile-form-label" htmlFor="personal-avatar-url">Đường dẫn ảnh đại diện (Avatar URL)</label>
+            <input
+              id="personal-avatar-url"
+              className="profile-form-input"
+              type="url"
+              placeholder="https://example.com/avatar.jpg"
+              value={form.avatarUrl}
+              onChange={e => setForm(f => ({ ...f, avatarUrl: e.target.value }))}
+            />
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>Hỗ trợ liên kết ảnh trực tiếp (JPG, PNG, WebP)</span>
+          </div>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
@@ -1466,7 +1486,17 @@ export default function ProfilePage() {
           <div className="profile-hero-body">
             <div className="profile-hero-row">
               <div className="profile-avatar-wrap">
-                <div className="profile-avatar">{initials(student.fullName)}</div>
+                <div className="profile-avatar">
+                  {student.avatarUrl ? (
+                    <img
+                      src={student.avatarUrl}
+                      alt={student.fullName}
+                      className="profile-avatar-img"
+                      onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                    />
+                  ) : null}
+                  <span>{initials(student.fullName)}</span>
+                </div>
               </div>
               <div className="profile-hero-info">
                 <h1>{student.fullName}</h1>

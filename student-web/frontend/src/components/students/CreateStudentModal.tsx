@@ -5,10 +5,10 @@
 import { useState, useEffect } from 'react';
 import Modal from '../Modal';
 import { studentApi } from '../../api/studentApi';
-import { classApi } from '../../api/academicApi';
+import { classApi, programApi } from '../../api/academicApi';
 import { ApiError } from '../../api/client';
 import type { CreateStudentPayload, CreateStudentResponse, Gender } from '../../types/student';
-import type { StudentClass } from '../../types/academic';
+import type { StudentClass, TrainingProgram } from '../../types/academic';
 
 const EMPTY: CreateStudentPayload = {
   fullName: '', dateOfBirth: '', gender: undefined,
@@ -38,9 +38,16 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
   const [result, setResult]     = useState<CreateStudentResponse | null>(null);
   const [copied, setCopied]     = useState(false);
   const [classes, setClasses]   = useState<StudentClass[]>([]);
+  const [programs, setPrograms] = useState<TrainingProgram[]>([]);
 
   useEffect(() => {
-    classApi.listAll().then(r => setClasses(r.content)).catch(() => {});
+    Promise.all([
+      classApi.listAll(),
+      programApi.listAll(),
+    ]).then(([clsRes, prgRes]) => {
+      setClasses(clsRes.content);
+      setPrograms(prgRes.content);
+    }).catch(() => {});
   }, []);
 
   function handleClose() {
@@ -94,7 +101,10 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
           <h3>Tạo tài khoản thành công!</h3>
           <p>
             Sinh viên <strong>{result.student.fullName}</strong> (MSSV: <code style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{result.student.studentCode}</code>) đã được tạo.
-            Hãy sao chép token kích hoạt bên dưới và gửi cho sinh viên qua kênh đã xác minh.
+            {result.student.schoolEmail && (
+              <> · Email trường: <code style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent)' }}>{result.student.schoolEmail}</code></>
+            )}
+            <br />Hãy sao chép token kích hoạt bên dưới và gửi cho sinh viên qua kênh đã xác minh.
           </p>
           <div className="token-box">
             <span className="token-value">{result.activationToken}</span>
@@ -180,13 +190,24 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Email trường</label>
-            <p className="form-hint">Email trường được tự sinh từ mã sinh viên.</p>
+            <p className="form-hint">Email trường được tự sinh từ mã sinh viên (vd: stu2024000001@sv.pbl4.edu.vn).</p>
           </div>
           <div className="form-group">
             <label className="form-label">SĐT gia đình</label>
             <input className="form-input" placeholder="Vd: 0900123456"
               value={form.familyPhoneNumber} onChange={e => setForm(f => ({ ...f, familyPhoneNumber: e.target.value }))} disabled={submitting} />
           </div>
+        </div>
+        {/* Row 5: Chương trình phụ */}
+        <div className="form-group full">
+          <label className="form-label">Chương trình đào tạo phụ (song ngành)</label>
+          <select className="form-select" value={form.secondaryProgramId ?? ''}
+            onChange={e => setForm(f => ({ ...f, secondaryProgramId: e.target.value ? Number(e.target.value) : null }))}
+            disabled={submitting}>
+            <option value="">— Không đăng ký CT phụ (để trống) —</option>
+            {programs.map(p => <option key={p.id} value={p.id}>{p.name} ({p.code})</option>)}
+          </select>
+          <p className="form-hint">Dành cho sinh viên đăng ký học song bằng / chương trình thứ hai (tùy chọn).</p>
         </div>
       </div>
     </Modal>
