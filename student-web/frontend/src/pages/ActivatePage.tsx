@@ -2,7 +2,7 @@
    ActivatePage — /activate
    First-time account activation using a one-time token
    ============================================================ */
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { activateAccount } from '../api/authApi';
 import { useTheme } from '../contexts/ThemeContext';
@@ -71,6 +71,21 @@ function ThemeToggle() {
   );
 }
 
+// Icon helpers outside render
+const EyeOff = () => (
+  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+    <path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5"/>
+    <circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+const EyeOn = () => (
+  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+    <path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5"/>
+    <circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+
 export default function ActivatePage() {
   const [searchParams] = useSearchParams();
 
@@ -83,11 +98,6 @@ export default function ActivatePage() {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep]         = useState<Step>('form');
-
-  useEffect(() => {
-    const t = searchParams.get('token');
-    if (t) setToken(t);
-  }, [searchParams]);
 
   const mismatch = confirm.length > 0 && confirm !== password;
 
@@ -109,21 +119,6 @@ export default function ActivatePage() {
       setSubmitting(false);
     }
   }
-
-  // Icon helpers
-  const EyeOff = () => (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-      <path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5"/>
-      <circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  );
-  const EyeOn = () => (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-      <path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5"/>
-      <circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
-    </svg>
-  );
 
   return (
     <div className="auth-page">

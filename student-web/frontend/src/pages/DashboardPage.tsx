@@ -49,8 +49,10 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   phoneNumber: 'Số điện thoại',
   currentAddress: 'Địa chỉ thường trú',
   permanentOrFamilyAddress: 'Hộ khẩu / Nhà gia đình',
-  emergencyContact: 'Liên hệ khẩn cấp',
+  father: 'Thông tin Bố (họ tên, ngày sinh)',
+  mother: 'Thông tin Mẹ (họ tên, ngày sinh)',
   familyMember: 'Nhân thân gia đình',
+  emergencyContact: 'Liên hệ khẩn cấp',
 };
 
 export default function DashboardPage() {
@@ -92,11 +94,11 @@ export default function DashboardPage() {
           if (!isMounted) return;
           const students = stdRes.content || [];
           const active = students.filter(s => s.status === 'ACTIVE').length;
-          // Approximate complete profiles from student batch
+          const completed = students.filter(s => s.profileStatus === 'COMPLETE').length;
           setStats({
             totalStudents: stdRes.totalElements || students.length,
             activeStudents: active,
-            completedStudents: Math.round(active * 0.85), // Estimated or derived
+            completedStudents: completed,
             facultiesCount: facRes.totalElements || facRes.content.length,
             majorsCount: majRes.totalElements || majRes.content.length,
             classesCount: clsRes.totalElements || clsRes.content.length,
@@ -165,7 +167,17 @@ export default function DashboardPage() {
           <div className="welcome-card">
             <div className="welcome-glow" aria-hidden="true" />
             <div className="welcome-body">
-              <div className="welcome-avatar">{initials}</div>
+              <div className="welcome-avatar" style={{ position: 'relative', overflow: 'hidden' }}>
+                {studentDetail?.avatarUrl ? (
+                  <img
+                    src={studentDetail.avatarUrl}
+                    alt={user.fullName ?? user.username}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                  />
+                ) : null}
+                <span>{initials}</span>
+              </div>
               <div className="welcome-text-wrap">
                 <div className="welcome-badge-row">
                   <span className={`dashboard-role-badge role-${user.role.toLowerCase()}`}>

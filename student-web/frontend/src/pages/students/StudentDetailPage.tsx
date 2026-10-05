@@ -43,8 +43,10 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   phoneNumber: 'Số điện thoại',
   currentAddress: 'Địa chỉ thường trú',
   permanentOrFamilyAddress: 'Hộ khẩu / Nhà gia đình',
-  emergencyContact: 'Liên hệ khẩn cấp',
+  father: 'Thông tin Bố (họ tên, ngày sinh)',
+  mother: 'Thông tin Mẹ (họ tên, ngày sinh)',
   familyMember: 'Nhân thân gia đình',
+  emergencyContact: 'Liên hệ khẩn cấp',
 };
 
 function initials(name: string) {
@@ -151,7 +153,17 @@ export default function StudentDetailPage() {
 
         {/* Profile card */}
         <div className="student-profile-card">
-          <div className="student-avatar">{initials(student.fullName)}</div>
+          <div className="student-avatar" style={{ position: 'relative', overflow: 'hidden' }}>
+            {student.avatarUrl ? (
+              <img
+                src={student.avatarUrl}
+                alt={student.fullName}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+              />
+            ) : null}
+            <span>{initials(student.fullName)}</span>
+          </div>
           <div className="student-info">
             <h2>{student.fullName}</h2>
             <div className="student-meta">
