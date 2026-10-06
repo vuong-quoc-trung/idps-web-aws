@@ -135,7 +135,11 @@ export default function ClassTab() {
         {formErr && <div className="form-alert" style={{ marginBottom: 16 }}><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>{formErr}</div>}
         <div className="catalog-form">
           <div className="form-row">
-            <p className="form-hint">Mã được hệ thống tự sinh.</p>
+            <div className="form-group">
+              <label className="form-label">Mã lớp</label>
+              <input className="form-input" value={modal?.mode === 'edit' ? (modal.item?.code ?? '') : '(Tự động sinh)'} disabled style={{ opacity: 0.7 }} />
+              <p className="form-hint">Mã lớp được hệ thống tự sinh</p>
+            </div>
             <div className="form-group">
               <label className="form-label">Tên lớp</label>
               <input className="form-input" placeholder="Vd: Lớp 26T1 CNTT CLC"
@@ -188,7 +192,7 @@ export default function ClassTab() {
           </button>
         </>}
       >
-        <DeleteConfirm icon="🎓" title="Xóa lớp này?"
+        <DeleteConfirm title="Xóa lớp này?"
           description={<>Lớp <code>{deleteTarget?.code}</code>{deleteTarget?.name ? ` — ${deleteTarget.name}` : ''} sẽ bị xóa. Không thể xóa nếu còn sinh viên thuộc lớp này.</>}
           error={deleteErr} />
       </Modal>

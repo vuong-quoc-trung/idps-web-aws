@@ -158,7 +158,11 @@ export default function ProgramTab() {
         <div className="catalog-form">
           {/* Row 1: code + name */}
           <div className="form-row">
-            <p className="form-hint">Mã được hệ thống tự sinh.</p>
+            <div className="form-group">
+              <label className="form-label">Mã chương trình</label>
+              <input className="form-input" value={modal?.mode === 'edit' ? (modal.item?.code ?? '') : '(Tự động sinh)'} disabled style={{ opacity: 0.7 }} />
+              <p className="form-hint">Mã chương trình được hệ thống tự sinh</p>
+            </div>
             <div className="form-group">
               <label className="form-label">Tên chương trình <span className="required">*</span></label>
               <input className={`form-input ${fv.name ? 'invalid' : ''}`} placeholder="Vd: Chương trình CNTT CLC"
@@ -188,15 +192,13 @@ export default function ProgramTab() {
               {fv.degreeType && <p className="form-error-text">{fv.degreeType}</p>}
             </div>
           </div>
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Mã phân biệt chương trình</label>
-              <input className={`form-input ${fv.variantCode ? 'invalid' : ''}`} maxLength={6}
-                placeholder="CLC, HTDN, TALENT" value={form.variantCode ?? ''} disabled={submitting}
-                onChange={e => setForm(f => ({ ...f, variantCode: e.target.value.toUpperCase() || null }))} />
-              <p className="form-hint">Để trống với chương trình thường. Dùng để phân biệt các chương trình cùng ngành, khóa và loại bằng.</p>
-              {fv.variantCode && <p className="form-error-text">{fv.variantCode}</p>}
-            </div>
+          <div className="form-group full">
+            <label className="form-label">Mã phân biệt chương trình</label>
+            <input className={`form-input ${fv.variantCode ? 'invalid' : ''}`} maxLength={6}
+              placeholder="CLC, HTDN, TALENT" value={form.variantCode ?? ''} disabled={submitting}
+              onChange={e => setForm(f => ({ ...f, variantCode: e.target.value.toUpperCase() || null }))} />
+            <p className="form-hint">Để trống với chương trình thường. Dùng để phân biệt các chương trình cùng ngành, khóa và loại bằng.</p>
+            {fv.variantCode && <p className="form-error-text">{fv.variantCode}</p>}
           </div>
           {/* Row 3: cohort + numberOfSemesters */}
           <div className="form-row">
@@ -258,7 +260,7 @@ export default function ProgramTab() {
           </button>
         </>}
       >
-        <DeleteConfirm icon="📋" title="Xóa chương trình này?"
+        <DeleteConfirm title="Xóa chương trình này?"
           description={<>Chương trình <code>{deleteTarget?.code}</code> — <strong>{deleteTarget?.name}</strong> sẽ bị xóa. Không thể xóa nếu còn lớp thuộc chương trình này.</>}
           error={deleteErr} />
       </Modal>

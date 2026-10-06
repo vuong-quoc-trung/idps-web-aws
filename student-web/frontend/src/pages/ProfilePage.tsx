@@ -1245,7 +1245,17 @@ function PersonalTab({
             Nơi sinh, dân tộc, tôn giáo
           </span>
         </div>
-        {catalogError && <div role="alert">{catalogError} <button type="button" onClick={retryCatalog}>Thử lại</button></div>}
+        {catalogError && (
+          <div role="alert" className="profile-alert-error" style={{ marginBottom: 'var(--space-3)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3.5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 4.5zm0 7a.875.875 0 110-1.75.875.875 0 010 1.75z"/>
+              </svg>
+              {catalogError}
+            </span>
+            <button type="button" onClick={retryCatalog}>Thử lại</button>
+          </div>
+        )}
         <div className="profile-form-row">
           <CountrySelect label="Quốc gia nơi sinh" value={form.birthCountryCode} countries={options?.countries ?? []}
             onChange={birthCountryCode => setForm(f => ({ ...f, birthCountryCode, placeOfBirth: '' }))} />
@@ -1258,7 +1268,7 @@ function PersonalTab({
           <ProvinceField label="Quê quán / nơi sinh trước đây" value={form.oldPlaceOfBirth} countryCode={form.originCountryCode} options={options} historical
             onChange={oldPlaceOfBirth => setForm(f => ({ ...f, oldPlaceOfBirth }))} />
         </div>
-        <div className="profile-form-row" style={{ marginTop: 'var(--space-3)' }}>
+        <div className="profile-form-row-3" style={{ marginTop: 'var(--space-3)' }}>
           <CatalogSelect label="Dân tộc *" value={form.ethnicity} options={options?.ethnicities ?? []} disabled={!options}
             onChange={ethnicity => setForm(f => ({ ...f, ethnicity }))} />
           <CatalogSelect label="Quốc tịch *" value={form.nationality} options={options?.countries.map(c => c.name) ?? []} disabled={!options}

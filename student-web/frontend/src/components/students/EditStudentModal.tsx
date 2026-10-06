@@ -11,10 +11,10 @@ import type { StudentDetail, UpdateStudentPayload, Gender, StudentStatus } from 
 import type { StudentClass, TrainingProgram } from '../../types/academic';
 
 const STATUS_OPTIONS: { value: StudentStatus; label: string }[] = [
-  { value: 'ACTIVE',    label: '● Đang học' },
-  { value: 'GRADUATED', label: '🎓 Đã tốt nghiệp' },
-  { value: 'SUSPENDED', label: '⏸ Đình chỉ' },
-  { value: 'INACTIVE',  label: '✕ Ngừng hoạt động' },
+  { value: 'ACTIVE', label: 'Đang học' },
+  { value: 'GRADUATED', label: 'Đã tốt nghiệp' },
+  { value: 'SUSPENDED', label: 'Đình chỉ' },
+  { value: 'INACTIVE', label: 'Ngừng hoạt động' },
 ];
 
 function toForm(s: StudentDetail): UpdateStudentPayload {
@@ -50,11 +50,11 @@ interface Props {
 }
 
 export default function EditStudentModal({ open, student, onClose, onUpdated }: Props) {
-  const [form, setForm]         = useState<UpdateStudentPayload | null>(null);
+  const [form, setForm] = useState<UpdateStudentPayload | null>(null);
   const [fieldErr, setFieldErr] = useState<Partial<Record<string, string>>>({});
-  const [formErr, setFormErr]   = useState<string | null>(null);
+  const [formErr, setFormErr] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [classes, setClasses]   = useState<StudentClass[]>([]);
+  const [classes, setClasses] = useState<StudentClass[]>([]);
   const [programs, setPrograms] = useState<TrainingProgram[]>([]);
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
     ]).then(([clsRes, prgRes]) => {
       setClasses(clsRes.content);
       setPrograms(prgRes.content);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   if (!form || !student) return null;
@@ -117,18 +117,26 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
     >
       {formErr && (
         <div className="form-alert" style={{ marginBottom: 16 }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           {formErr}
         </div>
       )}
       <div className="catalog-form">
-        {/* Read-only MSSV */}
-        <div className="form-group">
-          <label className="form-label">MSSV</label>
-          <input className="form-input" value={student.studentCode} disabled style={{ opacity: 0.6 }} />
-          <p className="form-hint">MSSV không thể thay đổi sau khi tạo</p>
+        {/* Row 1: Thông tin định danh cố định (MSSV + Email trường) */}
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Mã sinh viên (MSSV)</label>
+            <input className="form-input" value={student.studentCode} disabled style={{ opacity: 0.7 }} />
+            <p className="form-hint">MSSV không thể thay đổi sau khi tạo</p>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Email trường</label>
+            <input className="form-input" value={student?.schoolEmail ?? '—'} disabled style={{ opacity: 0.7 }} />
+            <p className="form-hint">Email định danh tài khoản trường</p>
+          </div>
         </div>
-        {/* Row: Họ tên + Trạng thái */}
+
+        {/* Row 2: Họ tên + Trạng thái */}
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Họ và tên <span className="required">*</span></label>
@@ -144,7 +152,8 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
             </select>
           </div>
         </div>
-        {/* Row: Ngày sinh + Giới tính */}
+
+        {/* Row 3: Ngày sinh + Giới tính */}
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Ngày sinh</label>
@@ -163,7 +172,8 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
             </select>
           </div>
         </div>
-        {/* Row: CCCD + Lớp */}
+
+        {/* Row 4: CCCD + Lớp */}
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Số CCCD</label>
@@ -180,31 +190,27 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
             {fv.classId && <p className="form-error-text">{fv.classId}</p>}
           </div>
         </div>
-        {/* Row: Chương trình phụ */}
-        <div className="form-group full">
-          <label className="form-label">Chương trình đào tạo phụ (song ngành)</label>
-          <select className="form-select" value={f.secondaryProgramId ?? ''}
-            onChange={e => set('secondaryProgramId', e.target.value ? Number(e.target.value) : null)}
-            disabled={submitting}>
-            <option value="">— Không đăng ký CT phụ (để trống) —</option>
-            {programs.map(p => <option key={p.id} value={p.id}>{p.name} ({p.code})</option>)}
-          </select>
-          <p className="form-hint">Dành cho sinh viên đăng ký học song bằng / chương trình thứ hai (tùy chọn).</p>
-        </div>
-        {/* Row: Email + SĐT */}
+
+        {/* Row 5: SĐT gia đình + Chương trình phụ */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Email trường</label>
-            <p className="form-hint">{student?.schoolEmail ?? '—'}</p>
-          </div>
-          <div className="form-group">
             <label className="form-label">SĐT gia đình</label>
-            <input className="form-input" value={f.familyPhoneNumber ?? ''}
+            <input className="form-input" placeholder="Vd: 0900123456" value={f.familyPhoneNumber ?? ''}
               onChange={e => set('familyPhoneNumber', e.target.value)} disabled={submitting} />
             {fv.familyPhoneNumber && <p className="form-error-text">{fv.familyPhoneNumber}</p>}
           </div>
+          <div className="form-group">
+            <label className="form-label">Chương trình phụ (song ngành)</label>
+            <select className="form-select" value={f.secondaryProgramId ?? ''}
+              onChange={e => set('secondaryProgramId', e.target.value ? Number(e.target.value) : null)}
+              disabled={submitting}>
+              <option value="">— Không đăng ký CT phụ —</option>
+              {programs.map(p => <option key={p.id} value={p.id}>{p.name} ({p.code})</option>)}
+            </select>
+          </div>
         </div>
-        {/* Row: Ngân hàng */}
+
+        {/* Row 6: Ngân hàng */}
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Số tài khoản ngân hàng</label>

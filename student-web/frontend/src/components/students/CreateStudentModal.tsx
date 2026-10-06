@@ -33,13 +33,13 @@ interface Props {
 }
 
 export default function CreateStudentModal({ open, onClose, onCreated }: Props) {
-  const [form, setForm]         = useState<CreateStudentPayload>(EMPTY);
+  const [form, setForm] = useState<CreateStudentPayload>(EMPTY);
   const [fieldErr, setFieldErr] = useState<Partial<Record<string, string>>>({});
-  const [formErr, setFormErr]   = useState<string | null>(null);
+  const [formErr, setFormErr] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult]     = useState<CreateStudentResponse | null>(null);
-  const [copied, setCopied]     = useState(false);
-  const [classes, setClasses]   = useState<StudentClass[]>([]);
+  const [result, setResult] = useState<CreateStudentResponse | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [classes, setClasses] = useState<StudentClass[]>([]);
   const [programs, setPrograms] = useState<TrainingProgram[]>([]);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
     ]).then(([clsRes, prgRes]) => {
       setClasses(clsRes.content);
       setPrograms(prgRes.content);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   function handleClose() {
@@ -96,10 +96,21 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
   if (result) {
     return (
       <Modal open={open} title="Sinh viên đã được tạo" onClose={handleClose} size="md"
-        footer={<button className="btn-submit" onClick={handleClose}>Xong ✓</button>}
+        footer={
+          <button className="btn-submit" onClick={handleClose}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginRight: 6 }}>
+              <path d="M2 7.5L5.5 11 12 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Hoàn tất
+          </button>
+        }
       >
         <div className="token-display">
-          <div className="token-success-icon">✓</div>
+          <div className="token-success-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12.5L9.5 18 20 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <h3>Tạo tài khoản thành công!</h3>
           <p>
             Sinh viên <strong>{result.student.fullName}</strong> (MSSV: <code style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{result.student.studentCode}</code>) đã được tạo.
@@ -116,8 +127,8 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
           </div>
           <div className="token-warning">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-              <path d="M8 1L15 14H1L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-              <path d="M8 6v4M8 12h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M8 1L15 14H1L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+              <path d="M8 6v4M8 12h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <span>Token chỉ hiển thị <strong>một lần</strong> và có hiệu lực trong 24 giờ. Không lưu token trong hệ thống sau khi đóng cửa sổ này.</span>
           </div>
@@ -137,14 +148,18 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
     >
       {formErr && (
         <div className="form-alert" style={{ marginBottom: 16 }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           {formErr}
         </div>
       )}
       <div className="catalog-form">
-        {/* Row 1: MSSV + Họ tên */}
+        {/* Row 1: MSSV (tự sinh) + Họ tên */}
         <div className="form-row">
-          <p className="form-hint">Mã sinh viên được tự sinh theo khóa của lớp và giữ nguyên khi chuyển lớp.</p>
+          <div className="form-group">
+            <label className="form-label">Mã sinh viên (MSSV)</label>
+            <input className="form-input" value="(Tự động sinh theo khóa của lớp)" disabled style={{ opacity: 0.7 }} />
+            <p className="form-hint">Mã sinh viên được tự sinh theo khóa và giữ nguyên khi chuyển lớp.</p>
+          </div>
           <div className="form-group">
             <label className="form-label">Họ và tên <span className="required">*</span></label>
             <input className={`form-input ${fv.fullName ? 'invalid' : ''}`} placeholder="Vd: Nguyễn Văn A"
@@ -192,7 +207,8 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Email trường</label>
-            <p className="form-hint">Email trường được tự sinh từ mã sinh viên (vd: stu2024000001@sv.pbl4.edu.vn).</p>
+            <input className="form-input" value="(Tự động cấp sau khi tạo)" disabled style={{ opacity: 0.7 }} />
+            <p className="form-hint">Email trường được tự sinh từ MSSV (vd: stu...@sv.pbl4.edu.vn).</p>
           </div>
           <div className="form-group">
             <label className="form-label">SĐT gia đình</label>

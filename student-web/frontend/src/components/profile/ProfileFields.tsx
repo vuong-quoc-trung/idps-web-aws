@@ -75,7 +75,17 @@ export function AddressLocationFields({ form, onChange }:
   const parent = options?.divisions.provinces.find(p => p.name === canonicalProvince(form.provinceCity ?? '', options.divisions.provinces));
   const wardId = useId();
   return <>
-    {error && <div role="alert">{error} <button type="button" onClick={retry}>Thử lại</button></div>}
+    {error && (
+      <div role="alert" className="profile-alert-error" style={{ marginBottom: 'var(--space-3)' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3.5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 4.5zm0 7a.875.875 0 110-1.75.875.875 0 010 1.75z"/>
+          </svg>
+          {error}
+        </span>
+        <button type="button" onClick={retry}>Thử lại</button>
+      </div>
+    )}
     <CountrySelect label="Quốc gia của địa chỉ" value={country} countries={options?.countries ?? []}
       onChange={countryCode => onChange({ ...form, countryCode, provinceCity: '', wardCommune: '' })} />
     <div className="profile-form-row form-row">
