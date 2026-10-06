@@ -105,7 +105,7 @@ export async function activateAccount(token: string, password: string): Promise<
     const body = await res.json().catch(() => ({})) as { message?: string };
     throw new Error(
       body.message ??
-        'Token không hợp lệ hoặc đã hết hạn (24 giờ). Yêu cầu cấp lại token từ quản trị viên.'
+      'Token không hợp lệ hoặc đã hết hạn (24 giờ). Yêu cầu cấp lại token từ quản trị viên.'
     );
   }
 }

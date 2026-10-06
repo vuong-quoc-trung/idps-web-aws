@@ -57,22 +57,42 @@ export default function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handle = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (menuRef.current && !menuRef.current.contains(target)) setOpen(false);
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
+        const toggleBtn = document.getElementById('mobile-menu-toggle');
+        if (!toggleBtn || !toggleBtn.contains(target)) {
+          setMobileOpen(false);
+        }
+      }
     };
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, []);
 
   useEffect(() => {
-    const handle = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    const handle = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        setMobileOpen(false);
+      }
+    };
     document.addEventListener('keydown', handle);
     return () => document.removeEventListener('keydown', handle);
   }, []);
+
+  // Close mobile menu on route changes
+  useEffect(() => {
+    setMobileOpen(false);
+    setOpen(false);
+  }, [location.pathname]);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -82,6 +102,7 @@ export default function AppHeader() {
     } finally {
       setLoggingOut(false);
       setOpen(false);
+      setMobileOpen(false);
     }
   }
 
@@ -92,6 +113,29 @@ export default function AppHeader() {
   return (
     <header className="app-header" id="app-header">
       <div className="header-inner">
+        {/* Mobile Hamburger Toggle */}
+        <button
+          id="mobile-menu-toggle"
+          className="mobile-menu-toggle"
+          onClick={() => setMobileOpen(v => !v)}
+          aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu điều hướng'}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav-drawer"
+        >
+          {mobileOpen ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </button>
+
         {/* Logo */}
         <Link to="/" className="header-logo" id="header-logo" aria-label="Trang chủ">
           <div className="header-logo-icon">
@@ -110,7 +154,7 @@ export default function AppHeader() {
           <span className="header-logo-text">Student Web</span>
         </Link>
 
-        {/* Nav */}
+        {/* Desktop Nav */}
         <nav className="header-nav" aria-label="Điều hướng chính">
           <Link
             to="/"
@@ -195,7 +239,7 @@ export default function AppHeader() {
             </span>
           </button>
 
-          {/* Dropdown */}
+          {/* User Dropdown */}
           {open && (
             <div className="user-dropdown" id="user-dropdown" role="menu">
               <div className="dropdown-header">
@@ -212,21 +256,81 @@ export default function AppHeader() {
               <div className="dropdown-divider" />
 
               <div className="dropdown-section">
+                <Link
+                  to="/"
+                  className="dropdown-item"
+                  id="menu-home"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                >
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 7l6-5 6 5v7a1 1 0 01-1 1H3a1 1 0 01-1-1V7z" stroke="currentColor" strokeWidth="1.35" strokeLinejoin="round"/>
+                  </svg>
+                  Trang chủ
+                </Link>
+
                 {user.role === 'STUDENT' && (
-                  <Link
-                    to="/profile"
-                    className="dropdown-item"
-                    id="menu-profile"
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                  >
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                      <circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
-                      <path d="M1.5 12.5c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-                    </svg>
-                    Hồ sơ cá nhân
-                  </Link>
+                  <>
+                    <Link
+                      to="/profile"
+                      className="dropdown-item"
+                      id="menu-profile"
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                        <circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
+                        <path d="M1.5 12.5c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                      </svg>
+                      Hồ sơ cá nhân
+                    </Link>
+                    <Link
+                      to="/catalog"
+                      className="dropdown-item"
+                      id="menu-catalog-student"
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                        <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.35"/>
+                        <path d="M5 6h6M5 9h4" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round"/>
+                      </svg>
+                      Chương trình & Lớp
+                    </Link>
+                  </>
                 )}
+
+                {(user.role === 'ADMIN' || user.role === 'STAFF') && (
+                  <>
+                    <Link
+                      to="/students"
+                      className="dropdown-item"
+                      id="menu-students"
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2L1 5.5l7 3.5 7-3.5L8 2z" stroke="currentColor" strokeWidth="1.35" strokeLinejoin="round"/>
+                        <path d="M3.5 7.5v4.5C3.5 13.5 8 14.5 8 14.5s4.5-1 4.5-2.5V7.5" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round"/>
+                      </svg>
+                      Quản lý sinh viên
+                    </Link>
+                    <Link
+                      to="/catalog"
+                      className="dropdown-item"
+                      id="menu-catalog"
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                        <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.35"/>
+                        <path d="M5 6h6M5 9h4" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round"/>
+                      </svg>
+                      Danh mục học vụ
+                    </Link>
+                  </>
+                )}
+
                 {user.role === 'ADMIN' && (
                   <Link
                     to="/admin"
@@ -271,6 +375,114 @@ export default function AppHeader() {
           )}
         </div>
       </div>
+
+      {/* Mobile Navigation Drawer */}
+      {mobileOpen && (
+        <div className="mobile-nav-drawer" id="mobile-nav-drawer" ref={mobileMenuRef}>
+          <div className="mobile-nav-user-bar">
+            <Avatar user={user} size={32} />
+            <div className="mobile-user-meta">
+              <span className="mobile-user-name">{user.fullName ?? user.username}</span>
+              <span className={`user-role-badge ${ROLE_CLASSES[user.role]}`}>
+                {ROLE_LABELS[user.role]}
+              </span>
+            </div>
+          </div>
+
+          <nav className="mobile-nav-links" aria-label="Menu di động">
+            <Link
+              to="/"
+              className={`mobile-nav-link ${pathname === '/' ? 'active' : ''}`}
+              onClick={() => setMobileOpen(false)}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 7l6-5 6 5v7a1 1 0 01-1 1H3a1 1 0 01-1-1V7z" stroke="currentColor" strokeWidth="1.35" strokeLinejoin="round"/>
+              </svg>
+              Trang chủ
+            </Link>
+
+            {(user.role === 'ADMIN' || user.role === 'STAFF') && (
+              <>
+                <Link
+                  to="/students"
+                  className={`mobile-nav-link ${pathname.startsWith('/students') ? 'active' : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2L1 5.5l7 3.5 7-3.5L8 2z" stroke="currentColor" strokeWidth="1.35" strokeLinejoin="round"/>
+                    <path d="M3.5 7.5v4.5C3.5 13.5 8 14.5 8 14.5s4.5-1 4.5-2.5V7.5" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round"/>
+                  </svg>
+                  Quản lý sinh viên
+                </Link>
+                <Link
+                  to="/catalog"
+                  className={`mobile-nav-link ${pathname.startsWith('/catalog') ? 'active' : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.35"/>
+                    <path d="M5 6h6M5 9h4" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round"/>
+                  </svg>
+                  Danh mục học vụ
+                </Link>
+              </>
+            )}
+
+            {user.role === 'STUDENT' && (
+              <>
+                <Link
+                  to="/profile"
+                  className={`mobile-nav-link ${pathname === '/profile' ? 'active' : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                    <circle cx="7" cy="4" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
+                    <path d="M1.5 12.5c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                  </svg>
+                  Hồ sơ của tôi
+                </Link>
+                <Link
+                  to="/catalog"
+                  className={`mobile-nav-link ${pathname.startsWith('/catalog') ? 'active' : ''}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.35"/>
+                    <path d="M5 6h6M5 9h4" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round"/>
+                  </svg>
+                  Chương trình & Lớp
+                </Link>
+              </>
+            )}
+
+            {user.role === 'ADMIN' && (
+              <Link
+                to="/admin"
+                className={`mobile-nav-link ${pathname.startsWith('/admin') ? 'active' : ''}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 1l1.5 3 3.5.5-2.5 2.5.5 3.5L7 9l-3 1.5.5-3.5L2 4.5 5.5 4z"
+                    stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+                </svg>
+                Quản trị hệ thống
+              </Link>
+            )}
+
+            <button
+              className="mobile-nav-link logout-btn"
+              onClick={handleLogout}
+              disabled={loggingOut}
+            >
+              <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                <path d="M5 2H3a1 1 0 00-1 1v8a1 1 0 001 1h2" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+                <path d="M9.5 9.5L12 7l-2.5-2.5M12 7H5.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {loggingOut ? 'Đang đăng xuất…' : 'Đăng xuất'}
+            </button>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
