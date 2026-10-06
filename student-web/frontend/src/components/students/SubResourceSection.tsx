@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Modal from '../Modal';
 
 interface SubResourceSectionProps<T extends { id: number }> {
-  title: string;
+  title: React.ReactNode;
   items: T[];
   renderItem: (item: T) => React.ReactNode;
   onRefresh: () => Promise<void>;
@@ -18,11 +18,11 @@ interface SubResourceSectionProps<T extends { id: number }> {
 export default function SubResourceSection<T extends { id: number }>({
   title, items, renderItem, onRefresh, AddEditModal, onDelete, emptyText = 'Chưa có dữ liệu.',
 }: SubResourceSectionProps<T>) {
-  const [editItem, setEditItem]     = useState<T | null>(null);
-  const [showModal, setShowModal]   = useState(false);
+  const [editItem, setEditItem] = useState<T | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<T | null>(null);
-  const [deleting, setDeleting]     = useState(false);
-  const [deleteErr, setDeleteErr]   = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   function openAdd() { setEditItem(null); setShowModal(true); }
   function openEdit(item: T) { setEditItem(item); setShowModal(true); }
@@ -46,12 +46,12 @@ export default function SubResourceSection<T extends { id: number }>({
         <div className="sub-card-actions">
           <button className="sv-action-btn" title="Chỉnh sửa" onClick={() => openEdit(item)}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-              <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+              <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
             </svg>
           </button>
           <button className="sv-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(item)}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-              <path d="M2.5 4h9M5.5 4V2.5h3V4M6 6.5v4M8 6.5v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2.5 4h9M5.5 4V2.5h3V4M6 6.5v4M8 6.5v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
@@ -65,7 +65,7 @@ export default function SubResourceSection<T extends { id: number }>({
         <span className="detail-section-title">{title}</span>
         <button className="section-add-btn" onClick={openAdd}>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           Thêm
         </button>
@@ -98,7 +98,23 @@ export default function SubResourceSection<T extends { id: number }>({
         </>}
       >
         <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
-          <div style={{ fontSize: '2rem', marginBottom: 8 }}>🗑️</div>
+          <div style={{
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'rgba(244,135,113,0.12)',
+            color: 'var(--text-error)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 12px',
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+              <line x1="10" y1="11" x2="10" y2="17" />
+              <line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </div>
           <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
             Bạn có chắc chắn muốn xóa bản ghi này? Hành động không thể hoàn tác.
           </p>

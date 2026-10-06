@@ -43,15 +43,15 @@ function ThemeToggle() {
       {theme === 'dark' ? (
         /* Sun icon */
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.75"/>
+          <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.75" />
           <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-            stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+            stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
         </svg>
       ) : (
         /* Moon icon */
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
-            stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round"/>
+            stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" />
         </svg>
       )}
     </button>
@@ -118,8 +118,8 @@ export default function LoginPage() {
           {error && (
             <div className="alert alert-error" role="alert" id="login-error">
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
               {error}
             </div>
@@ -132,8 +132,8 @@ export default function LoginPage() {
               <div className="input-wrapper">
                 <span className="input-icon">
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                    <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </span>
                 <input
@@ -159,9 +159,9 @@ export default function LoginPage() {
               <div className="input-wrapper">
                 <span className="input-icon">
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                    <rect x="2" y="7" width="12" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    <circle cx="8" cy="11" r="1.2" fill="currentColor"/>
+                    <rect x="2" y="7" width="12" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="8" cy="11" r="1.2" fill="currentColor" />
                   </svg>
                 </span>
                 <input
@@ -184,8 +184,8 @@ export default function LoginPage() {
                   aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                 >
                   {showPassword
-                    ? <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5"/><circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                    : <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5"/><circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5"/></svg>
+                    ? <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5" /><circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5" /><path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                    : <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" strokeWidth="1.5" /><circle cx="8" cy="8" r="1.5" stroke="currentColor" strokeWidth="1.5" /></svg>
                   }
                 </button>
               </div>
@@ -202,7 +202,7 @@ export default function LoginPage() {
               ) : (
                 <>Đăng nhập
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </>
               )}

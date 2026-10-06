@@ -172,7 +172,7 @@ export function SectionError({ message }: { message: string }) {
 // DeleteConfirm (body content for delete modal)
 // ============================================================
 interface DeleteConfirmProps {
-  icon: string;
+  icon?: ReactNode;
   title: string;
   description: ReactNode;
   error: string | null;

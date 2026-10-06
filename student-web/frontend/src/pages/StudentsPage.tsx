@@ -17,10 +17,10 @@ import type { Page } from '../api/client';
 import './StudentsPage.css';
 
 const STATUS_LABELS: Record<StudentStatus, string> = {
-  ACTIVE: '● Đang học',
-  GRADUATED: '🎓 Tốt nghiệp',
-  SUSPENDED: '⏸ Đình chỉ',
-  INACTIVE: '✕ Ngừng',
+  ACTIVE: 'Đang học',
+  GRADUATED: 'Tốt nghiệp',
+  SUSPENDED: 'Đình chỉ',
+  INACTIVE: 'Ngừng HĐ',
 };
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -146,7 +146,13 @@ export default function StudentsPage() {
         {/* Header */}
         <div className="students-header">
           <div className="students-title">
-            <h2>👨‍🎓 Quản lý sinh viên</h2>
+            <h2>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ verticalAlign: 'middle', marginRight: 8 }}>
+                <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round"/>
+                <path d="M5 13.18v4c0 2.21 3.13 4 7 4s7-1.79 7-4v-4" stroke="currentColor" strokeWidth="1.75"/>
+              </svg>
+              Quản lý sinh viên
+            </h2>
             <p>Tìm kiếm, thêm mới, cập nhật và quản lý trạng thái sinh viên</p>
           </div>
           <button className="btn-add" id="btn-add-student" onClick={() => setShowCreate(true)}>
@@ -251,7 +257,7 @@ export default function StudentsPage() {
                   <td data-label="Email" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{sv.schoolEmail ?? '—'}</td>
                   <td data-label="Hồ sơ">
                     <span className={`profile-badge ${sv.profileStatus === 'COMPLETE' ? 'complete' : 'incomplete'}`}>
-                      {sv.profileStatus === 'COMPLETE' ? '✓ Hoàn thiện' : '⚠ Chưa xong'}
+                      {sv.profileStatus === 'COMPLETE' ? '✓ Hoàn thiện' : 'Chưa hoàn thiện'}
                     </span>
                   </td>
                   <td data-label="Trạng thái">
@@ -310,7 +316,13 @@ export default function StudentsPage() {
         </>}
       >
         <div className="deactivate-confirm">
-          <div className="deactivate-icon">⚠️</div>
+          <div className="deactivate-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
           <h3>Ngừng hoạt động?</h3>
           <p>Sinh viên <strong>{deactivateTarget?.fullName}</strong> ({deactivateTarget?.studentCode}) sẽ bị đặt trạng thái <strong>INACTIVE</strong>, tài khoản sẽ bị khóa. Hồ sơ và dữ liệu được giữ nguyên.</p>
           {deactivateErr && (

@@ -182,7 +182,6 @@ export default function FacultyTab() {
         }
       >
         <DeleteConfirm
-          icon="🏫"
           title="Xóa khoa này?"
           description={<>Khoa <code>{deleteTarget?.code}</code> — <strong>{deleteTarget?.name}</strong> sẽ bị xóa vĩnh viễn. Không thể xóa nếu còn ngành thuộc khoa này.</>}
           error={deleteErr}

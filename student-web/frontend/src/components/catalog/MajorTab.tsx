@@ -168,7 +168,7 @@ export default function MajorTab() {
           </button>
         </>}
       >
-        <DeleteConfirm icon="📚" title="Xóa ngành này?"
+        <DeleteConfirm title="Xóa ngành này?"
           description={<>Ngành <code>{deleteTarget?.code}</code> — <strong>{deleteTarget?.name}</strong> sẽ bị xóa. Không thể xóa nếu còn chương trình đào tạo thuộc ngành này.</>}
           error={deleteErr} />
       </Modal>

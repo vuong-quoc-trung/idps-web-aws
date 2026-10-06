@@ -59,31 +59,31 @@ export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [student, setStudent]       = useState<StudentDetail | null>(null);
+  const [student, setStudent] = useState<StudentDetail | null>(null);
   const [completion, setCompletion] = useState<CompletionStatus | null>(null);
-  const [loading, setLoading]       = useState(true);
-  const [loadErr, setLoadErr]       = useState<string | null>(null);
-  const [showEdit, setShowEdit]     = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
+  const [showEdit, setShowEdit] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
   const [showDeactivate, setShowDeactivate] = useState(false);
 
   // Sub-resources
-  const [addresses, setAddresses]     = useState<Address[]>([]);
-  const [family, setFamily]           = useState<FamilyMember[]>([]);
-  const [emergency, setEmergency]     = useState<EmergencyContact[]>([]);
-  const [postGrad, setPostGrad]       = useState<PostGradContact[]>([]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [family, setFamily] = useState<FamilyMember[]>([]);
+  const [emergency, setEmergency] = useState<EmergencyContact[]>([]);
+  const [postGrad, setPostGrad] = useState<PostGradContact[]>([]);
 
   const studentId = Number(id);
 
   // Academic lookup maps
-  const [classMap, setClassMap]     = useState<Record<number, string>>({});
-  const [majorMap, setMajorMap]     = useState<Record<number, string>>({});
+  const [classMap, setClassMap] = useState<Record<number, string>>({});
+  const [majorMap, setMajorMap] = useState<Record<number, string>>({});
   const [programMap, setProgramMap] = useState<Record<number, string>>({});
 
   useEffect(() => {
-    classApi.listAll().then(r => setClassMap(Object.fromEntries(r.content.map(c => [c.id, c.code])))).catch(() => {});
-    majorApi.listAll().then(r => setMajorMap(Object.fromEntries(r.content.map(m => [m.id, m.name])))).catch(() => {});
-    programApi.listAll().then(r => setProgramMap(Object.fromEntries(r.content.map(p => [p.id, p.name])))).catch(() => {});
+    classApi.listAll().then(r => setClassMap(Object.fromEntries(r.content.map(c => [c.id, c.code])))).catch(() => { });
+    majorApi.listAll().then(r => setMajorMap(Object.fromEntries(r.content.map(m => [m.id, m.name])))).catch(() => { });
+    programApi.listAll().then(r => setProgramMap(Object.fromEntries(r.content.map(p => [p.id, p.name])))).catch(() => { });
   }, []);
 
   const load = useCallback(async () => {
@@ -129,7 +129,7 @@ export default function StudentDetailPage() {
       <AppHeader />
       <div className="student-detail-inner">
         <button className="back-btn" onClick={() => navigate('/students')}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           Quay lại
         </button>
         <div className="section-error">{loadErr ?? 'Không tìm thấy sinh viên'}</div>
@@ -149,7 +149,7 @@ export default function StudentDetailPage() {
       <div className="student-detail-inner">
         {/* Back */}
         <button className="back-btn" onClick={() => navigate('/students')}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           Quay lại danh sách
         </button>
 
@@ -174,14 +174,28 @@ export default function StudentDetailPage() {
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: STATUS_COLORS[student.status], display: 'inline-block' }} />
                 {STATUS_LABELS[student.status]}
               </span>
-              {student.classId && <span className="meta-chip">🏫 {classMap[student.classId] ?? `Lớp #${student.classId}`}</span>}
-              {student.majorId && <span className="meta-chip">📚 {majorMap[student.majorId] ?? `Ngành #${student.majorId}`}</span>}
+              {student.classId && (
+                <span className="meta-chip">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ marginRight: 4 }}>
+                    <path d="M2 13.5h12M3 13.5V4l5-2 5 2v9.5M6 7.5h1M9 7.5h1M6 10.5h1M9 10.5h1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                  </svg>
+                  {classMap[student.classId] ?? `Lớp #${student.classId}`}
+                </span>
+              )}
+              {student.majorId && (
+                <span className="meta-chip">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ marginRight: 4 }}>
+                    <path d="M2.5 3.5C4 3 6.5 3 8 4.5c1.5-1.5 4-1.5 5.5-1v9c-1.5-.5-4-.5-5.5 1-1.5-1.5-4-1-5.5-1v-9zM8 4.5v9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {majorMap[student.majorId] ?? `Ngành #${student.majorId}`}
+                </span>
+              )}
               {student.gender && <span className="meta-chip">{GENDER_LABELS[student.gender]}</span>}
             </div>
           </div>
           <div className="student-card-actions">
             <button className="btn-secondary" onClick={() => setShowEdit(true)}>
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/></svg>
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" /></svg>
               Chỉnh sửa
             </button>
             {student.status !== 'INACTIVE' && (
@@ -196,7 +210,14 @@ export default function StudentDetailPage() {
         {completion && (
           <div className="completion-card">
             <div className="completion-header">
-              <span className="completion-title">📋 Mức độ hoàn thiện hồ sơ</span>
+              <span className="completion-title">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3h7M6 6h7M6 9h5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                  <rect x="2.5" y="2" width="11" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+                  <path d="M4 3.5h.01M4 6.5h.01M4 9.5h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                Mức độ hoàn thiện hồ sơ
+              </span>
               <span className="completion-pct" style={{ color: isComplete ? '#16a34a' : 'var(--accent)' }}>
                 {isComplete ? '✓ Hoàn thiện' : `${displayPct}%`}
               </span>
@@ -208,7 +229,7 @@ export default function StudentDetailPage() {
               <div className="missing-fields">
                 {completion.missingFields.map(f => (
                   <span key={f} className="missing-tag" title={f}>
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v4M5 8h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v4M5 8h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                     {MISSING_FIELD_LABELS[f] ?? f}
                   </span>
                 ))}
@@ -220,7 +241,13 @@ export default function StudentDetailPage() {
         {/* Basic info */}
         <div className="detail-section">
           <div className="detail-section-header">
-            <span className="detail-section-title">👤 Thông tin cơ bản</span>
+            <span className="detail-section-title">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M2.5 13.5c0-2.5 2.5-4.5 5.5-4.5s5.5 2 5.5 4.5" stroke="currentColor" strokeWidth="1.3"/>
+              </svg>
+              Thông tin cơ bản
+            </span>
           </div>
           <div className="detail-section-body">
             <div className="info-grid">
@@ -238,7 +265,13 @@ export default function StudentDetailPage() {
         {/* Academic info */}
         <div className="detail-section">
           <div className="detail-section-header">
-            <span className="detail-section-title">🎓 Thông tin học vụ</span>
+            <span className="detail-section-title">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2.5L1.5 6 8 9.5 14.5 6 8 2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                <path d="M3.5 7.5v4.5c0 1.5 2 2.5 4.5 2.5s4.5-1 4.5-2.5V7.5" stroke="currentColor" strokeWidth="1.3"/>
+              </svg>
+              Thông tin học vụ
+            </span>
           </div>
           <div className="detail-section-body">
             <div className="info-grid">
@@ -254,7 +287,12 @@ export default function StudentDetailPage() {
         {/* Bank info */}
         <div className="detail-section">
           <div className="detail-section-header">
-            <span className="detail-section-title">🏦 Tài khoản ngân hàng</span>
+            <span className="detail-section-title">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M1.5 6L8 2.5 14.5 6M2.5 6v7M5.5 6v7M10.5 6v7M13.5 6v7M1.5 13.5h13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Tài khoản ngân hàng
+            </span>
           </div>
           <div className="detail-section-body">
             <div className="info-grid">
@@ -267,7 +305,13 @@ export default function StudentDetailPage() {
         {/* Personal & Demographic declared info */}
         <div className="detail-section">
           <div className="detail-section-header">
-            <span className="detail-section-title">📋 Thông tin nhân khẩu & Khai báo cá nhân</span>
+            <span className="detail-section-title">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M5.5 1.5v2M10.5 1.5v2M2.5 4.5h11M3.5 3h9a1.5 1.5 0 011.5 1.5v9a1.5 1.5 0 01-1.5 1.5h-9a1.5 1.5 0 01-1.5-1.5v-9A1.5 1.5 0 013.5 3z" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M5.5 8h5M5.5 11h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+              Thông tin nhân khẩu & Khai báo cá nhân
+            </span>
           </div>
           <div className="detail-section-body">
             <div className="info-grid">
@@ -293,12 +337,20 @@ export default function StudentDetailPage() {
 
         {/* Addresses */}
         <SubResourceSection
-          title="📍 Địa chỉ"
+          title={
+            <>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.375 4.5 8.5 4.5 8.5s4.5-5.125 4.5-8.5c0-2.485-2.015-4.5-4.5-4.5z" stroke="currentColor" strokeWidth="1.3"/>
+                <circle cx="8" cy="6" r="1.75" stroke="currentColor" strokeWidth="1.3"/>
+              </svg>
+              Địa chỉ
+            </>
+          }
           items={addresses}
           onRefresh={async () => setAddresses(await addressApi.list(studentId))}
           renderItem={(addr: Address) => (
             <div key={addr.id} className="sub-card">
-              <div className="sub-card-title">{addr.addressType === 'CURRENT' ? '🏠 Thường trú' : addr.addressType === 'PERMANENT' ? '🏡 Hộ khẩu' : '🏘 Gia đình'}</div>
+              <div className="sub-card-title">{addr.addressType === 'CURRENT' ? 'Thường trú' : addr.addressType === 'PERMANENT' ? 'Hộ khẩu' : 'Gia đình'}</div>
               <div className="sub-card-row"><span className="sub-card-label">Địa chỉ:</span><span>{addr.addressLine ?? '—'}</span></div>
               <div className="sub-card-row"><span className="sub-card-label">Quốc gia:</span><span>{countryLabel(addr.countryCode)}</span></div>
               <div className="sub-card-row"><span className="sub-card-label">Tỉnh/TP:</span><span>{addr.provinceCity ?? '—'}</span></div>
@@ -322,7 +374,17 @@ export default function StudentDetailPage() {
 
         {/* Family */}
         <SubResourceSection
-          title="👨‍👩‍👦 Nhân thân"
+          title={
+            <>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <circle cx="6" cy="5" r="2.2" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M2 13c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5" stroke="currentColor" strokeWidth="1.2"/>
+                <circle cx="11.5" cy="6" r="1.8" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M10.5 12.5c.3-1.2 1.5-2 2.7-2 .9 0 1.8.4 2.3 1" stroke="currentColor" strokeWidth="1.2"/>
+              </svg>
+              Nhân thân
+            </>
+          }
           items={family}
           onRefresh={async () => setFamily(await familyApi.list(studentId))}
           renderItem={(m: FamilyMember) => (
@@ -350,7 +412,15 @@ export default function StudentDetailPage() {
 
         {/* Emergency contacts */}
         <SubResourceSection
-          title="🆘 Liên hệ khẩn cấp"
+          title={
+            <>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M8 4.5v4M8 11.5h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Liên hệ khẩn cấp
+            </>
+          }
           items={emergency}
           onRefresh={async () => setEmergency(await emergencyApi.list(studentId))}
           renderItem={(c: EmergencyContact) => (
@@ -376,7 +446,16 @@ export default function StudentDetailPage() {
 
         {/* Post-grad contacts */}
         <SubResourceSection
-          title="🎯 Liên hệ sau tốt nghiệp"
+          title={
+            <>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/>
+                <circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.3"/>
+                <circle cx="8" cy="8" r="1" fill="currentColor"/>
+              </svg>
+              Liên hệ sau tốt nghiệp
+            </>
+          }
           items={postGrad}
           onRefresh={async () => setPostGrad(await postGradApi.list(studentId))}
           renderItem={(c: PostGradContact) => (
@@ -415,7 +494,13 @@ export default function StudentDetailPage() {
         </>}
       >
         <div className="deactivate-confirm">
-          <div className="deactivate-icon">⚠️</div>
+          <div className="deactivate-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
           <h3>Ngừng hoạt động?</h3>
           <p>Sinh viên <strong>{student.fullName}</strong> sẽ bị chuyển sang INACTIVE. Tài khoản bị khóa nhưng hồ sơ được giữ nguyên.</p>
         </div>
@@ -460,7 +545,7 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
   return (
     <Modal open={open} title={item ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ'} size="md" onClose={onClose}
       footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
+        <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
     >
       {err && <div className="form-alert" style={{ marginBottom: 12 }}>{err}</div>}
       <div className="catalog-form">
@@ -513,7 +598,7 @@ function FamilyModal({ studentId, item, open, onClose, onSaved }:
   return (
     <Modal open={open} title={item ? 'Cập nhật nhân thân' : 'Thêm nhân thân'} size="md" onClose={onClose}
       footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
+        <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
     >
       {err && <div className="form-alert" style={{ marginBottom: 12 }}>{err}</div>}
       <div className="catalog-form">
@@ -587,7 +672,7 @@ function EmergencyModal({ studentId, item, open, onClose, onSaved }:
   return (
     <Modal open={open} title={item ? 'Cập nhật liên hệ khẩn cấp' : 'Thêm liên hệ khẩn cấp'} size="md" onClose={onClose}
       footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
+        <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
     >
       {err && <div className="form-alert" style={{ marginBottom: 12 }}>{err}</div>}
       <div className="catalog-form">
@@ -648,7 +733,7 @@ function PostGradModal({ studentId, item, open, onClose, onSaved }:
   return (
     <Modal open={open} title={item ? 'Cập nhật liên hệ sau TN' : 'Thêm liên hệ sau TN'} size="md" onClose={onClose}
       footer={<><button className="btn-cancel" onClick={onClose} disabled={submitting}>Hủy</button>
-      <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
+        <button className="btn-submit" onClick={save} disabled={submitting}>{item ? 'Lưu' : 'Thêm'}</button></>}
     >
       {err && <div className="form-alert" style={{ marginBottom: 12 }}>{err}</div>}
       <div className="catalog-form">

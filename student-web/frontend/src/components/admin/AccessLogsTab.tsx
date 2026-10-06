@@ -173,7 +173,12 @@ export default function AccessLogsTab() {
       {/* Header */}
       <div className="logs-header-row">
         <div className="logs-header-title">
-          <h2>🛡️ Nhật ký truy cập hệ thống (Audit Trail)</h2>
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ verticalAlign: 'middle', marginRight: 8 }}>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Nhật ký truy cập hệ thống (Audit Trail)
+          </h2>
           <p>Lịch sử các yêu cầu HTTP và kiểm toán truy cập bảo mật được ghi nhận qua REST API.</p>
         </div>
         <div className="logs-header-actions">

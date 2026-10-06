@@ -657,6 +657,7 @@
   width: 52px; height: 52px;
   border-radius: 50%;
   background: rgba(234,179,8,0.1);
+  color: var(--text-warning);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem;
 }
