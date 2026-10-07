@@ -119,7 +119,7 @@ export default function MajorTab() {
         <div className="catalog-form">
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Mã viết tắt ngành <span className="required">*</span></label>
+              <label className="form-label" htmlFor="major-shortcode-input">Mã viết tắt ngành <span className="required">*</span></label>
               <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`}
                 id="major-shortcode-input"
                 aria-describedby={fieldErr.shortCode ? 'major-shortcode-error' : undefined}
@@ -130,7 +130,7 @@ export default function MajorTab() {
               {fieldErr.shortCode && <p className="form-error-text" id="major-shortcode-error">{fieldErr.shortCode}</p>}
             </div>
             <div className="form-group">
-              <label className="form-label">Tên ngành <span className="required">*</span></label>
+              <label className="form-label" htmlFor="major-name-input">Tên ngành <span className="required">*</span></label>
               <input className={`form-input ${fieldErr.name ? 'invalid' : ''}`}
                 id="major-name-input"
                 aria-describedby={fieldErr.name ? 'major-name-error' : undefined}
@@ -141,7 +141,7 @@ export default function MajorTab() {
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label">Khoa <span className="required">*</span></label>
+            <label className="form-label" htmlFor="major-faculty-select">Khoa <span className="required">*</span></label>
             <select className={`form-select ${fieldErr.facultyId ? 'invalid' : ''}`}
               id="major-faculty-select"
               aria-describedby={fieldErr.facultyId ? 'major-faculty-error' : undefined}
@@ -156,8 +156,8 @@ export default function MajorTab() {
             {modal?.mode === 'edit' && <p className="form-hint">Không thể thay đổi khoa nếu ngành đang được sử dụng</p>}
           </div>
           <div className="form-group full">
-            <label className="form-label">Mô tả</label>
-            <textarea className="form-textarea" placeholder="Mô tả về ngành (tùy chọn)"
+            <label className="form-label" htmlFor="major-description-textarea">Mô tả</label>
+            <textarea className="form-textarea" id="major-description-textarea" placeholder="Mô tả về ngành (tùy chọn)"
               value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} disabled={submitting} />
           </div>
           <div className="toggle-row">

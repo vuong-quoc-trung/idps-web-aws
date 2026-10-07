@@ -627,6 +627,7 @@ export default function UsersPage() {
             role="tab"
             id="admin-tab-users"
             aria-selected={activeTab === 'users'}
+            aria-controls="admin-panel-users"
             className={`admin-tab-btn ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => handleTabChange('users')}
           >
@@ -637,6 +638,7 @@ export default function UsersPage() {
             role="tab"
             id="admin-tab-logs"
             aria-selected={activeTab === 'logs'}
+            aria-controls="admin-panel-logs"
             className={`admin-tab-btn ${activeTab === 'logs' ? 'active' : ''}`}
             onClick={() => handleTabChange('logs')}
           >
@@ -645,9 +647,11 @@ export default function UsersPage() {
         </div>
 
         {activeTab === 'logs' ? (
-          <AccessLogsTab />
+          <div id="admin-panel-logs" role="tabpanel" aria-labelledby="admin-tab-logs">
+            <AccessLogsTab />
+          </div>
         ) : (
-          <>
+          <div id="admin-panel-users" role="tabpanel" aria-labelledby="admin-tab-users">
         {/* Stats */}
         <div className="users-stats-bar">
           <span className="users-stat-chip total">
@@ -862,7 +866,7 @@ export default function UsersPage() {
             </>
           )}
         </div>
-          </>
+          </div>
         )}
       </div>
 

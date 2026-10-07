@@ -159,58 +159,60 @@ export default function ProgramTab() {
           {/* Row 1: code + name */}
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Mã chương trình</label>
-              <input className="form-input" value={modal?.mode === 'edit' ? (modal.item?.code ?? '') : '(Tự động sinh)'} disabled style={{ opacity: 0.7 }} />
+              <label className="form-label" htmlFor="program-code-input">Mã chương trình</label>
+              <input className="form-input" id="program-code-input" value={modal?.mode === 'edit' ? (modal.item?.code ?? '') : '(Tự động sinh)'} disabled style={{ opacity: 0.7 }} />
               <p className="form-hint">Mã chương trình được hệ thống tự sinh</p>
             </div>
             <div className="form-group">
-              <label className="form-label">Tên chương trình <span className="required">*</span></label>
-              <input className={`form-input ${fv.name ? 'invalid' : ''}`} placeholder="Vd: Chương trình CNTT CLC"
+              <label className="form-label" htmlFor="program-name-input">Tên chương trình <span className="required">*</span></label>
+              <input className={`form-input ${fv.name ? 'invalid' : ''}`} id="program-name-input" placeholder="Vd: Chương trình CNTT CLC"
                 value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} disabled={submitting} />
-              {fv.name && <p className="form-error-text">{fv.name}</p>}
+              {fv.name && <p className="form-error-text" id="program-name-error">{fv.name}</p>}
             </div>
           </div>
           {/* Row 2: major + degreeType */}
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Ngành <span className="required">*</span></label>
-              <select className={`form-select ${fv.majorId ? 'invalid' : ''}`} value={form.majorId}
+              <label className="form-label" htmlFor="program-major-select">Ngành <span className="required">*</span></label>
+              <select className={`form-select ${fv.majorId ? 'invalid' : ''}`} id="program-major-select" value={form.majorId}
                 onChange={e => setForm(f => ({ ...f, majorId: Number(e.target.value) }))}
                 disabled={submitting || modal?.mode === 'edit'}>
                 <option value={0}>— Chọn ngành —</option>
                 {majors.map(m => <option key={m.id} value={m.id}>{m.name} ({m.code})</option>)}
               </select>
-              {fv.majorId && <p className="form-error-text">{fv.majorId}</p>}
+              {fv.majorId && <p className="form-error-text" id="program-major-error">{fv.majorId}</p>}
             </div>
             <div className="form-group">
-              <label className="form-label">Loại bằng (degreeType)</label>
-              <select className="form-select" value={form.degreeType ?? ''} disabled={submitting}
+              <label className="form-label" htmlFor="program-degree-select">Loại bằng <span className="required">*</span></label>
+              <select className={`form-select ${fv.degreeType ? 'invalid' : ''}`} id="program-degree-select" value={form.degreeType ?? ''} disabled={submitting}
                 onChange={e => setForm(f => ({ ...f, degreeType: (e.target.value as DegreeType) || null }))}>
                 <option value="">— Chọn loại bằng —</option>
                 {DEGREE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
-              {fv.degreeType && <p className="form-error-text">{fv.degreeType}</p>}
+              {fv.degreeType && <p className="form-error-text" id="program-degree-error">{fv.degreeType}</p>}
             </div>
           </div>
           <div className="form-group full">
-            <label className="form-label">Mã phân biệt chương trình</label>
-            <input className={`form-input ${fv.variantCode ? 'invalid' : ''}`} maxLength={6}
+            <label className="form-label" htmlFor="program-variant-input">Mã phân biệt chương trình</label>
+            <input className={`form-input ${fv.variantCode ? 'invalid' : ''}`} id="program-variant-input" maxLength={6}
               placeholder="CLC, HTDN, TALENT" value={form.variantCode ?? ''} disabled={submitting}
               onChange={e => setForm(f => ({ ...f, variantCode: e.target.value.toUpperCase() || null }))} />
             <p className="form-hint">Để trống với chương trình thường. Dùng để phân biệt các chương trình cùng ngành, khóa và loại bằng.</p>
-            {fv.variantCode && <p className="form-error-text">{fv.variantCode}</p>}
+            {fv.variantCode && <p className="form-error-text" id="program-variant-error">{fv.variantCode}</p>}
           </div>
           {/* Row 3: cohort + numberOfSemesters */}
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Khoá (cohort)</label>
-              <input className="form-input" type="number" placeholder="Vd: 2026"
-                value={form.cohort ?? ''} onChange={e => setNum('cohort', e.target.value)} disabled={submitting} />
-              {fv.cohort && <p className="form-error-text">{fv.cohort}</p>}
+              <label className="form-label" htmlFor="program-cohort-input">Khoá (cohort)</label>
+              <input className={`form-input ${fv.cohort ? 'invalid' : ''}`} id="program-cohort-input" type="number" placeholder="Vd: 2026"
+                value={form.cohort ?? ''} onChange={e => setNum('cohort', e.target.value)} disabled={submitting}
+                aria-describedby={fv.cohort ? 'program-cohort-error' : undefined}
+                aria-invalid={!!fv.cohort} />
+              {fv.cohort && <p className="form-error-text" id="program-cohort-error">{fv.cohort}</p>}
             </div>
             <div className="form-group">
-              <label className="form-label">Số học kỳ</label>
-              <input className={`form-input ${fv.numberOfSemesters ? 'invalid' : ''}`} type="number" placeholder="Vd: 10"
+              <label className="form-label" htmlFor="program-semesters-input">Số học kỳ</label>
+              <input className={`form-input ${fv.numberOfSemesters ? 'invalid' : ''}`} id="program-semesters-input" type="number" placeholder="Vd: 10"
                 value={form.numberOfSemesters ?? ''} onChange={e => setNum('numberOfSemesters', e.target.value)} disabled={submitting} />
               {fv.numberOfSemesters && <p className="form-error-text">{fv.numberOfSemesters}</p>}
             </div>
@@ -218,22 +220,22 @@ export default function ProgramTab() {
           {/* Row 4: totalCredits + requiredCredits + electiveCredits */}
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Tổng tín chỉ</label>
-              <input className={`form-input ${fv.totalCredits ? 'invalid' : ''}`} type="number" placeholder="Vd: 150"
+              <label className="form-label" htmlFor="program-total-credits-input">Tổng tín chỉ</label>
+              <input className={`form-input ${fv.totalCredits ? 'invalid' : ''}`} id="program-total-credits-input" type="number" placeholder="Vd: 150"
                 value={form.totalCredits ?? ''} onChange={e => setNum('totalCredits', e.target.value)} disabled={submitting} />
               {fv.totalCredits && <p className="form-error-text">{fv.totalCredits}</p>}
             </div>
             <div className="form-group">
-              <label className="form-label">Tín chỉ bắt buộc</label>
-              <input className={`form-input ${fv.requiredCredits ? 'invalid' : ''}`} type="number" placeholder="Vd: 120"
+              <label className="form-label" htmlFor="program-required-credits-input">Tín chỉ bắt buộc</label>
+              <input className={`form-input ${fv.requiredCredits ? 'invalid' : ''}`} id="program-required-credits-input" type="number" placeholder="Vd: 120"
                 value={form.requiredCredits ?? ''} onChange={e => setNum('requiredCredits', e.target.value)} disabled={submitting} />
               {fv.requiredCredits && <p className="form-error-text">{fv.requiredCredits}</p>}
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Tín chỉ tự chọn</label>
-              <input className={`form-input ${fv.electiveCredits ? 'invalid' : ''}`} type="number" placeholder="Vd: 30"
+              <label className="form-label" htmlFor="program-elective-credits-input">Tín chỉ tự chọn</label>
+              <input className={`form-input ${fv.electiveCredits ? 'invalid' : ''}`} id="program-elective-credits-input" type="number" placeholder="Vd: 30"
                 value={form.electiveCredits ?? ''} onChange={e => setNum('electiveCredits', e.target.value)} disabled={submitting} />
               {fv.electiveCredits && <p className="form-error-text">{fv.electiveCredits}</p>}
               <p className="form-hint">Bắt buộc + Tự chọn = Tổng tín chỉ</p>

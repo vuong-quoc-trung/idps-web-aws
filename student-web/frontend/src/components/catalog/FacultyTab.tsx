@@ -139,7 +139,7 @@ export default function FacultyTab() {
         <div className="catalog-form">
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Mã viết tắt khoa <span className="required">*</span></label>
+              <label className="form-label" htmlFor="faculty-shortcode-input">Mã viết tắt khoa <span className="required">*</span></label>
               <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`}
                 id="faculty-shortcode-input"
                 aria-describedby={fieldErr.shortCode ? 'faculty-shortcode-error' : undefined}
@@ -151,7 +151,7 @@ export default function FacultyTab() {
               {modal?.mode === 'edit' && <p className="form-hint">Mã không thể thay đổi sau khi tạo</p>}
             </div>
             <div className="form-group">
-              <label className="form-label">Tên khoa <span className="required">*</span></label>
+              <label className="form-label" htmlFor="faculty-name-input">Tên khoa <span className="required">*</span></label>
               <input className={`form-input ${fieldErr.name ? 'invalid' : ''}`}
                 id="faculty-name-input"
                 aria-describedby={fieldErr.name ? 'faculty-name-error' : undefined}
@@ -162,8 +162,8 @@ export default function FacultyTab() {
             </div>
           </div>
           <div className="form-group full">
-            <label className="form-label">Mô tả</label>
-            <textarea className="form-textarea" placeholder="Mô tả về khoa (tùy chọn)" value={form.description}
+            <label className="form-label" htmlFor="faculty-description-textarea">Mô tả</label>
+            <textarea className="form-textarea" id="faculty-description-textarea" placeholder="Mô tả về khoa (tùy chọn)" value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))} disabled={submitting} />
           </div>
           <div className="toggle-row">

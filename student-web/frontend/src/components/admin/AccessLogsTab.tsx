@@ -256,6 +256,8 @@ export default function AccessLogsTab() {
           <input
             className="logs-search-input"
             type="text"
+            id="logs-search-input"
+            aria-label="Tìm kiếm theo đường dẫn path, IP client, action"
             placeholder="Tìm theo đường dẫn path, IP client, action..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -417,6 +419,7 @@ export default function AccessLogsTab() {
                         className="btn-view-log"
                         onClick={() => setSelectedLog(log)}
                         title="Xem chi tiết bản ghi"
+                        aria-label={`Xem chi tiết nhật ký #${log.id}`}
                       >
                         <IcoEye/>
                       </button>

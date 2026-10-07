@@ -136,18 +136,18 @@ export default function ClassTab() {
         <div className="catalog-form">
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Mã lớp</label>
-              <input className="form-input" value={modal?.mode === 'edit' ? (modal.item?.code ?? '') : '(Tự động sinh)'} disabled style={{ opacity: 0.7 }} />
+              <label className="form-label" htmlFor="class-code-input">Mã lớp</label>
+              <input className="form-input" id="class-code-input" value={modal?.mode === 'edit' ? (modal.item?.code ?? '') : '(Tự động sinh)'} disabled style={{ opacity: 0.7 }} />
               <p className="form-hint">Mã lớp được hệ thống tự sinh</p>
             </div>
             <div className="form-group">
-              <label className="form-label">Tên lớp</label>
-              <input className="form-input" placeholder="Vd: Lớp 26T1 CNTT CLC"
+              <label className="form-label" htmlFor="class-name-input">Tên lớp</label>
+              <input className="form-input" id="class-name-input" placeholder="Vd: Lớp 26T1 CNTT CLC"
                 value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} disabled={submitting} />
             </div>
           </div>
           <div className="form-group full">
-            <label className="form-label">Chương trình đào tạo <span className="required">*</span></label>
+            <label className="form-label" htmlFor="class-program-select">Chương trình đào tạo <span className="required">*</span></label>
             <select className={`form-select ${fv.programId ? 'invalid' : ''}`}
               id="class-program-select"
               aria-describedby={fv.programId ? 'class-program-error' : undefined}
@@ -162,7 +162,7 @@ export default function ClassTab() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Khóa tuyển sinh</label>
+              <label className="form-label" htmlFor="class-cohort-input">Khóa tuyển sinh</label>
               <input className={`form-input ${fv.cohort ? 'invalid' : ''}`}
                 id="class-cohort-input"
                 aria-describedby={fv.cohort ? 'class-cohort-error' : undefined}
@@ -173,7 +173,7 @@ export default function ClassTab() {
               {fv.cohort && <p className="form-error-text" id="class-cohort-error">{fv.cohort}</p>}
             </div>
             <div className="form-group">
-              <label className="form-label">Năm học</label>
+              <label className="form-label" htmlFor="class-academic-year-input">Năm học</label>
               <input className={`form-input ${fv.academicYear ? 'invalid' : ''}`}
                 id="class-academic-year-input"
                 aria-describedby={fv.academicYear ? 'class-academic-year-error' : 'class-academic-year-hint'}

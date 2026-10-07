@@ -171,6 +171,7 @@ export default function StudentsPage() {
               <path d="M11 11l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <input className="search-input" id="sv-search" placeholder="Tìm MSSV hoặc họ tên…"
+              aria-label="Tìm kiếm sinh viên theo MSSV hoặc họ tên"
               value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           <select className="filter-select" id="sv-filter-major" value={majorId}
@@ -265,10 +266,10 @@ export default function StudentsPage() {
                   </td>
                   <td data-label="Thao tác" onClick={e => e.stopPropagation()}>
                     <div className="sv-actions">
-                      <button className="sv-action-btn" id={`edit-sv-${sv.id}`} title="Chỉnh sửa" onClick={e => { e.stopPropagation(); openEdit(sv); }}>
+                      <button className="sv-action-btn" id={`edit-sv-${sv.id}`} title="Chỉnh sửa" aria-label="Chỉnh sửa" onClick={e => { e.stopPropagation(); openEdit(sv); }}>
                         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/></svg>
                       </button>
-                      <button className="sv-action-btn danger" id={`deactivate-sv-${sv.id}`} title="Ngừng hoạt động" onClick={e => { e.stopPropagation(); setDeactivateTarget(sv); }}>
+                      <button className="sv-action-btn danger" id={`deactivate-sv-${sv.id}`} title="Ngừng hoạt động" aria-label="Ngừng hoạt động" onClick={e => { e.stopPropagation(); setDeactivateTarget(sv); }}>
                         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.25"/><path d="M5 9l4-4M9 9L5 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
                       </button>
                     </div>
@@ -283,13 +284,13 @@ export default function StudentsPage() {
             <div className="sv-pagination">
               <span className="sv-page-info">Tổng <strong>{totalElements}</strong> sinh viên</span>
               <div className="sv-page-controls">
-                <button className="sv-page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 0}>
+                <button className="sv-page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 0} aria-label="Trang trước">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
                 {pagesArr.map(p => (
                   <button key={p} className={`sv-page-btn ${p === page ? 'active' : ''}`} onClick={() => setPage(p)}>{p + 1}</button>
                 ))}
-                <button className="sv-page-btn" onClick={() => setPage(p => p + 1)} disabled={page >= (data?.totalPages ?? 1) - 1}>
+                <button className="sv-page-btn" onClick={() => setPage(p => p + 1)} disabled={page >= (data?.totalPages ?? 1) - 1} aria-label="Trang sau">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
