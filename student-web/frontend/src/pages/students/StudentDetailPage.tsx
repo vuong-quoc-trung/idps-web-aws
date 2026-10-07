@@ -66,6 +66,7 @@ export default function StudentDetailPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
   const [showDeactivate, setShowDeactivate] = useState(false);
+  const [deactivateErr, setDeactivateErr] = useState<string | null>(null);
 
   // Sub-resources
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -109,9 +110,9 @@ export default function StudentDetailPage() {
 
   async function handleDeactivate() {
     if (!student) return;
-    setDeactivating(true);
+    setDeactivating(true); setDeactivateErr(null);
     try { await studentApi.deactivate(student.id); navigate('/students'); }
-    catch (e) { alert(e instanceof Error ? e.message : 'Lỗi'); }
+    catch (e) { setDeactivateErr(e instanceof Error ? e.message : 'Lỗi ngừng hoạt động sinh viên'); }
     finally { setDeactivating(false); }
   }
 
@@ -485,7 +486,7 @@ export default function StudentDetailPage() {
 
       {/* Deactivate confirm */}
       <Modal open={showDeactivate} title="Ngừng hoạt động sinh viên" size="sm"
-        onClose={() => setShowDeactivate(false)}
+        onClose={() => { setShowDeactivate(false); setDeactivateErr(null); }}
         footer={<>
           <button className="btn-cancel" onClick={() => setShowDeactivate(false)} disabled={deactivating}>Hủy</button>
           <button className="btn-danger" onClick={handleDeactivate} disabled={deactivating}>
@@ -503,6 +504,11 @@ export default function StudentDetailPage() {
           </div>
           <h3>Ngừng hoạt động?</h3>
           <p>Sinh viên <strong>{student.fullName}</strong> sẽ bị chuyển sang INACTIVE. Tài khoản bị khóa nhưng hồ sơ được giữ nguyên.</p>
+          {deactivateErr && (
+            <div className="form-alert" role="alert" style={{ marginTop: 12 }}>
+              {deactivateErr}
+            </div>
+          )}
         </div>
       </Modal>
     </div>

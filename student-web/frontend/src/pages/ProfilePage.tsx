@@ -1197,9 +1197,9 @@ function PersonalTab({
         <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center', marginBottom: 'var(--space-4)', padding: 'var(--space-3)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
           <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--accent-btn)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-brand)', position: 'relative' }}>
             {form.avatarUrl ? (
-              <img src={form.avatarUrl} alt="Xem trước avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }} />
+              <img src={form.avatarUrl} alt="Xem trước avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0 }} onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }} />
             ) : null}
-            <span style={{ color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600 }}>{student.fullName.slice(0, 2).toUpperCase()}</span>
+            <span style={{ color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600, visibility: form.avatarUrl ? 'hidden' : 'visible' }}>{student.fullName.slice(0, 2).toUpperCase()}</span>
           </div>
           <div style={{ flex: 1 }}>
             <label className="profile-form-label" htmlFor="personal-avatar-url">Đường dẫn ảnh đại diện (Avatar URL)</label>
@@ -1505,10 +1505,15 @@ export default function ProfilePage() {
                       src={student.avatarUrl}
                       alt={student.fullName}
                       className="profile-avatar-img"
-                      onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                      onError={e => {
+                        const el = e.currentTarget as HTMLImageElement;
+                        el.style.display = 'none';
+                        const sibling = el.nextElementSibling as HTMLElement | null;
+                        if (sibling) sibling.style.visibility = 'visible';
+                      }}
                     />
                   ) : null}
-                  <span>{initials(student.fullName)}</span>
+                  <span style={{ visibility: student.avatarUrl ? 'hidden' : 'visible' }}>{initials(student.fullName)}</span>
                 </div>
               </div>
               <div className="profile-hero-info">

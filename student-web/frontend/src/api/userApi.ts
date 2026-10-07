@@ -36,7 +36,7 @@ export interface CreateUserPayload {
 }
 
 export interface CreateUserResponse {
-  user: UserDetail;
+  user: UserSummary;
   activationToken: string;
 }
 

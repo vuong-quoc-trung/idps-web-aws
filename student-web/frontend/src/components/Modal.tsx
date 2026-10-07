@@ -49,6 +49,33 @@ export default function Modal({ open, title, onClose, children, footer, size = '
     }
   }, [open]);
 
+  // Focus trap — keep Tab / Shift+Tab inside the dialog
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    function handleTab(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+      const focusableAll = Array.from(
+        panel!.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+      if (focusableAll.length === 0) { e.preventDefault(); return; }
+      const first = focusableAll[0];
+      const last = focusableAll[focusableAll.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }
+
+    panel.addEventListener('keydown', handleTab);
+    return () => panel.removeEventListener('keydown', handleTab);
+  }, [open]);
+
   if (!open) return null;
 
   return (

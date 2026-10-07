@@ -100,7 +100,7 @@ export interface CreateStudentPayload {
 
 // ---- Create student response ----
 export interface CreateStudentResponse {
-  student: StudentDetail;
+  student: StudentSummary;
   activationToken: string;
 }
 
@@ -111,6 +111,8 @@ export interface UpdateStudentPayload {
   gender?: Gender | null;
   citizenId?: string | null;
   classId: number;
+  majorId?: number | null;
+  trainingProgramId?: number | null;
   secondaryProgramId?: number | null;
   familyPhoneNumber?: string | null;
   bankAccountNumber?: string | null;

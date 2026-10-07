@@ -83,12 +83,12 @@ export default function StudentsPage() {
     finally { setLoading(false); }
   }, []);
 
-  // Reset to page 0 when filters change
+  // Reset to page 0 when filters change (including client-side profileStatus)
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     setPage(0);
-  }, [debouncedSearch, majorId, classId, status]);
+  }, [debouncedSearch, majorId, classId, status, profileStatus]);
 
   useEffect(() => {
     load(page, { search: debouncedSearch || undefined, majorId: majorId || undefined, classId: classId || undefined, status: status || undefined });
@@ -121,7 +121,9 @@ export default function StudentsPage() {
 
   const hasFilters = !!search || !!majorId || !!classId || !!status || !!profileStatus;
 
-  // Filter content by profileStatus if selected
+  // Filter content by profileStatus if selected.
+  // NOTE: this is a client-side filter over the current page only.
+  // Pagination totals reflect the full server dataset, not just the visible subset.
   const displayedStudents = useMemo(() => {
     const list = data?.content ?? [];
     if (!profileStatus) return list;
