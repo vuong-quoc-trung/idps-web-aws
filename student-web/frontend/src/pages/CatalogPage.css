@@ -91,6 +91,7 @@
   gap: 4px;
 }
 
+.resource-title h1,
 .resource-title h2 {
   font-size: 1.125rem;
   font-weight: 700;
@@ -111,25 +112,7 @@
   flex-shrink: 0;
 }
 
-/* Add button */
-.btn-add {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 34px;
-  padding: 0 var(--space-4);
-  background: var(--accent-btn);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background var(--transition-fast), transform var(--transition-fast);
-  white-space: nowrap;
-}
-.btn-add:hover { background: var(--accent-btn-hover); transform: translateY(-1px); }
+/* Note: .btn-add canonical definition lives in Modal.css */
 
 /* ============================================================
    Table
@@ -496,7 +479,8 @@
 @media (max-width: 768px) {
   .catalog-inner  { padding: var(--space-4); }
   .form-row       { grid-template-columns: 1fr; }
-  .catalog-tabs   { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 0; }
+  .catalog-tabs   { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 0; scrollbar-width: none; -ms-overflow-style: none; }
+  .catalog-tabs::-webkit-scrollbar { display: none; }
   .resource-header { flex-direction: column; align-items: flex-start; }
   .catalog-table thead { display: none; }
   .catalog-table td { display: block; border-bottom: none; }

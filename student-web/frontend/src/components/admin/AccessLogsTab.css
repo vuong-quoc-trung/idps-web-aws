@@ -461,22 +461,22 @@
 }
 
 .btn-copy-json {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 3px 8px;
   font-size: 11px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: inherit;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .btn-copy-json:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }

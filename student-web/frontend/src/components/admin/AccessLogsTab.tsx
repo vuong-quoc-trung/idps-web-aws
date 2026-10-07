@@ -521,7 +521,7 @@ export default function AccessLogsTab() {
             )}
           </div>
 
-          <div style={{ position: 'relative' }}>
+          <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Payload JSON chi tiết
@@ -530,6 +530,7 @@ export default function AccessLogsTab() {
                 className="btn-copy-json"
                 onClick={copyLogJson}
                 title="Sao chép nội dung JSON"
+                style={{ position: 'static', top: 'auto', right: 'auto' }}
               >
                 {copied ? <><IcoCheck/> Đã chép</> : <><IcoCopy/> Chép JSON</>}
               </button>
