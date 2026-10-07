@@ -33,14 +33,17 @@ export default function Modal({ open, title, onClose, children, footer, size = '
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-label={title}>
+    <div className="modal-backdrop" onClick={onClose}>
       <div
         className={`modal-panel modal-${size}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title-label"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="modal-header">
-          <h2 className="modal-title">{title}</h2>
+          <h2 className="modal-title" id="modal-title-label">{title}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Đóng">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>

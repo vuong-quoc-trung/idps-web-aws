@@ -195,9 +195,9 @@ export default function AppHeader() {
               <Link
                 to="/catalog"
                 className={`nav-link ${pathname.startsWith('/catalog') ? 'active' : ''}`}
-                id="nav-catalog"
+                id="nav-catalog-student"
               >
-                Chương trình & Lớp
+                Chương trình &amp; Lớp
               </Link>
             </>
           )}

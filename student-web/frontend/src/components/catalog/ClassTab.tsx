@@ -148,29 +148,41 @@ export default function ClassTab() {
           </div>
           <div className="form-group full">
             <label className="form-label">Chương trình đào tạo <span className="required">*</span></label>
-            <select className={`form-select ${fv.programId ? 'invalid' : ''}`} value={form.programId}
+            <select className={`form-select ${fv.programId ? 'invalid' : ''}`}
+              id="class-program-select"
+              aria-describedby={fv.programId ? 'class-program-error' : undefined}
+              aria-invalid={!!fv.programId}
+              value={form.programId}
               onChange={e => setForm(f => ({ ...f, programId: Number(e.target.value) }))}
               disabled={submitting || modal?.mode === 'edit'}>
               <option value={0}>— Chọn chương trình —</option>
               {programs.map(p => <option key={p.id} value={p.id}>{p.name} ({p.code})</option>)}
             </select>
-            {fv.programId && <p className="form-error-text">{fv.programId}</p>}
+            {fv.programId && <p className="form-error-text" id="class-program-error">{fv.programId}</p>}
           </div>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Khóa tuyển sinh</label>
-              <input className={`form-input ${fv.cohort ? 'invalid' : ''}`} placeholder="Vd: 2026"
+              <input className={`form-input ${fv.cohort ? 'invalid' : ''}`}
+                id="class-cohort-input"
+                aria-describedby={fv.cohort ? 'class-cohort-error' : undefined}
+                aria-invalid={!!fv.cohort}
+                placeholder="Vd: 2026"
                 type="number" min={1000} max={9999}
                 value={form.cohort ?? ''} onChange={e => setForm(f => ({ ...f, cohort: e.target.value === '' ? null : Number(e.target.value) }))} disabled={submitting} />
-              {fv.cohort && <p className="form-error-text">{fv.cohort}</p>}
+              {fv.cohort && <p className="form-error-text" id="class-cohort-error">{fv.cohort}</p>}
             </div>
             <div className="form-group">
               <label className="form-label">Năm học</label>
-              <input className={`form-input ${fv.academicYear ? 'invalid' : ''}`} placeholder="Vd: 2026-2031"
+              <input className={`form-input ${fv.academicYear ? 'invalid' : ''}`}
+                id="class-academic-year-input"
+                aria-describedby={fv.academicYear ? 'class-academic-year-error' : 'class-academic-year-hint'}
+                aria-invalid={!!fv.academicYear}
+                placeholder="Vd: 2026-2031"
                 value={form.academicYear} onChange={e => setForm(f => ({ ...f, academicYear: e.target.value }))} disabled={submitting} />
               {fv.academicYear
-                ? <p className="form-error-text">{fv.academicYear}</p>
-                : <p className="form-hint">Định dạng: YYYY-YYYY</p>}
+                ? <p className="form-error-text" id="class-academic-year-error">{fv.academicYear}</p>
+                : <p className="form-hint" id="class-academic-year-hint">Định dạng: YYYY-YYYY</p>}
             </div>
           </div>
           <div className="toggle-row">

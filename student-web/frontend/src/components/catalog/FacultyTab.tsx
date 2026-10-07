@@ -141,18 +141,24 @@ export default function FacultyTab() {
             <div className="form-group">
               <label className="form-label">Mã viết tắt khoa <span className="required">*</span></label>
               <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`}
+                id="faculty-shortcode-input"
+                aria-describedby={fieldErr.shortCode ? 'faculty-shortcode-error' : undefined}
+                aria-invalid={!!fieldErr.shortCode}
                 placeholder="Vd: IT" value={form.shortCode}
                 onChange={e => setForm(f => ({ ...f, shortCode: e.target.value }))}
                 disabled={submitting} />
-              {fieldErr.shortCode && <p className="form-error-text">{fieldErr.shortCode}</p>}
+              {fieldErr.shortCode && <p className="form-error-text" id="faculty-shortcode-error">{fieldErr.shortCode}</p>}
               {modal?.mode === 'edit' && <p className="form-hint">Mã không thể thay đổi sau khi tạo</p>}
             </div>
             <div className="form-group">
               <label className="form-label">Tên khoa <span className="required">*</span></label>
               <input className={`form-input ${fieldErr.name ? 'invalid' : ''}`}
+                id="faculty-name-input"
+                aria-describedby={fieldErr.name ? 'faculty-name-error' : undefined}
+                aria-invalid={!!fieldErr.name}
                 placeholder="Vd: Khoa Công nghệ thông tin" value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))} disabled={submitting} />
-              {fieldErr.name && <p className="form-error-text">{fieldErr.name}</p>}
+              {fieldErr.name && <p className="form-error-text" id="faculty-name-error">{fieldErr.name}</p>}
             </div>
           </div>
           <div className="form-group full">

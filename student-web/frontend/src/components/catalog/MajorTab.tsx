@@ -120,28 +120,39 @@ export default function MajorTab() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Mã viết tắt ngành <span className="required">*</span></label>
-              <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`} placeholder="Vd: IT"
+              <input className={`form-input ${fieldErr.shortCode ? 'invalid' : ''}`}
+                id="major-shortcode-input"
+                aria-describedby={fieldErr.shortCode ? 'major-shortcode-error' : undefined}
+                aria-invalid={!!fieldErr.shortCode}
+                placeholder="Vd: IT"
                 value={form.shortCode} onChange={e => setForm(f => ({ ...f, shortCode: e.target.value }))}
                 disabled={submitting} />
-              {fieldErr.shortCode && <p className="form-error-text">{fieldErr.shortCode}</p>}
+              {fieldErr.shortCode && <p className="form-error-text" id="major-shortcode-error">{fieldErr.shortCode}</p>}
             </div>
             <div className="form-group">
               <label className="form-label">Tên ngành <span className="required">*</span></label>
-              <input className={`form-input ${fieldErr.name ? 'invalid' : ''}`} placeholder="Vd: Công nghệ thông tin"
+              <input className={`form-input ${fieldErr.name ? 'invalid' : ''}`}
+                id="major-name-input"
+                aria-describedby={fieldErr.name ? 'major-name-error' : undefined}
+                aria-invalid={!!fieldErr.name}
+                placeholder="Vd: Công nghệ thông tin"
                 value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} disabled={submitting} />
-              {fieldErr.name && <p className="form-error-text">{fieldErr.name}</p>}
+              {fieldErr.name && <p className="form-error-text" id="major-name-error">{fieldErr.name}</p>}
             </div>
           </div>
           <div className="form-group">
             <label className="form-label">Khoa <span className="required">*</span></label>
             <select className={`form-select ${fieldErr.facultyId ? 'invalid' : ''}`}
+              id="major-faculty-select"
+              aria-describedby={fieldErr.facultyId ? 'major-faculty-error' : undefined}
+              aria-invalid={!!fieldErr.facultyId}
               value={form.facultyId}
               onChange={e => setForm(f => ({ ...f, facultyId: Number(e.target.value) }))}
               disabled={submitting || (modal?.mode === 'edit')}>
               <option value={0}>— Chọn khoa —</option>
               {faculties.map(f => <option key={f.id} value={f.id}>{f.name} ({f.shortCode})</option>)}
             </select>
-            {fieldErr.facultyId && <p className="form-error-text">{fieldErr.facultyId}</p>}
+            {fieldErr.facultyId && <p className="form-error-text" id="major-faculty-error">{fieldErr.facultyId}</p>}
             {modal?.mode === 'edit' && <p className="form-hint">Không thể thay đổi khoa nếu ngành đang được sử dụng</p>}
           </div>
           <div className="form-group full">

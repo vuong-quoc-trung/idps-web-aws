@@ -96,19 +96,19 @@ export default function CatalogPage() {
         {/* Page heading */}
         <div className="resource-header">
           <div className="resource-title">
-            <h2>
+            <h1>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ verticalAlign: 'middle', marginRight: 8 }}>
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" strokeWidth="1.75"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" strokeWidth="1.75"/>
               </svg>
               Quản lý danh mục học vụ
-            </h2>
+            </h1>
             <p>{tab.description}</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="catalog-tabs" role="tablist">
+        <div className="catalog-tabs" role="tablist" aria-label="Danh mục học vụ">
           {TABS.map(t => (
             <button
               key={t.id}
@@ -116,6 +116,7 @@ export default function CatalogPage() {
               className={`catalog-tab${activeTab === t.id ? ' active' : ''}`}
               role="tab"
               aria-selected={activeTab === t.id}
+              aria-controls="catalog-tabpanel"
               onClick={() => setActiveTab(t.id)}
             >
               <span className="tab-icon">{t.icon}</span>
@@ -125,7 +126,7 @@ export default function CatalogPage() {
         </div>
 
         {/* Tab content */}
-        <div className="resource-section" role="tabpanel">
+        <div id="catalog-tabpanel" className="resource-section" role="tabpanel" aria-labelledby={`catalog-tab-${activeTab}`}>
           <div className="resource-header">
             <div className="resource-title">
               <h2>{tab.title}</h2>
