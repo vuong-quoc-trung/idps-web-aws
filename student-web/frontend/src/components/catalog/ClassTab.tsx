@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { StudentClass, StudentClassPayload, TrainingProgram } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
-import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
+import { CatalogTable, type Column, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
 const EMPTY: StudentClassPayload = {
   name: '', active: true, programId: 0,
@@ -100,7 +100,7 @@ export default function ClassTab() {
     } finally { setDeleting(false); }
   }
 
-  const columns = [
+  const columns: Column<StudentClass>[] = [
     { key: 'id',          label: 'ID',          cls: 'col-id' },
     { key: 'code',        label: 'Mã lớp',      cls: 'col-code', render: (r: StudentClass) => <span>{r.code}</span> },
     { key: 'name',        label: 'Tên lớp',     render: (r: StudentClass) => <span>{r.name || '—'}</span> },
@@ -118,7 +118,7 @@ export default function ClassTab() {
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
         emptyText="Chưa có lớp nào." addLabel="Thêm lớp"
-        onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} readOnly={readOnly} />
+        onAdd={openAdd} onEdit={openEdit} onDelete={row => setDeleteTarget(row)} readOnly={readOnly} />
       {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal}

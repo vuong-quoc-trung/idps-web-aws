@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { TrainingProgram, TrainingProgramPayload, Major, DegreeType } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
-import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
+import { CatalogTable, type Column, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
 const DEGREE_OPTIONS: { value: DegreeType; label: string }[] = [
   { value: 'BACHELOR', label: 'Cử nhân (Bachelor)' },
@@ -122,7 +122,7 @@ export default function ProgramTab() {
 
   const degreeLabel = (d?: DegreeType | null) => DEGREE_OPTIONS.find(o => o.value === d)?.label ?? '—';
 
-  const columns = [
+  const columns: Column<TrainingProgram>[] = [
     { key: 'id',          label: 'ID',           cls: 'col-id' },
     { key: 'code',        label: 'Mã',            cls: 'col-code', render: (r: TrainingProgram) => <span>{r.code}</span> },
     { key: 'name',        label: 'Tên chương trình' },
@@ -140,7 +140,7 @@ export default function ProgramTab() {
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
         emptyText="Chưa có chương trình đào tạo nào." addLabel="Thêm chương trình"
-        onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} readOnly={readOnly} />
+        onAdd={openAdd} onEdit={openEdit} onDelete={row => setDeleteTarget(row)} readOnly={readOnly} />
       {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal} size="lg"

@@ -24,8 +24,8 @@ interface TableProps<T extends { id: number }> {
   emptyText: string;
   addLabel?: string;
   onAdd?: () => void;
-  onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
+  onEdit?: (row: NoInfer<T>) => void;
+  onDelete?: (row: NoInfer<T>) => void;
   readOnly?: boolean;
 }
 

@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { Major, MajorPayload, Faculty } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
-import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
+import { CatalogTable, type Column, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
 const EMPTY: MajorPayload = { shortCode: '', name: '', description: '', active: true, facultyId: 0 };
 
@@ -89,7 +89,7 @@ export default function MajorTab() {
     } finally { setDeleting(false); }
   }
 
-  const columns = [
+  const columns: Column<Major>[] = [
     { key: 'id',          label: 'ID',        cls: 'col-id' },
     { key: 'code',        label: 'Mã ngành',  cls: 'col-code', render: (r: Major) => <span>{r.code}</span> },
     { key: 'name',        label: 'Tên ngành' },
@@ -102,7 +102,7 @@ export default function MajorTab() {
     <>
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
-        emptyText="Chưa có ngành nào." addLabel="Thêm ngành" onAdd={openAdd} onEdit={openEdit} onDelete={setDeleteTarget} readOnly={readOnly} />
+        emptyText="Chưa có ngành nào." addLabel="Thêm ngành" onAdd={openAdd} onEdit={openEdit} onDelete={row => setDeleteTarget(row)} readOnly={readOnly} />
       {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal} title={modal?.mode === 'add' ? 'Thêm ngành mới' : `Chỉnh sửa: ${modal?.item?.name}`}

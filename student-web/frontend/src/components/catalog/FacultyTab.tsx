@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { Faculty, FacultyPayload } from '../../types/academic';
 import type { Page } from '../../api/client';
 import Modal from '../Modal';
-import { CatalogTable, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
+import { CatalogTable, type Column, Pagination, SectionError, DeleteConfirm } from './CatalogShared';
 
 // ---- Empty form state ----
 const EMPTY: FacultyPayload = { shortCode: '', name: '', description: '', active: true };
@@ -86,7 +86,7 @@ export default function FacultyTab() {
     } finally { setDeleting(false); }
   }
 
-  const columns = [
+  const columns: Column<Faculty>[] = [
     { key: 'id',     label: 'ID',        cls: 'col-id' },
     { key: 'code',   label: 'Mã khoa',   cls: 'col-code', render: (r: Faculty) => <span>{r.code}</span> },
     { key: 'name',   label: 'Tên khoa' },
@@ -107,7 +107,7 @@ export default function FacultyTab() {
         onAdd={openAdd}
         addLabel="Thêm khoa"
         onEdit={openEdit}
-        onDelete={setDeleteTarget}
+        onDelete={row => setDeleteTarget(row)}
         readOnly={readOnly}
       />
 
