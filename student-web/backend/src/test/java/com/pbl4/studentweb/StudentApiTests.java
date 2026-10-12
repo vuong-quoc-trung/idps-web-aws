@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "spring.datasource.url=jdbc:h2:mem:apitests;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
     "spring.datasource.username=sa", "spring.datasource.password=",
     "spring.jpa.hibernate.ddl-auto=create-drop", "spring.jpa.properties.hibernate.default_schema=PUBLIC",
-    "app.bootstrap.enabled=false", "logging.level.root=WARN"
+    "app.security.rate-limit-enabled=false", "app.bootstrap.enabled=false", "logging.level.root=WARN"
 })
 @Transactional
 class StudentApiTests {
@@ -177,13 +177,39 @@ class StudentApiTests {
         assertThat(encoder.matches(PASSWORD, u.getPasswordHash())).isTrue();
     }
 
-    @Test void passwordChangeRequiresCurrentPasswordCsrfAndStudentRole() throws Exception {
+    @Test void adminAndStaffCanChangeOwnPasswordWithoutMailAndMustLoginAgain() throws Exception {
+        for (String username : java.util.List.of("admin-test", "staff-test")) {
+            var session = login(username);
+            var otherSession = login(username);
+            var before = users.findByUsername(username).orElseThrow();
+            long version = before.getCredentialVersion();
+            send(post("/api/auth/change-password"), session,
+                jsonBody("currentPassword", "wrong-password", "newPassword", "New-account-password"), 400);
+            send(post("/api/auth/change-password"), session,
+                jsonBody("currentPassword", PASSWORD, "newPassword", PASSWORD), 400);
+            send(post("/api/auth/change-password"), session,
+                jsonBody("currentPassword", PASSWORD, "newPassword", "New-account-password"), 204);
+            assertThat(before.getCredentialVersion()).isEqualTo(version + 1);
+            mvc.perform(get("/api/auth/me").session(session)).andExpect(status().isUnauthorized());
+            mvc.perform(get("/api/auth/me").session(otherSession)).andExpect(status().isUnauthorized());
+            mvc.perform(post("/api/auth/login").with(csrf()).param("username", username).param("password", PASSWORD))
+                .andExpect(status().isUnauthorized());
+            mvc.perform(post("/api/auth/login").with(csrf()).param("username", username).param("password", "New-account-password"))
+                .andExpect(status().isNoContent());
+        }
+        org.mockito.Mockito.verifyNoInteractions(resetMail);
+        mvc.perform(post("/api/auth/change-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("currentPassword", PASSWORD, "newPassword", "New-account-password")))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test void passwordChangeRequiresCurrentPasswordCsrfAndActiveAccount() throws Exception {
         var student = student("STU-2024-000902"); var session = login(student.getStudentCode());
         String valid = jsonBody("currentPassword", PASSWORD, "newPassword", "Changed-good-password");
         mvc.perform(post("/api/auth/change-password").session(session).contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isForbidden());
         send(post("/api/auth/change-password"), session, jsonBody("currentPassword", "wrong-password", "newPassword", "Changed-good-password"), 400);
         send(post("/api/auth/change-password"), session, jsonBody("currentPassword", PASSWORD, "newPassword", "短".repeat(30)), 400);
-        send(post("/api/auth/change-password"), login("admin-test"), valid, 403);
+
         send(post("/api/auth/change-password"), session, valid, 204);
         mvc.perform(get("/api/auth/me").session(session)).andExpect(status().isUnauthorized());
         mvc.perform(post("/api/auth/login").with(csrf()).param("username", student.getStudentCode()).param("password", "Changed-good-password")).andExpect(status().isNoContent());

@@ -1,0 +1,21 @@
+# TLS terminates directly at Spring Boot. Supply a real certificate keystore.
+server:
+  ssl:
+    enabled: true
+    key-store: ${TLS_KEY_STORE}
+    key-store-password: ${TLS_KEY_STORE_PASSWORD}
+    key-store-type: PKCS12
+  servlet:
+    session:
+      tracking-modes: cookie
+      cookie:
+        secure: true
+        http-only: true
+        same-site: lax
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+app:
+  bootstrap:
+    enabled: false

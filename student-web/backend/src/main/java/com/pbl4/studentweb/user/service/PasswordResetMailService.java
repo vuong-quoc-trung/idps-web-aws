@@ -22,7 +22,7 @@ public class PasswordResetMailService {
         message.setFrom(from); message.setTo(recipient);
         message.setSubject("PBL4 - Mã xác thực đặt lại mật khẩu");
         message.setText("Mã xác thực của bạn: " + code
-            + "\nMã có hiệu lực 10 phút và chỉ dùng một lần. Không chia sẻ mã này."
+            + "\nMã có hiệu lực 5 phút và chỉ dùng một lần. Không chia sẻ mã này."
             + "\nNếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này.");
         sender.getObject().send(message);
     }

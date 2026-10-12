@@ -1,4 +1,4 @@
-export const PHONE_ERROR = 'Số điện thoại không hợp lệ. Nhập số Việt Nam (VD: 0912345678) hoặc +mã quốc gia.';
+export const PHONE_ERROR = 'Số điện thoại không hợp lệ. Di động Việt Nam cần 10 chữ số khi bắt đầu bằng 0, hoặc +84 và 9 chữ số (bỏ số 0 đầu).';
 export const EMAIL_ERROR = 'Email không đúng định dạng (VD: ten@gmail.com).';
 export function normalizePhone(raw?: string | null): string {
   return (raw ?? '').trim().replace(/[ .()-]/g, '');
@@ -9,6 +9,17 @@ export function validPhone(raw?: string | null): boolean {
   const value = normalizePhone(raw);
   return /^(?:0|\+84)(?:[35789][0-9]{8}|2[0-9]{9})$/.test(value)
     || (!value.startsWith('+84') && /^\+[1-9][0-9]{7,14}$/.test(value));
+}
+export function phoneError(raw?: string | null): string {
+  if (validPhone(raw)) return '';
+  const value = normalizePhone(raw);
+  if (value.startsWith('+840')) return 'Khi dùng +84, bỏ số 0 đầu: VD 0912345678 → +84912345678.';
+  const mobile = /^(0|\+84)([35789][0-9]*)$/.exec(value);
+  if (mobile) {
+    const actual = mobile[2].length;
+    if (actual !== 9) return `Số di động Việt Nam đang ${actual < 9 ? 'thiếu' : 'thừa'} ${Math.abs(9 - actual)} chữ số. Cần 10 chữ số gồm số 0 đầu, hoặc +84 và 9 chữ số.`;
+  }
+  return PHONE_ERROR;
 }
 export function validEmail(raw?: string | null): boolean {
   if (!raw?.trim()) return true;

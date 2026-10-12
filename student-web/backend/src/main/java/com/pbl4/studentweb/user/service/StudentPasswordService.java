@@ -48,7 +48,7 @@ public class StudentPasswordService {
         String code = String.format(Locale.ROOT, "%06d", random.nextInt(1000000));
         u.setResetSentAt(now); u.setResetSendCount(u.getResetSendCount() + 1);
         u.setResetAttempts(0); u.setResetCodeHash(encoder.encode(code));
-        u.setResetExpiresAt(now.plusMinutes(10));
+        u.setResetExpiresAt(now.plusMinutes(5));
         try { mail.send(student.get().getSchoolEmail(), code); }
         catch (MailException e) {
             // Do not leak account existence or SMTP details, and retain the send limit.
@@ -77,7 +77,8 @@ public class StudentPasswordService {
     public boolean change(Long userId, String currentPassword, String newPassword) {
         validatePassword(newPassword);
         var u = users.findForUpdate(userId).orElseThrow();
-        if (!eligible(u) || !encoder.matches(currentPassword, u.getPasswordHash())) return false;
+        if (!u.isEnabled() || u.isPasswordSetupRequired()
+                || !encoder.matches(currentPassword, u.getPasswordHash())) return false;
         if (encoder.matches(newPassword, u.getPasswordHash()))
             throw new IllegalArgumentException("Mật khẩu mới phải khác mật khẩu hiện tại");
         updatePassword(u, newPassword);

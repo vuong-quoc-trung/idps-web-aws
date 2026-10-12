@@ -34,7 +34,7 @@ import type {
 } from '../types/student';
 import './ProfilePage.css';
 import { AddressLocationFields, countryLabel, CatalogSelect, CountrySelect, ProvinceField, useProfileOptions } from '../components/profile/ProfileFields';
-import { validPhone, validEmail, PHONE_ERROR, EMAIL_ERROR } from '../utils/contactValidation';
+import { phoneError, validPhone, validEmail, EMAIL_ERROR } from '../utils/contactValidation';
 
 const GENDER_LABELS: Record<string, string> = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 const STATUS_LABELS: Record<string, string> = {
@@ -607,7 +607,7 @@ function FamilyModal({ item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
-    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
     setSubmitting(true); setErr(null);
     try {
       const payload = {
@@ -814,7 +814,7 @@ function EmergencyModal({ item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
-    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
     if (!form.fullName.trim()) { setErr('Họ tên là bắt buộc'); return; }
     if (!form.phoneNumber.trim()) { setErr('Số điện thoại là bắt buộc'); return; }
     if (!form.priority || form.priority < 1) { setErr('Thứ tự ưu tiên phải ≥ 1'); return; }
@@ -1010,7 +1010,7 @@ function PostGradModal({ item, open, onClose, onSaved }:
   }, [item, open]);
 
   async function save() {
-    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
     if (!validEmail(form.email)) { setErr(EMAIL_ERROR); return; }
     setSubmitting(true); setErr(null);
     try {
@@ -1145,7 +1145,7 @@ function PersonalTab({
   }
 
   async function save() {
-    if (!validPhone(form.phoneNumber)) { setErr(PHONE_ERROR); return; }
+    if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
     if (!validEmail(form.personalEmail)) { setErr(EMAIL_ERROR); return; }
     setSubmitting(true); setErr(null); setSuccess(false);
     try {
@@ -1221,7 +1221,15 @@ function PersonalTab({
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label">Số điện thoại cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" type="tel" placeholder="0912 345 678" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
+            <input className="profile-form-input" type="tel" inputMode="tel" placeholder="0912 345 678 hoặc +84912345678"
+              aria-invalid={!!phoneError(form.phoneNumber)} aria-describedby="personal-phone-help"
+              value={form.phoneNumber} onChange={e => {
+                setForm(f => ({ ...f, phoneNumber: e.target.value }));
+                setErr(previous => previous === phoneError(form.phoneNumber) ? '' : previous);
+              }}/>
+            <small id="personal-phone-help" role={phoneError(form.phoneNumber) ? 'alert' : undefined}>
+              {phoneError(form.phoneNumber) || 'Di động Việt Nam: 10 chữ số bắt đầu bằng 0; dùng +84 thì bỏ số 0 đầu.'}
+            </small>
           </div>
         </div>
         <div style={{ marginTop: 'var(--space-3)' }}>
