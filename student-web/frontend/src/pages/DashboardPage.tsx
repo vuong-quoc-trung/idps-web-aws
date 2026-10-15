@@ -76,6 +76,7 @@ export default function DashboardPage() {
   const [studentAcademic, setStudentAcademic] = useState<{ className?: string; majorName?: string }>({});
 
   const [loading, setLoading] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -105,7 +106,9 @@ export default function DashboardPage() {
             recentStudents: students.slice(0, 5),
           });
         })
-        .catch(() => {})
+        .catch((e) => {
+          if (isMounted) setStatsError(e instanceof Error ? e.message : 'Lỗi tải chỉ số học vụ');
+        })
         .finally(() => {
           if (isMounted) setLoading(false);
         });
@@ -149,14 +152,20 @@ export default function DashboardPage() {
     .join('')
     .toUpperCase();
 
-  // Completion calculation for student
+  // Completion calculation for student.
+  // Guard: if completion is null (not yet loaded or failed), do not compute a percentage —
+  // missingCount would default to 0 and produce a misleading 99% on an empty profile.
+  const completionReady = completion !== null;
   const isComplete =
-    completion?.status === 'COMPLETE' ||
-    completion?.complete === true ||
-    (completion?.missingFields && completion.missingFields.length === 0);
+    completionReady && (
+      completion?.status === 'COMPLETE' ||
+      completion?.complete === true ||
+      (completion?.missingFields && completion.missingFields.length === 0)
+    );
   const missingCount = completion?.missingFields?.length ?? 0;
   const totalFields = 17;
-  const displayPct = isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
+  // Only compute a percentage once we have real data; default to 0 while loading.
+  const displayPct = !completionReady ? 0 : isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
 
   return (
     <>
@@ -344,6 +353,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Recent Students Card */}
+              {!loading && statsError && (
+                <div className="section-error" role="alert" style={{ marginTop: 'var(--space-4)', fontSize: 'var(--text-sm)' }}>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  {statsError}
+                </div>
+              )}
+              {!loading && !statsError && stats && stats.recentStudents.length === 0 && (
+                <div className="dashboard-table-card" style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ margin: '0 auto 10px', display: 'block', opacity: 0.5 }}>
+                    <rect x="4" y="6" width="24" height="20" rx="3" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M4 12h24" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M10 18h12M10 22h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  Chưa có sinh viên nào trong hệ thống.
+                </div>
+              )}
               {stats?.recentStudents && stats.recentStudents.length > 0 && (
                 <div className="dashboard-table-card">
                   <div className="dashboard-table-header">

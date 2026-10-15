@@ -138,11 +138,14 @@ export default function StudentDetailPage() {
     </div>
   );
 
-  const isComplete = completion?.status === 'COMPLETE' || completion?.complete === true || (completion?.missingFields && completion.missingFields.length === 0);
+  const completionReady = completion !== null;
+  const isComplete = completionReady && (
+    completion?.status === 'COMPLETE' || completion?.complete === true || (completion?.missingFields && completion.missingFields.length === 0)
+  );
   const missingCount = completion?.missingFields?.length ?? 0;
   const totalFields = 17;
-  const pct = isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
-  const displayPct = isComplete ? 100 : pct;
+  const pct = !completionReady ? 0 : isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
+  const displayPct = pct;
 
   return (
     <div className="student-detail-page">
