@@ -64,6 +64,8 @@ export default function StudentsPage() {
   const [deactivateTarget, setDeactivateTarget] = useState<StudentSummary | null>(null);
   const [deactivating, setDeactivating] = useState(false);
   const [deactivateErr, setDeactivateErr] = useState<string | null>(null);
+  const [editLoading, setEditLoading] = useState<number | null>(null); // stores id of row being fetched
+  const [editError, setEditError] = useState<string | null>(null);
 
   // Load filter options + lookup data ONCE on mount
   useEffect(() => {
@@ -95,10 +97,15 @@ export default function StudentsPage() {
   }, [page, debouncedSearch, majorId, classId, status, load]);
 
   async function openEdit(sv: StudentSummary) {
+    setEditLoading(sv.id); setEditError(null);
     try {
       const detail = await studentApi.get(sv.id);
       setEditStudent(detail);
-    } catch { /* ignore */ }
+    } catch (e) {
+      setEditError(e instanceof Error ? e.message : 'Không thể tải thông tin sinh viên');
+    } finally {
+      setEditLoading(null);
+    }
   }
 
   async function handleDeactivate() {
@@ -204,12 +211,24 @@ export default function StudentsPage() {
             <button className="filter-clear" onClick={clearFilters}>✕ Xóa bộ lọc</button>
           )}
         </div>
+        {profileStatus && (
+          <div style={{ fontSize: 'var(--text-xs, 0.72rem)', color: 'var(--text-muted)', padding: '4px 2px', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.25"/><path d="M7 5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
+            Bộ lọc &quot;Tiến độ hồ sơ&quot; chỉ áp dụng cho trang hiện tại. Kết quả có thể không đầy đủ nếu có nhiều trang.
+          </div>
+        )}
 
         {/* Error */}
         {tableErr && (
           <div className="section-error" style={{ fontSize: 'var(--text-sm)' }} role="alert">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             {tableErr}
+          </div>
+        )}
+        {editError && (
+          <div className="section-error" style={{ fontSize: 'var(--text-sm)' }} role="alert">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4.5v4M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            {editError}
           </div>
         )}
 
@@ -268,8 +287,11 @@ export default function StudentsPage() {
                   </td>
                   <td data-label="Thao tác" onClick={e => e.stopPropagation()}>
                     <div className="sv-actions">
-                      <button className="sv-action-btn" id={`edit-sv-${sv.id}`} title="Chỉnh sửa" aria-label="Chỉnh sửa" onClick={e => { e.stopPropagation(); openEdit(sv); }}>
-                        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/></svg>
+                      <button className="sv-action-btn" id={`edit-sv-${sv.id}`} title="Chỉnh sửa" aria-label="Chỉnh sửa" disabled={editLoading === sv.id} onClick={e => { e.stopPropagation(); openEdit(sv); }}>
+                        {editLoading === sv.id
+                          ? <span className="spinner" style={{ width: 10, height: 10, borderWidth: 1.5, display: 'inline-block' }} />
+                          : <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/></svg>
+                        }
                       </button>
                       <button className="sv-action-btn danger" id={`deactivate-sv-${sv.id}`} title="Ngừng hoạt động" aria-label="Ngừng hoạt động" onClick={e => { e.stopPropagation(); setDeactivateTarget(sv); }}>
                         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.25"/><path d="M5 9l4-4M9 9L5 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
