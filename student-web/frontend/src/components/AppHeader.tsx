@@ -94,6 +94,16 @@ export default function AppHeader() {
     setOpen(false);
   }, [location.pathname]);
 
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
   async function handleLogout() {
     setLoggingOut(true);
     try {
@@ -378,7 +388,14 @@ export default function AppHeader() {
 
       {/* Mobile Navigation Drawer */}
       {mobileOpen && (
-        <div className="mobile-nav-drawer" id="mobile-nav-drawer" ref={mobileMenuRef}>
+        <>
+          {/* Backdrop scrim — closes drawer when tapped outside */}
+          <div
+            className="mobile-nav-scrim"
+            aria-hidden="true"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="mobile-nav-drawer" id="mobile-nav-drawer" ref={mobileMenuRef}>
           <div className="mobile-nav-user-bar">
             <Avatar user={user} size={32} />
             <div className="mobile-user-meta">
@@ -482,6 +499,7 @@ export default function AppHeader() {
             </button>
           </nav>
         </div>
+        </>
       )}
     </header>
   );
