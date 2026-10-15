@@ -712,6 +712,12 @@ export default function UsersPage() {
             <option value="false">Đã tắt</option>
           </select>
         </div>
+        {(search || filterRole || filterEnabled) && (
+          <div style={{ fontSize: 'var(--text-xs, 0.72rem)', color: 'var(--text-muted)', padding: '4px 2px', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.25"/><path d="M7 5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
+            Bộ lọc chỉ áp dụng cho trang hiện tại ({data?.content.length ?? 0} tài khoản đang tải). Kết quả có thể không đầy đủ nếu có nhiều trang.
+          </div>
+        )}
 
         {/* Table */}
         <div className="users-table-card">
