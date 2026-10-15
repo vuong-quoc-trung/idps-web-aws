@@ -39,7 +39,7 @@ export function CatalogTable<T extends { id: number }>({
       {/* Table header row with Add button */}
       {!readOnly && onAdd && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>
-          <button className="btn-add" id={`btn-add-${addLabel ?? 'new'}`} onClick={onAdd}>
+          <button className="btn-add" id={`btn-add-${(addLabel ?? 'new').replace(/\s+/g, '-').toLowerCase()}`} onClick={onAdd}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>

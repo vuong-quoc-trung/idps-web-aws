@@ -54,7 +54,8 @@ export default function MajorTab() {
 
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: Major) {
-    setForm({ shortCode: item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active, facultyId: item.facultyId });
+    // Backend summary DTOs expose `code`, not `shortCode`. Fall back to code so the field is never blank.
+    setForm({ shortCode: item.code ?? item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active, facultyId: item.facultyId });
     setFieldErr({}); setFormErr(null); setModal({ mode: 'edit', item });
   }
   function closeModal() { setModal(null); }
@@ -150,7 +151,7 @@ export default function MajorTab() {
               onChange={e => setForm(f => ({ ...f, facultyId: Number(e.target.value) }))}
               disabled={submitting || (modal?.mode === 'edit')}>
               <option value={0}>— Chọn khoa —</option>
-              {faculties.map(f => <option key={f.id} value={f.id}>{f.name} ({f.shortCode})</option>)}
+              {faculties.map(f => <option key={f.id} value={f.id}>{f.name} ({f.code})</option>)}
             </select>
             {fieldErr.facultyId && <p className="form-error-text" id="major-faculty-error">{fieldErr.facultyId}</p>}
             {modal?.mode === 'edit' && <p className="form-hint">Không thể thay đổi khoa nếu ngành đang được sử dụng</p>}

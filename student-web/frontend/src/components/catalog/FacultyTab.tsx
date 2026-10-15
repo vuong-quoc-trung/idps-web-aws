@@ -48,7 +48,8 @@ export default function FacultyTab() {
 
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: Faculty) {
-    setForm({ shortCode: item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active });
+    // Backend summary DTOs expose `code`, not `shortCode`. Fall back to code so the field is never blank.
+    setForm({ shortCode: item.code ?? item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active });
     setFieldErr({}); setFormErr(null);
     setModal({ mode: 'edit', item });
   }
