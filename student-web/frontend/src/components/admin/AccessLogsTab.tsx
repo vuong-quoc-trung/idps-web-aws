@@ -3,7 +3,7 @@
  * Connects to GET /api/access-logs and GET /api/access-logs/{id}
  * Displays HTTP methods, latency, response status, client IP, and inspection modal.
  */
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Modal from '../Modal';
 import { accessLogApi, type AccessLogSummary } from '../../api/accessLogApi';
 import type { Page } from '../../api/client';
@@ -108,17 +108,26 @@ export default function AccessLogsTab() {
   const [selectedLog, setSelectedLog] = useState<AccessLogSummary | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const reqIdRef = useRef(0);
+
   const loadLogs = useCallback(async (p: number, s: number) => {
+    const reqId = ++reqIdRef.current;
     setLoading(true);
     setErr(null);
     try {
       const res = await accessLogApi.list({ page: p, size: s });
-      setData(res);
-      setPage(p);
+      if (reqId === reqIdRef.current) {
+        setData(res);
+        setPage(p);
+      }
     } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Không thể tải nhật ký truy cập');
+      if (reqId === reqIdRef.current) {
+        setErr(e instanceof Error ? e.message : 'Không thể tải nhật ký truy cập');
+      }
     } finally {
-      setLoading(false);
+      if (reqId === reqIdRef.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -203,7 +212,7 @@ export default function AccessLogsTab() {
             </svg>
           </div>
           <div className="logs-stat-content">
-            <span className="logs-stat-label">Tổng bản ghi</span>
+            <span className="logs-stat-label">Tổng toàn hệ thống</span>
             <span className="logs-stat-val">{totalElements.toLocaleString()}</span>
           </div>
         </div>
@@ -215,7 +224,7 @@ export default function AccessLogsTab() {
             </svg>
           </div>
           <div className="logs-stat-content">
-            <span className="logs-stat-label">Thành công (2xx)</span>
+            <span className="logs-stat-label">Thành công (trang này)</span>
             <span className="logs-stat-val">{successCount}</span>
           </div>
         </div>
@@ -228,7 +237,7 @@ export default function AccessLogsTab() {
             </svg>
           </div>
           <div className="logs-stat-content">
-            <span className="logs-stat-label">Độ trễ trung bình</span>
+            <span className="logs-stat-label">Độ trễ TB (trang này)</span>
             <span className="logs-stat-val">{avgLatency} ms</span>
           </div>
         </div>
@@ -241,7 +250,7 @@ export default function AccessLogsTab() {
             </svg>
           </div>
           <div className="logs-stat-content">
-            <span className="logs-stat-label">Lỗi (4xx / 5xx)</span>
+            <span className="logs-stat-label">Lỗi (trang này)</span>
             <span className="logs-stat-val" style={{ color: errorCount > 0 ? '#f85149' : 'inherit' }}>
               {errorCount}
             </span>
@@ -302,6 +311,13 @@ export default function AccessLogsTab() {
           <option value={50}>50 / trang</option>
         </select>
       </div>
+
+      {(search || methodFilter || statusFilter) && (
+        <div style={{ fontSize: 'var(--text-xs, 0.72rem)', color: 'var(--text-muted)', padding: '4px 2px', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.25"/><path d="M7 5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
+          Bộ lọc chỉ áp dụng cho trang hiện tại ({data?.content.length ?? 0} bản ghi đang tải). Kết quả có thể không đầy đủ nếu có nhiều trang.
+        </div>
+      )}
 
       {/* Table Card */}
       <div className="logs-table-card">
@@ -366,7 +382,21 @@ export default function AccessLogsTab() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLogs.map(log => (
+                {filteredLogs.length === 0 ? (
+                  <tr>
+                    <td colSpan={9}>
+                      <div style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ margin: '0 auto 12px', display: 'block', color: 'var(--text-muted)' }}>
+                          <circle cx="14" cy="14" r="9" stroke="currentColor" strokeWidth="1.5"/>
+                          <path d="M21 21l6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                        <p style={{ margin: 0, fontSize: 'var(--text-sm)' }}>
+                          {search || methodFilter || statusFilter ? 'Không tìm thấy bản ghi nhật ký phù hợp bộ lọc trên trang này.' : 'Chưa có dữ liệu nhật ký truy cập.'}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : filteredLogs.map(log => (
                   <tr key={log.id}>
                     <td style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
                       #{log.id}

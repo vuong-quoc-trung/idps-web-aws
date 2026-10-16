@@ -7,7 +7,7 @@
  *   - Enable / disable account toggle
  *   - Re-issue activation token for pending (passwordSetupRequired) accounts
  */
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import Modal from '../components/Modal';
@@ -156,7 +156,7 @@ function CreateUserModal({ open, onClose, onCreated }: {
       {err && <div className="users-alert-error" style={{ marginBottom: 12 }}><IcoInfo/>{err}</div>}
       <div className="users-form">
         <div className="users-form-group">
-          <label className="users-form-label">Tên đăng nhập <span className="required">*</span></label>
+          <label className="users-form-label" htmlFor="create-user-username">Tên đăng nhập <span className="required">*</span></label>
           <input
             id="create-user-username"
             className="users-form-input"
@@ -169,7 +169,7 @@ function CreateUserModal({ open, onClose, onCreated }: {
           <span className="users-form-hint">Không thể thay đổi sau khi tạo.</span>
         </div>
         <div className="users-form-group">
-          <label className="users-form-label">Vai trò <span className="required">*</span></label>
+          <label className="users-form-label" htmlFor="create-user-role">Vai trò <span className="required">*</span></label>
           <select
             id="create-user-role"
             className="users-form-select"
@@ -517,17 +517,26 @@ export default function UsersPage() {
     if (user && user.role !== 'ADMIN') navigate('/', { replace: true });
   }, [user, navigate]);
 
+  const reqIdRef = useRef(0);
+
   // ---- Load users ----
   const load = useCallback(async (p: number) => {
+    const reqId = ++reqIdRef.current;
     setLoading(true); setLoadErr(null);
     try {
       const res = await userApi.list({ page: p, size: PAGE_SIZE });
-      setData(res);
-      setPage(p);
+      if (reqId === reqIdRef.current) {
+        setData(res);
+        setPage(p);
+      }
     } catch (e) {
-      setLoadErr(e instanceof Error ? e.message : 'Lỗi tải danh sách');
+      if (reqId === reqIdRef.current) {
+        setLoadErr(e instanceof Error ? e.message : 'Lỗi tải danh sách');
+      }
     } finally {
-      setLoading(false);
+      if (reqId === reqIdRef.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -654,26 +663,26 @@ export default function UsersPage() {
           <div id="admin-panel-users" role="tabpanel" aria-labelledby="admin-tab-users">
         {/* Stats */}
         <div className="users-stats-bar">
-          <span className="users-stat-chip total">
+          <span className="users-stat-chip total" title="Tổng số tài khoản trên toàn hệ thống">
             <span className="stat-dot" style={{ background: 'var(--text-muted)' }}/>
-            Tổng: {data?.totalElements ?? '—'}
+            Tổng hệ thống: {data?.totalElements ?? '—'}
           </span>
-          <span className="users-stat-chip admin">
+          <span className="users-stat-chip admin" title="Số tài khoản Admin trên trang hiện tại">
             <span className="stat-dot" style={{ background: 'var(--role-admin-text)' }}/>
-            Admin: {adminCount}
+            Admin (trang này): {adminCount}
           </span>
-          <span className="users-stat-chip staff">
+          <span className="users-stat-chip staff" title="Số tài khoản Staff trên trang hiện tại">
             <span className="stat-dot" style={{ background: 'var(--role-staff-text)' }}/>
-            Staff: {staffCount}
+            Staff (trang này): {staffCount}
           </span>
-          <span className="users-stat-chip active">
+          <span className="users-stat-chip active" title="Số tài khoản đang bật trên trang hiện tại">
             <span className="stat-dot"/>
-            Đang hoạt động: {activeCount}
+            Đang bật (trang này): {activeCount}
           </span>
           {pendingCount > 0 && (
-            <span className="users-stat-chip pending">
+            <span className="users-stat-chip pending" title="Số tài khoản chờ kích hoạt trên trang hiện tại">
               <span className="stat-dot"/>
-              Chờ kích hoạt: {pendingCount}
+              Chờ kích hoạt (trang này): {pendingCount}
             </span>
           )}
         </div>

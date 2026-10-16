@@ -78,11 +78,24 @@ export default function StudentsPage() {
     }).catch(() => {});
   }, []);
 
+  const reqIdRef = useRef(0);
   const load = useCallback(async (p: number, params: StudentListParams) => {
+    const reqId = ++reqIdRef.current;
     setLoading(true); setTableErr(null);
-    try { setData(await studentApi.list({ ...params, page: p })); }
-    catch (e) { setTableErr(e instanceof Error ? e.message : 'Lỗi tải danh sách'); }
-    finally { setLoading(false); }
+    try {
+      const res = await studentApi.list({ ...params, page: p });
+      if (reqId === reqIdRef.current) {
+        setData(res);
+      }
+    } catch (e) {
+      if (reqId === reqIdRef.current) {
+        setTableErr(e instanceof Error ? e.message : 'Lỗi tải danh sách');
+      }
+    } finally {
+      if (reqId === reqIdRef.current) {
+        setLoading(false);
+      }
+    }
   }, []);
 
   // Reset to page 0 when filters change (including client-side profileStatus)
@@ -266,7 +279,19 @@ export default function StudentsPage() {
                   </div>
                 </td></tr>
               ) : displayedStudents.map(sv => (
-                <tr key={sv.id} onClick={() => navigate(`/students/${sv.id}`)}>
+                <tr
+                  key={sv.id}
+                  tabIndex={0}
+                  role="link"
+                  aria-label={`Xem chi tiết sinh viên ${sv.fullName}, MSSV ${sv.studentCode}`}
+                  onClick={() => navigate(`/students/${sv.id}`)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/students/${sv.id}`);
+                    }
+                  }}
+                >
                   <td data-label="ID" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{sv.id}</td>
                   <td data-label="Sinh viên">
                     <div className="sv-identity">
@@ -287,13 +312,26 @@ export default function StudentsPage() {
                   </td>
                   <td data-label="Thao tác" onClick={e => e.stopPropagation()}>
                     <div className="sv-actions">
-                      <button className="sv-action-btn" id={`edit-sv-${sv.id}`} title="Chỉnh sửa" aria-label="Chỉnh sửa" disabled={editLoading === sv.id} onClick={e => { e.stopPropagation(); openEdit(sv); }}>
+                      <button
+                        className="sv-action-btn"
+                        id={`edit-sv-${sv.id}`}
+                        title={`Chỉnh sửa sinh viên ${sv.fullName}`}
+                        aria-label={`Chỉnh sửa sinh viên ${sv.fullName}`}
+                        disabled={editLoading === sv.id}
+                        onClick={e => { e.stopPropagation(); openEdit(sv); }}
+                      >
                         {editLoading === sv.id
                           ? <span className="spinner" style={{ width: 10, height: 10, borderWidth: 1.5, display: 'inline-block' }} />
                           : <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/></svg>
                         }
                       </button>
-                      <button className="sv-action-btn danger" id={`deactivate-sv-${sv.id}`} title="Ngừng hoạt động" aria-label="Ngừng hoạt động" onClick={e => { e.stopPropagation(); setDeactivateTarget(sv); }}>
+                      <button
+                        className="sv-action-btn danger"
+                        id={`deactivate-sv-${sv.id}`}
+                        title={`Ngừng hoạt động sinh viên ${sv.fullName}`}
+                        aria-label={`Ngừng hoạt động sinh viên ${sv.fullName}`}
+                        onClick={e => { e.stopPropagation(); setDeactivateTarget(sv); }}
+                      >
                         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.25"/><path d="M5 9l4-4M9 9L5 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
                       </button>
                     </div>
