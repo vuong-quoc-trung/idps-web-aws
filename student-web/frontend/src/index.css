@@ -29,7 +29,7 @@
   /* Text */
   --text-primary:   #d4d4d4;
   --text-secondary: #9d9d9d;
-  --text-muted:     #6d6d6d;
+  --text-muted:     #9e9e9e;
   --text-heading:   #e8e8e8;
   --text-brand:     #4fc1ff;
   --text-error:     #f48771;
@@ -105,7 +105,7 @@
 
   --text-primary:   #1f1f1f;
   --text-secondary: #525252;
-  --text-muted:     #8b8b8b;
+  --text-muted:     #656565;
   --text-heading:   #0f0f0f;
   --text-brand:     #005fb8;
   --text-error:     #b5200d;

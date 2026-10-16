@@ -44,12 +44,12 @@ export default function SubResourceSection<T extends { id: number }>({
       <div key={item.id} style={{ position: 'relative' }}>
         {rendered}
         <div className="sub-card-actions">
-          <button className="sv-action-btn" title="Chỉnh sửa" aria-label="Chỉnh sửa" onClick={() => openEdit(item)}>
+          <button className="sv-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa ${title}`} onClick={() => openEdit(item)}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
               <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
             </svg>
           </button>
-          <button className="sv-action-btn danger" title="Xóa" aria-label="Xóa" onClick={() => setDeleteTarget(item)}>
+          <button className="sv-action-btn danger" title="Xóa" aria-label={`Xóa ${title}`} onClick={() => setDeleteTarget(item)}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
               <path d="M2.5 4h9M5.5 4V2.5h3V4M6 6.5v4M8 6.5v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -63,7 +63,7 @@ export default function SubResourceSection<T extends { id: number }>({
     <div className="detail-section">
       <div className="detail-section-header">
         <span className="detail-section-title">{title}</span>
-        <button className="section-add-btn" onClick={openAdd}>
+        <button className="section-add-btn" onClick={openAdd} aria-label={`Thêm ${title}`}>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>

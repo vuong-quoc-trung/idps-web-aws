@@ -197,6 +197,11 @@
 .students-table tbody tr:last-child td { border-bottom: none; }
 .students-table tbody tr { transition: background var(--transition-fast); cursor: pointer; }
 .students-table tbody tr:hover { background: var(--bg-hover); }
+.students-table tbody tr:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: var(--bg-hover);
+}
 
 /* Student identity cell */
 .sv-identity { display: flex; flex-direction: column; gap: 2px; }

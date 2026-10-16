@@ -125,13 +125,13 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         {/* Row 1: Thông tin định danh cố định (MSSV + Email trường) */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Mã sinh viên (MSSV)</label>
-            <input className="form-input" value={student.studentCode} disabled style={{ opacity: 0.7 }} />
+            <label className="form-label" htmlFor="edit-student-mssv">Mã sinh viên (MSSV)</label>
+            <input id="edit-student-mssv" className="form-input" value={student.studentCode} disabled style={{ opacity: 0.7 }} />
             <p className="form-hint">MSSV không thể thay đổi sau khi tạo</p>
           </div>
           <div className="form-group">
-            <label className="form-label">Email trường</label>
-            <input className="form-input" value={student?.schoolEmail ?? '—'} disabled style={{ opacity: 0.7 }} />
+            <label className="form-label" htmlFor="edit-student-email">Email trường</label>
+            <input id="edit-student-email" className="form-input" value={student?.schoolEmail ?? '—'} disabled style={{ opacity: 0.7 }} />
             <p className="form-hint">Email định danh tài khoản trường</p>
           </div>
         </div>
@@ -139,14 +139,14 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         {/* Row 2: Họ tên + Trạng thái */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Họ và tên <span className="required">*</span></label>
-            <input className={`form-input ${fv.fullName ? 'invalid' : ''}`}
+            <label className="form-label" htmlFor="edit-student-fullname">Họ và tên <span className="required">*</span></label>
+            <input id="edit-student-fullname" className={`form-input ${fv.fullName ? 'invalid' : ''}`}
               value={f.fullName} onChange={e => set('fullName', e.target.value)} disabled={submitting} />
             {fv.fullName && <p className="form-error-text">{fv.fullName}</p>}
           </div>
           <div className="form-group">
-            <label className="form-label">Trạng thái <span className="required">*</span></label>
-            <select className={`form-select ${fv.status ? 'invalid' : ''}`} value={f.status}
+            <label className="form-label" htmlFor="edit-student-status">Trạng thái <span className="required">*</span></label>
+            <select id="edit-student-status" className={`form-select ${fv.status ? 'invalid' : ''}`} value={f.status}
               onChange={e => set('status', e.target.value)} disabled={submitting}>
               {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -156,14 +156,14 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         {/* Row 3: Ngày sinh + Giới tính */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Ngày sinh</label>
-            <input className={`form-input ${fv.dateOfBirth ? 'invalid' : ''}`} placeholder="YYYY-MM-DD"
+            <label className="form-label" htmlFor="edit-student-dob">Ngày sinh</label>
+            <input id="edit-student-dob" className={`form-input ${fv.dateOfBirth ? 'invalid' : ''}`} placeholder="YYYY-MM-DD"
               value={f.dateOfBirth ?? ''} onChange={e => set('dateOfBirth', e.target.value)} disabled={submitting} />
             {fv.dateOfBirth && <p className="form-error-text">{fv.dateOfBirth}</p>}
           </div>
           <div className="form-group">
-            <label className="form-label">Giới tính</label>
-            <select className="form-select" value={f.gender ?? ''}
+            <label className="form-label" htmlFor="edit-student-gender">Giới tính</label>
+            <select id="edit-student-gender" className="form-select" value={f.gender ?? ''}
               onChange={e => set('gender', (e.target.value as Gender) || null)} disabled={submitting}>
               <option value="">— Không xác định —</option>
               <option value="MALE">Nam</option>
@@ -176,13 +176,13 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         {/* Row 4: CCCD + Lớp */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Số CCCD</label>
-            <input className="form-input" placeholder="Số căn cước công dân"
+            <label className="form-label" htmlFor="edit-student-citizen-id">Số CCCD</label>
+            <input id="edit-student-citizen-id" className="form-input" placeholder="Số căn cước công dân"
               value={f.citizenId ?? ''} onChange={e => set('citizenId', e.target.value)} disabled={submitting} />
           </div>
           <div className="form-group">
-            <label className="form-label">Lớp <span className="required">*</span></label>
-            <select className={`form-select ${fv.classId ? 'invalid' : ''}`} value={f.classId}
+            <label className="form-label" htmlFor="edit-student-class">Lớp <span className="required">*</span></label>
+            <select id="edit-student-class" className={`form-select ${fv.classId ? 'invalid' : ''}`} value={f.classId}
               onChange={e => set('classId', Number(e.target.value))} disabled={submitting}>
               <option value={0}>— Chọn lớp —</option>
               {classes.map(c => <option key={c.id} value={c.id}>{c.name || c.code} ({c.code})</option>)}
@@ -194,14 +194,14 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         {/* Row 5: SĐT gia đình + Chương trình phụ */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">SĐT gia đình</label>
-            <input className="form-input" placeholder="Vd: 0900123456" value={f.familyPhoneNumber ?? ''}
+            <label className="form-label" htmlFor="edit-student-family-phone">SĐT gia đình</label>
+            <input id="edit-student-family-phone" className="form-input" placeholder="Vd: 0900123456" value={f.familyPhoneNumber ?? ''}
               onChange={e => set('familyPhoneNumber', e.target.value)} disabled={submitting} />
             {fv.familyPhoneNumber && <p className="form-error-text">{fv.familyPhoneNumber}</p>}
           </div>
           <div className="form-group">
-            <label className="form-label">Chương trình phụ (song ngành)</label>
-            <select className="form-select" value={f.secondaryProgramId ?? ''}
+            <label className="form-label" htmlFor="edit-student-secondary-program">Chương trình phụ (song ngành)</label>
+            <select id="edit-student-secondary-program" className="form-select" value={f.secondaryProgramId ?? ''}
               onChange={e => set('secondaryProgramId', e.target.value ? Number(e.target.value) : null)}
               disabled={submitting}>
               <option value="">— Không đăng ký CT phụ —</option>
@@ -213,13 +213,13 @@ export default function EditStudentModal({ open, student, onClose, onUpdated }: 
         {/* Row 6: Ngân hàng */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Số tài khoản ngân hàng</label>
-            <input className="form-input" placeholder="Vd: 0123456789"
+            <label className="form-label" htmlFor="edit-student-bank-account">Số tài khoản ngân hàng</label>
+            <input id="edit-student-bank-account" className="form-input" placeholder="Vd: 0123456789"
               value={f.bankAccountNumber ?? ''} onChange={e => set('bankAccountNumber', e.target.value)} disabled={submitting} />
           </div>
           <div className="form-group">
-            <label className="form-label">Tên ngân hàng</label>
-            <input className="form-input" placeholder="Vd: Vietcombank"
+            <label className="form-label" htmlFor="edit-student-bank-name">Tên ngân hàng</label>
+            <input id="edit-student-bank-name" className="form-input" placeholder="Vd: Vietcombank"
               value={f.bankName ?? ''} onChange={e => set('bankName', e.target.value)} disabled={submitting} />
           </div>
         </div>

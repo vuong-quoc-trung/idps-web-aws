@@ -156,13 +156,13 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         {/* Row 1: MSSV (tự sinh) + Họ tên */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Mã sinh viên (MSSV)</label>
-            <input className="form-input" value="(Tự động sinh theo khóa của lớp)" disabled style={{ opacity: 0.7 }} />
+            <label className="form-label" htmlFor="create-student-mssv">Mã sinh viên (MSSV)</label>
+            <input id="create-student-mssv" className="form-input" value="(Tự động sinh theo khóa của lớp)" disabled style={{ opacity: 0.7 }} />
             <p className="form-hint">Mã sinh viên được tự sinh theo khóa và giữ nguyên khi chuyển lớp.</p>
           </div>
           <div className="form-group">
-            <label className="form-label">Họ và tên <span className="required">*</span></label>
-            <input className={`form-input ${fv.fullName ? 'invalid' : ''}`} placeholder="Vd: Nguyễn Văn A"
+            <label className="form-label" htmlFor="create-student-fullname">Họ và tên <span className="required">*</span></label>
+            <input id="create-student-fullname" className={`form-input ${fv.fullName ? 'invalid' : ''}`} placeholder="Vd: Nguyễn Văn A"
               value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} disabled={submitting} />
             {fv.fullName && <p className="form-error-text">{fv.fullName}</p>}
           </div>
@@ -170,14 +170,14 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         {/* Row 2: Ngày sinh + Giới tính */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Ngày sinh</label>
-            <input className={`form-input ${fv.dateOfBirth ? 'invalid' : ''}`} placeholder="YYYY-MM-DD"
+            <label className="form-label" htmlFor="create-student-dob">Ngày sinh</label>
+            <input id="create-student-dob" className={`form-input ${fv.dateOfBirth ? 'invalid' : ''}`} placeholder="YYYY-MM-DD"
               value={form.dateOfBirth} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))} disabled={submitting} />
             {fv.dateOfBirth && <p className="form-error-text">{fv.dateOfBirth}</p>}
           </div>
           <div className="form-group">
-            <label className="form-label">Giới tính</label>
-            <select className="form-select" value={form.gender ?? ''}
+            <label className="form-label" htmlFor="create-student-gender">Giới tính</label>
+            <select id="create-student-gender" className="form-select" value={form.gender ?? ''}
               onChange={e => setForm(f => ({ ...f, gender: (e.target.value as Gender) || undefined }))}>
               <option value="">— Không xác định —</option>
               <option value="MALE">Nam</option>
@@ -189,13 +189,13 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         {/* Row 3: CCCD + Lớp */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Số CCCD</label>
-            <input className="form-input" placeholder="Vd: 001234567890"
+            <label className="form-label" htmlFor="create-student-citizen-id">Số CCCD</label>
+            <input id="create-student-citizen-id" className="form-input" placeholder="Vd: 001234567890"
               value={form.citizenId} onChange={e => setForm(f => ({ ...f, citizenId: e.target.value }))} disabled={submitting} />
           </div>
           <div className="form-group">
-            <label className="form-label">Lớp <span className="required">*</span></label>
-            <select className={`form-select ${fv.classId ? 'invalid' : ''}`} value={form.classId}
+            <label className="form-label" htmlFor="create-student-class">Lớp <span className="required">*</span></label>
+            <select id="create-student-class" className={`form-select ${fv.classId ? 'invalid' : ''}`} value={form.classId}
               onChange={e => setForm(f => ({ ...f, classId: Number(e.target.value) }))}>
               <option value={0}>— Chọn lớp —</option>
               {classes.map(c => <option key={c.id} value={c.id}>{c.name || c.code} ({c.code})</option>)}
@@ -206,21 +206,21 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         {/* Row 4: Email + SĐT gia đình */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Email trường</label>
-            <input className="form-input" value="(Tự động cấp sau khi tạo)" disabled style={{ opacity: 0.7 }} />
+            <label className="form-label" htmlFor="create-student-email">Email trường</label>
+            <input id="create-student-email" className="form-input" value="(Tự động cấp sau khi tạo)" disabled style={{ opacity: 0.7 }} />
             <p className="form-hint">Email trường được tự sinh từ MSSV (vd: stu...@sv.pbl4.edu.vn).</p>
           </div>
           <div className="form-group">
-            <label className="form-label">SĐT gia đình</label>
-            <input className="form-input" placeholder="Vd: 0900123456"
+            <label className="form-label" htmlFor="create-student-family-phone">SĐT gia đình</label>
+            <input id="create-student-family-phone" className="form-input" placeholder="Vd: 0900123456"
               value={form.familyPhoneNumber} onChange={e => setForm(f => ({ ...f, familyPhoneNumber: e.target.value }))} disabled={submitting} />
             {fv.familyPhoneNumber && <p className="form-error-text">{fv.familyPhoneNumber}</p>}
           </div>
         </div>
         {/* Row 5: Chương trình phụ */}
         <div className="form-group full">
-          <label className="form-label">Chương trình đào tạo phụ (song ngành)</label>
-          <select className="form-select" value={form.secondaryProgramId ?? ''}
+          <label className="form-label" htmlFor="create-student-secondary-program">Chương trình đào tạo phụ (song ngành)</label>
+          <select id="create-student-secondary-program" className="form-select" value={form.secondaryProgramId ?? ''}
             onChange={e => setForm(f => ({ ...f, secondaryProgramId: e.target.value ? Number(e.target.value) : null }))}
             disabled={submitting}>
             <option value="">— Không đăng ký CT phụ (để trống) —</option>

@@ -38,14 +38,21 @@ export default function Modal({ open, title, onClose, children, footer, size = '
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  // Move focus into the dialog on open
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  // Move focus into the dialog on open and restore on close
   useEffect(() => {
-    if (open && panelRef.current) {
-      // Focus the first focusable element, or the panel itself
-      const focusable = panelRef.current.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      (focusable ?? panelRef.current).focus();
+    if (open) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      if (panelRef.current) {
+        // Focus the first focusable element, or the panel itself
+        const focusable = panelRef.current.querySelector<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        (focusable ?? panelRef.current).focus();
+      }
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
     }
   }, [open]);
 

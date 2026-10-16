@@ -74,7 +74,9 @@ export function CatalogTable<T extends { id: number }>({
                 <p>{emptyText}</p>
               </div>
             </td></tr>
-          ) : rows.map(row => (
+          ) : rows.map(row => {
+            const rowLabel = String((row as Record<string, unknown>).name || (row as Record<string, unknown>).code || (row as Record<string, unknown>).shortCode || `#${row.id}`);
+            return (
             <tr key={row.id}>
               {columns.map(c => (
                 <td key={c.key} className={c.cls} data-label={c.label}>
@@ -85,14 +87,14 @@ export function CatalogTable<T extends { id: number }>({
                 <td className="col-actions">
                   <div className="row-actions">
                     {onEdit && (
-                      <button className="action-btn" id={`edit-${row.id}`} onClick={() => onEdit(row)} title="Chỉnh sửa" aria-label="Chỉnh sửa">
+                      <button className="action-btn" id={`edit-${row.id}`} onClick={() => onEdit(row)} title="Chỉnh sửa" aria-label={`Chỉnh sửa ${rowLabel}`}>
                         <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                           <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
                         </svg>
                       </button>
                     )}
                     {onDelete && (
-                      <button className="action-btn delete" id={`delete-${row.id}`} onClick={() => onDelete(row)} title="Xóa" aria-label="Xóa">
+                      <button className="action-btn delete" id={`delete-${row.id}`} onClick={() => onDelete(row)} title="Xóa" aria-label={`Xóa ${rowLabel}`}>
                         <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                           <path d="M2 4h10M5 4V3h4v1M5.5 6.5v4M8.5 6.5v4M3 4l.75 8h6.5L11 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
@@ -102,7 +104,7 @@ export function CatalogTable<T extends { id: number }>({
                 </td>
               )}
             </tr>
-          ))}
+          );})}
         </tbody>
       </table>
     </div>
