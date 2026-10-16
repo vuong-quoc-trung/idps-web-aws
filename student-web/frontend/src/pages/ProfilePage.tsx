@@ -34,7 +34,7 @@ import type {
 } from '../types/student';
 import './ProfilePage.css';
 import { AddressLocationFields, countryLabel, CatalogSelect, CountrySelect, ProvinceField, useProfileOptions } from '../components/profile/ProfileFields';
-import { phoneError, validPhone, validEmail, EMAIL_ERROR } from '../utils/contactValidation';
+import { phoneError, validPhone, validEmail, EMAIL_ERROR, REQUIRED_PHONE_ERROR, REQUIRED_EMAIL_ERROR } from '../utils/contactValidation';
 
 const GENDER_LABELS: Record<string, string> = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 const STATUS_LABELS: Record<string, string> = {
@@ -366,8 +366,8 @@ function AddressTab({ onModified }: { onModified?: () => void }) {
                 </div>
               )}
               <div className="profile-sub-card-actions">
-                <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(addr); setShowModal(true); }}><IcoEdit/></button>
-                <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(addr)}><IcoTrash/></button>
+                <button className="profile-sub-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa địa chỉ ${ADDR_LABELS[addr.addressType] ?? ''} ${addr.addressLine ?? ''}`} onClick={() => { setEditItem(addr); setShowModal(true); }}><IcoEdit/></button>
+                <button className="profile-sub-action-btn danger" title="Xóa" aria-label={`Xóa địa chỉ ${ADDR_LABELS[addr.addressType] ?? ''} ${addr.addressLine ?? ''}`} onClick={() => setDeleteTarget(addr)}><IcoTrash/></button>
               </div>
             </div>
           ))}
@@ -554,8 +554,8 @@ function FamilyTab({ onModified }: { onModified?: () => void }) {
               </div>
               {m.unavailable && <div className="profile-sub-card-row"><span style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>Đã mất / Không liên lạc được</span></div>}
               <div className="profile-sub-card-actions">
-                <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(m); setShowModal(true); }}><IcoEdit/></button>
-                <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(m)}><IcoTrash/></button>
+                <button className="profile-sub-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa nhân thân ${m.fullName || (REL_LABELS[m.relationship] ?? '')}`} onClick={() => { setEditItem(m); setShowModal(true); }}><IcoEdit/></button>
+                <button className="profile-sub-action-btn danger" title="Xóa" aria-label={`Xóa nhân thân ${m.fullName || (REL_LABELS[m.relationship] ?? '')}`} onClick={() => setDeleteTarget(m)}><IcoTrash/></button>
               </div>
             </div>
           ))}
@@ -768,8 +768,8 @@ function EmergencyTab({ onModified }: { onModified?: () => void }) {
                 </div>
               )}
               <div className="profile-sub-card-actions">
-                <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(c); setShowModal(true); }}><IcoEdit/></button>
-                <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(c)}><IcoTrash/></button>
+                <button className="profile-sub-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa liên hệ khẩn cấp ${c.fullName}`} onClick={() => { setEditItem(c); setShowModal(true); }}><IcoEdit/></button>
+                <button className="profile-sub-action-btn danger" title="Xóa" aria-label={`Xóa liên hệ khẩn cấp ${c.fullName}`} onClick={() => setDeleteTarget(c)}><IcoTrash/></button>
               </div>
             </div>
           ))}
@@ -965,8 +965,8 @@ function PostGradTab() {
                 </div>
               )}
               <div className="profile-sub-card-actions">
-                <button className="profile-sub-action-btn" title="Chỉnh sửa" onClick={() => { setEditItem(c); setShowModal(true); }}><IcoEdit/></button>
-                <button className="profile-sub-action-btn danger" title="Xóa" onClick={() => setDeleteTarget(c)}><IcoTrash/></button>
+                <button className="profile-sub-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa liên hệ sau tốt nghiệp ${c.fullName}`} onClick={() => { setEditItem(c); setShowModal(true); }}><IcoEdit/></button>
+                <button className="profile-sub-action-btn danger" title="Xóa" aria-label={`Xóa liên hệ sau tốt nghiệp ${c.fullName}`} onClick={() => setDeleteTarget(c)}><IcoTrash/></button>
               </div>
             </div>
           ))}
@@ -1145,7 +1145,9 @@ function PersonalTab({
   }
 
   async function save() {
+    if (!form.phoneNumber.trim()) { setErr(REQUIRED_PHONE_ERROR); return; }
     if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
+    if (!form.personalEmail.trim()) { setErr(REQUIRED_EMAIL_ERROR); return; }
     if (!validEmail(form.personalEmail)) { setErr(EMAIL_ERROR); return; }
     setSubmitting(true); setErr(null); setSuccess(false);
     try {
@@ -1216,12 +1218,12 @@ function PersonalTab({
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Email cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" type="email" placeholder="example@gmail.com" value={form.personalEmail} onChange={e => setForm(f => ({ ...f, personalEmail: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-personal-email">Email cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input id="profile-personal-email" className="profile-form-input" type="email" placeholder="example@gmail.com" value={form.personalEmail} onChange={e => setForm(f => ({ ...f, personalEmail: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" type="tel" inputMode="tel" placeholder="0912 345 678 hoặc +84912345678"
+            <label className="profile-form-label" htmlFor="profile-personal-phone">Số điện thoại cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input id="profile-personal-phone" className="profile-form-input" type="tel" inputMode="tel" placeholder="0912 345 678 hoặc +84912345678"
               aria-invalid={!!phoneError(form.phoneNumber)} aria-describedby="personal-phone-help"
               value={form.phoneNumber} onChange={e => {
                 setForm(f => ({ ...f, phoneNumber: e.target.value }));
@@ -1234,8 +1236,8 @@ function PersonalTab({
         </div>
         <div style={{ marginTop: 'var(--space-3)' }}>
           <div className="profile-form-group">
-            <label className="profile-form-label">Facebook / Mạng xã hội</label>
-            <input className="profile-form-input" placeholder="https://facebook.com/..." value={form.facebookUrl} onChange={e => setForm(f => ({ ...f, facebookUrl: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-facebook-url">Facebook / Mạng xã hội</label>
+            <input id="profile-facebook-url" className="profile-form-input" placeholder="https://facebook.com/..." value={form.facebookUrl} onChange={e => setForm(f => ({ ...f, facebookUrl: e.target.value }))}/>
           </div>
         </div>
       </div>

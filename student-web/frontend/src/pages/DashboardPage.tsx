@@ -86,24 +86,31 @@ export default function DashboardPage() {
 
     if (isAdminOrStaff) {
       Promise.all([
-        studentApi.list({ size: 100 }),
+        studentApi.list({ size: 20 }),
+        studentApi.list({ status: 'ACTIVE', size: 1 }),
         facultyApi.list(0),
         majorApi.list(0),
         classApi.list(0),
       ])
-        .then(([stdRes, facRes, majRes, clsRes]) => {
+        .then(([stdRes, activeRes, facRes, majRes, clsRes]) => {
           if (!isMounted) return;
           const students = stdRes.content || [];
-          const active = students.filter(s => s.status === 'ACTIVE').length;
+          const totalStudents = stdRes.totalElements || students.length;
+          // Use totalElements from server-filtered query for true global active student count
+          const active = activeRes.totalElements ?? students.filter(s => s.status === 'ACTIVE').length;
           const completed = students.filter(s => s.profileStatus === 'COMPLETE').length;
+
+          // Backend returns students ordered by id ASC; sorting by id DESC presents the newest additions
+          const recent = [...students].sort((a, b) => b.id - a.id).slice(0, 5);
+
           setStats({
-            totalStudents: stdRes.totalElements || students.length,
+            totalStudents,
             activeStudents: active,
             completedStudents: completed,
             facultiesCount: facRes.totalElements || facRes.content.length,
             majorsCount: majRes.totalElements || majRes.content.length,
             classesCount: clsRes.totalElements || clsRes.content.length,
-            recentStudents: students.slice(0, 5),
+            recentStudents: recent,
           });
         })
         .catch((e) => {

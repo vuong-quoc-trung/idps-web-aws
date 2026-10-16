@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validPhone, normalizePhone, validEmail, phoneError } from './contactValidation.ts';
+import { validPhone, normalizePhone, validEmail, phoneError, validRequiredPhone, validRequiredEmail } from './contactValidation.ts';
 
 test('Vietnamese mobile/landline and international phone formats', () => {
   for (const value of [undefined, '', '0912345678', '0912 345 678', '+84 912-345-678', '02412345678', '+1 (415) 555-2671']) assert.equal(validPhone(value), true, value);
@@ -18,4 +18,16 @@ test('Vietnamese phone errors explain missing digits and international prefix', 
   assert.match(phoneError('+840912345678'), /bỏ số 0 đầu/);
   assert.equal(phoneError('0771234567'), '');
   assert.equal(phoneError('+84771234567'), '');
+});
+
+test('Required contact validation rejects empty/whitespace values and accepts valid ones', () => {
+  assert.equal(validRequiredPhone(''), false);
+  assert.equal(validRequiredPhone('   '), false);
+  assert.equal(validRequiredPhone(null), false);
+  assert.equal(validRequiredPhone('0912345678'), true);
+
+  assert.equal(validRequiredEmail(''), false);
+  assert.equal(validRequiredEmail('   '), false);
+  assert.equal(validRequiredEmail(null), false);
+  assert.equal(validRequiredEmail('student@university.edu.vn'), true);
 });

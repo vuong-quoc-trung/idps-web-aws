@@ -1,7 +1,15 @@
 export const PHONE_ERROR = 'Số điện thoại không hợp lệ. Di động Việt Nam cần 10 chữ số khi bắt đầu bằng 0, hoặc +84 và 9 chữ số (bỏ số 0 đầu).';
+export const REQUIRED_PHONE_ERROR = 'Vui lòng nhập số điện thoại cá nhân.';
 export const EMAIL_ERROR = 'Email không đúng định dạng (VD: ten@gmail.com).';
+export const REQUIRED_EMAIL_ERROR = 'Vui lòng nhập email cá nhân.';
 export function normalizePhone(raw?: string | null): string {
   return (raw ?? '').trim().replace(/[ .()-]/g, '');
+}
+export function validRequiredPhone(raw?: string | null): boolean {
+  return !!raw?.trim() && validPhone(raw);
+}
+export function validRequiredEmail(raw?: string | null): boolean {
+  return !!raw?.trim() && validEmail(raw);
 }
 export function validPhone(raw?: string | null): boolean {
   if (!raw?.trim()) return true;
