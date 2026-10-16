@@ -54,4 +54,13 @@ public class User extends AuditedEntity {
     @org.hibernate.annotations.ColumnDefault("0")
     @Column(nullable = false)
     private int resetSendCount;
+    @Column(length = 64)
+    private String activationProofHash;
+    private LocalDateTime activationProofExpiresAt;
+    @Column(length = 150)
+    private String pendingActivationEmail;
+    private LocalDateTime activationCheckWindow;
+    @org.hibernate.annotations.ColumnDefault("0")
+    @Column(nullable = false)
+    private int activationCheckCount;
 }

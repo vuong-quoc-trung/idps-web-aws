@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 final class SecurityRequestFilter extends OncePerRequestFilter {
-    private static final Set<String> LIMITED = Set.of("/api/auth/login", "/api/auth/activate",
+    private static final Set<String> LIMITED = Set.of("/api/auth/login", "/api/auth/activate", "/api/auth/activation/verify", "/api/auth/activation/send",
         "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/change-password");
     private final SensitiveRequestLimiter limiter;
     private final SecurityAuditService audit;

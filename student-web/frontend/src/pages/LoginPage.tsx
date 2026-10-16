@@ -2,7 +2,7 @@
    LoginPage — /login
    ============================================================ */
 import { useState, type FormEvent } from 'react';
-import { useNavigate, Navigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './LoginPage.css';
@@ -61,6 +61,7 @@ function ThemeToggle() {
 export default function LoginPage() {
   const { user, loading, login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -115,6 +116,7 @@ export default function LoginPage() {
             <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
           </div>
 
+          {location.state?.passwordNotice && <p role="status" className="auth-hint">Mật khẩu đã được cập nhật. Vui lòng đăng nhập bằng mật khẩu mới.</p>}
           {error && (
             <div className="alert alert-error" role="alert" id="login-error">
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -209,6 +211,7 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <p className="auth-hint"><Link to="/forgot-password">Quên mật khẩu?</Link></p>
           <p className="auth-hint">
             Lần đầu đăng nhập?&nbsp;
             <Link to="/activate" id="activate-link">Kích hoạt tài khoản</Link>

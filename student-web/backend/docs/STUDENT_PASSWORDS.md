@@ -12,7 +12,7 @@ Tất cả POST vẫn yêu cầu cookie và CSRF: lấy token từ `GET /api/aut
 | POST /reset-password | `{"studentCode":"STU-2024-000001","code":"012345","newPassword":"new-long-password"}` | 204 |
 | POST /change-password | `{"currentPassword":"old-long-password","newPassword":"new-long-password"}` | 204, yêu cầu đăng nhập STUDENT, ADMIN hoặc STAFF |
 
-Quên mật khẩu: nhập mã sinh viên, nhận OTP vào **schoolEmail đang lưu trong database**, rồi gửi OTP cùng mật khẩu mới. Backend xác thực mã trước khi ghi mật khẩu; không có bước xác thực trên frontend có thể bỏ qua. Không nhận email đích từ request và không gửi sang email cá nhân. Email trường phải là hộp thư thực có khả năng nhận thư; chuỗi email tự sinh chưa đồng nghĩa đã tạo mailbox.
+Quên mật khẩu: nhập mã sinh viên, nhận OTP vào **personalEmail đang lưu trong hồ sơ**, rồi gửi OTP cùng mật khẩu mới. Backend xác thực mã trước khi ghi mật khẩu; không có bước xác thực trên frontend có thể bỏ qua. Không nhận email đích từ request và không gửi sang email trường. Nếu chưa có email cá nhân hợp lệ, không gửi mã và vẫn trả thông báo chung.
 
 OTP gồm 6 chữ số, có hiệu lực 5 phút, lưu bằng BCrypt. Mỗi tài khoản tối đa 5 lần gửi/giờ, cách nhau ít nhất 60 giây; tối đa 5 lần thử mỗi mã. Gửi lại thay mã cũ. Mã sai/hết hạn/đã dùng trả 400. Mã đúng chỉ dùng một lần. Yêu cầu gửi cho tài khoản không tồn tại, bị khóa, chưa kích hoạt hoặc bị giới hạn đều trả cùng 202 và không gửi thư. Lỗi SMTP cũng không tiết lộ tài khoản; backend ghi thông báo lỗi chung và hủy mã không gửi được.
 
@@ -40,3 +40,5 @@ Tham khảo cấu hình JavaMailSender chính thức: https://docs.spring.io/spr
 Test dùng mail service giả để xác nhận email nhận, mã một lần, hạn sử dụng, giới hạn gửi/thử, CSRF, phân quyền, mật khẩu và thu hồi phiên; không gửi thư thật. Khi đưa lên môi trường public, cấu hình rate limit tại reverse proxy cho cả login và các endpoint mật khẩu để hạn chế lưu lượng từ nhiều địa chỉ/tài khoản.
 
 Đổi mật khẩu áp dụng cho cả sinh viên, admin và staff, chỉ đổi tài khoản đang đăng nhập (không nhận userId từ client). Không cần SMTP/OTP; có thể giữ PASSWORD_RESET_MAIL_ENABLED=false. Quên mật khẩu qua email vẫn dành cho sinh viên. Không cần migration mới nếu đã chạy 016.
+
+Luồng kích hoạt tự phục vụ qua đối chiếu hồ sơ và link email: xem [STUDENT_ACTIVATION.md](STUDENT_ACTIVATION.md). Cần migration 017 và PUBLIC_APP_URL.

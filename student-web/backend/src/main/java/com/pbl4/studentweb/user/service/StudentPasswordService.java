@@ -38,7 +38,10 @@ public class StudentPasswordService {
         var u = users.findForUpdate(found.get().getId()).orElseThrow();
         if (!eligible(u)) return;
         var student = students.findByUserId(u.getId());
-        if (student.isEmpty() || student.get().getSchoolEmail() == null) return;
+        if (student.isEmpty()) return;
+        String recipient = student.get().getPersonalEmail();
+        if (recipient == null || recipient.isBlank()
+                || !com.pbl4.studentweb.common.validation.ContactValues.validEmail(recipient)) return;
         var now = LocalDateTime.now();
         if (u.getResetSentAt() != null && u.getResetSentAt().plusSeconds(60).isAfter(now)) return;
         if (u.getResetWindowStartedAt() == null || !u.getResetWindowStartedAt().plusHours(1).isAfter(now)) {
@@ -49,11 +52,15 @@ public class StudentPasswordService {
         u.setResetSentAt(now); u.setResetSendCount(u.getResetSendCount() + 1);
         u.setResetAttempts(0); u.setResetCodeHash(encoder.encode(code));
         u.setResetExpiresAt(now.plusMinutes(5));
-        try { mail.send(student.get().getSchoolEmail(), code); }
+        try { mail.send(recipient.trim(), code); }
         catch (MailException e) {
             // Do not leak account existence or SMTP details, and retain the send limit.
             clearReset(u);
-            org.slf4j.LoggerFactory.getLogger(getClass()).warn("Password reset delivery failed; check SMTP configuration");
+            String category = e instanceof org.springframework.mail.MailAuthenticationException
+                ? "SMTP_AUTHENTICATION_FAILED: check SMTP username and app password"
+                : "SMTP_DELIVERY_FAILED: check SMTP connectivity, TLS and sender configuration";
+            org.slf4j.LoggerFactory.getLogger(getClass()).warn("Password reset delivery failed; {} (type={})",
+                category, e.getClass().getSimpleName());
         }
     }
     // Return failure instead of throwing so failed-attempt counters commit.

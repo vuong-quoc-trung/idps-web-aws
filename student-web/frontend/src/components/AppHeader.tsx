@@ -361,6 +361,7 @@ export default function AppHeader() {
               <div className="dropdown-divider" />
 
               <div className="dropdown-section">
+                <button className="dropdown-item" role="menuitem" onClick={() => navigate('/change-password')}>Đổi mật khẩu</button>
                 <button
                   id="logout-button"
                   className="dropdown-item logout-item"
@@ -486,6 +487,7 @@ export default function AppHeader() {
               </Link>
             )}
 
+            <button className="mobile-nav-link" onClick={() => navigate('/change-password')}>Đổi mật khẩu</button>
             <button
               className="mobile-nav-link logout-btn"
               onClick={handleLogout}

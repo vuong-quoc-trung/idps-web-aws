@@ -40,6 +40,8 @@ server:
         secure: ${SESSION_COOKIE_SECURE:false}
 
 app:
+  activation:
+    public-base-url: ${PUBLIC_APP_URL:http://localhost:5173}
   password-reset:
     mail-enabled: ${PASSWORD_RESET_MAIL_ENABLED:false}
     from: ${MAIL_FROM:}

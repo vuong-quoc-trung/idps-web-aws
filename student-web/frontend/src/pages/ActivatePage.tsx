@@ -2,8 +2,9 @@
    ActivatePage — /activate
    First-time account activation using a one-time token
    ============================================================ */
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import ActivationIdentityForm from './ActivationIdentityForm';
 import { activateAccount } from '../api/authApi';
 import { useTheme } from '../contexts/ThemeContext';
 import './ActivatePage.css';
@@ -89,7 +90,10 @@ const EyeOn = () => (
 export default function ActivatePage() {
   const [searchParams] = useSearchParams();
 
-  const [token, setToken] = useState(searchParams.get('token') ?? '');
+  const [token] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get('token') ?? searchParams.get('token') ?? '');
+  useEffect(() => {
+    if (token) window.history.replaceState(window.history.state, '', window.location.pathname);
+  }, [token]);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [showPwd, setShowPwd] = useState(false);
@@ -119,6 +123,8 @@ export default function ActivatePage() {
       setSubmitting(false);
     }
   }
+
+  if (!token) return <ActivationIdentityForm />;
 
   return (
     <div className="auth-page">
@@ -201,7 +207,7 @@ export default function ActivatePage() {
             <>
               <div className="auth-card-header">
                 <h1>Đặt mật khẩu lần đầu</h1>
-                <p>Nhập token kích hoạt và tạo mật khẩu mới cho tài khoản</p>
+                <p>Tạo mật khẩu lần đầu để hoàn tất kích hoạt tài khoản</p>
               </div>
 
               {error && (
@@ -215,32 +221,7 @@ export default function ActivatePage() {
               )}
 
               <form id="activate-form" className="auth-form" onSubmit={handleSubmit} noValidate>
-                {/* Token */}
-                <div className="field-group">
-                  <label className="field-label" htmlFor="activate-token">Token kích hoạt</label>
-                  <div className="input-wrapper">
-                    <span className="input-icon">
-                      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                        <path d="M10 2a4 4 0 00-3.873 5H3l-1 1v2h1v1h2v-1h1v-2l-.127-.127A4 4 0 1010 2z"
-                          stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                        <circle cx="10" cy="5" r="1" fill="currentColor" />
-                      </svg>
-                    </span>
-                    <input
-                      id="activate-token"
-                      type="text"
-                      className="field-input"
-                      placeholder="Dán token vào đây"
-                      autoFocus={!token}
-                      required
-                      value={token}
-                      onChange={e => setToken(e.target.value)}
-                      disabled={submitting}
-                      style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', letterSpacing: '0.3px' }}
-                    />
-                  </div>
-                  <p className="field-hint">Token do quản trị viên cung cấp, có hiệu lực trong 24 giờ</p>
-                </div>
+                <p className="field-hint">Liên kết kích hoạt đã được nhận. Hãy đặt mật khẩu lần đầu cho tài khoản.</p>
 
                 {/* New password */}
                 <div className="field-group">

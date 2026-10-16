@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import PasswordPage from './pages/PasswordPage';
 import LoginPage          from './pages/LoginPage';
 import ActivatePage       from './pages/ActivatePage';
 import DashboardPage      from './pages/DashboardPage';
@@ -18,12 +19,14 @@ export default function App() {
         <AuthProvider>
           <Routes>
             {/* Public routes */}
+            <Route path="/forgot-password" element={<PasswordPage mode="forgot" />} />
             <Route path="/login"    element={<LoginPage />} />
             <Route path="/activate" element={<ActivatePage />} />
 
             {/* All authenticated users */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardPage />} />
+              <Route path="/change-password" element={<PasswordPage mode="change" />} />
               <Route path="/catalog" element={<CatalogPage />} />
             </Route>
 

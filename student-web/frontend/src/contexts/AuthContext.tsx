@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { fetchMe, login as apiLogin, logout as apiLogout } from '../api/authApi';
+import { clearAuthTokens, fetchMe, login as apiLogin, logout as apiLogout } from '../api/authApi';
 import type { CurrentUser } from '../types/auth';
 
 interface AuthContextValue {
@@ -19,6 +19,7 @@ interface AuthContextValue {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  clearSession: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -47,8 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const clearSession = useCallback(() => { clearAuthTokens(); setUser(null); }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, refresh, clearSession }}>
       {children}
     </AuthContext.Provider>
   );

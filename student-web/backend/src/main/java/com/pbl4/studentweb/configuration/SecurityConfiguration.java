@@ -30,7 +30,7 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/profile-options").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/activate", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/activate", "/api/auth/activation/verify", "/api/auth/activation/send", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/change-password").hasAnyRole("STUDENT", "ADMIN", "STAFF")
                 .requestMatchers("/api/auth/me", "/api/auth/logout").authenticated()
                 .requestMatchers("/api/users/**", "/api/access-logs/**").hasRole("ADMIN")

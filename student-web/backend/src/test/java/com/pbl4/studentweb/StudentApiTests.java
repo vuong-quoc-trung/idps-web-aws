@@ -117,7 +117,7 @@ class StudentApiTests {
 
 
     @Test void resetMailConfigurationEligibilityAndHourlyLimitAreEnforced() throws Exception {
-        var student = student("STU-2024-000903"); var u = student.getUser();
+        var student = student("STU-2024-000903"); student.setPersonalEmail("reset-limits@gmail.com"); students.saveAndFlush(student); var u = student.getUser();
         String body = jsonBody("studentCode", student.getStudentCode());
         mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isServiceUnavailable());
         org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
@@ -136,14 +136,71 @@ class StudentApiTests {
         assertThat(u.getResetCodeHash()).isNull();
     }
 
+    private String identityBody(Student s, String citizenId) throws Exception {
+        return jsonBody("studentCode", s.getStudentCode(), "fullName", s.getFullName(),
+            "dateOfBirth", s.getDateOfBirth().toString(), "gender", s.getGender().name(),
+            "citizenId", citizenId, "classCode", s.getStudentClass().getClassCode());
+    }
+    @Test void activationVerifiesIdentityAndCommitsEmailOnlyAfterSingleUseLink() throws Exception {
+        var s = student("ACTIVATE-MAIL"); var u = s.getUser();
+        u.setPasswordSetupRequired(true); users.saveAndFlush(u);
+        org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
+        mvc.perform(post("/api/auth/activation/verify").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(identityBody(s, "wrong"))).andExpect(status().isBadRequest());
+        var verified = body(mvc.perform(post("/api/auth/activation/verify").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(identityBody(s, s.getCitizenId()))).andExpect(status().isOk()).andReturn());
+        String proof = verified.get("proof").asString();
+        assertThat(u.getActivationProofHash()).isNotEqualTo(proof);
+        String payload = jsonBody("proof", proof, "email", "activation-recipient@gmail.com");
+        mvc.perform(post("/api/auth/activation/send").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(payload)).andExpect(status().isAccepted());
+        assertThat(s.getPersonalEmail()).isNull();
+        var token = org.mockito.ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(resetMail).sendActivation(org.mockito.ArgumentMatchers.eq("activation-recipient@gmail.com"), token.capture());
+        assertThat(u.getActivationTokenHash()).isNotEqualTo(token.getValue());
+        mvc.perform(post("/api/auth/activation/send").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(payload)).andExpect(status().isBadRequest());
+        String activation = jsonBody("token", token.getValue(), "password", "Activated-password-123");
+        mvc.perform(post("/api/auth/activate").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(activation)).andExpect(status().isNoContent());
+        assertThat(s.getPersonalEmail()).isEqualTo("activation-recipient@gmail.com");
+        assertThat(u.isPasswordSetupRequired()).isFalse();
+        mvc.perform(post("/api/auth/activate").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(activation)).andExpect(status().isBadRequest());
+        mvc.perform(post("/api/auth/activation/verify").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(identityBody(s, s.getCitizenId()))).andExpect(status().isBadRequest());
+    }
+    @Test void identityAttemptsAreLimitedAndMissingSchoolDataCannotActivate() throws Exception {
+        var s = student("ACT-LIMIT"); s.getUser().setPasswordSetupRequired(true); users.saveAndFlush(s.getUser());
+        for (int i = 0; i < 5; i++) mvc.perform(post("/api/auth/activation/verify").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(identityBody(s, "wrong"))).andExpect(status().isBadRequest());
+        mvc.perform(post("/api/auth/activation/verify").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(identityBody(s, s.getCitizenId()))).andExpect(status().isBadRequest());
+        var missing = student("ACT-MISSING"); missing.getUser().setPasswordSetupRequired(true);
+        String request = identityBody(missing, missing.getCitizenId());
+        missing.setCitizenId(null); students.saveAndFlush(missing);
+        mvc.perform(post("/api/auth/activation/verify").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(request)).andExpect(status().isBadRequest());
+    }
+
+    @Test void resetNeverFallsBackToSchoolEmail() throws Exception {
+        var student = student("NO-PERSONAL");
+        student.setPersonalEmail(null); students.saveAndFlush(student);
+        org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
+        mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content(jsonBody("studentCode", student.getStudentCode()))).andExpect(status().isAccepted());
+        org.mockito.Mockito.verify(resetMail, org.mockito.Mockito.never()).send(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+    }
+
     @Test void studentCanResetPasswordOnlyWithDeliveredSingleUseCode() throws Exception {
         var student = student("STU-2024-000900");
+        student.setPersonalEmail("reset-recipient@gmail.com"); students.saveAndFlush(student);
         var oldSession = login(student.getStudentCode());
         org.mockito.Mockito.when(resetMail.available()).thenReturn(true);
         mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(jsonBody("studentCode", student.getStudentCode()))).andExpect(status().isAccepted());
         var code = org.mockito.ArgumentCaptor.forClass(String.class);
-        org.mockito.Mockito.verify(resetMail).send(org.mockito.ArgumentMatchers.eq(student.getSchoolEmail()), code.capture());
+        org.mockito.Mockito.verify(resetMail).send(org.mockito.ArgumentMatchers.eq(student.getPersonalEmail()), code.capture());
         assertThat(code.getValue()).matches("[0-9]{6}");
         assertThat(users.findById(student.getUser().getId()).orElseThrow().getResetCodeHash()).isNotEqualTo(code.getValue());
         mvc.perform(post("/api/auth/forgot-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)

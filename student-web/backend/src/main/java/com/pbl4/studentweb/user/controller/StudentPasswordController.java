@@ -30,7 +30,7 @@ public class StudentPasswordController {
     public ResponseEntity<Message> forgot(@Valid @RequestBody ForgotRequest request) {
         if (!mail.available()) return ResponseEntity.status(503).body(new Message("Chức năng gửi email chưa được cấu hình"));
         passwords.requestReset(request.studentCode());
-        return ResponseEntity.accepted().body(new Message("Nếu tài khoản đủ điều kiện, mã xác thực sẽ được gửi tới email trường. Vui lòng kiểm tra hộp thư."));
+        return ResponseEntity.accepted().body(new Message("Nếu tài khoản đủ điều kiện, mã xác thực sẽ được gửi tới email cá nhân đã lưu trong hồ sơ. Vui lòng kiểm tra hộp thư."));
     }
     @PostMapping("/reset-password")
     public ResponseEntity<Void> reset(@Valid @RequestBody ResetRequest request) {

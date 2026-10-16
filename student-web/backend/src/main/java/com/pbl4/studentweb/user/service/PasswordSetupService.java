@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PasswordSetupService {
     private final UserRepository users;
     private final PasswordEncoder encoder;
+    private final com.pbl4.studentweb.student.repository.StudentRepository students;
     private final SecureRandom random = new SecureRandom();
 
     // Internal admin onboarding only. Deliver the returned secret through a trusted channel.
@@ -42,6 +43,13 @@ public class PasswordSetupService {
         if (!user.isEnabled() || !user.isPasswordSetupRequired() || user.getActivationExpiresAt() == null
                 || !user.getActivationExpiresAt().isAfter(LocalDateTime.now()))
             throw new IllegalArgumentException("Invalid or expired activation token");
+        if (user.getPendingActivationEmail() != null) {
+            var student = students.findByUserId(user.getId()).orElseThrow();
+            student.setPersonalEmail(user.getPendingActivationEmail());
+        }
+        user.setPendingActivationEmail(null);
+        user.setActivationProofHash(null);
+        user.setActivationProofExpiresAt(null);
         user.setPasswordHash(encoder.encode(password));
         user.setPasswordSetupRequired(false);
         user.setActivationTokenHash(null);
@@ -55,6 +63,9 @@ public class PasswordSetupService {
                 new com.pbl4.studentweb.common.exception.ResourceNotFoundException("User"));
         if (!user.isEnabled() || !user.isPasswordSetupRequired())
             throw new IllegalStateException("Only enabled accounts awaiting password setup can receive a new activation token");
+        user.setPendingActivationEmail(null);
+        user.setActivationProofHash(null);
+        user.setActivationProofExpiresAt(null);
         String token = randomToken();
         user.setActivationTokenHash(hash(token));
         user.setActivationExpiresAt(LocalDateTime.now().plusHours(24));

@@ -109,3 +109,27 @@ export async function activateAccount(token: string, password: string): Promise<
     );
   }
 }
+
+/** Fetch a fresh CSRF token because password changes invalidate old sessions. */
+async function passwordRequest(path: string, payload: object): Promise<void> {
+  const csrf = await fetchCsrf();
+  const response = await fetch(`${BASE}/auth/${path}`, {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...csrfHeaders(csrf) },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    if (response.status === 429) throw new Error('Bạn thao tác quá nhiều lần. Vui lòng chờ ít nhất 60 giây rồi thử lại.');
+    if (response.status === 503) throw new Error('Chức năng gửi mã chưa sẵn sàng. Vui lòng liên hệ nhà trường hoặc thử lại sau.');
+    if (response.status === 401) throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    if (response.status === 403) throw new Error('Yêu cầu không được chấp nhận. Vui lòng tải lại trang hoặc đăng nhập lại.');
+    const body = await response.json().catch(() => ({})) as { message?: string };
+    throw new Error(body.message ?? 'Không thể thực hiện yêu cầu. Vui lòng thử lại.');
+  }
+}
+export const requestPasswordReset = (studentCode: string) => passwordRequest('forgot-password', { studentCode });
+export const resetPassword = (studentCode: string, code: string, newPassword: string) =>
+  passwordRequest('reset-password', { studentCode, code, newPassword });
+export const changePassword = (currentPassword: string, newPassword: string) =>
+  passwordRequest('change-password', { currentPassword, newPassword });
+export function clearAuthTokens() { csrfCache = null; clearCsrfCache(); }
