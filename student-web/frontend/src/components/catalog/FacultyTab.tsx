@@ -147,7 +147,7 @@ export default function FacultyTab() {
                 aria-invalid={!!fieldErr.shortCode}
                 placeholder="Vd: IT" value={form.shortCode}
                 onChange={e => setForm(f => ({ ...f, shortCode: e.target.value }))}
-                disabled={submitting} />
+                disabled={submitting || modal?.mode === 'edit'} />
               {fieldErr.shortCode && <p className="form-error-text" id="faculty-shortcode-error">{fieldErr.shortCode}</p>}
               {modal?.mode === 'edit' && <p className="form-hint">Mã không thể thay đổi sau khi tạo</p>}
             </div>

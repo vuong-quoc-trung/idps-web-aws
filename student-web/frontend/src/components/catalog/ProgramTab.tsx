@@ -203,7 +203,7 @@ export default function ProgramTab() {
           {/* Row 3: cohort + numberOfSemesters */}
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label" htmlFor="program-cohort-input">Khoá (cohort)</label>
+              <label className="form-label" htmlFor="program-cohort-input">Khoá (cohort) <span className="required">*</span></label>
               <input className={`form-input ${fv.cohort ? 'invalid' : ''}`} id="program-cohort-input" type="number" placeholder="Vd: 2026"
                 value={form.cohort ?? ''} onChange={e => setNum('cohort', e.target.value)} disabled={submitting}
                 aria-describedby={fv.cohort ? 'program-cohort-error' : undefined}

@@ -203,7 +203,7 @@ export default function AppHeader() {
                 Hồ sơ của tôi
               </Link>
               <Link
-                to="/catalog"
+                to="/catalog?tab=program"
                 className={`nav-link ${pathname.startsWith('/catalog') ? 'active' : ''}`}
                 id="nav-catalog-student"
               >

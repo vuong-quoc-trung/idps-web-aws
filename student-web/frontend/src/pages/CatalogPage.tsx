@@ -3,7 +3,8 @@
  * Tabs: Khoa | Ngành | Chương trình đào tạo | Lớp
  * Access: ADMIN + STAFF only (ProtectedRoute handles this)
  */
-import { useState, lazy, Suspense, type JSX } from 'react';
+import { lazy, Suspense, type JSX } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import './CatalogPage.css';
 
@@ -85,8 +86,14 @@ function TabSpinner() {
 }
 
 export default function CatalogPage() {
-  const [activeTab, setActiveTab] = useState<TabId>('faculty');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab') as TabId;
+  const activeTab: TabId = TABS.some(t => t.id === urlTab) ? urlTab : 'faculty';
   const tab = TABS.find(t => t.id === activeTab)!;
+
+  const handleSelectTab = (id: TabId) => {
+    setSearchParams(id === 'faculty' ? {} : { tab: id });
+  };
 
   return (
     <div className="catalog-page">
@@ -117,7 +124,7 @@ export default function CatalogPage() {
               role="tab"
               aria-selected={activeTab === t.id}
               aria-controls="catalog-tabpanel"
-              onClick={() => setActiveTab(t.id)}
+              onClick={() => handleSelectTab(t.id)}
             >
               <span className="tab-icon">{t.icon}</span>
               {t.label}
