@@ -10,7 +10,12 @@ interface SubResourceSectionProps<T extends { id: number }> {
   items: T[];
   renderItem: (item: T) => React.ReactNode;
   onRefresh: () => Promise<void>;
-  AddEditModal: (props: { open: boolean; item: T | null; onClose: () => void }) => React.ReactNode;
+  AddEditModal: React.ComponentType<{
+    open: boolean;
+    item: T | null;
+    onClose: () => void;
+    onSaved?: () => void | Promise<void>;
+  }>;
   onDelete: (item: T) => Promise<void>;
   emptyText?: string;
 }
@@ -81,11 +86,17 @@ export default function SubResourceSection<T extends { id: number }>({
       </div>
 
       {/* Add/Edit modal */}
-      {showModal && AddEditModal({
-        open: showModal,
-        item: editItem,
-        onClose: () => { closeModal(); onRefresh(); },
-      })}
+      {showModal && (
+        <AddEditModal
+          open={showModal}
+          item={editItem}
+          onClose={closeModal}
+          onSaved={async () => {
+            closeModal();
+            await onRefresh();
+          }}
+        />
+      )}
 
       {/* Delete confirm */}
       <Modal open={!!deleteTarget} title="Xác nhận xóa" size="sm"

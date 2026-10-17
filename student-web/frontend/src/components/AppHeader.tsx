@@ -60,6 +60,8 @@ export default function AppHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,13 +82,69 @@ export default function AppHeader() {
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpen(false);
+        if (open) {
+          setOpen(false);
+          menuTriggerRef.current?.focus();
+        }
         setMobileOpen(false);
       }
     };
     document.addEventListener('keydown', handle);
     return () => document.removeEventListener('keydown', handle);
-  }, []);
+  }, [open]);
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+      if (!open) {
+        e.preventDefault();
+        setOpen(true);
+        setTimeout(() => {
+          const first = dropdownRef.current?.querySelector<HTMLElement>('[role="menuitem"]:not([disabled])');
+          first?.focus();
+        }, 50);
+      }
+    } else if (e.key === 'ArrowUp') {
+      if (!open) {
+        e.preventDefault();
+        setOpen(true);
+        setTimeout(() => {
+          const items = dropdownRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not([disabled])');
+          if (items && items.length > 0) items[items.length - 1].focus();
+        }, 50);
+      }
+    }
+  };
+
+  const handleDropdownKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const items = Array.from(
+      dropdownRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not([disabled])') ?? []
+    );
+    if (!items.length) return;
+
+    const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+      items[nextIndex]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+      items[prevIndex]?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      items[0]?.focus();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      items[items.length - 1]?.focus();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setOpen(false);
+      menuTriggerRef.current?.focus();
+    } else if (e.key === 'Tab') {
+      setOpen(false);
+    }
+  };
 
   // Close mobile menu on route changes
   useEffect(() => {
@@ -228,11 +286,14 @@ export default function AppHeader() {
           <ThemeToggleBtn />
 
           <button
+            ref={menuTriggerRef}
             id="user-menu-button"
             className="user-menu-trigger"
             onClick={() => setOpen(v => !v)}
-            aria-haspopup="true"
+            onKeyDown={handleTriggerKeyDown}
+            aria-haspopup="menu"
             aria-expanded={open}
+            aria-controls="user-dropdown"
             aria-label="Menu tài khoản"
           >
             <Avatar user={user} />
@@ -251,7 +312,14 @@ export default function AppHeader() {
 
           {/* User Dropdown */}
           {open && (
-            <div className="user-dropdown" id="user-dropdown" role="menu">
+            <div
+              ref={dropdownRef}
+              className="user-dropdown"
+              id="user-dropdown"
+              role="menu"
+              aria-labelledby="user-menu-button"
+              onKeyDown={handleDropdownKeyDown}
+            >
               <div className="dropdown-header">
                 <Avatar user={user} size={34} />
                 <div>
@@ -361,7 +429,20 @@ export default function AppHeader() {
               <div className="dropdown-divider" />
 
               <div className="dropdown-section">
-                <button className="dropdown-item" role="menuitem" onClick={() => navigate('/change-password')}>Đổi mật khẩu</button>
+                <button
+                  className="dropdown-item"
+                  role="menuitem"
+                  onClick={() => {
+                    setOpen(false);
+                    navigate('/change-password');
+                  }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ marginRight: 6 }}>
+                    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.35" />
+                    <path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
+                  </svg>
+                  Đổi mật khẩu
+                </button>
                 <button
                   id="logout-button"
                   className="dropdown-item logout-item"

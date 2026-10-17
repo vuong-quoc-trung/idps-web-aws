@@ -1,7 +1,4 @@
-/**
- * Modal — accessible dialog component used across catalog pages
- */
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useId, type ReactNode } from 'react';
 import './Modal.css';
 
 interface ModalProps {
@@ -14,14 +11,10 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-/** Derive a stable DOM-safe ID fragment from the modal title */
-function titleToId(title: string): string {
-  return 'modal-title-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
-
 export default function Modal({ open, title, onClose, children, footer, size = 'md' }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const titleId = titleToId(title);
+  const reactId = useId();
+  const titleId = `modal-title-${reactId.replace(/:/g, '')}`;
 
   // Close on Escape
   useEffect(() => {
@@ -45,13 +38,25 @@ export default function Modal({ open, title, onClose, children, footer, size = '
     if (open) {
       previousFocusRef.current = document.activeElement as HTMLElement | null;
       if (panelRef.current) {
-        // Focus the first focusable element, or the panel itself
-        const focusable = panelRef.current.querySelector<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        // Priority 1: Explicit autofocus element inside the modal
+        // Priority 2: First active form control inside modal body
+        // Priority 3: First interactive element inside modal body
+        // Priority 4: Dialog title heading (with tabIndex=-1) or dialog panel
+        // (Do NOT default focus to the close 'X' button)
+        const autoFocusEl = panelRef.current.querySelector<HTMLElement>('[autofocus]');
+        const body = panelRef.current.querySelector<HTMLElement>('.modal-body');
+        const firstInput = body?.querySelector<HTMLElement>(
+          'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
         );
-        (focusable ?? panelRef.current).focus();
+        const firstAction = body?.querySelector<HTMLElement>(
+          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+        );
+        const heading = panelRef.current.querySelector<HTMLElement>('.modal-title');
+
+        const target = autoFocusEl ?? firstInput ?? firstAction ?? heading ?? panelRef.current;
+        target.focus();
       }
-    } else if (previousFocusRef.current) {
+    } else if (previousFocusRef.current && document.contains(previousFocusRef.current)) {
       previousFocusRef.current.focus();
     }
   }, [open]);
@@ -98,8 +103,8 @@ export default function Modal({ open, title, onClose, children, footer, size = '
       >
         {/* Header */}
         <div className="modal-header">
-          <h2 className="modal-title" id={titleId}>{title}</h2>
-          <button className="modal-close" onClick={onClose} aria-label="Đóng">
+          <h2 className="modal-title" id={titleId} tabIndex={-1}>{title}</h2>
+          <button className="modal-close" type="button" onClick={onClose} aria-label="Đóng">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
             </svg>
