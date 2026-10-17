@@ -286,7 +286,7 @@ export default function StudentsPage() {
                   aria-label={`Xem chi tiết sinh viên ${sv.fullName}, MSSV ${sv.studentCode}`}
                   onClick={() => navigate(`/students/${sv.id}`)}
                   onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
                       e.preventDefault();
                       navigate(`/students/${sv.id}`);
                     }
@@ -310,7 +310,7 @@ export default function StudentsPage() {
                   <td data-label="Trạng thái">
                     <span className={`status-badge status-${sv.status}`}>{STATUS_LABELS[sv.status]}</span>
                   </td>
-                  <td data-label="Thao tác" onClick={e => e.stopPropagation()}>
+                  <td data-label="Thao tác" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
                     <div className="sv-actions">
                       <button
                         className="sv-action-btn"
@@ -342,20 +342,22 @@ export default function StudentsPage() {
           </table>
 
           {/* Pagination */}
-          {data && data.totalPages > 1 && (
+          {data && (
             <div className="sv-pagination">
               <span className="sv-page-info">Tổng <strong>{totalElements}</strong> sinh viên</span>
-              <div className="sv-page-controls">
-                <button className="sv-page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 0} aria-label="Trang trước">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-                {pagesArr.map(p => (
-                  <button key={p} className={`sv-page-btn ${p === page ? 'active' : ''}`} onClick={() => setPage(p)}>{p + 1}</button>
-                ))}
-                <button className="sv-page-btn" onClick={() => setPage(p => p + 1)} disabled={page >= (data?.totalPages ?? 1) - 1} aria-label="Trang sau">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              </div>
+              {data.totalPages > 1 && (
+                <div className="sv-page-controls">
+                  <button className="sv-page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 0} aria-label="Trang trước">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  {pagesArr.map(p => (
+                    <button key={p} className={`sv-page-btn ${p === page ? 'active' : ''}`} onClick={() => setPage(p)}>{p + 1}</button>
+                  ))}
+                  <button className="sv-page-btn" onClick={() => setPage(p => p + 1)} disabled={page >= (data?.totalPages ?? 1) - 1} aria-label="Trang sau">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

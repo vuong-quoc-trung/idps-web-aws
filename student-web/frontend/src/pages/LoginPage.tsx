@@ -69,7 +69,12 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && user) return <Navigate to="/" replace />;
+  const fromState = (location.state as { from?: string } | null)?.from;
+  const returnTo = (fromState && fromState.startsWith('/') && !fromState.startsWith('//'))
+    ? fromState
+    : '/';
+
+  if (!loading && user) return <Navigate to={returnTo} replace />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -78,7 +83,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(username.trim(), password);
-      navigate('/', { replace: true });
+      navigate(returnTo, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
     } finally {

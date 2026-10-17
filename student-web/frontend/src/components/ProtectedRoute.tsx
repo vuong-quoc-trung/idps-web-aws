@@ -1,7 +1,7 @@
 /* ============================================================
    ProtectedRoute — redirects to /login if not authenticated
    ============================================================ */
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 
 export default function ProtectedRoute({ allowedRoles }: Props) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -23,7 +24,10 @@ export default function ProtectedRoute({ allowedRoles }: Props) {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    const returnPath = location.pathname + location.search;
+    return <Navigate to="/login" replace state={{ from: returnPath }} />;
+  }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
