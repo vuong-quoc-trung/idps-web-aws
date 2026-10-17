@@ -397,7 +397,7 @@ function UserDetailModal({
             <div>
               <h3 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 600 }}>@{detail.username}</h3>
               <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                {detail.fullName ? `${detail.fullName} · ` : ''}ID: #{detail.id}
+                ID: #{detail.id}
               </p>
             </div>
           </div>
@@ -424,24 +424,6 @@ function UserDetailModal({
                 )}
               </span>
             </div>
-            {detail.studentCode && (
-              <div className="user-detail-item">
-                <span className="user-detail-label">Mã sinh viên:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{detail.studentCode}</span>
-              </div>
-            )}
-            {detail.createdAt && (
-              <div className="user-detail-item">
-                <span className="user-detail-label">Ngày tạo:</span>
-                <span style={{ fontSize: 'var(--text-xs)' }}>{new Date(detail.createdAt).toLocaleString('vi-VN')}</span>
-              </div>
-            )}
-            {detail.lastLoginAt && (
-              <div className="user-detail-item">
-                <span className="user-detail-label">Đăng nhập gần nhất:</span>
-                <span style={{ fontSize: 'var(--text-xs)' }}>{new Date(detail.lastLoginAt).toLocaleString('vi-VN')}</span>
-              </div>
-            )}
           </div>
 
           {/* Action buttons inside detail */}
@@ -546,8 +528,8 @@ export default function UsersPage() {
   const filtered = useMemo(() => {
     if (!data) return [];
     return data.content.filter(u => {
-      const q = search.toLowerCase();
-      const matchSearch = !q || u.username.toLowerCase().includes(q) || (u.fullName ?? '').toLowerCase().includes(q);
+      const q = search.trim().toLowerCase();
+      const matchSearch = !q || u.username.toLowerCase().includes(q);
       const matchRole = !filterRole || u.role === filterRole;
       const matchEnabled = filterEnabled === '' ? true
         : filterEnabled === 'true' ? u.enabled
@@ -694,7 +676,7 @@ export default function UsersPage() {
             <input
               id="users-search-input"
               className="users-search-input"
-              placeholder="Tìm theo username hoặc họ tên..."
+              placeholder="Tìm theo username..."
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -779,7 +761,6 @@ export default function UsersPage() {
                             </div>
                             <div className="user-identity-info">
                               <span className="user-username">@{u.username}</span>
-                              {u.fullName && <span className="user-fullname">{u.fullName}</span>}
                             </div>
                           </div>
                         </td>
@@ -853,29 +834,33 @@ export default function UsersPage() {
               </div>
 
               {/* Pagination */}
-              {data && data.totalPages > 1 && (
+              {data && (
                 <div className="users-pagination">
                   <span className="users-pagination-info">
-                    Trang {data.page + 1} / {data.totalPages} — {data.totalElements} tài khoản
+                    {data.totalPages > 1
+                      ? `Trang ${data.page + 1} / ${data.totalPages} — ${data.totalElements} tài khoản`
+                      : `Tổng ${data.totalElements} tài khoản`}
                   </span>
-                  <div className="users-pagination-btns">
-                    <button
-                      id="users-prev-page-btn"
-                      className="pagination-btn"
-                      onClick={() => load(page - 1)}
-                      disabled={page === 0 || loading}
-                    >
-                      <IcoChevLeft/> Trước
-                    </button>
-                    <button
-                      id="users-next-page-btn"
-                      className="pagination-btn"
-                      onClick={() => load(page + 1)}
-                      disabled={page >= data.totalPages - 1 || loading}
-                    >
-                      Tiếp <IcoChevRight/>
-                    </button>
-                  </div>
+                  {data.totalPages > 1 && (
+                    <div className="users-pagination-btns">
+                      <button
+                        id="users-prev-page-btn"
+                        className="pagination-btn"
+                        onClick={() => load(page - 1)}
+                        disabled={page === 0 || loading}
+                      >
+                        <IcoChevLeft/> Trước
+                      </button>
+                      <button
+                        id="users-next-page-btn"
+                        className="pagination-btn"
+                        onClick={() => load(page + 1)}
+                        disabled={page >= data.totalPages - 1 || loading}
+                      >
+                        Tiếp <IcoChevRight/>
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </>

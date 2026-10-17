@@ -12,14 +12,11 @@ export interface StudentSummary {
   id: number;
   studentCode: string;
   fullName: string;
-  dateOfBirth?: string;
-  gender?: Gender;
   status: StudentStatus;
   profileStatus?: string;
   classId?: number;
   majorId?: number;
   schoolEmail?: string;
-  familyPhoneNumber?: string;
 }
 
 // ---- Student detail (GET /students/{id}) ----

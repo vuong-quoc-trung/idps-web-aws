@@ -20,15 +20,9 @@ export interface UserSummary {
   role: UserRole;
   enabled: boolean;
   passwordSetupRequired: boolean;
-  fullName?: string;
-  studentCode?: string;
-  createdAt?: string;
 }
 
-export interface UserDetail extends UserSummary {
-  lastLoginAt?: string;
-  activationTokenExpiry?: string;
-}
+export type UserDetail = UserSummary;
 
 export interface CreateUserPayload {
   username: string;
