@@ -11,6 +11,7 @@ import { studentApi } from '../api/studentApi';
 import { facultyApi, majorApi, classApi } from '../api/academicApi';
 import { myProfileApi } from '../api/profileApi';
 import type { StudentSummary, StudentDetail, CompletionStatus, StudentStatus } from '../types/student';
+import { calculateProfileCompletion } from '../utils/profileCompletion';
 import './DashboardPage.css';
 
 const ROLE_WELCOME: Record<string, string> = {
@@ -63,7 +64,6 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<{
     totalStudents: number;
     activeStudents: number;
-    completedStudents: number;
     facultiesCount: number;
     majorsCount: number;
     classesCount: number;
@@ -92,21 +92,33 @@ export default function DashboardPage() {
         majorApi.list(0),
         classApi.list(0),
       ])
-        .then(([stdRes, activeRes, facRes, majRes, clsRes]) => {
+        .then(async ([stdRes, activeRes, facRes, majRes, clsRes]) => {
           if (!isMounted) return;
-          const students = stdRes.content || [];
-          const totalStudents = stdRes.totalElements || students.length;
+          const totalStudents = stdRes.totalElements || (stdRes.content || []).length;
           // Use totalElements from server-filtered query for true global active student count
-          const active = activeRes.totalElements ?? students.filter(s => s.status === 'ACTIVE').length;
-          const completed = students.filter(s => s.profileStatus === 'COMPLETE').length;
+          const active = activeRes.totalElements ?? (stdRes.content || []).filter(s => s.status === 'ACTIVE').length;
 
-          // Backend returns students ordered by id ASC; sorting by id DESC presents the newest additions
-          const recent = [...students].sort((a, b) => b.id - a.id).slice(0, 5);
+          // Backend returns students ordered by id ASC.
+          // When totalPages > 1, the newest-created students (highest IDs) are on the last page.
+          let newestStudents = stdRes.content || [];
+          if (stdRes.totalPages > 1) {
+            try {
+              const lastPageRes = await studentApi.list({ page: stdRes.totalPages - 1, size: 20 });
+              if (lastPageRes.content && lastPageRes.content.length > 0) {
+                newestStudents = lastPageRes.content;
+              }
+            } catch {
+              // Fallback to page 0 if fetching last page fails
+            }
+          }
+          if (!isMounted) return;
+
+          // Sorting by id DESC presents the newest additions in descending creation order
+          const recent = [...newestStudents].sort((a, b) => b.id - a.id).slice(0, 5);
 
           setStats({
             totalStudents,
             activeStudents: active,
-            completedStudents: completed,
             facultiesCount: facRes.totalElements || facRes.content.length,
             majorsCount: majRes.totalElements || majRes.content.length,
             classesCount: clsRes.totalElements || clsRes.content.length,
@@ -159,20 +171,8 @@ export default function DashboardPage() {
     .join('')
     .toUpperCase();
 
-  // Completion calculation for student.
-  // Guard: if completion is null (not yet loaded or failed), do not compute a percentage —
-  // missingCount would default to 0 and produce a misleading 99% on an empty profile.
-  const completionReady = completion !== null;
-  const isComplete =
-    completionReady && (
-      completion?.status === 'COMPLETE' ||
-      completion?.complete === true ||
-      (completion?.missingFields && completion.missingFields.length === 0)
-    );
-  const missingCount = completion?.missingFields?.length ?? 0;
-  const totalFields = 17;
-  // Only compute a percentage once we have real data; default to 0 while loading.
-  const displayPct = !completionReady ? 0 : isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
+  // Completion calculation for student using shared helper
+  const { isComplete, percent: displayPct, missingCount } = calculateProfileCompletion(completion);
 
   return (
     <>
@@ -380,8 +380,8 @@ export default function DashboardPage() {
                 <div className="dashboard-table-card">
                   <div className="dashboard-table-header">
                     <div>
-                      <h3 className="dashboard-table-title">Sinh viên mới cập nhật</h3>
-                      <p className="dashboard-table-desc">Danh sách sinh viên vừa được ghi nhận trong hệ thống</p>
+                      <h3 className="dashboard-table-title">Sinh viên mới được ghi nhận</h3>
+                      <p className="dashboard-table-desc">5 sinh viên có mã số được cấp mới nhất trong hệ thống</p>
                     </div>
                     <Link to="/students" className="btn-table-more">
                       Xem tất cả →
@@ -461,7 +461,7 @@ export default function DashboardPage() {
                     <span className={`completion-percentage-badge ${isComplete ? 'complete' : ''}`}>
                       {displayPct}%
                     </span>
-                    <Link to="/profile" className="btn-complete-profile">
+                    <Link to="/profile?tab=personal" className="btn-complete-profile">
                       {isComplete ? 'Xem lại hồ sơ' : 'Cập nhật ngay →'}
                     </Link>
                   </div>
@@ -503,7 +503,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="student-service-grid">
-                <Link to="/profile" className="student-service-card">
+                <Link to="/profile?tab=personal" className="student-service-card">
                   <div className="service-card-icon service-blue">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
@@ -515,7 +515,7 @@ export default function DashboardPage() {
                   <span className="service-arrow">Truy cập →</span>
                 </Link>
 
-                <Link to="/profile" className="student-service-card">
+                <Link to="/profile?tab=addresses" className="student-service-card">
                   <div className="service-card-icon service-green">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
@@ -527,7 +527,7 @@ export default function DashboardPage() {
                   <span className="service-arrow">Truy cập →</span>
                 </Link>
 
-                <Link to="/profile" className="student-service-card">
+                <Link to="/profile?tab=family" className="student-service-card">
                   <div className="service-card-icon service-purple">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />

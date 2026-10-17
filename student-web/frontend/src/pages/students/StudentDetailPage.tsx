@@ -1,5 +1,6 @@
 import { validPhone, validEmail, PHONE_ERROR, EMAIL_ERROR } from '../../utils/contactValidation';
 import { AddressLocationFields, countryLabel } from '../../components/profile/ProfileFields';
+import { calculateProfileCompletion } from '../../utils/profileCompletion';
 /**
  * StudentDetailPage — xem chi tiết sinh viên, completion status,
  * và quản lý sub-resources: địa chỉ, nhân thân, liên hệ khẩn cấp, liên hệ sau TN
@@ -138,14 +139,7 @@ export default function StudentDetailPage() {
     </div>
   );
 
-  const completionReady = completion !== null;
-  const isComplete = completionReady && (
-    completion?.status === 'COMPLETE' || completion?.complete === true || (completion?.missingFields && completion.missingFields.length === 0)
-  );
-  const missingCount = completion?.missingFields?.length ?? 0;
-  const totalFields = 17;
-  const pct = !completionReady ? 0 : isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
-  const displayPct = pct;
+  const { isComplete, percent: displayPct, missingCount } = calculateProfileCompletion(completion);
 
   return (
     <div className="student-detail-page">
@@ -537,7 +531,7 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
 
   useEffect(() => {
     if (item) setForm({ countryCode: item.countryCode ?? 'VN', addressType: item.addressType, addressLine: item.addressLine ?? '', provinceCity: item.provinceCity ?? '', wardCommune: item.wardCommune ?? '', residenceRelation: item.residenceRelation ?? '', current: item.current });
-    else setForm({ countryCode: 'VN', addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
+    else setForm({ countryCode: 'VN', addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: true });
     setErr(null);
   }, [item, open]);
 
@@ -571,10 +565,15 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
           <input className="form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} />
         </div>
         <AddressLocationFields form={form} onChange={setForm} />
-        <label className="toggle-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <input type="checkbox" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))} />
-          <span className="form-label" style={{ margin: 0 }}>Đây là địa chỉ hiện tại</span>
-        </label>
+        <div className="form-group">
+          <label className="toggle-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <input type="checkbox" id="addr-detail-current-cb" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))} />
+            <span className="form-label" style={{ margin: 0 }}>Địa chỉ đang có hiệu lực</span>
+          </label>
+          <p className="form-hint" style={{ marginTop: 4 }}>
+            Bật tùy chọn này để hệ thống ghi nhận hoàn thiện tiêu chí nơi cư trú/hộ khẩu.
+          </p>
+        </div>
       </div>
     </Modal>
   );

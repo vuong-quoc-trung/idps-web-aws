@@ -8,9 +8,10 @@
  *   - Maps completion missing fields to user-friendly Vietnamese labels
  */
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import Modal from '../components/Modal';
+import { calculateProfileCompletion } from '../utils/profileCompletion';
 import { useAuth } from '../contexts/AuthContext';
 import {
   myProfileApi,
@@ -202,11 +203,7 @@ function CompletionWidget({ completion, loading }: { completion: CompletionStatu
   }
   if (!completion) return null;
 
-  const isComplete = completion.status === 'COMPLETE' || completion.complete === true || (completion.missingFields && completion.missingFields.length === 0);
-  const missingCount = completion.missingFields?.length ?? 0;
-  const totalFields = 17;
-  const pct = isComplete ? 100 : Math.max(0, Math.min(99, Math.round(((totalFields - missingCount) / totalFields) * 100)));
-  const displayPct = isComplete ? 100 : pct;
+  const { isComplete, percent: displayPct, missingCount } = calculateProfileCompletion(completion);
 
   return (
     <div className="completion-widget">
@@ -413,7 +410,7 @@ function AddressModal({ item, open, onClose, onSaved }:
         current: item.current,
       });
     } else {
-      setForm({ countryCode: 'VN', addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: false });
+      setForm({ countryCode: 'VN', addressType: 'CURRENT', addressLine: '', provinceCity: '', wardCommune: '', residenceRelation: '', current: true });
     }
     setErr(null);
   }, [item, open]);
@@ -462,10 +459,15 @@ function AddressModal({ item, open, onClose, onSaved }:
           <input className="profile-form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} placeholder="VD: 123 Nguyễn Văn A"/>
         </div>
         <AddressLocationFields form={form} onChange={setForm} />
-        <label className="profile-toggle-row">
-          <input type="checkbox" className="profile-checkbox" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))}/>
-          <span className="profile-toggle-label">Đây là địa chỉ hiện tại đang cư trú</span>
-        </label>
+        <div className="profile-form-group">
+          <label className="profile-toggle-row">
+            <input type="checkbox" className="profile-checkbox" id="profile-addr-current" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))}/>
+            <span className="profile-toggle-label">Địa chỉ đang có hiệu lực sử dụng</span>
+          </label>
+          <p style={{ marginTop: 4, fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+            Hệ thống yêu cầu cả nơi thường trú và hộ khẩu phải được đánh dấu &quot;Có hiệu lực&quot; để nghiệm thu hoàn thiện hồ sơ.
+          </p>
+        </div>
       </div>
     </Modal>
   );
@@ -1411,13 +1413,29 @@ function OverviewTab({ student }: { student: StudentDetail }) {
   );
 }
 
+const VALID_PROFILE_TABS: TabId[] = ['overview', 'personal', 'addresses', 'family', 'emergency', 'postgrad'];
+
 /* ============================================================
    MAIN PROFILE PAGE
    ============================================================ */
 export default function ProfilePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const initialTab: TabId = tabParam && VALID_PROFILE_TABS.includes(tabParam as TabId) ? (tabParam as TabId) : 'overview';
+  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
+
+  useEffect(() => {
+    if (tabParam && VALID_PROFILE_TABS.includes(tabParam as TabId)) {
+      setActiveTab(curr => (curr === tabParam ? curr : (tabParam as TabId)));
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (newTab: TabId) => {
+    setActiveTab(newTab);
+    setSearchParams(newTab === 'overview' ? {} : { tab: newTab }, { replace: true });
+  };
   const [student, setStudent] = useState<StudentDetail | null>(null);
   const [completion, setCompletion] = useState<CompletionStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1570,7 +1588,7 @@ export default function ProfilePage() {
                 role="tab"
                 aria-selected={activeTab === tab.id}
                 aria-controls={`profile-tabpanel-${tab.id}`}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
               >
                 {tab.icon}{tab.label}
               </button>
