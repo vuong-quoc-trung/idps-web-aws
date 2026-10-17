@@ -112,7 +112,7 @@ export default function FacultyTab() {
         readOnly={readOnly}
       />
 
-      {data && data.totalPages > 1 && (
+      {data && (
         <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />
       )}
 

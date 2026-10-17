@@ -51,7 +51,7 @@ export default function ActivationIdentityForm() {
                 <option value="">Chọn giới tính</option><option value="MALE">Nam</option><option value="FEMALE">Nữ</option><option value="OTHER">Khác</option>
               </select></div></>}
         <button className="btn-primary" disabled={busy}>{busy ? 'Đang xử lý…' : proof ? 'Gửi link kích hoạt' : 'Đối chiếu thông tin'}</button>
-        {proof && <button type="button" disabled={busy} onClick={() => { setProof(''); setError(''); }}>Quay lại đối chiếu</button>}
+        {proof && <button type="button" className="btn-secondary" disabled={busy} onClick={() => { setProof(''); setError(''); }}>Quay lại đối chiếu</button>}
       </form></>}
     <p className="auth-hint"><Link to="/login">Quay lại đăng nhập</Link></p>
   </section></div></main>;

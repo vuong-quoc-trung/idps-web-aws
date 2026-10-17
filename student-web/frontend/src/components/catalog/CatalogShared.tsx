@@ -134,23 +134,25 @@ export function Pagination({ page, totalPages, totalElements, onChange }: Pagina
       <span className="pagination-info">
         Tổng cộng <strong>{totalElements}</strong> bản ghi
       </span>
-      <div className="pagination-controls">
-        <button className="page-btn" onClick={() => onChange(page - 1)} disabled={page === 0} aria-label="Trang trước">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-        {pages.map(p => (
-          <button key={p} className={`page-btn ${p === page ? 'active' : ''}`} onClick={() => onChange(p)}>
-            {p + 1}
+      {totalPages > 1 && (
+        <div className="pagination-controls">
+          <button className="page-btn" onClick={() => onChange(page - 1)} disabled={page === 0} aria-label="Trang trước">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
-        ))}
-        <button className="page-btn" onClick={() => onChange(page + 1)} disabled={page >= totalPages - 1} aria-label="Trang sau">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      </div>
+          {pages.map(p => (
+            <button key={p} className={`page-btn ${p === page ? 'active' : ''}`} onClick={() => onChange(p)}>
+              {p + 1}
+            </button>
+          ))}
+          <button className="page-btn" onClick={() => onChange(page + 1)} disabled={page >= totalPages - 1} aria-label="Trang sau">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -462,27 +462,31 @@ export default function AccessLogsTab() {
         )}
 
         {/* Pagination bar */}
-        {data && data.totalPages > 1 && (
+        {data && (
           <div className="logs-pagination">
             <span>
-              Trang {page + 1} / {data.totalPages} ({totalElements.toLocaleString()} bản ghi)
+              {data.totalPages > 1
+                ? `Trang ${page + 1} / ${data.totalPages} (${totalElements.toLocaleString()} bản ghi)`
+                : `Tổng ${totalElements.toLocaleString()} bản ghi`}
             </span>
-            <div className="logs-page-btns">
-              <button
-                className="btn-page-nav"
-                onClick={() => loadLogs(page - 1, size)}
-                disabled={page <= 0 || loading}
-              >
-                Trang trước
-              </button>
-              <button
-                className="btn-page-nav"
-                onClick={() => loadLogs(page + 1, size)}
-                disabled={page >= data.totalPages - 1 || loading}
-              >
-                Trang kế
-              </button>
-            </div>
+            {data.totalPages > 1 && (
+              <div className="logs-page-btns">
+                <button
+                  className="btn-page-nav"
+                  onClick={() => loadLogs(page - 1, size)}
+                  disabled={page <= 0 || loading}
+                >
+                  Trang trước
+                </button>
+                <button
+                  className="btn-page-nav"
+                  onClick={() => loadLogs(page + 1, size)}
+                  disabled={page >= data.totalPages - 1 || loading}
+                >
+                  Trang kế
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

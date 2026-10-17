@@ -119,7 +119,7 @@ export default function ClassTab() {
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
         emptyText="Chưa có lớp nào." addLabel="Thêm lớp"
         onAdd={openAdd} onEdit={openEdit} onDelete={row => setDeleteTarget(row)} readOnly={readOnly} />
-      {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
+      {data && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal}
         title={modal?.mode === 'add' ? 'Thêm lớp mới' : `Chỉnh sửa lớp: ${modal?.item?.code}`}

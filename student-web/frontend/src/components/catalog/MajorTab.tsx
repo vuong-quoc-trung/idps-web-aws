@@ -104,7 +104,7 @@ export default function MajorTab() {
       {tableErr && <SectionError message={tableErr} />}
       <CatalogTable columns={columns} rows={data?.content ?? []} loading={loading}
         emptyText="Chưa có ngành nào." addLabel="Thêm ngành" onAdd={openAdd} onEdit={openEdit} onDelete={row => setDeleteTarget(row)} readOnly={readOnly} />
-      {data && data.totalPages > 1 && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
+      {data && <Pagination page={page} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
 
       <Modal open={!!modal} title={modal?.mode === 'add' ? 'Thêm ngành mới' : `Chỉnh sửa: ${modal?.item?.name}`}
         onClose={closeModal}
