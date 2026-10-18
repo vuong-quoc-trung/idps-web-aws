@@ -21,6 +21,7 @@ export interface AccessLogSummary {
 }
 
 export interface AccessLogListParams {
+  direction?: 'ASC' | 'DESC';
   page?: number;
   size?: number;
 }
@@ -31,6 +32,7 @@ export const accessLogApi = {
     const p: Record<string, string | number> = {};
     if (params?.page !== undefined) p.page = params.page;
     if (params?.size !== undefined) p.size = params.size;
+    if (params?.direction) p.direction = params.direction;
     return apiGet<Page<AccessLogSummary>>('/access-logs', p);
   },
 

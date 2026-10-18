@@ -96,6 +96,7 @@ export default function AccessLogsTab() {
   const [data, setData] = useState<Page<AccessLogSummary> | null>(null);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(20);
+  const [direction, setDirection] = useState<'ASC' | 'DESC'>('DESC');
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
@@ -115,7 +116,7 @@ export default function AccessLogsTab() {
     setLoading(true);
     setErr(null);
     try {
-      const res = await accessLogApi.list({ page: p, size: s });
+      const res = await accessLogApi.list({ page: p, size: s, direction });
       if (reqId === reqIdRef.current) {
         setData(res);
         setPage(p);
@@ -129,7 +130,7 @@ export default function AccessLogsTab() {
         setLoading(false);
       }
     }
-  }, []);
+  }, [direction]);
 
   useEffect(() => {
     loadLogs(0, size);
@@ -272,6 +273,12 @@ export default function AccessLogsTab() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
+
+        <select className="logs-select" aria-label="Sắp xếp theo thời gian" value={direction}
+          onChange={e => { setPage(0); setDirection(e.target.value as 'ASC' | 'DESC'); }}>
+          <option value="DESC">Thời gian: Mới nhất trước</option>
+          <option value="ASC">Thời gian: Cũ nhất trước</option>
+        </select>
 
         <select
           className="logs-select"

@@ -272,6 +272,32 @@ class StudentApiTests {
         mvc.perform(post("/api/auth/login").with(csrf()).param("username", student.getStudentCode()).param("password", "Changed-good-password")).andExpect(status().isNoContent());
     }
 
+    @Autowired com.pbl4.studentweb.accesslog.repository.AccessLogRepository auditLogs;
+    @Autowired org.springframework.jdbc.core.JdbcTemplate auditJdbc;
+    @Test void auditLogsSortByTimeBeforePaginationWithStableTies() throws Exception {
+        var session = login("admin-test");
+        auditLogs.deleteAllInBatch();
+        var ids = new java.util.ArrayList<Long>();
+        for (int i = 0; i < 3; i++) {
+            var log = new com.pbl4.studentweb.accesslog.entity.AccessLog();
+            log.setHttpMethod("PUT"); log.setRequestPath("/api/me/profile"); log.setStatusCode(200);
+            ids.add(auditLogs.saveAndFlush(log).getId());
+        }
+        // Verify descending chronology and a deterministic ID tie-break for equal timestamps.
+        var time = java.time.LocalDateTime.now();
+        auditJdbc.update("update access_logs set created_at = ? where id = ?", time.minusHours(1), ids.get(0));
+        auditJdbc.update("update access_logs set created_at = ? where id = ?", time, ids.get(1));
+        auditJdbc.update("update access_logs set created_at = ? where id = ?", time, ids.get(2));
+        mvc.perform(get("/api/access-logs").session(session).param("size", "1"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].id").value(ids.get(2)));
+        mvc.perform(get("/api/access-logs").session(session).param("size", "1").param("page", "1"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].id").value(ids.get(1)));
+        mvc.perform(get("/api/access-logs").session(session).param("size", "1").param("direction", "ASC"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].id").value(ids.get(0)));
+        mvc.perform(get("/api/access-logs").session(session).param("direction", "INVALID"))
+            .andExpect(status().isBadRequest());
+    }
+
     @Test void profileAcceptsLongAvatarLinkAndRejectsOversizedLink() throws Exception {
         var s = student("LONG-AVATAR"); var session = login(s.getStudentCode());
         String link = "https://images.example.com/photo.jpg?signature=" + "a".repeat(1000);

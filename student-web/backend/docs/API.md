@@ -228,3 +228,7 @@ Việc sinh địa chỉ email không tạo mailbox trên dịch vụ email.
 ### Đổi và quên mật khẩu sinh viên
 
 Xem [STUDENT_PASSWORDS.md](STUDENT_PASSWORDS.md) cho API `/auth/forgot-password`, `/auth/reset-password`, `/auth/change-password`, CSRF, giới hạn OTP và cấu hình SMTP. Chạy migration `016_student_password_reset.sql` trước khi triển khai.
+
+### Sắp xếp nhật ký truy cập
+
+`GET /api/access-logs?page=0&size=20&direction=DESC` dành cho ADMIN. Mặc định `DESC` (mới nhất trước), có thể chọn `ASC` (cũ nhất trước). Backend sắp xếp theo `createdAt`, sau đó `id` cùng chiều để ổn định thứ tự khi thời gian trùng nhau, trước khi phân trang. Direction không hợp lệ trả 400.
