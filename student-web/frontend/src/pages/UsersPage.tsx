@@ -177,7 +177,7 @@ function CreateUserModal({ open, onClose, onCreated }: {
             onChange={e => setForm(f => ({ ...f, role: e.target.value as 'ADMIN' | 'STAFF' }))}
           >
             <option value="STAFF">Staff — Quản lý sinh viên</option>
-            <option value="ADMIN">Admin — Toàn quyền hệ thống</option>
+            <option value="ADMIN">Admin — Toàn quyền hệ thống (tối đa 3 tài khoản)</option>
           </select>
         </div>
         <div className="token-warning">

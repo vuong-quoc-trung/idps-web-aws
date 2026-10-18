@@ -26,6 +26,7 @@ public class UserAccountService {
     private final StudentRepository students;
     private final UserMapper mapper;
     private final PasswordSetupService passwords;
+    private final AdminLimitService adminLimit;
 
     public Page<UserSummary> findAll(Pageable page) { return users.findAll(page).map(mapper::toSummary); }
     public UserSummary findById(Long id) { return mapper.toSummary(require(id)); }
@@ -33,6 +34,7 @@ public class UserAccountService {
     @Transactional
     public CreatedUser create(@NotNull @Valid CreateUserRequest request) {
         if (request.role() == UserRole.STUDENT) throw new IllegalArgumentException("Create student accounts through student onboarding");
+        if (request.role() == UserRole.ADMIN) adminLimit.requireSlot();
         String username = request.username().trim();
         if (users.existsByUsername(username)) throw new IllegalStateException("Username already exists");
         var user = new User();

@@ -232,3 +232,9 @@ Xem [STUDENT_PASSWORDS.md](STUDENT_PASSWORDS.md) cho API `/auth/forgot-password`
 ### Sắp xếp nhật ký truy cập
 
 `GET /api/access-logs?page=0&size=20&direction=DESC` dành cho ADMIN. Mặc định `DESC` (mới nhất trước), có thể chọn `ASC` (cũ nhất trước). Backend sắp xếp theo `createdAt`, sau đó `id` cùng chiều để ổn định thứ tự khi thời gian trùng nhau, trước khi phân trang. Direction không hợp lệ trả 400.
+
+### Giới hạn tài khoản Admin
+
+`POST /api/users` chỉ tạo ADMIN nếu tổng số tài khoản role ADMIN nhỏ hơn 3. Tính cả tài khoản bị khóa và chưa kích hoạt. Đủ 3 trả HTTP 409 với thông báo tiếng Việt; không tạo tài khoản hoặc token mới. STAFF/STUDENT không bị áp dụng hạn mức này.
+
+Backend khóa bản ghi singleton trong `admin_creation_lock` trong cùng transaction kiểm tra số lượng và tạo tài khoản. Các instance backend dùng chung database và luồng bootstrap đều tuân theo khóa này. Chạy `019_admin_creation_lock.sql` trước khi triển khai production. Không tự xóa/đổi quyền admin cũ nếu dữ liệu đã vượt 3; hệ thống chỉ chặn tạo thêm. Đây là quy tắc của ứng dụng, không phải trigger chặn thao tác SQL trực tiếp; công cụ quản trị DB phải tuân thủ cùng chính sách.

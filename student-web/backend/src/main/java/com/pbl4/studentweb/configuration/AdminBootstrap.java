@@ -17,13 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminBootstrap implements CommandLineRunner {
     private final UserRepository users;
     private final PasswordEncoder encoder;
+    private final com.pbl4.studentweb.user.service.AdminLimitService adminLimit;
     @Value("${app.bootstrap.admin-username:}") private String username;
     @Value("${app.bootstrap.admin-password:}") private String password;
 
     @Override
     @Transactional
     public void run(String... args) {
-        if (users.existsByRole(UserRole.ADMIN)) return;
+        if (adminLimit.lockAndCount() > 0) return;
         if (username.isBlank() || username.length() > 50 || password.length() < 12
                 || password.getBytes(StandardCharsets.UTF_8).length > 72)
             throw new IllegalStateException("Bootstrap requires an admin username and a password of at least 12 characters, at most 72 UTF-8 bytes");
