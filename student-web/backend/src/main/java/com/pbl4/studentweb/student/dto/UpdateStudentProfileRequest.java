@@ -5,7 +5,7 @@ import com.pbl4.studentweb.common.validation.PhoneNumber;
 import com.pbl4.studentweb.common.validation.ContactEmail;
 import java.time.LocalDate;
 public record UpdateStudentProfileRequest(
-        @Size(max = 500) String avatarUrl,
+        @Size(max = 4096, message = "Đường dẫn ảnh đại diện không được vượt quá 4096 ký tự") String avatarUrl,
         @Size(max = 150) String placeOfBirth, @Size(max = 150) String oldPlaceOfBirth,
         @Size(max = 50) String ethnicity, @Size(max = 150) String nationality,
         @Size(max = 50) String religion, @PastOrPresent LocalDate citizenIdIssueDate,

@@ -34,3 +34,11 @@ Tham khảo:
 - https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html
 - https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html
 - https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
+
+## Tự dọn audit log quá 3 ngày
+
+Backend bật tác vụ retention mặc định: chạy lần đầu sau 60 giây kể từ khởi động, sau đó 10 phút sau mỗi đợt hoàn tất. Mốc hết hạn là thời gian hiện tại trừ 3 ngày (72 giờ), so sánh nghiêm ngặt created_at < cutoff; bản ghi đúng mốc hoặc mới hơn vẫn được giữ. Dùng cùng thời gian local của JVM với timestamp audit hiện có; giữ timezone runtime nhất quán khi triển khai.
+
+Mỗi transaction xóa tối đa 500 bản ghi cũ nhất, tối đa 20 lô/đợt (10.000 bản ghi). Nếu tồn đọng nhiều hơn, đợt tiếp theo dọn tiếp. Dùng index created_at sẵn có; không cần migration mới. Chỉ tác động bảng access_logs, không xóa tài khoản/hồ sơ. Dữ liệu bị xóa vĩnh viễn; không phải chỉ ẩn khỏi giao diện. Khi backend tắt không dọn, khi bật lại sẽ xử lý log quá hạn.
+
+Cấu hình ở application.yaml: app.audit.retention.enabled (biến môi trường AUDIT_RETENTION_ENABLED, mặc định true), initial-delay-ms và interval-ms. Khi tắt tác vụ, ghi chú thời hạn mặc định trên UI không còn phản ánh lịch dọn đang chạy. Không cung cấp endpoint xóa log công khai. Tác vụ ghi số bản ghi đã dọn vào console, không tự tạo thêm audit row.

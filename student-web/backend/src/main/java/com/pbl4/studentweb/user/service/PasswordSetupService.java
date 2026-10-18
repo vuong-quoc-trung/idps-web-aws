@@ -1,6 +1,7 @@
 package com.pbl4.studentweb.user.service;
 
 import com.pbl4.studentweb.user.entity.User;
+import com.pbl4.studentweb.student.repository.StudentRepository;
 import com.pbl4.studentweb.user.repository.UserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -9,18 +10,23 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HexFormat;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class PasswordSetupService {
     private final UserRepository users;
     private final PasswordEncoder encoder;
-    private final com.pbl4.studentweb.student.repository.StudentRepository students;
-    private final SecureRandom random = new SecureRandom();
+    private final StudentRepository students;
+    private final SecureRandom random;
+
+    public PasswordSetupService(UserRepository users, PasswordEncoder encoder, StudentRepository students) {
+        this.users = users;
+        this.encoder = encoder;
+        this.students = students;
+        this.random = new SecureRandom();
+    }
 
     // Internal admin onboarding only. Deliver the returned secret through a trusted channel.
     public String prepareNewAccount(User user) {

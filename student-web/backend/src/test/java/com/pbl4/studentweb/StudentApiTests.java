@@ -272,6 +272,15 @@ class StudentApiTests {
         mvc.perform(post("/api/auth/login").with(csrf()).param("username", student.getStudentCode()).param("password", "Changed-good-password")).andExpect(status().isNoContent());
     }
 
+    @Test void profileAcceptsLongAvatarLinkAndRejectsOversizedLink() throws Exception {
+        var s = student("LONG-AVATAR"); var session = login(s.getStudentCode());
+        String link = "https://images.example.com/photo.jpg?signature=" + "a".repeat(1000);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "avatarUrl", link), 200);
+        assertThat(students.findById(s.getId()).orElseThrow().getAvatarUrl()).isEqualTo(link);
+        send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, "avatarUrl", "https://example.com/" + "a".repeat(4096)), 400);
+        assertThat(students.findById(s.getId()).orElseThrow().getAvatarUrl()).isEqualTo(link);
+    }
+
     @Test void profileOptionsAndAddressHierarchyAreValidatedOnTheServer() throws Exception {
         student("OPTIONS"); var session = login("OPTIONS");
         mvc.perform(get("/api/profile-options")).andExpect(status().isUnauthorized());

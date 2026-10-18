@@ -8,20 +8,27 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Locale;
-import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class StudentPasswordService {
     private final UserRepository users;
     private final StudentRepository students;
     private final PasswordEncoder encoder;
     private final PasswordResetMailService mail;
-    private final SecureRandom random = new SecureRandom();
+    private final SecureRandom random;
+
+    public StudentPasswordService(UserRepository users, StudentRepository students,
+            PasswordEncoder encoder, PasswordResetMailService mail) {
+        this.users = users;
+        this.students = students;
+        this.encoder = encoder;
+        this.mail = mail;
+        this.random = new SecureRandom();
+    }
 
     private boolean eligible(User u) {
         return u.isEnabled() && !u.isPasswordSetupRequired() && u.getRole() == UserRole.STUDENT;

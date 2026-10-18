@@ -26,7 +26,7 @@ public class Student extends AuditedEntity {
     @Column(name = "full_name", length = 120, nullable = false)
     private String fullName;
 
-    @Column(name = "avatar_url", length = 500)
+    @Column(name = "avatar_url", length = 4096)
     private String avatarUrl;
 
     @Column(name = "date_of_birth")

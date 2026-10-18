@@ -9,18 +9,26 @@ import java.security.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class StudentActivationService {
     private final StudentRepository students;
     private final UserRepository users;
     private final PasswordSetupService setup;
     private final PasswordResetMailService mail;
-    private final SecureRandom random = new SecureRandom();
+    private final SecureRandom random;
+
+    public StudentActivationService(StudentRepository students, UserRepository users,
+            PasswordSetupService setup, PasswordResetMailService mail) {
+        this.students = students;
+        this.users = users;
+        this.setup = setup;
+        this.mail = mail;
+        this.random = new SecureRandom();
+    }
+
     private String normalize(String value) {
         return value == null ? "" : java.text.Normalizer.normalize(value.trim(), java.text.Normalizer.Form.NFC)
             .replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);

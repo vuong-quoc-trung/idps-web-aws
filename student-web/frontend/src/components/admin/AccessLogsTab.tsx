@@ -188,7 +188,7 @@ export default function AccessLogsTab() {
             </svg>
             Nhật ký truy cập hệ thống (Audit Trail)
           </h2>
-          <p>Lịch sử các yêu cầu HTTP và kiểm toán truy cập bảo mật được ghi nhận qua REST API.</p>
+          <p>Lịch sử các yêu cầu HTTP và kiểm toán truy cập bảo mật được ghi nhận qua REST API. Log quá 3 ngày được tự động xóa theo đợt dọn định kỳ (10 phút/lần).</p>
         </div>
         <div className="logs-header-actions">
           <button

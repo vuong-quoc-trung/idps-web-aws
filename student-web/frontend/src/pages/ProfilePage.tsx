@@ -1147,6 +1147,7 @@ function PersonalTab({
   }
 
   async function save() {
+    if (form.avatarUrl.trim().length > 4096) { setErr('Đường dẫn ảnh đại diện quá dài (tối đa 4096 ký tự). Vui lòng dùng link ảnh ngắn hơn.'); return; }
     if (!form.phoneNumber.trim()) { setErr(REQUIRED_PHONE_ERROR); return; }
     if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
     if (!form.personalEmail.trim()) { setErr(REQUIRED_EMAIL_ERROR); return; }
@@ -1205,17 +1206,18 @@ function PersonalTab({
             ) : null}
             <span style={{ color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600, visibility: form.avatarUrl ? 'hidden' : 'visible' }}>{student.fullName.slice(0, 2).toUpperCase()}</span>
           </div>
-          <div style={{ flex: 1 }}>
+          <div className="profile-avatar-url-field">
             <label className="profile-form-label" htmlFor="personal-avatar-url">Đường dẫn ảnh đại diện (Avatar URL)</label>
             <input
               id="personal-avatar-url"
               className="profile-form-input"
               type="url"
               placeholder="https://example.com/avatar.jpg"
+              aria-describedby="avatar-url-hint"
               value={form.avatarUrl}
               onChange={e => setForm(f => ({ ...f, avatarUrl: e.target.value }))}
             />
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>Hỗ trợ liên kết ảnh trực tiếp (JPG, PNG, WebP)</span>
+            <span id="avatar-url-hint" className="profile-avatar-url-hint">Dùng liên kết ảnh trực tiếp (JPG, PNG, WebP), tối đa 4096 ký tự. Link ảnh mạng xã hội có thể hết hạn.</span>
           </div>
         </div>
         <div className="profile-form-row">
