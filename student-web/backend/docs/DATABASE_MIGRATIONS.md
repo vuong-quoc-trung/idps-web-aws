@@ -71,7 +71,7 @@ ORDER BY installed_rank;
 ## Kiểm thử
 
 `./mvnw test` chạy các test nghiệp vụ H2 với Flyway tắt trong test resources.
-`FlywayMigrationTests` và `FlywayStartupTests` chỉ chạy khi có `MIGRATION_TEST_URL`.
+`FlywayMigrationTests`, `FlywayStartupTests` và `PostgresAccountTransactionTests` chỉ chạy khi có `MIGRATION_TEST_URL`.
 Chỉ trỏ biến này tới PostgreSQL **tạm dành riêng cho test**, không dùng student_db thật:
 startup test tạo schema, migration test tạo/xóa database tạm; user test cần CREATEDB.
 URL test có dạng `jdbc:postgresql://localhost:PORT/migration_test` (không thêm query parameters).
@@ -90,3 +90,34 @@ giữ dữ liệu và áp dụng V2 thử nghiệm đúng một lần. V2 thử 
 Tham khảo:
 - https://docs.spring.io/spring-boot/how-to/data-initialization.html
 - https://documentation.red-gate.com/flyway/reference/commands/baseline
+
+## Transaction và concurrency trên PostgreSQL
+
+`PostgresAccountTransactionTests` chạy service thật với Flyway schema và Hibernate validate.
+Test không bọc trong transaction tự rollback của Spring: mỗi lời gọi service được commit thực,
+và các luồng cạnh tranh dùng các connection riêng. Test chỉ xóa user fixture có tiền tố `pg-transaction-`.
+Không chạy các test này song song với suite khác cùng sửa bảng users trong cùng database.
+
+Các trường hợp được kiểm tra:
+
+- Đã có 2 ADMIN (kể cả tài khoản bị khóa/chưa kích hoạt), 3 yêu cầu tạo ADMIN cùng bắt đầu:
+  chỉ 1 thành công, tổng không vượt 3; yêu cầu thứ tư bị từ chối và STAFF vẫn tạo được.
+- Hai yêu cầu đặt mật khẩu lần đầu dùng cùng token kích hoạt: chỉ 1 thành công,
+  mật khẩu lưu là của luồng thắng, token/expiry bị xóa và không tái sử dụng được.
+  Luồng dùng tài khoản STAFF để kiểm tra PasswordSetupService chung; không giả lập gửi email.
+- Transaction tạo tài khoản lỗi phải rollback cả bản ghi. Transaction kích hoạt đã flush rồi lỗi
+  phải phục hồi password hash và token cũ; token đó vẫn dùng được sau rollback.
+- Giữ khóa `findForUpdate` ở transaction thứ nhất, quan sát `pg_stat_activity.wait_event_type = Lock`
+  của connection thứ hai; chỉ sau commit transaction thứ nhất, luồng thứ hai mới sửa được bản ghi.
+
+Các Future/latch và câu lệnh SQL có timeout để phát hiện deadlock thay vì treo CI.
+Đây là kiểm thử giới hạn tài khoản và token kích hoạt; chưa phải kiểm thử OTP reset đồng thời,
+load test hay kiểm thử toàn bộ luồng sinh viên trên PostgreSQL.
+CI dùng sẵn service PostgreSQL 16 và biến MIGRATION_TEST_URL nên tự chạy suite này với `./mvnw test`.
+Chạy riêng khi đã có PostgreSQL test như hướng dẫn trên:
+
+```bash
+MIGRATION_TEST_URL=jdbc:postgresql://localhost:PORT/migration_test \
+MIGRATION_TEST_PASSWORD=migration-test-only \
+./mvnw -Dtest=PostgresAccountTransactionTests test
+```

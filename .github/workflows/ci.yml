@@ -88,8 +88,8 @@ jobs:
       - name: Grant execute permission for Maven Wrapper
         run: chmod +x mvnw
 
-      # Application tests on H2 plus migration/startup tests on disposable PostgreSQL
-      - name: Run tests with Maven Wrapper
+      # H2 application tests plus PostgreSQL migrations, transactions, locks and token races
+      - name: Run backend tests including PostgreSQL concurrency
         run: ./mvnw test
 
       # Đóng gói file JAR ứng dụng Spring Boot
