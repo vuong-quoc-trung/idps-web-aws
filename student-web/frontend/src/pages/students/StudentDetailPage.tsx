@@ -348,7 +348,7 @@ export default function StudentDetailPage() {
           onRefresh={async () => setAddresses(await addressApi.list(studentId))}
           renderItem={(addr: Address) => (
             <div key={addr.id} className="sub-card">
-              <div className="sub-card-title">{addr.addressType === 'CURRENT' ? 'Thường trú' : addr.addressType === 'PERMANENT' ? 'Hộ khẩu' : 'Gia đình'}</div>
+              <div className="sub-card-title">{addr.addressType === 'CURRENT' ? 'Nơi ở hiện tại (Tạm trú)' : addr.addressType === 'PERMANENT' ? 'Hộ khẩu thường trú (Nơi thường trú)' : 'Nhà gia đình'}</div>
               <div className="sub-card-row"><span className="sub-card-label">Địa chỉ:</span><span>{addr.addressLine ?? '—'}</span></div>
               <div className="sub-card-row"><span className="sub-card-label">Quốc gia:</span><span>{countryLabel(addr.countryCode)}</span></div>
               <div className="sub-card-row"><span className="sub-card-label">Tỉnh/TP:</span><span>{addr.provinceCity ?? '—'}</span></div>
@@ -553,21 +553,21 @@ function AddressModal({ studentId, item, open, onClose, onSaved }:
       {err && <div className="form-alert" style={{ marginBottom: 12 }}>{err}</div>}
       <div className="catalog-form">
         <div className="form-group">
-          <label className="form-label">Loại địa chỉ</label>
-          <select className="form-select" value={form.addressType} onChange={e => setForm(f => ({ ...f, addressType: e.target.value as AddressPayload['addressType'] }))}>
-            <option value="CURRENT">Thường trú</option>
-            <option value="PERMANENT">Hộ khẩu thường trú</option>
+          <label htmlFor="std-detail-addr-type" className="form-label">Loại địa chỉ</label>
+          <select id="std-detail-addr-type" className="form-select" value={form.addressType} onChange={e => setForm(f => ({ ...f, addressType: e.target.value as AddressPayload['addressType'] }))}>
+            <option value="CURRENT">Nơi ở hiện tại (Tạm trú)</option>
+            <option value="PERMANENT">Hộ khẩu thường trú (Nơi thường trú)</option>
             <option value="FAMILY_HOME">Nhà gia đình</option>
           </select>
         </div>
         <div className="form-group">
-          <label className="form-label">Số nhà, đường</label>
-          <input className="form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} />
+          <label htmlFor="std-detail-addr-line" className="form-label">Số nhà, đường</label>
+          <input id="std-detail-addr-line" className="form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} />
         </div>
         <AddressLocationFields form={form} onChange={setForm} />
         <div className="form-group">
-          <label className="toggle-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input type="checkbox" id="addr-detail-current-cb" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))} />
+          <label htmlFor="std-detail-addr-current" className="toggle-row" style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <input type="checkbox" id="std-detail-addr-current" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))} />
             <span className="form-label" style={{ margin: 0 }}>Địa chỉ đang có hiệu lực</span>
           </label>
           <p className="form-hint" style={{ marginTop: 4 }}>
@@ -612,8 +612,8 @@ function FamilyModal({ studentId, item, open, onClose, onSaved }:
       <div className="catalog-form">
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Quan hệ <span className="required">*</span></label>
-            <select className="form-select" value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship: e.target.value as FamilyMemberPayload['relationship'] }))}>
+            <label htmlFor="std-detail-fam-rel" className="form-label">Quan hệ <span className="required">*</span></label>
+            <select id="std-detail-fam-rel" className="form-select" value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship: e.target.value as FamilyMemberPayload['relationship'] }))}>
               <option value="MOTHER">Mẹ</option>
               <option value="FATHER">Bố</option>
               <option value="GUARDIAN">Người giám hộ</option>
@@ -621,27 +621,27 @@ function FamilyModal({ studentId, item, open, onClose, onSaved }:
             </select>
           </div>
           <div className="form-group">
-            <label className="form-label">Họ và tên</label>
-            <input className="form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} />
+            <label htmlFor="std-detail-fam-name" className="form-label">Họ và tên</label>
+            <input id="std-detail-fam-name" className="form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} />
           </div>
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Ngày sinh</label>
-            <input className="form-input" placeholder="YYYY-MM-DD" value={form.dateOfBirth ?? ''} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))} />
+            <label htmlFor="std-detail-fam-dob" className="form-label">Ngày sinh</label>
+            <input id="std-detail-fam-dob" className="form-input" placeholder="YYYY-MM-DD" value={form.dateOfBirth ?? ''} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))} />
           </div>
           <div className="form-group">
-            <label className="form-label">Số điện thoại</label>
-            <input className="form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} />
+            <label htmlFor="std-detail-fam-phone" className="form-label">Số điện thoại</label>
+            <input id="std-detail-fam-phone" className="form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} />
           </div>
         </div>
         <div style={{ display: 'flex', gap: 20 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--text-sm)' }}>
-            <input type="checkbox" checked={form.hasCollegeDegree} onChange={e => setForm(f => ({ ...f, hasCollegeDegree: e.target.checked }))} />
+          <label htmlFor="std-detail-fam-degree" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--text-sm)', cursor: 'pointer' }}>
+            <input id="std-detail-fam-degree" type="checkbox" checked={form.hasCollegeDegree} onChange={e => setForm(f => ({ ...f, hasCollegeDegree: e.target.checked }))} />
             Có bằng đại học
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--text-sm)' }}>
-            <input type="checkbox" checked={form.unavailable} onChange={e => setForm(f => ({ ...f, unavailable: e.target.checked }))} />
+          <label htmlFor="std-detail-fam-unavail" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--text-sm)', cursor: 'pointer' }}>
+            <input id="std-detail-fam-unavail" type="checkbox" checked={form.unavailable} onChange={e => setForm(f => ({ ...f, unavailable: e.target.checked }))} />
             Đã mất / Không liên lạc được
           </label>
         </div>
@@ -686,27 +686,27 @@ function EmergencyModal({ studentId, item, open, onClose, onSaved }:
       <div className="catalog-form">
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Họ và tên <span className="required">*</span></label>
-            <input className="form-input" value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} />
+            <label htmlFor="std-detail-emg-name" className="form-label">Họ và tên <span className="required">*</span></label>
+            <input id="std-detail-emg-name" className="form-input" value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} />
           </div>
           <div className="form-group">
-            <label className="form-label">Số điện thoại <span className="required">*</span></label>
-            <input className="form-input" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} />
+            <label htmlFor="std-detail-emg-phone" className="form-label">Số điện thoại <span className="required">*</span></label>
+            <input id="std-detail-emg-phone" className="form-input" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} />
           </div>
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Mối quan hệ</label>
-            <input className="form-input" placeholder="Vd: Cha, Mẹ, Anh/Chị…" value={form.relationship ?? ''} onChange={e => setForm(f => ({ ...f, relationship: e.target.value }))} />
+            <label htmlFor="std-detail-emg-rel" className="form-label">Mối quan hệ</label>
+            <input id="std-detail-emg-rel" className="form-input" placeholder="Vd: Cha, Mẹ, Anh/Chị…" value={form.relationship ?? ''} onChange={e => setForm(f => ({ ...f, relationship: e.target.value }))} />
           </div>
           <div className="form-group">
-            <label className="form-label">Thứ tự ưu tiên <span className="required">*</span></label>
-            <input className="form-input" type="number" min={1} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: Number(e.target.value) }))} />
+            <label htmlFor="std-detail-emg-priority" className="form-label">Thứ tự ưu tiên <span className="required">*</span></label>
+            <input id="std-detail-emg-priority" className="form-input" type="number" min={1} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: Number(e.target.value) }))} />
           </div>
         </div>
         <div className="form-group">
-          <label className="form-label">Địa chỉ</label>
-          <input className="form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
+          <label htmlFor="std-detail-emg-address" className="form-label">Địa chỉ</label>
+          <input id="std-detail-emg-address" className="form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
         </div>
       </div>
     </Modal>
@@ -747,22 +747,22 @@ function PostGradModal({ studentId, item, open, onClose, onSaved }:
       <div className="catalog-form">
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Họ và tên</label>
-            <input className="form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} />
+            <label htmlFor="std-detail-postgrad-name" className="form-label">Họ và tên</label>
+            <input id="std-detail-postgrad-name" className="form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))} />
           </div>
           <div className="form-group">
-            <label className="form-label">Số điện thoại</label>
-            <input className="form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} />
+            <label htmlFor="std-detail-postgrad-phone" className="form-label">Số điện thoại</label>
+            <input id="std-detail-postgrad-phone" className="form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} />
           </div>
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Email</label>
-            <input className="form-input" type="email" value={form.email ?? ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            <label htmlFor="std-detail-postgrad-email" className="form-label">Email</label>
+            <input id="std-detail-postgrad-email" className="form-input" type="email" value={form.email ?? ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
           </div>
           <div className="form-group">
-            <label className="form-label">Địa chỉ</label>
-            <input className="form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
+            <label htmlFor="std-detail-postgrad-address" className="form-label">Địa chỉ</label>
+            <input id="std-detail-postgrad-address" className="form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
           </div>
         </div>
       </div>

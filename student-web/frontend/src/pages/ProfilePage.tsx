@@ -303,8 +303,8 @@ function AddressTab({ onModified }: { onModified?: () => void }) {
   }
 
   const ADDR_LABELS: Record<string, string> = {
-    CURRENT: 'Thường trú',
-    PERMANENT: 'Hộ khẩu thường trú',
+    CURRENT: 'Nơi ở hiện tại (Tạm trú)',
+    PERMANENT: 'Hộ khẩu thường trú (Nơi thường trú)',
     FAMILY_HOME: 'Nhà gia đình',
   };
 
@@ -447,25 +447,25 @@ function AddressModal({ item, open, onClose, onSaved }:
       {err && <div className="profile-alert-error" style={{ marginBottom: 12 }}>{err}</div>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-group">
-          <label className="profile-form-label">Loại địa chỉ</label>
-          <select className="profile-form-input" value={form.addressType} onChange={e => setForm(f => ({ ...f, addressType: e.target.value as AddressPayload['addressType'] }))}>
-            <option value="CURRENT">Thường trú</option>
-            <option value="PERMANENT">Hộ khẩu thường trú</option>
+          <label className="profile-form-label" htmlFor="profile-addr-type">Loại địa chỉ</label>
+          <select id="profile-addr-type" className="profile-form-input" value={form.addressType} onChange={e => setForm(f => ({ ...f, addressType: e.target.value as AddressPayload['addressType'] }))}>
+            <option value="CURRENT">Nơi ở hiện tại (Tạm trú)</option>
+            <option value="PERMANENT">Hộ khẩu thường trú (Nơi thường trú)</option>
             <option value="FAMILY_HOME">Nhà gia đình</option>
           </select>
         </div>
         <div className="profile-form-group">
-          <label className="profile-form-label">Số nhà, đường</label>
-          <input className="profile-form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} placeholder="VD: 123 Nguyễn Văn A"/>
+          <label className="profile-form-label" htmlFor="profile-addr-line">Số nhà, đường</label>
+          <input id="profile-addr-line" className="profile-form-input" value={form.addressLine ?? ''} onChange={e => setForm(f => ({ ...f, addressLine: e.target.value }))} placeholder="VD: 123 Nguyễn Văn A"/>
         </div>
         <AddressLocationFields form={form} onChange={setForm} />
         <div className="profile-form-group">
-          <label className="profile-toggle-row">
+          <label className="profile-toggle-row" htmlFor="profile-addr-current">
             <input type="checkbox" className="profile-checkbox" id="profile-addr-current" checked={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.checked }))}/>
             <span className="profile-toggle-label">Địa chỉ đang có hiệu lực sử dụng</span>
           </label>
           <p style={{ marginTop: 4, fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-            Hệ thống yêu cầu cả nơi thường trú và hộ khẩu phải được đánh dấu &quot;Có hiệu lực&quot; để nghiệm thu hoàn thiện hồ sơ.
+            Hệ thống yêu cầu cả nơi ở hiện tại và hộ khẩu thường trú phải được đánh dấu &quot;Có hiệu lực&quot; để nghiệm thu hoàn thiện hồ sơ.
           </p>
         </div>
       </div>
@@ -648,8 +648,8 @@ function FamilyModal({ item, open, onClose, onSaved }:
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Quan hệ <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <select className="profile-form-input" value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship: e.target.value as FamilyMemberPayload['relationship'] }))}>
+            <label className="profile-form-label" htmlFor="profile-fam-rel">Quan hệ <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <select id="profile-fam-rel" className="profile-form-input" value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship: e.target.value as FamilyMemberPayload['relationship'] }))}>
               <option value="MOTHER">Mẹ</option>
               <option value="FATHER">Bố</option>
               <option value="GUARDIAN">Người giám hộ</option>
@@ -657,27 +657,27 @@ function FamilyModal({ item, open, onClose, onSaved }:
             </select>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Họ và tên</label>
-            <input className="profile-form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-fam-name">Họ và tên</label>
+            <input id="profile-fam-name" className="profile-form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
           </div>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Ngày sinh</label>
-            <input className="profile-form-input" type="date" value={form.dateOfBirth ?? ''} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-fam-dob">Ngày sinh</label>
+            <input id="profile-fam-dob" className="profile-form-input" type="date" value={form.dateOfBirth ?? ''} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại</label>
-            <input className="profile-form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-fam-phone">Số điện thoại</label>
+            <input id="profile-fam-phone" className="profile-form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 24 }}>
-          <label className="profile-toggle-row">
-            <input type="checkbox" className="profile-checkbox" checked={form.hasCollegeDegree} onChange={e => setForm(f => ({ ...f, hasCollegeDegree: e.target.checked }))}/>
+          <label className="profile-toggle-row" htmlFor="profile-fam-degree">
+            <input id="profile-fam-degree" type="checkbox" className="profile-checkbox" checked={form.hasCollegeDegree} onChange={e => setForm(f => ({ ...f, hasCollegeDegree: e.target.checked }))}/>
             <span className="profile-toggle-label">Có bằng đại học</span>
           </label>
-          <label className="profile-toggle-row">
-            <input type="checkbox" className="profile-checkbox" checked={form.unavailable} onChange={e => setForm(f => ({ ...f, unavailable: e.target.checked }))}/>
+          <label className="profile-toggle-row" htmlFor="profile-fam-unavail">
+            <input id="profile-fam-unavail" type="checkbox" className="profile-checkbox" checked={form.unavailable} onChange={e => setForm(f => ({ ...f, unavailable: e.target.checked }))}/>
             <span className="profile-toggle-label">Đã mất / Không liên lạc</span>
           </label>
         </div>
@@ -853,27 +853,27 @@ function EmergencyModal({ item, open, onClose, onSaved }:
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Họ và tên <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-emg-name">Họ và tên <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input id="profile-emg-name" className="profile-form-input" value={form.fullName} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-emg-phone">Số điện thoại <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input id="profile-emg-phone" className="profile-form-input" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Mối quan hệ</label>
-            <input className="profile-form-input" placeholder="VD: Cha, Mẹ, Anh/Chị..." value={form.relationship ?? ''} onChange={e => setForm(f => ({ ...f, relationship: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-emg-rel">Mối quan hệ</label>
+            <input id="profile-emg-rel" className="profile-form-input" placeholder="VD: Cha, Mẹ, Anh/Chị..." value={form.relationship ?? ''} onChange={e => setForm(f => ({ ...f, relationship: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Thứ tự ưu tiên <span style={{ color: 'var(--text-error)' }}>*</span></label>
-            <input className="profile-form-input" type="number" min={1} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: Number(e.target.value) }))}/>
+            <label className="profile-form-label" htmlFor="profile-emg-priority">Thứ tự ưu tiên <span style={{ color: 'var(--text-error)' }}>*</span></label>
+            <input id="profile-emg-priority" className="profile-form-input" type="number" min={1} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: Number(e.target.value) }))}/>
           </div>
         </div>
         <div className="profile-form-group">
-          <label className="profile-form-label">Địa chỉ</label>
-          <input className="profile-form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}/>
+          <label className="profile-form-label" htmlFor="profile-emg-address">Địa chỉ</label>
+          <input id="profile-emg-address" className="profile-form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}/>
         </div>
       </div>
     </Modal>
@@ -1051,22 +1051,22 @@ function PostGradModal({ item, open, onClose, onSaved }:
       {err && <div className="profile-alert-error" style={{ marginBottom: 12 }}>{err}</div>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         <div className="profile-form-group">
-          <label className="profile-form-label">Họ và tên</label>
-          <input className="profile-form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
+          <label className="profile-form-label" htmlFor="profile-postgrad-name">Họ và tên</label>
+          <input id="profile-postgrad-name" className="profile-form-input" value={form.fullName ?? ''} onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}/>
         </div>
         <div className="profile-form-row">
           <div className="profile-form-group">
-            <label className="profile-form-label">Số điện thoại</label>
-            <input className="profile-form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-postgrad-phone">Số điện thoại</label>
+            <input id="profile-postgrad-phone" className="profile-form-input" value={form.phoneNumber ?? ''} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))}/>
           </div>
           <div className="profile-form-group">
-            <label className="profile-form-label">Email</label>
-            <input className="profile-form-input" type="email" value={form.email ?? ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}/>
+            <label className="profile-form-label" htmlFor="profile-postgrad-email">Email</label>
+            <input id="profile-postgrad-email" className="profile-form-input" type="email" value={form.email ?? ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}/>
           </div>
         </div>
         <div className="profile-form-group">
-          <label className="profile-form-label">Địa chỉ</label>
-          <input className="profile-form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}/>
+          <label className="profile-form-label" htmlFor="profile-postgrad-address">Địa chỉ</label>
+          <input id="profile-postgrad-address" className="profile-form-input" value={form.address ?? ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}/>
         </div>
       </div>
     </Modal>
