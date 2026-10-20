@@ -1,6 +1,6 @@
 # Student Web — REST API quản lý sinh viên
 
-Java 25, Spring Boot 4.1.1, PostgreSQL 16. Hibernate tạo/cập nhật schema từ entity.
+Java 25, Spring Boot 4.1.1, PostgreSQL 16. Flyway quản lý phiên bản schema; Hibernate chỉ kiểm tra mapping (`validate`).
 
 ## Cấu trúc theo chức năng
 
@@ -24,7 +24,8 @@ và `degreeType` chỉ nhận `BACHELOR`, `ENGINEER`, `MASTER` hoặc null.
 
 ## Chạy tạo bảng
 
-Đảm bảo PostgreSQL có database `student_db`; Hibernate tạo bảng, không tạo database.
+Đảm bảo PostgreSQL có database `student_db`; Flyway tạo bảng khi schema rỗng, không tạo database.
+Database đang dùng cần tiếp nhận một lần theo [hướng dẫn Flyway](docs/DATABASE_MIGRATIONS.md) trước khi chạy bản mới.
 Thiết lập biến môi trường trong IDE hoặc terminal:
 
 ```bash

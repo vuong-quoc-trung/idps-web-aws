@@ -53,6 +53,23 @@ jobs:
   student-web-backend:
     name: "Student Web - Backend (Spring Boot/Java)"
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: migration-test-only
+          POSTGRES_DB: migration_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d migration_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      MIGRATION_TEST_URL: jdbc:postgresql://localhost:5432/migration_test
+      MIGRATION_TEST_USER: postgres
+      MIGRATION_TEST_PASSWORD: migration-test-only
     defaults:
       run:
         working-directory: student-web/backend
@@ -71,7 +88,7 @@ jobs:
       - name: Grant execute permission for Maven Wrapper
         run: chmod +x mvnw
 
-      # Chạy 43 unit/integration tests trên in-memory H2 database
+      # Application tests on H2 plus migration/startup tests on disposable PostgreSQL
       - name: Run tests with Maven Wrapper
         run: ./mvnw test
 
