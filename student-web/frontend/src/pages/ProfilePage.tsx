@@ -1,3 +1,4 @@
+import { validHttpUrl } from '../utils/urlValidation';
 /**
  * ProfilePage — Student self-service profile management
  * Fixed according to backend Spring Security contracts:
@@ -1147,6 +1148,9 @@ function PersonalTab({
   }
 
   async function save() {
+    if (!validHttpUrl(form.avatarUrl)) { setErr('Ảnh đại diện: vui lòng nhập URL HTTP/HTTPS hợp lệ, không chứa thông tin đăng nhập.'); return; }
+    if (!validHttpUrl(form.facebookUrl)) { setErr('Facebook: vui lòng nhập URL HTTP/HTTPS hợp lệ, không chứa thông tin đăng nhập.'); return; }
+    if (form.facebookUrl.trim().length > 500) { setErr('Đường dẫn Facebook không được vượt quá 500 ký tự.'); return; }
     if (form.avatarUrl.trim().length > 4096) { setErr('Đường dẫn ảnh đại diện quá dài (tối đa 4096 ký tự). Vui lòng dùng link ảnh ngắn hơn.'); return; }
     if (!form.phoneNumber.trim()) { setErr(REQUIRED_PHONE_ERROR); return; }
     if (!validPhone(form.phoneNumber)) { setErr(phoneError(form.phoneNumber)); return; }
@@ -1201,7 +1205,7 @@ function PersonalTab({
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center', marginBottom: 'var(--space-4)', padding: 'var(--space-3)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
           <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--accent-btn)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, border: '2px solid var(--border-brand)', position: 'relative' }}>
-            {form.avatarUrl ? (
+            {form.avatarUrl && validHttpUrl(form.avatarUrl) ? (
               <img src={form.avatarUrl} alt="Xem trước avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0 }} onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }} />
             ) : null}
             <span style={{ color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600, visibility: form.avatarUrl ? 'hidden' : 'visible' }}>{student.fullName.slice(0, 2).toUpperCase()}</span>

@@ -298,6 +298,20 @@ class StudentApiTests {
             .andExpect(status().isBadRequest());
     }
 
+    @Test void profileRejectsUnsafeUrls() throws Exception {
+        var s = student("URL-TEST"); var session = login(s.getStudentCode());
+        for (String field : java.util.List.of("avatarUrl", "facebookUrl")) {
+            for (String value : java.util.List.of("javascript:alert(1)", "data:text/html,test", "//example.com/a",
+                    "https:///a", "https://user:pass@example.com/a", "https://example.com:99999/a",
+                    "https://example.com/\nfoo", "https://example.com/%xx")) {
+                send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, field, value), 400);
+            }
+            for (String value : java.util.List.of("https://example.com/a?x=1&y=2", "http://example.com/a", "")) {
+                send(put("/api/me/profile"), session, jsonBody("freeHealthInsurance", false, field, value), 200);
+            }
+        }
+    }
+
     @Test void profileAcceptsLongAvatarLinkAndRejectsOversizedLink() throws Exception {
         var s = student("LONG-AVATAR"); var session = login(s.getStudentCode());
         String link = "https://images.example.com/photo.jpg?signature=" + "a".repeat(1000);
@@ -371,6 +385,29 @@ class StudentApiTests {
                 .header(refreshed.get("headerName").asText(), refreshed.get("token").asText()))
                 .andExpect(status().isNoContent());
         assertThat(session.isInvalid()).isTrue();
+    }
+
+    @Test void sqlInjectionPayloadsRemainLiteralData() throws Exception {
+        student("SQL-SAFE");
+        var session = login("admin-test");
+        long userCount = users.count();
+        long studentCount = students.count();
+        for (String payload : java.util.List.of("' OR '1'='1", "'; DROP TABLE users; --",
+                "' UNION SELECT username FROM users --", "%", "_", "!")) {
+            mvc.perform(get("/api/students").session(session).param("search", payload))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+            mvc.perform(post("/api/auth/login").with(csrf())
+                    .param("username", payload).param("password", PASSWORD))
+                    .andExpect(status().isUnauthorized());
+        }
+        mvc.perform(get("/api/students").session(session).param("search", "SQL-SAFE"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(1));
+        mvc.perform(get("/api/students").session(session).param("majorId", "1 OR 1=1"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/access-logs").session(session).param("direction", "DESC; DROP TABLE users"))
+                .andExpect(status().isBadRequest());
+        assertThat(users.count()).isEqualTo(userCount);
+        assertThat(students.count()).isEqualTo(studentCount);
     }
 
     @Test void rejectsWrongPasswordAndUnactivatedAccounts() throws Exception {
