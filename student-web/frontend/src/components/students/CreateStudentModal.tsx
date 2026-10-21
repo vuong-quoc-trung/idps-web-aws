@@ -22,7 +22,11 @@ function validate(f: CreateStudentPayload): Partial<Record<string, string>> {
   if (!validPhone(f.familyPhoneNumber)) e.familyPhoneNumber = PHONE_ERROR;
   if (!f.fullName.trim()) e.fullName = 'Họ tên là bắt buộc';
   if (!f.classId) e.classId = 'Phải chọn lớp';
-  if (f.dateOfBirth && !/^\d{4}-\d{2}-\d{2}$/.test(f.dateOfBirth)) e.dateOfBirth = 'Định dạng YYYY-MM-DD';
+  // Required by backend StudentActivationService — students without these cannot self-activate
+  if (!f.dateOfBirth) e.dateOfBirth = 'Ngày sinh là bắt buộc (cần thiết để kích hoạt tài khoản)';
+  else if (!/^\d{4}-\d{2}-\d{2}$/.test(f.dateOfBirth)) e.dateOfBirth = 'Định dạng YYYY-MM-DD';
+  if (!f.gender) e.gender = 'Giới tính là bắt buộc (cần thiết để kích hoạt tài khoản)';
+  if (!f.citizenId?.trim()) e.citizenId = 'Số CCCD là bắt buộc (cần thiết để kích hoạt tài khoản)';
   return e;
 }
 
@@ -68,7 +72,7 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         classId: Number(form.classId),
         dateOfBirth: form.dateOfBirth || undefined,
         gender: form.gender || undefined,
-        citizenId: form.citizenId || undefined,
+        citizenId: form.citizenId?.trim() || undefined,
         familyPhoneNumber: form.familyPhoneNumber || undefined,
         secondaryProgramId: form.secondaryProgramId || null,
       };
@@ -170,28 +174,34 @@ export default function CreateStudentModal({ open, onClose, onCreated }: Props) 
         {/* Row 2: Ngày sinh + Giới tính */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label" htmlFor="create-student-dob">Ngày sinh</label>
-            <input id="create-student-dob" className={`form-input ${fv.dateOfBirth ? 'invalid' : ''}`} placeholder="YYYY-MM-DD"
+            <label className="form-label" htmlFor="create-student-dob">Ngày sinh <span className="required">*</span></label>
+            <input id="create-student-dob" type="date" className={`form-input ${fv.dateOfBirth ? 'invalid' : ''}`}
+              placeholder="YYYY-MM-DD"
               value={form.dateOfBirth} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))} disabled={submitting} />
-            {fv.dateOfBirth && <p className="form-error-text">{fv.dateOfBirth}</p>}
+            {fv.dateOfBirth && <p className="form-error-text" id="create-student-dob-error">{fv.dateOfBirth}</p>}
+            <p className="form-hint">Bắt buộc — cần thiết để sinh viên có thể tự kích hoạt tài khoản</p>
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="create-student-gender">Giới tính</label>
-            <select id="create-student-gender" className="form-select" value={form.gender ?? ''}
+            <label className="form-label" htmlFor="create-student-gender">Giới tính <span className="required">*</span></label>
+            <select id="create-student-gender" className={`form-select ${fv.gender ? 'invalid' : ''}`} value={form.gender ?? ''}
               onChange={e => setForm(f => ({ ...f, gender: (e.target.value as Gender) || undefined }))}>
-              <option value="">— Không xác định —</option>
+              <option value="">— Chọn giới tính —</option>
               <option value="MALE">Nam</option>
               <option value="FEMALE">Nữ</option>
               <option value="OTHER">Khác</option>
             </select>
+            {fv.gender && <p className="form-error-text" id="create-student-gender-error">{fv.gender}</p>}
+            <p className="form-hint">Bắt buộc — cần thiết để sinh viên có thể tự kích hoạt tài khoản</p>
           </div>
         </div>
         {/* Row 3: CCCD + Lớp */}
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label" htmlFor="create-student-citizen-id">Số CCCD</label>
-            <input id="create-student-citizen-id" className="form-input" placeholder="Vd: 001234567890"
+            <label className="form-label" htmlFor="create-student-citizen-id">Số CCCD <span className="required">*</span></label>
+            <input id="create-student-citizen-id" className={`form-input ${fv.citizenId ? 'invalid' : ''}`} placeholder="Vd: 001234567890"
               value={form.citizenId} onChange={e => setForm(f => ({ ...f, citizenId: e.target.value }))} disabled={submitting} />
+            {fv.citizenId && <p className="form-error-text" id="create-student-citizen-id-error">{fv.citizenId}</p>}
+            <p className="form-hint">Bắt buộc — cần thiết để sinh viên có thể tự kích hoạt tài khoản</p>
           </div>
           <div className="form-group">
             <label className="form-label" htmlFor="create-student-class">Lớp <span className="required">*</span></label>

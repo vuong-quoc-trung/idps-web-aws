@@ -87,13 +87,30 @@ const EyeOn = () => (
   </svg>
 );
 
+const SESSION_KEY = 'activate_token';
+
 export default function ActivatePage() {
   const [searchParams] = useSearchParams();
 
-  const [token] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get('token') ?? searchParams.get('token') ?? '');
+  // Resolve token: prefer URL param (fresh link), then sessionStorage (reload recovery)
+  const [token] = useState(() => {
+    const fromUrl =
+      new URLSearchParams(window.location.hash.slice(1)).get('token') ??
+      searchParams.get('token') ??
+      '';
+    if (fromUrl) {
+      // Persist so the user can reload within the same tab without losing it
+      sessionStorage.setItem(SESSION_KEY, fromUrl);
+      return fromUrl;
+    }
+    // Fallback: recover from sessionStorage after a same-tab reload
+    return sessionStorage.getItem(SESSION_KEY) ?? '';
+  });
+
   useEffect(() => {
     if (token) window.history.replaceState(window.history.state, '', window.location.pathname);
   }, [token]);
+
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [showPwd, setShowPwd] = useState(false);
@@ -115,6 +132,8 @@ export default function ActivatePage() {
     setSubmitting(true);
     try {
       await activateAccount(token.trim(), password);
+      // Token consumed — clear from session storage so it cannot be replayed
+      sessionStorage.removeItem(SESSION_KEY);
       setStep('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kích hoạt tài khoản thất bại');
