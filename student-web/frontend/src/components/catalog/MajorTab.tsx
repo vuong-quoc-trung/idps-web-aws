@@ -94,7 +94,10 @@ export default function MajorTab() {
     { key: 'id',          label: 'ID',        cls: 'col-id' },
     { key: 'code',        label: 'Mã ngành',  cls: 'col-code', render: (r: Major) => <span>{r.code}</span> },
     { key: 'name',        label: 'Tên ngành' },
-    { key: 'facultyName', label: 'Khoa',      render: (r: Major) => <span style={{ color: 'var(--text-muted)' }}>{r.facultyName ?? `#${r.facultyId}`}</span> },
+    { key: 'facultyName', label: 'Khoa',      render: (r: Major) => {
+      const facultyNameMap = Object.fromEntries(faculties.map(f => [f.id, f.name]));
+      return <span style={{ color: 'var(--text-muted)' }}>{facultyNameMap[r.facultyId] ?? r.facultyName ?? `#${r.facultyId}`}</span>;
+    } },
     { key: 'active', label: 'Trạng thái', cls: 'col-active', render: (r: Major) =>
         <span className={`badge ${r.active ? 'badge-active' : 'badge-inactive'}`}>{r.active ? '● Hoạt động' : '○ Ngừng'}</span> },
   ];

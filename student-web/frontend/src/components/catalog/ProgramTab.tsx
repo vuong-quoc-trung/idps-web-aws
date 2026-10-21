@@ -122,11 +122,14 @@ export default function ProgramTab() {
 
   const degreeLabel = (d?: DegreeType | null) => DEGREE_OPTIONS.find(o => o.value === d)?.label ?? '—';
 
+  // Build major name lookup map from already-loaded majors list
+  const majorNameMap = Object.fromEntries(majors.map(m => [m.id, m.name]));
+
   const columns: Column<TrainingProgram>[] = [
     { key: 'id',          label: 'ID',           cls: 'col-id' },
     { key: 'code',        label: 'Mã',            cls: 'col-code', render: (r: TrainingProgram) => <span>{r.code}</span> },
     { key: 'name',        label: 'Tên chương trình' },
-    { key: 'majorName',   label: 'Ngành',         render: (r: TrainingProgram) => <span style={{ color: 'var(--text-muted)' }}>{r.majorName ?? `#${r.majorId}`}</span> },
+    { key: 'majorName',   label: 'Ngành',         render: (r: TrainingProgram) => <span style={{ color: 'var(--text-muted)' }}>{majorNameMap[r.majorId] ?? r.majorName ?? `#${r.majorId}`}</span> },
     { key: 'degreeType',  label: 'Bằng cấp',      render: (r: TrainingProgram) => <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{degreeLabel(r.degreeType)}</span> },
     { key: 'totalCredits',label: 'Tín chỉ',       render: (r: TrainingProgram) => <span>{r.totalCredits ?? '—'}</span> },
     { key: 'active', label: 'Trạng thái', cls: 'col-active', render: (r: TrainingProgram) =>

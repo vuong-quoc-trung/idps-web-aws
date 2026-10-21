@@ -100,11 +100,14 @@ export default function ClassTab() {
     } finally { setDeleting(false); }
   }
 
+  // Build program name lookup map from already-loaded programs list
+  const programNameMap = Object.fromEntries(programs.map(p => [p.id, p.name]));
+
   const columns: Column<StudentClass>[] = [
     { key: 'id',          label: 'ID',          cls: 'col-id' },
     { key: 'code',        label: 'Mã lớp',      cls: 'col-code', render: (r: StudentClass) => <span>{r.code}</span> },
     { key: 'name',        label: 'Tên lớp',     render: (r: StudentClass) => <span>{r.name || '—'}</span> },
-    { key: 'programName', label: 'Chương trình', render: (r: StudentClass) => <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{r.programName ?? `#${r.programId}`}</span> },
+    { key: 'programName', label: 'Chương trình', render: (r: StudentClass) => <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{programNameMap[r.programId] ?? r.programName ?? `#${r.programId}`}</span> },
     { key: 'cohort',      label: 'Khoá',        render: (r: StudentClass) => <span>{r.cohort ?? '—'}</span> },
     { key: 'academicYear',label: 'Năm học',     render: (r: StudentClass) => <span style={{ color: 'var(--text-muted)' }}>{r.academicYear ?? '—'}</span> },
     { key: 'active', label: 'Trạng thái', cls: 'col-active', render: (r: StudentClass) =>
