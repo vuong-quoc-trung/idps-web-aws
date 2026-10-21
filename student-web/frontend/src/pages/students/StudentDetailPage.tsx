@@ -44,7 +44,7 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   trainingProgram: 'Chương trình đào tạo',
   personalEmail: 'Email cá nhân',
   phoneNumber: 'Số điện thoại',
-  currentAddress: 'Địa chỉ thường trú',
+  currentAddress: 'Địa chỉ hiện tại / Tạm trú',
   permanentOrFamilyAddress: 'Hộ khẩu / Nhà gia đình',
   father: 'Thông tin Bố (họ tên, ngày sinh)',
   mother: 'Thông tin Mẹ (họ tên, ngày sinh)',
@@ -344,6 +344,7 @@ export default function StudentDetailPage() {
               Địa chỉ
             </>
           }
+          accessibleName="Địa chỉ"
           items={addresses}
           onRefresh={async () => setAddresses(await addressApi.list(studentId))}
           renderItem={(addr: Address) => (
@@ -383,6 +384,7 @@ export default function StudentDetailPage() {
               Nhân thân
             </>
           }
+          accessibleName="Nhân thân"
           items={family}
           onRefresh={async () => setFamily(await familyApi.list(studentId))}
           renderItem={(m: FamilyMember) => (
@@ -419,6 +421,7 @@ export default function StudentDetailPage() {
               Liên hệ khẩn cấp
             </>
           }
+          accessibleName="Liên hệ khẩn cấp"
           items={emergency}
           onRefresh={async () => setEmergency(await emergencyApi.list(studentId))}
           renderItem={(c: EmergencyContact) => (
@@ -454,6 +457,7 @@ export default function StudentDetailPage() {
               Liên hệ sau tốt nghiệp
             </>
           }
+          accessibleName="Liên hệ sau tốt nghiệp"
           items={postGrad}
           onRefresh={async () => setPostGrad(await postGradApi.list(studentId))}
           renderItem={(c: PostGradContact) => (

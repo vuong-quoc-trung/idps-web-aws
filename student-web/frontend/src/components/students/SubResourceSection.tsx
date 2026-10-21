@@ -7,6 +7,10 @@ import Modal from '../Modal';
 
 interface SubResourceSectionProps<T extends { id: number }> {
   title: React.ReactNode;
+  /** Plain-text name used for accessible button labels (e.g. "Địa chỉ", "Nhân thân").
+   *  Provide this whenever `title` is a JSX element (SVG + text) to avoid
+   *  aria-label="... [object Object]" corruption. */
+  accessibleName?: string;
   items: T[];
   renderItem: (item: T) => React.ReactNode;
   onRefresh: () => Promise<void>;
@@ -21,8 +25,12 @@ interface SubResourceSectionProps<T extends { id: number }> {
 }
 
 export default function SubResourceSection<T extends { id: number }>({
-  title, items, renderItem, onRefresh, AddEditModal, onDelete, emptyText = 'Chưa có dữ liệu.',
+  title, accessibleName, items, renderItem, onRefresh, AddEditModal, onDelete, emptyText = 'Chưa có dữ liệu.',
 }: SubResourceSectionProps<T>) {
+  // The label used in aria-label attributes. If `accessibleName` is provided we
+  // use it directly. Otherwise we attempt to extract a plain string from `title`
+  // (works when title is a string literal) and fall back to a generic label.
+  const ariaName = accessibleName ?? (typeof title === 'string' ? title : 'mục');
   const [editItem, setEditItem] = useState<T | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<T | null>(null);
@@ -49,12 +57,12 @@ export default function SubResourceSection<T extends { id: number }>({
       <div key={item.id} style={{ position: 'relative' }}>
         {rendered}
         <div className="sub-card-actions">
-          <button className="sv-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa ${title}`} onClick={() => openEdit(item)}>
+          <button className="sv-action-btn" title="Chỉnh sửa" aria-label={`Chỉnh sửa ${ariaName}`} onClick={() => openEdit(item)}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
               <path d="M9.5 2.5L11.5 4.5L5 11H3V9L9.5 2.5z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
             </svg>
           </button>
-          <button className="sv-action-btn danger" title="Xóa" aria-label={`Xóa ${title}`} onClick={() => setDeleteTarget(item)}>
+          <button className="sv-action-btn danger" title="Xóa" aria-label={`Xóa ${ariaName}`} onClick={() => setDeleteTarget(item)}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
               <path d="M2.5 4h9M5.5 4V2.5h3V4M6 6.5v4M8 6.5v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -68,7 +76,7 @@ export default function SubResourceSection<T extends { id: number }>({
     <div className="detail-section">
       <div className="detail-section-header">
         <span className="detail-section-title">{title}</span>
-        <button className="section-add-btn" onClick={openAdd} aria-label={`Thêm ${title}`}>
+        <button className="section-add-btn" onClick={openAdd} aria-label={`Thêm ${ariaName}`}>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
