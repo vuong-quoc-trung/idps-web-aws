@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DashboardPage — Modern Academic Portal Dashboard
  * Tailored for ADMIN/STAFF (metrics, quick actions, recent students)
  * and STUDENT (student card, completion widget, fast services)
@@ -48,7 +48,7 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   trainingProgram: 'Chương trình đào tạo',
   personalEmail: 'Email cá nhân',
   phoneNumber: 'Số điện thoại',
-  currentAddress: 'Địa chỉ thường trú',
+  currentAddress: 'Địa chỉ hiện tại / Tạm trú',
   permanentOrFamilyAddress: 'Hộ khẩu / Nhà gia đình',
   father: 'Thông tin Bố (họ tên, ngày sinh)',
   mother: 'Thông tin Mẹ (họ tên, ngày sinh)',
@@ -536,8 +536,21 @@ export default function DashboardPage() {
                       <path d="M16 3.13a4 4 0 010 7.75" />
                     </svg>
                   </div>
-                  <h3>Nhân thân & Khẩn cấp</h3>
-                  <p>Khai báo thông tin người thân trong gia đình và số điện thoại liên hệ khi có sự cố</p>
+                  <h3>Nhân thân gia đình</h3>
+                  <p>Khai báo thông tin bố, mẹ và người thân trong gia đình (quan hệ, ngày sinh, trình độ)</p>
+                  <span className="service-arrow">Truy cập →</span>
+                </Link>
+
+                <Link to="/profile?tab=emergency" className="student-service-card">
+                  <div className="service-card-icon service-purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                  </div>
+                  <h3>Liên hệ khẩn cấp</h3>
+                  <p>Khai báo số điện thoại người liên hệ khi có sự cố và thông tin liên lạc sau tốt nghiệp</p>
                   <span className="service-arrow">Truy cập →</span>
                 </Link>
 

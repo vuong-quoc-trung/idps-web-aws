@@ -37,6 +37,7 @@ import type {
 import './ProfilePage.css';
 import { AddressLocationFields, countryLabel, CatalogSelect, CountrySelect, ProvinceField, useProfileOptions } from '../components/profile/ProfileFields';
 import { phoneError, validPhone, validEmail, EMAIL_ERROR, REQUIRED_PHONE_ERROR, REQUIRED_EMAIL_ERROR } from '../utils/contactValidation';
+import { classApi, majorApi, programApi } from '../api/academicApi';
 
 const GENDER_LABELS: Record<string, string> = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 const STATUS_LABELS: Record<string, string> = {
@@ -60,7 +61,7 @@ const MISSING_FIELD_LABELS: Record<string, string> = {
   trainingProgram: 'Chương trình đào tạo',
   personalEmail: 'Email cá nhân',
   phoneNumber: 'Số điện thoại',
-  currentAddress: 'Địa chỉ thường trú hiện tại',
+  currentAddress: 'Địa chỉ hiện tại / Tạm trú',
   permanentOrFamilyAddress: 'Hộ khẩu hoặc nhà gia đình',
   father: 'Thông tin Bố (tên, ngày sinh hoặc đánh dấu đã mất)',
   mother: 'Thông tin Mẹ (tên, ngày sinh hoặc đánh dấu đã mất)',
@@ -1361,7 +1362,12 @@ function PersonalTab({
 /* ============================================================
    OVERVIEW TAB
    ============================================================ */
-function OverviewTab({ student }: { student: StudentDetail }) {
+function OverviewTab({ student, classMap, majorMap, programMap }: {
+  student: StudentDetail;
+  classMap: Record<number, string>;
+  majorMap: Record<number, string>;
+  programMap: Record<number, string>;
+}) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       {/* Thông tin học vụ do trường quản lý */}
@@ -1391,6 +1397,36 @@ function OverviewTab({ student }: { student: StudentDetail }) {
           />
         </div>
       </div>
+
+      {/* Thông tin học vụ */}
+      {(student.classId || student.majorId || student.trainingProgramId) && (
+        <div>
+          <div className="profile-section-header" style={{ marginBottom: 'var(--space-3)' }}>
+            <span className="profile-section-title">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                <path d="M7 1L1.5 4.5 7 8l5.5-3.5L7 1z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
+                <path d="M1.5 4.5v4.5M7 8v4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+              </svg>
+              Thông tin học vụ (do nhà trường quản lý)
+            </span>
+          </div>
+          <div className="profile-info-grid">
+            {student.classId && (
+              <InfoItem label="Lớp" value={classMap[student.classId] ?? `Lớp #${student.classId}`}/>
+            )}
+            {student.majorId && (
+              <InfoItem label="Ngành" value={majorMap[student.majorId] ?? `Ngành #${student.majorId}`}/>
+            )}
+            {student.trainingProgramId && (
+              <InfoItem label="Chương trình chính" value={programMap[student.trainingProgramId] ?? `CT #${student.trainingProgramId}`}/>
+            )}
+            {student.secondaryProgramId && (
+              <InfoItem label="Chương trình phụ" value={programMap[student.secondaryProgramId] ?? `CT #${student.secondaryProgramId}`}/>
+            )}
+            <InfoItem label="Trạng thái" value={STATUS_LABELS[student.status] ?? student.status}/>
+          </div>
+        </div>
+      )}
 
       {/* Thông tin cá nhân sinh viên tự khai */}
       <div>
@@ -1447,6 +1483,16 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [completionLoading, setCompletionLoading] = useState(true);
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  // Academic lookup maps for OverviewTab (fire-and-forget; errors silently ignored)
+  const [classMap, setClassMap] = useState<Record<number, string>>({});
+  const [majorMap, setMajorMap] = useState<Record<number, string>>({});
+  const [programMap, setProgramMap] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    classApi.listAll().then(r => setClassMap(Object.fromEntries(r.content.map(c => [c.id, c.name || c.code])))).catch(() => {});
+    majorApi.listAll().then(r => setMajorMap(Object.fromEntries(r.content.map(m => [m.id, m.name])))).catch(() => {});
+    programApi.listAll().then(r => setProgramMap(Object.fromEntries(r.content.map(p => [p.id, p.name])))).catch(() => {});
+  }, []);
 
   const refreshCompletion = useCallback(async () => {
     try {
@@ -1607,7 +1653,7 @@ export default function ProfilePage() {
             role="tabpanel"
             aria-labelledby={`profile-tab-${activeTab}`}
           >
-            {activeTab === 'overview' && <OverviewTab student={student}/>}
+            {activeTab === 'overview' && <OverviewTab student={student} classMap={classMap} majorMap={majorMap} programMap={programMap}/>}
             {activeTab === 'personal' && (
               <PersonalTab
                 student={student}
