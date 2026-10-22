@@ -9,25 +9,7 @@ import './LoginPage.css';
 
 // VS Code logo SVG inline
 function BrandLogo() {
-  return (
-    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
-      <rect width="44" height="44" rx="12" fill="url(#login-brand-grad)" />
-      <path
-        d="M22 10L10 17v10l12 7 12-7V17L22 10z"
-        stroke="white" strokeWidth="1.8" strokeLinejoin="round" fill="none"
-      />
-      <path
-        d="M22 10v17M10 17l12 7 12-7"
-        stroke="white" strokeWidth="1.8" strokeLinejoin="round"
-      />
-      <defs>
-        <linearGradient id="login-brand-grad" x1="0" y1="0" x2="44" y2="44">
-          <stop stopColor="#007acc" />
-          <stop offset="1" stopColor="#005f9e" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
+  return <img src="/images/dut-logo.jpg" alt="Logo Đại học Bách khoa Đà Nẵng" />;
 }
 
 function ThemeToggle() {
@@ -109,7 +91,7 @@ export default function LoginPage() {
         <div className="auth-brand">
           <div className="brand-icon"><BrandLogo /></div>
           <div className="brand-text">
-            <span className="brand-name">Student Web</span>
+            <span className="brand-name">DUT - THÔNG TIN SINH VIÊN</span>
             <span className="brand-sub">Hệ thống quản lý sinh viên</span>
           </div>
         </div>
@@ -224,7 +206,7 @@ export default function LoginPage() {
         </div>
 
         <p className="auth-footer">
-          © {new Date().getFullYear()} Student Web · Hệ thống quản lý thông tin sinh viên
+          © {new Date().getFullYear()} DUT - THÔNG TIN SINH VIÊN · Hệ thống quản lý thông tin sinh viên
         </p>
       </div>
     </div>

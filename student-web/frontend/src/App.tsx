@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import AppFooter from './components/AppFooter';
 import ProtectedRoute from './components/ProtectedRoute';
 import PasswordPage from './pages/PasswordPage';
 import LoginPage          from './pages/LoginPage';
@@ -11,6 +12,10 @@ import StudentsPage       from './pages/StudentsPage';
 import StudentDetailPage  from './pages/students/StudentDetailPage';
 import ProfilePage        from './pages/ProfilePage';
 import UsersPage          from './pages/UsersPage';
+
+function PortalLayout() {
+  return <><Outlet /><AppFooter /></>;
+}
 
 export default function App() {
   return (
@@ -23,6 +28,7 @@ export default function App() {
             <Route path="/login"    element={<LoginPage />} />
             <Route path="/activate" element={<ActivatePage />} />
 
+            <Route element={<PortalLayout />}>
             {/* All authenticated users */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<DashboardPage />} />
@@ -44,6 +50,8 @@ export default function App() {
             {/* Admin only */}
             <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
               <Route path="/admin" element={<UsersPage />} />
+            </Route>
+
             </Route>
 
             {/* Fallback */}
