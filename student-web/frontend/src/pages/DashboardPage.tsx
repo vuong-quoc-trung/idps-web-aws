@@ -431,6 +431,7 @@ export default function DashboardPage() {
           {!isAdminOrStaff && (
             <>
               {/* Profile Completion Widget */}
+              {completion && !isComplete && (
               <div className="dashboard-completion-card">
                 <div className="completion-card-header">
                   <div className="completion-card-left">
@@ -488,6 +489,8 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
+
+              )}
 
               {/* Student Quick Access Grid */}
               <div className="dashboard-section-header">
