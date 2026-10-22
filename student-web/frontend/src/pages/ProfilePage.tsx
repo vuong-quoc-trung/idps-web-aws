@@ -1103,6 +1103,17 @@ function PersonalTab({
     healthInsuranceExpiry: student.healthInsuranceExpiry ?? '',
     freeHealthInsurance: student.freeHealthInsurance ?? false,
   });
+  const dirty = Object.entries(form).some(([key, value]) => {
+    const previous = student[key as keyof StudentDetail];
+    const fallback = key === 'nationality' ? 'Việt Nam' : key.endsWith('CountryCode') ? 'VN' : key === 'freeHealthInsurance' ? false : '';
+    return value !== (previous ?? fallback);
+  });
+  useEffect(() => {
+    if (!dirty) return;
+    const handler = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [dirty]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -1148,7 +1159,16 @@ function PersonalTab({
     setErr(null); setSuccess(false);
   }
 
+  useEffect(() => {
+    if (!err) return;
+    const id = err.includes('Ảnh') || err.includes('ảnh') ? 'profile-avatar-url' :
+      err.includes('Facebook') ? 'profile-facebook-url' :
+      err.toLowerCase().includes('điện thoại') ? 'profile-personal-phone' :
+      err.toLowerCase().includes('email') ? 'profile-personal-email' : null;
+    if (id) document.getElementById(id)?.focus();
+  }, [err]);
   async function save() {
+    if (submitting || !dirty) return;
     if (!validHttpUrl(form.avatarUrl)) { setErr('Ảnh đại diện: vui lòng nhập URL HTTP/HTTPS hợp lệ, không chứa thông tin đăng nhập.'); return; }
     if (!validHttpUrl(form.facebookUrl)) { setErr('Facebook: vui lòng nhập URL HTTP/HTTPS hợp lệ, không chứa thông tin đăng nhập.'); return; }
     if (form.facebookUrl.trim().length > 500) { setErr('Đường dẫn Facebook không được vượt quá 500 ký tự.'); return; }
@@ -1229,6 +1249,7 @@ function PersonalTab({
           <div className="profile-form-group">
             <label className="profile-form-label" htmlFor="profile-personal-email">Email cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
             <input id="profile-personal-email" className="profile-form-input" type="email" placeholder="example@gmail.com" value={form.personalEmail} onChange={e => setForm(f => ({ ...f, personalEmail: e.target.value }))}/>
+            {form.personalEmail && !validEmail(form.personalEmail) && <small className="profile-field-error" role="status">Định dạng không hợp lệ. Vui lòng kiểm tra lại.</small>}
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label" htmlFor="profile-personal-phone">Số điện thoại cá nhân <span style={{ color: 'var(--text-error)' }}>*</span></label>
@@ -1247,6 +1268,7 @@ function PersonalTab({
           <div className="profile-form-group">
             <label className="profile-form-label" htmlFor="profile-facebook-url">Facebook / Mạng xã hội</label>
             <input id="profile-facebook-url" className="profile-form-input" placeholder="https://facebook.com/..." value={form.facebookUrl} onChange={e => setForm(f => ({ ...f, facebookUrl: e.target.value }))}/>
+            {form.facebookUrl && !validHttpUrl(form.facebookUrl) && <small className="profile-field-error" role="status">Định dạng không hợp lệ. Vui lòng kiểm tra lại.</small>}
           </div>
         </div>
       </div>
@@ -1351,7 +1373,7 @@ function PersonalTab({
 
       <div className="profile-save-bar">
         <button className="btn-profile-cancel" onClick={reset} disabled={submitting}>Đặt lại</button>
-        <button className="btn-profile-save" onClick={save} disabled={submitting}>
+        <button className="btn-profile-save" onClick={save} disabled={submitting || !dirty}>
           {submitting ? <><span className="spinner spinner-sm"/> Đang lưu...</> : <><IcoCheck/> Lưu thay đổi</>}
         </button>
       </div>
