@@ -1,0 +1,21 @@
+[Unit]
+Description=PBL4 Web IDPS Security Core Service
+After=network.target network-online.target docker.service suricata.service nginx.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{RUN_USER}}
+Group={{RUN_GROUP}}
+WorkingDirectory={{PROJECT_DIR}}
+EnvironmentFile=-{{PROJECT_DIR}}/.env
+ExecStart={{PROJECT_DIR}}/target/release/pbl4-security-demo
+Restart=on-failure
+RestartSec=3s
+
+# Required to read /var/log/nginx/access.log without root
+SupplementaryGroups=adm
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
