@@ -238,3 +238,10 @@ Xem [STUDENT_PASSWORDS.md](STUDENT_PASSWORDS.md) cho API `/auth/forgot-password`
 `POST /api/users` chỉ tạo ADMIN nếu tổng số tài khoản role ADMIN nhỏ hơn 3. Tính cả tài khoản bị khóa và chưa kích hoạt. Đủ 3 trả HTTP 409 với thông báo tiếng Việt; không tạo tài khoản hoặc token mới. STAFF/STUDENT không bị áp dụng hạn mức này.
 
 Backend khóa bản ghi singleton trong `admin_creation_lock` trong cùng transaction kiểm tra số lượng và tạo tài khoản. Các instance backend dùng chung database và luồng bootstrap đều tuân theo khóa này. Chạy `019_admin_creation_lock.sql` trước khi triển khai production. Không tự xóa/đổi quyền admin cũ nếu dữ liệu đã vượt 3; hệ thống chỉ chặn tạo thêm. Đây là quy tắc của ứng dụng, không phải trigger chặn thao tác SQL trực tiếp; công cụ quản trị DB phải tuân thủ cùng chính sách.
+
+### Học vụ cá nhân (STUDENT)
+
+- `GET /api/me/academic`: khoa, ngành, chương trình chính/thứ hai, lớp và khóa của sinh viên đăng nhập.
+- `GET /api/me/academic/classmates?page=0&size=20`: cùng lớp, gồm `studentCode`, `fullName`, `self`; size 1–100, page >= 0.
+- Lớp được xác định từ principal, không chọn bằng classId/studentId. Không trả thông tin liên hệ hay định danh riêng tư của bạn cùng lớp.
+- `/catalog` hiển thị học vụ cá nhân với STUDENT; ADMIN/STAFF giữ trang quản lý danh mục.
