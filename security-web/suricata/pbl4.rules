@@ -1,1 +1,28 @@
-alert tcp any any -> 192.168.10.1 any (msg:"PBL4 DEMO TCP SYN port scan"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:2;)
+# ==============================================================================
+# PBL4 Web IDPS - Suricata NIDS Rule Set
+# Rules observe incoming traffic to Security VM (192.168.10.1) on enp1s0
+# ==============================================================================
+
+# 1. Reconnaissance: Port Scanning (TCP SYN Burst)
+alert tcp any any -> 192.168.10.1 any (msg:"PBL4 NIDS: TCP SYN Port Scan Detected"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:3;)
+
+# 2. Web Attack: SQL Injection - Boolean or Union Based
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: SQL Injection - Boolean or Union Attempt"; flow:established,to_server; http.uri; pcre:"/(\%27|\')\s*(union(\s+all)?\s+select|or\s+1\=1|and\s+1\=1|or\s+\%271\%27\=\%271|and\s+\%271\%27\=\%271)/i"; classtype:web-application-attack; priority:1; sid:1000002; rev:2;)
+
+# 3. Web Attack: SQL Injection - Function or Statement Injection
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: SQL Injection - Generic Keywords Attempt"; flow:established,to_server; http.uri; pcre:"/(sleep\s*\(\s*\d+\s*\)|benchmark\s*\(\s*\d+|waitfor\s+delay|drop\s+table|insert\s+into|exec\s*\()/i"; classtype:web-application-attack; priority:1; sid:1000008; rev:1;)
+
+# 4. Web Attack: Cross-Site Scripting (XSS)
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: Cross-Site Scripting (XSS) Attempt"; flow:established,to_server; http.uri; pcre:"/(<script|javascript:|onerror\=|onload\=|<svg|<iframe|<img\s+src\=x)/i"; classtype:web-application-attack; priority:2; sid:1000003; rev:2;)
+
+# 5. Web Attack: Path Traversal / Directory Traversal
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: Path Traversal (Directory Traversal) Attempt"; flow:established,to_server; http.uri; pcre:"/(\.\.\/|\.\.\\|\%2e\%2e\%2f|\%2e\%2e\/|\.\.\%2f|\/etc\/passwd|\/etc\/shadow|c:\\\\windows)/i"; classtype:web-application-attack; priority:2; sid:1000004; rev:2;)
+
+# 6. Web Attack: OS Command Injection
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: OS Command Injection Attempt"; flow:established,to_server; http.uri; pcre:"/(\;|\&|\||\`|\$\()\s*(cat|id|whoami|uname|nc|sh|bash|curl|wget)\b/i"; classtype:web-application-attack; priority:1; sid:1000005; rev:2;)
+
+# 7. Reconnaissance: Sensitive Files and Configuration Probing
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: Sensitive Configuration / Credential Probing"; flow:established,to_server; http.uri; pcre:"/(\/\.env|\/wp-config\.php|\/\.git\/HEAD|\/\.ssh\/id_rsa|\/web\.config|\/config\.php|\/backup\.sql)/i"; classtype:attempted-recon; priority:2; sid:1000006; rev:2;)
+
+# 8. Reconnaissance: Automated Vulnerability Scanner User-Agent
+alert http any any -> 192.168.10.1 any (msg:"PBL4 NIDS: Automated Vulnerability Scanner Tool Detected"; flow:established,to_server; http.user_agent; pcre:"/(sqlmap|nikto|dirbuster|gobuster|masscan|acunetix|nmap|zgrab)/i"; classtype:attempted-recon; priority:3; sid:1000007; rev:2;)
