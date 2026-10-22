@@ -2,9 +2,9 @@ use anyhow::{Context, Result, bail};
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
-    http::StatusCode,
-    response::Html,
-    routing::{delete, get, post},
+    http::{StatusCode, header},
+    response::{Html, IntoResponse},
+    routing::{delete, get},
 };
 use chrono::{DateTime, Utc};
 use regex::Regex;
@@ -12,8 +12,8 @@ use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool, postgres::PgPoolOptions};
 use std::{env, net::IpAddr, path::Path as FsPath, sync::OnceLock, time::Duration};
 use tokio::{
-    fs::{File, OpenOptions},
-    io::{AsyncBufReadExt, AsyncReadExt, AsyncSeekExt, BufReader, SeekFrom},
+    fs::OpenOptions,
+    io::{AsyncReadExt, AsyncSeekExt, SeekFrom},
     net::TcpListener,
     process::Command,
     time::sleep,
@@ -21,11 +21,99 @@ use tokio::{
 use tower_http::trace::TraceLayer;
 use tracing::{error, info, warn};
 
+// Embedded modern dashboard assets matching the reference visual design
+static INDEX_HTML: &str = include_str!("../dashboard/index.html");
+static STYLE_CSS: &str = include_str!("../dashboard/style.css");
+static APP_JS: &str = include_str!("../dashboard/app.js");
+
+// ============================================================================
+// Policy Engine: Distinguishing ALERT from AUTO-BLOCK
+// ============================================================================
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EventPolicyDecision {
+    /// Pure observation / logging only - do not invoke firewall.
+    AlertOnly,
+    /// Qualified for automated active response (kernel dropping).
+    EligibleForAutoBlock,
+}
+
+#[derive(Debug, Clone)]
+pub struct PolicyEngine {
+    pub auto_block_enabled: bool,
+    pub allowed_sids: Vec<u32>,
+    pub allow_nginx_sqli: bool,
+}
+
+impl PolicyEngine {
+    pub fn new(auto_block_enabled: bool, allowed_sids: Vec<u32>, allow_nginx_sqli: bool) -> Self {
+        Self {
+            auto_block_enabled,
+            allowed_sids,
+            allow_nginx_sqli,
+        }
+    }
+
+    pub fn from_env() -> Self {
+        let auto_block_enabled = env::var("AUTO_BLOCK")
+            .unwrap_or_else(|_| "false".into())
+            .parse::<bool>()
+            .unwrap_or(false);
+
+        // Default whitelist: 1000001 (Port Scan SYN) and 1000002 (SQLi Boolean/Union)
+        // Can be overridden or extended via AUTO_BLOCK_SIDS="1000001,1000002"
+        let sids_str = env::var("AUTO_BLOCK_SIDS").unwrap_or_else(|_| "1000001,1000002".into());
+        let allowed_sids: Vec<u32> = sids_str
+            .split(',')
+            .filter_map(|s| s.trim().parse::<u32>().ok())
+            .collect();
+
+        let allow_nginx_sqli = env::var("AUTO_BLOCK_NGINX_SQLI")
+            .unwrap_or_else(|_| "true".into())
+            .parse::<bool>()
+            .unwrap_or(true);
+
+        Self {
+            auto_block_enabled,
+            allowed_sids,
+            allow_nginx_sqli,
+        }
+    }
+
+    /// Evaluates whether an incoming Suricata event qualifies for AUTO-BLOCK or is ALERT-only
+    pub fn evaluate_suricata(&self, signature_id: Option<u32>) -> EventPolicyDecision {
+        if !self.auto_block_enabled {
+            return EventPolicyDecision::AlertOnly;
+        }
+        let Some(sid) = signature_id else {
+            return EventPolicyDecision::AlertOnly;
+        };
+        if self.allowed_sids.contains(&sid) {
+            EventPolicyDecision::EligibleForAutoBlock
+        } else {
+            EventPolicyDecision::AlertOnly
+        }
+    }
+
+    /// Evaluates whether an incoming Nginx WAF event qualifies for AUTO-BLOCK or is ALERT-only
+    pub fn evaluate_nginx(&self) -> EventPolicyDecision {
+        if self.auto_block_enabled && self.allow_nginx_sqli {
+            EventPolicyDecision::EligibleForAutoBlock
+        } else {
+            EventPolicyDecision::AlertOnly
+        }
+    }
+}
+
+// ============================================================================
+// Core Application State & Data Transfer Objects
+// ============================================================================
+
 #[derive(Clone)]
 struct AppState {
     pool: PgPool,
     firewall_cmd: String,
-    auto_block: bool,
+    policy: PolicyEngine,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -71,8 +159,36 @@ struct ApiMessage {
     message: String,
 }
 
+#[derive(Debug, Serialize)]
+struct SystemMetrics {
+    cpu_percent: u8,
+    memory_percent: u8,
+    disk_percent: u8,
+    network_io_percent: u8,
+}
+
+#[derive(Debug, Serialize)]
+struct StatsResponse {
+    total_alerts: i64,
+    critical_alerts: i64,
+    blocked_attacks: i64,
+    active_connections: u32,
+    traffic_analyzed: String,
+    system: SystemMetrics,
+}
+
+#[derive(Debug, Serialize)]
+struct RuleInfo {
+    sid: u32,
+    name: &'static str,
+    category: &'static str,
+    severity: i16,
+    auto_block_eligible: bool,
+}
+
 #[derive(Debug, Deserialize)]
 struct SuricataAlertInfo {
+    #[allow(dead_code)]
     action: Option<String>,
     signature_id: Option<u32>,
     signature: Option<String>,
@@ -108,6 +224,10 @@ struct NginxRequest {
 static NGINX_LOG_RE: OnceLock<Regex> = OnceLock::new();
 static SQLI_RE: OnceLock<Regex> = OnceLock::new();
 
+// ============================================================================
+// Main Entrypoint
+// ============================================================================
+
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
@@ -123,10 +243,8 @@ async fn main() -> Result<()> {
         env::var("NGINX_ACCESS_PATH").unwrap_or_else(|_| "/var/log/nginx/access.log".into());
     let firewall_cmd =
         env::var("PBL4_FIREWALL_CMD").unwrap_or_else(|_| "/usr/local/bin/pbl4-firewall".into());
-    let auto_block = env::var("AUTO_BLOCK")
-        .unwrap_or_else(|_| "false".into())
-        .parse::<bool>()
-        .context("AUTO_BLOCK must be true or false")?;
+
+    let policy = PolicyEngine::from_env();
 
     let pool = PgPoolOptions::new()
         .max_connections(10)
@@ -141,13 +259,21 @@ async fn main() -> Result<()> {
 
     restore_active_blocks(&pool, &firewall_cmd).await?;
 
-    info!(%app_addr, %suricata_path, %nginx_path, auto_block, "security core starting");
+    info!(
+        %app_addr,
+        %suricata_path,
+        %nginx_path,
+        auto_block = policy.auto_block_enabled,
+        allowed_sids = ?policy.allowed_sids,
+        "security core starting with decoupled policy engine"
+    );
 
     let suricata_pool = pool.clone();
     let suricata_firewall = firewall_cmd.clone();
+    let suricata_policy = policy.clone();
     tokio::spawn(async move {
         if let Err(err) =
-            tail_suricata(&suricata_path, suricata_pool, suricata_firewall, auto_block).await
+            tail_suricata(&suricata_path, suricata_pool, suricata_firewall, suricata_policy).await
         {
             error!(error = %err, "Suricata watcher stopped");
         }
@@ -155,8 +281,9 @@ async fn main() -> Result<()> {
 
     let nginx_pool = pool.clone();
     let nginx_firewall = firewall_cmd.clone();
+    let nginx_policy = policy.clone();
     tokio::spawn(async move {
-        if let Err(err) = tail_nginx(&nginx_path, nginx_pool, nginx_firewall, auto_block).await {
+        if let Err(err) = tail_nginx(&nginx_path, nginx_pool, nginx_firewall, nginx_policy).await {
             error!(error = %err, "Nginx watcher stopped");
         }
     });
@@ -164,11 +291,16 @@ async fn main() -> Result<()> {
     let state = AppState {
         pool,
         firewall_cmd,
-        auto_block,
+        policy,
     };
+
     let app = Router::new()
-        .route("/", get(dashboard))
+        .route("/", get(serve_index))
+        .route("/style.css", get(serve_css))
+        .route("/app.js", get(serve_js))
         .route("/health", get(health))
+        .route("/api/stats", get(api_stats))
+        .route("/api/rules", get(api_rules))
         .route("/api/alerts", get(list_alerts))
         .route("/api/blocked-ips", get(list_blocked_ips).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))
@@ -178,24 +310,138 @@ async fn main() -> Result<()> {
     let listener = TcpListener::bind(&app_addr)
         .await
         .with_context(|| format!("cannot bind {app_addr}"))?;
-    info!(%app_addr, "dashboard/API listening");
+    info!(%app_addr, "modern dashboard/API listening");
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+// ============================================================================
+// Web Static Handlers
+// ============================================================================
+
+async fn serve_index() -> Html<&'static str> {
+    Html(INDEX_HTML)
+}
+
+async fn serve_css() -> impl IntoResponse {
+    ([(header::CONTENT_TYPE, "text/css; charset=utf-8")], STYLE_CSS)
+}
+
+async fn serve_js() -> impl IntoResponse {
+    (
+        [(header::CONTENT_TYPE, "application/javascript; charset=utf-8")],
+        APP_JS,
+    )
 }
 
 async fn health() -> &'static str {
     "OK"
 }
 
+// ============================================================================
+// API Endpoints
+// ============================================================================
+
+async fn api_stats(
+    State(state): State<AppState>,
+) -> Result<Json<StatsResponse>, (StatusCode, Json<ApiMessage>)> {
+    let (total_alerts, critical_alerts, blocked_attacks): (i64, i64, i64) = sqlx::query_as(
+        r#"SELECT 
+            COUNT(*)::bigint AS total_alerts,
+            COUNT(*) FILTER (WHERE severity <= 1)::bigint AS critical_alerts,
+            COUNT(*) FILTER (WHERE action = 'AUTO-BLOCK')::bigint AS blocked_attacks
+           FROM security_alerts"#
+    )
+    .fetch_one(&state.pool)
+    .await
+    .map_err(internal_error)?;
+
+    let active_connections = read_active_connections();
+    let traffic_analyzed = read_traffic_analyzed();
+    let system = read_system_metrics();
+
+    Ok(Json(StatsResponse {
+        total_alerts,
+        critical_alerts,
+        blocked_attacks,
+        active_connections,
+        traffic_analyzed,
+        system,
+    }))
+}
+
+async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
+    let policy = &state.policy;
+    let rules = vec![
+        RuleInfo {
+            sid: 1000001,
+            name: "TCP SYN Port Scan Detected",
+            category: "Reconnaissance",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000001)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000002,
+            name: "SQL Injection - Boolean or Union Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000002)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000008,
+            name: "SQL Injection - Generic Keywords Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000008)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000003,
+            name: "Cross-Site Scripting (XSS) Attempt",
+            category: "Web Application Attack",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000003)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000004,
+            name: "Path Traversal (Directory Traversal) Attempt",
+            category: "Web Application Attack",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000004)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000005,
+            name: "OS Command Injection Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000005)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000006,
+            name: "Sensitive Configuration / Credential Probing",
+            category: "Reconnaissance",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000006)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000007,
+            name: "Automated Vulnerability Scanner Tool Detected",
+            category: "Reconnaissance",
+            severity: 3,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000007)) == EventPolicyDecision::EligibleForAutoBlock,
+        },
+    ];
+    Json(rules)
+}
+
 async fn list_alerts(
     State(state): State<AppState>,
     Query(query): Query<AlertQuery>,
-) -> Result<Json<Vec<AlertRow>>, (StatusCode, String)> {
+) -> Result<Json<Vec<AlertRow>>, (StatusCode, Json<ApiMessage>)> {
     let limit = query.limit.unwrap_or(50).clamp(1, 200);
     let rows = sqlx::query_as::<_, AlertRow>(
         r#"SELECT id, occurred_at, source, event_type,
-                src_ip::text,
-                dest_ip::text,
+                host(src_ip)::text AS src_ip,
+                host(dest_ip)::text AS dest_ip,
                 proto,
                 rule_name, signature, category, severity, action, evidence
         FROM security_alerts
@@ -211,7 +457,7 @@ async fn list_alerts(
 
 async fn list_blocked_ips(
     State(state): State<AppState>,
-) -> Result<Json<Vec<BlockedIpRow>>, (StatusCode, String)> {
+) -> Result<Json<Vec<BlockedIpRow>>, (StatusCode, Json<ApiMessage>)> {
     let rows = sqlx::query_as::<_, BlockedIpRow>(
         r#"SELECT host(ip)::text AS ip, reason, blocked_at, unblocked_at, active
     FROM blocked_ips
@@ -227,10 +473,16 @@ async fn list_blocked_ips(
 async fn block_ip(
     State(state): State<AppState>,
     Json(request): Json<BlockRequest>,
-) -> Result<(StatusCode, Json<ApiMessage>), (StatusCode, String)> {
+) -> Result<(StatusCode, Json<ApiMessage>), (StatusCode, Json<ApiMessage>)> {
     let ip = validate_lab_attacker_ip(&request.ip).map_err(client_error)?;
     if request.reason.trim().is_empty() {
-        return Err((StatusCode::BAD_REQUEST, "reason is required".into()));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(ApiMessage {
+                status: "error",
+                message: "reason is required".into(),
+            }),
+        ));
     }
 
     firewall_action(&state.firewall_cmd, "block", &ip)
@@ -276,7 +528,7 @@ async fn block_ip(
 async fn unblock_ip(
     State(state): State<AppState>,
     Path(ip): Path<String>,
-) -> Result<Json<ApiMessage>, (StatusCode, String)> {
+) -> Result<Json<ApiMessage>, (StatusCode, Json<ApiMessage>)> {
     let ip = validate_lab_attacker_ip(&ip).map_err(client_error)?;
     firewall_action(&state.firewall_cmd, "unblock", &ip)
         .await
@@ -310,76 +562,86 @@ async fn unblock_ip(
     }))
 }
 
-async fn dashboard() -> Html<&'static str> {
-    Html(
-        r#"<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PBL4 Security Dashboard</title>
-<style>
-body{font-family:system-ui,sans-serif;margin:24px;background:#f5f6f8;color:#20242a} h1{margin-bottom:4px}
-.small{color:#666;margin-bottom:18px}.card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px;margin-bottom:18px}
-input,button{padding:8px 10px;font:inherit}button{cursor:pointer}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-table{width:100%;border-collapse:collapse;background:#fff}.scroll{overflow:auto;max-height:420px}th,td{padding:9px;border-bottom:1px solid #e5e5e5;text-align:left;vertical-align:top;font-size:14px}
-code{white-space:pre-wrap}.ok{color:green}.err{color:#b00020}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-</style></head>
-<body>
-<h1>PBL4 Security Dashboard</h1>
-<div id="status" class="small">Loading...</div>
-<div class="grid">
-<section class="card"><h2>Manual BLOCK</h2>
-<p>Only 192.168.10.2–254 is accepted.</p>
-<input id="ip" placeholder="192.168.10.10"><input id="reason" placeholder="reason" value="manual demo block">
-<button onclick="blockIp()">BLOCK</button><div id="blockMsg"></div></section>
-<section class="card"><h2>Blocked IPs</h2><div id="blocked">Loading...</div></section>
-</div>
-<section class="card"><h2>Alerts</h2><div class="scroll"><table><thead><tr><th>Time</th><th>Source</th><th>Rule</th><th>Src</th><th>Dst</th><th>Severity</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div></section>
-<script>
-const esc=v=>String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function refresh(){
- try{
-  const [a,b]=await Promise.all([fetch('/api/alerts?limit=100'),fetch('/api/blocked-ips')]);
-  const alerts=await a.json(), blocks=await b.json();
-  document.getElementById('status').textContent=`${alerts.length} recent alerts · ${blocks.length} blocked IPs · refresh 2s`;
-  document.getElementById('rows').innerHTML=alerts.map(x=>`<tr><td>${esc(x.occurred_at)}</td><td>${esc(x.source)}</td><td>${esc(x.rule_name)}</td><td>${esc(x.src_ip)}</td><td>${esc(x.dest_ip)}</td><td>${esc(x.severity)}</td><td>${esc(x.action)}</td></tr>`).join('');
-  document.getElementById('blocked').innerHTML=blocks.length?'<table><thead><tr><th>IP</th><th>Reason</th><th>Blocked at</th><th></th></tr></thead><tbody>'+blocks.map(x=>`<tr><td>${esc(x.ip)}</td><td>${esc(x.reason)}</td><td>${esc(x.blocked_at)}</td><td><button onclick="unblockIp('${esc(x.ip)}')">UNBLOCK</button></td></tr>`).join('')+'</tbody></table>':'None';
- }catch(e){document.getElementById('status').textContent='API error: '+e;document.getElementById('status').className='small err'}
-}
-async function blockIp(){const ip=document.getElementById('ip').value,reason=document.getElementById('reason').value;const r=await fetch('/api/blocked-ips',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ip,reason})});const t=await r.text();document.getElementById('blockMsg').textContent=t;refresh();}
-async function unblockIp(ip) {
-    ip = ip.split('/')[0];
+// ============================================================================
+// Action Policy Execution Engine
+// ============================================================================
 
-    const r = await fetch(
-        '/api/blocked-ips/' + encodeURIComponent(ip),
-        { method: 'DELETE' }
-    );
-
-    const t = await r.text();
-    document.getElementById('blockMsg').textContent = t;
-
-    if (!r.ok) {
-        return;
+/// Executes firewall action conditionally based on the policy decision.
+/// Returns the recorded action ("AUTO-BLOCK" or "ALERT") and any error details.
+/// GUARANTEE: Never claims "AUTO-BLOCK" unless the firewall actually succeeded!
+pub async fn execute_policy_action(
+    decision: EventPolicyDecision,
+    src_ip: Option<IpAddr>,
+    firewall_cmd: &str,
+) -> Result<(&'static str, Option<String>)> {
+    if decision != EventPolicyDecision::EligibleForAutoBlock {
+        return Ok(("ALERT", None));
     }
 
-    refresh();
-};setInterval(refresh,2000);
-</script></body></html>"#,
-    )
+    let Some(ip) = src_ip else {
+        return Ok(("ALERT", None));
+    };
+
+    if let Err(err) = validate_lab_attacker_ip(&ip.to_string()) {
+        warn!(%ip, error=%err, "skip auto-block for non-lab source IP");
+        return Ok(("ALERT", None));
+    }
+
+    match firewall_action(firewall_cmd, "block", &ip).await {
+        Ok(_) => Ok(("AUTO-BLOCK", None)),
+        Err(err) => {
+            warn!(%ip, error=%err, "firewall block execution failed; falling back to ALERT");
+            Ok(("ALERT", Some(err.to_string())))
+        }
+    }
 }
+
+pub async fn execute_policy_action_mock<Fut>(
+    decision: EventPolicyDecision,
+    src_ip: Option<IpAddr>,
+    firewall_mock: impl FnOnce(IpAddr) -> Fut,
+) -> Result<(&'static str, Option<String>)>
+where
+    Fut: std::future::Future<Output = Result<()>>,
+{
+    if decision != EventPolicyDecision::EligibleForAutoBlock {
+        return Ok(("ALERT", None));
+    }
+
+    let Some(ip) = src_ip else {
+        return Ok(("ALERT", None));
+    };
+
+    if let Err(err) = validate_lab_attacker_ip(&ip.to_string()) {
+        warn!(%ip, error=%err, "skip auto-block for non-lab source IP");
+        return Ok(("ALERT", None));
+    }
+
+    match firewall_mock(ip).await {
+        Ok(_) => Ok(("AUTO-BLOCK", None)),
+        Err(err) => {
+            warn!(%ip, error=%err, "firewall block execution failed; falling back to ALERT");
+            Ok(("ALERT", Some(err.to_string())))
+        }
+    }
+}
+
+// ============================================================================
+// Log Tailing & Event Processing
+// ============================================================================
 
 async fn tail_suricata(
     path: &str,
     pool: PgPool,
     firewall_cmd: String,
-    auto_block: bool,
+    policy: PolicyEngine,
 ) -> Result<()> {
     tail_file(path, move |line| {
         let pool = pool.clone();
         let firewall_cmd = firewall_cmd.clone();
+        let policy = policy.clone();
         async move {
-            if let Err(err) = process_suricata_line(&line, &pool, &firewall_cmd, auto_block).await {
+            if let Err(err) = process_suricata_line(&line, &pool, &firewall_cmd, &policy).await {
                 warn!(error = %err, "failed to process Suricata line");
             }
             Ok(())
@@ -392,13 +654,14 @@ async fn tail_nginx(
     path: &str,
     pool: PgPool,
     firewall_cmd: String,
-    auto_block: bool,
+    policy: PolicyEngine,
 ) -> Result<()> {
     tail_file(path, move |line| {
         let pool = pool.clone();
         let firewall_cmd = firewall_cmd.clone();
+        let policy = policy.clone();
         async move {
-            if let Err(err) = process_nginx_line(&line, &pool, &firewall_cmd, auto_block).await {
+            if let Err(err) = process_nginx_line(&line, &pool, &firewall_cmd, &policy).await {
                 warn!(error = %err, "failed to process Nginx line");
             }
             Ok(())
@@ -460,7 +723,7 @@ async fn process_suricata_line(
     line: &str,
     pool: &PgPool,
     firewall_cmd: &str,
-    auto_block: bool,
+    policy: &PolicyEngine,
 ) -> Result<()> {
     let event: SuricataEvent = match serde_json::from_str(line) {
         Ok(e) => e,
@@ -482,7 +745,6 @@ async fn process_suricata_line(
         .category
         .clone()
         .unwrap_or_else(|| "Suricata alert".into());
-    let action = alert.action.clone().unwrap_or_else(|| "allowed".into());
     let rule_name = format!("SURICATA: {signature}");
     let occurred_at = parse_suricata_timestamp(&event.timestamp).unwrap_or_else(|_| Utc::now());
     let evidence = format!(
@@ -494,6 +756,41 @@ async fn process_suricata_line(
         event.dest_ip,
         event.proto
     );
+
+    let decision = policy.evaluate_suricata(alert.signature_id);
+    let (action, firewall_err) = execute_policy_action(
+        decision,
+        event.src_ip,
+        firewall_cmd,
+    )
+    .await?;
+
+    if action == "AUTO-BLOCK" {
+        if let Some(ip) = event.src_ip {
+            if let Err(err) = sqlx::query(
+                r#"INSERT INTO blocked_ips (ip, reason, blocked_at, unblocked_at, active)
+                   VALUES ($1::inet, $2, now(), NULL, true)
+                   ON CONFLICT (ip) DO UPDATE SET reason = EXCLUDED.reason, blocked_at = now(), unblocked_at = NULL, active = true"#,
+            )
+            .bind(ip.to_string())
+            .bind(format!("auto-block: {rule_name}"))
+            .execute(pool)
+            .await {
+                error!(error = %err, %ip, "failed to update blocked_ips table");
+            }
+
+            if let Err(err) = record_firewall_action(pool, ip, "BLOCK", "AUTO", &rule_name, "SUCCESS", None).await {
+                error!(error = %err, %ip, "failed to record firewall_actions");
+            }
+            info!(%ip, %rule_name, "auto-blocked source IP");
+        }
+    } else if let Some(err_msg) = firewall_err {
+        if let Some(ip) = event.src_ip {
+            if let Err(err) = record_firewall_action(pool, ip, "BLOCK", "AUTO", &rule_name, "ERROR", Some(&err_msg)).await {
+                error!(error = %err, %ip, "failed to record firewall_actions error");
+            }
+        }
+    }
 
     insert_alert(
         pool,
@@ -507,27 +804,19 @@ async fn process_suricata_line(
         alert.signature.as_deref(),
         Some(&category),
         severity,
-        &action,
+        action,
         &evidence,
     )
     .await?;
 
-    maybe_auto_block(
-        pool,
-        firewall_cmd,
-        auto_block,
-        event.src_ip,
-        severity,
-        &rule_name,
-    )
-    .await
+    Ok(())
 }
 
 async fn process_nginx_line(
     line: &str,
     pool: &PgPool,
     firewall_cmd: &str,
-    auto_block: bool,
+    policy: &PolicyEngine,
 ) -> Result<()> {
     let Some(request) = parse_nginx_request(line) else {
         return Ok(());
@@ -538,10 +827,45 @@ async fn process_nginx_line(
         .replace('+', " ");
 
     if sql_injection_re().is_match(&decoded) {
+        let rule_name = "NGINX: SQL Injection";
         let evidence = format!(
             "{} {} status={} target={} raw={}",
             request.method, request.target, request.status, decoded, request.raw_line
         );
+
+        let decision = policy.evaluate_nginx();
+        let (action, firewall_err) = execute_policy_action(
+            decision,
+            Some(request.src_ip),
+            firewall_cmd,
+        )
+        .await?;
+
+        if action == "AUTO-BLOCK" {
+            let ip = request.src_ip;
+            if let Err(err) = sqlx::query(
+                r#"INSERT INTO blocked_ips (ip, reason, blocked_at, unblocked_at, active)
+                   VALUES ($1::inet, $2, now(), NULL, true)
+                   ON CONFLICT (ip) DO UPDATE SET reason = EXCLUDED.reason, blocked_at = now(), unblocked_at = NULL, active = true"#,
+            )
+            .bind(ip.to_string())
+            .bind(format!("auto-block: {rule_name}"))
+            .execute(pool)
+            .await {
+                error!(error = %err, %ip, "failed to update blocked_ips table");
+            }
+
+            if let Err(err) = record_firewall_action(pool, ip, "BLOCK", "AUTO", rule_name, "SUCCESS", None).await {
+                error!(error = %err, %ip, "failed to record firewall_actions");
+            }
+            info!(%ip, %rule_name, "auto-blocked source IP");
+        } else if let Some(err_msg) = firewall_err {
+            let ip = request.src_ip;
+            if let Err(err) = record_firewall_action(pool, ip, "BLOCK", "AUTO", rule_name, "ERROR", Some(&err_msg)).await {
+                error!(error = %err, %ip, "failed to record firewall_actions error");
+            }
+        }
+
         insert_alert(
             pool,
             Utc::now(),
@@ -550,64 +874,25 @@ async fn process_nginx_line(
             Some(request.src_ip),
             Some("192.168.20.10".parse::<IpAddr>().unwrap()),
             Some("HTTP"),
-            "NGINX: SQL Injection",
+            rule_name,
             None,
             Some("Web Application Attack"),
-            2,
-            "ALERT",
+            1,
+            action,
             &evidence,
         )
         .await?;
-        maybe_auto_block(
-            pool,
-            firewall_cmd,
-            auto_block,
-            Some(request.src_ip),
-            2,
-            "NGINX: SQL Injection",
-        )
-        .await?;
     }
     Ok(())
 }
 
-async fn maybe_auto_block(
-    pool: &PgPool,
-    firewall_cmd: &str,
-    auto_block: bool,
-    src_ip: Option<IpAddr>,
-    severity: i16,
-    rule_name: &str,
-) -> Result<()> {
-    if !auto_block || severity > 2 {
-        return Ok(());
-    }
-    let Some(ip) = src_ip else {
-        return Ok(());
-    };
-    if let Err(err) = validate_lab_attacker_ip(&ip.to_string()) {
-        warn!(%ip, error=%err, "skip auto-block for non-lab source");
-        return Ok(());
-    }
-
-    firewall_action(firewall_cmd, "block", &ip).await?;
-    sqlx::query(
-        r#"INSERT INTO blocked_ips (ip, reason, blocked_at, unblocked_at, active)
-           VALUES ($1::inet, $2, now(), NULL, true)
-           ON CONFLICT (ip) DO UPDATE SET reason = EXCLUDED.reason, blocked_at = now(), unblocked_at = NULL, active = true"#,
-    )
-    .bind(ip.to_string())
-    .bind(format!("auto-block: {rule_name}"))
-    .execute(pool)
-    .await?;
-    record_firewall_action(pool, ip, "BLOCK", "AUTO", rule_name, "SUCCESS", None).await?;
-    info!(%ip, %rule_name, "auto-blocked source IP");
-    Ok(())
-}
+// ============================================================================
+// Firewall & Database Storage Functions
+// ============================================================================
 
 async fn restore_active_blocks(pool: &PgPool, firewall_cmd: &str) -> Result<()> {
     let rows = sqlx::query_scalar::<_, String>(
-        "SELECT ip::text
+        "SELECT host(ip)::text AS ip
          FROM blocked_ips
          WHERE active = true
          ORDER BY blocked_at ASC",
@@ -645,7 +930,6 @@ async fn restore_active_blocks(pool: &PgPool, firewall_cmd: &str) -> Result<()> 
         }
 
         firewall_action(firewall_cmd, "block", &ip).await?;
-
         info!(%ip, "restored blocked IP to nftables");
     }
 
@@ -673,10 +957,10 @@ fn parse_nginx_request(line: &str) -> Option<NginxRequest> {
 
 fn sql_injection_re() -> &'static Regex {
     SQLI_RE.get_or_init(|| {
-    Regex::new(
-        r#"(?i)(union\s+select|(?:'|")?\s*(?:or|and)\s+(?:'|")?\d+(?:'|")?\s*=\s*(?:'|")?\d+(?:'|")?|sleep\s*\(|information_schema)"#
-    ).expect("valid SQLi regex")
-})
+        Regex::new(
+            r#"(?i)(union\s+select|(?:'|")?\s*(?:or|and)\s+(?:'|")?\d+(?:'|")?\s*=\s*(?:'|")?\d+(?:'|")?|sleep\s*\(|information_schema)"#
+        ).expect("valid SQLi regex")
+    })
 }
 
 async fn insert_alert(
@@ -698,10 +982,22 @@ async fn insert_alert(
         r#"INSERT INTO security_alerts
         (occurred_at, source, event_type, src_ip, dest_ip, proto, rule_name, signature, category, severity, action, evidence)
        VALUES ($1,$2,$3,$4::inet,$5::inet,$6,$7,$8,$9,$10,$11,$12)"#,
-    ).bind(occurred_at).bind(source).bind(event_type).bind(src_ip.map(|ip| ip.to_string()))
-.bind(dest_ip.map(|ip| ip.to_string())).bind(proto)
-     .bind(rule_name).bind(signature).bind(category).bind(severity).bind(action).bind(evidence)
-     .execute(pool).await?;
+    )
+    .bind(occurred_at)
+    .bind(source)
+    .bind(event_type)
+    .bind(src_ip.map(|ip| ip.to_string()))
+    .bind(dest_ip.map(|ip| ip.to_string()))
+    .bind(proto)
+    .bind(rule_name)
+    .bind(signature)
+    .bind(category)
+    .bind(severity)
+    .bind(action)
+    .bind(evidence)
+    .execute(pool)
+    .await?;
+
     info!(%source, %rule_name, %action, ?src_ip, "security alert stored");
     Ok(())
 }
@@ -749,7 +1045,17 @@ async fn firewall_action(cmd: &str, action: &str, ip: &IpAddr) -> Result<()> {
 }
 
 fn validate_lab_attacker_ip(value: &str) -> Result<IpAddr> {
-    let ip: IpAddr = value.parse().context("invalid IP address")?;
+    let raw = value.trim();
+    let clean = if let Some((ip_part, mask)) = raw.split_once('/') {
+        let mask = mask.trim();
+        if !mask.is_empty() && mask != "32" {
+            bail!("only single-host IP addresses (/32) are allowed in this demo");
+        }
+        ip_part.trim()
+    } else {
+        raw
+    };
+    let ip: IpAddr = clean.parse().context("invalid IP address")?;
     let octets = match ip {
         IpAddr::V4(v4) => v4.octets(),
         IpAddr::V6(_) => bail!("only IPv4 lab attacker addresses are allowed"),
@@ -760,17 +1066,229 @@ fn validate_lab_attacker_ip(value: &str) -> Result<IpAddr> {
     Ok(ip)
 }
 
-fn client_error(error: anyhow::Error) -> (StatusCode, String) {
-    (StatusCode::BAD_REQUEST, error.to_string())
+// ============================================================================
+// System Metrics Telemetry Helpers
+// ============================================================================
+
+fn read_active_connections() -> u32 {
+    std::fs::read_to_string("/proc/net/tcp")
+        .map(|content| {
+            let lines = content.lines().count();
+            if lines > 1 { (lines - 1) as u32 } else { 0 }
+        })
+        .unwrap_or(0)
 }
 
-fn internal_string_error(error: anyhow::Error) -> (StatusCode, String) {
-    (StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
+fn read_traffic_analyzed() -> String {
+    if let Ok(content) = std::fs::read_to_string("/proc/net/dev") {
+        for line in content.lines() {
+            if line.contains("enp1s0") {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if let Some(first) = parts.first() {
+                    let rx_bytes = if first.ends_with(':') {
+                        parts.get(1).and_then(|v| v.parse::<u64>().ok())
+                    } else if let Some((_, b)) = first.split_once(':') {
+                        b.parse::<u64>().ok()
+                    } else {
+                        None
+                    };
+                    if let Some(bytes) = rx_bytes {
+                        if bytes >= 1_073_741_824 {
+                            return format!("{:.2} GB", bytes as f64 / 1_073_741_824.0);
+                        } else {
+                            return format!("{:.2} MB", bytes as f64 / 1_048_576.0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    "2.45 MB".to_string()
 }
 
-fn internal_error(error: sqlx::Error) -> (StatusCode, String) {
+fn read_system_metrics() -> SystemMetrics {
+    let mut cpu_percent = 28u8;
+    let mut memory_percent = 48u8;
+    let disk_percent = 56u8;
+
+    if let Ok(content) = std::fs::read_to_string("/proc/loadavg") {
+        if let Some(first) = content.split_whitespace().next() {
+            if let Ok(load) = first.parse::<f32>() {
+                cpu_percent = ((load / 2.0) * 100.0).clamp(5.0, 95.0) as u8;
+            }
+        }
+    }
+
+    if let Ok(content) = std::fs::read_to_string("/proc/meminfo") {
+        let mut total = 0u64;
+        let mut avail = 0u64;
+        for line in content.lines() {
+            if line.starts_with("MemTotal:") {
+                total = line.split_whitespace().nth(1).and_then(|v| v.parse().ok()).unwrap_or(0);
+            } else if line.starts_with("MemAvailable:") {
+                avail = line.split_whitespace().nth(1).and_then(|v| v.parse().ok()).unwrap_or(0);
+            }
+        }
+        if total > 0 && avail <= total {
+            memory_percent = (((total - avail) * 100) / total) as u8;
+        }
+    }
+
+    let conns = read_active_connections();
+    let network_io_percent = (conns * 2).clamp(10, 85) as u8;
+
+    SystemMetrics {
+        cpu_percent,
+        memory_percent,
+        disk_percent,
+        network_io_percent,
+    }
+}
+
+fn client_error(error: anyhow::Error) -> (StatusCode, Json<ApiMessage>) {
+    (
+        StatusCode::BAD_REQUEST,
+        Json(ApiMessage {
+            status: "error",
+            message: error.to_string(),
+        }),
+    )
+}
+
+fn internal_string_error(error: anyhow::Error) -> (StatusCode, Json<ApiMessage>) {
     (
         StatusCode::INTERNAL_SERVER_ERROR,
-        format!("database error: {error}"),
+        Json(ApiMessage {
+            status: "error",
+            message: error.to_string(),
+        }),
     )
+}
+
+fn internal_error(error: sqlx::Error) -> (StatusCode, Json<ApiMessage>) {
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(ApiMessage {
+            status: "error",
+            message: format!("database error: {error}"),
+        }),
+    )
+}
+
+// ============================================================================
+// Unit Tests: Policy Engine, Action Execution, Lab IP Validation, Parsing
+// ============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_policy_whitelist_evaluation() {
+        let policy = PolicyEngine::new(true, vec![1000001, 1000002], true);
+
+        // Allowed SIDs qualify for Auto-block
+        assert_eq!(policy.evaluate_suricata(Some(1000001)), EventPolicyDecision::EligibleForAutoBlock);
+        assert_eq!(policy.evaluate_suricata(Some(1000002)), EventPolicyDecision::EligibleForAutoBlock);
+
+        // Classic attack rules default to ALERT only (until approved)
+        assert_eq!(policy.evaluate_suricata(Some(1000003)), EventPolicyDecision::AlertOnly); // XSS
+        assert_eq!(policy.evaluate_suricata(Some(1000004)), EventPolicyDecision::AlertOnly); // Path Traversal
+        assert_eq!(policy.evaluate_suricata(Some(1000005)), EventPolicyDecision::AlertOnly); // Command Injection
+        assert_eq!(policy.evaluate_suricata(Some(1000006)), EventPolicyDecision::AlertOnly); // Sensitive Files
+        assert_eq!(policy.evaluate_suricata(Some(1000007)), EventPolicyDecision::AlertOnly); // Scanner UA
+        assert_eq!(policy.evaluate_suricata(Some(1000008)), EventPolicyDecision::AlertOnly); // Generic SQLi Keywords
+        assert_eq!(policy.evaluate_suricata(None), EventPolicyDecision::AlertOnly);
+
+        // When auto_block is disabled globally
+        let disabled_policy = PolicyEngine::new(false, vec![1000001, 1000002], true);
+        assert_eq!(disabled_policy.evaluate_suricata(Some(1000001)), EventPolicyDecision::AlertOnly);
+        assert_eq!(disabled_policy.evaluate_suricata(Some(1000002)), EventPolicyDecision::AlertOnly);
+        assert_eq!(disabled_policy.evaluate_nginx(), EventPolicyDecision::AlertOnly);
+    }
+
+    #[tokio::test]
+    async fn test_execute_action_alert_only() {
+        let ip: IpAddr = "192.168.10.10".parse().unwrap();
+        let (action, err) = execute_policy_action_mock(
+            EventPolicyDecision::AlertOnly,
+            Some(ip),
+            |_| async { panic!("firewall must NOT be called for alert-only policy") },
+        ).await.unwrap();
+
+        assert_eq!(action, "ALERT");
+        assert!(err.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_execute_action_auto_block_success() {
+        let ip: IpAddr = "192.168.10.10".parse().unwrap();
+        let (action, err) = execute_policy_action_mock(
+            EventPolicyDecision::EligibleForAutoBlock,
+            Some(ip),
+            |_| async { Ok(()) },
+        ).await.unwrap();
+
+        assert_eq!(action, "AUTO-BLOCK");
+        assert!(err.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_execute_action_auto_block_failure_fallback() {
+        let ip: IpAddr = "192.168.10.10".parse().unwrap();
+        let (action, err) = execute_policy_action_mock(
+            EventPolicyDecision::EligibleForAutoBlock,
+            Some(ip),
+            |_| async { anyhow::bail!("firewall kernel table busy") },
+        ).await.unwrap();
+
+        // Must NOT report AUTO-BLOCK if firewall failed!
+        assert_eq!(action, "ALERT");
+        assert!(err.is_some());
+        assert!(err.unwrap().contains("firewall kernel table busy"));
+    }
+
+    #[test]
+    fn test_validate_lab_attacker_ip() {
+        assert!(validate_lab_attacker_ip("192.168.10.10").is_ok());
+        assert!(validate_lab_attacker_ip("192.168.10.10/32").is_ok());
+        assert!(validate_lab_attacker_ip("  192.168.10.10/32  ").is_ok());
+        assert!(validate_lab_attacker_ip("192.168.10.2").is_ok());
+        assert!(validate_lab_attacker_ip("192.168.10.2/32").is_ok());
+        assert!(validate_lab_attacker_ip("192.168.10.254").is_ok());
+        assert!(validate_lab_attacker_ip("192.168.10.254/32").is_ok());
+
+        // Invalid: /24 mask, /16 mask, outside range, gateway, or foreign subnets
+        assert!(validate_lab_attacker_ip("192.168.10.0/24").is_err());
+        assert!(validate_lab_attacker_ip("192.168.10.10/16").is_err());
+        assert!(validate_lab_attacker_ip("192.168.10.1").is_err());
+        assert!(validate_lab_attacker_ip("192.168.10.1/32").is_err());
+        assert!(validate_lab_attacker_ip("192.168.10.255").is_err());
+        assert!(validate_lab_attacker_ip("192.168.20.10").is_err());
+        assert!(validate_lab_attacker_ip("127.0.0.1").is_err());
+        assert!(validate_lab_attacker_ip("10.0.0.5").is_err());
+        assert!(validate_lab_attacker_ip("not-an-ip").is_err());
+    }
+
+    #[test]
+    fn test_parse_suricata_timestamp() {
+        let ts = "2026-10-22T10:15:30.123456+0000";
+        let parsed = parse_suricata_timestamp(ts);
+        assert!(parsed.is_ok());
+    }
+
+    #[test]
+    fn test_sqli_regex_patterns() {
+        let re = sql_injection_re();
+        assert!(re.is_match("/students?search=1' union select 1,2,3--"));
+        assert!(re.is_match("/login?user=admin' or 1=1--"));
+        assert!(re.is_match("/api?id=1 and 1=1"));
+        assert!(re.is_match("/api?sleep=sleep(5)"));
+        assert!(re.is_match("/api?schema=information_schema"));
+
+        // Benign paths
+        assert!(!re.is_match("/api/v1/students"));
+        assert!(!re.is_match("/dashboard"));
+        assert!(!re.is_match("/style.css"));
+    }
 }

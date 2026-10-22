@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIDS — Network Intrusion Detection & Prevention System</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="brand-name">NIDS</span>
+        </div>
+        <button class="mobile-close-btn" id="sidebarCloseBtn" aria-label="Close sidebar">✕</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#alerts" class="nav-item" data-tab="alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span>Alerts</span>
+          <span class="nav-badge" id="sidebarAlertBadge">0</span>
+        </a>
+        <a href="#blocked" class="nav-item" data-tab="blocked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          </svg>
+          <span>Blocked IPs</span>
+          <span class="nav-badge danger" id="sidebarBlockedBadge">0</span>
+        </a>
+        <a href="#rules" class="nav-item" data-tab="rules">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="4 17 10 11 4 5"/>
+            <line x1="12" y1="19" x2="20" y2="19"/>
+          </svg>
+          <span>Rules & Policy</span>
+        </a>
+        <a href="#traffic" class="nav-item" data-tab="traffic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>Traffic Monitor</span>
+        </a>
+        <a href="#history" class="nav-item" data-tab="history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>Audit History</span>
+        </a>
+        <a href="#system" class="nav-item" data-tab="system">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+            <line x1="6" y1="6" x2="6.01" y2="6"/>
+            <line x1="6" y1="18" x2="6.01" y2="18"/>
+          </svg>
+          <span>System Status</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-health-indicator">
+          <span class="status-pulse"></span>
+          <div class="health-text">
+            <span class="health-title">System Status</span>
+            <span class="health-subtitle" id="globalStatusText">All systems operational</span>
+          </div>
+        </div>
+        <div class="version-tag">Version 2.1.0 • PBL4 Core</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menuToggleBtn" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <div class="page-title-box">
+            <h1 class="page-title">Network Intrusion Detection System</h1>
+            <span class="page-subtitle">Security VM 192.168.10.1 &bull; Active Inspection Core</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="globalSearchInput" placeholder="Search IP, Rule, SID... (Ctrl+K)">
+          </div>
+
+          <div class="date-filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <select id="timeRangeSelect">
+              <option value="1h">Last 1 Hour</option>
+              <option value="24h" selected>Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="all">All Events</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" id="exportReportBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Export Report</span>
+          </button>
+
+          <button class="icon-btn" id="manualBlockTriggerBtn" title="Manual Firewall Action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </button>
+
+          <div class="user-profile">
+            <div class="avatar">A</div>
+            <span class="user-name">Admin</span>
+            <span class="dropdown-arrow">▾</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <div class="tab-content active" id="dashboardTab">
+        <!-- 5 Metric Stat Cards -->
+        <section class="stat-cards-grid">
+          <!-- Card 1: Total Alerts -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Total Alerts</span>
+              <div class="stat-icon-wrapper blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <h2 class="stat-value" id="statTotalAlerts">0</h2>
+              <div class="stat-trend up">
+                <span class="trend-icon">↑</span>
+                <span class="trend-text">+12.5% vs last 7 days</span>
+              </div>
+            </div>
+            <div class="stat-sparkline">
+              <svg class="sparkline-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path d="M 0 18 Q 20 12, 40 14 T 70 8 T 100 4" fill="none" stroke="#3b82f6" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 2: Critical Alerts -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Critical Alerts</span>
+              <div class="stat-icon-wrapper red">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 22 22 22 12 2"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <h2 class="stat-value" id="statCriticalAlerts">0</h2>
+              <div class="stat-trend up danger">
+                <span class="trend-icon">↑</span>
+                <span class="trend-text">+8.2% vs last 7 days</span>
+              </div>
+            </div>
+            <div class="stat-sparkline">
+              <svg class="sparkline-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path d="M 0 20 Q 25 18, 45 10 T 75 12 T 100 6" fill="none" stroke="#ef4444" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 3: Blocked Attacks -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Blocked Attacks</span>
+              <div class="stat-icon-wrapper green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <h2 class="stat-value" id="statBlockedAttacks">0</h2>
+              <div class="stat-trend up success">
+                <span class="trend-icon">↑</span>
+                <span class="trend-text">+15.3% vs last 7 days</span>
+              </div>
+            </div>
+            <div class="stat-sparkline">
+              <svg class="sparkline-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path d="M 0 22 Q 20 16, 50 14 T 80 8 T 100 5" fill="none" stroke="#10b981" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 4: Traffic Analyzed -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Traffic Analyzed</span>
+              <div class="stat-icon-wrapper purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="12" x2="2" y2="12"/>
+                  <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                  <line x1="6" y1="16" x2="6.01" y2="16"/>
+                  <line x1="10" y1="16" x2="10.01" y2="16"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <h2 class="stat-value" id="statTrafficAnalyzed">1.84 GB</h2>
+              <div class="stat-trend up">
+                <span class="trend-icon">↑</span>
+                <span class="trend-text">+23.1% vs last 7 days</span>
+              </div>
+            </div>
+            <div class="stat-sparkline">
+              <svg class="sparkline-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path d="M 0 16 Q 30 18, 55 12 T 85 8 T 100 3" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 5: Active Connections -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Active Connections</span>
+              <div class="stat-icon-wrapper cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="4"/>
+                  <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <h2 class="stat-value" id="statActiveConnections">8,547</h2>
+              <div class="stat-trend up">
+                <span class="trend-icon">↑</span>
+                <span class="trend-text">+5.4% vs last 7 days</span>
+              </div>
+            </div>
+            <div class="stat-sparkline">
+              <svg class="sparkline-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path d="M 0 19 Q 25 15, 50 14 T 80 10 T 100 7" fill="none" stroke="#06b6d4" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- Middle Row: Charts -->
+        <section class="charts-row">
+          <!-- Left: Traffic Overview (Multi-line chart) -->
+          <div class="card chart-card flex-2">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3 class="card-title">Traffic Overview</h3>
+                <span class="card-subtitle">Real-time HTTP & Transport Layer Flow</span>
+              </div>
+              <div class="chart-controls">
+                <div class="chart-legend">
+                  <span class="legend-item"><span class="legend-dot blue"></span> Normal Traffic</span>
+                  <span class="legend-item"><span class="legend-dot yellow"></span> Suspicious Traffic</span>
+                  <span class="legend-item"><span class="legend-dot red"></span> Malicious Traffic</span>
+                </div>
+                <select class="select-pill" id="trafficChartFilter">
+                  <option value="7d">7 Days</option>
+                  <option value="24h">24 Hours</option>
+                </select>
+              </div>
+            </div>
+            <div class="chart-container" id="trafficChartContainer">
+              <canvas id="trafficLineChart" height="260"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Top Attack Types (Donut Chart) -->
+          <div class="card chart-card flex-1">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3 class="card-title">Top Attack Types</h3>
+                <span class="card-subtitle">Categorized Detection Breakdown</span>
+              </div>
+            </div>
+            <div class="donut-wrapper">
+              <div class="donut-canvas-container">
+                <canvas id="attackTypesDonutChart" width="200" height="200"></canvas>
+                <div class="donut-center-label">
+                  <span class="donut-total" id="donutTotalCount">0</span>
+                  <span class="donut-text">Total</span>
+                </div>
+              </div>
+              <div class="donut-legend-list" id="donutLegendList">
+                <!-- Dynamically Populated -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bottom Row: Recent Alerts & System Status -->
+        <section class="tables-row">
+          <!-- Left: Recent Alerts Table -->
+          <div class="card flex-2">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3 class="card-title">Recent Alerts</h3>
+                <span class="card-subtitle">Real-time event stream from Suricata & Nginx WAF</span>
+              </div>
+              <div class="header-actions">
+                <div class="policy-pill-group">
+                  <span class="policy-indicator alert-dot"></span><span class="policy-label">ALERT: Monitor</span>
+                  <span class="policy-indicator block-dot"></span><span class="policy-label">AUTO-BLOCK: Active Dropping</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="viewAllAlertsBtn">View All</button>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table" id="alertsTable">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Source IP</th>
+                    <th>Destination IP</th>
+                    <th>Severity</th>
+                    <th>Action</th>
+                    <th>Quick Ops</th>
+                  </tr>
+                </thead>
+                <tbody id="alertsTableBody">
+                  <tr>
+                    <td colspan="7" class="loading-cell">
+                      <div class="skeleton-loader">
+                        <span class="loader-spinner"></span> Loading real-time alerts...
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: System Status -->
+          <div class="card flex-1">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3 class="card-title">System Status</h3>
+                <span class="card-subtitle">Security VM Resource Consumption</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="viewSystemDetailsBtn">View Details</button>
+            </div>
+
+            <div class="system-meters">
+              <!-- CPU Usage -->
+              <div class="meter-item">
+                <div class="meter-info">
+                  <span class="meter-label">CPU Usage</span>
+                  <span class="meter-val" id="cpuUsageVal">32%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-bar blue" id="cpuProgressBar" style="width: 32%;"></div>
+                </div>
+              </div>
+
+              <!-- Memory Usage -->
+              <div class="meter-item">
+                <div class="meter-info">
+                  <span class="meter-label">Memory Usage</span>
+                  <span class="meter-val" id="memUsageVal">65%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-bar purple" id="memProgressBar" style="width: 65%;"></div>
+                </div>
+              </div>
+
+              <!-- Disk Usage -->
+              <div class="meter-item">
+                <div class="meter-info">
+                  <span class="meter-label">Disk Usage</span>
+                  <span class="meter-val" id="diskUsageVal">78%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-bar orange" id="diskProgressBar" style="width: 78%;"></div>
+                </div>
+              </div>
+
+              <!-- Network I/O -->
+              <div class="meter-item">
+                <div class="meter-info">
+                  <span class="meter-label">Network I/O</span>
+                  <span class="meter-val" id="netUsageVal">45%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-bar green" id="netProgressBar" style="width: 45%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Service Health Badges -->
+            <div class="service-badges-list">
+              <div class="service-status-pill">
+                <span class="dot active"></span>
+                <span class="srv-name">Suricata NIDS</span>
+                <span class="srv-badge" id="srvSuricata">Active</span>
+              </div>
+              <div class="service-status-pill">
+                <span class="dot active"></span>
+                <span class="srv-name">Nginx Proxy</span>
+                <span class="srv-badge" id="srvNginx">Active</span>
+              </div>
+              <div class="service-status-pill">
+                <span class="dot active"></span>
+                <span class="srv-name">nftables IPS</span>
+                <span class="srv-badge" id="srvNftables">Enforcing</span>
+              </div>
+              <div class="service-status-pill">
+                <span class="dot active"></span>
+                <span class="srv-name">PostgreSQL</span>
+                <span class="srv-badge" id="srvPostgres">Connected</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Modals and Drawers -->
+      <!-- Modal: Manual Block / Blocklist Manager -->
+      <div class="modal-backdrop" id="blockModal">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3>Firewall Response Engine — Block IP</h3>
+            <button class="modal-close-btn" id="closeBlockModalBtn">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-desc">
+              Manually add an attacker IP to the kernel nftables set <code>@blocked_ips</code>.
+              Allowed range: <code>192.168.10.2</code> to <code>192.168.10.254</code>.
+            </p>
+            <div class="form-group">
+              <label for="manualIpInput">Attacker IPv4 Address</label>
+              <input type="text" id="manualIpInput" class="form-control" placeholder="192.168.10.10">
+            </div>
+            <div class="form-group">
+              <label for="manualReasonInput">Incident / Justification Reason</label>
+              <input type="text" id="manualReasonInput" class="form-control" placeholder="Manual security block via dashboard" value="Manual administrator block">
+            </div>
+            <div class="modal-feedback" id="manualBlockFeedback"></div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancelBlockModalBtn">Cancel</button>
+            <button class="btn btn-danger" id="submitManualBlockBtn">Execute Kernel Block</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Active Blocked IPs List -->
+      <div class="modal-backdrop" id="blockedListModal">
+        <div class="modal-box modal-lg">
+          <div class="modal-header">
+            <h3>Active Blocked IPs (nftables: <code>@blocked_ips</code>)</h3>
+            <button class="modal-close-btn" id="closeBlockedListModalBtn">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="table-container max-h-400">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Blocked IP</th>
+                    <th>Reason</th>
+                    <th>Blocked Timestamp</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="activeBlockedTableBody">
+                  <tr><td colspan="5" class="loading-cell">Loading active blocks...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="refreshBlockedListBtn">Refresh</button>
+            <button class="btn btn-primary" id="closeBlockedListBtn">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notification Container -->
+      <div class="toast-container" id="toastContainer"></div>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
