@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: pbl4-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pbl4_security
+      POSTGRES_USER: pbl4
+      POSTGRES_PASSWORD: pbl4_dev_password
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pbl4_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pbl4 -d pbl4_security"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pbl4_pgdata:

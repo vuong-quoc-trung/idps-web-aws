@@ -1,0 +1,532 @@
+use anyhow::{bail, Context, Result};
+use axum::{
+    extract::{Path, Query, State},
+    http::StatusCode,
+    response::Html,
+    routing::{delete, get, post},
+    Json, Router,
+};
+use chrono::{DateTime, Utc};
+use regex::Regex;
+use serde::{Deserialize, Serialize};
+use sqlx::{postgres::PgPoolOptions, FromRow, PgPool};
+use std::{
+    env,
+    net::IpAddr,
+    path::Path as FsPath,
+    sync::OnceLock,
+    time::Duration,
+};
+use tokio::{
+    fs::{File, OpenOptions},
+    io::{AsyncBufReadExt, AsyncReadExt, AsyncSeekExt, BufReader, SeekFrom},
+    net::TcpListener,
+    process::Command,
+    time::sleep,
+};
+use tracing::{error, info, warn};
+use tower_http::trace::TraceLayer;
+
+#[derive(Clone)]
+struct AppState {
+    pool: PgPool,
+    firewall_cmd: String,
+    auto_block: bool,
+}
+
+#[derive(Debug, Serialize, FromRow)]
+struct AlertRow {
+    id: i64,
+    occurred_at: DateTime<Utc>,
+    source: String,
+    event_type: String,
+    src_ip: Option<String>,
+    dest_ip: Option<String>,
+    proto: Option<String>,
+    rule_name: String,
+    signature: Option<String>,
+    category: Option<String>,
+    severity: i16,
+    action: String,
+    evidence: String,
+}
+
+#[derive(Debug, Serialize, FromRow)]
+struct BlockedIpRow {
+    ip: String,
+    reason: String,
+    blocked_at: DateTime<Utc>,
+    unblocked_at: Option<DateTime<Utc>>,
+    active: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct AlertQuery {
+    limit: Option<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+struct BlockRequest {
+    ip: String,
+    reason: String,
+}
+
+#[derive(Debug, Serialize)]
+struct ApiMessage {
+    status: &'static str,
+    message: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SuricataAlertInfo {
+    action: Option<String>,
+    signature_id: Option<u32>,
+    signature: Option<String>,
+    category: Option<String>,
+    severity: Option<u8>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SuricataEvent {
+    timestamp: String,
+    event_type: String,
+    #[serde(default)]
+    in_iface: Option<String>,
+    #[serde(default)]
+    src_ip: Option<IpAddr>,
+    #[serde(default)]
+    dest_ip: Option<IpAddr>,
+    #[serde(default)]
+    proto: Option<String>,
+    #[serde(default)]
+    alert: Option<SuricataAlertInfo>,
+}
+
+#[derive(Debug)]
+struct NginxRequest {
+    src_ip: IpAddr,
+    method: String,
+    target: String,
+    status: u16,
+    raw_line: String,
+}
+
+static NGINX_LOG_RE: OnceLock<Regex> = OnceLock::new();
+static SQLI_RE: OnceLock<Regex> = OnceLock::new();
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    dotenvy::dotenv().ok();
+    tracing_subscriber::fmt()
+        .with_env_filter(env::var("RUST_LOG").unwrap_or_else(|_| "info".into()))
+        .init();
+
+    let database_url = env::var("DATABASE_URL").context("DATABASE_URL is not set")?;
+    let app_addr = env::var("APP_ADDR").unwrap_or_else(|_| "0.0.0.0:3000".into());
+    let suricata_path = env::var("SURICATA_EVE_PATH")
+        .unwrap_or_else(|_| "/var/log/suricata/eve.json".into());
+    let nginx_path = env::var("NGINX_ACCESS_PATH")
+        .unwrap_or_else(|_| "/var/log/nginx/access.log".into());
+    let firewall_cmd = env::var("PBL4_FIREWALL_CMD")
+        .unwrap_or_else(|_| "/usr/local/bin/pbl4-firewall".into());
+    let auto_block = env::var("AUTO_BLOCK")
+        .unwrap_or_else(|_| "false".into())
+        .parse::<bool>()
+        .context("AUTO_BLOCK must be true or false")?;
+
+    let pool = PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&database_url)
+        .await
+        .context("cannot connect to PostgreSQL")?;
+
+    sqlx::query("SELECT 1")
+        .execute(&pool)
+        .await
+        .context("PostgreSQL health check failed")?;
+
+    info!(%app_addr, %suricata_path, %nginx_path, auto_block, "security core starting");
+
+    let suricata_pool = pool.clone();
+    let suricata_firewall = firewall_cmd.clone();
+    tokio::spawn(async move {
+        if let Err(err) = tail_suricata(&suricata_path, suricata_pool, suricata_firewall, auto_block).await {
+            error!(error = %err, "Suricata watcher stopped");
+        }
+    });
+
+    let nginx_pool = pool.clone();
+    let nginx_firewall = firewall_cmd.clone();
+    tokio::spawn(async move {
+        if let Err(err) = tail_nginx(&nginx_path, nginx_pool, nginx_firewall, auto_block).await {
+            error!(error = %err, "Nginx watcher stopped");
+        }
+    });
+
+    let state = AppState { pool, firewall_cmd, auto_block };
+    let app = Router::new()
+        .route("/", get(dashboard))
+        .route("/health", get(health))
+        .route("/api/alerts", get(list_alerts))
+        .route("/api/blocked-ips", get(list_blocked_ips).post(block_ip))
+        .route("/api/blocked-ips/{ip}", delete(unblock_ip))
+        .layer(TraceLayer::new_for_http())
+        .with_state(state);
+
+    let listener = TcpListener::bind(&app_addr)
+        .await
+        .with_context(|| format!("cannot bind {app_addr}"))?;
+    info!(%app_addr, "dashboard/API listening");
+    axum::serve(listener, app).await?;
+    Ok(())
+}
+
+async fn health() -> &'static str {
+    "OK"
+}
+
+async fn list_alerts(
+    State(state): State<AppState>,
+    Query(query): Query<AlertQuery>,
+) -> Result<Json<Vec<AlertRow>>, (StatusCode, String)> {
+    let limit = query.limit.unwrap_or(50).clamp(1, 200);
+    let rows = sqlx::query_as::<_, AlertRow>(
+        r#"SELECT id, occurred_at, source, event_type,
+                src_ip::text,
+                dest_ip::text,
+                proto,
+                rule_name, signature, category, severity, action, evidence
+        FROM security_alerts
+        ORDER BY id DESC
+        LIMIT $1"#,
+    )
+    .bind(limit)
+    .fetch_all(&state.pool)
+    .await
+    .map_err(internal_error)?;
+    Ok(Json(rows))
+}
+
+async fn list_blocked_ips(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<BlockedIpRow>>, (StatusCode, String)> {
+    let rows = sqlx::query_as::<_, BlockedIpRow>(
+    r#"SELECT ip::text, reason, blocked_at, unblocked_at, active
+    FROM blocked_ips
+    WHERE active = true
+    ORDER BY blocked_at DESC"#,
+    )
+    .fetch_all(&state.pool)
+    .await
+    .map_err(internal_error)?;
+    Ok(Json(rows))
+}
+
+async fn block_ip(
+    State(state): State<AppState>,
+    Json(request): Json<BlockRequest>,
+) -> Result<(StatusCode, Json<ApiMessage>), (StatusCode, String)> {
+    let ip = validate_lab_attacker_ip(&request.ip).map_err(client_error)?;
+    if request.reason.trim().is_empty() {
+        return Err((StatusCode::BAD_REQUEST, "reason is required".into()));
+    }
+
+    firewall_action(&state.firewall_cmd, "block", &ip).await.map_err(internal_string_error)?;
+
+    sqlx::query(
+    r#"INSERT INTO blocked_ips (ip, reason, blocked_at, unblocked_at, active)
+    VALUES ($1::inet, $2, now(), NULL, true)
+    ON CONFLICT (ip) DO UPDATE
+    SET reason = EXCLUDED.reason,
+        blocked_at = now(),
+        unblocked_at = NULL,
+        active = true"#,
+    )
+    .bind(ip.to_string())
+    .bind(&request.reason)
+    .execute(&state.pool)
+    .await
+    .map_err(internal_error)?;
+
+    record_firewall_action(&state.pool, ip, "BLOCK", "API", &request.reason, "SUCCESS", None)
+        .await
+        .map_err(internal_string_error)?;
+
+    Ok((
+        StatusCode::CREATED,
+        Json(ApiMessage { status: "ok", message: format!("blocked {ip}") }),
+    ))
+}
+
+async fn unblock_ip(
+    State(state): State<AppState>,
+    Path(ip): Path<String>,
+) -> Result<Json<ApiMessage>, (StatusCode, String)> {
+    let ip = validate_lab_attacker_ip(&ip).map_err(client_error)?;
+    firewall_action(&state.firewall_cmd, "unblock", &ip)
+        .await
+        .map_err(internal_string_error)?;
+
+        sqlx::query(
+            "UPDATE blocked_ips
+            SET active = false, unblocked_at = now()
+            WHERE ip = $1::inet"
+        )
+        .bind(ip.to_string())
+        .execute(&state.pool)
+        .await
+        .map_err(internal_error)?;
+
+    record_firewall_action(&state.pool, ip, "UNBLOCK", "API", "manual unblock", "SUCCESS", None)
+        .await
+        .map_err(internal_string_error)?;
+
+    Ok(Json(ApiMessage { status: "ok", message: format!("unblocked {ip}") }))
+}
+
+async fn dashboard() -> Html<&'static str> {
+    Html(r#"<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PBL4 Security Dashboard</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:24px;background:#f5f6f8;color:#20242a} h1{margin-bottom:4px}
+.small{color:#666;margin-bottom:18px}.card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px;margin-bottom:18px}
+input,button{padding:8px 10px;font:inherit}button{cursor:pointer}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+table{width:100%;border-collapse:collapse;background:#fff}.scroll{overflow:auto;max-height:420px}th,td{padding:9px;border-bottom:1px solid #e5e5e5;text-align:left;vertical-align:top;font-size:14px}
+code{white-space:pre-wrap}.ok{color:green}.err{color:#b00020}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<h1>PBL4 Security Dashboard</h1>
+<div id="status" class="small">Loading...</div>
+<div class="grid">
+<section class="card"><h2>Manual BLOCK</h2>
+<p>Only 192.168.10.2–254 is accepted.</p>
+<input id="ip" placeholder="192.168.10.10"><input id="reason" placeholder="reason" value="manual demo block">
+<button onclick="blockIp()">BLOCK</button><div id="blockMsg"></div></section>
+<section class="card"><h2>Blocked IPs</h2><div id="blocked">Loading...</div></section>
+</div>
+<section class="card"><h2>Alerts</h2><div class="scroll"><table><thead><tr><th>Time</th><th>Source</th><th>Rule</th><th>Src</th><th>Dst</th><th>Severity</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<script>
+const esc=v=>String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function refresh(){
+ try{
+  const [a,b]=await Promise.all([fetch('/api/alerts?limit=100'),fetch('/api/blocked-ips')]);
+  const alerts=await a.json(), blocks=await b.json();
+  document.getElementById('status').textContent=`${alerts.length} recent alerts · ${blocks.length} blocked IPs · refresh 2s`;
+  document.getElementById('rows').innerHTML=alerts.map(x=>`<tr><td>${esc(x.occurred_at)}</td><td>${esc(x.source)}</td><td>${esc(x.rule_name)}</td><td>${esc(x.src_ip)}</td><td>${esc(x.dest_ip)}</td><td>${esc(x.severity)}</td><td>${esc(x.action)}</td></tr>`).join('');
+  document.getElementById('blocked').innerHTML=blocks.length?'<table><thead><tr><th>IP</th><th>Reason</th><th>Blocked at</th><th></th></tr></thead><tbody>'+blocks.map(x=>`<tr><td>${esc(x.ip)}</td><td>${esc(x.reason)}</td><td>${esc(x.blocked_at)}</td><td><button onclick="unblockIp('${esc(x.ip)}')">UNBLOCK</button></td></tr>`).join('')+'</tbody></table>':'None';
+ }catch(e){document.getElementById('status').textContent='API error: '+e;document.getElementById('status').className='small err'}
+}
+async function blockIp(){const ip=document.getElementById('ip').value,reason=document.getElementById('reason').value;const r=await fetch('/api/blocked-ips',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ip,reason})});const t=await r.text();document.getElementById('blockMsg').textContent=t;refresh();}
+async function unblockIp(ip){const r=await fetch('/api/blocked-ips/'+encodeURIComponent(ip),{method:'DELETE'});const t=await r.text();document.getElementById('blockMsg').textContent=t;refresh();}
+refresh();setInterval(refresh,2000);
+</script></body></html>"#)
+}
+
+async fn tail_suricata(path: &str, pool: PgPool, firewall_cmd: String, auto_block: bool) -> Result<()> {
+    tail_file(path, move |line| {
+        let pool = pool.clone();
+        let firewall_cmd = firewall_cmd.clone();
+        async move {
+            if let Err(err) = process_suricata_line(&line, &pool, &firewall_cmd, auto_block).await {
+                warn!(error = %err, "failed to process Suricata line");
+            }
+            Ok(())
+        }
+    }).await
+}
+
+async fn tail_nginx(path: &str, pool: PgPool, firewall_cmd: String, auto_block: bool) -> Result<()> {
+    tail_file(path, move |line| {
+        let pool = pool.clone();
+        let firewall_cmd = firewall_cmd.clone();
+        async move {
+            if let Err(err) = process_nginx_line(&line, &pool, &firewall_cmd, auto_block).await {
+                warn!(error = %err, "failed to process Nginx line");
+            }
+            Ok(())
+        }
+    }).await
+}
+
+async fn tail_file<F, Fut>(path: &str, mut handler: F) -> Result<()>
+where
+    F: FnMut(String) -> Fut,
+    Fut: std::future::Future<Output = Result<()>>,
+{
+    loop {
+        if !FsPath::new(path).exists() {
+            warn!(%path, "log file does not exist; waiting");
+            sleep(Duration::from_secs(2)).await;
+            continue;
+        }
+
+        let mut file = OpenOptions::new().read(true).open(path).await?;
+        let start = file.metadata().await?.len();
+        file.seek(SeekFrom::End(0)).await?;
+        let mut offset = start;
+        let mut pending = Vec::new();
+        info!(%path, "watching log file from EOF");
+
+        loop {
+            let size = match file.metadata().await { Ok(m) => m.len(), Err(_) => break };
+            if size < offset { break; }
+            if size > offset {
+                file.seek(SeekFrom::Start(offset)).await?;
+                let mut chunk = Vec::with_capacity((size - offset) as usize);
+                let mut limited = (&mut file).take(size - offset);
+                limited.read_to_end(&mut chunk).await?;
+                offset = size;
+                pending.extend_from_slice(&chunk);
+                while let Some(pos) = pending.iter().position(|b| *b == b'\n') {
+                    let line = pending.drain(..=pos).collect::<Vec<_>>();
+                    let line = String::from_utf8_lossy(&line).trim_end_matches(&['\r','\n'][..]).to_string();
+                    if !line.is_empty() { handler(line).await?; }
+                }
+            }
+            sleep(Duration::from_millis(500)).await;
+        }
+    }
+}
+
+async fn process_suricata_line(line: &str, pool: &PgPool, firewall_cmd: &str, auto_block: bool) -> Result<()> {
+    let event: SuricataEvent = match serde_json::from_str(line) { Ok(e) => e, Err(_) => return Ok(()) };
+    if event.event_type != "alert" { return Ok(()); }
+    let Some(alert) = event.alert else { return Ok(()); };
+
+    let severity = alert.severity.unwrap_or(3).clamp(1, 5) as i16;
+    let signature = alert.signature.clone().unwrap_or_else(|| "Unknown Suricata alert".into());
+    let category = alert.category.clone().unwrap_or_else(|| "Suricata alert".into());
+    let action = alert.action.clone().unwrap_or_else(|| "allowed".into());
+    let rule_name = format!("SURICATA: {signature}");
+    let occurred_at = parse_suricata_timestamp(&event.timestamp).unwrap_or_else(|_| Utc::now());
+    let evidence = format!(
+        "iface={} signature_id={:?} signature={} src={:?} dst={:?} proto={:?}",
+        event.in_iface.as_deref().unwrap_or("-"), alert.signature_id, signature, event.src_ip, event.dest_ip, event.proto
+    );
+
+    insert_alert(pool, occurred_at, "SURICATA", "alert", event.src_ip, event.dest_ip, event.proto.as_deref(), &rule_name, alert.signature.as_deref(), Some(&category), severity, &action, &evidence).await?;
+
+    maybe_auto_block(pool, firewall_cmd, auto_block, event.src_ip, severity, &rule_name).await
+}
+
+async fn process_nginx_line(line: &str, pool: &PgPool, firewall_cmd: &str, auto_block: bool) -> Result<()> {
+    let Some(request) = parse_nginx_request(line) else { return Ok(()); };
+    let decoded = urlencoding::decode(&request.target).map(|v| v.into_owned()).unwrap_or_else(|_| request.target.clone()).replace('+', " ");
+
+    if sql_injection_re().is_match(&decoded) {
+        let evidence = format!("{} {} status={} target={} raw={}", request.method, request.target, request.status, decoded, request.raw_line);
+        insert_alert(pool, Utc::now(), "NGINX", "waf", Some(request.src_ip), Some("192.168.20.10".parse::<IpAddr>().unwrap()), Some("HTTP"), "NGINX: SQL Injection", None, Some("Web Application Attack"), 2, "ALERT", &evidence).await?;
+        maybe_auto_block(pool, firewall_cmd, auto_block, Some(request.src_ip), 2, "NGINX: SQL Injection").await?;
+    }
+    Ok(())
+}
+
+async fn maybe_auto_block(pool: &PgPool, firewall_cmd: &str, auto_block: bool, src_ip: Option<IpAddr>, severity: i16, rule_name: &str) -> Result<()> {
+    if !auto_block || severity > 2 { return Ok(()); }
+    let Some(ip) = src_ip else { return Ok(()); };
+    if let Err(err) = validate_lab_attacker_ip(&ip.to_string()) { warn!(%ip, error=%err, "skip auto-block for non-lab source"); return Ok(()); }
+
+    firewall_action(firewall_cmd, "block", &ip).await?;
+    sqlx::query(
+        r#"INSERT INTO blocked_ips (ip, reason, blocked_at, unblocked_at, active)
+           VALUES ($1::inet, $2, now(), NULL, true)
+           ON CONFLICT (ip) DO UPDATE SET reason = EXCLUDED.reason, blocked_at = now(), unblocked_at = NULL, active = true"#,
+    )
+    .bind(ip.to_string())
+    .bind(format!("auto-block: {rule_name}"))
+    .execute(pool)
+    .await?;
+    record_firewall_action(pool, ip, "BLOCK", "AUTO", rule_name, "SUCCESS", None).await?;
+    info!(%ip, %rule_name, "auto-blocked source IP");
+    Ok(())
+}
+
+fn parse_suricata_timestamp(value: &str) -> Result<DateTime<Utc>> {
+    Ok(DateTime::parse_from_str(value, "%Y-%m-%dT%H:%M:%S%.f%z")?.with_timezone(&Utc))
+}
+
+fn parse_nginx_request(line: &str) -> Option<NginxRequest> {
+    let re = NGINX_LOG_RE.get_or_init(|| Regex::new(r#"^(\S+) \S+ \S+ \[[^\]]+\] \"(\S+) ([^\"]+) HTTP/[0-9.]+\" (\d{3}) "#).expect("valid nginx regex"));
+    let caps = re.captures(line)?;
+    Some(NginxRequest {
+        src_ip: caps.get(1)?.as_str().parse().ok()?,
+        method: caps.get(2)?.as_str().to_string(),
+        target: caps.get(3)?.as_str().to_string(),
+        status: caps.get(4)?.as_str().parse().ok()?,
+        raw_line: line.to_string(),
+    })
+}
+
+fn sql_injection_re() -> &'static Regex {
+    SQLI_RE.get_or_init(|| {
+    Regex::new(
+        r#"(?i)(union\s+select|(?:'|")?\s*(?:or|and)\s+(?:'|")?\d+(?:'|")?\s*=\s*(?:'|")?\d+(?:'|")?|sleep\s*\(|information_schema)"#
+    ).expect("valid SQLi regex")
+})
+}
+
+async fn insert_alert(
+    pool: &PgPool, occurred_at: DateTime<Utc>, source: &str, event_type: &str,
+    src_ip: Option<IpAddr>, dest_ip: Option<IpAddr>, proto: Option<&str>, rule_name: &str,
+    signature: Option<&str>, category: Option<&str>, severity: i16, action: &str, evidence: &str,
+) -> Result<()> {
+    sqlx::query(
+        r#"INSERT INTO security_alerts
+        (occurred_at, source, event_type, src_ip, dest_ip, proto, rule_name, signature, category, severity, action, evidence)
+       VALUES ($1,$2,$3,$4::inet,$5::inet,$6,$7,$8,$9,$10,$11,$12)"#,
+    ).bind(occurred_at).bind(source).bind(event_type).bind(src_ip.map(|ip| ip.to_string()))
+.bind(dest_ip.map(|ip| ip.to_string())).bind(proto)
+     .bind(rule_name).bind(signature).bind(category).bind(severity).bind(action).bind(evidence)
+     .execute(pool).await?;
+    info!(%source, %rule_name, %action, ?src_ip, "security alert stored");
+    Ok(())
+}
+
+async fn record_firewall_action(
+    pool: &PgPool, ip: IpAddr, action: &str, source: &str, reason: &str, status: &str, details: Option<&str>
+) -> Result<()> {
+        sqlx::query(
+        "INSERT INTO firewall_actions
+        (ip, action, source, reason, status, details)
+        VALUES ($1::inet,$2,$3,$4,$5,$6)"
+    )
+        .bind(ip.to_string()).bind(action).bind(source).bind(reason).bind(status).bind(details).execute(pool).await?;
+    Ok(())
+}
+
+async fn firewall_action(cmd: &str, action: &str, ip: &IpAddr) -> Result<()> {
+    let output = Command::new("sudo").arg(cmd).arg(action).arg(ip.to_string()).output().await
+        .with_context(|| format!("failed to execute firewall helper {cmd}"))?;
+    if !output.status.success() {
+        bail!("firewall helper failed: {}", String::from_utf8_lossy(&output.stderr));
+    }
+    Ok(())
+}
+
+fn validate_lab_attacker_ip(value: &str) -> Result<IpAddr> {
+    let ip: IpAddr = value.parse().context("invalid IP address")?;
+    let octets = match ip {
+        IpAddr::V4(v4) => v4.octets(),
+        IpAddr::V6(_) => bail!("only IPv4 lab attacker addresses are allowed"),
+    };
+    if octets[0] != 192 || octets[1] != 168 || octets[2] != 10 || !(2..=254).contains(&octets[3]) {
+        bail!("only 192.168.10.2-192.168.10.254 may be blocked in this demo");
+    }
+    Ok(ip)
+}
+
+fn client_error(error: anyhow::Error) -> (StatusCode, String) {
+    (StatusCode::BAD_REQUEST, error.to_string())
+}
+
+fn internal_string_error(error: anyhow::Error) -> (StatusCode, String) {
+    (StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
+}
+
+fn internal_error(error: sqlx::Error) -> (StatusCode, String) {
+    (StatusCode::INTERNAL_SERVER_ERROR, format!("database error: {error}"))
+}

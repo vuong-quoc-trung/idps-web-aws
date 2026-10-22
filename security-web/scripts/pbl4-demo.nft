@@ -1,0 +1,21 @@
+table inet pbl4_demo {
+    set blocked_ips {
+        type ipv4_addr
+        flags interval
+    }
+
+    chain input {
+        type filter hook input priority -100; policy accept;
+        ip saddr @blocked_ips drop
+    }
+
+    chain forward {
+        type filter hook forward priority -100; policy accept;
+
+        # Force lab HTTP clients to use the Security VM Nginx proxy.
+        iifname "enp1s0" oifname "enp7s0" ip daddr 192.168.20.10 tcp dport 80 drop
+
+        # Response Engine block list.
+        ip saddr @blocked_ips drop
+    }
+}

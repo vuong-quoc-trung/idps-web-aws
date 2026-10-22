@@ -1,0 +1,1 @@
+alert tcp any any -> 192.168.10.1 any (msg:"PBL4 DEMO TCP SYN port scan"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:2;)

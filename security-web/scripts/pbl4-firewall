@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TABLE="inet pbl4_demo"
+SET="blocked_ips"
+
+validate_ip() {
+    local ip="$1"
+    [[ "$ip" =~ ^192\.168\.10\.[0-9]{1,3}$ ]] || {
+        echo "Only attacker-side lab IPs 192.168.10.0/24 are allowed" >&2
+        exit 2
+    }
+    local last="${ip##*.}"
+    (( last >= 2 && last <= 254 )) || {
+        echo "IP must be between 192.168.10.2 and 192.168.10.254" >&2
+        exit 2
+    }
+}
+
+case "${1:-}" in
+  block)
+    validate_ip "${2:-}"
+    if ! /usr/sbin/nft add element $TABLE $SET "{ ${2} }" 2>/tmp/pbl4-nft.err; then
+      if ! grep -qi "File exists" /tmp/pbl4-nft.err; then
+        cat /tmp/pbl4-nft.err >&2
+        exit 1
+      fi
+    fi
+    ;;
+  unblock)
+    validate_ip "${2:-}"
+    /usr/sbin/nft delete element $TABLE $SET "{ ${2} }" 2>/tmp/pbl4-nft.err || {
+      grep -qi "No such file\|Could not process rule" /tmp/pbl4-nft.err || {
+        cat /tmp/pbl4-nft.err >&2
+        exit 1
+      }
+    }
+    ;;
+  list)
+    /usr/sbin/nft list set $TABLE $SET
+    ;;
+  *)
+    echo "Usage: $0 {block|unblock|list} <192.168.10.x>" >&2
+    exit 2
+    ;;
+esac
