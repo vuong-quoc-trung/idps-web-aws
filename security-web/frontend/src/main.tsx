@@ -10,6 +10,7 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
+import { Icon } from "./Icon";
 
 type User = { username: string; role: "admin" | "viewer" };
 type Alert = {
@@ -283,6 +284,9 @@ function App() {
     return (
       <main className="login">
         <form onSubmit={login}>
+          <div className="login-emblem">
+            <Icon name="blocked" />
+          </div>
           <p className="eyebrow">PBL4 / SECURITY PLATFORM</p>
           <h1>Đăng nhập giám sát</h1>
           <p className="muted">Theo dõi cảnh báo và quản lý bảo vệ website.</p>
@@ -313,6 +317,7 @@ function App() {
           )}
           <button className="primary" disabled={loginBusy}>
             {loginBusy ? "Đang xác thực…" : "Đăng nhập"}
+            <Icon name="arrow" />
           </button>
         </form>
       </main>
@@ -339,7 +344,12 @@ function App() {
             setTab("overview");
           }}
         >
-          PBL4 <span>SECURITY</span>
+          <span className="brand-mark">
+            <Icon name="blocked" />
+          </span>
+          <span className="brand-wordmark">
+            PBL4 <span>SECURITY</span>
+          </span>
         </a>
         <p className="eyebrow">ĐIỀU HÀNH BẢO MẬT</p>
         <nav aria-label="Điều hướng">
@@ -349,25 +359,41 @@ function App() {
               aria-current={tab === id ? "page" : undefined}
               onClick={() => setTab(id)}
             >
-              {label}
+              <Icon name={id} />
+              <span>{label}</span>
             </button>
           ))}
         </nav>
         <div className="account">
-          <strong>{session.user.username}</strong>
-          <p>{admin ? "Quản trị viên" : "Chỉ xem"}</p>
-          <button onClick={() => void logout()}>Đăng xuất</button>
+          <div className="account-profile">
+            <span className="avatar" aria-hidden="true">
+              {session.user.username.slice(0, 1).toUpperCase()}
+            </span>
+            <div>
+              <strong>{session.user.username}</strong>
+              <p>{admin ? "Quản trị viên" : "Chỉ xem"}</p>
+            </div>
+          </div>
+          <button onClick={() => void logout()}>
+            <Icon name="logout" />
+            Đăng xuất
+          </button>
         </div>
       </aside>
       <main>
         <header>
           <div>
             <p className="eyebrow">SECURITY OPERATIONS</p>
-            <h1>{tabs.find(([id]) => id === tab)?.[1]}</h1>
+            <h1>
+              <span className="heading-icon">
+                <Icon name={tab} />
+              </span>
+              {tabs.find(([id]) => id === tab)?.[1]}
+            </h1>
           </div>
-          <div>
+          <div className="header-actions">
             <span
-              className={`badge ${!error && health?.healthy ? "good" : "warn"}`}
+              className={`badge status-badge ${!error && health?.healthy ? "good" : "warn"}`}
             >
               {error
                 ? "Mất kết nối / dữ liệu có thể cũ"
@@ -375,10 +401,12 @@ function App() {
                   ? "Hệ thống sẵn sàng"
                   : "Cần kiểm tra hệ thống"}
             </span>
-            <p className="muted">
+            <p className="muted updated-at">
+              <Icon name="clock" />
               {updated ? `Cập nhật ${updated}` : "Đang tải dữ liệu"}
             </p>
             <button onClick={() => void refresh()} disabled={loading}>
+              <Icon name="refresh" className={loading ? "is-spinning" : ""} />
               {loading ? "Đang tải…" : "Làm mới"}
             </button>
           </div>
@@ -401,15 +429,28 @@ function App() {
                 ["Mức nghiêm trọng 1", stats?.critical_alerts],
                 ["Sự kiện auto-block thành công", stats?.blocked_attacks],
                 ["IP hiện có trong firewall", blocked?.kernel?.length],
-              ].map(([label, value]) => (
-                <article key={String(label)}>
-                  <p>{label}</p>
+              ].map(([label, value], index) => (
+                <article
+                  className={`metric-card metric-${index}`}
+                  key={String(label)}
+                >
+                  <div className="metric-heading">
+                    <p>{label}</p>
+                    <span className="metric-icon">
+                      <Icon
+                        name={["status", "alerts", "blocked", "network"][index]}
+                      />
+                    </span>
+                  </div>
                   <strong>{fmt(value as number | undefined)}</strong>
                 </article>
               ))}
             </section>
             <section className="panel">
-              <h2>Cảnh báo theo giờ</h2>
+              <h2>
+                <Icon name="status" />
+                Cảnh báo theo giờ
+              </h2>
               <p className="muted">
                 24 giờ gần nhất · số sự kiện đã lưu trong database
               </p>
@@ -447,14 +488,29 @@ function App() {
               </details>
             </section>
             <section className="panel">
-              <h2>Nhóm cảnh báo phổ biến</h2>
+              <h2>
+                <Icon name="overview" />
+                Nhóm cảnh báo phổ biến
+              </h2>
               {!stats?.types.length ? (
                 <p>Chưa có cảnh báo.</p>
               ) : (
-                stats.types.map((t) => (
-                  <div className="type-row" key={t.name}>
-                    <span>{t.name}</span>
-                    <strong>{t.count}</strong>
+                stats.types.map((t, index) => (
+                  <div className="type-row attack-row" key={t.name}>
+                    <span className="type-rank" aria-hidden="true">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="type-main">
+                      <span>{t.name}</span>
+                      <div className="type-track" aria-hidden="true">
+                        <div
+                          style={{
+                            width: `${(t.count / Math.max(1, ...stats.types.map((item) => item.count))) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <strong className="count-pill">{t.count}</strong>
                   </div>
                 ))
               )}
@@ -534,7 +590,13 @@ function App() {
                           Severity {a.severity}
                         </span>
                       </td>
-                      <td>{a.action}</td>
+                      <td>
+                        <span
+                          className={`badge ${a.action === "AUTO-BLOCK" ? "good" : "warn"}`}
+                        >
+                          {a.action}
+                        </span>
+                      </td>
                       <td>
                         <details>
                           <summary>Xem</summary>
@@ -567,7 +629,10 @@ function App() {
         {tab === "blocked" && (
           <>
             <section className="panel">
-              <h2>Trạng thái firewall</h2>
+              <h2>
+                <Icon name="blocked" />
+                Trạng thái firewall
+              </h2>
               <p className={blocked?.in_sync ? "notice" : "error"}>
                 {blocked?.in_sync
                   ? "Database khớp với nftables."
@@ -612,7 +677,10 @@ function App() {
               )}
             </section>
             <section className="panel">
-              <h2>Danh sách từ DB và kernel</h2>
+              <h2>
+                <Icon name="network" />
+                Danh sách từ DB và kernel
+              </h2>
               {Array.from(
                 new Set([
                   ...(blocked?.database.map((b) => b.ip) ?? []),
@@ -650,7 +718,10 @@ function App() {
         )}
         {tab === "audit" && (
           <section className="panel">
-            <h2>100 thao tác gần nhất</h2>
+            <h2>
+              <Icon name="audit" />
+              100 thao tác gần nhất
+            </h2>
             <div className="table-wrap">
               <table>
                 <thead>
@@ -692,7 +763,10 @@ function App() {
         )}
         {tab === "rules" && (
           <section className="panel">
-            <h2>Luật và chính sách hiện tại</h2>
+            <h2>
+              <Icon name="rules" />
+              Luật và chính sách hiện tại
+            </h2>
             <p className="muted">
               Chính sách được cấu hình trên server. Danh mục dưới đây mô tả bộ
               rule đi kèm dự án.
@@ -717,7 +791,10 @@ function App() {
         {tab === "status" && (
           <>
             <section className="panel">
-              <h2>Dịch vụ</h2>
+              <h2>
+                <Icon name="status" />
+                Dịch vụ
+              </h2>
               <p>
                 Database: {health?.database ? "Kết nối được" : "Chưa sẵn sàng"}
               </p>
