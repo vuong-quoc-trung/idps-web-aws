@@ -34,7 +34,7 @@ try:
         call(path, token)
         print('PASS:', path)
     try:
-        status = call('/api/status', token)
+        status = call('/api/ready', token)
         print('PASS: pipeline status', status)
     except urllib.error.HTTPError as error:
         if error.code != 503:

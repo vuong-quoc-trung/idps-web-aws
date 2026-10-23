@@ -88,7 +88,7 @@ Deploy thay cấu hình host, cấp quyền helper qua sudoers, reload dịch v�
 | POST | `/api/auth/logout` | Thu hồi token |
 | GET | `/api/alerts?limit=25&offset=0&search=...&severity=1` | Viewer/admin |
 | GET | `/api/stats` | Tổng số và series 24 giờ từ DB |
-| GET | `/api/status` | Trạng thái DB, watchers, firewall; 503 nếu degraded |
+| GET | `/api/status` | Báo cáo DB, watchers, firewall; HTTP 200, xem `healthy` trong JSON |
 | GET | `/api/rules` | Danh mục rule đi kèm và policy đã bật |
 | GET | `/api/blocked-ips` | Object `database`, `kernel`, `in_sync`, `error` |
 | POST | `/api/blocked-ips` | Admin; `{ip, reason}` → 202 + ID job |
@@ -114,3 +114,5 @@ python3 scripts/smoke-test.py --url http://127.0.0.1:3000 --username admin
 ```
 
 Kiểm thử packet thật, cấu hình Suricata, SSH quản trị, block/unblock HTTP cần chạy theo `docs/LAB_ACCEPTANCE.md`. Chưa có WebSocket, TTL auto-unblock, correlation xuyên nguồn, hoặc backup/restore tự động.
+
+`GET /api/ready` yêu cầu đăng nhập và trả cùng báo cáo với `/api/status`, nhưng HTTP 503 nếu hệ thống chưa sẵn sàng. Dashboard dùng `/api/status` để không phát sinh lỗi HTTP mỗi lần polling khi test host chưa có firewall. `healthy: false` vẫn được hiển thị; HTTP 200 không khẳng định pipeline đã sẵn sàng.

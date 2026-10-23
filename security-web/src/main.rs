@@ -275,6 +275,7 @@ fn router(state: AppState) -> Router {
         .route("/api/alerts", get(list_alerts))
         .route("/api/stats", get(metrics::stats))
         .route("/api/status", get(metrics::status))
+        .route("/api/ready", get(metrics::readiness))
         .route("/api/rules", get(api_rules))
         .route("/api/blocked-ips", get(firewall::list).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))

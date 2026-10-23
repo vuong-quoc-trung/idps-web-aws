@@ -50,7 +50,13 @@ pub async fn stats(State(state): State<AppState>) -> Result<Json<Value>, ApiErro
         "system":{"load_average_1m":load,"memory_percent":memory_percent(),"interface_rx_bytes":network_bytes(),"established_tcp_connections":connections()}}),
     ))
 }
-pub async fn status(State(state): State<AppState>) -> (StatusCode, Json<Value>) {
+// Dashboard polling retrieves a report successfully even when a component is degraded.
+pub async fn status(state: State<AppState>) -> Json<Value> {
+    readiness(state).await.1
+}
+
+// Monitoring clients can use the HTTP code to check readiness.
+pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value>) {
     let database = sqlx::query("SELECT 1").execute(&state.pool).await.is_ok();
     let fw = firewall::kernel(&state).await;
     let watchers = state.watchers.read().await.clone();
