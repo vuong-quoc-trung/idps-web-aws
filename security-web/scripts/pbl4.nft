@@ -6,7 +6,7 @@ table inet pbl4_demo {
 
     chain input {
         type filter hook input priority -100; policy accept;
-        ip saddr @blocked_ips drop
+        ip saddr @blocked_ips counter drop
     }
 
     chain forward {
@@ -16,6 +16,6 @@ table inet pbl4_demo {
         iifname "enp1s0" oifname "enp7s0" ip daddr 192.168.20.10 tcp dport 80 drop
 
         # Response Engine block list.
-        ip saddr @blocked_ips drop
+        ip saddr @blocked_ips counter drop
     }
 }
