@@ -182,7 +182,7 @@ run_check() {
 
     # 2. Required tools check
     log_info "Verifying required system binaries..."
-    local tools=(cargo docker nginx suricata nft sudo)
+    local tools=(cargo node npm docker nginx suricata nft sudo)
     for tool in "${tools[@]}"; do
         if command -v "$tool" >/dev/null 2>&1; then
             log_success "Tool installed: $tool ($(command -v "$tool"))"
@@ -419,20 +419,13 @@ run_deploy() {
     fi
     log_success "Source validation passed."
 
-    # Step 2: Ensure release binary exists or compile it
-    log_info "Step 2/8: Checking backend binary..."
-    local release_bin="${PROJECT_DIR}/target/release/pbl4-security-demo"
-    if [ ! -f "${release_bin}" ]; then
-        log_info "Release binary not found. Compiling 'cargo build --release'..."
-        if command -v cargo >/dev/null 2>&1; then
-            su - "${RUN_USER}" -c "cd '${PROJECT_DIR}' && cargo build --release"
-            log_success "Compiled release binary successfully."
-        else
-            log_warn "Cargo not found in PATH for compiling release binary."
-        fi
-    else
-        log_success "Release binary ready: ${release_bin}"
-    fi
+    # Always build current source; never deploy a stale binary or stale UI.
+    log_info "Step 2/8: Building React dashboard and Rust release..."
+    su - "${RUN_USER}" -c "cd '${PROJECT_DIR}/frontend' && npm ci && npm run build"
+    su - "${RUN_USER}" -c "cd '${PROJECT_DIR}' && cargo build --release --locked"
+    test -f "${PROJECT_DIR}/frontend/dist/index.html"
+    test -x "${PROJECT_DIR}/target/release/pbl4-security-demo"
+    su - "${RUN_USER}" -c "cd '${PROJECT_DIR}' && target/release/pbl4-security-demo --check-config"
 
     # Step 3: Timestamped backup
     local timestamp
