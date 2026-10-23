@@ -24,6 +24,26 @@ và `degreeType` chỉ nhận `BACHELOR`, `ENGINEER`, `MASTER` hoặc null.
 
 ## Chạy tạo bảng
 
+File cấu hình local nằm tại `student-web/backend/.env`. Từ thư mục gốc repository, chạy:
+
+```bash
+docker compose -f docker/docker-compose.yml up -d postgres
+bash student-web/backend/run.sh
+```
+
+PostgreSQL Docker lắng nghe tại `localhost:5433`, database `student_db`.
+Đặt `DB_URL=jdbc:postgresql://localhost:5433/student_db` trong `.env` khi dùng Docker này.
+Nếu gặp `Connection refused`, kiểm tra container bằng `docker compose -f docker/docker-compose.yml ps`.
+
+Script tự chuyển tới thư mục backend và export các biến trong `.env` trước khi chạy Maven.
+Backend yêu cầu JDK 25. Script dùng `JAVA_HOME` nếu đã đặt, hoặc tự chọn JDK local
+tại `.local-jdk/25` ở gốc repository. JDK local được loại khỏi Git.
+Với database cũ đã kiểm tra schema và sao lưu theo hướng dẫn Flyway, tiếp nhận một lần bằng:
+
+```bash
+FLYWAY_BASELINE_ON_MIGRATE=true bash student-web/backend/run.sh
+```
+
 Đảm bảo PostgreSQL có database `student_db`; Flyway tạo bảng khi schema rỗng, không tạo database.
 Database đang dùng cần tiếp nhận một lần theo [hướng dẫn Flyway](docs/DATABASE_MIGRATIONS.md) trước khi chạy bản mới.
 Thiết lập biến môi trường trong IDE hoặc terminal:

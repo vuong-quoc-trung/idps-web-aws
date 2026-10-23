@@ -1,1 +1,4 @@
 student-web/backend/.env
+/.local-jdk/
+/.local-node/
+/.local-backups/

@@ -1,5 +1,18 @@
 # React + TypeScript + Vite
 
+## Chạy local
+
+Từ thư mục gốc repository:
+
+```bash
+bash student-web/frontend/run.sh
+```
+
+Script dùng Node.js local tại `.local-node/24` nếu có. Mở URL Vite in trong
+terminal (mặc định http://localhost:5173). Backend cần chạy tại cổng 8080.
+Dependencies đã được cài bằng `npm ci`; khi cần cài lại, thêm `.local-node/24/bin`
+vào `PATH` trước khi dùng npm.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
