@@ -459,6 +459,8 @@ fn validate_lab_attacker_ip(value: &str) -> Result<IpAddr> {
     Ok(ip)
 }
 
+#[cfg(test)]
+mod integration_tests;
 
 #[cfg(test)]
 mod parser_tests {
