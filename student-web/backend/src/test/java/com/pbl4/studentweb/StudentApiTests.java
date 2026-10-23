@@ -116,6 +116,36 @@ class StudentApiTests {
 
 
 
+    @Test void studentAcademicPageOnlyExposesOwnClassAndPublicNames() throws Exception {
+        var self = student("CLASS-SELF");
+        student("CLASS-PEER");
+        var outside = student("CLASS-OUTSIDE");
+        var otherClass = new StudentClass();
+        otherClass.setClassCode("OTHER-CLASS"); otherClass.setMajor(catalog().getMajor());
+        otherClass.setProgram(catalog().getProgram()); otherClass.setCohort(2026);
+        classes.saveAndFlush(otherClass);
+        outside.setStudentClass(otherClass); students.saveAndFlush(outside);
+        var session = login(self.getStudentCode());
+        mvc.perform(get("/api/me/academic").session(session)).andExpect(status().isOk())
+            .andExpect(jsonPath("$.faculty.code").value("FAC"))
+            .andExpect(jsonPath("$.studentClass.code").value("CS26"));
+        mvc.perform(get("/api/me/academic/classmates").session(session)
+            .param("classId", otherClass.getId().toString())).andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements").value(2))
+            .andExpect(jsonPath("$.content[0].studentCode").value("CLASS-SELF"))
+            .andExpect(jsonPath("$.content[0].self").value(true))
+            .andExpect(jsonPath("$.content[1].studentCode").value("CLASS-PEER"))
+            .andExpect(jsonPath("$.content[1].personalEmail").doesNotExist())
+            .andExpect(jsonPath("$.content[1].citizenId").doesNotExist())
+            .andExpect(jsonPath("$.content[1].userId").doesNotExist());
+        mvc.perform(get("/api/me/academic/classmates").session(session).param("page", "1").param("size", "1"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].studentCode").value("CLASS-PEER"));
+        mvc.perform(get("/api/me/academic/classmates").session(session).param("size", "101"))
+            .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/me/academic")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/me/academic").session(login("staff-test"))).andExpect(status().isForbidden());
+    }
+
     @Test void resetMailConfigurationEligibilityAndHourlyLimitAreEnforced() throws Exception {
         var student = student("STU-2024-000903"); student.setPersonalEmail("reset-limits@gmail.com"); students.saveAndFlush(student); var u = student.getUser();
         String body = jsonBody("studentCode", student.getStudentCode());

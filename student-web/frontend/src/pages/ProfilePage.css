@@ -747,3 +747,5 @@
   line-height: 1.5;
   color: var(--text-muted);
 }
+
+.profile-field-error { display: block; margin-top: 6px; color: var(--text-error); font-size: .8rem; }
