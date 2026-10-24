@@ -955,3 +955,131 @@ details > ul {
     scroll-behavior: auto !important;
   }
 }
+
+.overview-toolbar {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.overview-toolbar label {
+  min-width: 180px;
+}
+.overview-toolbar p {
+  flex: 1;
+  min-width: 240px;
+}
+.overview-toolbar small,
+.overview-grid small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+}
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.overview-grid .panel {
+  min-width: 0;
+}
+.overview-jobs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.overview-jobs button {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+  padding: 20px;
+}
+.overview-jobs strong {
+  font-size: 28px;
+}
+.overview-alert {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.overview-alert summary {
+  cursor: pointer;
+  line-height: 1.7;
+}
+.overview-alert pre {
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .overview-grid,
+  .overview-jobs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.alert-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  margin: 0;
+  width: min(700px, 100vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  max-width: 100vw;
+  padding: 24px;
+  background: #142023;
+  color: #e5efef;
+  border: 1px solid var(--border);
+  overflow-y: auto;
+}
+.alert-drawer::backdrop {
+  background: rgb(0 0 0 / 65%);
+}
+.drawer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.detail-fields {
+  display: grid;
+  gap: 12px;
+}
+.detail-fields > div {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
+}
+.detail-fields dt {
+  color: var(--muted);
+}
+.detail-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.alert-drawer pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 360px;
+  overflow: auto;
+}
+.related-alert {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+  white-space: normal;
+}
+.related-alert small {
+  display: block;
+  margin-top: 6px;
+}
+@media (max-width: 480px) {
+  .detail-fields > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .alert-drawer {
+    padding: 16px;
+  }
+}

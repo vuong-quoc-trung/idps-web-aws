@@ -10,6 +10,7 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
+import { AlertDetail } from "./AlertDetail";
 import { Icon } from "./Icon";
 
 type User = { username: string; role: "admin" | "viewer" };
@@ -24,7 +25,24 @@ type Alert = {
   action: string;
   evidence: string;
 };
+type IpSummary = {
+  ip: string;
+  count: number;
+  severity: number;
+  last_seen: string;
+};
 type Stats = {
+  range: string;
+  from: string;
+  to: string;
+  unknown_destinations: number;
+  unique_sources: number;
+  sources: { name: string; count: number }[];
+  severities: { severity: number; count: number }[];
+  source_ips: IpSummary[];
+  destination_ips: IpSummary[];
+  recent: Alert[];
+  jobs: { status: string; count: number }[];
   total_alerts: number;
   critical_alerts: number;
   blocked_attacks: number;
@@ -95,8 +113,27 @@ function App() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [severity, setSeverity] = useState("");
+  const [selectedAlert, setSelectedAlert] = useState<number | null>(null);
+  const [totalAlerts, setTotalAlerts] = useState(0);
+  const [alertFilters, setAlertFilters] = useState({
+    from: "",
+    to: "",
+    source: "",
+    action: "",
+    dest_ip: "",
+  });
+  const filterParams = new URLSearchParams();
+  Object.entries(alertFilters).forEach(([key, value]) => {
+    if (value)
+      filterParams.set(
+        key,
+        key === "from" || key === "to" ? new Date(value).toISOString() : value,
+      );
+  });
+  const extraFilters = filterParams.toString();
   const [page, setPage] = useState(0);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [range, setRange] = useState("24h");
   const [stats, setStats] = useState<Stats | null>(null);
   const [blocked, setBlocked] = useState<Blocked | null>(null);
   const [audit, setAudit] = useState<Audit[]>([]);
@@ -108,7 +145,7 @@ function App() {
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
   const refreshing = useRef(false);
-  const requestKey = `${session?.token ?? ""}:${page}:${filter}:${severity}`;
+  const requestKey = `${session?.token ?? ""}:${page}:${filter}:${severity}:${range}:${extraFilters}`;
   const latestKey = useRef(requestKey);
   latestKey.current = requestKey;
   const api = useCallback(
@@ -145,16 +182,17 @@ function App() {
     try {
       const results = await Promise.all([
         api(
-          `/api/alerts?limit=25&offset=${page * 25}&search=${encodeURIComponent(filter)}${severity ? `&severity=${severity}` : ""}`,
+          `/api/alerts/search?${extraFilters}&limit=25&offset=${page * 25}&search=${encodeURIComponent(filter)}${severity ? `&severity=${severity}` : ""}`,
         ),
-        api("/api/stats"),
+        api(`/api/stats?range=${range}`),
         api("/api/blocked-ips"),
         api("/api/audit"),
         api("/api/rules"),
         api("/api/status"),
       ]);
       if (latestKey.current !== requestKey) return;
-      setAlerts(results[0]);
+      setAlerts(results[0].items);
+      setTotalAlerts(results[0].total);
       setStats(results[1]);
       setBlocked(results[2]);
       setAudit(results[3]);
@@ -168,7 +206,7 @@ function App() {
       refreshing.current = false;
       setLoading(false);
     }
-  }, [session, page, filter, severity, api, requestKey]);
+  }, [session, page, filter, severity, range, extraFilters, api, requestKey]);
   useEffect(() => {
     void refresh();
     const timer = setInterval(() => void refresh(), 5000);
@@ -423,12 +461,43 @@ function App() {
         )}
         {tab === "overview" && (
           <>
+            <section className="panel overview-toolbar">
+              <label>
+                Khoảng thời gian
+                <select
+                  value={range}
+                  onChange={(e) => {
+                    setStats(null);
+                    setRange(e.target.value);
+                  }}
+                >
+                  <option value="1h">1 giờ gần nhất</option>
+                  <option value="24h">24 giờ gần nhất</option>
+                  <option value="7d">7 ngày gần nhất</option>
+                </select>
+              </label>
+              <p className="muted">
+                Số cảnh báo không phải số cuộc tấn công: một request có thể được
+                nhiều nguồn phát hiện.
+                {stats && (
+                  <small>
+                    {new Date(stats.from).toLocaleString()} →{" "}
+                    {new Date(stats.to).toLocaleString()} · giờ địa phương
+                  </small>
+                )}
+                {!stats && (
+                  <small>
+                    {loading ? "Đang tải dữ liệu…" : "Chưa tải được dữ liệu."}
+                  </small>
+                )}
+              </p>
+            </section>
             <section className="cards" aria-label="Thống kê">
               {[
                 ["Tổng cảnh báo", stats?.total_alerts],
                 ["Mức nghiêm trọng 1", stats?.critical_alerts],
                 ["Sự kiện auto-block thành công", stats?.blocked_attacks],
-                ["IP hiện có trong firewall", blocked?.kernel?.length],
+                ["IP nguồn khác nhau", stats?.unique_sources],
               ].map(([label, value], index) => (
                 <article
                   className={`metric-card metric-${index}`}
@@ -449,15 +518,16 @@ function App() {
             <section className="panel">
               <h2>
                 <Icon name="status" />
-                Cảnh báo theo giờ
+                Diễn biến cảnh báo
               </h2>
               <p className="muted">
-                24 giờ gần nhất · số sự kiện đã lưu trong database
+                Trong khoảng thời gian đã chọn · số cảnh báo đã lưu trong
+                database
               </p>
               <div
                 className="chart"
                 role="img"
-                aria-label="Số cảnh báo theo từng giờ"
+                aria-label="Số cảnh báo theo từng khoảng thời gian"
               >
                 {stats?.trend.map((point) => (
                   <div
@@ -472,7 +542,17 @@ function App() {
                         height: `${(point.count / Math.max(1, ...stats.trend.map((p) => p.count))) * 130}px`,
                       }}
                     />
-                    <small>{new Date(point.hour).getHours()}h</small>
+                    <small>
+                      {range === "7d"
+                        ? new Date(point.hour).toLocaleDateString(undefined, {
+                            day: "2-digit",
+                            month: "2-digit",
+                          })
+                        : new Date(point.hour).toLocaleTimeString(undefined, {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                    </small>
                   </div>
                 ))}
               </div>
@@ -515,6 +595,142 @@ function App() {
                 ))
               )}
             </section>
+            <div className="overview-grid">
+              {(
+                [
+                  ["IP nguồn nổi bật", stats?.source_ips],
+                  ["Đích bị nhắm tới", stats?.destination_ips],
+                ] as const
+              ).map(([title, rows]) => (
+                <section className="panel" key={title}>
+                  <h2>{title}</h2>
+                  <p className="muted">
+                    Top 5 · mức độ cao nhất là số severity nhỏ nhất
+                  </p>
+                  {rows?.map((row) => (
+                    <div className="type-row" key={row.ip}>
+                      <div>
+                        <strong>{row.ip}</strong>
+                        <small>
+                          Severity {row.severity} · Gần nhất:{" "}
+                          {new Date(row.last_seen).toLocaleString()}
+                        </small>
+                      </div>
+                      <span className="count-pill">{row.count}</span>
+                    </div>
+                  ))}
+                  {rows?.length === 0 && (
+                    <p>Không có IP được ghi nhận trong khoảng này.</p>
+                  )}
+                  {title === "Đích bị nhắm tới" && (
+                    <p className="muted">
+                      {fmt(stats?.unknown_destinations)} cảnh báo không có IP
+                      đích; không tính vào bảng này.
+                    </p>
+                  )}
+                </section>
+              ))}
+              <section className="panel">
+                <h2>Phân bố mức độ</h2>
+                <p className="muted">
+                  1 là mức ưu tiên cao nhất; số càng lớn, ưu tiên càng thấp theo
+                  rule nguồn.
+                </p>
+                {[1, 2, 3, 4, 5].map((level) => (
+                  <div className="type-row" key={level}>
+                    <span className={`badge ${level === 1 ? "danger" : ""}`}>
+                      Severity {level}
+                    </span>
+                    <strong>
+                      {stats
+                        ? (stats.severities.find((x) => x.severity === level)
+                            ?.count ?? 0)
+                        : "—"}
+                    </strong>
+                  </div>
+                ))}
+                {stats?.severities
+                  .filter((x) => x.severity < 1 || x.severity > 5)
+                  .map((x) => (
+                    <p key={x.severity}>
+                      Mức khác ({x.severity}): {x.count}
+                    </p>
+                  ))}
+              </section>
+              <section className="panel">
+                <h2>Nguồn phát hiện</h2>
+                {Array.from(
+                  new Set([
+                    "NGINX",
+                    "SURICATA",
+                    ...(stats?.sources.map((x) => x.name) ?? []),
+                  ]),
+                ).map((name) => (
+                  <div className="type-row" key={name}>
+                    <strong>{name}</strong>
+                    <span className="count-pill">
+                      {stats
+                        ? (stats.sources.find((x) => x.name === name)?.count ??
+                          0)
+                        : "—"}
+                    </span>
+                  </div>
+                ))}
+                <p className="muted">
+                  Không có cảnh báo không đồng nghĩa nguồn đang ngừng hoạt động.
+                </p>
+              </section>
+            </div>
+            <section className="panel">
+              <h2>Tác vụ chặn</h2>
+              <p className="muted">
+                Trạng thái hiện tại của yêu cầu BLOCK được tạo trong khoảng đã
+                chọn, gồm tự động và thủ công.
+              </p>
+              <div className="overview-jobs">
+                {[
+                  ["PENDING", "Đang chờ"],
+                  ["SUCCESS", "Thành công"],
+                  ["ERROR", "Thất bại"],
+                ].map(([status, label]) => (
+                  <button key={status} onClick={() => setTab("audit")}>
+                    <span>{label}</span>
+                    <strong>
+                      {stats
+                        ? (stats.jobs.find((x) => x.status === status)?.count ??
+                          0)
+                        : "—"}
+                    </strong>
+                    <small>Xem audit gần nhất →</small>
+                  </button>
+                ))}
+              </div>
+            </section>
+            <section className="panel">
+              <h2>10 cảnh báo mới nhất trong khoảng đã chọn</h2>
+              <p className="muted">
+                Mở từng cảnh báo để xem IP, hành động và bằng chứng gốc.
+              </p>
+              {stats?.recent.map((a) => (
+                <details className="overview-alert" key={a.id}>
+                  <summary>
+                    #{a.id} · {new Date(a.occurred_at).toLocaleString()} ·{" "}
+                    {a.rule_name} · Severity {a.severity}
+                  </summary>
+                  <p>
+                    Nguồn: {a.source} · IP: {a.src_ip ?? "Không có"} →{" "}
+                    {a.dest_ip ?? "Không có"} · Hành động: {a.action}
+                  </p>
+                  <button onClick={() => setSelectedAlert(a.id)}>
+                    Mở chi tiết điều tra
+                  </button>
+                  <pre>{a.evidence}</pre>
+                </details>
+              ))}
+              {stats?.recent.length === 0 && (
+                <p>Chưa có cảnh báo trong khoảng này.</p>
+              )}
+            </section>
           </>
         )}
         {tab === "alerts" && (
@@ -524,6 +740,12 @@ function App() {
               onSubmit={(e) => {
                 e.preventDefault();
                 setFilter(search);
+                setAlertFilters({
+                  ...alertFilters,
+                  dest_ip: String(
+                    new FormData(e.currentTarget).get("dest_ip") ?? "",
+                  ).trim(),
+                });
                 setPage(0);
               }}
             >
@@ -548,6 +770,70 @@ function App() {
                     <option key={n}>{n}</option>
                   ))}
                 </select>
+              </label>
+              <label>
+                Từ (giờ địa phương)
+                <input
+                  type="datetime-local"
+                  value={alertFilters.from}
+                  onChange={(e) => {
+                    setAlertFilters({ ...alertFilters, from: e.target.value });
+                    setPage(0);
+                  }}
+                />
+              </label>
+              <label>
+                Đến (không gồm mốc này)
+                <input
+                  type="datetime-local"
+                  value={alertFilters.to}
+                  onChange={(e) => {
+                    setAlertFilters({ ...alertFilters, to: e.target.value });
+                    setPage(0);
+                  }}
+                />
+              </label>
+              <label>
+                Nguồn
+                <select
+                  value={alertFilters.source}
+                  onChange={(e) => {
+                    setAlertFilters({
+                      ...alertFilters,
+                      source: e.target.value,
+                    });
+                    setPage(0);
+                  }}
+                >
+                  <option value="">Tất cả</option>
+                  <option>NGINX</option>
+                  <option>SURICATA</option>
+                </select>
+              </label>
+              <label>
+                Hành động
+                <select
+                  value={alertFilters.action}
+                  onChange={(e) => {
+                    setAlertFilters({
+                      ...alertFilters,
+                      action: e.target.value,
+                    });
+                    setPage(0);
+                  }}
+                >
+                  <option value="">Tất cả</option>
+                  <option>ALERT</option>
+                  <option>AUTO-BLOCK</option>
+                </select>
+              </label>
+              <label>
+                IP đích chính xác
+                <input
+                  name="dest_ip"
+                  defaultValue={alertFilters.dest_ip}
+                  placeholder="192.168.20.10"
+                />
               </label>
               <button>Tìm kiếm</button>
               <button
@@ -598,10 +884,9 @@ function App() {
                         </span>
                       </td>
                       <td>
-                        <details>
-                          <summary>Xem</summary>
-                          <pre>{a.evidence}</pre>
-                        </details>
+                        <button onClick={() => setSelectedAlert(a.id)}>
+                          Chi tiết #{a.id}
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -616,9 +901,12 @@ function App() {
               >
                 Trước
               </button>
-              <span>Trang {page + 1}</span>
+              <span>
+                {totalAlerts} kết quả · Trang {page + 1} /{" "}
+                {Math.max(1, Math.ceil(totalAlerts / 25))}
+              </span>
               <button
-                disabled={alerts.length < 25 || loading}
+                disabled={(page + 1) * 25 >= totalAlerts || loading}
                 onClick={() => setPage((p) => p + 1)}
               >
                 Tiếp
@@ -831,6 +1119,14 @@ function App() {
               </article>
             </section>
           </>
+        )}
+        {selectedAlert !== null && (
+          <AlertDetail
+            id={selectedAlert}
+            api={api}
+            onClose={() => setSelectedAlert(null)}
+            onSelect={setSelectedAlert}
+          />
         )}
       </main>
     </div>
