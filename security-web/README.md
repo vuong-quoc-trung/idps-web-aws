@@ -116,3 +116,15 @@ python3 scripts/smoke-test.py --url http://127.0.0.1:3000 --username admin
 Kiểm thử packet thật, cấu hình Suricata, SSH quản trị, block/unblock HTTP cần chạy theo `docs/LAB_ACCEPTANCE.md`. Chưa có WebSocket, TTL auto-unblock, correlation xuyên nguồn, hoặc backup/restore tự động.
 
 `GET /api/ready` yêu cầu đăng nhập và trả cùng báo cáo với `/api/status`, nhưng HTTP 503 nếu hệ thống chưa sẵn sàng. Dashboard dùng `/api/status` để không phát sinh lỗi HTTP mỗi lần polling khi test host chưa có firewall. `healthy: false` vẫn được hiển thị; HTTP 200 không khẳng định pipeline đã sẵn sàng.
+
+### Thống kê Tổng quan
+
+`GET /api/stats?range=1h|24h|7d` (mặc định `24h`) dùng cùng mốc `from`/`to` cho toàn bộ thống kê cảnh báo, Top IP, phân bố và 10 cảnh báo mới nhất. Biểu đồ chia lần lượt thành 12 khoảng 5 phút, 24 khoảng 1 giờ hoặc 28 khoảng 6 giờ. Khoảng là `[from, to)` theo thời điểm xảy ra cảnh báo; giao diện hiển thị giờ địa phương.
+
+`jobs` chỉ đếm yêu cầu `BLOCK` được tạo trong khoảng đã chọn, theo trạng thái hiện tại; bao gồm thủ công và tự động. Liên kết audit mở danh sách 100 thao tác gần nhất, không áp dụng bộ lọc thời gian Tổng quan. `unknown_destinations` đếm riêng cảnh báo thiếu IP đích. Một request có thể tạo nhiều cảnh báo từ các nguồn khác nhau; số cảnh báo không phải số cuộc tấn công. Chỉ số tài nguyên trong `system` vẫn là số đo hiện tại, không phải lịch sử theo khoảng chọn.
+
+### Điều tra cảnh báo
+
+- `GET /api/alerts/search`: trả `{items, total}` với bộ lọc `search`, `severity`, `from`, `to`, `source`, `action`, `dest_ip`, `limit`, `offset`. Thời gian ISO 8601 theo khoảng `[from, to)`; IP đích khớp chính xác. `GET /api/alerts` giữ phản hồi mảng để tương thích client cũ.
+- `GET /api/alerts/{id}`: chi tiết đầy đủ, tối đa 10 cảnh báo khác cùng IP nguồn trên toàn bộ lịch sử và tác vụ firewall liên kết trực tiếp qua `event_id`. Cả hai API yêu cầu đăng nhập, admin/viewer đều đọc được.
+- Tab Cảnh báo có bộ lọc và tổng kết quả. Nút “Chi tiết” mở bảng bên cạnh; Escape hoặc nút Đóng thoát bảng. Request HTTP được trích từ bằng chứng Nginx combined hoặc trường `http` của Suricata EVE khi có. Nút sao chép giữ nguyên bằng chứng gốc, JSON được định dạng chỉ để đọc.
