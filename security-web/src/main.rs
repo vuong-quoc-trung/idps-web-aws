@@ -122,23 +122,6 @@ impl PolicyEngine {
 }
 
 #[derive(Debug, Serialize, FromRow)]
-struct AlertRow {
-    id: i64,
-    occurred_at: DateTime<Utc>,
-    source: String,
-    event_type: String,
-    src_ip: Option<String>,
-    dest_ip: Option<String>,
-    proto: Option<String>,
-    rule_name: String,
-    signature: Option<String>,
-    category: Option<String>,
-    severity: i16,
-    action: String,
-    evidence: String,
-}
-
-#[derive(Debug, Serialize, FromRow)]
 struct BlockedIpRow {
     ip: String,
     reason: String,
@@ -153,6 +136,11 @@ struct AlertQuery {
     offset: Option<i64>,
     search: Option<String>,
     severity: Option<i16>,
+    from: Option<DateTime<Utc>>,
+    to: Option<DateTime<Utc>>,
+    source: Option<String>,
+    action: Option<String>,
+    dest_ip: Option<std::net::IpAddr>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -273,6 +261,8 @@ fn router(state: AppState) -> Router {
         )
         .route("/api/auth/logout", post(auth::logout))
         .route("/api/alerts", get(list_alerts))
+        .route("/api/alerts/search", get(search_alerts))
+        .route("/api/alerts/{id}", get(alert_detail))
         .route("/api/stats", get(metrics::stats))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
@@ -293,17 +283,51 @@ fn router(state: AppState) -> Router {
         .layer(TraceLayer::new_for_http())
         .with_state(state)
 }
-async fn list_alerts(
+async fn search_alerts(
     State(state): State<AppState>,
     Query(q): Query<AlertQuery>,
-) -> Result<Json<Vec<AlertRow>>, ApiError> {
-    let rows = sqlx::query_as::<_, AlertRow>(r#"SELECT id, occurred_at, source, event_type, host(src_ip)::text src_ip,
-        host(dest_ip)::text dest_ip, proto, rule_name, signature, category, severity, action, evidence
-        FROM security_alerts WHERE ($3::text IS NULL OR rule_name ILIKE '%' || $3 || '%' OR host(src_ip) ILIKE '%' || $3 || '%')
-        AND ($4::smallint IS NULL OR severity = $4) ORDER BY id DESC LIMIT $1 OFFSET $2"#)
-        .bind(q.limit.unwrap_or(50).clamp(1,200)).bind(q.offset.unwrap_or(0).max(0))
-        .bind(q.search).bind(q.severity).fetch_all(&state.pool).await.map_err(api_error)?;
-    Ok(Json(rows))
+) -> Result<Json<serde_json::Value>, ApiError> {
+    if matches!((q.from, q.to), (Some(from), Some(to)) if from >= to) {
+        return Err(bad_request(
+            "Thời gian bắt đầu phải trước thời gian kết thúc",
+        ));
+    }
+    let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_search.sql"))
+        .bind(q.limit.unwrap_or(50).clamp(1, 200))
+        .bind(q.offset.unwrap_or(0).max(0))
+        .bind(q.search)
+        .bind(q.severity)
+        .bind(q.from)
+        .bind(q.to)
+        .bind(q.source)
+        .bind(q.action)
+        .bind(q.dest_ip.map(|ip| ip.to_string()))
+        .fetch_one(&state.pool)
+        .await
+        .map_err(api_error)?;
+    Ok(Json(result))
+}
+// Preserve the original array response for existing clients.
+async fn list_alerts(
+    state: State<AppState>,
+    query: Query<AlertQuery>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let Json(report) = search_alerts(state, query).await?;
+    Ok(Json(report["items"].clone()))
+}
+async fn alert_detail(
+    State(state): State<AppState>,
+    axum::extract::Path(id): axum::extract::Path<i64>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_detail.sql"))
+        .bind(id)
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(api_error)?;
+    result.map(Json).ok_or((
+        StatusCode::NOT_FOUND,
+        Json(serde_json::json!({"message":"Không tìm thấy cảnh báo"})),
+    ))
 }
 async fn block_ip(
     State(state): State<AppState>,

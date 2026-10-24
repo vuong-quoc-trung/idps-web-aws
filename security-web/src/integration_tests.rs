@@ -361,3 +361,146 @@ async fn restore_does_not_override_pending_unblock(pool: PgPool) {
             .unwrap()
     );
 }
+
+#[sqlx::test(migrations = "./migrations")]
+async fn overview_time_windows_and_aggregates(pool: PgPool) {
+    sqlx::query("INSERT INTO security_alerts (occurred_at,source,event_type,src_ip,dest_ip,rule_name,severity,action,evidence) VALUES (now()-interval '10 minutes','NGINX','alert','192.0.2.1',NULL,'SQLi',2,'ALERT','test'), (now()-interval '20 minutes','SURICATA','alert','192.0.2.1','192.0.2.2','SQLi',1,'AUTO-BLOCK','test'), (now()-interval '2 days','SURICATA','alert','192.0.2.3',NULL,'Scan',3,'ALERT','test'), (now()-interval '8 days','NGINX','alert','192.0.2.4',NULL,'Old',1,'ALERT','test')")
+        .execute(&pool).await.unwrap();
+    sqlx::query("INSERT INTO firewall_actions (ip,action,source,reason,status,created_at) VALUES ('192.0.2.1','BLOCK','AUTO','test','PENDING',now()-interval '5 minutes'), ('192.0.2.1','UNBLOCK','MANUAL','test','SUCCESS',now()-interval '5 minutes'), ('192.0.2.1','BLOCK','AUTO','old','ERROR',now()-interval '8 days')")
+        .execute(&pool).await.unwrap();
+    for (seconds, buckets, expected) in [(3600_i64, 12_i64, 2_i64), (86400, 24, 2), (604800, 28, 3)]
+    {
+        let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
+            .bind(seconds)
+            .bind(buckets)
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(result["total_alerts"], expected);
+        assert_eq!(result["critical_alerts"], 1);
+        assert_eq!(result["trend"].as_array().unwrap().len(), buckets as usize);
+        let sum: i64 = result["trend"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x["count"].as_i64().unwrap())
+            .sum();
+        assert_eq!(sum, expected);
+        assert_eq!(
+            result["recent"].as_array().unwrap().len(),
+            expected as usize
+        );
+        assert_eq!(result["source_ips"][0]["severity"], 1);
+        assert_eq!(result["source_ips"][0]["count"], 2);
+        assert_eq!(result["destination_ips"].as_array().unwrap().len(), 1);
+        assert_eq!(result["unknown_destinations"], expected - 1);
+        assert_eq!(
+            result["jobs"],
+            serde_json::json!([{"status":"PENDING","count":1}])
+        );
+    }
+    sqlx::query("DELETE FROM security_alerts")
+        .execute(&pool)
+        .await
+        .unwrap();
+    let empty = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
+        .bind(3600_i64)
+        .bind(12_i64)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(empty["total_alerts"], 0);
+    assert_eq!(empty["recent"], serde_json::json!([]));
+    assert_eq!(empty["source_ips"], serde_json::json!([]));
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn alert_investigation_filters_and_links(pool: PgPool) {
+    let id = sqlx::query_scalar::<_, i64>("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,dest_ip,proto,rule_name,signature,category,severity,action,evidence) VALUES ('2026-10-24T10:00:00Z','SURICATA','alert','192.0.2.1','192.0.2.2','TCP','SQLi','signature','Web',1,'ALERT','evidence') RETURNING id")
+        .fetch_one(&pool).await.unwrap();
+    sqlx::query("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,rule_name,severity,action,evidence) VALUES ('2026-10-23T10:00:00Z','NGINX','alert','192.0.2.1','Other',2,'ALERT','test')").execute(&pool).await.unwrap();
+    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,event_id) VALUES ('192.0.2.1','BLOCK','AUTO','linked','ERROR',$1),('192.0.2.1','BLOCK','MANUAL','unrelated','SUCCESS',NULL)").bind(id).execute(&pool).await.unwrap();
+    let app = router(state(pool));
+    for path in [
+        "/api/alerts/search".to_string(),
+        format!("/api/alerts/{id}"),
+    ] {
+        assert_eq!(
+            request(app.clone(), "GET", &path, None, serde_json::Value::Null)
+                .await
+                .0,
+            StatusCode::UNAUTHORIZED
+        );
+    }
+    let token = login(app.clone(), "viewer").await;
+    let path = "/api/alerts/search?from=2026-10-24T00:00:00Z&to=2026-10-25T00:00:00Z&source=SURICATA&action=ALERT&dest_ip=192.0.2.2&severity=1&limit=1";
+    let (status, result) = request(
+        app.clone(),
+        "GET",
+        path,
+        Some(&token),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(result["total"], 1);
+    assert_eq!(result["items"][0]["id"], id);
+    let (_, empty_page) = request(
+        app.clone(),
+        "GET",
+        &format!("{path}&offset=1"),
+        Some(&token),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(empty_page["total"], 1);
+    assert_eq!(empty_page["items"], serde_json::json!([]));
+    let (_, detail) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/alerts/{id}"),
+        Some(&token),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(detail["alert"]["proto"], "TCP");
+    assert_eq!(detail["related"].as_array().unwrap().len(), 1);
+    assert_eq!(detail["firewall"].as_array().unwrap().len(), 1);
+    assert_eq!(detail["firewall"][0]["status"], "ERROR");
+    assert_eq!(
+        request(
+            app.clone(),
+            "GET",
+            "/api/alerts/999999",
+            Some(&token),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::NOT_FOUND
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "GET",
+            "/api/alerts/search?from=2026-10-25T00:00:00Z&to=2026-10-24T00:00:00Z",
+            Some(&token),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        request(
+            app,
+            "GET",
+            "/api/alerts/search?dest_ip=invalid",
+            Some(&token),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+}

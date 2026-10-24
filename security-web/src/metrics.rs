@@ -38,17 +38,33 @@ fn connections() -> Option<usize> {
             .count(),
     )
 }
-pub async fn stats(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
-    let (total,critical,blocked):(i64,i64,i64)=sqlx::query_as("SELECT count(*),count(*) FILTER(WHERE severity=1),count(*) FILTER(WHERE action='AUTO-BLOCK') FROM security_alerts").fetch_one(&state.pool).await.map_err(api_error)?;
-    let trend=sqlx::query_scalar::<_,Value>("SELECT jsonb_build_object('hour',hours.h,'count',count(a.id)) FROM generate_series(date_trunc('hour',now())-interval '23 hours',date_trunc('hour',now()),interval '1 hour') hours(h) LEFT JOIN security_alerts a ON a.occurred_at>=hours.h AND a.occurred_at<hours.h+interval '1 hour' GROUP BY hours.h ORDER BY hours.h").fetch_all(&state.pool).await.map_err(api_error)?;
-    let types=sqlx::query_scalar::<_,Value>("SELECT jsonb_build_object('name',rule_name,'count',count(*)) FROM security_alerts GROUP BY rule_name ORDER BY count(*) DESC LIMIT 8").fetch_all(&state.pool).await.map_err(api_error)?;
+#[derive(Deserialize)]
+pub struct StatsQuery {
+    range: Option<String>,
+}
+pub async fn stats(
+    State(state): State<AppState>,
+    Query(query): Query<StatsQuery>,
+) -> Result<Json<Value>, ApiError> {
+    let range = query.range.as_deref().unwrap_or("24h");
+    let (seconds, buckets) = match range {
+        "1h" => (3600_i64, 12_i64),
+        "24h" => (86400, 24),
+        "7d" => (604800, 28),
+        _ => return Err(bad_request("range must be 1h, 24h or 7d")),
+    };
+    let mut report = sqlx::query_scalar::<_, Value>(include_str!("overview.sql"))
+        .bind(seconds)
+        .bind(buckets)
+        .fetch_one(&state.pool)
+        .await
+        .map_err(api_error)?;
+    report["range"] = json!(range);
     let load = std::fs::read_to_string("/proc/loadavg")
         .ok()
         .and_then(|s| s.split_whitespace().next()?.parse::<f64>().ok());
-    Ok(Json(
-        json!({"total_alerts":total,"critical_alerts":critical,"blocked_attacks":blocked,"trend":trend,"types":types,
-        "system":{"load_average_1m":load,"memory_percent":memory_percent(),"interface_rx_bytes":network_bytes(),"established_tcp_connections":connections()}}),
-    ))
+    report["system"] = json!({"load_average_1m":load,"memory_percent":memory_percent(),"interface_rx_bytes":network_bytes(),"established_tcp_connections":connections()});
+    Ok(Json(report))
 }
 // Dashboard polling retrieves a report successfully even when a component is degraded.
 pub async fn status(state: State<AppState>) -> Json<Value> {
