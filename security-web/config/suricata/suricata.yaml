@@ -15,7 +15,7 @@ suricata-version: "8.0"
 vars:
   # more specific is better for alert accuracy and performance
   address-groups:
-    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    HOME_NET: "[192.168.10.1/32,192.168.20.0/24]"
     #HOME_NET: "[192.168.0.0/16]"
     #HOME_NET: "[10.0.0.0/8]"
     #HOME_NET: "[172.16.0.0/12]"
@@ -657,7 +657,7 @@ logging:
 
 # Linux high speed capture support
 af-packet:
-  - interface: enp1s0
+  - interface: vmnet2
     # Number of receive threads. "auto" uses the number of cores
     #threads: auto
     # Default clusterid. AF_PACKET will load balance packets based on flow.
@@ -735,16 +735,7 @@ af-packet:
     # https://redmine.openinfosecfoundation.org/issues/7585
     #disable-hwtimestamp: false
 
-  # Put default values here. These will be used for an interface that is not
-  # in the list above.
-  - interface: enp7s0
-    cluster-id: 98
-    cluster-type: cluster_flow
-    defrag: yes
-    #threads: auto
-    # If left commented out, defaults to true when not in a copy
-    # (inline) mode.
-    #tpacket-v3: yes
+  # Capture only the attacker-facing host interface; proxy upstream is a separate flow.
 
 # Linux high speed af-xdp capture support
 af-xdp:
