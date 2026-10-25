@@ -128,3 +128,21 @@ Kiểm thử packet thật, cấu hình Suricata, SSH quản trị, block/unbloc
 - `GET /api/alerts/search`: trả `{items, total}` với bộ lọc `search`, `severity`, `from`, `to`, `source`, `action`, `dest_ip`, `limit`, `offset`. Thời gian ISO 8601 theo khoảng `[from, to)`; IP đích khớp chính xác. `GET /api/alerts` giữ phản hồi mảng để tương thích client cũ.
 - `GET /api/alerts/{id}`: chi tiết đầy đủ, tối đa 10 cảnh báo khác cùng IP nguồn trên toàn bộ lịch sử và tác vụ firewall liên kết trực tiếp qua `event_id`. Cả hai API yêu cầu đăng nhập, admin/viewer đều đọc được.
 - Tab Cảnh báo có bộ lọc và tổng kết quả. Nút “Chi tiết” mở bảng bên cạnh; Escape hoặc nút Đóng thoát bảng. Request HTTP được trích từ bằng chứng Nginx combined hoặc trường `http` của Suricata EVE khi có. Nút sao chép giữ nguyên bằng chứng gốc, JSON được định dạng chỉ để đọc.
+
+### Trạng thái thu thập theo nguồn
+
+Tab Trạng thái hiển thị riêng Nginx/Suricata: lần quét đọc thành công, lần quan sát file có dữ liệu mới/thay đổi, byte chưa xử lý, lần lưu cảnh báo vào DB, số dòng sai định dạng và lỗi phân tích gần nhất. `watchers` trong `/api/status` hiện là object trạng thái cho từng nguồn; `collection` chứa thống kê lịch sử từ DB.
+
+Mốc đọc/quan sát được giữ trong bộ nhớ và bắt đầu lại khi backend khởi động. File có nội dung từ trước được tính là lần quan sát đầu tiên; file rỗng không được tính. Đây không phải kiểm tra tiến trình Suricata/Nginx. Byte chờ là tổng kích thước còn lại sau checkpoint của file hiện tại và các file rotation chưa nén, gồm dòng chưa hoàn tất. Khi quét lỗi, byte chờ là `null` (không xác định), không phải 0. Lần cảnh báo là thời điểm lưu vào DB, không phải timestamp gốc của sự kiện. Thống kê lỗi lấy từ DB, không tăng lại khi đọc lại cùng dòng lỗi.
+
+### Liên kết firewall và audit
+
+Danh sách IP hiển thị thời điểm chặn từ DB và phân biệt có ở cả DB/kernel, chỉ DB, chỉ kernel hoặc chưa xác định kernel. Không suy luận “không có IP bị chặn” khi không đọc được kernel. Audit hiển thị nguồn yêu cầu, người thực hiện, thời điểm tạo và hoàn tất; `RESTORE` là khôi phục bởi hệ thống, `AUTO` là tự động và `API` là thao tác quản trị.
+
+`GET /api/audit?event_id=<id>` lọc tác vụ trực tiếp theo cảnh báo trước khi giới hạn 100 kết quả. Từ bảng chi tiết cảnh báo có thể chuyển đến audit đã lọc; từ dòng audit có `event_id` có thể mở lại cảnh báo. Nút “Xem tất cả thao tác” bỏ bộ lọc.
+
+### Ngữ cảnh tài nguyên backend
+
+Tab Trạng thái hiển thị hostname, interface `ATTACKER_IFACE`, RX/TX theo KiB/s và bộ đếm tích lũy. Backend lấy mẫu nền (nghỉ 2 giây giữa các lượt), tính tốc độ bằng chênh lệch byte / thời gian thực giữa hai mẫu; không có interface, mẫu đầu tiên hoặc reset bộ đếm trả `null` thay vì tốc độ 0.
+
+`METRICS_DISK_PATH` mặc định `/`: đo tổng dung lượng và byte khả dụng của filesystem chứa đường dẫn bằng `df` (timeout 2 giây). Chọn đường dẫn log hoặc mount cần giám sát nếu khác `/`. Số đo không đại diện DB ở máy/volume khác. Các số liệu thuộc môi trường backend, không tự động là Security VM; container có thể giới hạn phạm vi quan sát. `sampled_at` là thời điểm công bố mẫu mạng/đĩa; lần dashboard tải API và lần nguồn nhận log mới hiển thị riêng.
