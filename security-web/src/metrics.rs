@@ -47,7 +47,7 @@ fn parse_disk(text: &str) -> Option<Value> {
         "available_bytes":fields.get(1)?.parse::<u64>().ok()?}))
 }
 pub async fn sample_resources() {
-    let iface = env::var("ATTACKER_IFACE").unwrap_or("enp1s0".into());
+    let iface = env::var("ATTACKER_IFACE").unwrap_or("vmnet2".into());
     let disk_path = env::var("METRICS_DISK_PATH").unwrap_or("/".into());
     let mut previous: Option<(std::time::Instant, u64, u64)> = None;
     loop {
