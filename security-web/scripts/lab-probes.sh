@@ -10,7 +10,7 @@ for arg in "$@"; do
         all|normal|xss|sqli|traversal|sensitive|scanner) selected="$arg" ;;
         -h|--help)
             echo 'Usage: bash lab-probes.sh [all|normal|xss|sqli|traversal|sensitive|scanner] [--dry-run]'
-            echo 'Fixed lab target: http://192.168.10.1 (Security VM proxy). Run on Kali; start with AUTO_BLOCK=false.'
+            echo 'Fixed lab target: http://192.168.10.1 (Security Host proxy). Run on Kali; start with AUTO_BLOCK=false.'
             exit 0 ;;
         *) echo "Unknown argument: $arg" >&2; exit 2 ;;
     esac

@@ -1,6 +1,6 @@
 # PBL4 Security Platform
 
-Security VM nhận cảnh báo Suricata/Nginx, lưu PostgreSQL, phục vụ React/TypeScript dashboard và thực thi block/unblock qua nftables. Đây là bản lab; kiểm thử ba VM và bằng chứng nghiệm thu được hướng dẫn trong `docs/LAB_ACCEPTANCE.md`.
+Security Host nhận cảnh báo Suricata/Nginx, lưu PostgreSQL, phục vụ React/TypeScript dashboard và thực thi block/unblock qua nftables. Đây là bản lab; kiểm thử ba VM và bằng chứng nghiệm thu được hướng dẫn trong `docs/LAB_ACCEPTANCE.md`.
 
 ## Các thay đổi chính
 
@@ -49,24 +49,19 @@ ssh -L 3000:127.0.0.1:3000 user@SECURITY_MANAGEMENT_IP
 
 Sau đó mở `http://127.0.0.1:3000` trên máy quản trị. Nếu triển khai truy cập trực tiếp, cấu hình HTTPS reverse proxy và giới hạn mạng quản trị; không gửi mật khẩu/token qua HTTP trên mạng không tin cậy.
 
-## Triển khai Security VM
+## Triển khai Security Host
 
 Các file Suricata, Nginx và nftables vẫn dùng topology lab:
 
-- Kali: `192.168.10.10` → Security `192.168.10.1` / `enp1s0`.
-- Security phía protected: `192.168.20.1` / `enp7s0` → Web `192.168.20.10`.
+- Kali: `192.168.10.10` → Security `192.168.10.1` / `vmnet2`.
+- Security phía protected: `192.168.20.1` / `vmnet3` → Web `192.168.20.10`.
 - Nginx proxy HTTP tới Web; nftables chặn HTTP đi tắt tới Web qua hai NIC.
 
 Các IP/interface được ghi trực tiếp trong một số file. Đổi `.env` không tự render toàn bộ topology. Kiểm tra chúng trước khi deploy. Tạo tài khoản và bật DB như hướng dẫn phía trên trước.
 
-```bash
-bash scripts/deploy.sh --check
-sudo bash scripts/deploy.sh --deploy
-sudo systemctl status pbl4-security --no-pager
-sudo journalctl -u pbl4-security -n 100 --no-pager
-```
+Thực hiện từng bước trong [hướng dẫn nghiệm thu Ubuntu host](docs/HOST_SECURITY_SETUP.md): kiểm tra Suricata, quyền đọc log, dữ liệu firewall cũ, syntax nftables rồi mới cài helper và sudoers. Các lệnh cần sudo do người vận hành tự chạy; không áp ruleset tự động.
 
-Deploy thay cấu hình host, cấp quyền helper qua sudoers, reload dịch vụ và firewall; chỉ chạy trên Security VM đã chuẩn bị. Script luôn build lại React và Rust release. Chạy trên user có Rust và Node trong login PATH. Cấp quyền đọc log cho user dịch vụ (Nginx và Suricata); dashboard báo lỗi nếu watcher thiếu quyền.
+`deploy.sh --deploy` đã khóa để tránh thay cấu hình host bằng quy trình cũ. Giữ `AUTO_BLOCK=false` trong toàn bộ nghiệm thu. Lưu ý worker vẫn xử lý tác vụ PENDING và khôi phục IP active từ DB: phải rà các bản ghi này trước khi chạy backend có quyền helper.
 
 `IP_WHITELIST` là các IP host phân cách dấu phẩy. Mọi block phải qua kiểm tra whitelist và giới hạn `192.168.10.2–254`. Unblock vẫn được phép với IP trong whitelist để khôi phục một block cũ. SID cho auto-block cấu hình qua `AUTO_BLOCK_SIDS`; Nginx SQLi qua `AUTO_BLOCK_NGINX_SQLI`. Bật auto-block chỉ sau khi kiểm thử thủ công.
 
@@ -77,7 +72,7 @@ Deploy thay cấu hình host, cấp quyền helper qua sudoers, reload dịch v�
 - Checkpoint và khóa sự kiện ngăn ghi trùng khi đọc lại cùng file/inode/offset. Hai nguồn Suricata và Nginx có thể báo cùng một request; đây là hai quan sát, chưa có correlation xuyên nguồn.
 - Đọc tối đa 1 MiB mỗi file mỗi lượt. Dòng vượt 1 MiB bị dừng để kiểm tra; file mất/xóa/nén trước khi đọc xong không thể phục hồi bằng checkpoint.
 - DB lỗi: retry, không advance checkpoint. Firewall lỗi: audit ERROR, alert vẫn ALERT; quản trị kiểm tra lý do và gửi lại yêu cầu. Lỗi sau khi kernel thành công nhưng DB chưa commit: job vẫn PENDING, thực thi lại idempotent.
-- Vận hành một instance backend trên Security VM. Advisory lock tuần tự hóa việc thực thi firewall trong DB; không để chương trình khác tự sửa cùng set mà không kiểm tra trạng thái lệch.
+- Vận hành một instance backend trên Security Host. Advisory lock tuần tự hóa việc thực thi firewall trong DB; không để chương trình khác tự sửa cùng set mà không kiểm tra trạng thái lệch.
 
 ## API
 
@@ -145,4 +140,4 @@ Danh sách IP hiển thị thời điểm chặn từ DB và phân biệt có �
 
 Tab Trạng thái hiển thị hostname, interface `ATTACKER_IFACE`, RX/TX theo KiB/s và bộ đếm tích lũy. Backend lấy mẫu nền (nghỉ 2 giây giữa các lượt), tính tốc độ bằng chênh lệch byte / thời gian thực giữa hai mẫu; không có interface, mẫu đầu tiên hoặc reset bộ đếm trả `null` thay vì tốc độ 0.
 
-`METRICS_DISK_PATH` mặc định `/`: đo tổng dung lượng và byte khả dụng của filesystem chứa đường dẫn bằng `df` (timeout 2 giây). Chọn đường dẫn log hoặc mount cần giám sát nếu khác `/`. Số đo không đại diện DB ở máy/volume khác. Các số liệu thuộc môi trường backend, không tự động là Security VM; container có thể giới hạn phạm vi quan sát. `sampled_at` là thời điểm công bố mẫu mạng/đĩa; lần dashboard tải API và lần nguồn nhận log mới hiển thị riêng.
+`METRICS_DISK_PATH` mặc định `/`: đo tổng dung lượng và byte khả dụng của filesystem chứa đường dẫn bằng `df` (timeout 2 giây). Chọn đường dẫn log hoặc mount cần giám sát nếu khác `/`. Số đo không đại diện DB ở máy/volume khác. Các số liệu thuộc môi trường backend, không tự động là Security Host; container có thể giới hạn phạm vi quan sát. `sampled_at` là thời điểm công bố mẫu mạng/đĩa; lần dashboard tải API và lần nguồn nhận log mới hiển thị riêng.

@@ -85,7 +85,7 @@ Mỗi case ghi lại: giờ UTC script in ra, IP nguồn, SID trong eve.json, ID
 ## Nếu không thấy cảnh báo
 
 1. Không có request trong access.log: kiểm tra Kali có đi qua đúng proxy và có đang bị block hay không.
-2. Có request nhưng không có EVE alert: tcpdump đúng NIC (`sudo tcpdump -ni enp1s0 host 192.168.10.10 and tcp port 80`), kiểm tra Suricata đang chạy đúng interface và đã nạp pbl4.rules. Thay IP/interface nếu topology lab thực tế khác.
+2. Có request nhưng không có EVE alert: tcpdump đúng NIC (`sudo tcpdump -ni vmnet2 host 192.168.10.10 and tcp port 80`), kiểm tra Suricata đang chạy đúng interface và đã nạp pbl4.rules. Thay IP/interface nếu topology lab thực tế khác.
 3. Có EVE nhưng DB không có: xem trạng thái watcher, quyền đọc log, kết nối DB và log Rust (`journalctl -u pbl4-security -f` nếu chạy service).
 4. DB có nhưng UI chưa thấy: làm mới, bỏ lọc, về trang 1, kiểm tra đúng backend/database.
 5. Test từ host hoặc ngay Security VM có thể không đi qua NIC Suricata đang nghe; hãy chạy từ Kali.
