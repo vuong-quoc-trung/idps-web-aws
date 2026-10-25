@@ -8,6 +8,13 @@
 
 set -euo pipefail
 
+# The legacy deploy flow replaces system configuration. Never use it on the host.
+if [ "${1:-}" = "--deploy" ]; then
+    echo "Host deployment is manual. Follow docs/HOST_SECURITY_SETUP.md; no changes applied." >&2
+    exit 2
+fi
+
+
 # Determine script & project root regardless of working directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -57,8 +64,8 @@ if [ "${1:-}" = "--deploy" ] && [ "$EUID" -ne 0 ]; then
 fi
 
 # Load optional network configuration from .env if present
-ATTACKER_IFACE="enp1s0"
-PROTECTED_IFACE="enp7s0"
+ATTACKER_IFACE="vmnet2"
+PROTECTED_IFACE="vmnet3"
 SECURITY_IP="192.168.10.1"
 WEB_SERVER_IP="192.168.20.10"
 
@@ -209,9 +216,9 @@ run_check() {
     fi
 
     if ip -br a | grep -q "${SECURITY_IP}"; then
-        log_success "Security VM IP is configured on a local interface: ${SECURITY_IP}"
+        log_success "Security Host IP is configured on a local interface: ${SECURITY_IP}"
     else
-        log_warn "Security VM IP '${SECURITY_IP}' is not assigned to any local interface!"
+        log_warn "Security Host IP '${SECURITY_IP}' is not assigned to any local interface!"
         warnings=$((warnings + 1))
     fi
 

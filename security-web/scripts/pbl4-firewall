@@ -17,7 +17,7 @@ case "${1:-}" in
             if [[ $1 == block ]]; then /usr/sbin/nft add element inet pbl4_demo blocked_ips "{ $2 }"; fi
         fi
         ;;
-    list) /usr/sbin/nft list set inet pbl4_demo blocked_ips ;;
-    list-json) /usr/sbin/nft -j list set inet pbl4_demo blocked_ips ;;
+    list) [[ $# == 1 ]] || exit 2; /usr/sbin/nft list set inet pbl4_demo blocked_ips ;;
+    list-json) [[ $# == 1 ]] || exit 2; /usr/sbin/nft -j list set inet pbl4_demo blocked_ips ;;
     *) echo 'Usage: pbl4-firewall block|unblock IP, or list|list-json' >&2; exit 2 ;;
 esac
