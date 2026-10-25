@@ -70,21 +70,48 @@ fn parse(source: &str, line: &str, policy: &PolicyEngine) -> Result<Option<Event
         }))
     }
 }
+#[derive(Clone, Serialize)]
+pub struct WatcherStatus {
+    pub state: String,
+    pub last_success_at: Option<DateTime<Utc>>,
+    pub last_data_at: Option<DateTime<Utc>>,
+    pub pending_bytes: Option<u64>,
+    pub error: Option<String>,
+    #[serde(skip)]
+    observed: BTreeMap<String, (u64, i64, i64)>,
+}
+impl Default for WatcherStatus {
+    fn default() -> Self {
+        Self {
+            state: "starting".into(),
+            last_success_at: None,
+            last_data_at: None,
+            pending_bytes: None,
+            error: None,
+            observed: BTreeMap::new(),
+        }
+    }
+}
 pub async fn watch(state: AppState, source: String, path: String) {
     loop {
-        let result = scan(&state, &source, &path).await;
-        let status = match result {
-            Ok(()) => "watching".to_string(),
-            Err(e) => {
-                warn!(%source,error=%e,"Log watcher will retry");
-                format!("error: {e}")
-            }
-        };
-        state.watchers.write().await.insert(source.clone(), status);
+        if let Err(e) = scan(&state, &source, &path).await {
+            warn!(%source,error=%e,"Log watcher will retry");
+        }
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }
 }
 pub async fn scan(state: &AppState, source: &str, path: &str) -> Result<()> {
+    let result = scan_source(state, source, path).await;
+    if let Err(error) = &result {
+        let mut statuses = state.watchers.write().await;
+        let status = statuses.entry(source.into()).or_default();
+        status.state = "error".into();
+        status.error = Some(error.to_string());
+        status.pending_bytes = None;
+    }
+    result
+}
+async fn scan_source(state: &AppState, source: &str, path: &str) -> Result<()> {
     let path = FsPath::new(path);
     let parent = path.parent().context("Log directory missing")?;
     let name = path
@@ -103,10 +130,34 @@ pub async fn scan(state: &AppState, source: &str, path: &str) -> Result<()> {
         }
     }
     paths.sort();
+    let mut pending = 0_u64;
+    let mut observed = BTreeMap::new();
     for candidate in paths {
         process_file(state, source, &candidate).await?;
+        let meta = fs::metadata(&candidate).await?;
+        let key = format!("{source}:{}:{}", meta.dev(), meta.ino());
+        let offset =
+            sqlx::query_scalar::<_, i64>("SELECT byte_offset FROM log_cursors WHERE file_key=$1")
+                .bind(&key)
+                .fetch_one(&state.pool)
+                .await?;
+        pending = pending.saturating_add(meta.len().saturating_sub(offset as u64));
+        observed.insert(key, (meta.len(), meta.mtime(), meta.mtime_nsec()));
     }
     anyhow::ensure!(path.exists(), "Active log file is missing");
+    let mut statuses = state.watchers.write().await;
+    let status = statuses.entry(source.into()).or_default();
+    if observed
+        .iter()
+        .any(|(key, version)| version.0 > 0 && status.observed.get(key) != Some(version))
+    {
+        status.last_data_at = Some(Utc::now());
+    }
+    status.observed = observed;
+    status.last_success_at = Some(Utc::now());
+    status.pending_bytes = Some(pending);
+    status.state = "watching".into();
+    status.error = None;
     Ok(())
 }
 async fn read_anchor(file: &mut fs::File, offset: i64) -> Result<String> {
@@ -156,6 +207,17 @@ pub async fn process_file(state: &AppState, source: &str, path: &FsPath) -> Resu
             bytes.len() < 1024 * 1024,
             "Log line exceeds 1 MiB; cursor retained for operator review"
         );
+        // Persist a truncation reset even when the replacement file only has a partial line.
+        let anchor_value = read_anchor(&mut file, offset).await?;
+        sqlx::query(
+            "UPDATE log_cursors SET byte_offset=$2,generation=$3,anchor=$4 WHERE file_key=$1",
+        )
+        .bind(&key)
+        .bind(offset)
+        .bind(generation)
+        .bind(anchor_value)
+        .execute(&mut *tx)
+        .await?;
         tx.commit().await?;
         return Ok(());
     };

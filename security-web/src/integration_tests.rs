@@ -467,6 +467,20 @@ async fn alert_investigation_filters_and_links(pool: PgPool) {
     assert_eq!(detail["related"].as_array().unwrap().len(), 1);
     assert_eq!(detail["firewall"].as_array().unwrap().len(), 1);
     assert_eq!(detail["firewall"][0]["status"], "ERROR");
+    let (audit_status, linked_audit) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/audit?event_id={id}"),
+        Some(&token),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(audit_status, StatusCode::OK);
+    assert_eq!(linked_audit.as_array().unwrap().len(), 1);
+    assert_eq!(linked_audit[0]["event_id"], id);
+    assert_eq!(linked_audit[0]["source"], "AUTO");
+    assert!(linked_audit[0].get("completed_at").is_some());
+
     assert_eq!(
         request(
             app.clone(),
@@ -503,4 +517,45 @@ async fn alert_investigation_filters_and_links(pool: PgPool) {
         .0,
         StatusCode::BAD_REQUEST
     );
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn collection_status_empty_partial_error_and_recovery(pool: PgPool) {
+    let s = state(pool);
+    let temp = TempLog::new();
+    let file = temp.file();
+    let path = file.to_str().unwrap();
+    std::fs::write(&file, "").unwrap();
+    ingest::scan(&s, "SURICATA", path).await.unwrap();
+    let empty = s.watchers.read().await["SURICATA"].clone();
+    assert!(empty.last_success_at.is_some());
+    assert!(empty.last_data_at.is_none());
+    assert_eq!(empty.pending_bytes, Some(0));
+    std::fs::write(&file, "partial").unwrap();
+    ingest::scan(&s, "SURICATA", path).await.unwrap();
+    let partial = s.watchers.read().await["SURICATA"].clone();
+    assert_eq!(partial.pending_bytes, Some(7));
+    assert!(partial.last_data_at.is_some());
+    ingest::scan(&s, "SURICATA", path).await.unwrap();
+    assert_eq!(
+        s.watchers.read().await["SURICATA"].last_data_at,
+        partial.last_data_at
+    );
+    std::fs::write(&file, format!("invalid\n{}", event("192.168.10.10"))).unwrap();
+    ingest::scan(&s, "SURICATA", path).await.unwrap();
+    let (_, Json(report)) = metrics::readiness(State(s.clone())).await;
+    assert_eq!(report["collection"]["SURICATA"]["error_count"], 1);
+    assert!(report["collection"]["SURICATA"]["last_alert_at"].is_string());
+    assert!(report["collection"]["SURICATA"]["last_error"]["reason"].is_string());
+    let last_success = s.watchers.read().await["SURICATA"].last_success_at;
+    std::fs::remove_file(&file).unwrap();
+    assert!(ingest::scan(&s, "SURICATA", path).await.is_err());
+    let failed = s.watchers.read().await["SURICATA"].clone();
+    assert_eq!(failed.state, "error");
+    assert_eq!(failed.pending_bytes, None);
+    assert_eq!(failed.last_success_at, last_success);
+    std::fs::write(&file, "").unwrap();
+    ingest::scan(&s, "SURICATA", path).await.unwrap();
+    assert_eq!(s.watchers.read().await["SURICATA"].state, "watching");
+    assert!(s.watchers.read().await["SURICATA"].error.is_none());
 }

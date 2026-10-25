@@ -30,7 +30,7 @@ struct AppState {
     policy: PolicyEngine,
     firewall_cmd: String,
     whitelist: Arc<Vec<IpAddr>>,
-    watchers: Arc<RwLock<BTreeMap<String, String>>>,
+    watchers: Arc<RwLock<BTreeMap<String, ingest::WatcherStatus>>>,
 }
 type ApiError = (StatusCode, Json<serde_json::Value>);
 fn api_error(e: impl std::fmt::Display) -> ApiError {
@@ -239,9 +239,10 @@ async fn main() -> Result<()> {
             .watchers
             .write()
             .await
-            .insert(name.into(), "starting".into());
+            .insert(name.into(), ingest::WatcherStatus::default());
         tokio::spawn(ingest::watch(state.clone(), name.into(), path));
     }
+    tokio::spawn(metrics::sample_resources());
     tokio::spawn(firewall::worker(state.clone()));
     let addr = env::var("APP_ADDR").unwrap_or("127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(&addr).await?;

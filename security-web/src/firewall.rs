@@ -204,11 +204,16 @@ pub async fn list(State(state): State<AppState>) -> Result<Json<serde_json::Valu
         }
     }))
 }
+#[derive(Deserialize)]
+pub struct AuditQuery {
+    event_id: Option<i64>,
+}
 pub async fn audit(
     State(state): State<AppState>,
+    Query(query): Query<AuditQuery>,
 ) -> Result<Json<Vec<serde_json::Value>>, ApiError> {
-    let rows=sqlx::query_scalar::<_,serde_json::Value>("SELECT to_jsonb(a) FROM (SELECT id,host(ip) ip,action,actor,source,reason,status,details,created_at,completed_at FROM firewall_actions ORDER BY id DESC LIMIT 100) a")
-        .fetch_all(&state.pool).await.map_err(api_error)?;
+    let rows=sqlx::query_scalar::<_,serde_json::Value>("SELECT to_jsonb(a) FROM (SELECT id,host(ip) ip,action,actor,source,reason,status,details,created_at,completed_at,event_id FROM firewall_actions WHERE ($1::bigint IS NULL OR event_id=$1) ORDER BY id DESC LIMIT 100) a")
+        .bind(query.event_id).fetch_all(&state.pool).await.map_err(api_error)?;
     Ok(Json(rows))
 }
 #[cfg(test)]
