@@ -26,6 +26,7 @@ export type Detail = {
     action: string;
     status: string;
     actor: string;
+    source: string;
     reason: string;
     details: string | null;
     created_at: string;
@@ -61,11 +62,13 @@ export function AlertDetail({
   api,
   onClose,
   onSelect,
+  onAudit,
 }: {
   id: number;
   api: (path: string) => Promise<any>;
   onClose: () => void;
   onSelect: (id: number) => void;
+  onAudit: (id: number) => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [data, setData] = useState<Detail | null>(null);
@@ -191,6 +194,9 @@ export function AlertDetail({
             </p>
           )}
           <h3>Tác vụ firewall liên kết trực tiếp</h3>
+          <button onClick={() => onAudit(id)}>
+            Xem audit của cảnh báo #{id}
+          </button>
           {data.firewall.map((f) => (
             <article className="panel" key={f.id}>
               <strong>
@@ -204,7 +210,15 @@ export function AlertDetail({
                 )[f.status] ?? f.status}
               </strong>
               <p>
-                {f.actor} · {f.reason}
+                {f.actor} ·{" "}
+                {f.source === "AUTO"
+                  ? "Tự động"
+                  : f.source === "RESTORE"
+                    ? "Hệ thống khôi phục"
+                    : f.source === "UI" || f.source === "API"
+                      ? "Quản trị viên"
+                      : f.source}{" "}
+                · {f.reason}
               </p>
               <p>
                 Tạo: {new Date(f.created_at).toLocaleString()}

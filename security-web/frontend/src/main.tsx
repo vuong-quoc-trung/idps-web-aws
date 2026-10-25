@@ -49,6 +49,16 @@ type Stats = {
   trend: { hour: string; count: number }[];
   types: { name: string; count: number }[];
   system: {
+    hostname?: string | null;
+    interface?: string;
+    sampled_at?: string;
+    interface_tx_bytes?: number | null;
+    rx_bytes_per_second?: number | null;
+    tx_bytes_per_second?: number | null;
+    network_error?: string | null;
+    disk_path?: string;
+    disk?: { total_bytes: number; available_bytes: number } | null;
+    disk_error?: string | null;
     load_average_1m: number | null;
     memory_percent: number | null;
     interface_rx_bytes: number | null;
@@ -61,7 +71,23 @@ type Blocked = {
   in_sync: boolean;
   error: string | null;
 };
+function auditSource(source: string) {
+  return (
+    (
+      {
+        AUTO: "Hệ thống tự động",
+        RESTORE: "Hệ thống khôi phục",
+        UI: "Quản trị viên",
+        API: "Quản trị viên qua API",
+        MANUAL: "Thủ công",
+      } as Record<string, string>
+    )[source] ?? source
+  );
+}
 type Audit = {
+  source: string;
+  completed_at: string | null;
+  event_id: number | null;
   id: number;
   ip: string;
   action: string;
@@ -82,7 +108,24 @@ type Health = {
   database: boolean;
   firewall: boolean;
   firewall_in_sync: boolean;
-  watchers: Record<string, string>;
+  watchers: Record<
+    string,
+    {
+      state: string;
+      last_success_at: string | null;
+      last_data_at: string | null;
+      pending_bytes: number | null;
+      error: string | null;
+    }
+  >;
+  collection: Record<
+    string,
+    {
+      last_alert_at: string | null;
+      error_count: number;
+      last_error: { at: string; reason: string } | null;
+    }
+  > | null;
   ingestion_errors: number | null;
 };
 class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -136,6 +179,7 @@ function App() {
   const [range, setRange] = useState("24h");
   const [stats, setStats] = useState<Stats | null>(null);
   const [blocked, setBlocked] = useState<Blocked | null>(null);
+  const [auditEvent, setAuditEvent] = useState<number | null>(null);
   const [audit, setAudit] = useState<Audit[]>([]);
   const [rules, setRules] = useState<Rule[]>([]);
   const [health, setHealth] = useState<Health | null>(null);
@@ -145,7 +189,7 @@ function App() {
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
   const refreshing = useRef(false);
-  const requestKey = `${session?.token ?? ""}:${page}:${filter}:${severity}:${range}:${extraFilters}`;
+  const requestKey = `${session?.token ?? ""}:${page}:${filter}:${severity}:${range}:${extraFilters}:${auditEvent}`;
   const latestKey = useRef(requestKey);
   latestKey.current = requestKey;
   const api = useCallback(
@@ -186,7 +230,9 @@ function App() {
         ),
         api(`/api/stats?range=${range}`),
         api("/api/blocked-ips"),
-        api("/api/audit"),
+        api(
+          `/api/audit${auditEvent !== null ? `?event_id=${auditEvent}` : ""}`,
+        ),
         api("/api/rules"),
         api("/api/status"),
       ]);
@@ -206,7 +252,17 @@ function App() {
       refreshing.current = false;
       setLoading(false);
     }
-  }, [session, page, filter, severity, range, extraFilters, api, requestKey]);
+  }, [
+    session,
+    page,
+    filter,
+    severity,
+    range,
+    extraFilters,
+    auditEvent,
+    api,
+    requestKey,
+  ]);
   useEffect(() => {
     void refresh();
     const timer = setInterval(() => void refresh(), 5000);
@@ -441,7 +497,9 @@ function App() {
             </span>
             <p className="muted updated-at">
               <Icon name="clock" />
-              {updated ? `Cập nhật ${updated}` : "Đang tải dữ liệu"}
+              {updated
+                ? `Dashboard tải dữ liệu thành công: ${updated}`
+                : "Đang tải dữ liệu"}
             </p>
             <button onClick={() => void refresh()} disabled={loading}>
               <Icon name="refresh" className={loading ? "is-spinning" : ""} />
@@ -693,7 +751,14 @@ function App() {
                   ["SUCCESS", "Thành công"],
                   ["ERROR", "Thất bại"],
                 ].map(([status, label]) => (
-                  <button key={status} onClick={() => setTab("audit")}>
+                  <button
+                    key={status}
+                    onClick={() => {
+                      setAudit([]);
+                      setAuditEvent(null);
+                      setTab("audit");
+                    }}
+                  >
                     <span>{label}</span>
                     <strong>
                       {stats
@@ -981,11 +1046,21 @@ function App() {
                     <div>
                       <strong>{address}</strong>
                       <p>
-                        {row?.reason ?? "Chỉ có trong kernel"} ·{" "}
-                        {blocked?.kernel?.includes(address)
-                          ? "Có trong kernel"
-                          : "Chưa xác nhận trong kernel"}
+                        {blocked?.kernel == null
+                          ? "Có trong DB · Chưa xác định trong kernel"
+                          : row && blocked.kernel.includes(address)
+                            ? "Có trong cả DB và kernel"
+                            : row
+                              ? "Chỉ có trong DB"
+                              : "Chỉ có trong kernel"}
                       </p>
+                      <p>Lý do: {row?.reason ?? "Không có bản ghi DB"}</p>
+                      <small>
+                        Thời điểm chặn (DB):{" "}
+                        {row
+                          ? new Date(row.blocked_at).toLocaleString()
+                          : "Không xác định"}
+                      </small>
                     </div>
                     {admin && (
                       <button
@@ -998,9 +1073,11 @@ function App() {
                   </div>
                 );
               })}
-              {!blocked?.database.length && !blocked?.kernel?.length && (
-                <p>Chưa có IP bị chặn.</p>
-              )}
+              {blocked?.kernel == null ? (
+                <p>Chưa xác định được trạng thái firewall.</p>
+              ) : !blocked.database.length && !blocked.kernel.length ? (
+                <p>Chưa có IP bị chặn trong DB và kernel.</p>
+              ) : null}
             </section>
           </>
         )}
@@ -1008,14 +1085,26 @@ function App() {
           <section className="panel">
             <h2>
               <Icon name="audit" />
-              100 thao tác gần nhất
+              {auditEvent === null
+                ? "100 thao tác gần nhất"
+                : `Tác vụ liên quan cảnh báo #${auditEvent}`}
             </h2>
+            {auditEvent !== null && (
+              <button
+                onClick={() => {
+                  setAudit([]);
+                  setAuditEvent(null);
+                }}
+              >
+                Xem tất cả thao tác
+              </button>
+            )}
             <div className="table-wrap">
               <table>
                 <thead>
                   <tr>
                     <th>ID / Thời gian</th>
-                    <th>Người thực hiện</th>
+                    <th>Người thực hiện / Nguồn yêu cầu</th>
                     <th>Thao tác / IP</th>
                     <th>Lý do</th>
                     <th>Kết quả</th>
@@ -1028,9 +1117,17 @@ function App() {
                         #{a.id}
                         <small>{new Date(a.created_at).toLocaleString()}</small>
                       </td>
-                      <td>{a.actor}</td>
+                      <td>
+                        {a.actor}
+                        <small>{auditSource(a.source)}</small>
+                      </td>
                       <td>
                         {a.action} {a.ip}
+                        {a.event_id !== null && (
+                          <button onClick={() => setSelectedAlert(a.event_id)}>
+                            Cảnh báo #{a.event_id}
+                          </button>
+                        )}
                       </td>
                       <td>{a.reason}</td>
                       <td>
@@ -1039,6 +1136,14 @@ function App() {
                         >
                           {a.status}
                         </span>
+                        <small>
+                          Hoàn tất:{" "}
+                          {a.completed_at
+                            ? new Date(a.completed_at).toLocaleString()
+                            : a.status === "PENDING"
+                              ? "Đang chờ"
+                              : "Chưa có dữ liệu"}
+                        </small>
                         {a.details && <p>{a.details}</p>}
                       </td>
                     </tr>
@@ -1091,32 +1196,208 @@ function App() {
                 DB / firewall:{" "}
                 {health?.firewall_in_sync ? "Đồng bộ" : "Chưa đồng bộ"}
               </p>
-              {Object.entries(health?.watchers ?? {}).map(([name, value]) => (
-                <p key={name}>
-                  {name}: {value}
-                </p>
-              ))}
-              <p>Dòng log không hợp lệ: {fmt(health?.ingestion_errors)}</p>
+              <p className="muted">
+                Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến trình
+                Nginx/Suricata đang chạy. Không có cảnh báo mới có thể là bình
+                thường.
+              </p>
+              <div className="overview-grid">
+                {["NGINX", "SURICATA"].map((name) => {
+                  const watcher = health?.watchers[name];
+                  const collection = health?.collection?.[name];
+                  const time = (value: string | null | undefined) =>
+                    value ? new Date(value).toLocaleString() : "Chưa ghi nhận";
+                  return (
+                    <article className="panel" key={name}>
+                      <h3>{name}</h3>
+                      <p
+                        className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
+                      >
+                        {watcher?.state === "error"
+                          ? "Lỗi đọc / xử lý nguồn log"
+                          : watcher?.state === "watching"
+                            ? "Đọc log thành công"
+                            : "Chưa có kết quả kiểm tra"}
+                      </p>
+                      {watcher?.error && (
+                        <p className="error">{watcher.error}</p>
+                      )}
+                      <dl className="detail-fields">
+                        <div>
+                          <dt>Lần đọc thành công</dt>
+                          <dd>{time(watcher?.last_success_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Lần thấy dữ liệu mới</dt>
+                          <dd>{time(watcher?.last_data_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Lần lưu cảnh báo</dt>
+                          <dd>{time(collection?.last_alert_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Log còn chờ</dt>
+                          <dd>
+                            {watcher?.pending_bytes == null
+                              ? "Chưa xác định"
+                              : `${fmt(watcher.pending_bytes)} byte`}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Dòng sai định dạng</dt>
+                          <dd>
+                            {collection
+                              ? fmt(collection.error_count)
+                              : "Chưa tải được"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Lỗi phân tích gần nhất</dt>
+                          <dd>
+                            {collection?.last_error ? (
+                              <>
+                                {time(collection.last_error.at)}
+                                <br />
+                                {collection.last_error.reason}
+                              </>
+                            ) : collection ? (
+                              "Chưa ghi nhận"
+                            ) : (
+                              "Chưa tải được"
+                            )}
+                          </dd>
+                        </div>
+                      </dl>
+                      {!watcher?.last_data_at &&
+                        watcher?.state === "watching" && (
+                          <p className="muted">
+                            Đọc được file nhưng chưa quan sát thấy dữ liệu trong
+                            phiên backend này.
+                          </p>
+                        )}
+                      <p className="muted">
+                        Mốc đọc và nhận dữ liệu tính từ lần khởi động backend;
+                        dữ liệu sẵn có khi mở file cũng được tính là lần quan
+                        sát. Cảnh báo và lỗi lấy từ lịch sử DB. Byte chờ gồm cả
+                        dòng chưa kết thúc, không gồm file .gz.
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
             </section>
-            <section className="cards">
-              <article>
-                <p>Load average 1 phút</p>
-                <strong>{fmt(stats?.system.load_average_1m)}</strong>
-              </article>
-              <article>
-                <p>Bộ nhớ đang dùng</p>
-                <strong>{fmt(stats?.system.memory_percent, "%")}</strong>
-              </article>
-              <article>
-                <p>Byte nhận trên NIC từ khi khởi động/reset</p>
-                <strong>{fmt(stats?.system.interface_rx_bytes)}</strong>
-              </article>
-              <article>
-                <p>Kết nối TCP established trên máy</p>
-                <strong>
-                  {fmt(stats?.system.established_tcp_connections)}
-                </strong>
-              </article>
+            <section className="panel">
+              <h2>Tài nguyên máy chạy backend</h2>
+              <p>
+                Máy:{" "}
+                <strong>{stats?.system.hostname ?? "Chưa xác định"}</strong> ·
+                Interface:{" "}
+                <strong>{stats?.system.interface ?? "Chưa xác định"}</strong>
+              </p>
+              <p className="muted">
+                Số liệu của môi trường chạy backend, không mặc nhiên là Security
+                VM. Nếu chạy trong container, một số số liệu có thể thuộc
+                container hoặc host tùy cách triển khai.
+              </p>
+              <p className="muted">
+                Mẫu mạng/đĩa:{" "}
+                {stats?.system.sampled_at
+                  ? new Date(stats.system.sampled_at).toLocaleString()
+                  : "Đang chờ mẫu đầu tiên"}{" "}
+                · Dữ liệu hiện tại, không theo bộ lọc thời gian Tổng quan.
+              </p>
+              {stats?.system.network_error && (
+                <p className="error">
+                  {stats.system.network_error}. Kiểm tra ATTACKER_IFACE.
+                </p>
+              )}
+              {stats?.system.disk_error && (
+                <p className="error">{stats.system.disk_error}</p>
+              )}
+              <div className="cards">
+                <article>
+                  <p>Load average 1 phút</p>
+                  <strong>{fmt(stats?.system.load_average_1m)}</strong>
+                  <small>Không phải phần trăm CPU</small>
+                </article>
+                <article>
+                  <p>Bộ nhớ đang dùng</p>
+                  <strong>{fmt(stats?.system.memory_percent, "%")}</strong>
+                </article>
+                <article>
+                  <p>RX — tốc độ nhận</p>
+                  <strong>
+                    {stats?.system.rx_bytes_per_second == null
+                      ? "Chưa đo được"
+                      : `${fmt(stats.system.rx_bytes_per_second / 1024)} KiB/s`}
+                  </strong>
+                </article>
+                <article>
+                  <p>TX — tốc độ gửi</p>
+                  <strong>
+                    {stats?.system.tx_bytes_per_second == null
+                      ? "Chưa đo được"
+                      : `${fmt(stats.system.tx_bytes_per_second / 1024)} KiB/s`}
+                  </strong>
+                </article>
+                <article>
+                  <p>RX tích lũy</p>
+                  <strong>
+                    {stats?.system.interface_rx_bytes == null
+                      ? "—"
+                      : `${fmt(stats.system.interface_rx_bytes / 1048576)} MiB`}
+                  </strong>
+                  <small>Từ lúc interface khởi động/reset</small>
+                </article>
+                <article>
+                  <p>TX tích lũy</p>
+                  <strong>
+                    {stats?.system.interface_tx_bytes == null
+                      ? "—"
+                      : `${fmt(stats.system.interface_tx_bytes / 1048576)} MiB`}
+                  </strong>
+                  <small>Từ lúc interface khởi động/reset</small>
+                </article>
+                <article>
+                  <p>Đĩa khả dụng: {stats?.system.disk_path ?? "—"}</p>
+                  <strong>
+                    {stats?.system.disk
+                      ? `${fmt(stats.system.disk.available_bytes / 1073741824)} GiB`
+                      : "Chưa đo được"}
+                  </strong>
+                  <small>
+                    Tổng:{" "}
+                    {stats?.system.disk
+                      ? `${fmt(stats.system.disk.total_bytes / 1073741824)} GiB`
+                      : "—"}
+                  </small>
+                </article>
+                <article>
+                  <p>Kết nối TCP established</p>
+                  <strong>
+                    {fmt(stats?.system.established_tcp_connections)}
+                  </strong>
+                </article>
+              </div>
+              <p className="muted">
+                RX/TX là trung bình giữa hai mẫu liên tiếp; cần hai mẫu để tính,
+                reset bộ đếm sẽ chờ mẫu mới. Đĩa là filesystem chứa đường dẫn
+                trên; không đại diện dung lượng DB nếu DB ở máy hoặc volume
+                khác.
+              </p>
+              <p>
+                Lần thấy log mới:{" "}
+                {["NGINX", "SURICATA"]
+                  .map(
+                    (name) =>
+                      `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString() : "chưa ghi nhận"}`,
+                  )
+                  .join(" · ")}
+              </p>
+              <p className="muted">
+                Dashboard tải thành công chỉ xác nhận lấy được API; không có
+                nghĩa nguồn log vừa nhận dữ liệu mới.
+              </p>
             </section>
           </>
         )}
@@ -1126,6 +1407,12 @@ function App() {
             api={api}
             onClose={() => setSelectedAlert(null)}
             onSelect={setSelectedAlert}
+            onAudit={(id) => {
+              setSelectedAlert(null);
+              setAudit([]);
+              setAuditEvent(id);
+              setTab("audit");
+            }}
           />
         )}
       </main>
