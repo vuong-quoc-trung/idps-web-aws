@@ -1,23 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
-validate_ip() {
-    [[ "$1" =~ ^192\.168\.10\.([0-9]{1,3})$ ]] || { echo 'Invalid lab IP' >&2; exit 2; }
-    local last=$((10#${BASH_REMATCH[1]}))
-    ((last >= 2 && last <= 254)) || { echo 'Protected or invalid IP' >&2; exit 2; }
-}
-case "${1:-}" in
-    block|unblock)
-        [[ $# == 2 ]] || exit 2
-        validate_ip "$2"
-        if /usr/sbin/nft get element inet pbl4_demo blocked_ips "{ $2 }" >/dev/null 2>&1; then
-            if [[ $1 == unblock ]]; then /usr/sbin/nft delete element inet pbl4_demo blocked_ips "{ $2 }"; fi
-        else
-            # Distinguish an absent element from a missing table/set or broken permissions.
-            /usr/sbin/nft list set inet pbl4_demo blocked_ips >/dev/null
-            if [[ $1 == block ]]; then /usr/sbin/nft add element inet pbl4_demo blocked_ips "{ $2 }"; fi
-        fi
-        ;;
-    list) [[ $# == 1 ]] || exit 2; /usr/sbin/nft list set inet pbl4_demo blocked_ips ;;
-    list-json) [[ $# == 1 ]] || exit 2; /usr/sbin/nft -j list set inet pbl4_demo blocked_ips ;;
-    *) echo 'Usage: pbl4-firewall block|unblock IP, or list|list-json' >&2; exit 2 ;;
-esac
+# Both this wrapper and the installed policy module must be root-owned.
+exec /usr/bin/python3 /usr/local/libexec/pbl4-firewall-policy.py "$@"

@@ -1,7 +1,10 @@
 mod auth;
+mod detection;
+mod events;
 mod firewall;
 mod ingest;
 mod metrics;
+mod network;
 use anyhow::{Context, Result, bail};
 use axum::{
     Extension, Json, Router,
@@ -26,6 +29,9 @@ use tracing::{info, warn};
 #[derive(Clone)]
 struct AppState {
     pool: PgPool,
+    ingestion: Arc<ingest::Config>,
+    sensor_id: String,
+    safety: Arc<network::Safety>,
     auth: auth::Auth,
     policy: PolicyEngine,
     firewall_cmd: String,
@@ -76,9 +82,9 @@ impl PolicyEngine {
             .parse::<bool>()
             .unwrap_or(false);
 
-        // Default whitelist: 1000001 (Port Scan SYN) and 1000002 (SQLi Boolean/Union)
+        // Default response candidate: SQLi only; SYN burst is an observation, not proof of scan.
         // Can be overridden or extended via AUTO_BLOCK_SIDS="1000001,1000002"
-        let sids_str = env::var("AUTO_BLOCK_SIDS").unwrap_or_else(|_| "1000001,1000002".into());
+        let sids_str = env::var("AUTO_BLOCK_SIDS").unwrap_or_else(|_| "1000002".into());
         let allowed_sids: Vec<u32> = sids_str
             .split(',')
             .filter_map(|s| s.trim().parse::<u32>().ok())
@@ -158,37 +164,16 @@ struct RuleInfo {
     auto_block_eligible: bool,
 }
 
-#[derive(Debug, Deserialize)]
-struct SuricataAlertInfo {
-    #[allow(dead_code)]
-    action: Option<String>,
-    signature_id: Option<u32>,
-    signature: Option<String>,
-    category: Option<String>,
-    severity: Option<u8>,
-}
-
-#[derive(Debug, Deserialize)]
-struct SuricataEvent {
-    timestamp: String,
-    event_type: String,
-    #[serde(default)]
-    src_ip: Option<IpAddr>,
-    #[serde(default)]
-    dest_ip: Option<IpAddr>,
-    #[serde(default)]
-    proto: Option<String>,
-    #[serde(default)]
-    alert: Option<SuricataAlertInfo>,
-}
-
+#[cfg(test)]
 #[derive(Debug)]
 struct NginxRequest {
     src_ip: IpAddr,
     target: String,
 }
 
+#[cfg(test)]
 static NGINX_LOG_RE: OnceLock<Regex> = OnceLock::new();
+#[cfg(test)]
 static SQLI_RE: OnceLock<Regex> = OnceLock::new();
 
 #[tokio::main]
@@ -218,6 +203,9 @@ async fn main() -> Result<()> {
         .collect::<std::result::Result<Vec<IpAddr>, _>>()?;
     let state = AppState {
         pool,
+        ingestion: Arc::new(ingest::Config::from_env()?),
+        sensor_id: env::var("SECURITY_SENSOR_ID").unwrap_or_else(|_| "local".into()),
+        safety: Arc::new(network::Safety::from_env().await?),
         auth,
         policy: PolicyEngine::from_env(),
         firewall_cmd: env::var("PBL4_FIREWALL_CMD")
@@ -225,7 +213,11 @@ async fn main() -> Result<()> {
         whitelist: Arc::new(whitelist),
         watchers: Default::default(),
     };
-    for (name, path) in [
+    anyhow::ensure!(
+        events::valid_request_id(&state.sensor_id),
+        "SECURITY_SENSOR_ID must be 1..128 safe ASCII characters"
+    );
+    let mut sources = vec![
         (
             "SURICATA",
             env::var("SURICATA_EVE_PATH").unwrap_or("/var/log/suricata/eve.json".into()),
@@ -234,7 +226,13 @@ async fn main() -> Result<()> {
             "NGINX",
             env::var("NGINX_ACCESS_PATH").unwrap_or("/var/log/nginx/access.log".into()),
         ),
-    ] {
+    ];
+    if let Ok(path) = env::var("STUDENT_AUDIT_LOG_PATH")
+        && !path.trim().is_empty()
+    {
+        sources.push(("STUDENT_AUDIT", path));
+    }
+    for (name, path) in sources {
         state
             .watchers
             .write()
@@ -242,6 +240,7 @@ async fn main() -> Result<()> {
             .insert(name.into(), ingest::WatcherStatus::default());
         tokio::spawn(ingest::watch(state.clone(), name.into(), path));
     }
+    tokio::spawn(ingest::retention_worker(state.clone()));
     tokio::spawn(metrics::sample_resources());
     tokio::spawn(firewall::worker(state.clone()));
     let addr = env::var("APP_ADDR").unwrap_or("127.0.0.1:3000".into());
@@ -352,7 +351,7 @@ async fn unblock_ip(
     Extension(actor): Extension<auth::Identity>,
     Path(ip): Path<String>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
-    let ip = validate_lab_attacker_ip(&ip).map_err(bad_request)?;
+    let ip = network::Safety::parse_host(&ip).map_err(bad_request)?;
     let id = firewall::enqueue(
         &state.pool,
         ip,
@@ -373,7 +372,7 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
     let rules = vec![
         RuleInfo {
             sid: 1000001,
-            name: "TCP SYN Port Scan Detected",
+            name: "TCP SYN Burst Threshold",
             category: "Reconnaissance",
             severity: 2,
             auto_block_eligible: policy.evaluate_suricata(Some(1000001))
@@ -435,14 +434,24 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
             auto_block_eligible: policy.evaluate_suricata(Some(1000007))
                 == EventPolicyDecision::EligibleForAutoBlock,
         },
+        RuleInfo {
+            sid: 1000009,
+            name: "Repeated Login 401 or 403 Responses",
+            category: "Authentication Abuse",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000009))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
     ];
     Json(rules)
 }
 
+#[cfg(test)]
 fn parse_suricata_timestamp(value: &str) -> Result<DateTime<Utc>> {
     Ok(DateTime::parse_from_str(value, "%Y-%m-%dT%H:%M:%S%.f%z")?.with_timezone(&Utc))
 }
 
+#[cfg(test)]
 fn parse_nginx_request(line: &str) -> Option<NginxRequest> {
     let re = NGINX_LOG_RE.get_or_init(|| {
         Regex::new(r#"^(\S+) \S+ \S+ \[[^\]]+\] \"(\S+) ([^\"]+) HTTP/[0-9.]+\" (\d{3}) "#)
@@ -455,6 +464,7 @@ fn parse_nginx_request(line: &str) -> Option<NginxRequest> {
     })
 }
 
+#[cfg(test)]
 fn sql_injection_re() -> &'static Regex {
     SQLI_RE.get_or_init(|| {
         Regex::new(
@@ -463,6 +473,7 @@ fn sql_injection_re() -> &'static Regex {
     })
 }
 
+#[cfg(test)]
 fn validate_lab_attacker_ip(value: &str) -> Result<IpAddr> {
     let raw = value.trim();
     let clean = if let Some((ip_part, mask)) = raw.split_once('/') {
@@ -513,6 +524,7 @@ mod parser_tests {
         assert!(parse_suricata_timestamp("invalid").is_err());
         let parsed=parse_nginx_request(r#"192.168.10.10 - - [23/Oct/2026:12:00:00 +0000] "GET /login?q=hello HTTP/1.1" 200 15 "-" "curl""#).unwrap();
         assert_eq!(parsed.target, "/login?q=hello");
+        assert_eq!(parsed.src_ip.to_string(), "192.168.10.10");
         assert!(parse_nginx_request("invalid").is_none());
     }
     #[test]
@@ -529,3 +541,6 @@ mod parser_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod foundation_tests;

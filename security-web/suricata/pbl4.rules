@@ -1,28 +1,33 @@
 # ==============================================================================
 # PBL4 Web IDPS - Suricata NIDS Rule Set
-# Rules observe incoming traffic to Security Host (192.168.10.1) on vmnet2
+# Rules observe configured HOME_NET servers on whichever interfaces the sensor captures.
 # ==============================================================================
 
-# 1. Reconnaissance: Port Scanning (TCP SYN Burst)
-alert tcp 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: TCP SYN Port Scan Detected"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:3;)
+# 1. SYN burst is a rate observation, not proof of a multi-port scan.
+alert tcp any any -> $HOME_NET any (msg:"PBL4 NIDS: TCP SYN Burst Threshold"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:4;)
 
 # 2. Web Attack: SQL Injection - Boolean or Union Based
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: SQL Injection - Boolean or Union Attempt"; flow:established,to_server; http.uri; pcre:"/(union\s+(all\s+)?select|(?:\x27|%27)\s*(?:or|and)\s+(?:1\s*=\s*1|\x271\x27\s*=\s*\x271\x27))/i"; classtype:web-application-attack; priority:1; sid:1000002; rev:3;)
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Boolean or Union Attempt"; flow:established,to_server; http.uri; pcre:"/(union(?:[+\s]|\/\*.*?\*\/)+(?:all(?:[+\s]|\/\*.*?\*\/)+)?select|(?:\x27|%27|\x22|%22)(?:[+\s]|\/\*.*?\*\/)*(?:or|and)(?:[+\s]|\/\*.*?\*\/)+(?:\d+[+\s]*=[+\s]*\d+|(?:\x27|\x22)\w+(?:\x27|\x22)[+\s]*=[+\s]*(?:\x27|\x22)\w+))/i"; classtype:web-application-attack; priority:1; sid:1000002; rev:4;)
 
-# 3. Web Attack: SQL Injection - Function or Statement Injection
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: SQL Injection - Generic Keywords Attempt"; flow:established,to_server; http.uri; pcre:"/(sleep\s*\(\s*\d+\s*\)|benchmark\s*\(\s*\d+|waitfor\s+delay|drop\s+table|insert\s+into|exec\s*\()/i"; classtype:web-application-attack; priority:1; sid:1000008; rev:1;)
+# 3. Time/error-based and statement SQLi indicators. Alert only by default.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Time Error or Statement Attempt"; flow:established,to_server; http.uri; pcre:"/(?:(?:sleep|pg_sleep|benchmark|extractvalue|updatexml)(?:[+\s]|\/\*.*?\*\/)*\(|waitfor(?:[+\s]|\/\*.*?\*\/)+delay|(?:drop|insert)(?:[+\s]|\/\*.*?\*\/)+(?:table|into)|exec[+\s]*\()/i"; classtype:web-application-attack; priority:1; sid:1000008; rev:2;)
 
 # 4. Web Attack: Cross-Site Scripting (XSS)
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: Cross-Site Scripting (XSS) Attempt"; flow:established,to_server; http.uri; pcre:"/(<script|javascript:|onerror\=|onload\=|<svg|<iframe|<img\s+src\=x)/i"; classtype:web-application-attack; priority:2; sid:1000003; rev:2;)
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Cross-Site Scripting (XSS) Attempt"; flow:established,to_server; http.uri; pcre:"/(<(?:script|svg|iframe|img)\b|javascript[+\s]*:|(?:onerror|onload|onmouseover)[+\s]*=)/i"; classtype:web-application-attack; priority:2; sid:1000003; rev:3;)
 
-# 5. Web Attack: Path Traversal / Directory Traversal
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: Path Traversal (Directory Traversal) Attempt"; flow:established,to_server; http.uri; pcre:"/(\.\.(?:\/|\x5c)|%2e%2e(?:%2f|\/)|\.\.%2f|\/etc\/(?:passwd|shadow)|c:\x5cwindows)/i"; classtype:web-application-attack; priority:2; sid:1000004; rev:3;)
+# 5. Inspect raw URI so path normalization cannot erase traversal segments.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Path Traversal or Local File Inclusion Attempt"; flow:established,to_server; http.uri.raw; pcre:"/(?:(?:\.\.|%2e%2e|%252e%252e)(?:\/|%2f|%252f|\x5c|%5c)|(?:\/|%2f)etc(?:\/|%2f)(?:passwd|shadow)|php(?:\x3a|%3a)(?:\/\/|%2f%2f)(?:filter|input)|c:(?:\x5c|%5c)windows)/i"; classtype:web-application-attack; priority:2; sid:1000004; rev:4;)
 
 # 6. Web Attack: OS Command Injection
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: OS Command Injection Attempt"; flow:established,to_server; http.uri; pcre:"/(\;|\&|\||\`|\$\()\s*(cat|id|whoami|uname|nc|sh|bash|curl|wget)\b/i"; classtype:web-application-attack; priority:1; sid:1000005; rev:2;)
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: OS Command Injection Attempt"; flow:established,to_server; http.uri; pcre:"/(?:\x3b|\&|\||\x60|\$\()(?:[+\s]|\$\{IFS\})*(?:cat|id|whoami|uname|nc|sh|bash|curl|wget)\b/i"; classtype:web-application-attack; priority:1; sid:1000005; rev:3;)
 
 # 7. Reconnaissance: Sensitive Files and Configuration Probing
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: Sensitive Configuration / Credential Probing"; flow:established,to_server; http.uri; pcre:"/(\/\.env|\/wp-config\.php|\/\.git\/HEAD|\/\.ssh\/id_rsa|\/web\.config|\/config\.php|\/backup\.sql)/i"; classtype:attempted-recon; priority:2; sid:1000006; rev:2;)
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Sensitive Configuration or Credential Probing"; flow:established,to_server; http.uri; pcre:"/(\/\.env(?:[.\/?]|$)|\/wp-config\.php|\/\.git\/(?:HEAD|config)|\/\.ssh\/(?:id_rsa|authorized_keys)|\/web\.config|\/config\.php|\/backup\.sql)/i"; classtype:attempted-recon; priority:2; sid:1000006; rev:3;)
 
 # 8. Reconnaissance: Automated Vulnerability Scanner User-Agent
-alert http 192.168.10.0/24 any -> 192.168.10.1 any (msg:"PBL4 NIDS: Automated Vulnerability Scanner Tool Detected"; flow:established,to_server; http.user_agent; pcre:"/(sqlmap|nikto|dirbuster|gobuster|masscan|acunetix|nmap|zgrab)/i"; classtype:attempted-recon; priority:3; sid:1000007; rev:2;)
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Automated Vulnerability Scanner User-Agent"; flow:established,to_server; http.user_agent; pcre:"/(sqlmap|nikto|dirbuster|gobuster|masscan|acunetix|nmap|zgrab|nuclei|ffuf)/i"; classtype:attempted-recon; priority:3; sid:1000007; rev:3;)
+
+# 9. Suricata 8 transactional => associates request route and response status.
+# Five failed POST logins per client in 60s; no credentials/body inspection.
+# Keep SID 1000009 outside AUTO_BLOCK_SIDS; 403 may be CSRF/policy failure.
+alert http any any => $HTTP_SERVERS any (msg:"PBL4 NIDS: Repeated Login 401 or 403 Responses"; http.method; content:"POST"; bsize:4; http.uri; pcre:"/^\/api\/auth\/login(?:\?|$)/"; http.stat_code; pcre:"/^40[13]$/"; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-user; priority:2; sid:1000009; rev:1;)

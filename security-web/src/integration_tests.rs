@@ -3,9 +3,13 @@ use axum::{body::Body, http::Request};
 use http_body_util::BodyExt;
 use std::path::PathBuf;
 use tower::ServiceExt;
+
 fn state(pool: PgPool) -> AppState {
     AppState {
         pool,
+        ingestion: Arc::new(ingest::Config::default()),
+        sensor_id: "test-sensor".into(),
+        safety: Arc::new(network::Safety::test()),
         auth: auth::test_auth(),
         policy: PolicyEngine::new(true, vec![1000002], true),
         firewall_cmd: "/not-installed".into(),
@@ -129,7 +133,7 @@ async fn authentication_roles_and_audit(pool: PgPool) {
         .0,
         StatusCode::ACCEPTED
     );
-    firewall::process_one(&state, |_, _| async {
+    firewall::process_one(&state, |_, _, _| async {
         anyhow::bail!("simulated firewall failure")
     })
     .await
@@ -179,7 +183,8 @@ impl Drop for TempLog {
 }
 fn event(ip: &str) -> String {
     format!(
-        "{{\"timestamp\":\"2026-10-23T01:00:00.000000+0000\",\"event_type\":\"alert\",\"src_ip\":\"{ip}\",\"alert\":{{\"signature_id\":1000002,\"signature\":\"test SQLi\",\"severity\":1}}}}\n"
+        "{{\"timestamp\":\"{}\",\"event_type\":\"alert\",\"src_ip\":\"{ip}\",\"alert\":{{\"signature_id\":1000002,\"signature\":\"test SQLi\",\"severity\":1}}}}\n",
+        Utc::now().format("%Y-%m-%dT%H:%M:%S%.6f%z")
     )
 }
 async fn count(pool: &PgPool) -> i64 {
@@ -233,7 +238,7 @@ async fn ingestion_rotation_restart_partial_and_dedup(pool: PgPool) {
             .await
             .unwrap();
     assert_eq!(pending, 3);
-    firewall::process_one(&s, |_, _| async { Ok(()) })
+    firewall::process_one(&s, |_, _, _| async { Ok(()) })
         .await
         .unwrap();
     let actions: Vec<String> = sqlx::query_scalar("SELECT action FROM security_alerts ORDER BY id")
@@ -241,7 +246,7 @@ async fn ingestion_rotation_restart_partial_and_dedup(pool: PgPool) {
         .await
         .unwrap();
     assert_eq!(actions, ["AUTO-BLOCK", "ALERT", "ALERT"]);
-    firewall::process_one(&s, |_, _| async { anyhow::bail!("kernel failure") })
+    firewall::process_one(&s, |_, _, _| async { anyhow::bail!("kernel failure") })
         .await
         .unwrap();
     assert_eq!(
@@ -263,10 +268,10 @@ async fn ingestion_rotation_restart_partial_and_dedup(pool: PgPool) {
     )
     .await
     .unwrap();
-    firewall::process_one(&s, |_, _| async { Ok(()) })
+    firewall::process_one(&s, |_, _, _| async { Ok(()) })
         .await
         .unwrap(); // remaining auto job
-    firewall::process_one(&s, |_, _| async { Ok(()) })
+    firewall::process_one(&s, |_, _, _| async { Ok(()) })
         .await
         .unwrap();
     assert!(
@@ -351,7 +356,7 @@ async fn restore_does_not_override_pending_unblock(pool: PgPool) {
             .unwrap(),
         1
     );
-    firewall::process_one(&s, |_, _| async { Ok(()) })
+    firewall::process_one(&s, |_, _, _| async { Ok(()) })
         .await
         .unwrap();
     assert!(

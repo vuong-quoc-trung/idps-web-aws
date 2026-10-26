@@ -6,18 +6,21 @@ use tokio::{
 };
 
 pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
-    let ip = validate_lab_attacker_ip(value)?;
+    let ip = state.safety.validate(value)?;
     anyhow::ensure!(
         !state.whitelist.contains(&ip),
         "IP is protected by whitelist"
     );
     Ok(ip)
 }
-pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>) -> Result<String> {
+pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<String> {
     let mut command = Command::new("sudo");
     command.arg("-n").arg(cmd).arg(action);
     if let Some(ip) = ip {
         command.arg(ip.to_string());
+    }
+    if let Some(ttl) = ttl {
+        command.arg(ttl.to_string());
     }
     command.kill_on_drop(true);
     let out = timeout(Duration::from_secs(5), command.output())
@@ -45,6 +48,10 @@ pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
             .as_array()
             .context("Unexpected nftables elements")?
         {
+            let value = value
+                .get("elem")
+                .and_then(|e| e.get("val"))
+                .unwrap_or(value);
             if let Some(ip) = value.as_str() {
                 ips.insert(ip.parse::<IpAddr>()?.to_string());
             } else if let Some(range) = value.get("range").and_then(|r| r.as_array()) {
@@ -93,7 +100,7 @@ pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
     Ok(ips)
 }
 pub async fn kernel(state: &AppState) -> Result<BTreeSet<String>> {
-    parse_set(&run(&state.firewall_cmd, "list-json", None).await?)
+    parse_set(&run(&state.firewall_cmd, "list-json", None, None).await?)
 }
 pub async fn enqueue(
     pool: &PgPool,
@@ -113,12 +120,17 @@ struct Job {
     action: String,
     reason: String,
     event_id: Option<i64>,
+    source: String,
+    expires_at: Option<DateTime<Utc>>,
 }
 pub async fn process_one<F, Fut>(state: &AppState, execute: F) -> Result<bool>
 where
-    F: FnOnce(String, IpAddr) -> Fut,
+    F: FnOnce(String, IpAddr, Option<u64>) -> Fut,
     Fut: std::future::Future<Output = Result<()>>,
 {
+    if state.safety.mode == "OFF" {
+        return Ok(false);
+    }
     let mut tx = state.pool.begin().await?;
     let locked: bool = sqlx::query_scalar("SELECT pg_try_advisory_xact_lock(7272401)")
         .fetch_one(&mut *tx)
@@ -126,7 +138,7 @@ where
     if !locked {
         return Ok(false);
     }
-    let job = sqlx::query_as::<_, Job>("SELECT id,host(ip)::text ip,action,reason,event_id FROM firewall_actions WHERE status='PENDING' ORDER BY id LIMIT 1 FOR UPDATE")
+    let job = sqlx::query_as::<_, Job>("SELECT id,host(ip)::text ip,action,reason,event_id,source,expires_at FROM firewall_actions WHERE status='PENDING' ORDER BY id LIMIT 1 FOR UPDATE")
         .fetch_optional(&mut *tx).await?;
     let Some(job) = job else {
         return Ok(false);
@@ -134,10 +146,39 @@ where
     let validation = if job.action == "BLOCK" {
         validate(state, &job.ip)
     } else {
-        validate_lab_attacker_ip(&job.ip)
+        network::Safety::parse_host(&job.ip)
+    };
+    let validation =
+        if job.action == "BLOCK" && state.safety.mode == "MANUAL" && job.source != "API" {
+            Err(anyhow::anyhow!("Automatic BLOCK disabled in MANUAL mode"))
+        } else if job.action == "BLOCK" && state.safety.discover_before_apply {
+            match network::discover().await {
+                Ok(protected) if protected.contains(&job.ip.parse::<IpAddr>()?) => {
+                    Err(anyhow::anyhow!("Current host/gateway IP is protected"))
+                }
+                Ok(_) => validation,
+                Err(_) => Err(anyhow::anyhow!(
+                    "Safety discovery unavailable; BLOCK refused"
+                )),
+            }
+        } else {
+            validation
+        };
+    let validation = if job.action == "BLOCK" && job.expires_at.is_none_or(|at| at <= Utc::now()) {
+        Err(anyhow::anyhow!(
+            "BLOCK job expired or predates the response deadline contract"
+        ))
+    } else {
+        validation
+    };
+    let ttl = if job.action == "BLOCK" {
+        job.expires_at
+            .map(|at| (at - Utc::now()).num_seconds().clamp(1, 300) as u64)
+    } else {
+        None
     };
     let result = match validation {
-        Ok(ip) => execute(job.action.to_lowercase(), ip).await,
+        Ok(ip) => execute(job.action.to_lowercase(), ip, ttl).await,
         Err(e) => Err(e),
     };
     let (status, details) = match result {
@@ -145,8 +186,8 @@ where
         Err(e) => ("ERROR", Some(e.to_string())),
     };
     if status == "SUCCESS" {
-        sqlx::query("INSERT INTO blocked_ips(ip,reason,active,unblocked_at) VALUES($1::inet,$2,$3,CASE WHEN $3 THEN NULL ELSE now() END) ON CONFLICT(ip) DO UPDATE SET reason=$2,active=$3,blocked_at=CASE WHEN $3 THEN now() ELSE blocked_ips.blocked_at END,unblocked_at=CASE WHEN $3 THEN NULL ELSE now() END")
-            .bind(&job.ip).bind(&job.reason).bind(job.action=="BLOCK").execute(&mut *tx).await?;
+        sqlx::query("INSERT INTO blocked_ips(ip,reason,active,unblocked_at,expires_at) VALUES($1::inet,$2,$3,CASE WHEN $3 THEN NULL ELSE now() END,CASE WHEN $3 THEN $4 ELSE NULL END) ON CONFLICT(ip) DO UPDATE SET reason=$2,active=$3,blocked_at=CASE WHEN $3 THEN now() ELSE blocked_ips.blocked_at END,unblocked_at=CASE WHEN $3 THEN NULL ELSE now() END,expires_at=CASE WHEN $3 THEN $4 ELSE NULL END")
+            .bind(&job.ip).bind(&job.reason).bind(job.action=="BLOCK").bind(job.expires_at).execute(&mut *tx).await?;
         if let Some(id) = job.event_id {
             sqlx::query("UPDATE security_alerts SET action='AUTO-BLOCK' WHERE id=$1")
                 .bind(id)
@@ -164,7 +205,7 @@ where
     Ok(true)
 }
 pub async fn restore_jobs(pool: &PgPool) -> Result<()> {
-    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor) SELECT b.ip,'BLOCK','RESTORE','Restore active block after backend restart','PENDING','system' FROM blocked_ips b WHERE b.active AND NOT EXISTS (SELECT 1 FROM firewall_actions a WHERE a.ip=b.ip AND a.status='PENDING')")
+    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,expires_at) SELECT b.ip,'BLOCK','RESTORE','Restore active block after backend restart','PENDING','system',b.expires_at FROM blocked_ips b WHERE b.active AND b.expires_at > now() AND NOT EXISTS (SELECT 1 FROM firewall_actions a WHERE a.ip=b.ip AND a.status='PENDING')")
         .execute(pool).await?;
     Ok(())
 }
@@ -178,8 +219,8 @@ pub async fn worker(state: AppState) {
     }
     loop {
         let cmd = state.firewall_cmd.clone();
-        match process_one(&state, move |action, ip| async move {
-            run(&cmd, &action, Some(ip)).await.map(|_| ())
+        match process_one(&state, move |action, ip, ttl| async move {
+            run(&cmd, &action, Some(ip), ttl).await.map(|_| ())
         })
         .await
         {

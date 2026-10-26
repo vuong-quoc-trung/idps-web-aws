@@ -145,7 +145,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
           'last_alert_at', (SELECT max(created_at) FROM security_alerts a WHERE a.source=s.source),
           'error_count', (SELECT count(*) FROM ingestion_errors e WHERE e.source=s.source),
           'last_error', (SELECT jsonb_build_object('at',created_at,'reason',reason) FROM ingestion_errors e WHERE e.source=s.source ORDER BY created_at DESC,event_key DESC LIMIT 1)
-        )) FROM (VALUES ('NGINX'),('SURICATA')) s(source)
+        )) FROM (VALUES ('NGINX'),('SURICATA'),('STUDENT_AUDIT')) s(source)
     "#).fetch_one(&state.pool).await.ok();
     let desired = sqlx::query_scalar::<_, String>("SELECT host(ip) FROM blocked_ips WHERE active")
         .fetch_all(&state.pool)
@@ -158,7 +158,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
     let healthy = database
         && fw.is_ok()
         && in_sync
-        && watchers.len() == 2
+        && !watchers.is_empty()
         && watchers.values().all(|s| s.state == "watching");
     (
         if healthy {
@@ -167,7 +167,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
             StatusCode::SERVICE_UNAVAILABLE
         },
         Json(
-            json!({"healthy":healthy,"database":database,"firewall":fw.is_ok(),"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors}),
+            json!({"healthy":healthy,"database":database,"firewall":fw.is_ok(),"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
         ),
     )
 }
