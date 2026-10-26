@@ -2,6 +2,21 @@
 
 Security Host nhận cảnh báo Suricata/Nginx, lưu PostgreSQL, phục vụ React/TypeScript dashboard và thực thi block/unblock qua nftables. Đây là bản lab; kiểm thử ba VM và bằng chứng nghiệm thu được hướng dẫn trong `docs/LAB_ACCEPTANCE.md`.
 
+## Shared Foundation hiện hành
+
+Bắt đầu tại [docs/00](../docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md), [schema v1.0](../contracts/README.md) và [hồ sơ test](../docs/06_AI_HANDOFF_AND_RUN_LEDGER.md). Các hướng dẫn lab cũ bên dưới cần đối chiếu cấu hình mới:
+
+- Security Compose mặc định `127.0.0.1:${SECURITY_DB_PORT:-5434}:5432`; Student dùng5433. DATABASE_URL trong `.env.example` đã đổi5434; **kiểm và cập nhật port trong `.env` riêng** khi chuyển cấu hình cũ. Không tự đổi mật khẩu/volume DB đã có.
+- `STUDENT_AUDIT_LOG_PATH` bật watcherStudent khi path không rỗng. Nginx structured/combined và EVE alert/http/flow đều được normalize; `COLLECT_ALL_EVENTS=true` lưu observations vào normalized_events, false vẫn parse/detect nhưng không backfill dữ liệu đã bỏ qua.
+- Retention dataset7ngày, cap1triệu rows, sweep60s; INGEST_MAX_LINE_BYTES mặc định65536. Oversized records bị cách ly theo hash/range, không copy raw secrets; partial/rotation/dedup tiếp tục dùng durable cursor.
+- Rust có SQLi/XSS/traversal/command/scanner và auth-burst theo IP+route; auth counter dedup Nginx/Student theo request ID. Suricata có9SID, SYNburst được đặt tên đúng và không auto eligible mặc định. Các family Rust mới là alert-only.
+- **ENFORCEMENT_MODE=OFF** mặc định chặn mọi thực thi PENDING/RESTORE. MANUAL chỉ cho BLOCK nguồnAPI; ENFORCE vẫn phải qua protected-target/deadline/freshness/policy. AUTO_BLOCK=false riêng lẻ vẫn không là global stop.
+- `ENFORCE_ALLOWED_SUBNETS` mặc định các dảiIPv4 private; WEB_SERVER_IP/PROTECTED_GATEWAY_IP và IP_WHITELIST bổ sung miễn trừ. Backend/helper khám phá host/default gateways; khi không xác minh an toàn thì từ chốiBLOCK. IPv6 collect-only, không block.
+- Helper mới gồm wrapper + root-owned Python policy module; phải cài đồng bộ theo update trong HOST_SECURITY_SETUP.md trước bật enforcement. TTL/deadline tối đa300s, restore giữ deadline gốc. Chưa áp ruleset host bởi script dev.
+- Nginx template nghe0.0.0.0:80, ưu tiên API127.0.0.1:8080/frontend127.0.0.1:5173, WebVM192.168.20.10:80 backup. Query values không ghi disk; edge tính rule flags trong memory. TLS cần certificate/template riêng và Secure cookies. Local session/DB không tự đồng bộ với VM khi failover.
+
+Từ gốc repo chạy `scripts/dev-up-and-verify.sh --bootstrap-nginx` để dùng hai DB demo riêng55433/55434 và Security3001; thêm--expose-lan để mở dev edge18780 ra mạng. `scripts/dev-up-and-verify.sh --stop` chỉ dừng stackdemo, giữ dữ liệu. Credentials dev trong ignored `.local-dev/foundation/credentials.json`, không in vào Git/docs. Service cũ3000 và DB5433/5434 được giữ nguyên.
+
 ## Các thay đổi chính
 
 - Đăng nhập admin/viewer bằng mật khẩu Argon2id. Session ngẫu nhiên 256 bit, hết hạn sau một giờ, lưu hash ở server; frontend giữ token trong bộ nhớ. Logout thu hồi session. Restart backend hoặc reload trang yêu cầu đăng nhập lại.
@@ -37,7 +52,7 @@ Mở `http://127.0.0.1:3000`. Không cần nạp `schema.sql` thủ công nữa.
 
 Nếu phát triển frontend riêng: giữ Rust ở cổng 3000, chạy `npm run dev` trong `frontend/`; Vite proxy `/api` về Rust. Production Rust phục vụ `frontend/dist` nên phải build frontend trước khi chạy.
 
-`.env` hiện có được giữ nguyên; kiểm tra `APP_ADDR=127.0.0.1:3000` và `AUTO_BLOCK=false` trong lần chạy đầu. Dữ liệu PostgreSQL mặc định ở volume Docker hiện có. Thay biến mật khẩu Compose không đổi mật khẩu của database đã được khởi tạo.
+`.env` hiện có được giữ nguyên; kiểm tra `APP_ADDR=127.0.0.1:3000`, `ENFORCEMENT_MODE=OFF` và `AUTO_BLOCK=false` trong lần chạy đầu. Dữ liệu PostgreSQL mặc định ở volume Docker hiện có. Thay biến mật khẩu Compose không đổi mật khẩu của database đã được khởi tạo.
 
 ## Truy cập từ máy quản trị
 
@@ -63,7 +78,7 @@ Thực hiện từng bước trong [hướng dẫn nghiệm thu Ubuntu host](doc
 
 `deploy.sh --deploy` đã khóa để tránh thay cấu hình host bằng quy trình cũ. Giữ `AUTO_BLOCK=false` trong toàn bộ nghiệm thu. Lưu ý worker vẫn xử lý tác vụ PENDING và khôi phục IP active từ DB: phải rà các bản ghi này trước khi chạy backend có quyền helper.
 
-`IP_WHITELIST` là các IP host phân cách dấu phẩy. Mọi block phải qua kiểm tra whitelist và giới hạn `192.168.10.2–254`. Unblock vẫn được phép với IP trong whitelist để khôi phục một block cũ. SID cho auto-block cấu hình qua `AUTO_BLOCK_SIDS`; Nginx SQLi qua `AUTO_BLOCK_NGINX_SQLI`. Bật auto-block chỉ sau khi kiểm thử thủ công.
+`IP_WHITELIST` là các IP host phân cách dấu phẩy. Mọi block phải qua kiểm tra whitelist và các dải `ENFORCE_ALLOWED_SUBNETS` và protected-target policy hiện hành. Unblock vẫn được phép với IP trong whitelist để khôi phục một block cũ. SID cho auto-block cấu hình qua `AUTO_BLOCK_SIDS`; Nginx SQLi qua `AUTO_BLOCK_NGINX_SQLI`. Bật auto-block chỉ sau khi kiểm thử thủ công.
 
 ## Chính sách log và khôi phục
 
@@ -89,15 +104,23 @@ Thực hiện từng bước trong [hướng dẫn nghiệm thu Ubuntu host](doc
 | POST | `/api/blocked-ips` | Admin; `{ip, reason}` → 202 + ID job |
 | DELETE | `/api/blocked-ips/{ip}` | Admin; → 202 + ID job |
 | GET | `/api/audit` | 100 thao tác gần nhất |
+| GET | `/api/application-audit` | Viewer/admin; quan sát canonical, lọc/phân trang và trạng thái thu thập |
+| GET | `/api/application-audit/{id}` | Viewer/admin; JSON đã che dữ liệu + tối đa10 quan sát cùng requestID |
 | GET | `/health` | Liveness tiến trình, không chứng minh pipeline khỏe |
+
+Tab **Audit ứng dụng** mặc định xem Student audit trong 24 giờ qua, có bộ lọc thời gian/nguồn/IP/endpoint/mã HTTP/method/requestID, phân trang25 dòng và JSON chi tiết đã mask. Dùng `request_id` để xem quan sát tương ứng từ Nginx. API hỗ trợ `limit`1–200, `offset`0–1000000; `from` bao gồm, `to` không bao gồm; endpoint tìm chuỗi con, các trường khác khớp chính xác. Xem hợp đồng tại [docs02](../docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md#24-api-quan-sát-và-tab-audit-ứng-dụng).
+
+Trạng thái thu thập/watcher hiển thị ngay trong tab. `COLLECT_ALL_EVENTS=false` vẫn xem được lịch sử nhưng không thêm observations mới và không tự backfill khi bật lại. Outcome HTTP chỉ phản ánh kết quả request; nhãn attack/benign cần được đánh giá riêng.
+
+Sau thao tác trên Student, mở **Audit ứng dụng** và bấm **Tải lại audit** hoặc **Làm mới** phía trên. Cả hai giữ bộ lọc/trang đang xem; bảng audit tải thủ công. Thao tác tạo khoa xuất hiện dưới `POST /api/faculties`, thường HTTP201, không làm tăng số cảnh báo ở Tổng quan.
 
 ## Kiểm thử
 
 ```bash
 # PostgreSQL user phải có quyền tạo DB test; dùng database điều phối postgres,
 # không trỏ vào database production. SQLx tạo DB riêng cho mỗi test.
-DATABASE_URL=postgres://USER:PASSWORD@127.0.0.1:5433/postgres cargo test
-cd frontend && npm run build
+DATABASE_URL=postgres://USER:PASSWORD@127.0.0.1:5434/postgres cargo test --locked
+cd frontend && npm test && npm run format:check && npm run build
 ```
 
 Test bao phủ đăng nhập/logout/session hết hạn, viewer bị từ chối block, whitelist, audit lỗi, lưu log/rotation/partial/replay, lỗi DB và retry, auto-block thành công/thất bại, unblock và migration từ schema cũ. Firewall trong integration test được thay bằng hàm giả lập tại đúng đường thực thi dùng trong production; không chạy nftables thật.
@@ -108,7 +131,7 @@ Test bao phủ đăng nhập/logout/session hết hạn, viewer bị từ chối
 python3 scripts/smoke-test.py --url http://127.0.0.1:3000 --username admin
 ```
 
-Kiểm thử packet thật, cấu hình Suricata, SSH quản trị, block/unblock HTTP cần chạy theo `docs/LAB_ACCEPTANCE.md`. Chưa có WebSocket, TTL auto-unblock, correlation xuyên nguồn, hoặc backup/restore tự động.
+Kiểm thử packet thật, cấu hình Suricata, SSH quản trị, block/unblock HTTP cần chạy theo `docs/LAB_ACCEPTANCE.md`. Chưa có WebSocket hoặc backup/restore tự động. Foundation đã thêm TTL/deadline và request-ID correlation giữa Student/Nginx; nghiệm thu host packet thật vẫn cần riêng.
 
 `GET /api/ready` yêu cầu đăng nhập và trả cùng báo cáo với `/api/status`, nhưng HTTP 503 nếu hệ thống chưa sẵn sàng. Dashboard dùng `/api/status` để không phát sinh lỗi HTTP mỗi lần polling khi test host chưa có firewall. `healthy: false` vẫn được hiển thị; HTTP 200 không khẳng định pipeline đã sẵn sàng.
 

@@ -2,11 +2,11 @@
 
 Ngày khảo sát: **26/10/2026** (Asia/Ho_Chi_Minh). Baseline code: `37bc4d2ae1552939659a10647898e2228f1b801f`.
 
-**Trạng thái:** khảo sát tĩnh và thiết kế đề xuất. Chưa tải dataset, sinh traffic, xuất dữ liệu DB hay huấn luyện model trong phiên này. Schema, pipeline và kịch bản có nhãn **ĐỀ XUẤT** dưới đây chưa được triển khai. Đọc cùng [01 — Audit và kiến trúc](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md) và [03 — Model và training](03_AI_MODEL_AND_TRAINING_PLAN.md).
+**Cập nhật foundation 26/10/2026:** canonical v1.0 đã có code, JSON Schema, fixture và validation; Java xuất JSONL, Rust thu cả Student/Nginx/EVE khi bật dataset. Base HEAD1925764, branch `codex/foundation-audit-and-schema`, thay đổi chưa commit. Phần1 là bằng chứng khảo sát lịch sử tại37bc4d2; phần2 dưới đây là **contract hiện hành đã khóa**. Chưa tải public dataset, tạo corpus có nhãn, train hoặc xuất model.
 
-## 1. Kết luận từ code: `audit.log` chưa phải nguồn đang tồn tại
+## 1. Baseline lịch sử trước foundation: chưa có file audit
 
-Trong các file nguồn, cấu hình và log dự án được khảo sát, **không thấy file `audit.log`, cấu hình ghi `audit.log`, parser `audit.log`, hay cầu nối từ audit ứng dụng sang `security-web`**. Điều này chỉ mô tả workspace; không chứng minh máy triển khai bên ngoài không có một file như vậy.
+Ở snapshot khảo sát37bc4d2 (không phải code foundation hiện tại), trong các file nguồn, cấu hình và log được khảo sát, **không thấy file `audit.log`, cấu hình ghi `audit.log`, parser `audit.log`, hay cầu nối từ audit ứng dụng sang `security-web`**. Điều này chỉ mô tả workspace; không chứng minh máy triển khai bên ngoài không có một file như vậy.
 
 Audit của `student-web` hiện là **bảng PostgreSQL `access_logs`**, được tạo bởi Flyway. Không được giả định file này là Linux auditd, ModSecurity audit log hoặc Suricata EVE: đó là các định dạng khác nhau. Bước tích hợp tiếp theo phải chốt hợp đồng audit ứng dụng; tên `audit.log` trong thiết kế này chỉ dành cho NDJSON của `student-web` nếu nhóm chọn bổ sung file export.
 
@@ -57,59 +57,67 @@ Các đường dẫn viết tắt `.../` trong bảng đầu là `student-web/ba
 - TLS làm sensor thụ động trên chặng mã hoá không thấy URL/body. Chỉ lấy HTTP rõ ở điểm terminate được kiểm soát hoặc telemetry từ ứng dụng; không giả định mọi packet có payload đọc được.
 - Path hiện là URI thực, chưa phải template. `/api/students/123` làm tăng cardinality và chứa ID đối tượng; phải chuẩn hoá `/api/students/{studentId}` ở feature pipeline.
 
-## 2. Hợp đồng sự kiện chuẩn — ĐỀ XUẤT v1
+## 2. Canonical Event Schema v1.0 — ĐÃ KHÓA TRONG CODE
 
-Chốt một schema chung trước khi viết parser/model. Giữ **event thô có kiểm soát**, **event chuẩn hoá**, **feature** và **decision** thành các lớp có version riêng. Không ghi đè dữ liệu nguồn bằng điểm AI hay nhãn suy luận.
+Nguồn chuẩn: [`contracts/canonical-event-v1.schema.json`](../contracts/canonical-event-v1.schema.json), [`contracts/README.md`](../contracts/README.md), fixture [`student-audit-v1.jsonl`](../contracts/fixtures/student-audit-v1.jsonl). Java `AuditJsonlExporter` và Rust `events::CanonicalEvent` được kiểm theo cùng contract. Các tên `event_time_utc/source_event_id/...` trong đề xuất cũ không phải một schema thứ hai được triển khai.
 
-| Nhóm | Trường đề xuất | Mapping từ nguồn đang có / phần cần bổ sung |
-| --- | --- | --- |
-| Định danh | `schema_version,event_id,source,source_instance,source_event_id,source_cursor,producer_version` | DB audit có `id`; cần thêm instance/epoch để không trùng khi restore. `source_event_id` là identity gốc ổn định, `source_cursor` là vị trí đọc/ACK. File có dev/inode/generation/offset trong ingest hiện tại; cần host/sensor namespace nếu nhiều máy |
-| Thời gian | `event_time_utc,observed_at_utc,source_timezone,clock_skew_ms` | Nginx/EVE có offset; audit DB cần timezone nguồn xác nhận. Giữ raw timestamp phục vụ kiểm toán |
-| Correlation | `request_id,trace_id,flow_id,session_hmac,actor_hmac,attempted_subject_hmac` | **Chưa có** trong audit hiện tại ngoài user ID. Request ID do proxy tin cậy sinh/ghi đè; session/actor HMAC do app sinh, không lưu token/cookie thật |
-| Nguồn mạng | `src_ip,src_ip_provenance,peer_ip,dest_ip,src_port,dest_port,transport,service` | Có IP cơ bản; thiếu port/destination audit. Ghi rõ `peer` hay `trusted_proxy`; không tin header do client tự gửi |
-| HTTP | `method,route_template,status,duration_ms,request_bytes,response_bytes,content_type,query_keys` | Method/path/status/duration đã có audit; những trường còn lại cần instrumentation/proxy JSON. Query keys cũng qua giới hạn/allowlist |
-| Payload an toàn | `payload_observed,payload_redacted,payload_truncated,payload_length,encoding_depth,char_statistics,payload_view_ref` | **Chưa có** từ audit. Chỉ ghi mẫu đã lọc tại endpoint/trường được phép; auth/identity/profile bí mật không ghi body |
-| Ngữ cảnh | `auth_state,role_class,operation,target_type,target_hmac,outcome_reason` | Cần thêm app telemetry; không join toàn bộ hồ sơ sinh viên vào IDPS. Role/outcome không tự suy từ status |
-| Chất lượng và vận chuyển | `missing_fields,parse_error,normalizer_version,redaction_version,trusted_source,late_event,raw_ref,replay` | Cần thêm; không điền 0 cho dữ liệu không quan sát được. `raw_ref` trỏ evidence đã kiểm soát quyền; `replay` phân biệt lịch sử với live và không cho phép enforcement hồi tố |
-| Detection riêng | `rule_ids,rule_version,model_version,feature_version,scores,decision,policy_version,evidence_refs` | Cần bảng/event quyết định riêng; không dùng làm input của model cùng nhãn khi đánh giá độc lập |
+| Nhóm | Trường v1.0 | Quy ước thực hiện |
+|---|---|---|
+| Phiên bản/identity | `schema_version,event_id,source,source_instance` | Version chính xác1.0; source=STUDENT_AUDIT/NGINX/SURICATA; eventID và instance ASCII1–128; Student sinh UUID một lần/line |
+| Thời gian | `timestamp` | ISO8601UTC có Z; PostgreSQL occurred_at nhận timestamp; observed_at là lúc ingest trong DB, không phải field của producer |
+| Correlation/mạng | `request_id,client_ip,peer_ip,dest_ip,src_port,dest_port,transport,flow_id` | RequestID không unique; IP literal/null; port0–65535/null; flowID string để không mất chính xác số lớn; không coi1flow=1request |
+| Identity ứng dụng | `user_id,username,role,session_hmac` | Ba identity field nullable HMAC purpose-separated `hmac-sha256:<64hex>`; role ADMIN/STAFF/STUDENT/ANONYMOUS/null; không raw username/session/cookie |
+| HTTP | `http_method,uri_path,query_string,status_code,latency_ms,user_agent,request_bytes,response_bytes` | Bounded metadata; custom method→OTHER; UA chỉ giữ product families, unknown text→[REDACTED]; path động/ID được mask; query values đều mask hoặc null; latency_ms không âm; status100–599/null |
+| Loại và outcome | `event_type,outcome` | Type=http_request/flow/alert/dns/tls/other; outcome=success/failure/unknown chỉ HTTP outcome, **không là nhãn malicious/benign** |
+| Flow | `flow` nullable | duration_seconds, bytes/packets_to_server/client, state; chỉ map khi source có, không tạo flow counters từ audit |
+| Cấu trúc query | `query_features` nullable | length/parameter_count/percent_count/quote_count/operator_count khi đọc raw target phù hợp; không tính lại thống kê giả từ query đã mask của Student |
+| Quality | `redacted,truncated` | Boolean; trường thiếu dùng null. Missing/OOD/drift vector và ML feature_version chưa được implement, không đánh dấu đã có |
 
-Ví dụ **minh hoạ schema đề xuất**, không phải bản ghi thật:
+Không chấp nhận raw body/header object, field bất ngờ hoặc version không tương thích. Core fields bắt buộc và network extensions optional được liệt kê chính xác trong JSON Schema. Any addition/type/meaning change phải có version mới và review cả hai luồng; ML feature vector phát triển ngoài canonical contract, không sửa v1.0 theo ý một branch.
 
-```json
-{
-  "schema_version": "1.0",
-  "event_id": "student-lab:epoch-01:access-logs:42",
-  "source": "student_audit_db",
-  "event_time_utc": "2026-10-26T02:00:00Z",
-  "source_timezone": "Asia/Ho_Chi_Minh",
-  "src_ip": "192.0.2.25",
-  "src_ip_provenance": "peer_unverified",
-  "method": "POST",
-  "route_template": "/api/auth/login",
-  "status": 401,
-  "duration_ms": 115,
-  "actor_hmac": null,
-  "session_hmac": null,
-  "payload_observed": false,
-  "missing_fields": ["request_id", "session_hmac", "attempted_subject_hmac"]
-}
+### 2.1. Luồng hiện tại và delivery semantics
+
+```text
+Student request → trusted attribution / request ID → filter (reads configurable)
+   → AuditEvent metadata → DB writer (access_logs) + private JSONL exporter
+                                                ↓ STUDENT_AUDIT_LOG_PATH
+Nginx structured/legacy combined ─────────→ Rust parser/normalizer
+Suricata EVE alert/http/flow/other ────────→ Rust parser/normalizer
+   → transaction: cursor + receipts + normalized_events (nếu bật) + alerts + jobs
+   → policy/worker (OFF mặc định; TTL/deadline/protected-target checks)
 ```
 
-### 2.1. Chọn cách thu audit, không tạo thêm nguồn mất dữ liệu
+DB và file của **producer là hai sink độc lập**, không phải atomic outbox. DB fail không ngăn thử file; file/permission/disk-limit fail được cảnh báo bằng loại lỗi/SQLSTATE, không echo secret. File write synchronized+file lock+force, owner-only directory/file, không theo symlink, mở lại mỗi append để theo rename/create. Giới hạn16KiB/line và64MiB/file; phải rotate và monitor lỗi. Crash giữa business commit và audit/file vẫn có cửa sổ mất telemetry; chưa gọi lossless/exactly-once.
 
-**Ưu tiên triển khai nhỏ:** exporter dùng DB role chỉ đọc `access_logs`, chuẩn hoá metadata ra durable inbox của security DB; lưu cursor độc lập và acknowledge sau persist. Không dùng tài khoản ADMIN browser để poll. Bổ sung source event identity + bounded lookback/dedup; không đơn giản `WHERE id > last_id` vì sequence cấp ID không bảo đảm commit theo ID. Lookback phải có giới hạn trễ được đo; nếu không chứng minh được giới hạn, dùng outbox transactional hoặc CDC theo commit position. Retention chỉ xoá sau khi downstream đã giữ bản sao theo chính sách.
+Collector ACK cursor chỉ sau transaction commit. Student receipt dùng `(source,source_instance,event_id)` độc lập inode nên copied JSONL không tạo event trùng trong cửa sổ receipt. Nginx/EVE identity vẫn dựa file/inode/generation/offset/hash: copy sang inode mới có thể thành observation mới. RequestID chỉ để correlation, không xóa hai observation hợp lệ của Nginx và app.
 
-**Đích bền vững:** outbox ghi cùng transaction cho security business event, collector đọc và retry/ack; telemetry request độc lập có local spool, bounded queue và counters mất dữ liệu. Nếu chọn `audit.log`, NDJSON phải UTF-8, một JSON/event, không multiline; atomic flush, rotation rename + create, quyền tối thiểu, collector checkpoint/ack, giới hạn dòng, parser lỗi vào quarantine, không âm thầm skip. Không ghi DB và file theo hai lệnh rời rồi tuyên bố exactly-once.
+Dòng partial bình thường giữ cursor; dòng vượt cap mặc định64KiB vào persistent discard-until-newline, quarantine theo hash/byte range (không raw secret) rồi tiếp event sau. Truncate/reset anchor tăng generation; rename/create rotation được đọc cùng file chưa nén; `.gz` chưa hỗ trợ. Không xóa/nén file trước khi đọc xong.
 
-Các GET thành công cần đưa vào telemetry với chính sách lưu đủ metadata để tạo behavioral baseline. Nếu phải sampling, ghi sampling rate và event class; auth/security failure không sampling. Giữ thống kê count đầy đủ tại source khi sampling chi tiết, nếu không không được dùng rate bị sampling để auto-block.
+### 2.2. Kết nối, privacy và các cờ hiện hành
 
-### 2.2. Time, join và chống trùng
+- Student: `STUDENT_AUDIT_LOG_ENABLED=true`, `STUDENT_AUDIT_LOG_PATH=./logs/student-audit.log`, `AUDIT_INCLUDE_SUCCESSFUL_READS=true` mặc định. Cần `STUDENT_AUDIT_HMAC_KEY` tối thiểu32byte và source instance ổn định; tests tắt file nếu không dùng temp path.
+- Privacy producer: cả DB/JSONL Student chỉ nhận UA family từ allowlist browser/client/scanner, không giữ arbitrary prose/version/secret trong header. UA null/empty giữ đúng trạng thái thiếu; dài bị bound và bật truncated. Java/Rust chuẩn hóa custom HTTP method thành OTHER, không lưu lại token method tùy ý. Hợp đồng v1.0 vẫn giữ nguyên kiểu/trường; các report trước thay đổi này là snapshot lịch sử.
+- `TRUSTED_PROXIES` nhận exact literal/CIDR. Spring auto-forwarding NONE để giữ peer gốc, custom trusted ForwardedHeaderFilter chỉ dùng địa chỉ đã kiểm tra và strip các header không tin cậy. Nginx sinh lại request ID và overwrite XFF; header giả từ client không quyết định audit/rate-limit identity.
+- Security: cùng đường dẫn đã đọc được từ user chạy collector, `COLLECT_ALL_EVENTS=true` để lưu observations. Khi false, parser/rules/auth detector vẫn chạy, dataset rows không ghi và cursor vẫn advance; bật lại không tự backfill đoạn đã bỏ qua.
+- Retention normalized mặc định7ngày, cap1.000.000row, sweep mỗi60s; đây không phải hard byte quota. Receipt theo cửa sổ retention, auth observation1ngày. Alerts/errors/quarantine/actions chưa có archive/retention hoàn chỉnh — OPS-04 vẫn mở. Dataset snapshot cần được xuất/version trước khi retention xóa.
+- Nginx không lưu raw query, chỉ flag rule tính trong memory; legacy combined và EVE được detector đọc trước redaction khi ingest. Canonical/evidence không sao chép body/token/query value. EVE raw ở sensor vẫn cần kiểm quyền/retention và không bật payload/body dump; chưa có source-level redactor tổng quát cho phần mềm bên thứ ba.
+- Không có exporter/shipper SSH/S3 tự động xuyên máy. VM/cloud tách host phải cung cấp secure mounted/shipped JSONL đúng path, giữ eventID/source_instance và file rotation contract; HTTP failover không đồng nghĩa file log tự chuyển sang Security Host.
 
-- Dùng UTC ở hợp đồng mới, đồng bộ đồng hồ; không sửa timezone các dòng cũ bằng cách nối `Z`.
-- Ưu tiên request ID xuyên Nginx → app → collector. EVE có thể dùng flow/transaction ID, tuple và timestamp; HTTP keep-alive tạo nhiều request trong một flow nên không join 1 flow = 1 request.
-- Trước khi có request ID, correlation theo IP/route/time chỉ là **ước lượng có confidence**, không tự hợp nhất thành ground truth. Bảo toàn source event ID và evidence độc lập.
-- Cửa sổ đề xuất 10 giây, 60 giây, 5 phút; allowed lateness khởi điểm 30 giây rồi đo. TTL state ≥ max window + lateness. Late event quá watermark vẫn lưu nhưng không tạo quyết định IPS hồi tố.
-- Dùng deterministic dedup theo source event identity; surrogate event hash nội dung không được xoá hai request hợp lệ giống hệt nhau ở thời điểm khác nhau.
+### 2.3. Feature availability sau foundation
+
+Có metadata HTTP/UA/session HMAC khi nguồn có; có counts/bytes/flow fields từ EVE flow, requestID giữa Student/Nginx. Chưa có body payload được phép lưu, attempted-account HMAC cho login lỗi, target ownership/role đầy đủ trên nguồn Nginx, causal ML window library hoặc incident correlation tổng quát. **Payload Byte-CNN trong03 chưa đủ đầu vào production**; phải có policy dataset riêng để thu synthetic/sanitized payload phù hợp trước khi train. Bảng feature ở phần3 giữ cả kế hoạch và ràng buộc, không phải tất cả feature đã có code.
+
+### 2.4. API quan sát và tab Audit ứng dụng
+
+`GET /api/application-audit` dành cho viewer/admin đã đăng nhập, trả `{items,total,limit,offset,collection}`; `GET /api/application-audit/{id}` trả metadata DB, canonical JSON đã che dữ liệu và tối đa10 quan sát khác cùng `request_id`. Không có API ghi/xóa/chỉnh nhãn ở tab này. API giữ `Cache-Control: no-store`; `/api/audit` tiếp tục là nhật ký thao tác firewall.
+
+Filters: `from` bao gồm và `to` không bao gồm (ISO8601 instant, UI chuyển từ múi giờ trình duyệt sang UTC); `source` thuộc STUDENT_AUDIT/NGINX/SURICATA; `client_ip`, `status_code`, `request_id`, `http_method` khớp chính xác; `uri_path` tìm chuỗi con có phân biệt hoa thường trên đường dẫn đã mask. `limit` mặc định25, tối đa200; `offset`0–1000000. Sắp theo `occurred_at DESC,id DESC`; count/page dùng cùng snapshot trong một SQL statement. Các trang khác nhau là các truy vấn mới, có thể dịch chuyển nếu đồng thời nhận/xóa dữ liệu. Unknown/invalid filters trả400, ID không tồn tại trả404.
+
+List chỉ trả summary. Detail deserialize bằng typed contract v1, validate HMAC/enum/identity và áp lại masking path/query/User-Agent trước khi trả JSON; không trả JSON tùy ý hay body/header object. Row vi phạm contract trả lỗi500 chung, không trả nội dung lỗi chứa dữ liệu thô. Bước hiển thị không sửa canonical/receipts trong DB và không thay schema v1 đã khóa.
+
+`collection` cho biết cờ COLLECT_ALL_EVENTS, retention/cap và trạng thái watcher từng nguồn. Cờ false vẫn đọc được lịch sử; cursor vẫn chạy, nên bật lại không backfill phần đã bỏ. UI mặc định Student audit trong24giờ qua, áp bộ lọc khi submit, tải lại thủ công bằng **Tải lại audit** hoặc **Làm mới** ở header khi đang mở tab Audit; giữ filters/page và hủy request cũ khi tải lại/đổi truy vấn/rời tab. Polling5s ở header chỉ cập nhật các summary cũ, không tự refresh bảng audit. Outcome HTTP không phải nhãn attack/benign; cùng Request ID có thể có nhiều quan sát. Suricata flow thiếu requestID không được ghép chỉ vì trùng IP.
+
+Kiểm chứng: 5 integration tests mới, tổng49 Rust PASS; 3 frontend tests cho timezone/encoding/validation PASS, build/format/clippy PASS và HTTP smoke trên demo3001 PASS. Kiểm tra giao diện bằng browser NOT_RUN do Work settings tắt Local browser use; chi tiết tại ledger06 mục14 và `APPLICATION_AUDIT_VALIDATION.json`.
 
 ## 3. Feature catalog và điều kiện sử dụng
 
@@ -238,7 +246,7 @@ Chỉ lưu metadata/manifest không chứa PII trong `/docs`; dữ liệu lớn 
 - Replay cùng capture tạo feature deterministic và decision có version; offline/online parity đạt trước khi benchmark model.
 - Ghi giới hạn đã biết: payload/body chưa quan sát thì nhánh payload chưa đủ điều kiện; không quảng bá khả năng phát hiện từ dữ liệu vắng mặt. Chỉ chuyển training stage khi các điều kiện trên có evidence, theo roadmap 04.
 
-## 10. Handoff dữ liệu tại baseline này
+## 10. Handoff khảo sát cũ — lịch sử, ưu tiên trạng thái hiện hành ở mục2/06
 
 | Mục | Tiến độ đã xác minh | Việc tiếp theo |
 | --- | --- | --- |

@@ -1,0 +1,145 @@
+{
+  "recorded_at": "2026-10-26T15:48:44.764696+00:00",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "task": "Read-only application audit tab",
+  "owner": "Codex",
+  "independent_review": "NOT_RUN",
+  "branch": "codex/foundation-audit-and-schema",
+  "base_head": "1925764a0b4dbbae647797136e17abfd9a122c45",
+  "work_status": "Uncommitted working tree; preceding foundation changes preserved",
+  "canonical_schema_version": "1.0",
+  "schema_changed_in_this_task": false,
+  "new_dependencies": false,
+  "checks": [
+    {
+      "command": "DATABASE_URL=postgres://postgres@127.0.0.1:55432/postgres cargo test --locked -j 2",
+      "cwd": "security-web",
+      "status": "PASS",
+      "passed": 49,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo clippy --locked --all-targets -j 2 -- -D warnings",
+      "cwd": "security-web",
+      "status": "PASS"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "cwd": "security-web",
+      "status": "PASS"
+    },
+    {
+      "command": "cargo build --locked -j 2",
+      "cwd": "security-web",
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "cwd": "security-web/frontend",
+      "status": "PASS",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "command": "npm run format:check",
+      "cwd": "security-web/frontend",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "cwd": "security-web/frontend",
+      "status": "PASS"
+    },
+    {
+      "command": "python3 scripts/smoke-test.py --url http://127.0.0.1:3001 --username admin",
+      "cwd": "security-web",
+      "status": "PASS",
+      "authentication": "Private demo credential supplied via getpass override in memory; no credential in argv/output"
+    },
+    {
+      "command": "git diff --check",
+      "cwd": ".",
+      "status": "PASS"
+    },
+    {
+      "command": "mvn test",
+      "cwd": "student-web/backend",
+      "status": "NOT_RUN",
+      "reason": "No Student changes in this UI task; earlier foundation 87-pass run is a separate historical report"
+    },
+    {
+      "command": "Browser/CUA visual and interaction acceptance",
+      "status": "NOT_RUN",
+      "reason": "Local browser use is disabled in Work settings"
+    },
+    {
+      "command": "GitHub Actions execution",
+      "status": "NOT_RUN",
+      "reason": "Workflow updated; no commit/push/remote CI dispatch in this task"
+    }
+  ],
+  "http_runtime_evidence": {
+    "recorded_at": "2026-10-26T15:43:01.743432+00:00",
+    "scope": "Local application audit dashboard, isolated demo on 127.0.0.1:3001",
+    "checks": {
+      "anonymous_denied": "PASS",
+      "authenticated_list_and_no_store": "PASS",
+      "student_detail_masking_and_nginx_correlation": "PASS",
+      "invalid_filter_and_missing_record": "PASS",
+      "firewall_audit_unchanged": "PASS",
+      "current_frontend_bundle_served": "PASS",
+      "all_sources_readable": "PASS"
+    },
+    "observation_counts": {
+      "STUDENT_AUDIT": 25,
+      "NGINX": 90,
+      "SURICATA": 0
+    },
+    "watcher_states": {
+      "NGINX": "watching",
+      "STUDENT_AUDIT": "watching",
+      "SURICATA": "watching"
+    },
+    "browser_visual": {
+      "status": "NOT_RUN",
+      "reason": "Local browser use is disabled in Work settings"
+    },
+    "credentials_included": false
+  },
+  "served_assets_sha256": {
+    "/assets/index-NHBQ_dee.js": "b892bc0cd8ec301c8ee2a42f08ba31c3c8e3da48e8df234afd8c16190a7064ba",
+    "/assets/index-De-WFBYo.css": "a0d99a28b109f439047a6d65b61543969a25a4e97cea082a03eb768812400bab"
+  },
+  "runtime": {
+    "url": "http://127.0.0.1:3001",
+    "restart_scope": "Demo Security process on 3001 only",
+    "other_demo_processes_preserved": true,
+    "enforcement_mode": "OFF",
+    "host_firewall_modified": false,
+    "readiness": "DEGRADED (demo has no installed host firewall helper)",
+    "test_postgres": "Disposable port 55432 container stopped and auto-removed after tests"
+  },
+  "files_sha256": {
+    ".github/workflows/security.yml": "a2b49f86982e6ff0eeae8a7456395fb25a6c2c18c7ac00478a82954187a99867",
+    "security-web/src/application_audit.rs": "50a01c78a65bfea76bbc1b33bfa18dde89e4236b36af2a56c9cff498d14ffaf9",
+    "security-web/src/application_audit.sql": "8bbd34a2a37eff06f9c7e9f5ec0327747110c0bca93c1650a7f5d2d585fa97ec",
+    "security-web/src/main.rs": "1b0ad5a38d095270c18bb5cc39027c2c4d802894f0870d50db52e6d30a227864",
+    "security-web/src/events.rs": "5ea319e7fb41af95b0d365786ce9a95a9fe87db73f7833f146e40f564cc6dbf0",
+    "security-web/src/detection.rs": "5fb2013c5075d3ae764ba96dddf9c5142ca79d2b1c862bb9b7f381b2d2266e3d",
+    "security-web/src/integration_tests.rs": "d5a93c27e6f87089eb022cba2c7c7ffcb8def8778a00c8d928496ce2139d16a2",
+    "security-web/frontend/src/ApplicationAudit.tsx": "237633bf062dcb0b4b29cfb8da2bf64e5fdc29370a011d9b471321d06ea86a20",
+    "security-web/frontend/src/auditQuery.ts": "7013b7f606e9f8a8a4f9a1ff08f55f2f48cb24a50f6eb01d8177cbc7c7c041f2",
+    "security-web/frontend/tests/audit-query.test.mjs": "59767b853a318a0887ce226189aef580f0a2fb8bde9de3b96006870b3172b717",
+    "security-web/frontend/src/main.tsx": "07e14814c66e0e10c8a23a5e402f8a6904c18c3c4119f2058085d21bfe63ef46",
+    "security-web/frontend/src/Icon.tsx": "28ae7eacc06db4d8b070412c85bb869aa3db0540f4daf6733479e398a0d07231",
+    "security-web/frontend/src/style.css": "9943767b6128fc991c4f6e4ce4c721e9f4ced7764b88a0cde25e73dc360ee058",
+    "security-web/frontend/package.json": "8ee5d3e669b1a17def09f20cee42280b2bafe2a54399131776168d0555f429f3",
+    "security-web/scripts/smoke-test.py": "6ebbb966595dbca2ace9cd052776c81ad0dd15038a4599a6325ab7dace2b5df4",
+    "security-web/README.md": "f4936757b4694c758937e939511dfa4d1f74d6c510c33e41e866b413176bb950",
+    "docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md": "f93d54cb0b6c3633eb18b0470dee8d2c0747017d8c58df2c760ecd16853e4086",
+    "docs/01_SYSTEM_AUDIT_AND_ARCHITECTURE.md": "15770be7f32644530564a144d973edffb6076c2eef2f0f141825a665b967e578",
+    "docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md": "64306057735a368771fac0a5984eb8f4ff1be6167b5f3424f2c7fd7fb3abe514",
+    "docs/06_AI_HANDOFF_AND_RUN_LEDGER.md": "de75e2763129ee4484aeea692c03f873343aa79a2468e4122b86f8723b9a1abc"
+  }
+}

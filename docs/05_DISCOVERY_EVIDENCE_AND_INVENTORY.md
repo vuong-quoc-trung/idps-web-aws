@@ -1,6 +1,6 @@
 # 05 — Bằng chứng khảo sát, phạm vi và giới hạn xác minh
 
-**Snapshot:** 26/10/2026, Asia/Ho_Chi_Minh. **Git HEAD được khảo sát:** `37bc4d2ae1552939659a10647898e2228f1b801f`. Worktree ban đầu sạch. Bản ghi này mô tả cách có được kết luận trong 00–04; không thay thế kết quả kiểm thử runtime.
+**Snapshot khảo sát lịch sử (không phải hash code foundation):** 26/10/2026, Asia/Ho_Chi_Minh. **Git HEAD được khảo sát:** `37bc4d2ae1552939659a10647898e2228f1b801f`. Worktree ban đầu sạch. Bản ghi này mô tả cách có được kết luận trong 00–04; không thay thế kết quả kiểm thử runtime.
 
 ## 1. Phạm vi thực sự đã kiểm kê
 
@@ -85,3 +85,7 @@ Giữ manifest 05A là snapshot lịch sử gắn commit khảo sát. Khi có PR
 Kiểm `git diff --name-only`, `git ls-files --others --exclude-standard` và đối chiếu hash baseline để bảo đảm đợt khảo sát chỉ thêm `docs/`. Không chạy formatter toàn repo, tự sửa file cấu hình lỗi hoặc clean cache chỉ để báo cáo đẹp. Các finding được xử lý bằng task/PR riêng theo 04.
 
 Kết quả QA tài liệu trong phiên: đủ 5 tệp bắt buộc và 2 tệp hỗ trợ cùng manifest TSV; 28 link Markdown nội bộ trỏ đúng tệp, JSON minh họa parse hợp lệ, code fence đóng đủ và không có trailing whitespace. SHA-256 của **524/524 tệp tracked** vẫn khớp manifest; tracked diff rỗng, chỉ có **8 tệp mới trong `docs/`**. Hai lượt review độc lập đã đối chiếu trạng thái, tên trường schema, IPS semantics và kế hoạch tài nguyên/resume; không có test ứng dụng hoặc training được chạy để đạt các kết quả QA này.
+
+## 7. Foundation continuation
+
+Từ base1925764, nhánhfoundation đã có code thay đổi và kiểm thử runtime theo00/06. Manifest05A giữ nguyên snapshot lịch sử37bc4d2; không dùng số524unchanged của khảo sát đầu để khẳng định code hiện tại không đổi. Trạng thái mới, filelist và kết quảPASS/NOT_RUN nằm trong06.

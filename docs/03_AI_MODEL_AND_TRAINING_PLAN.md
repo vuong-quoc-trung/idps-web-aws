@@ -2,6 +2,8 @@
 
 **Ngày thiết kế:** 26/10/2026. **Trạng thái toàn bộ phần triển khai trong tài liệu:** ĐỀ XUẤT, chưa có trainer, inference service, model hoặc checkpoint được tạo. Hiện trạng code và data ở [00](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md).
 
+**Foundation update26/10/2026:** đã có exporter/canonical metadata cho successful reads/sessionHMAC/requestID/UA/HTTP/flow, nên các mô tả thiếu metadata ở baseline bên dưới cần đọc cùng02 hiện hành. Vẫn chưa có corpus có nhãn, causal ML feature library, payload được phép train, trainer hoặc model; mọi kiến trúc neural/checkpoint/stage của tài liệu này vẫn là thiết kế, chưa có giờ train được ghi nhận.
+
 ## 1. Bài toán và lựa chọn ban đầu
 
 Không thể khẳng định một kiến trúc “tối ưu nhất” khi chưa có corpus đại diện, CPU SKU và benchmark. Lựa chọn khởi đầu phù hợp repo là **mô hình nhỏ theo từng loại quan sát**, CPU-first, tách khỏi đường HTTP ứng dụng và khỏi executor firewall. Phải so sánh với rule-only và baseline đơn giản trước khi chấp nhận neural model.

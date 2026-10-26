@@ -4,6 +4,31 @@
 
 Đọc cùng [hiện trạng và tiến độ](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [chiến lược dữ liệu](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md), [AI/training](03_AI_MODEL_AND_TRAINING_PLAN.md) và [roadmap](04_ROADMAP_AND_TEAM_TASKS.md). Đường dẫn và số dòng bên dưới tính từ gốc repository tại mốc trên; phải đối chiếu lại khi code thay đổi.
 
+## Foundation update — 26/10/2026, base `1925764`, working tree
+
+Phần audit bên dưới được giữ làm **bằng chứng lịch sử tại `37bc4d2`**, không còn là mô tả đầy đủ code hiện tại. Đối chiếu thay đổi sau:
+
+| Finding / capability | Trạng thái mới | Evidence |
+|---|---|---|
+| DATA-01/02: missing Student/normal traffic | Đã triển khai phần foundation | Java filter/JSONL, `events.rs`, `ingest.rs`, `0003_shared_foundation.sql`; COLLECT_ALL_EVENTS; successful reads bật mặc định |
+| DATA-04: oversized stalls source | Đã xử lý | Bounded scans, persistent discard state, byte/hash quarantine, partial/rotation/replay/DB rollback tests |
+| APP metadata / attribution | Đã triển khai | RequestAttribution + TrustedForwardingConfiguration; UA product family/request_id DB + DTO + JSONL; custom methods→OTHER; V2 Flyway không sửa V1; trước commit89 Java/50 Rust PASS |
+| SEC-01 global stop | Đã xử lý bằng ENFORCEMENT_MODE=OFF mặc định | `process_one` dừng cả job pending/restore; MANUAL không áp AUTO/RESTORE |
+| SEC-02/03 TTL + stale reaction | Đã thêm TTL/deadline cơ bản | Helper timeout tối đa300s, DB expiry, migration0004, event freshness60s, giữ expiry gốc khi restore; historical/null-deadline không enforce |
+| SEC-04 SYN false-positive eligibility | Giảm rủi ro mặc định | Đổi tên SYN burst đúng semantics; bỏ SID1000001 khỏi allowlist auto mặc định; chưa có benchmark FP |
+| SEC-05 broader networks / host safety | Đã bổ sung | `network.rs` discovery host/gateway, WEB_SERVER_IP, exact whitelist; helper root-owned policy độc lập, IPv4 private CIDR default; rootless nft syntax test |
+| RULE-02 basic coverage | Đã mở rộng | Rust SQLi/XSS/traversal/command/scanner + durable auth burst; Suricata9SID kiểm PCAP offline |
+| Deployment ports/local-first | Đã có config và smoke | Compose5433/5434, upstream8080/5173 + WebVM backup, private dev runtime, loopback bind thực |
+| Quan sát audit trên dashboard | API/build/test PASS; UI trực quan NOT_RUN | `/api/application-audit` và `/{id}` chỉ đọc `normalized_events`; viewer/admin; UTC filters, snapshot count/page, strict Schema v1 + masking khi hiển thị; `ApplicationAudit.tsx`. Header Làm mới tải lại audit đang mở (ledger14.1); firewall audit `/api/audit` độc lập |
+
+**Không tuyên bố đã hoàn tất enterprise:** chưa throughput/FP benchmark; chưa HA/outbox source/remote shipping/periodic full reconciliation; chưa auth identity provider, learned anomaly model hoặc disaster recovery drill. Kernel enforcement thật, VLAN/LAN/Wi-Fi/VM/AWS end-to-end chưa được thử. Chế độ dev cố ý OFF và `/api/ready` có thể degraded khi chưa cài helper/ruleset; `/health` chỉ chứng minh process sống.
+
+Nginx query values bị loại trước khi ghi disk; các flag phát hiện được tính trong memory và tách khỏi input ML. Canonical evidence lưu metadata đã lọc, không giữ raw URL/body. EVE input có thể chứa thông tin ứng dụng nhạy cảm ở nguồn sensor: quản lý quyền/retention và không bật body/packet dump; collector không sao chép raw EVE vào DB. Không gọi đây là bảo đảm mọi log của phần mềm bên thứ ba không có bí mật.
+
+Spring Boot giữ auto-forward strategy NONE, nhưng có **ForwardedHeaderFilter tùy biến được trust-gate trước khi rewrite**. Header từ peer không tin cậy không được dùng làm client identity. IPv6 được parse/collect và tự miễn trừ host, nhưng actuator hiện chỉ thực thi IPv4; không quảng bá enforcement IPv6.
+
+Tham khảo cơ chế: [Spring trusted forwarding](https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/filters.html), [Nginx retry semantics](https://nginx.org/en/docs/http/ngx_http_proxy_module.html), [nftables element timeouts](https://wiki.nftables.org/wiki-nftables/index.php/Element_timeouts). Implementation được kiểm trên stack thực ghi trong ledger06.
+
 ## 1. Kết luận kiến trúc dựa trên code
 
 Đây là hệ thống lab có nền tảng IDS dựa trên chữ ký và phản ứng nftables đã được triển khai trong source; chưa phải IDPS hai lõi có AI. `security-web` chỉ đăng ký hai watcher **SURICATA** và **NGINX**, không có watcher/exporter cho audit ứng dụng sinh viên (`security-web/src/main.rs:228`). `student-web` đã lưu audit vào PostgreSQL; không nên giả định có sẵn file `audit.log`. Bài toán ưu tiên là hoàn thiện đường dữ liệu bình thường/bất thường và độ an toàn phản ứng, rồi mới huấn luyện AI trên dữ liệu đó.

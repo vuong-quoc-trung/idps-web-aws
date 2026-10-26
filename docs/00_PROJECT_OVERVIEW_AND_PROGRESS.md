@@ -2,15 +2,21 @@
 
 **Mốc khảo sát:** 26/10/2026, múi giờ Asia/Ho_Chi_Minh. **Code nền:** `37bc4d2ae1552939659a10647898e2228f1b801f`.
 
-**Phạm vi phiên này:** đọc và phân tích; chỉ thêm tài liệu trong `docs/`. Không sửa mã chức năng, không cài thư viện, không chạy training, server, migration, firewall, deploy hay gửi traffic thử nghiệm. Worktree sạch trước khi tạo bộ tài liệu. Đây là kết quả đọc tĩnh và thiết kế đề xuất, không phải chứng nhận hệ thống đang chạy hoặc đã đạt chuẩn doanh nghiệp.
+**Phạm vi khảo sát ban đầu (lịch sử):** đọc và phân tích; chỉ thêm tài liệu trong `docs/`. Không sửa mã chức năng, không cài thư viện, không chạy training, server, migration, firewall, deploy hay gửi traffic thử nghiệm. Worktree sạch trước khi tạo bộ tài liệu. Đây là kết quả đọc tĩnh và thiết kế đề xuất, không phải chứng nhận hệ thống đang chạy hoặc đã đạt chuẩn doanh nghiệp.
 
-## 1. Kết luận hiện trạng
+## 1. Hiện trạng Shared Foundation — 26/10/2026
 
-Dự án có hai ứng dụng hoạt động độc lập về mã và dữ liệu: cổng quản lý sinh viên `student-web` và nền tảng giám sát/chặn `security-web`. Security engine đã xử lý **rule**, có checkpoint đọc log, chống ghi trùng, ghi nhận cảnh báo, hàng đợi tác vụ firewall trong PostgreSQL và dashboard điều tra. **Chưa có AI engine, tập dữ liệu IDPS đã chuẩn hóa, mã train, checkpoint model hoặc model triển khai trong phạm vi đã kiểm kê.**
+**Nhánh:** `codex/foundation-audit-and-schema`; mốc nền `1925764a0b4dbbae647797136e17abfd9a122c45`. Thay đổi đã được chia thành các commit schema/Student/Security/infra/dev/Audit/CI và commit tài liệu bàn giao; xem ledger06 mục15. Chưa push trong phiên này. Quy định docs-only của phiên khảo sát cũ đã được yêu cầu triển khai mới thay thế; không tự áp quy định cũ để dừng việc đã giao.
 
-Điểm cần sửa trong cách hiểu ban đầu: `student-web` **chưa xuất tệp `audit.log`**. Audit HTTP hiện vào bảng **`access_logs`** của Student DB. Security backend chỉ đọc Suricata EVE và Nginx combined; chưa thu bảng này, chưa đọc audit JSONL của student và không giữ tất cả traffic bình thường. Cần xây cầu nối dữ liệu trước khi có thể train hành vi thực tế. Xem bằng chứng và schema tại [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md).
+Student Web hiện lưu audit DB **và** xuất JSONL theo `STUDENT_AUDIT_LOG_PATH`; mặc định ghi cả GET/HEAD/OPTIONS `/api/**` với cờ tắt riêng. Trusted proxy CIDR, `X-Request-Id`, User-Agent product families, HMAC identities và masking query đã được nối vào filter/writer. Header tự do không giữ nguyên văn; method tùy biến được chuẩn hóa thành OTHER. Spring dùng `ForwardedHeaderFilter` được bọc kiểm tra trust; chiến lược auto-forwarding của Boot giữ `NONE` để không rewrite IP trước bước kiểm tra.
 
-Tên repository có AWS, nhưng hiện trạng triển khai được mô tả và cấu hình là **Ubuntu Security Host + Kali VM + Web VM qua VMware vmnet2/vmnet3**. Không tìm thấy hạ tầng AWS bằng Terraform/CloudFormation, adapter WAF hay luồng CloudWatch trong mã dự án. AWS là hướng mở rộng sau khi chốt môi trường đích, không phải tính năng đã có.
+Rust đọc `STUDENT_AUDIT`, Nginx structured/combined và EVE; giữ normalized HTTP/flow/non-alert khi `COLLECT_ALL_EVENTS=true`. Migration `0003` bổ sung canonical event store, receipts, quarantine và state auth; `0004` bổ sung response deadlines. Cursor, observations/alerts/jobs và receipts commit cùng transaction. Dòng quá dài được cách ly theo byte/hash, không làm kẹt nguồn.
+
+Contract v1.0 đã khóa tại [`contracts/canonical-event-v1.schema.json`](../contracts/canonical-event-v1.schema.json), có typed Rust, Java exporter, fixture và test tương thích. **Chưa có model, trainer, corpus được gắn nhãn hoặc phiên training**. Không đánh đồng normalized observations với dataset benign đã được review.
+
+PostgreSQL Compose mặc định Student `5433`, Security `5434`, cùng loopback và có biến port riêng. Nginx template nghe `0.0.0.0:80`, tách API/frontend upstream local `8080/5173`, Web VM `192.168.20.10:80 backup`; TLS là template tùy chọn cần chứng thư. Backend/frontend bind loopback. Local-first/failover đã được thử bằng hai upstream cô lập; LAN/VM/AWS thật chưa nghiệm thu và chưa có AWS IaC.
+
+Enforcement mặc định `OFF` (kể cả PENDING/RESTORE). IPv4 scope cấu hình được, bảo vệ host/default gateway/Web VM và whitelist ở backend cùng helper độc lập. Helper dùng TTL, job hết hạn/stale bị từ chối; không mở quyền auto-response cho các rule Rust mới. Chưa áp firewall lên host trong phiên này.
 
 ## 2. Cách đọc bộ nhớ dự án
 
@@ -23,6 +29,7 @@ Tên repository có AWS, nhưng hiện trạng triển khai được mô tả v�
 | 04 | [ROADMAP_AND_TEAM_TASKS](04_ROADMAP_AND_TEAM_TASKS.md) | Thứ tự triển khai, phụ thuộc, chủ sở hữu và tiêu chí hoàn thành |
 | 05 | [DISCOVERY_EVIDENCE_AND_INVENTORY](05_DISCOVERY_EVIDENCE_AND_INVENTORY.md) | Phạm vi đọc, kiểm kê, giới hạn xác minh, manifest SHA-256 |
 | 06 | [AI_HANDOFF_AND_RUN_LEDGER](06_AI_HANDOFF_AND_RUN_LEDGER.md) | Quy trình “Đọc lại project”, bàn giao, sổ train và decision log |
+| 07 | [VM_ONLY_UPGRADE_GUIDE](07_VM_ONLY_UPGRADE_GUIDE.md) | Checklist nâng bản cho Student trên Web VM, Security ở máy khác; env, hai proxy, DB và audit transport |
 
 Các đường dẫn bằng chứng trong tài liệu tính từ gốc repo; số dòng gắn với commit khảo sát. Khi code thay đổi phải đọc lại đoạn liên quan, không coi số dòng cũ là bằng chứng mới. Tài liệu cũ trong từng service vẫn có giá trị lịch sử; khi mâu thuẫn, ưu tiên **code/config hiện tại + kết quả kiểm chứng có ghi thời điểm**, sau đó cập nhật `docs/`.
 
@@ -32,22 +39,22 @@ Các đường dẫn bằng chứng trong tài liệu tính từ gốc repo; s�
 |---|---|---|
 | `student-web/backend` | Java 25, Spring Boot 4.1.1 theo POM; Spring Security, MVC/JPA, PostgreSQL, Flyway, SMTP | `pom.xml`, `StudentWebApplication.java`, `configuration/`, `accesslog/`, `user/` |
 | `student-web/backend/src/main/java/com/pbl4/studentweb` | Auth/session/CSRF và vai trò ADMIN/STAFF/STUDENT; hồ sơ, sinh viên, khoa/ngành/chương trình/lớp; liên hệ, địa chỉ, gia đình | `student/`, `faculty/`, `major/`, `trainingprogram/`, `studentclass/`, các module hồ sơ |
-| `student-web/backend/src/main/resources` | Config dev/prod, Flyway V1, danh mục địa giới | `application*.yaml`, `db/migration/V1__initial_schema.sql` |
+| `student-web/backend/src/main/resources` | Config dev/prod, Flyway V1/V2, danh mục địa giới | `application*.yaml`, `db/migration/V1__initial_schema.sql` |
 | `student-web/backend/docs` | API, các đợt chuyển schema/seed lịch sử, dữ liệu danh mục và hướng dẫn vận hành | Không coi 019 script SQL là 019 Flyway migration đã chạy |
 | `student-web/frontend` | React + TypeScript + Vite, React Router; quản trị và self-service sinh viên | `src/App.tsx`, `api/`, `contexts/AuthContext.tsx`, `pages/` |
 | `security-web/src` | Rust edition 2024, rust-version tối thiểu 1.88; Axum 0.8, Tokio, SQLx 0.8, PostgreSQL | `main.rs`, `auth.rs`, `ingest.rs`, `firewall.rs`, `metrics.rs` |
-| `security-web/frontend` | React + TypeScript + Vite; API polling, alerts/search/detail, statistics, rules, trạng thái và firewall audit | `src/main.tsx`, `AlertDetail.tsx` |
-| `security-web/migrations` | SQLx 0001/0002 cho security DB | `sql/schema.sql` là fixture schema cũ, không phải nguồn migrate chính |
+| `security-web/frontend` | React + TypeScript + Vite; API polling, alerts/search/detail, application audit, statistics, rules, trạng thái và firewall audit | `src/main.tsx`, `AlertDetail.tsx`, `ApplicationAudit.tsx`, `auditQuery.ts` |
+| `security-web/migrations` | SQLx 0001–0004 cho security DB | `sql/schema.sql` là fixture schema cũ, không phải nguồn migrate chính |
 | `security-web/config`, `suricata`, `nginx`, `scripts`, `deploy` | Suricata capture/rules, Nginx proxy, nftables helper, systemd template, probes/acceptance | `docs/HOST_SECURITY_SETUP.md`; `deploy.sh --deploy` hiện bị khóa |
 | `docker` | PostgreSQL 16 cho student, không đóng gói đầy đủ ứng dụng | `docker-compose.yml` |
-| `security-web/docker-compose.yml` | PostgreSQL 17 cho security | Host port mặc định trùng 5433 nếu cùng máy với Student DB |
+| `security-web/docker-compose.yml` | PostgreSQL 17 cho security | Host port 5434; Student 5433, cấu hình được |
 | `.github/workflows` | Hai workflow CI student/security | `ci.yml`, `security.yml` |
 | `deliverables/security-host` | Hai DOCX kế hoạch Ubuntu host ngày 25/10, có đoạn không còn khớp mã mới | Snapshot tham khảo, không chứng minh cài đặt thực tế |
 | `.agents`, `skills-lock.json` | Bộ công cụ/skill hỗ trợ AI, không phải pipeline ML của IDPS | Có dữ liệu CSV thiết kế UI; không được tính là dataset tấn công |
 
 Lockfile frontend thực tế ghi Student React 19.3.0 / Vite 8.3.0 / TypeScript 6.0.3; Security React 19.3.1 / Vite 8.3.5 / TypeScript 6.0.3. Đây là phiên bản trong snapshot lockfile, không tuyên bố là phiên bản mới nhất hay đã cài. `package.json` chứa khoảng phiên bản, xem manifest gốc khi tái lập môi trường.
 
-## 4. Luồng chạy hiện tại
+## 4. Sơ đồ khảo sát ban đầu — lịch sử trước foundation
 
 ```mermaid
 flowchart LR
@@ -71,7 +78,7 @@ flowchart LR
   API --> D
 ```
 
-Không vẽ mũi tên từ `access_logs` sang Rust vì kết nối này chưa được triển khai. Nginx cấu hình upstream Web IP cổng HTTP 80; repo chưa cung cấp cấu hình web VM đầy đủ để xác nhận chuỗi serve Student SPA và reverse proxy tới Spring. Profile production của Spring bật TLS trực tiếp; cần chốt hợp đồng TLS trước nghiệm thu end-to-end.
+Đoạn khảo sát dưới đây mô tả baseline cũ; hiện luồng JSONL Student → Rust đã có như mục 1. Trước foundation, không có mũi tên từ `access_logs` sang Rust. Nginx cấu hình upstream Web IP cổng HTTP 80; repo chưa cung cấp cấu hình web VM đầy đủ để xác nhận chuỗi serve Student SPA và reverse proxy tới Spring. Profile production của Spring bật TLS trực tiếp; cần chốt hợp đồng TLS trước nghiệm thu end-to-end.
 
 Audit student hiện ghi mutation `/api/**` và request lỗi/exception, bỏ qua GET/HEAD/OPTIONS thành công; do đó không đủ tạo chuỗi hành vi đầy đủ. `user_agent` có trong entity nhưng writer hiện không gán. Nguồn IP hiện dùng `getRemoteAddr()`, chưa có hợp đồng trusted proxy. Retention audit student là 3 ngày, nên không thể đợi nhiều tuần rồi mới thu dữ liệu.
 
@@ -85,14 +92,14 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 |---|---|---|
 | Student CRUD, academic hierarchy, self-service | CÓ CODE + CÓ TEST | Controllers/services/entities và `StudentApiTests`, `StudentDatabaseTests` |
 | Student session, CSRF, RBAC, activation/reset | CÓ CODE + CÓ TEST | `SecurityConfiguration`, `user/*`, PostgreSQL transaction/race tests có điều kiện môi trường |
-| Student audit DB và retention | CÓ CODE + CÓ TEST | Filter/service/retention; thiếu successful reads và export an toàn |
-| Student `audit.log` JSONL / collector | ĐỀ XUẤT | Không có file/writer/adapter này trong code đã kiểm kê |
-| Suricata rules + Nginx SQLi parser | CÓ CODE + CÓ TEST parser | 8 SID lab; chưa đo recall/FP trên traffic đại diện |
+| Student audit DB + JSONL + reads | PASS 89 Java, gồm PostgreSQL | Filter/writers/attribution và UA/method privacy; retention DB vẫn 3 ngày; exporter có rotation/limit và lỗi được báo |
+| Student JSONL / durable collector | PASS Java + Rust + smoke | Path chung cấu hình được; collector checkpoint/dedup/oversize quarantine |
+| Suricata + Rust HTTP rules | PASS unit/integration/offline engine | 9 SID và 6 family Rust; chưa đo recall/FP trên workload đại diện |
 | Durable ingestion/checkpoint/replay | CÓ CODE + CÓ TEST | `ingest.rs`, migration reliability; giới hạn rotation/.gz/oversized line |
-| Firewall jobs, allowlist, RBAC, đối chiếu DB/kernel và startup restore | CÓ CODE + CÓ TEST với executor giả | Chưa reconcile định kỳ, TTL, global enforcement switch, freshness gate; chưa xác minh packet/kernel thật |
-| Security dashboard/API | CÓ CODE | Dữ liệu từ backend; catalog rule tĩnh không chứng minh Suricata đã nạp rule |
-| Correlation giữa student/proxy/flow | ĐỀ XUẤT | Thiếu request identity, schema chung và all-event stream |
-| Shared rate-limit / behavioral hard rules | MỘT PHẦN | Student có limiter RAM theo process; chưa engine ngưỡng hành vi liên nguồn |
+| Firewall safety / mode / TTL / deadlines | PASS policy + DB/executor tests; nft syntax PASS | OFF/MANUAL/ENFORCE, host/gateway discovery, TTL ≤300s, stale gate; kernel enforcement thật NOT_RUN |
+| Security dashboard/API | PASS API/build; UI trực quan NOT_RUN | Tab Audit ứng dụng, filters/page/detail/correlation; header refresh đã nối audit. Kiểm tra trước commit:50 Rust +3 frontend PASS; catalog rule tĩnh không chứng minh Suricata đã nạp rule |
+| Correlation student/proxy | PASS smoke và cross-source counter test | Request ID thống nhất; flow-to-request correlation vẫn chưa triển khai |
+| Auth burst detector | PASS Rust PostgreSQL | Theo IP+route, cửa sổ/thành công reset/cooldown; dedup request ID Nginx+audit; chưa distributed spraying theo account |
 | AI features/model/inference | ĐỀ XUẤT | Không có training package hay model artifact |
 | CI | CÓ CẤU HÌNH | Java/PG, Rust/PG, frontend build; chưa xác minh trạng thái run mới nhất |
 | Ubuntu host deployment | CÓ CONFIG + HƯỚNG DẪN | Service/helper/config cần host acceptance; không áp dụng trong phiên này |
@@ -104,8 +111,8 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 | Sổ theo dõi | Giá trị đã biết |
 |---|---|
 | Dataset IDPS đã đăng ký | Chưa có trong repo đã kiểm kê |
-| Bộ log `audit.log`/EVE/Nginx thật có mẫu đại diện | Chưa được cung cấp trong workspace; có fixture test, không phải corpus production |
-| Labeled split / feature schema / normalizer | Chưa triển khai |
+| Log runtime / corpus đại diện | Có JSONL/Nginx smoke trong ignored `.local-dev`; chưa có corpus đại diện hoặc nhãn được review |
+| Canonical schema / normalizer | v1.0 đã có code/test; chưa có ML feature library hoặc labeled split |
 | Model baseline / champion / ONNX | Chưa có artifact được kiểm chứng |
 | Ca train đã ghi nhận | **0 ca trong repo**; thời gian bên ngoài repo **chưa biết** |
 | Giờ train có bằng chứng | **0 giờ được ghi nhận**; không suy diễn nhóm chưa từng train ở nơi khác |
@@ -128,4 +135,13 @@ Thiết bị mục tiêu do người dùng cung cấp: ASUS Zenbook 14 OLED, RAM
 
 ## 8. Ưu tiên tiếp theo
 
-Ưu tiên đầu là thống nhất hợp đồng triển khai/proxy/IP và đóng các khoảng trống IPS, sau đó thu audit và traffic bình thường theo schema có version. Chỉ bắt đầu train khi dữ liệu có nhãn/split sạch, sampler và checkpoint đã kiểm chứng. Lộ trình chi tiết và chia việc ở [04](04_ROADMAP_AND_TEAM_TASKS.md); không có thay đổi chức năng nào được thực hiện bởi bộ tài liệu này.
+Ưu tiên đầu là thống nhất hợp đồng triển khai/proxy/IP và đóng các khoảng trống IPS, sau đó thu audit và traffic bình thường theo schema có version. Chỉ bắt đầu train khi dữ liệu có nhãn/split sạch, sampler và checkpoint đã kiểm chứng. Foundation đã được triển khai trong phiên tiếp nối; ưu tiên tiếp theo là data/feature/benchmark và nghiệm thu môi trường thật theo [04](04_ROADMAP_AND_TEAM_TASKS.md).
+
+## 9. Kết quả kiểm chứng foundation ban đầu — snapshot lịch sử
+
+- Java: **87 test PASS**, gồm các test PostgreSQL trên container test riêng (PostgreSQL 17); 0 skipped.
+- Rust: **44 test PASS**, gồm migrations/cursor/dedup/oversize/DB rollback/benign capture/auth correlation/deadlines; clippy toàn target và rustfmt PASS.
+- Nginx 1.28: 5 kịch bản PASS, gồm request ID/secret masking và local→backup failover. Suricata 8.0.3: syntax + PCAP offline đủ 9 SID PASS.
+- Smoke stack riêng PASS: backend 127.0.0.1:8080, frontend 127.0.0.1:5173, edge 18780, security 127.0.0.1:3001, DB 55433/55434; request ID xuất hiện ở cả NGINX và STUDENT_AUDIT trong normalized_events. Xem trạng thái cuối và lệnh tái lập tại [06](06_AI_HANDOFF_AND_RUN_LEDGER.md).
+
+Các finding runtime còn lại và giới hạn production được ghi trong 01/02/06; dữ liệu/AI vẫn cần R30–R34 trước S0. Những bảng/lời kết khảo sát cũ bên trên không phải trạng thái tính năng mới; mục 1/5/9 và ledger 06 là nguồn hiện hành.

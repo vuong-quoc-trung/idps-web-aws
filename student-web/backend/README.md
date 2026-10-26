@@ -2,6 +2,20 @@
 
 Java 25, Spring Boot 4.1.1, PostgreSQL 16. Flyway quản lý phiên bản schema; Hibernate chỉ kiểm tra mapping (`validate`).
 
+## Shared Foundation: chạy local và thu audit
+
+Xem [bộ nhớ dự án hiện hành](../../docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md) và [Canonical Event v1.0](../../contracts/README.md). Từ gốc repo, `scripts/dev-up-and-verify.sh --bootstrap-nginx` dựng stack demo riêng, kiểm loopback/JSONL/correlation và không thay đổi host firewall. Dùng `--expose-lan` nếu cần mở riêng Nginx dev; backend/frontend vẫn ở loopback.
+
+Khi chạy service riêng, lấy tên biến từ [.env.example](.env.example), giữ `.env` cá nhân ngoài Git:
+
+- Student Compose: `127.0.0.1:${STUDENT_DB_PORT:-5433}:5432`; Security Compose dùng5434 mặc định, không trùng cổng. Nếu đổi STUDENT_DB_PORT trong môi trường Compose, đổi DB_URL tương ứng.
+- Spring mặc định bind127.0.0.1, dùng DB_URL mặc địnhjdbc:postgresql://127.0.0.1:5433/student_db. DB_PASSWORD vẫn phải được cung cấp.
+- `TRUSTED_PROXIES` là danh sách exact-IP/CIDR, mặc định chỉ loopback. TrustedForwardingConfiguration bọc ForwardedHeaderFilter sau kiểm trust; Boot auto strategy giữNONE để không đánh mất peer gốc. Header từ peer khác không được tin.
+- `AUDIT_INCLUDE_SUCCESSFUL_READS=true` thu cả GET/HEAD/OPTIONS `/api/**`. DB audit có User-Agent product families và request ID; JSONL bổ sung timestampUTC, role, HMAC identity/session, query đã che và bounded metadata. UA lạ được che, không lưu header free text/version; method tùy biến thành OTHER để tránh giữ nội dung tùy ý của client.
+- Exporter bật mặc định qua `STUDENT_AUDIT_LOG_ENABLED=true`; `STUDENT_AUDIT_LOG_PATH=./logs/student-audit.log`. Cần `STUDENT_AUDIT_HMAC_KEY` tối thiểu32byte (ví dụ sinh bằng `openssl rand -hex 32`, giữ riêng); service fail config rõ ràng nếu thiếu key. Test contexts tắt file nếu không có temporary path riêng.
+- Exporter dùng file/directory riêng thuộc user ứng dụng, file0600, không symlink, max64MiB/file và16KiB/line. Rotate bằng rename+create, giữ file cũ chưa nén đến khi collector đọc hết; lỗi ghi file được cảnh báo an toàn. DB và file là hai sink độc lập, chưa phải transactional outbox.
+- Student Flyway V2 bổ sung request_id; không chỉnh V1 đã triển khai. Với VM/cloud tách máy, cần cấu hình bind/trusted proxy cụ thể và secure transport cho file audit; reverse proxy failover không tự chuyển log.
+
 ## Cấu trúc theo chức năng
 
 `src/main/java/com/pbl4/studentweb/` có các module:

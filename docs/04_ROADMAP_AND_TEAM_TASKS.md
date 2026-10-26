@@ -2,6 +2,14 @@
 
 **Baseline:** 26/10/2026, commit `37bc4d2ae1552939659a10647898e2228f1b801f`. Đây là backlog đề xuất sau khảo sát, **chưa phải thay đổi code được thực hiện**. Không áp ngày hoàn thành cố định khi chưa có benchmark/data. Tham chiếu finding IDs trong [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), data contract [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md), training gates [03](03_AI_MODEL_AND_TRAINING_PLAN.md).
 
+## Cập nhật foundation 26/10/2026
+
+Phiên mới đã cho phép và triển khai code trên `codex/foundation-audit-and-schema` (base1925764); đã chia commit theo phần, chưa push, xem ledger06 mục15. R02 canonical v1 đã khóa; phần R13 attribution/proxy, R20 JSONL/reads, R22 normal collection và R24 normalization có code/test. R10–R12 có chế độ OFF, TTL/deadline/freshness và safety protections cơ bản. R00 mới nghiệm thu local và failover mô phỏng; môi trường VM/LAN/AWS thật chưa xác minh. R21 mới là **hai sink DB/file độc lập**, không phải transactional outbox hoặc remote shipping hoàn chỉnh.
+
+Có thể tách hai luồng theo contract đã khóa: A tiếp IPS/Infra/benchmark/reconcile; B dùng normalized_events + v1 schema để xây data manifests/labels/splits/ML feature library. Không sửa v1 tùy ý hoặc coi observation không alert là nhãn benign. R30–R34, model training và release gates vẫn chưa hoàn tất. Chi tiết test và worktree paths ở 06.
+
+Phần lộ trình dưới đây giữ thứ tự/định nghĩa ban đầu; các câu “chỉ tạo tài liệu” là lịch sử, được yêu cầu triển khai của phiên mới thay thế.
+
 ## 1. Mục tiêu và thứ tự phụ thuộc
 
 Mục tiêu là một pilot IDPS có bằng chứng: thu đủ log, phân tích hai lõi không chặn lẫn nhau, phản ứng có giới hạn/khôi phục, model nhẹ được đánh giá trên Student Web thật và hai thành viên tiếp tục công việc được qua `/docs`. “Enterprise-grade” trong lộ trình là tập năng lực kiểm chứng được, không phải nhãn chứng nhận hoặc lời hứa đạt ngay nhờ đổi model.

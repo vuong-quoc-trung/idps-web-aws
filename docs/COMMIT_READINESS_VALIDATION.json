@@ -1,0 +1,181 @@
+{
+  "recorded_at": "2026-10-26T16:14:57.336180+00:00",
+  "branch": "codex/foundation-audit-and-schema",
+  "base_commit": "1925764a0b4dbbae647797136e17abfd9a122c45",
+  "code_commits": [
+    {
+      "sha": "7a4b7abcf5b24933424559ad0eebbf5ed428c73f",
+      "subject": "feat(schema): define canonical security event v1 contract"
+    },
+    {
+      "sha": "1894799c42fe99976f236e691898b1e807eebb81",
+      "subject": "feat(student): export private audit events with trusted proxy attribution"
+    },
+    {
+      "sha": "355cda54fab28db5ebc9b211cbec61d1c45e84b2",
+      "subject": "feat(security): add durable ingestion and bounded response policies"
+    },
+    {
+      "sha": "79b9869c7843f1b34655318f3e8e3bbb34ddd2ec",
+      "subject": "fix(infra): separate database ports and normalize proxy telemetry"
+    },
+    {
+      "sha": "e3e75bc7457bdc84aef5f33d13863278b273d119",
+      "subject": "chore(dev): add an isolated foundation launcher and smoke workflow"
+    },
+    {
+      "sha": "8b762bfda97c1105ef38127bc67025f86bd6b0cc",
+      "subject": "feat(audit): expose canonical event search and dashboard details"
+    },
+    {
+      "sha": "ed361fea907c8a14645dcb783f8e1ffe7a21cc6d",
+      "subject": "ci: validate shared contracts and security dashboard checks"
+    }
+  ],
+  "documentation_commit": "The commit containing this report; intentionally no self-referential hash",
+  "schema_version": "1.0",
+  "java": {
+    "tests": 89,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "rust_complete": {
+    "tests": 50,
+    "failures": 0,
+    "ignored": 0
+  },
+  "rust_foundation_index_snapshot": {
+    "tests": 45,
+    "failures": 0,
+    "clippy": "PASS",
+    "rustfmt": "PASS"
+  },
+  "frontend": {
+    "tests": 3,
+    "build": "PASS",
+    "format": "PASS"
+  },
+  "schema_tests": {
+    "tests": 3,
+    "runtime_samples": "Previously running Java and Rust demo JSONL; source compatibility, not new producer deployment"
+  },
+  "edge_sensor_tests": {
+    "tests": 6,
+    "kind": "Disposable loopback Nginx and offline Suricata PCAP"
+  },
+  "firewall_policy_tests": 3,
+  "launcher_tests": 2,
+  "clippy": "PASS",
+  "rustfmt": "PASS",
+  "shell_syntax": "PASS",
+  "source_manifest_preserved": "PASS",
+  "credential_scan": {
+    "status": "PASS",
+    "paths": 85,
+    "runtime_credential_matches": 0
+  },
+  "whitespace_gate": {
+    "initial": "FAIL (one trailing space in newly staged dev launcher)",
+    "final": "PASS after whitespace-only correction"
+  },
+  "test_container_removed": true,
+  "index_snapshot_removed": true,
+  "host_firewall_modified": false,
+  "app_database_modified": false,
+  "runtime_processes_restarted": false,
+  "push_performed": false,
+  "remote_ci": "NOT_RUN",
+  "browser_interaction": "NOT_RUN (Local browser use disabled)",
+  "vm_lan_aws_acceptance": "NOT_RUN",
+  "real_packet_enforcement": "NOT_RUN",
+  "training": "NOT_RUN",
+  "runtime_note": "Daemons keep prior binaries; rebuild/restart to run the new producer privacy changes. Only frontend dist was rebuilt.",
+  "known_nonblocking_issues": [
+    {
+      "priority": "P3",
+      "issue": "Canonical Edge UA family can be lost on a subsequent sanitization because only raw edg/ is recognized.",
+      "followup": "Add a canonical alias and idempotence test before training on UA families."
+    }
+  ],
+  "historical_reports": [
+    "FOUNDATION_VALIDATION.json",
+    "APPLICATION_AUDIT_VALIDATION.json",
+    "APPLICATION_AUDIT_REFRESH_VALIDATION.json"
+  ],
+  "source_sha256": {
+    ".github/workflows/ci.yml": "e62d7a5f6add52169cb93d8e6b81715168f831e280e7823c9df7c00b07aaa13b",
+    ".github/workflows/security.yml": "a2b49f86982e6ff0eeae8a7456395fb25a6c2c18c7ac00478a82954187a99867",
+    ".gitignore": "905225492336b542cc7da4688ec6ac3bb5b616e692f870483babf9e99c09f833",
+    "contracts/README.md": "76358ca5d711cd8f6ba82d1cadb9418b71017f99201ef98f2fd451e3e3e4ce56",
+    "contracts/canonical-event-v1.schema.json": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "contracts/fixtures/student-audit-v1.jsonl": "5e1494485107b282a01f82d1ecc803dd5e848f8fd663f1195f7d5c4b0a954971",
+    "contracts/test-schema.py": "472bd842eed6bdbe6309389750f48b087461f0b313603193c2f76c6bb11391cb",
+    "docker/docker-compose.yml": "f0c123d5ef2dd884f341bbfe504e1a30a01a0236a5cbfe2f4f5baf38a79c2837",
+    "scripts/dev-up-and-verify.py": "54c4bdfadd54a5bcbaca468be532e8d586c89d55d8bfabe512108948fd334a65",
+    "scripts/dev-up-and-verify.sh": "ea9a20dcabb41af6b2a674a8922f9d25d880cc9a9aeefcd11820f47ae3f15f4a",
+    "scripts/test-dev-launcher.py": "fc9a5554e97e8dd9dc0a461a33ef852f5acca2f0fe454b4556707218e6ea5532",
+    "security-web/.env.example": "f504bd30a323cc4a1fa30b2d11a252854fd95b9108f2b5d37bdf694a5e851c26",
+    "security-web/.gitignore": "587ca41d7feb5469f0bde00aae60e901cc0534ef2138ffd77b77c3b21b648f96",
+    "security-web/README.md": "de0ae9c45de0010c4c4b58397d226d33877b8054ed89db6dd42cefb17766ee48",
+    "security-web/config/firewall-policy.json.example": "24cee13e6dacd5bd40d58d5ceed1ce156055769053a3195435db113ce4ae7422",
+    "security-web/config/suricata/suricata.yaml": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+    "security-web/docker-compose.yml": "b9aa998a49fcb33d6063b2bd45d42fd88a5ba3b66ae2df9b46baa1c10f040910",
+    "security-web/docs/HOST_SECURITY_SETUP.md": "f810a51ce4038a71731e223127e4bbdac460aaa7e7c72b5efdd2b980c88cea5c",
+    "security-web/frontend/package.json": "8ee5d3e669b1a17def09f20cee42280b2bafe2a54399131776168d0555f429f3",
+    "security-web/frontend/src/ApplicationAudit.tsx": "868f7549bda3f68d1611058f105c3ab7e6b5e82859879ada1681af809c68734f",
+    "security-web/frontend/src/Icon.tsx": "28ae7eacc06db4d8b070412c85bb869aa3db0540f4daf6733479e398a0d07231",
+    "security-web/frontend/src/auditQuery.ts": "7013b7f606e9f8a8a4f9a1ff08f55f2f48cb24a50f6eb01d8177cbc7c7c041f2",
+    "security-web/frontend/src/main.tsx": "980abd8ce0f7bc490d346144a003f2ba9b104fac0b954a3be968e23d4147bb58",
+    "security-web/frontend/src/style.css": "9943767b6128fc991c4f6e4ce4c721e9f4ced7764b88a0cde25e73dc360ee058",
+    "security-web/frontend/tests/audit-query.test.mjs": "59767b853a318a0887ce226189aef580f0a2fb8bde9de3b96006870b3172b717",
+    "security-web/migrations/0003_shared_foundation.sql": "26b59640f9f416351492f7e901c393c3ece996a0d337d7cda4d9380e454800ba",
+    "security-web/migrations/0004_response_deadlines.sql": "6d5889a01d9ed58221e74f6c23db6ae4949101b176aaa434061cd45a67f4d93d",
+    "security-web/nginx/pbl4-proxy.conf": "3b704126461de711f33e4e10803bcebfc6fdc2697fd4cf111492820ac239986b",
+    "security-web/nginx/pbl4-tls.conf.example": "a61ab7ff370aa9f6d671845af733212030b0afe11d23b4fc3d128340e0bc24fc",
+    "security-web/scripts/pbl4-firewall": "6503dac73b6ba741e0acfad1156877bb35c562de02a676e29cc2c4a25c7e42ca",
+    "security-web/scripts/pbl4-firewall-policy.py": "bcb844dc867539246eb481e8d807a0524a1c2ec20497401e976314ab7eeb6f4f",
+    "security-web/scripts/pbl4.nft": "6d8d37a498921b6835e3e6f4371fe5ecd4dd6a9e9f09ec1d79461e229b14846b",
+    "security-web/scripts/smoke-test.py": "6ebbb966595dbca2ace9cd052776c81ad0dd15038a4599a6325ab7dace2b5df4",
+    "security-web/scripts/test-config-contracts.py": "89cbecd32fddda508a2c3ca97be8fe14136bd13ced2c392b2feead311c566692",
+    "security-web/scripts/test-firewall-policy.py": "f788457e5bea915ad660a1e38465e30b55b820bb21b10f0f5a3b83c10bbc6721",
+    "security-web/src/application_audit.rs": "bb6d06835fef42ecbe357560c3848ff066823e216f4d2ac4f88acaf46a6d566b",
+    "security-web/src/application_audit.sql": "8bbd34a2a37eff06f9c7e9f5ec0327747110c0bca93c1650a7f5d2d585fa97ec",
+    "security-web/src/detection.rs": "5fb2013c5075d3ae764ba96dddf9c5142ca79d2b1c862bb9b7f381b2d2266e3d",
+    "security-web/src/events.rs": "1c64b8b5cc8502538b8acbbae20353dcd6cd72920b4bf88558e491e11affc811",
+    "security-web/src/firewall.rs": "5ddaed09a843b5fba0513d23b549be6689d2016af61474d3597926de0a3426a7",
+    "security-web/src/foundation_tests.rs": "1f670b447754d24962be0e7b03f248362422a137909d9c2c62773c3880d9db47",
+    "security-web/src/ingest.rs": "ea0cc113abec6921289d7e77bce203a35fb70f015c9bafc4348d07b04b321848",
+    "security-web/src/integration_tests.rs": "d5a93c27e6f87089eb022cba2c7c7ffcb8def8778a00c8d928496ce2139d16a2",
+    "security-web/src/main.rs": "1b0ad5a38d095270c18bb5cc39027c2c4d802894f0870d50db52e6d30a227864",
+    "security-web/src/metrics.rs": "10401e334aeacf464345f4b936927d442795a3dbd2e7f69aace019fbd2fa0893",
+    "security-web/src/network.rs": "ba849e48f5bc3f65b2229419ad2ae6239fcea1ff4a6515d4c32dc95f6b15f85e",
+    "security-web/suricata/pbl4.rules": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "student-web/backend/.env.example": "95d60c886a86d246e14485ac2639a4f799bebdaae38afddc3a0b8e89f1330d5a",
+    "student-web/backend/README.md": "678a8960467a01f24207266c2d7062d124b145d09c9048ef60b520fe45815485",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/dto/AccessLogSummary.java": "53df787bbe30668869f89f9bb9fd3e7a6590a7e4dc58e1dce3bf75cf137a75d3",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/entity/AccessLog.java": "399b2b71b870ba2a74136ecf31141ef7e39a7e2f4c4518b700a0a566ad466910",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/mapper/AccessLogMapper.java": "b69cdbfd06c379f39d876e5253c46b31fa1e75cc6c7f321e713a867c32553492",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditDatabaseWriter.java": "69f0e85b0df180cf61c7f6b921e4067e42dc0b21798f44264f79a6d8ab594f8c",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditEvent.java": "b2efdc66188bea6179319ba125b09aa15b8c00e4ea38749d8540f6849d5600b1",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.java": "8f1cc65f97a475478c7635c83e5b36c9bfcef7da2c94142389b29b3cdb476888",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/SecurityAuditService.java": "b961bacd70ac609204d5e3c5362bc6c775fb943095f520e9238d397d6d609147",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/configuration/AccountPrincipal.java": "6cbe82a9e498ce1bb6156f4cc2c744f9dd3e6303f654b821bcafa682ca874216",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/configuration/RequestAttribution.java": "584c167b8a3004cd5fd52120c2ca86ed2a93725177ec66d9608c2e2e84930886",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/configuration/SecurityConfiguration.java": "9ce67eaed2be6ff5c35645a2c8174825372cbc71204caf0f0d9cd8f38e7668a9",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/configuration/SecurityRequestFilter.java": "dd2beb9d42400c16a00747c6b3984638cdd97a85fe48a0034cc24724951a14c5",
+    "student-web/backend/src/main/java/com/pbl4/studentweb/configuration/TrustedForwardingConfiguration.java": "1d4c4e95c6374ab11306a03416cd5002eff1c8507b90c01a7697044e78658351",
+    "student-web/backend/src/main/resources/application.yaml": "79a1edb57b9e2c5514a8b9599135576ea71f7525c1674de0f09f19d0923f61b8",
+    "student-web/backend/src/main/resources/db/migration/V2__audit_request_id.sql": "896ffda3ff4543e86c253bb42b2fdab410674e0750e1b436492545a5e08a4945",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/AuditPersistenceTests.java": "0a0c7aa705e161d49ff99176aa9ff5d12eb58cd1aa0794a03a9b459b7f2b2649",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/FlywayMigrationTests.java": "b9829bc0d3676271b086ec444ff1e0324f8779150b90be697914d6780e953abc",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/FlywayStartupTests.java": "cec631678b958918349e96e1686c4d7b83fa14239f6a784a4209ca7dc448b866",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/StudentApiTests.java": "d93ed9013755fb0a609274c85aceb9a8c2c66460c2ba444b4416c3426b2de4d7",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/accesslog/AuditExporterTests.java": "809033487acf500f6c09cf8c0bf0f01a86164c8bb2a2b4804886a67f79ced4b7",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/configuration/RequestAttributionTests.java": "ff60a1c82773bff2d10200b76404ff60c86362db31bc1e4333a4b31da9bd98a3",
+    "student-web/backend/src/test/java/com/pbl4/studentweb/configuration/SecurityRequestFilterTests.java": "472d91af76ee9e8df3dadae3707c6e30b5560801f7102f96b83452205c70725c",
+    "student-web/backend/src/test/resources/application.properties": "8fd6bbbeef4342c75a0d3e3533e7453157d201eafa2273ac80a1b4789f284000",
+    "student-web/backend/src/test/resources/db/upgrade/V3__migration_test_marker.sql": "ba26ce98427d9fad8fc466c075a966faf89a9fac85a74ae053653c8af1c36e4f",
+    "student-web/frontend/vite.config.ts": "4b2de0b83cdad5559e857b6b8e946ae0b1a9de08abb3f87b5066f6df1f9bfe30"
+  }
+}

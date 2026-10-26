@@ -1,0 +1,70 @@
+{
+  "recorded_at": "2026-10-26T15:56:19.295429+00:00",
+  "task": "Global manual refresh updates active application audit tab",
+  "preceding_report": "APPLICATION_AUDIT_VALIDATION.json (historical snapshot preserved)",
+  "review": {
+    "agent": "audit_refresh_review",
+    "status": "PASS",
+    "scope": "Read-only review of manual refresh signal, abort cleanup and preserved filters/page/dialog",
+    "browser_click": "NOT_RUN: Local browser use disabled in Work settings"
+  },
+  "observed_faculty_audit": {
+    "id": 242,
+    "source": "STUDENT_AUDIT",
+    "http_method": "POST",
+    "uri_path": "/api/faculties",
+    "status_code": 201,
+    "occurred_at": "2026-10-26T15:51:39.917721Z",
+    "observed_at": "2026-10-26T15:51:40.156137Z",
+    "related_sources": [
+      "NGINX"
+    ],
+    "verification": "PASS via authenticated HTTP GET; private credential read only in memory"
+  },
+  "checks": [
+    {
+      "command": "npm test",
+      "cwd": "security-web/frontend",
+      "status": "PASS",
+      "passed": 3,
+      "scope": "Existing timezone/query encoding/validation unit tests, not DOM interaction tests"
+    },
+    {
+      "command": "npm run format:check",
+      "cwd": "security-web/frontend",
+      "status": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "cwd": "security-web/frontend",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    },
+    {
+      "command": "cargo test / mvn test",
+      "status": "NOT_RUN",
+      "reason": "No backend/Student changes in this follow-up"
+    }
+  ],
+  "runtime": {
+    "url": "http://127.0.0.1:3001",
+    "security_restarted": false,
+    "student_nginx_database_changed": false,
+    "served_assets_sha256": {
+      "/assets/index-u8cVW-63.js": "e39f5a2177e77dc65e4ae74a8093332da6e9438dfeaf65505049d1e80999fda5",
+      "/assets/index-De-WFBYo.css": "a0d99a28b109f439047a6d65b61543969a25a4e97cea082a03eb768812400bab"
+    }
+  },
+  "files_sha256": {
+    "security-web/frontend/src/main.tsx": "980abd8ce0f7bc490d346144a003f2ba9b104fac0b954a3be968e23d4147bb58",
+    "security-web/frontend/src/ApplicationAudit.tsx": "22098b09c4f50f845144885d0699761823037344ef2768d3456f39a0d92d22b3",
+    "security-web/README.md": "de0ae9c45de0010c4c4b58397d226d33877b8054ed89db6dd42cefb17766ee48",
+    "docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md": "5f07c0952a842049cefa92714a965faf31ad03572a2d45b09dd9b1a4ee6cb858",
+    "docs/01_SYSTEM_AUDIT_AND_ARCHITECTURE.md": "9430aac420528086a95a73de142af1c67610cc1f2de1cb436b9bbcd8db177149",
+    "docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md": "261b8768ab1c656c72e1bba7a57839365f70b42f21b659fadf07b34521bd347e",
+    "docs/06_AI_HANDOFF_AND_RUN_LEDGER.md": "136c230bf082f78105c5405bb106f66397b6036fbbc9c07ff0216ea1f4c89943"
+  }
+}
