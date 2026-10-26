@@ -11,6 +11,7 @@ import {
 import { createRoot } from "react-dom/client";
 import "./style.css";
 import { AlertDetail } from "./AlertDetail";
+import { ApplicationAudit } from "./ApplicationAudit";
 import { Icon } from "./Icon";
 
 type User = { username: string; role: "admin" | "viewer" };
@@ -181,6 +182,7 @@ function App() {
   const [blocked, setBlocked] = useState<Blocked | null>(null);
   const [auditEvent, setAuditEvent] = useState<number | null>(null);
   const [audit, setAudit] = useState<Audit[]>([]);
+  const [applicationAuditRefresh, setApplicationAuditRefresh] = useState(0);
   const [rules, setRules] = useState<Rule[]>([]);
   const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(false);
@@ -420,6 +422,7 @@ function App() {
   const tabs = [
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
+    ["application-audit", "Audit ứng dụng"],
     ["blocked", "IP bị chặn"],
     ["audit", "Nhật ký thao tác"],
     ["rules", "Luật phát hiện"],
@@ -501,7 +504,14 @@ function App() {
                 ? `Dashboard tải dữ liệu thành công: ${updated}`
                 : "Đang tải dữ liệu"}
             </p>
-            <button onClick={() => void refresh()} disabled={loading}>
+            <button
+              onClick={() => {
+                if (tab === "application-audit")
+                  setApplicationAuditRefresh((value) => value + 1);
+                void refresh();
+              }}
+              disabled={loading}
+            >
               <Icon name="refresh" className={loading ? "is-spinning" : ""} />
               {loading ? "Đang tải…" : "Làm mới"}
             </button>
@@ -516,6 +526,9 @@ function App() {
           <p role="status" className="notice">
             {notice}
           </p>
+        )}
+        {tab === "application-audit" && (
+          <ApplicationAudit api={api} refreshSignal={applicationAuditRefresh} />
         )}
         {tab === "overview" && (
           <>

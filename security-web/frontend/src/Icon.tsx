@@ -4,6 +4,8 @@ const paths: Record<string, string> = {
   alerts: "M12 3 2.5 20h19L12 3Z M12 9v5 M12 17v.1",
   blocked: "M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z M9 12l2 2 4-4",
   audit: "M8 3h8l4 4v14H4V3h4 M14 3v5h6 M8 12h8 M8 16h5",
+  "application-audit":
+    "M4 3h12v6 M4 3v18h8 M8 7h4 M8 11h3 M20 16a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z M19 20l3 3",
   rules: "M4 6h16 M4 12h16 M4 18h16 M8 3v6 M16 9v6 M10 15v6",
   status: "M2 12h4l3-8 6 16 3-8h4",
   refresh:

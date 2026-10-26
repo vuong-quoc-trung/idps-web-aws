@@ -1,3 +1,4 @@
+mod application_audit;
 mod auth;
 mod detection;
 mod events;
@@ -270,6 +271,11 @@ fn router(state: AppState) -> Router {
         .route("/api/blocked-ips", get(firewall::list).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))
         .route("/api/audit", get(firewall::audit))
+        .route("/api/application-audit", get(application_audit::list))
+        .route(
+            "/api/application-audit/{id}",
+            get(application_audit::detail),
+        )
         .route_layer(middleware::from_fn_with_state(state.clone(), auth::guard));
     Router::new()
         .merge(api)

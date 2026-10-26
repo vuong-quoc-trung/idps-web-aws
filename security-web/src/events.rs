@@ -181,6 +181,22 @@ impl CanonicalEvent {
         Ok(())
     }
 
+    /// Reapply the privacy boundary when displaying stored observations. This
+    /// protects against legacy/manual rows without exposing arbitrary JSON.
+    pub fn display_view(mut self) -> Result<Self> {
+        self.validate()?;
+        let target = self.uri_path.as_ref().map(|path| match &self.query_string {
+            Some(query) => format!("{path}?{query}"),
+            None => path.clone(),
+        });
+        if target.is_none() && self.query_string.is_some() {
+            self.query_string = Some("[REDACTED]".into());
+            self.redacted = true;
+        }
+        self.sanitize(target.as_deref());
+        Ok(self)
+    }
+
     fn sanitize(&mut self, target: Option<&str>) {
         if let Some(target) = target {
             self.truncated |= target.chars().count() > MAX_TARGET_CHARS;

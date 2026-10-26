@@ -4,6 +4,431 @@ use http_body_util::BodyExt;
 use std::path::PathBuf;
 use tower::ServiceExt;
 
+fn application_event(
+    source: &str,
+    timestamp: &str,
+    request_id: Option<&str>,
+) -> events::CanonicalEvent {
+    let mut event = events::CanonicalEvent::new(source, timestamp.parse().unwrap());
+    event.event_id = format!("test-{}", rand::random::<u64>());
+    event.request_id = request_id.map(str::to_owned);
+    event.client_ip = Some("198.51.100.8".parse().unwrap());
+    event.http_method = Some("GET".into());
+    event.uri_path = Some("/api/students/123".into());
+    event.status_code = Some(200);
+    event.latency_ms = Some(12.5);
+    event.role = Some("ANONYMOUS".into());
+    event.outcome = "success".into();
+    event
+}
+
+async fn insert_application_event(pool: &PgPool, e: events::CanonicalEvent) -> i64 {
+    sqlx::query_scalar("INSERT INTO normalized_events(event_key,schema_version,source,source_instance,source_event_id,occurred_at,request_id,client_ip,event_type,http_method,uri_path,status_code,canonical) VALUES($1,'1.0',$2,$3,$1,$4,$5,$6::inet,$7,$8,$9,$10,$11) RETURNING id")
+        .bind(&e.event_id).bind(&e.source).bind(&e.source_instance).bind(e.timestamp)
+        .bind(&e.request_id).bind(e.client_ip.map(|ip|ip.to_string())).bind(&e.event_type)
+        .bind(&e.http_method).bind(&e.uri_path).bind(e.status_code.map(i32::from))
+        .bind(serde_json::to_value(&e).unwrap()).fetch_one(pool).await.unwrap()
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn application_audit_permissions_history_and_missing_records(pool: PgPool) {
+    let id = insert_application_event(
+        &pool,
+        application_event("STUDENT_AUDIT", "2026-10-26T00:00:00Z", None),
+    )
+    .await;
+    let app = router(state(pool.clone())); // collection is OFF, history must remain readable
+    for path in [
+        "/api/application-audit".to_string(),
+        format!("/api/application-audit/{id}"),
+    ] {
+        assert_eq!(
+            request(app.clone(), "GET", &path, None, serde_json::Value::Null)
+                .await
+                .0,
+            StatusCode::UNAUTHORIZED
+        );
+    }
+    let viewer = login(app.clone(), "viewer").await;
+    let (status, page) = request(
+        app.clone(),
+        "GET",
+        "/api/application-audit",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(page["total"], 1);
+    assert_eq!(page["collection"]["enabled"], false);
+    assert_eq!(page["collection"]["watchers"], serde_json::json!({}));
+    assert_eq!(page["items"][0]["uri_path"], "/api/students/[id]");
+    let (_, detail) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/application-audit/{id}"),
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(detail["related"], serde_json::json!([]));
+    assert_eq!(
+        request(
+            app.clone(),
+            "GET",
+            "/api/application-audit/999999",
+            Some(&viewer),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::NOT_FOUND
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            "/api/application-audit",
+            Some(&viewer),
+            serde_json::json!({})
+        )
+        .await
+        .0,
+        StatusCode::FORBIDDEN
+    );
+    let admin = login(app.clone(), "admin").await;
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            "/api/application-audit",
+            Some(&admin),
+            serde_json::json!({})
+        )
+        .await
+        .0,
+        StatusCode::METHOD_NOT_ALLOWED
+    );
+    assert_eq!(
+        request(
+            app,
+            "GET",
+            "/api/audit",
+            Some(&viewer),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT count(*) FROM firewall_actions")
+            .fetch_one(&pool)
+            .await
+            .unwrap(),
+        0
+    );
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn application_audit_filters_pagination_and_snapshot_count(pool: PgPool) {
+    let first = insert_application_event(
+        &pool,
+        application_event(
+            "STUDENT_AUDIT",
+            "2026-10-26T00:00:00Z",
+            Some("request-shared"),
+        ),
+    )
+    .await;
+    let second = insert_application_event(
+        &pool,
+        application_event("NGINX", "2026-10-26T00:00:00Z", Some("request-shared")),
+    )
+    .await;
+    let mut failed = application_event(
+        "STUDENT_AUDIT",
+        "2026-10-26T00:00:00Z",
+        Some("request-failed"),
+    );
+    failed.status_code = Some(403);
+    failed.outcome = "failure".into();
+    let third = insert_application_event(&pool, failed).await;
+    insert_application_event(
+        &pool,
+        application_event("STUDENT_AUDIT", "2026-10-26T00:01:00Z", None),
+    )
+    .await;
+    insert_application_event(
+        &pool,
+        application_event("SURICATA", "2026-10-25T23:59:59Z", None),
+    )
+    .await;
+    let mut s = state(pool);
+    s.ingestion = Arc::new(ingest::Config {
+        collect_all: true,
+        ..Default::default()
+    });
+    s.watchers
+        .write()
+        .await
+        .insert("STUDENT_AUDIT".into(), ingest::WatcherStatus::default());
+    let app = router(s);
+    let viewer = login(app.clone(), "viewer").await;
+    let get = |path: String| {
+        let app = app.clone();
+        let viewer = viewer.clone();
+        async move { request(app, "GET", &path, Some(&viewer), serde_json::Value::Null).await }
+    };
+    // Equal timestamps are ordered by id DESC; page count does not change with LIMIT/OFFSET.
+    let (_, page) = get("/api/application-audit?limit=2&offset=1".into()).await;
+    assert_eq!(page["total"], 5);
+    assert_eq!(page["items"][0]["id"], third);
+    assert_eq!(page["items"][1]["id"], second);
+    assert_eq!(page["collection"]["enabled"], true);
+    assert_eq!(
+        page["collection"]["watchers"]["STUDENT_AUDIT"]["state"],
+        "starting"
+    );
+    let (_, filtered) = get("/api/application-audit?from=2026-10-26T00:00:00Z&to=2026-10-26T00:01:00Z&source=STUDENT_AUDIT&client_ip=198.51.100.8&uri_path=%2Fapi%2Fstudents&status_code=200&http_method=GET&request_id=request-shared".into()).await;
+    assert_eq!(filtered["total"], 1);
+    assert_eq!(filtered["items"][0]["id"], first);
+    for (filter, total) in [
+        ("source=SURICATA", 1),
+        ("source=STUDENT_AUDIT", 3),
+        ("status_code=403", 1),
+        ("request_id=request-shared", 2),
+        ("from=2026-10-26T00:00:00Z&to=2026-10-26T00:01:00Z", 3),
+    ] {
+        let (status, page) = get(format!("/api/application-audit?{filter}")).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(page["total"], total, "filter: {filter}");
+    }
+    for filter in [
+        "client_ip=2001%3Adb8%3A%3A1",
+        "uri_path=%25",
+        "uri_path=%27%20OR%201%3D1--",
+        "http_method=POST",
+        "offset=100",
+    ] {
+        let (status, empty) = get(format!("/api/application-audit?{filter}")).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(empty["items"], serde_json::json!([]));
+    }
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn application_audit_rejects_invalid_filters(pool: PgPool) {
+    let app = router(state(pool));
+    let viewer = login(app.clone(), "viewer").await;
+    for query in [
+        "limit=0",
+        "limit=201",
+        "offset=-1",
+        "offset=1000001",
+        "source=RAW",
+        "status_code=99",
+        "status_code=600",
+        "status_code=abc",
+        "request_id=bad%20id",
+        "request_id=",
+        "uri_path=",
+        "uri_path=%0A",
+        "http_method=get",
+        "client_ip=bad",
+        "from=bad",
+        "from=2026-10-26T00:00:00Z&to=2026-10-26T00:00:00Z",
+        "unknown=secret",
+    ] {
+        assert_eq!(
+            request(
+                app.clone(),
+                "GET",
+                &format!("/api/application-audit?{query}"),
+                Some(&viewer),
+                serde_json::Value::Null
+            )
+            .await
+            .0,
+            StatusCode::BAD_REQUEST,
+            "query: {query}"
+        );
+    }
+    for query in [
+        format!("uri_path={}", "a".repeat(513)),
+        format!("request_id={}", "a".repeat(129)),
+    ] {
+        assert_eq!(
+            request(
+                app.clone(),
+                "GET",
+                &format!("/api/application-audit?{query}"),
+                Some(&viewer),
+                serde_json::Value::Null
+            )
+            .await
+            .0,
+            StatusCode::BAD_REQUEST
+        );
+    }
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn application_audit_display_redaction_and_strict_contract(pool: PgPool) {
+    let mut e = application_event("STUDENT_AUDIT", "2026-10-26T00:00:00Z", None);
+    e.uri_path = Some("/api/students/private-student-name".into());
+    e.query_string = Some(
+        "password=plaintext-password&token=plaintext-token&private-email=plaintext-email".into(),
+    );
+    e.user_agent = Some("Mozilla/5.0 Chrome/123 plaintext-ua-secret".into());
+    e.username = Some(format!("hmac-sha256:{}", "a".repeat(64)));
+    let id = insert_application_event(&pool, e).await;
+    let app = router(state(pool.clone()));
+    let viewer = login(app.clone(), "viewer").await;
+    for path in [
+        "/api/application-audit".to_string(),
+        format!("/api/application-audit/{id}"),
+    ] {
+        let (status, body) = request(
+            app.clone(),
+            "GET",
+            &path,
+            Some(&viewer),
+            serde_json::Value::Null,
+        )
+        .await;
+        assert_eq!(status, StatusCode::OK);
+        for secret in ["plaintext-", "private-student-name", "private-email"] {
+            assert!(!body.to_string().contains(secret));
+        }
+    }
+    let (_, detail) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/application-audit/{id}"),
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(
+        detail["canonical"]["query_string"],
+        "password=[REDACTED]&token=[REDACTED]&[key]=[REDACTED]"
+    );
+    assert_eq!(detail["canonical"]["redacted"], true);
+    // The API is read-only: display sanitation must not rewrite stored training observations.
+    let raw: serde_json::Value =
+        sqlx::query_scalar("SELECT canonical FROM normalized_events WHERE id=$1")
+            .bind(id)
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+    assert!(raw.to_string().contains("plaintext-password"));
+    let canonical: events::CanonicalEvent = serde_json::from_value(raw.clone()).unwrap();
+    let safe = canonical.clone().display_view().unwrap();
+    assert_eq!(
+        serde_json::to_value(safe.clone()).unwrap(),
+        serde_json::to_value(safe.display_view().unwrap()).unwrap()
+    );
+    let mut orphan_query = canonical;
+    orphan_query.uri_path = None;
+    assert_eq!(
+        orphan_query.display_view().unwrap().query_string.as_deref(),
+        Some("[REDACTED]")
+    );
+    for patch in [
+        serde_json::json!({"body":"never-show-this-body"}),
+        serde_json::json!({"username":"never-show-this-user"}),
+    ] {
+        sqlx::query("UPDATE normalized_events SET canonical=canonical || $1 WHERE id=$2")
+            .bind(patch)
+            .bind(id)
+            .execute(&pool)
+            .await
+            .unwrap();
+        let (status, body) = request(
+            app.clone(),
+            "GET",
+            &format!("/api/application-audit/{id}"),
+            Some(&viewer),
+            serde_json::Value::Null,
+        )
+        .await;
+        assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(!body.to_string().contains("never-show"));
+        let (status, body) = request(
+            app.clone(),
+            "GET",
+            "/api/application-audit",
+            Some(&viewer),
+            serde_json::Value::Null,
+        )
+        .await;
+        assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
+        assert!(!body.to_string().contains("never-show"));
+        sqlx::query("UPDATE normalized_events SET canonical=$1 WHERE id=$2")
+            .bind(&raw)
+            .bind(id)
+            .execute(&pool)
+            .await
+            .unwrap();
+    }
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn application_audit_request_id_correlation_is_bounded(pool: PgPool) {
+    let id = insert_application_event(
+        &pool,
+        application_event(
+            "STUDENT_AUDIT",
+            "2026-10-26T00:00:00Z",
+            Some("same-request"),
+        ),
+    )
+    .await;
+    for _ in 0..12 {
+        insert_application_event(
+            &pool,
+            application_event("NGINX", "2026-10-26T00:00:00Z", Some("same-request")),
+        )
+        .await;
+    }
+    let unrelated = insert_application_event(
+        &pool,
+        application_event(
+            "SURICATA",
+            "2026-10-26T00:00:00Z",
+            Some("different-request"),
+        ),
+    )
+    .await;
+    let app = router(state(pool));
+    let viewer = login(app.clone(), "viewer").await;
+    let (status, detail) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/application-audit/{id}"),
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    let related = detail["related"].as_array().unwrap();
+    assert_eq!(related.len(), 10);
+    assert!(
+        related
+            .iter()
+            .all(|r| r["request_id"] == "same-request" && r["id"] != unrelated && r["id"] != id)
+    );
+    let (_, page) = request(
+        app,
+        "GET",
+        "/api/application-audit?request_id=same-request",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(page["total"], 13);
+}
 fn state(pool: PgPool) -> AppState {
     AppState {
         pool,

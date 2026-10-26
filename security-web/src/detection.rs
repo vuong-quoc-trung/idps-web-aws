@@ -349,7 +349,7 @@ pub fn redact_target(target: &str) -> (String, Option<String>, bool) {
         } else if sensitive_segment(base) {
             tail_sensitive = true;
             "[redacted]".into()
-        } else if safe_route_segment(base) {
+        } else if safe_route_segment(base) || matches!(base, "[id]" | "[redacted]") {
             base.to_owned()
         } else if base.len() <= 20 && base.bytes().all(|b| b.is_ascii_digit()) {
             "[id]".into()
