@@ -15,7 +15,7 @@ suricata-version: "8.0"
 vars:
   # more specific is better for alert accuracy and performance
   address-groups:
-    HOME_NET: "[192.168.10.1/32,192.168.20.0/24]"
+    HOME_NET: "[127.0.0.0/8,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,::1]"
     #HOME_NET: "[192.168.0.0/16]"
     #HOME_NET: "[10.0.0.0/8]"
     #HOME_NET: "[172.16.0.0/12]"
@@ -735,7 +735,8 @@ af-packet:
     # https://redmine.openinfosecfoundation.org/issues/7585
     #disable-hwtimestamp: false
 
-  # Capture only the attacker-facing host interface; proxy upstream is a separate flow.
+  # vmnet2 is the lab capture default. For LAN/AWS select the actual ingress
+  # interface with --af-packet=<iface>; do not assume VMware names exist.
 
 # Linux high speed af-xdp capture support
 af-xdp:

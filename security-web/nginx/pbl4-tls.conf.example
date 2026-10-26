@@ -1,0 +1,7 @@
+# Optional HTTPS server template: replace the HTTP listener in pbl4-proxy.conf
+# with these directives inside that same server. Do not include this file blindly.
+listen 0.0.0.0:443 ssl;
+ssl_certificate /etc/ssl/idps/fullchain.pem;
+ssl_certificate_key /etc/ssl/idps/privkey.pem;
+# Set SESSION_COOKIE_SECURE=true for Student Web when HTTPS terminates here.
+# Run Spring without its direct-TLS prod profile for this HTTP-upstream topology.

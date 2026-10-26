@@ -1,5 +1,12 @@
 # Nghiệm thu Security trên Ubuntu host
 
+> **Cập nhật foundation26/10/2026:** dùng `ENFORCEMENT_MODE=OFF` khi nghiệm thu; code/config đã hỗ trợ dảiprivate, host/gateway exclusions và TTL, thay cho dảiKali cố định trong hướng dẫn lịch sử. Không áp helper/ruleset cũ lẫn bản mới. Cài đồng bộ **wrapper**, **policy module** và `pbl4.nft` sau khi kiểm tra backup/management access; scriptdev không thực hiện việc này.
+>
+> Module mới: `scripts/pbl4-firewall-policy.py` → `/usr/local/libexec/pbl4-firewall-policy.py`, root-owned0755; wrapper vẫn `/usr/local/bin/pbl4-firewall`, root-owned0755. Policy tùy chọn `config/firewall-policy.json.example` → `/etc/pbl4/firewall-policy.json`, root-owned0644, protectedIPs phải gồm WebVM/gateway và assets quản trị thực tế. ENV backend không thay thế policy root. Tệp root policy không được group/world writable.
+>
+> Nginx template mới ưu tiên backend/frontendloopback rồi backupWebVM80; Security DB5434, Student DB5433. Tham chiếu [`../README.md`](../README.md) và [`../../docs/06_AI_HANDOFF_AND_RUN_LEDGER.md`](../../docs/06_AI_HANDOFF_AND_RUN_LEDGER.md) cho trạng thái kiểm chứng. Những dòng dưới mô tả snapshot lab cũ nếu không được ghi đè bởi update này.
+
+
 Kiến trúc cố định: Kali 192.168.10.10 (VMnet2) → Nginx host 192.168.10.1:80 → Web 192.168.20.10 (VMnet3); host vmnet3=192.168.20.1. AUTO_BLOCK=false. Các lệnh sudo bên dưới do người vận hành tự chạy, không phải script tự triển khai. Không dùng deploy.sh --deploy (đã khóa trước bước sudo).
 
 Chạy các lệnh từ `security-web/`. Không đổi mạng/IP, không flush ruleset, không thay /etc/nftables.conf. Dừng backend đang chạy trước khi cấp quyền firewall; chỉ khởi động lại sau bước rà tác vụ DB.
