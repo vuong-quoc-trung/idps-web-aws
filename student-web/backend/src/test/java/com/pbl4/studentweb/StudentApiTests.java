@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "spring.datasource.url=jdbc:h2:mem:apitests;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
     "spring.datasource.username=sa", "spring.datasource.password=",
     "spring.jpa.hibernate.ddl-auto=create-drop", "spring.jpa.properties.hibernate.default_schema=PUBLIC",
-    "app.security.rate-limit-enabled=false", "app.bootstrap.enabled=false", "logging.level.root=WARN"
+    "app.audit.include-successful-reads=false", "app.security.rate-limit-enabled=false", "app.bootstrap.enabled=false", "logging.level.root=WARN"
 })
 @Transactional
 class StudentApiTests {

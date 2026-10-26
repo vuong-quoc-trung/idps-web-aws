@@ -38,6 +38,9 @@ public class AccessLog extends BaseEntity {
     @Column(name = "user_agent", columnDefinition = "text")
     private String userAgent;
 
+    @Column(name = "request_id", length = 128)
+    private String requestId;
+
     @Column(name = "request_time_ms")
     private Long requestTimeMs;
 

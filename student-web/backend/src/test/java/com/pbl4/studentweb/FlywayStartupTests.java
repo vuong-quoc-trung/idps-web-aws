@@ -24,7 +24,7 @@ class FlywayStartupTests {
     }
     @Autowired Flyway flyway;
     @Test void flywayRunsBeforeHibernateSchemaValidation() {
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("1");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
         assertThat(flyway.info().pending()).isEmpty();
         flyway.validate();
     }

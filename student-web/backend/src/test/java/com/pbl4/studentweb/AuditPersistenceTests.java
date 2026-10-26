@@ -35,7 +35,8 @@ class AuditPersistenceTests {
         user.setPasswordSetupRequired(false); user.setPasswordHash(encoder.encode("Original-password-123"));
         users.saveAndFlush(user);
         var session = (MockHttpSession) mvc.perform(post("/api/auth/login").with(csrf())
-            .param("username", "audit-student").param("password", "Original-password-123"))
+            .param("username", "audit-student").param("password", "Original-password-123")
+            .header("X-Request-Id", "edge-login-123").header("X-Forwarded-For", "192.0.2.44").header("User-Agent", "Mozilla/5.0 AuditTest"))
             .andExpect(status().isNoContent()).andReturn().getRequest().getSession(false);
         mvc.perform(post("/api/auth/change-password").session(session).with(csrf())
             .contentType("application/json")
@@ -43,7 +44,19 @@ class AuditPersistenceTests {
             .andExpect(status().isNoContent());
         mvc.perform(post("/api/auth/login").with(csrf()).param("username", "audit-student").param("password", "wrong"))
             .andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/auth/csrf").header("User-Agent", "Mozilla/5.0 Reads"))
+            .andExpect(status().isOk());
         var entries = logs.findAll();
+        assertThat(entries).anySatisfy(e -> {
+            assertThat(e.getRequestId()).isEqualTo("edge-login-123");
+            assertThat(e.getClientIp()).isEqualTo("192.0.2.44");
+            assertThat(e.getUserAgent()).isEqualTo("Mozilla");
+        });
+        assertThat(entries).anySatisfy(e -> {
+            assertThat(e.getRequestPath()).isEqualTo("/api/auth/csrf");
+            assertThat(e.getUserAgent()).isEqualTo("Mozilla");
+            assertThat(e.getStatusCode()).isEqualTo(200);
+        });
         assertThat(entries).anySatisfy(e -> {
             assertThat(e.getRequestPath()).isEqualTo("/api/auth/change-password");
             assertThat(e.getStatusCode()).isEqualTo(204);

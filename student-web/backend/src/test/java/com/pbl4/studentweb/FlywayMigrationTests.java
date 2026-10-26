@@ -49,7 +49,7 @@ class FlywayMigrationTests {
     }
     @Test void freshSchemaRunsOnceAndValidatesChecksum() throws Exception {
         var migration = flyway(false, false);
-        assertThat(migration.migrate().migrationsExecuted).isEqualTo(1);
+        assertThat(migration.migrate().migrationsExecuted).isEqualTo(2);
         assertThat(count("students")).isZero();
         assertThat(count("admin_creation_lock")).isEqualTo(1);
         assertThat(migration.migrate().migrationsExecuted).isZero();
@@ -62,7 +62,7 @@ class FlywayMigrationTests {
         execute("DROP TABLE flyway_schema_history");
         execute("INSERT INTO faculties (faculty_code, faculty_name, active) VALUES ('FAC-TEST', 'Preserve me', true)");
         assertThatThrownBy(() -> flyway(false, false).migrate()).isInstanceOf(FlywayException.class);
-        assertThat(flyway(true, false).migrate().migrationsExecuted).isZero();
+        assertThat(flyway(true, false).migrate().migrationsExecuted).isEqualTo(1);
         assertThat(count("faculties")).isEqualTo(1);
         assertThat(flyway(false, true).migrate().migrationsExecuted).isEqualTo(1);
         assertThat(count("migration_test_marker")).isZero();

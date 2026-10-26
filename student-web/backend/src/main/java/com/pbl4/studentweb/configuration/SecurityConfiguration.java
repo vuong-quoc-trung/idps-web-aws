@@ -25,7 +25,8 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, UserRepository users, UserAccountService accounts, SensitiveRequestLimiter limiter,
-            com.pbl4.studentweb.accesslog.service.SecurityAuditService audit) throws Exception {
+            com.pbl4.studentweb.accesslog.service.SecurityAuditService audit, RequestAttribution attribution,
+            @org.springframework.beans.factory.annotation.Value("${app.audit.include-successful-reads:true}") boolean includeReads) throws Exception {
         // Default session-backed CSRF tokens are obtained from /api/auth/csrf and sent in the returned header.
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
@@ -51,7 +52,7 @@ public class SecurityConfiguration {
         http.exceptionHandling(errors -> errors
                 .authenticationEntryPoint((request, response, error) -> error(response, 401, "Authentication required"))
                 .accessDeniedHandler((request, response, error) -> error(response, 403, "Access denied")));
-        http.addFilterBefore(new SecurityRequestFilter(limiter, audit), org.springframework.security.web.csrf.CsrfFilter.class);
+        http.addFilterBefore(new SecurityRequestFilter(limiter, audit, attribution, includeReads), org.springframework.security.web.csrf.CsrfFilter.class);
         http.sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId()));
         http.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'")));
         http.requestCache(cache -> cache.disable());

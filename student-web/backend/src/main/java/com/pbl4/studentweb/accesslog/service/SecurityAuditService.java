@@ -1,27 +1,29 @@
 package com.pbl4.studentweb.accesslog.service;
 
-import com.pbl4.studentweb.accesslog.entity.AccessLog;
-import com.pbl4.studentweb.accesslog.repository.AccessLogRepository;
-import com.pbl4.studentweb.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class SecurityAuditService {
-    private final AccessLogRepository logs;
-    private final UserRepository users;
-    @Transactional
-    public void record(String username, String ip, String method, String path, int status, long elapsed) {
-        var entry = new AccessLog();
-        if (username != null) users.findByUsername(username).ifPresent(entry::setUser);
-        entry.setClientIp(ip == null ? null : ip.substring(0, Math.min(45, ip.length())));
-        entry.setHttpMethod(method.substring(0, Math.min(10, method.length())));
-        entry.setRequestPath(path.substring(0, Math.min(500, path.length())));
-        entry.setStatusCode(status);
-        entry.setAction(status >= 400 ? "REQUEST_REJECTED" : "REQUEST_SUCCEEDED");
-        entry.setRequestTimeMs(elapsed);
-        logs.save(entry);
+    private final AuditDatabaseWriter database;
+    private final AuditJsonlExporter exporter;
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SecurityAuditService.class);
+
+    public void record(AuditEvent event) {
+        try { database.record(event); }
+        catch (RuntimeException e) {
+            String state = "unknown";
+            Throwable cause = e;
+            for (int depth = 0; cause != null && depth < 16; depth++, cause = cause.getCause()) {
+                if (cause instanceof java.sql.SQLException sql) { state = sql.getSQLState(); break; }
+            }
+            // Never include exception text, request fields, paths or secrets in this warning.
+            LOG.warn("Security audit database write failed: type={}, SQLSTATE={}", e.getClass().getSimpleName(), state);
+        }
+        try { exporter.append(event); }
+        catch (java.io.IOException | RuntimeException e) {
+            LOG.warn("Security audit JSONL write failed: type={}; inspect exporter permissions/capacity", e.getClass().getSimpleName());
+        }
     }
 }
