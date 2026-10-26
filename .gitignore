@@ -2,3 +2,6 @@ student-web/backend/.env
 /.local-jdk/
 /.local-node/
 /.local-backups/
+/.local-dev/
+**/__pycache__/
+student-web/backend/logs/

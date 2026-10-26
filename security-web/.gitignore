@@ -22,3 +22,6 @@ target/
 # Frontend artifacts
 frontend/node_modules/
 frontend/dist/
+
+# Runtime captures are never source/training fixtures.
+logs/
