@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:idps:canonical-event:1.0",
+  "title": "IDPS Canonical Event v1.0",
+  "description": "Redacted observation, not an attack label. IP strings are literal addresses checked by the consumer. Missing source features remain null. No request body, credential or arbitrary extension object is permitted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "source",
+    "source_instance",
+    "timestamp",
+    "request_id",
+    "client_ip",
+    "peer_ip",
+    "user_id",
+    "username",
+    "role",
+    "session_hmac",
+    "http_method",
+    "uri_path",
+    "query_string",
+    "status_code",
+    "latency_ms",
+    "user_agent",
+    "event_type",
+    "outcome",
+    "redacted",
+    "truncated"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "source": {
+      "enum": [
+        "STUDENT_AUDIT",
+        "NGINX",
+        "SURICATA"
+      ]
+    },
+    "source_instance": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "request_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "client_ip": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 45
+    },
+    "peer_ip": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 45
+    },
+    "user_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^hmac-sha256:[a-f0-9]{64}$"
+    },
+    "username": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^hmac-sha256:[a-f0-9]{64}$"
+    },
+    "role": {
+      "enum": [
+        "ADMIN",
+        "STAFF",
+        "STUDENT",
+        "ANONYMOUS",
+        null
+      ]
+    },
+    "session_hmac": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^hmac-sha256:[a-f0-9]{64}$"
+    },
+    "http_method": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 16
+    },
+    "uri_path": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "query_string": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 4096
+    },
+    "status_code": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 100,
+      "maximum": 599
+    },
+    "latency_ms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "user_agent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1024
+    },
+    "event_type": {
+      "enum": [
+        "http_request",
+        "flow",
+        "alert",
+        "dns",
+        "tls",
+        "other"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "success",
+        "failure",
+        "unknown"
+      ]
+    },
+    "dest_ip": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 45
+    },
+    "src_port": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "dest_port": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "transport": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 32
+    },
+    "flow_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "request_bytes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "response_bytes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "flow": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "duration_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "bytes_to_server": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "bytes_to_client": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "packets_to_server": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "packets_to_client": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        }
+      }
+    },
+    "query_features": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "length",
+        "parameter_count",
+        "percent_count",
+        "quote_count",
+        "operator_count"
+      ],
+      "properties": {
+        "length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "parameter_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "percent_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quote_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "operator_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "redacted": {
+      "type": "boolean"
+    },
+    "truncated": {
+      "type": "boolean"
+    }
+  }
+}
