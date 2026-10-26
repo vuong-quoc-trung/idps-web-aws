@@ -1,9 +1,9 @@
 name: Security Platform CI
 on:
   push:
-    paths: ['security-web/**', '.github/workflows/security.yml']
+    paths: ['security-web/**', 'contracts/**', 'scripts/**', '.github/workflows/security.yml']
   pull_request:
-    paths: ['security-web/**', '.github/workflows/security.yml']
+    paths: ['security-web/**', 'contracts/**', 'scripts/**', '.github/workflows/security.yml']
 permissions:
   contents: read
 jobs:
@@ -39,6 +39,14 @@ jobs:
       - run: cargo test --locked
       - run: npm ci
         working-directory: security-web/frontend
+      - run: npm test && npm run format:check
+        working-directory: security-web/frontend
       - run: npm run build
         working-directory: security-web/frontend
       - run: bash -n scripts/deploy.sh scripts/pbl4-firewall
+      - name: Validate shared event contract and actuator policy
+        run: |
+          python3 -m pip install 'jsonschema==4.25.1'
+          python3 ../contracts/test-schema.py
+          python3 scripts/test-firewall-policy.py
+          python3 ../scripts/test-dev-launcher.py
