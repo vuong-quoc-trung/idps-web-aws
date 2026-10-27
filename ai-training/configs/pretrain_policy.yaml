@@ -1,0 +1,19 @@
+format_version: 1
+purpose: offline_lab_pilot
+# Data-readiness floors, not detection-performance guarantees or production SLAs.
+allowed_data_kinds: [lab_capture]
+minimum_requests: 3000
+minimum_label_coverage: 0.90
+minimum_label_confidence: 0.8
+minimum_groups_per_partition: 2
+minimum_benign_per_partition: 200
+minimum_family_per_partition: 8
+required_families: [benign, sqli, xss, path_traversal, cmd_injection, scanner_recon, brute_force, behavioral_anomaly]
+required_sources: [STUDENT_AUDIT, NGINX]
+required_roles: [ADMIN, STAFF, STUDENT]
+require_variant_provenance: true
+maximum_invalid_fraction: 0.01
+maximum_unknown_identity_fraction: 0.01
+embargo_seconds: 300
+# EVE is not required for this HTTP tabular pilot, but unavailable flow features
+# must remain missing. A flow-specific or production release gate is separate.

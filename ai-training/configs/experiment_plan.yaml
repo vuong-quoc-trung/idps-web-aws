@@ -1,0 +1,32 @@
+format_version: 1
+status: planned_not_started
+purpose: first_offline_lab_pilot
+entry_gate: READY_FOR_OFFLINE_PILOT
+candidate_models:
+  - {kind: mlp, config: train_config.yaml, input: ai-features-2, hidden_dim: 32}
+  - {kind: autoencoder, config: anomaly_config.yaml, fit_labels: benign_only}
+initial_total_epochs: 5
+max_session_minutes: 150
+max_threads: 2
+memory_limit_gib: 12
+checkpoint_every_seconds: 300
+selection_partition: val
+final_evaluation_partition: test
+threshold_target_empirical_fpr: 0.01
+# These are release questions, not achieved scores or pre-training guarantees.
+required_comparisons:
+  - same_split_rule_only_vs_ai_only
+  - rule_plus_ai_at_equal_false_alert_budget
+  - benign_error_and_role_hard_negatives
+  - missing_query_flow_and_actor_ablation
+  - response_status_and_rate_limit_reaction_ablation
+  - per_family_and_per_campaign_error_review
+  - native_vs_onnx_parity
+forbidden_shortcuts:
+  - label_from_no_alert_or_status_only
+  - rule_hits_or_identity_as_model_input
+  - timestamp_ip_rewriting_for_split
+  - test_set_threshold_tuning
+  - claiming_zero_day_from_anomaly_score
+  - extending_training_only_to_fill_hours
+production_release: not_authorized_by_this_pilot
