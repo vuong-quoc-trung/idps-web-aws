@@ -1,8 +1,8 @@
 # 06 — AI handoff, decision log và sổ training
 
-**Handoff hiện hành:** 2026-10-26T22:11:48+07:00. Nhánh `codex/foundation-audit-and-schema`, base commit `1925764a0b4dbbae647797136e17abfd9a122c45`, foundation chưa commit/push. Đã bảo toàn và hoàn thiện các file viết dở của lần gián đoạn; không reset/revert, không đụng dữ liệu/container/service có sẵn. Quy định chỉ-đọc của khảo sát trước là lịch sử, không còn giới hạn nhiệm vụ triển khai mới.
+**Handoff hiện hành:**27/10/2026, nhánh `feat/ai-model-training`, base`fbe078d8fe2e35bf60f7a08c7d21331f4522221e`; AI/docs được chia thành4commit theo mục17; chưa push. Package `ai-training/` offline đã hoàn thiện và kiểm chứng S0synthetic. **Không sửa bất kỳ file Student/Security**; SHA356file và gitdiffPASS. Không restart dịch vụ hay truy cập DB live. Foundation trước đó đã commit như mục15; các entry cũ giữ lại để tra lịch sử.
 
-Đọc trạng thái hiện hành trong 00/01/02 cùng contract tại `contracts/`. Chưa có AI model/training/dataset labels. Thời gian làm code/test không phải giờ train.
+Hiện trạng:42testsPASS,2run chính MLP/AE mỗi run2phiên2+2epoch,2run reference4epoch, ONNX960/960 mỗi model. **Giờ training dữ liệu thật0**; xem report metadata và bảng từng phiên ở mục16. Thời gian làm code/test/preprocessing/export không cộng vào giờ optimizer.
 
 ## 1. Quy trình cho câu “Đọc lại project”
 
@@ -20,17 +20,15 @@ Không thể đảm bảo chat mới biết 100% trạng thái ở laptop/artifa
 
 | Mục | Giá trị / bằng chứng |
 |---|---|
-| Code base / branch | 1925764; codex/foundation-audit-and-schema; thay đổi working tree chưa commit |
-| Có sẵn ở đầu lần tiếp tục | Port config5433/5434, expanded rule/config và các lớp AuditEvent/exporter/attribution + Rust events/detection viết dở; chưa nối filter/ingestion, chưa khóa file schema |
-| Vừa hoàn thiện | Java attribution/filter/reads/UA/correlation/JSONL, Flyway V2; Rust normalizer/durable dataset/auth/counters/quarantine; schema1.0+fixtures; network safety/TTL/deadline; dev script và tests |
-| Audit/collection | JSONL path cấu hình được; Student+Nginx+EVE; dataset opt-in, alerts riêng; exporter hai sink độc lập |
-| Canonical contract | contracts/canonical-event-v1.schema.json + typed Rust + Java + cross-language runtime validation |
-| Response | OFF mặc định; new Rust families alert-only; protected-target discovery/root helper policy; TTL/deadline/freshness; không áp nft lên host |
-| Validation | Java87 PASS; Rust44 PASS; clippy/fmt PASS; edge5+sensor1 PASS; schema3 PASS; firewall policy3 PASS; isolated nft syntax PASS; smoke PASS |
-| AI | Chưa trainer/model/labels/run/checkpoint. Training ledger vẫn0run có bằng chứng |
-| Môi trường đã thử | Ubuntu local, PostgreSQL test17; demo Student16/Security17; Nginx1.28.3; Suricata8.0.3 offline |
-| Chưa thử | Kernel enforcement thật; packet capture live; máy LAN/Wi-Fi/VM/AWS thật; throughput/FP; remote file shipping/HA/restore drill |
-| Việc tiếp theo | A: operational hardening/reconcile/load/proxy deploy; B: R30–R34 manifests/labels/splits/causal features trước S0 |
+| Code base / branch | Base fbe078d8fe2e35bf60f7a08c7d21331f4522221e / feat/ai-model-training; commit theo mục17 |
+| Foundation có sẵn | Canonicalv1.0, JavaauditJSONL, Rustdurableingest/rules/AuditAPI+tab; chuỗi8commit và tests nền ở mục15 |
+| Vừa hoàn thiện | ai-training read-only adapters/privacy/correlation/Parquet/labels/split/features/MLP/AE/checkpoint/evaluate/ONNX/Pythonreference |
+| Contract | Canonicalv1 giữ nguyên; AI schema snapshot có source hashes; derived ai-features-1 có125cột |
+| Validation phiên AI |42pytestPASS, ruff/format/compileall/pipcheck/contractPASS; S0 exactresume/ONNXPASS;356protectedfileSHA+gitdiffPASS |
+| AI data/models | Chỉ synthetic960requests; MLP/AE localignored candidates, chưa champion; realtraining0giờ |
+| Runtime | Không thay đổi service/DB/config/host; không đọc credential; kết quả Java89/Rust50 thuộc phiên15, không là test đã chạy lại ở phiên AI |
+| Chưa thử | Corpus thật, rule-only comparison, Rustport/parity/shadow, targetZenbook ca2–3h/thermal, hardcgroup quota, VM/AWS/kernel enforcement |
+| Việc tiếp theo | Snapshot log bất biến→nhãnreview→data-readiness→train/benchmark máyđích; shared artifact store/reviewer chưa cấp |
 
 ## 3. Nhật ký công việc code/docs
 
@@ -39,19 +37,15 @@ Không thể đảm bảo chat mới biết 100% trạng thái ở laptop/artifa
 | DISCOVERY-20261026 | 26/10/2026 | Khảo sát source/config/SQL/tests/frontend/infra/docs/log artifacts | DONE cho đọc tĩnh | Snapshot commit + manifest 05A; limitations 05 |
 | DOCS-20261026 | 26/10/2026 | Bộ nhớ sống và kế hoạch dual-engine/data/AI/team | DONE cho tài liệu | 00–06 + 05A; không có chức năng mới |
 | FOUNDATION-20261026 | 26/10/2026 | Shared foundation code + schema + local runtime | IMPLEMENTED / validation bên dưới | R02 + phầnR10–R24; không coi mọiR00–R34 hoặc enterprise đã DONE |
+| AI-PIPELINE-20261027 | 27/10/2026 | Isolated AI package + synthetic S0 | PASS cho offline pipeline/resume/export |42tests;2+2epoch newprocess cả2model;960/960parity; xem16, realtraining0giờ |
 
 Với entry mới, thêm commit/PR, task ID, owner/reviewer, change summary, tests/env/results, known issue và next step. `DONE` cần đầu ra đã kiểm tra; `IN_PROGRESS` ghi phần còn thiếu. Dùng `BLOCKED` trong bảng này khi task thực bị phụ thuộc và ghi lý do, không coi tài liệu chưa implement là sự cố hiện tại.
 
-## 4. Training ledger — chưa có run nào được đăng ký
+## 4. Training ledger — phân biệt synthetic và dữ liệu thật
 
-**Số run có bằng chứng tại snapshot: 0. Giờ optimizer được ghi nhận trong repo: 0. Giờ training ở nơi khác: chưa biết.** Không có latest/best/champion để resume hoặc deploy. Không dùng checkpoint minh họa trong tài liệu làm đường dẫn thật.
+Snapshot26/10 có0run; không có lịch sử train thật bị xóa. Cập nhật27/10 có **2run synthetic chính với4phiên và2run reference với2phiên**, toàn bộ6row có ID/hash/time ở mục16. Optimizer hai run chính0.015538449s, reference0.015986770s tách riêng. **Training dữ liệu thật0giờ; bên ngoài repo chưa biết.** Chưa có champion hoặc artifact được phát hành.
 
-Khi bắt đầu, thêm một row mỗi phiên, không ghi đè row trước:
-
-| Run / session | Stage / model | Dataset + split hash | Commit + config hash | Start/end có timezone | Wall / optimizer hours | Global step | Checkpoint URI + SHA-256 | Validation / review | Stop reason / next |
-|---|---|---|---|---|---|---|---|---|---|
-
-Bảng trống là chủ ý: **chưa có ca thực**, không phải lỗi mất dữ liệu. Có thể giữ bảng gọn và link tới manifest phiên ở artifact store; không bỏ trường hash/step chỉ để vừa màn hình.
+Giữ một row mỗi phiên; bảng S0 ở16 là ledger đầu tiên, các phiên thật sau này thêm bảng riêng gắn nhãn nguồn dữ liệu. Không dùng checkpoint minh họa làm URI thật.
 
 Mỗi run phải có metadata ngoài bảng: model architecture/env lock, parent/fine-tune relation, feature/redaction version, seed/sampler state, optimizer/scheduler config, thresholds/calibration, target resource quota và measured peaks. Mỗi session có số samples/steps, failures/retries, checkpoint integrity và reviewer khi promote.
 
@@ -68,15 +62,15 @@ Quy ước thời gian: `wall_hours` bao gồm đọc data/validation/checkpoint
 
 ## 5. Artifact registry — chưa có bản phát hành
 
-| Artifact | Version/hash/URI | Trạng thái tại baseline |
+| Artifact | Version/hash/URI | Trạng thái hiện hành |
 |---|---|---|
 | Canonical event schema | contracts/canonical-event-v1.schema.json /1.0 | FROZEN, có fixture/schema/runtime tests |
-| Feature pipeline + golden vectors | Chưa cấp version | Chưa triển khai |
-| Dataset + labels/splits | Chưa có manifest | Chưa thu/tải trong phiên này |
-| Training environment lock | Chưa tạo | Chọn/pin ở R03/S0 |
-| Latest / previous / best checkpoint | Chưa có | Không thể resume |
-| Champion model + ONNX bundle | Chưa có | Không thể deploy AI |
-| Calibration/threshold/model card | Chưa có | Phải gắn cùng model version |
+| Feature pipeline + golden vectors | ai-features-1/125features; ai-training/tests/fixtures/preprocessing_golden.json | Pythonreference/offline parityPASS, RustNOT_RUN |
+| Dataset + labels/splits | S0synthetic manifestSHA ở16/report |576/192/192requests; chưa corpus thật |
+| Training environment lock | ai-training/requirements.txt +pyproject.toml | Python3.12.14/Linux; exactpins/requirementsSHA ởreport |
+| Latest / previous / best checkpoint | local ignored ai-training/.artifacts/synthetic_s0_20261027_final | Atomic manifests/hash; exactresumePASS; sharedstore chưa cấp |
+| Candidate ONNX bundles / champion | Local MLP+AE; checksums ở16/report | Synthetic parityPASS; chưa champion/deploy |
+| Calibration/threshold/model card | Có trong2bundle synthetic; validation-only empiricalFPR1% | Không chứng minh FPR production; không promote |
 | Rule bundle | Repo có9SID + Rust6family | Engine offline PASS; không xác minh bundle đang cài ở host production |
 
 URI phải dùng nơi nhóm thực sự truy cập được, ghi ACL/owner/expiry và checksum. Không commit model/data lớn chỉ để chat mới “thấy” tệp. Secret store riêng, docs chỉ có tên secret/key reference được phép chia sẻ.
@@ -95,6 +89,7 @@ Quyết định của người dùng có hiệu lực trong scope phiên này; �
 | D05 | USER CONSTRAINT + DESIGN | Khoảng nửa CPU, RAM train dưới 16GB, ca 2–3h, checkpoint/resume | Thiết kế cap12GiB và tổng 70h dự kiến qua 30 phiên ở 03; CPU/OS thực cần S0 |
 | D06 | PROPOSED | AI shadow/alert trước; IPS qua policy/TTL/freshness/kill switch | Giảm false block, bảo vệ management/NAT |
 | D07 | PROPOSED | Chốt Ubuntu lab trước, AWS/HA sau bằng chứng | Repo chưa có AWS IaC/adapter thực |
+| D08 | IMPLEMENTED27/10; user scope | feat/ai-model-training, packageai-training độc lập; MLP/AE NumPyCPU; chỉ đọc snapshots/export | User yêu cầu zero-config modification và cho phép MLP/AE; explicitAdam+NPZ/JSON giảm dependencies và giữ resume đầy đủ. Tree/CNN/TCN so sánh sau data-readiness. OwnerCodex;42tests/S0PASS; chưa reviewer thứ2 |
 
 Entry mới phải ghi alternatives, trade-off, owner/reviewer, ngày, commit/PR và bằng chứng chấp nhận. Nếu bỏ một đề xuất, đổi trạng thái SUPERSEDED kèm quyết định thay thế; giữ lịch sử cần thiết, không xóa lý do khiến team hiểu sai bản hiện tại.
 
@@ -380,3 +375,113 @@ Files thay đổi trong lần siết privacy: `AuditEvent.java`, `AuditExporterT
 Container PostgreSQL test đã stop/auto-remove, snapshot index tạm được dọn sau kiểm chứng. Không restart Student/Security/Nginx hoặc sửa DB ứng dụng trong phiên commit; daemon đang chạy vẫn dùng binary trước lần siết privacy, cần build/restart theo quy trình dev khi muốn chạy chính xác source vừa commit. Phần UI dist đã build lại. Credentials, runtime logs/captures, `.env` cá nhân, cache và build artifacts không được đưa vào commit. Không huấn luyện AI. Các báo cáo FOUNDATION/APPLICATION_AUDIT trước đó là snapshot lịch sử có base/hash/uncommitted ở thời điểm ghi, không phải mô tả Git HEAD mới.
 
 Review sau sửa privacy không phát hiện blocker. Có một backlog P3 về chất lượng metadata: sanitizer nhận raw `edg/` nhưng chưa alias canonical `Edge`, nên qua lần sanitize tiếp theo có thể mất family Edge; các family khác trên cùng UA vẫn được giữ. Chưa sửa trong phiên đóng gói commit; không ảnh hưởng che bí mật hay ingestion. Cần bổ sung alias và idempotence test trước khi dùng UA families làm feature train chính thức.
+
+## 16. AI Data & Training Pipeline — 27/10/2026
+
+**Scope/owner:** Codex triển khai trực tiếp theo yêu cầu user, không tạo agent mới; chưa có reviewer người thứ hai. Nhánh **`feat/ai-model-training`**, base/sourcecommit`fbe078d8fe2e35bf60f7a08c7d21331f4522221e`. Đầu task workingtree sạch; kiểm gitstatus/branch/log, đọc00/02/03/04/06 và Javaexporter/Rustingest/events/allmigrations/Nginx/canonical trước viết code. Thêm toàn bộ AI trong package riêng, không đổi rootcontract/CI/launcher hoặc file Student/Security. Tại thời điểm nghiệm thu S0 chưa gitadd/commit/push; yêu cầu commit tiếp theo của user được thực hiện riêng ở mục17.
+
+### 16.1. Kết quả và quyết định
+
+Read-only bounded parsers đúngfield/unit, canonicalstrict, privacyHMAC/keyriêng, route/UA/query numericprojection, requestcorrelation tránhNAT, past-onlyflowcontext, explicitlabelconflicts/unknown, temporalconnectedgroups/embargo300s, Parquet+manifestsha.125causalfeatures, benign-train-onlyscaler, boundedwindows, sourcefingerprint và Pythonreference/golden vectors. CPU FP32 MLP+AE cóAdam/scheduler/RNG/sampler/cursor, resourceguard, atomiccheckpoint/runlock/fallback, metrics/validation-onlythreshold, ONNXopset18IR9/CPUparity. README ghi CLI đầy đủ. D08 chốt lựa chọn nhẹ thay vì càiTorchCUDA/boosting khi chưa có corpus thật; không có chức năng inference/enforcement trong services.
+
+**S0 pipeline/resume verification trên synthetic fixture**, không phải ca train corpus thật hoặc kết quả phát hiện zero-day. Chạy **2026-10-27T12:39:52.687+07:00 → 2026-10-27T12:40:01.896+07:00**, tổngwall9.209334850s.15campaign×64=960request/3403observations; train576/val192/test192; AE chỉ fit72benign train.125feature; rule/alertfacts excluded khỏi model. Hai run chính2epoch→process mớiresume đến4; reference mỗi model4epoch liên tục. Exact weights/Adammoments/scheduler/RNG/permutationPASS; S0decay_steps5 đi quaLRboundary, defaultconfig100 không thay.
+
+Local artifactroot thật: `ai-training/.artifacts/synthetic_s0_20261027_final/` (ignored). **Local-only**, chưa upload/sharedstore; máy bạn không tự có file này. Public metadata: [S0_20261027.json](../ai-training/reports/S0_20261027.json), chứa source/config/test hashes, fullrun/sessionID, features/env/resources, allmetrics vàbundlehash; không có key/rawdata/weights.
+
+
+ReportSHA-256 `f478de8d39b30ff4faa024a360e1087a170976b0b75002ef7320c6d11fce8354`. DatasetSHA-256 `2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a`. RequirementsSHA-256 `a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5`. FeatureSpecSHA-256 `1eec80eae30c3e5ec8e59276c3d2c3b4b90e18c0f70da9c7f54c0a09734edc43`. Code AI còn uncommitted lúc đo; report lưu SHA từngsourcefile để tái kiểm, không gán kết quả cho commit tương lai.
+
+
+| Model | Immutable learning config SHA-256 | Final checkpoint manifest SHA-256 | ONNX SHA-256 |
+|---|---|---|---|
+| autoencoder | `30523e0ccf2f9d45c6fb266c5032f6be95ddec80ea7cf83db8a064a612fa80b5` | `fe8896145823b3b4c61dcc2ed33f048e9a9a5fadb0efce3a02ddbaa267f0dc8f` | `24ce67057c7616abc9d68a38596ce1d601455bd2679194d5ac0c91bb1548dc18` |
+| mlp | `2fd43ee1edf20763546edb50e7d826f3a4182f819134abadc4ad078d4e0073e8` | `b17c8ce86ef07033619bb7296ffd0314b7c4ab89b243249538d19c543c629b6b` | `83de614dbf185817c38653013e27311bd6e5a5295930d930c96936462eabae87` |
+
+### 16.2. Ledger từng phiên S0 — thời gian đều +07:00
+
+Dataset/configSHA dùng bảng trên, sourcecommitfbe078d+workingtree hashes trongreport. URI checkpoint là artifactroot +`{model}-resumed/` hoặc`{model}-continuous/`+checkpointgeneration dưới đây. Session wall gồm bước khởi tạo/validation/checkpoint; optimizer chỉ thời gian tính step; bảng dùng **giây** để không làm tròn thành giờ giả. ID đầy đủ và cumulative state có trongreport.
+
+| Model / run / session | Start → end (+07:00) | Epoch / global step cuối | Session wall s / optimizer s | Checkpoint generation + manifest SHA-256 | Stop |
+|---|---|---|---|---|---|
+| autoencoder main<br>run`6051181c123e47d99e9b1c6c5ec14387`<br>session`61e9c6e79b554f30851683c5dbc26816` | 2026-10-27T12:39:58.480+07:00 → 2026-10-27T12:39:58.815+07:00 | 2 / 4 | 0.334937131 / 0.002904527 | `checkpoints/step-000000000004-8afe8c67cb7a`<br>`6135d3e40ea250bcdfeaa5f1638159014d93569f375e05f0f5e9895b6446a27e` | epochs_complete |
+| autoencoder main<br>run`6051181c123e47d99e9b1c6c5ec14387`<br>session`4da3c027f2be4658ba40e7009414fac4` | 2026-10-27T12:39:59.449+07:00 → 2026-10-27T12:39:59.711+07:00 | 4 / 8 | 0.261424660 / 0.001892931 | `checkpoints/step-000000000008-829b52957e56`<br>`fe8896145823b3b4c61dcc2ed33f048e9a9a5fadb0efce3a02ddbaa267f0dc8f` | epochs_complete |
+| autoencoder reference<br>run`e861cc531a294930a5366f0fdbb83aa1`<br>session`81f680e44b824ac9b2982847fea9e5bb` | 2026-10-27T12:40:00.350+07:00 → 2026-10-27T12:40:00.832+07:00 | 4 / 8 | 0.482148273 / 0.005119749 | `checkpoints/step-000000000008-7defb412cf96`<br>`40b5c5a880b67258a423016096f2de323c9ac24d8d2bae638cb70a67b661210d` | epochs_complete |
+| mlp main<br>run`fbd3c1dc86864568af1ac823d78c0d7b`<br>session`9e68708864a54a15a388c6a26d88fe87` | 2026-10-27T12:39:54.242+07:00 → 2026-10-27T12:39:54.621+07:00 | 2 / 18 | 0.378758844 / 0.005566408 | `checkpoints/step-000000000018-aaff5fc7a4f4`<br>`fc1a4b706bd0d37134015b1b3c16c75a81d68185cd5a496ebf1fcd43fecaaddb` | epochs_complete |
+| mlp main<br>run`fbd3c1dc86864568af1ac823d78c0d7b`<br>session`2453d031acb3426a97de35a4ef10472e` | 2026-10-27T12:39:55.279+07:00 → 2026-10-27T12:39:55.650+07:00 | 4 / 36 | 0.371193808 / 0.005174583 | `checkpoints/step-000000000036-95af02628246`<br>`b17c8ce86ef07033619bb7296ffd0314b7c4ab89b243249538d19c543c629b6b` | epochs_complete |
+| mlp reference<br>run`bc765eda609e464bb5d19da11331b093`<br>session`5ee1d19e99c54ec485dbac109273e518` | 2026-10-27T12:39:56.280+07:00 → 2026-10-27T12:39:56.859+07:00 | 4 / 36 | 0.578946724 / 0.010867021 | `checkpoints/step-000000000036-ee381ac2e8fa`<br>`6bf2e493c7d9b86d29d00b8c3c2567dcffaad472b2dd0340bdad207396d32c73` | epochs_complete |
+
+Tổng optimizer hai mainrun **0.015538449s = 0.000004316236h**; hai continuousreference **0.015986770s** ghi riêng. Preprocessingwall1.067499977s không tính training; ngoài6sessionwall6.801925410s gồm collect/prepare/export/processstartup và orchestration. **Giờ train dữ liệu thật=0**. Tất cả dừng epochs_complete, không dùng maxduration để giả kéo dài ca.
+
+### 16.3. Metrics/resource/export đo thật trên synthetic
+
+| Model | Final step / next LR | ONNX parity | Test PR-AUC(AP) / ROC-AUC / F1 / precision / recall | Recall@FPR≤1% ROC diagnostic | Warm ORT latency p50/p95/p99 ms |
+|---|---|---|---|---|---|
+
+| autoencoder | 8 / 0.00196 |960/960PASS, rtol1e-5/atol1e-6 | 0.878891 / 0.469246 / 0.000000 / 0.000000 / 0.000000 | 0.029762 | 0.004543/0.005234/0.005484 |
+| mlp | 36 / 0.00173625106649344 |960/960PASS, rtol1e-5/atol1e-6 | 0.936729 / 0.677331 / 0.222222 / 1.000000 / 0.125000 | 0.142857 | 0.003928/0.004404/0.004819 |
+
+ThresholdMLP0.9363242388, AE6.2777276039 fit validation24benign+168attack, target empiricalFPR≤1%; không tune trên test. Test binaryconfusionMLP`[[24,0],[147,21]]`, AE`[[24,0],[168,0]]`; đầy đủ per-family/multiclass/trapezoidPR-AUC và native latency trongreport. AErecall0 phải giữ nguyên, không bỏ kết quả xấu. ROC diagnostic không đổi thresholddeploy. Dữ liệu nhỏ giả lập/không đại diện;0FP trên24benign không bảo đảmFPRproduction/zero-day.
+
+Training6sessions: Python3.12.14/Linux, host32.44GBRAM/16logicalCPUaffinity trước cap (không xác nhận là Zenbook user), cap2threads/affinity[0,1], RLIMIT_AS hiệu lực12GiB=12884901888byte, không childtrainingworker. PeakRSS/process-tree cao nhất218906624byte=208.765625MiB; preprocessingpeak174911488byte. Allocation ceiling làsoftRLIMIT_AS từngprocess vàRSSguard tạistepboundary, **không phải hardcgroup quota cảgroup**. ONNXMLP17678byte/4296parameter; AE33136byte/8157parameter. Latency chỉwarmbatch1/model, không preprocessing/queue/coldstart. Longrun/thermal/hardcgroup/SSDpowerloss/throughputtargetNOT_RUN.
+
+### 16.4. Lệnh kiểm tra và kết quả
+
+Các lệnh dưới chạy từrepo hoặc `cd ai-training` như chỉ rõ; venv không sửa Python global. Phiên này không chạy lại Java/Rust vì không có service code change.
+
+| Lệnh / kiểm tra | Trạng thái | Bằng chứng |
+|---|---|---|
+| `git status --short --branch`; `git branch`; `git log -n 5`; tạo `feat/ai-model-training` | PASS | Sạch tại basefbe078d, đúng branch user chỉ định |
+| `.venv/bin/python -m pytest` qua `ai-training/scripts/check.sh` | PASS | **42passed/0skipped**,9.08s; private `.artifacts/final-checks.log` |
+| `.venv/bin/ruff check src tests`; `.venv/bin/ruff format --check src tests`; `python -m compileall -q src` | PASS |33Pythonfiles formatted; khôngsyntax/lint error |
+| `.venv/bin/python -m pip check`; `.venv/bin/idps-ai check-contract` | PASS | Exactpins, schema/producersnapshot hashes khớp |
+| `.venv/bin/idps-ai s0 --output .artifacts/synthetic_s0_20261027_final --max-threads 2` | PASS | Actualsubprocess2+2epoch/cả2model+2references,960/960ONNXparity từngmodel; stderrfinalrỗng |
+| Fault/integrationtests trong42tests | PASS | ActualSIGINT/SIGTERM, mid-epoch, maxduration0, earlystopterminal, runlock, latestcorruptfallback, badconfig/env/dataset/missingshard, simulatedENOSPC, abruptprocessdeathatfsync |
+| TDD/intermediate gates | FAIL→PASS | REDAPIimports có chủ đích; tests bắt querymask bỏ feature, NATambiguity/weaklabelconflict, AEparity bỏ trainattacks và fixturediscovery sauformat; đã sửa, full42PASS trước finalS0 |
+| `git diff --exit-code fbe078d -- student-web security-web` +SHAmanifest356trackedfiles | PASS | Không thay đổi bất kỳ code/config/script dịch vụ |
+| Final source/config/test/bundle SHA, report SHA, scope và docs links; `git diff --check` | PASS |44 file mới chỉ trong AI +5docs;42 local links hợp lệ; artifacts/key không xuất hiện trong danh sách Git untracked được phép commit |
+| `mvn test`; `cargo test` | NOT_RUN | Phiên AI không sửa service; Java89/Rust50 của mục15 là evidence lịch sử |
+| Realcollect/realtrain, Rustport/parity/liveinference, longsessionthermal/cgroup, VM/AWS/hostenforce | NOT_RUN | Không suy diễn S0synthetic hoàn thành những gate này |
+
+Không có test bị SKIPPED ở suiteAI cuối. ENOSPC được faultinject, không làm đầy ổ thực; kill tạifsync làprocesscrash, không chứng minh SSDsurvive mấtđiện. Không sử dụng .env hoặc secret dịch vụ; keydatasetAI doS0 tựsinh nằmprivateignored.
+
+### 16.5. Danh sách file và bàn giao
+
+Chỉ thêm trong `ai-training/`:
+
+- `.gitignore`, `README.md`, `pyproject.toml`, `requirements.txt`; scripts`bootstrap.sh`, `check.sh`.
+- configs`schema_contract.yaml`, `train_config.yaml`, `anomaly_config.yaml`; report`reports/S0_20261027.json`.
+- `src/idps_ai/`: `__init__.py`, `__main__.py`, `common.py`, `cli.py`, `inference.py`, `smoke.py`.
+- `data/`: `__init__.py`, `readers.py`, `privacy.py`, `dataset.py`, `split.py`, `synthetic.py`; `features/`: `__init__.py`, `pipeline.py`.
+- `training/`: `__init__.py`, `models.py`, `checkpoint.py`, `resources.py`, `runner.py`, `evaluation.py`; `export/`: `__init__.py`, `onnx.py`.
+- `tests/`: `conftest.py`, `test_cli.py`, `test_contracts.py`, `test_dataset.py`, `test_export.py`, `test_features.py`, `test_models.py`, `test_readers.py`, `test_safety.py`, `test_splits.py`, `test_training.py`; fixture`preprocessing_golden.json`.
+
+Docs sửa:00/02/03/04/06. Inventory path đầy đủ+source/config/testhash trongreport. `.venv`, `.artifacts`, logs/Parquet/NPZ/ONNX/raw/HMACkey vàprotected-baseline.json đềuignored, không commit. Rootcontract/CI/scripts/Student/Security không sửa. ProtectedEdgealiasP3 chỉ xử lý ở trainingadapter riêng, sourceRust/Java giữ nguyên.
+
+Bàn giao CLIcopy/paste tại [README](../ai-training/README.md): `s0` dùng outputdir mới; `collect` nhận snapshotpath tuyệt đối vàkeyAI riêng; `prepare` cần labelsidecar approved, đủ time/groups/benign-attackvalidation; `train` target20epoch/maxduration150phút, `--resume-from` cùngrun đểnối ca. AE dùngconfiganomaly vàrun-dir riêng. Chưa tựcollect/traindữ liệu thật hoặc tạo nhãnbenign từnoalert. Bước sau cần reviewer/data-readiness, snapshot/campaign độc lập vàstoreACL; giữmodel candidateoffline tới khi Rustpreprocessingparity/shadow được giao và nghiệmthu.
+
+
+## 17. Chia commit luồng AI — 27/10/2026 13:15 +07:00
+
+**Yêu cầu user:** git add và commit các thay đổi, chia nhỏ khi cần. Nhánh giữ nguyên `feat/ai-model-training`; base trước chuỗi commit `fbe078d8fe2e35bf60f7a08c7d21331f4522221e`. Không push, merge, đổi remote hoặc sửa danh tính Git. Chỉ đóng gói code đã nghiệm thu, cập nhật trạng thái bàn giao; không sửa thêm source Python/config/schema. Report S0 giữ nguyên sourcecommitfbe078d và working-tree hashes tại lúc đo, không gán lại kết quả lịch sử cho commit mới.
+
+| Commit | Nội dung |
+|---|---|
+| `4d81ce2` | `feat(ai-data): add private datasets and causal feature pipelines` — adapters/privacy/correlation/labels/splits/Parquet/features, schema snapshot, pins và data tests |
+| `4ab15ba` | `feat(ai-training): add CPU models with durable checkpoint resume` — MLP/AE, Adam/scheduler, integrity/cursor/RNG/atomic checkpoint, resource guards/evaluation và model/training tests |
+| `bc15e8d` | `feat(ai-export): add ONNX parity and end-to-end S0 commands` — CLI/package/bootstrap/check scripts, ONNX/Python inference reference, S0 orchestration và fault/integration tests |
+| Commit chứa mục này | `docs(ai): record synthetic S0 results and training handoff` — README, public report metadata và docs00/02/03/04/06 |
+
+Để tránh commit phụ thuộc vào source chưa stage, mỗi mốc được xuất từ **Git index** sang thư mục tạm, dùng venv hiện có nhưng `PYTHONPATH` trỏ vào snapshot. Chỉ chạy tests thuộc mốc đã stage. Không checkout/reset/stash file làm việc. Hai commit thư viện đầu có thể kiểm qua Python module/tests; CLI và packaging xuất hiện tại commit thứ3.
+
+| Kiểm tra phiên commit | Trạng thái | Bằng chứng |
+|---|---|---|
+| Data index snapshot | PASS |6tests,0.07s; private `.artifacts/commit-data-index-tests.log` |
+| Training index snapshot | PASS |6tests,1.74s; gồm2+2epoch bằng4epoch liên tục ở cả2model; `.artifacts/commit-training-index-tests.log` |
+| Full code index snapshot | PASS |**42tests**,0skipped,9.15s; gồm subprocess S0/fault signals/ONNX; `.artifacts/commit-full-index-tests.log` |
+| Ruff check/format; pip check | PASS |33Pythonfiles đã format; không broken dependency |
+| Source/config/test SHA với report S0; public report SHA/bundle hashes | PASS |Code đúng bản đã đo S0; report không sửa chỉ để làm đẹp lịch sử Git |
+| `git diff --exit-code fbe078d -- student-web security-web contracts docker .github scripts .gitignore` +356servicefileSHA | PASS |Không thay đổi code/config dịch vụ hoặc root contract/infra |
+| Staged path/artifact/credential screening; `git diff --cached --check` | PASS |Chỉ44fileAI+5docs; không key/rawlog/Parquet/NPZ/ONNX/.venv/.artifacts; secret-pattern scan không match credential |
+| Java/Rust tests, real training, VM/AWS deploy, Rust integration | NOT_RUN |Không sửa dịch vụ; không tính các kết quả foundation cũ là test chạy lại |
+
+Không có FAIL/SKIPPED mới trong phiên đóng gói commit. Không rerun caS0 lớn960requests vì source không đổi; giữ evidence S0 mục16, suite42tests đã chạy lại ở index snapshot và bao gồm S0 nhỏ thực qua subprocess. Các snapshot tạm đã xóa sau test, logs còn localignored. Hash service giữ nguyên, không restart dịch vụ hay chạm DB/firewall. Working tree sạch sau commit cuối; người dùng tự push nhánh khi sẵn sàng. Còn lại real corpus/data-readiness/target-machine long benchmark và Rust integration như mục16.

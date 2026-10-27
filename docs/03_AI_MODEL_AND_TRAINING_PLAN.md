@@ -1,14 +1,30 @@
 # 03 — Thiết kế AI và training theo ca 2–3 giờ
 
-**Ngày thiết kế:** 26/10/2026. **Trạng thái toàn bộ phần triển khai trong tài liệu:** ĐỀ XUẤT, chưa có trainer, inference service, model hoặc checkpoint được tạo. Hiện trạng code và data ở [00](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md).
+**Ngày thiết kế:**26/10/2026; **cập nhật triển khai:**27/10/2026. MLP/autoencoder offline, causal features, trainer/checkpoint và ONNX đã được triển khai trong `ai-training/`; xem mục0. Byte-CNN/TCN, corpus thật, Rust inference và champion/release vẫn là đề xuất. Hiện trạng code và data ở [00](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md).
 
-**Foundation update26/10/2026:** đã có exporter/canonical metadata cho successful reads/sessionHMAC/requestID/UA/HTTP/flow, nên các mô tả thiếu metadata ở baseline bên dưới cần đọc cùng02 hiện hành. Vẫn chưa có corpus có nhãn, causal ML feature library, payload được phép train, trainer hoặc model; mọi kiến trúc neural/checkpoint/stage của tài liệu này vẫn là thiết kế, chưa có giờ train được ghi nhận.
+**Foundation update26/10/2026:** đã có exporter/canonical metadata cho successful reads/sessionHMAC/requestID/UA/HTTP/flow, nên các mô tả thiếu metadata ở baseline bên dưới cần đọc cùng02 hiện hành. Tại snapshot foundation chưa có trainer/model; cập nhật27/10 bên dưới thay thế trạng thái đó. Chưa có corpus thật/payload được phép train hoặc giờ training dữ liệu thật.
+
+## 0. Triển khai và bằng chứng S0 — 27/10/2026
+
+Nhánh `feat/ai-model-training`, base `fbe078d`; toàn bộ source/env/config/checkpoint dưới [`ai-training/`](../ai-training/README.md), chỉ đọc snapshot/export. Không sửa Student/Security hay tích hợp inference vào Rust. Quyết định D08 và ledger6phiên ở [06 mục16](06_AI_HANDOFF_AND_RUN_LEDGER.md#16-ai-data--training-pipeline--27102026).
+
+- **Supervised:** NumPy FP32 MLP125→32→8, ReLU/softmax,4296tham số, CE+Adam; score1−P(benign). Đây là lựa chọn MLP nhẹ trong các kiến trúc cho phép, chưa chọn champion.
+- **Anomaly:** NumPy FP32 autoencoder125→32→125,8157tham số, MSE+Adam; chỉ fit72benign train ở S0. Scaler cũng chỉ fit benign train; reconstruction error không là xác suất attack.
+- **Environment:** Linux/Python3.12.14; exact direct/transitive pins, requirementsSHA trong report. Không cần Torch/CUDA. CPU default≤4 và≤nửa affinity ban đầu, S0cap2; BLAS/ONNX cùng cap. RLIMIT_AS12GiB có readback, process-tree RSS guard ở optimizer boundary; không phải cgroup hard cap toàn nhóm. Không sinh training workers.
+- **Resume:** NPZ `allow_pickle=False`+JSON, architecture/learning/data/shard/feature/env/all-source hashes, Python/NumPy RNG, Adam moments, scheduler,nextLR, permutation/cursor,best/patience. Atomic temp/fsync/rename, latest/previous/best, runlock; signal chỉ đặt flag. Code/env/config bất biến lệch bị từ chối. Target epoch là tổng đích, ca150phút là operational limit.
+- **Evaluate/export:** validation-only threshold maximize recall với empiricalFPR≤1%; AP/trapezoidPR-AUC/ROC-AUC/F1/confusions/perfamily/ROCdiagnosticrecall@FPR≤1%, warm batch1 p50/p95/p99. ONNXopset18/IR9 CPUExecutionProvider, feature/golden/modelmanifest/checksum/modelcard đi cùng. Test set không chọn deployment threshold.
+
+**S0 pipeline/resume verification trên synthetic fixture:**27/10 12:39:52.687–12:40:01.896+07:00, wall9.209335s. Hai nhánh đều2epoch→newprocessresume thêm2, exact state bằng4epoch liên tục; LR thực sự qua decay boundary (S0decay_steps5; production config100). MLP36steps, AE8steps; ONNX parity **960/960 mỗi nhánh**, rtol1e-5/atol1e-6. **42tests PASS** gồm mid-epoch, process signals, fault/corruption/mismatch tests và reference preprocessing golden vectors.
+
+Peak treeRSS cao nhất6training sessions208.77MiB,2threads; modelONNX17.678/33.136byte. Warm model-only ORTp95 MLP0.004404ms/AE0.005234ms, không gồm preprocessing/queue/coldstart và không là benchmark targetZenbook/production. Hai run chính optimizer0.015538449s, hai reference0.015986770s, preprocessing1.067500s được tách; **training dữ liệu thật0giờ**. [Báo cáo có hash/metrics đầy đủ](../ai-training/reports/S0_20261027.json).
+
+S0 ngắn không nghiệm thu cgroup controller, SSD/power-loss durability thực, nhiệt/độ mượt hay ca2–3giờ. Metrics synthetic thấp/thiên lệch vẫn được giữ nguyên (MLPrecall0.125; AErecall0 ở validation-fitted threshold trên test); không dùng làm chất lượng phát hiện, production FPR hoặc zero-day claim. Bước tiếp theo là corpus thật có nhãn/split, rule-only baseline và target-machine benchmark, rồi mới quyết định train dài. Các kiến trúc neural nâng cao/ngân sách bên dưới vẫn là kế hoạch.
 
 ## 1. Bài toán và lựa chọn ban đầu
 
 Không thể khẳng định một kiến trúc “tối ưu nhất” khi chưa có corpus đại diện, CPU SKU và benchmark. Lựa chọn khởi đầu phù hợp repo là **mô hình nhỏ theo từng loại quan sát**, CPU-first, tách khỏi đường HTTP ứng dụng và khỏi executor firewall. Phải so sánh với rule-only và baseline đơn giản trước khi chấp nhận neural model.
 
-Đầu vào audit hiện tại thiếu successful GET, payload, session identity và request correlation. Vì thế không thể lấy dữ liệu hiện có rồi hứa mô hình bắt đủ chuỗi hành vi/payload/flow. Dùng các tier dữ liệu theo 02; chỉ kích hoạt nhánh model khi source/features của nhánh đó tồn tại và đạt kiểm tra chất lượng.
+Đầu vào audit ở baseline khảo sát thiếu successful GET/session/request correlation; foundation đã bổ sung metadata này, còn payload/object identity đầy đủ vẫn thiếu. Vì thế không thể lấy dữ liệu hiện có rồi hứa mô hình bắt đủ chuỗi hành vi/payload/flow. Dùng các tier dữ liệu theo 02; chỉ kích hoạt nhánh model khi source/features của nhánh đó tồn tại và đạt kiểm tra chất lượng.
 
 | Nhánh | Baseline để đo trước | Candidate khi đủ dữ liệu | Vai trò |
 |---|---|---|---|
@@ -95,7 +111,7 @@ Tách hash **learning config bất biến** (data/split/feature/model/optimizer/
 
 ### 4.2. Hợp đồng trainer cần xây
 
-CLI **dự kiến, chưa tồn tại để chạy**: `train --config <versioned-config> --run-id <id> --session-hours 2.5 --checkpoint-every-seconds 300 --resume <checkpoint-uri>`.
+CLI đã triển khai: `.venv/bin/idps-ai train --dataset <prepared-dir> --config configs/train_config.yaml --run-dir <run-dir> --epochs 20 --max-duration-minutes 150 --resume-from <run-dir>`. Bỏ `--resume-from` ở phiên đầu; xem README cho pipeline collect/prepare. Checkpoint300s cấu hình trong YAML. CLI cũ `--session-hours/--resume` chỉ là thiết kế đã được thay thế, không dùng để chạy.
 
 Session 2–3h tính theo wall-clock, gồm warmup/checkpoint/validation; lưu riêng thời gian optimizer thực. Bộ đếm monotonic của phiên bắt đầu lại khi resume, còn global steps/scheduler/giờ tích lũy tiếp tục. Dành tối thiểu 5–10 phút cuối phiên cho validation ngắn, ghi checkpoint và kiểm integrity. Checkpoint theo thời gian mỗi 5 phút **hoặc** số step tối đa, tại ranh giới optimizer step đã hoàn tất. Epoch dài hơn 3h vẫn resume được giữa epoch.
 
@@ -114,7 +130,7 @@ Checkpoint neural đầy đủ phải có:
 
 Chọn gradient accumulation = 1 ban đầu. Nếu thêm accumulation, chỉ checkpoint sau optimizer step hoặc phải lưu gradients và microstep index; không bỏ dở rồi tăng cursor. Với `num_workers>0`, prefetch/sampler position cần phân biệt mẫu đã nạp và mẫu đã commit; nghiệm thu lại resume trước khi dùng. Epoch-shuffle dựa seed+epoch và lưu permutation/cursor để không đọc lại toàn bộ file từ đầu vô tình.
 
-PyTorch hướng dẫn lưu cả optimizer state để tiếp training; `state_dict` weights đơn thuần chưa đủ. Tham chiếu: [Saving and Loading Models](https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html). Các trường cursor/hash/RNG/early-stop ở trên là yêu cầu bổ sung của dự án để chia ca và tái lập, không phải artifact đã tồn tại.
+PyTorch hướng dẫn lưu cả optimizer state để tiếp training; `state_dict` weights đơn thuần chưa đủ. Tham chiếu: [Saving and Loading Models](https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html). Bản NumPy CPU hiện hành đã lưu cursor/hash/RNG/early-stop và Adam trong NPZ/JSON; không có Torch state hoặc AMP vì không dùng Torch/AMP. Các candidate Torch tương lai phải nghiệm thu lại checklist này.
 
 ### 4.3. Lưu bền và dừng đúng cách
 
@@ -132,7 +148,7 @@ S0 phải so sánh hai run cùng seed/data/config trong **cùng môi trường �
 
 Các fault cases bắt buộc: Ctrl+C, SIGTERM, hết wall-time; kill ngay trong lúc ghi file tạm; latest hỏng; disk full; dataset hash/config thay đổi; thiếu shard; resume sau early-stopping; dừng giữa epoch; hai process tranh cùng run. Dùng run lock và báo lỗi rõ thay vì cho hai trainer cùng cập nhật latest.
 
-S0 chỉ PASS khi checkpoint trước vẫn load được sau crash, cursor không bỏ qua mẫu, lịch LR không reset và quota/RAM có hiệu lực. Ghi báo cáo, hash và lệnh tái lập vào 06. Đây là test có ý nghĩa cho chức năng tương lai; chưa được viết hoặc chạy ở phiên tài liệu.
+S0 chỉ PASS khi checkpoint trước vẫn load được sau crash, cursor không bỏ qua mẫu, lịch LR không reset và quota/RAM có hiệu lực. Ghi báo cáo, hash và lệnh tái lập vào 06. Các fault/resume tests đã PASS trong42tests và S0synthetic27/10; nghiệm thu cgroup/thermal/ca dài/mất điện máy thật vẫn NOT_RUN. Không đánh đồng mocked ENOSPC hay process death tại fsync với power-loss SSD.
 
 ## 6. Stages và ngân sách ca
 
@@ -176,7 +192,7 @@ Candidate PyTorch được export với input shape/dtype đã pin, chọn opset
 
 Theo [PyTorch ONNX](https://docs.pytorch.org/docs/stable/onnx), exporter chuyển tensor graph; việc export không tự đóng gói toàn bộ parser/feature pipeline. ONNX Runtime cho phép cap thread và tắt spinning để giảm CPU lúc chờ; xem [Thread management](https://onnxruntime.ai/docs/performance/tune-performance/threading.html). Khởi đầu sequential execution, intra-op 1–2, inter-op 1; benchmark thực trước khi tăng.
 
-Rust integration cần chọn và pin binding/runtime tương thích sau một spike riêng; `Cargo.toml` hiện **chưa có ONNX Runtime**. Triển khai worker inference cách ly, load model một lần, queue bounded, timeout/circuit breaker, shadow metrics; lỗi AI không làm rule/HTTP pipeline dừng. Không thêm thư viện/sidecar trong phiên docs này.
+Rust integration cần chọn và pin binding/runtime tương thích sau một spike riêng; `Cargo.toml` hiện **chưa có ONNX Runtime**. Triển khai worker inference cách ly, load model một lần, queue bounded, timeout/circuit breaker, shadow metrics; lỗi AI không làm rule/HTTP pipeline dừng. Nhánh AI chỉ thêm package Python riêng; không thêm thư viện/sidecar vào Rust trong phiên này.
 
 Giữ FP32 làm chuẩn. Chỉ dùng int8 sau calibration phù hợp nếu latency/RAM tốt hơn và recall/FPR/parity không suy giảm quá giới hạn đã thống nhất; quantization không mặc định nhanh hơn mọi CPU/op. Tham chiếu [ONNX Runtime quantization](https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html).
 

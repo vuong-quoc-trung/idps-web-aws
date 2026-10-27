@@ -2,7 +2,28 @@
 
 Ngày khảo sát: **26/10/2026** (Asia/Ho_Chi_Minh). Baseline code: `37bc4d2ae1552939659a10647898e2228f1b801f`.
 
-**Cập nhật foundation 26/10/2026:** canonical v1.0 đã có code, JSON Schema, fixture và validation; Java xuất JSONL, Rust thu cả Student/Nginx/EVE khi bật dataset. Base HEAD1925764, branch `codex/foundation-audit-and-schema`, thay đổi chưa commit. Phần1 là bằng chứng khảo sát lịch sử tại37bc4d2; phần2 dưới đây là **contract hiện hành đã khóa**. Chưa tải public dataset, tạo corpus có nhãn, train hoặc xuất model.
+**Cập nhật foundation 26/10/2026:** canonical v1.0 đã có code, JSON Schema, fixture và validation; Java xuất JSONL, Rust thu cả Student/Nginx/EVE khi bật dataset. Foundation đã được commit đến `fbe078d` (xem06 mục15); branch AI hiện hành là `feat/ai-model-training`. Phần1 là bằng chứng khảo sát lịch sử tại37bc4d2; phần2 dưới đây là **contract hiện hành đã khóa**. Tại mốc foundation chưa tải public dataset hoặc tạo model; cập nhật AI dưới đây thay thế phần trạng thái đó, không đổi contract v1.0.
+
+## 0. Data pipeline đã triển khai — 27/10/2026
+
+Owner triển khai: Codex, nhánh `feat/ai-model-training`, base `fbe078d`; chưa có review người thứ hai. [`ai-training/README.md`](../ai-training/README.md) là runbook CLI hiện hành; [`schema_contract.yaml`](../ai-training/configs/schema_contract.yaml) ghi đúng field/type/unit từ Java exporter, Nginx, EVE và16cột `normalized_events`, kèm hash source. Canonical v1.0 SHA-256 `7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4` **giữ nguyên**; không đổi producer, migration hay config dịch vụ.
+
+| Công đoạn | Hợp đồng đã có code/test |
+|---|---|
+| Input | Student JSONL; Nginx JSON hiện hành/legacy combined; EVE http/flow/alert; canonical JSONL hoặc PostgreSQL export `{canonical: {...}}`. Chỉ đọc snapshot; từ chối file thay đổi. Không có DB connector ghi/đổi config |
+| Units/validation | Nginx `latency_seconds`×1000→ms; EVE `flow.age` giây, byte/packet counters giữ units; uint64 flowID không qua float. Canonical validation strict version/unknown fields, bounded line64KiB, đếm partial/oversize/malformed |
+| Privacy | HMAC key AI riêng≥32byte, purpose-separated IP/user/session/request/flow/campaign IDs. Route allowlist/template, UA family allowlist (có alias Edge), loại query secret/PII trước numeric projection; không lưu query/body/header/raw evidence vào Parquet |
+| Correlation | RequestID+IP tương thích+≤2s, mỗi nguồn tối đa1observation/request, Student ưu tiên actor. Ambiguous IDs không merge/không áp nhãn; cùng IP/thời gian chỉ context. Flow match qua cùng flowID pseudonym và timestamp≤decision, không dùng future/close counters |
+| Ground truth | `label`0/1, `attack_family`8lớp, `label_source`, `label_confidence`, `review_status`. Chỉ scenario_manifest/human_review approved; weak_rule/unmatched giữ unknown và không train. HTTP success/no-alert không phải benign |
+| Snapshot | Sanitized SQLite scratch có giới hạn memory, streaming Parquet; immutable manifest/hash/input hash/time range/distributions, verify trước prepare/train/resume. Không đưa scratch/raw/key/model vào Git |
+| Split | Temporal60/20/20, connected groups campaign/client/user/session, embargo300s, purge group spanning/boundary; từ chối partition reviewed rỗng, không fallback random |
+| Feature/scaler | `ai-features-1`:125features request/flow và cửa sổ10/60/300s IP/user; inclusivecurrent một lần, late-event rejected, LRU/event caps +incomplete flags. Scaler fit benign train-only; order/vocab/impute/clip/float32/hash lưu feature_spec |
+| Leakage control | IDs/labels/rule_signals/alert count không là model input mặc định; Suricata alert counts chỉ context10/60/300s. Unknown có thể góp context nhân quả trong partition, không làm training row |
+| Inference parity | Python stateful reference dùng fused request row +cùng feature library; golden preprocessing fixture và ONNX parity. Rust port/parity chưa làm |
+
+S0 thật đã chạy trên **fixture synthetic**:3403observations→960request→576/192/192 reviewed splits,125features. **42tests PASS**, ONNX960/960 mỗi nhánh; [report](../ai-training/reports/S0_20261027.json). Dữ liệu thật/giờ train thật vẫn0. Không tải public corpus, không đọc service DB live. Kho artifact chung chưa cấp; file local ignored không tự có trên máy bạn cùng nhóm.
+
+Availability phải đi cùng feature: producer mask query/objectID thì không thể suy lại payload, entropy gốc hay unique studentID. `query_original_*` chỉ được dùng khi producer có counters hợp lệ; lexical còn lại là view đã lọc privacy. API/read/diversity chỉ hỗ trợ triage, chưa chứng minh IDOR/zero-day. Decision timestamp sau response; không tuyên bố chặn request đầu tiên. Các phần đề xuất data-readiness/public-data bên dưới vẫn là gate cần làm trên corpus thật.
 
 ## 1. Baseline lịch sử trước foundation: chưa có file audit
 

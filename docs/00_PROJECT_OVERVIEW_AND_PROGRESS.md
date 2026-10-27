@@ -4,7 +4,15 @@
 
 **Phạm vi khảo sát ban đầu (lịch sử):** đọc và phân tích; chỉ thêm tài liệu trong `docs/`. Không sửa mã chức năng, không cài thư viện, không chạy training, server, migration, firewall, deploy hay gửi traffic thử nghiệm. Worktree sạch trước khi tạo bộ tài liệu. Đây là kết quả đọc tĩnh và thiết kế đề xuất, không phải chứng nhận hệ thống đang chạy hoặc đã đạt chuẩn doanh nghiệp.
 
-## 1. Hiện trạng Shared Foundation — 26/10/2026
+## 1. Hiện trạng AI pipeline — 27/10/2026
+
+**Nhánh hiện hành:** `feat/ai-model-training`, tạo từ `fbe078d8fe2e35bf60f7a08c7d21331f4522221e`. Chỉ thêm package độc lập [`ai-training/`](../ai-training/README.md) và cập nhật docs00/02/03/04/06; đã chia commit theo phần, xem06 mục17; chưa push. Đã đối chiếu SHA-256 **356 file tracked** và Git diff với base: `student-web/`, `security-web/` giữ nguyên. Không đổi cấu hình, restart dịch vụ, truy cập DB live hoặc áp firewall.
+
+Package đã có adapters read-only, privacy/correlation, explicit labels, temporal/grouped split, Parquet manifests, 125 features nhân quả, CPU MLP8 lớp + benign-only autoencoder, checkpoint/resume và ONNX CPU parity. **42 tests PASS**. S0 thực tế 27/10/2026 12:39:52–12:40:01+07:00: 960 request synthetic, hai model đều chạy2epoch rồi tiến trình mới resume đến4epoch, bằng reference chạy4epoch liên tục; ONNX khớp960/960 mỗi model. Chi tiết/hash ở [báo cáo S0](../ai-training/reports/S0_20261027.json) và [06 mục16](06_AI_HANDOFF_AND_RUN_LEDGER.md#16-ai-data--training-pipeline--27102026).
+
+**Giờ training dữ liệu thật: 0.** Chưa có champion, Rust preprocessing/inference, chất lượng production hoặc nghiệm thu ca2–3giờ/thermal trên Zenbook. Query/object identity đã mask ở producer không thể khôi phục; đây là baseline post-response, không phải model payload đầy đủ hay bằng chứng zero-day detection.
+
+### Shared Foundation — snapshot 26/10/2026
 
 **Nhánh:** `codex/foundation-audit-and-schema`; mốc nền `1925764a0b4dbbae647797136e17abfd9a122c45`. Thay đổi đã được chia thành các commit schema/Student/Security/infra/dev/Audit/CI và commit tài liệu bàn giao; xem ledger06 mục15. Chưa push trong phiên này. Quy định docs-only của phiên khảo sát cũ đã được yêu cầu triển khai mới thay thế; không tự áp quy định cũ để dừng việc đã giao.
 
@@ -12,7 +20,7 @@ Student Web hiện lưu audit DB **và** xuất JSONL theo `STUDENT_AUDIT_LOG_PA
 
 Rust đọc `STUDENT_AUDIT`, Nginx structured/combined và EVE; giữ normalized HTTP/flow/non-alert khi `COLLECT_ALL_EVENTS=true`. Migration `0003` bổ sung canonical event store, receipts, quarantine và state auth; `0004` bổ sung response deadlines. Cursor, observations/alerts/jobs và receipts commit cùng transaction. Dòng quá dài được cách ly theo byte/hash, không làm kẹt nguồn.
 
-Contract v1.0 đã khóa tại [`contracts/canonical-event-v1.schema.json`](../contracts/canonical-event-v1.schema.json), có typed Rust, Java exporter, fixture và test tương thích. **Chưa có model, trainer, corpus được gắn nhãn hoặc phiên training**. Không đánh đồng normalized observations với dataset benign đã được review.
+Contract v1.0 đã khóa tại [`contracts/canonical-event-v1.schema.json`](../contracts/canonical-event-v1.schema.json), có typed Rust, Java exporter, fixture và test tương thích. **Tại snapshot foundation chưa có model, trainer, corpus được gắn nhãn hoặc phiên training**; phần AI mới ở đầu mục1 thay thế trạng thái này. Không đánh đồng normalized observations với dataset benign đã được review.
 
 PostgreSQL Compose mặc định Student `5433`, Security `5434`, cùng loopback và có biến port riêng. Nginx template nghe `0.0.0.0:80`, tách API/frontend upstream local `8080/5173`, Web VM `192.168.20.10:80 backup`; TLS là template tùy chọn cần chứng thư. Backend/frontend bind loopback. Local-first/failover đã được thử bằng hai upstream cô lập; LAN/VM/AWS thật chưa nghiệm thu và chưa có AWS IaC.
 
@@ -50,6 +58,7 @@ Các đường dẫn bằng chứng trong tài liệu tính từ gốc repo; s�
 | `security-web/docker-compose.yml` | PostgreSQL 17 cho security | Host port 5434; Student 5433, cấu hình được |
 | `.github/workflows` | Hai workflow CI student/security | `ci.yml`, `security.yml` |
 | `deliverables/security-host` | Hai DOCX kế hoạch Ubuntu host ngày 25/10, có đoạn không còn khớp mã mới | Snapshot tham khảo, không chứng minh cài đặt thực tế |
+| `ai-training` | Python3.12, NumPy/PyArrow, MLP/AE CPU, ONNX Runtime; môi trường/config/artifact riêng | `README.md`, `src/idps_ai`, `configs`, `tests`, `reports/S0_20261027.json` |
 | `.agents`, `skills-lock.json` | Bộ công cụ/skill hỗ trợ AI, không phải pipeline ML của IDPS | Có dữ liệu CSV thiết kế UI; không được tính là dataset tấn công |
 
 Lockfile frontend thực tế ghi Student React 19.3.0 / Vite 8.3.0 / TypeScript 6.0.3; Security React 19.3.1 / Vite 8.3.5 / TypeScript 6.0.3. Đây là phiên bản trong snapshot lockfile, không tuyên bố là phiên bản mới nhất hay đã cài. `package.json` chứa khoảng phiên bản, xem manifest gốc khi tái lập môi trường.
@@ -98,9 +107,9 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 | Durable ingestion/checkpoint/replay | CÓ CODE + CÓ TEST | `ingest.rs`, migration reliability; giới hạn rotation/.gz/oversized line |
 | Firewall safety / mode / TTL / deadlines | PASS policy + DB/executor tests; nft syntax PASS | OFF/MANUAL/ENFORCE, host/gateway discovery, TTL ≤300s, stale gate; kernel enforcement thật NOT_RUN |
 | Security dashboard/API | PASS API/build; UI trực quan NOT_RUN | Tab Audit ứng dụng, filters/page/detail/correlation; header refresh đã nối audit. Kiểm tra trước commit:50 Rust +3 frontend PASS; catalog rule tĩnh không chứng minh Suricata đã nạp rule |
-| Correlation student/proxy | PASS smoke và cross-source counter test | Request ID thống nhất; flow-to-request correlation vẫn chưa triển khai |
+| Correlation student/proxy | PASS smoke và cross-source counter test | Request ID thống nhất; Rust live flow-to-request correlation chưa triển khai. AI offline có past-only flow context theo flowID, xem02 |
 | Auth burst detector | PASS Rust PostgreSQL | Theo IP+route, cửa sổ/thành công reset/cooldown; dedup request ID Nginx+audit; chưa distributed spraying theo account |
-| AI features/model/inference | ĐỀ XUẤT | Không có training package hay model artifact |
+| AI features/trainer/export | PASS offline + S0 synthetic | `ai-training/`:125 features, MLP/AE, durable resume,42 tests;960/960 parity mỗi model. Rust/live inference và dữ liệu thật NOT_RUN |
 | CI | CÓ CẤU HÌNH | Java/PG, Rust/PG, frontend build; chưa xác minh trạng thái run mới nhất |
 | Ubuntu host deployment | CÓ CONFIG + HƯỚNG DẪN | Service/helper/config cần host acceptance; không áp dụng trong phiên này |
 | AWS, HA, backup/restore đã diễn tập | ĐỀ XUẤT / CHƯA XÁC MINH | Không có IaC hoặc bằng chứng diễn tập trong repo |
@@ -110,15 +119,15 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 
 | Sổ theo dõi | Giá trị đã biết |
 |---|---|
-| Dataset IDPS đã đăng ký | Chưa có trong repo đã kiểm kê |
-| Log runtime / corpus đại diện | Có JSONL/Nginx smoke trong ignored `.local-dev`; chưa có corpus đại diện hoặc nhãn được review |
-| Canonical schema / normalizer | v1.0 đã có code/test; chưa có ML feature library hoặc labeled split |
-| Model baseline / champion / ONNX | Chưa có artifact được kiểm chứng |
-| Ca train đã ghi nhận | **0 ca trong repo**; thời gian bên ngoài repo **chưa biết** |
-| Giờ train có bằng chứng | **0 giờ được ghi nhận**; không suy diễn nhóm chưa từng train ở nơi khác |
-| Latest / best checkpoint | Chưa có đường dẫn và checksum |
-| Metrics PR-AUC/recall/FPR/latency | Chưa đo, không điền số giả |
-| Ca tiếp theo | S0: benchmark tài nguyên + kiểm thử resume, sau khi hoàn tất schema/collector/data slice |
+| Dataset IDPS đã đăng ký | `synthetic_s0_20261027_final`:960 request/3403 observations; train576/val192/test192,15campaign; chưa có corpus thật |
+| Log runtime / corpus đại diện | Không thu log live trong phiên AI; cần snapshot bất biến và nhãn đã review trước train thật |
+| Canonical schema / normalizer | v1.0 giữ nguyên; derived `ai-features-1`,125 cột, feature_spec/scaler/golden vectors đã có |
+| Model baseline / champion / ONNX | MLP4296 và AE8157 tham số; ONNX17.678/33.136byte, parity PASS; chưa chọn champion |
+| Ca train đã ghi nhận | **4 phiên synthetic của2run chính +2phiên reference**; S0 verification, không tính là ca train thật |
+| Giờ train có bằng chứng | Synthetic optimizer0,015538449s; reference0,015986770s tách riêng; **dữ liệu thật0giờ**; ngoài repo chưa biết |
+| Latest / best checkpoint | Local ignored `.artifacts/synthetic_s0_20261027_final/{mlp,autoencoder}-resumed/checkpoints`; checksum ở06/report; chưa có shared artifact store |
+| Metrics PR-AUC/recall/FPR/latency | Có trong report synthetic; không dùng làm chất lượng production. Warm ORT model-only p95 MLP0,004404ms/AE0,005234ms |
+| Ca tiếp theo | Snapshot log thật → review labels → split/data-readiness → benchmark ca có kiểm soát trên máy đích; chưa mở train dài hay enforce |
 
 Thiết bị mục tiêu do người dùng cung cấp: ASUS Zenbook 14 OLED, RAM 32GB. Chưa biết SKU CPU, số luồng, OS train, GPU/NPU, dung lượng SSD trống hoặc thermal profile. Kế hoạch [03](03_AI_MODEL_AND_TRAINING_PLAN.md) dùng CPU-first, RAM dưới 16GB và ca 2–3 giờ; chưa lấy phần cứng máy thực thi chat làm thông số laptop.
 
@@ -144,4 +153,4 @@ Thiết bị mục tiêu do người dùng cung cấp: ASUS Zenbook 14 OLED, RAM
 - Nginx 1.28: 5 kịch bản PASS, gồm request ID/secret masking và local→backup failover. Suricata 8.0.3: syntax + PCAP offline đủ 9 SID PASS.
 - Smoke stack riêng PASS: backend 127.0.0.1:8080, frontend 127.0.0.1:5173, edge 18780, security 127.0.0.1:3001, DB 55433/55434; request ID xuất hiện ở cả NGINX và STUDENT_AUDIT trong normalized_events. Xem trạng thái cuối và lệnh tái lập tại [06](06_AI_HANDOFF_AND_RUN_LEDGER.md).
 
-Các finding runtime còn lại và giới hạn production được ghi trong 01/02/06; dữ liệu/AI vẫn cần R30–R34 trước S0. Những bảng/lời kết khảo sát cũ bên trên không phải trạng thái tính năng mới; mục 1/5/9 và ledger 06 là nguồn hiện hành.
+Các finding runtime còn lại và giới hạn production được ghi trong 01/02/06; S0 kỹ thuật synthetic đã PASS ở mục1; dữ liệu thật/benchmark R30–R34 vẫn cần trước train/champion production. Những bảng/lời kết khảo sát cũ bên trên không phải trạng thái tính năng mới; mục 1/5/9 và ledger 06 là nguồn hiện hành.

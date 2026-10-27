@@ -1,0 +1,1027 @@
+{
+  "artifact_root": "/home/trung/projects/idps-web-aws/ai-training/.artifacts/synthetic_s0_20261027_final",
+  "branch": "feat/ai-model-training",
+  "comparison_optimizer_seconds": 0.015986770003109996,
+  "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+  "ended_at_unix": 1793079601.8965957,
+  "feature_count": 125,
+  "fixture": {
+    "campaigns": 15,
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "files": {
+      "access.log": "a72a37ce5513efdc6b68af9518a7e8540d7251b3b65d2e4542e312337abe75e0",
+      "eve.json": "2bd8404afcb55df6f6e9951b6e9f46b75dc7050e09e32f26e8920282f75a6ba1",
+      "labels.jsonl": "23f390e58bf50fe94d0789d2e81eb34e4d168a108e29bc725705adb792659eb3",
+      "student-audit.log": "99e160da2735ed11ae1cad4a689db616de9d369c22fcdcb4ab95a724ca77f45b"
+    },
+    "purpose": "S0 pipeline/resume verification only; not model quality evidence",
+    "requests": 960,
+    "seed": 17,
+    "synthetic": true
+  },
+  "models": {
+    "autoencoder": {
+      "benign_only_training": true,
+      "checkpoint_manifest_sha256": "fe8896145823b3b4c61dcc2ed33f048e9a9a5fadb0efce3a02ddbaa267f0dc8f",
+      "config_sha256": "30523e0ccf2f9d45c6fb266c5032f6be95ddec80ea7cf83db8a064a612fa80b5",
+      "continuous_reference_session": {
+        "best_metric": 0.8532512946625506,
+        "checkpoint": "checkpoints/step-000000000008-7defb412cf96",
+        "checkpoint_manifest_sha256": "40b5c5a880b67258a423016096f2de323c9ac24d8d2bae638cb70a67b661210d",
+        "config_sha256": "30523e0ccf2f9d45c6fb266c5032f6be95ddec80ea7cf83db8a064a612fa80b5",
+        "cumulative_optimizer_seconds": 0.005119748999277363,
+        "cumulative_wall_seconds": 0.43176043199946434,
+        "cursor": 0,
+        "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+        "ended_at_unix": 1793079600.832743,
+        "epoch": 4,
+        "global_step": 8,
+        "process_id": 31638,
+        "resources": {
+          "address_space_limit_effective": 12884901888,
+          "affinity_effective": [
+            0,
+            1
+          ],
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 2,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 12884901888,
+          "peak_rss_bytes": 218906624,
+          "peak_tree_rss_bytes": 218906624,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+          "total_host_memory_bytes": 32440905728
+        },
+        "run_id": "e861cc531a294930a5366f0fdbb83aa1",
+        "session_id": "81f680e44b824ac9b2982847fea9e5bb",
+        "session_optimizer_seconds": 0.005119748999277363,
+        "session_wall_seconds": 0.48214827299943863,
+        "started_at_unix": 1793079600.3506176,
+        "stop_reason": "epochs_complete",
+        "used_previous_checkpoint": false,
+        "started_at": "2026-10-27T12:40:00.350+07:00",
+        "ended_at": "2026-10-27T12:40:00.832+07:00"
+      },
+      "epoch": 4,
+      "evaluation": {
+        "confusion_matrix": [
+          [
+            24,
+            0
+          ],
+          [
+            168,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "families": {
+          "behavioral_anomaly": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "benign": {
+            "count": 24,
+            "false_positives": 0
+          },
+          "brute_force": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "cmd_injection": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "path_traversal": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "scanner_recon": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "sqli": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "xss": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          }
+        },
+        "latency_ms": {
+          "native": {
+            "p50": 0.0066195,
+            "p95": 0.007173049999999999,
+            "p99": 0.007715910000000006
+          },
+          "onnxruntime": {
+            "p50": 0.004543,
+            "p95": 0.0052339,
+            "p99": 0.00548408000000001
+          },
+          "scope": "warm batch1 model inference; preprocessing excluded"
+        },
+        "pr_auc_average_precision": 0.8788914266490243,
+        "pr_auc_trapezoidal": 0.8778459126106806,
+        "precision": 0.0,
+        "recall": 0.0,
+        "recall_at_fpr_le_1pct": 0.02976190476190476,
+        "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+        "roc_auc": 0.46924603174603174,
+        "rows": 192,
+        "threshold": 6.2777276039123535
+      },
+      "first_process_id": 31626,
+      "global_step": 8,
+      "next_learning_rate": 0.00196,
+      "onnx_parity": {
+        "all_rows_match": true,
+        "atol": 1e-06,
+        "max_absolute_error": 1.430511474609375e-06,
+        "rows": 960,
+        "rtol": 1e-05
+      },
+      "onnx_sha256": "24ce67057c7616abc9d68a38596ce1d601455bd2679194d5ac0c91bb1548dc18",
+      "resume_equivalent": true,
+      "resumed_process_id": 31632,
+      "scheduler_decay_steps": 5,
+      "sessions": [
+        {
+          "best_metric": 0.8526281374759915,
+          "checkpoint": "checkpoints/step-000000000004-8afe8c67cb7a",
+          "checkpoint_manifest_sha256": "6135d3e40ea250bcdfeaa5f1638159014d93569f375e05f0f5e9895b6446a27e",
+          "config_sha256": "30523e0ccf2f9d45c6fb266c5032f6be95ddec80ea7cf83db8a064a612fa80b5",
+          "cumulative_optimizer_seconds": 0.002904527000282542,
+          "cumulative_wall_seconds": 0.28480937000040285,
+          "cursor": 0,
+          "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+          "ended_at_unix": 1793079598.815822,
+          "epoch": 2,
+          "global_step": 4,
+          "process_id": 31626,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 218464256,
+            "peak_tree_rss_bytes": 218464256,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440905728
+          },
+          "run_id": "6051181c123e47d99e9b1c6c5ec14387",
+          "session_id": "61e9c6e79b554f30851683c5dbc26816",
+          "session_optimizer_seconds": 0.002904527000282542,
+          "session_wall_seconds": 0.33493713100051536,
+          "started_at_unix": 1793079598.4808984,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false,
+          "started_at": "2026-10-27T12:39:58.480+07:00",
+          "ended_at": "2026-10-27T12:39:58.815+07:00"
+        },
+        {
+          "best_metric": 0.8532512946625506,
+          "checkpoint": "checkpoints/step-000000000008-829b52957e56",
+          "checkpoint_manifest_sha256": "fe8896145823b3b4c61dcc2ed33f048e9a9a5fadb0efce3a02ddbaa267f0dc8f",
+          "config_sha256": "30523e0ccf2f9d45c6fb266c5032f6be95ddec80ea7cf83db8a064a612fa80b5",
+          "cumulative_optimizer_seconds": 0.004797458000211918,
+          "cumulative_wall_seconds": 0.4984583580007893,
+          "cursor": 0,
+          "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+          "ended_at_unix": 1793079599.711023,
+          "epoch": 4,
+          "global_step": 8,
+          "process_id": 31632,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 218521600,
+            "peak_tree_rss_bytes": 218521600,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440905728
+          },
+          "run_id": "6051181c123e47d99e9b1c6c5ec14387",
+          "session_id": "4da3c027f2be4658ba40e7009414fac4",
+          "session_optimizer_seconds": 0.0018929309999293764,
+          "session_wall_seconds": 0.2614246600005572,
+          "started_at_unix": 1793079599.449614,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false,
+          "started_at": "2026-10-27T12:39:59.449+07:00",
+          "ended_at": "2026-10-27T12:39:59.711+07:00"
+        }
+      ],
+      "threshold": 6.2777276039123535,
+      "training_rows": 72
+    },
+    "mlp": {
+      "benign_only_training": false,
+      "checkpoint_manifest_sha256": "b17c8ce86ef07033619bb7296ffd0314b7c4ab89b243249538d19c543c629b6b",
+      "config_sha256": "2fd43ee1edf20763546edb50e7d826f3a4182f819134abadc4ad078d4e0073e8",
+      "continuous_reference_session": {
+        "best_metric": 0.9179554128993026,
+        "checkpoint": "checkpoints/step-000000000036-ee381ac2e8fa",
+        "checkpoint_manifest_sha256": "6bf2e493c7d9b86d29d00b8c3c2567dcffaad472b2dd0340bdad207396d32c73",
+        "config_sha256": "2fd43ee1edf20763546edb50e7d826f3a4182f819134abadc4ad078d4e0073e8",
+        "cumulative_optimizer_seconds": 0.010867021003832633,
+        "cumulative_wall_seconds": 0.5280835949997709,
+        "cursor": 0,
+        "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+        "ended_at_unix": 1793079596.8598313,
+        "epoch": 4,
+        "global_step": 36,
+        "process_id": 31611,
+        "resources": {
+          "address_space_limit_effective": 12884901888,
+          "affinity_effective": [
+            0,
+            1
+          ],
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 2,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 12884901888,
+          "peak_rss_bytes": 218251264,
+          "peak_tree_rss_bytes": 218251264,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+          "total_host_memory_bytes": 32440905728
+        },
+        "run_id": "bc765eda609e464bb5d19da11331b093",
+        "session_id": "5ee1d19e99c54ec485dbac109273e518",
+        "session_optimizer_seconds": 0.010867021003832633,
+        "session_wall_seconds": 0.5789467240001613,
+        "started_at_unix": 1793079596.2809029,
+        "stop_reason": "epochs_complete",
+        "used_previous_checkpoint": false,
+        "started_at": "2026-10-27T12:39:56.280+07:00",
+        "ended_at": "2026-10-27T12:39:56.859+07:00"
+      },
+      "epoch": 4,
+      "evaluation": {
+        "confusion_matrix": [
+          [
+            24,
+            0
+          ],
+          [
+            147,
+            21
+          ]
+        ],
+        "f1": 0.2222222222222222,
+        "families": {
+          "behavioral_anomaly": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                22,
+                2
+              ]
+            ],
+            "count": 24,
+            "detected": 2
+          },
+          "benign": {
+            "count": 24,
+            "false_positives": 0
+          },
+          "brute_force": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                12,
+                12
+              ]
+            ],
+            "count": 24,
+            "detected": 12
+          },
+          "cmd_injection": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                22,
+                2
+              ]
+            ],
+            "count": 24,
+            "detected": 2
+          },
+          "path_traversal": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                22,
+                2
+              ]
+            ],
+            "count": 24,
+            "detected": 2
+          },
+          "scanner_recon": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                23,
+                1
+              ]
+            ],
+            "count": 24,
+            "detected": 1
+          },
+          "sqli": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                24,
+                0
+              ]
+            ],
+            "count": 24,
+            "detected": 0
+          },
+          "xss": {
+            "confusion_matrix_vs_benign": [
+              [
+                24,
+                0
+              ],
+              [
+                22,
+                2
+              ]
+            ],
+            "count": 24,
+            "detected": 2
+          }
+        },
+        "latency_ms": {
+          "native": {
+            "p50": 0.006224,
+            "p95": 0.0065406,
+            "p99": 0.007343180000000003
+          },
+          "onnxruntime": {
+            "p50": 0.0039285,
+            "p95": 0.00440375,
+            "p99": 0.004819160000000022
+          },
+          "scope": "warm batch1 model inference; preprocessing excluded"
+        },
+        "multiclass_confusion_matrix": [
+          [
+            24,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            24,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            22,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            22,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0
+          ],
+          [
+            23,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            12,
+            0,
+            0,
+            0,
+            0,
+            0,
+            12,
+            0
+          ],
+          [
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1
+          ]
+        ],
+        "multiclass_labels": [
+          "benign",
+          "sqli",
+          "xss",
+          "path_traversal",
+          "cmd_injection",
+          "scanner_recon",
+          "brute_force",
+          "behavioral_anomaly"
+        ],
+        "pr_auc_average_precision": 0.9367289667418448,
+        "pr_auc_trapezoidal": 0.9363994619284596,
+        "precision": 1.0,
+        "recall": 0.125,
+        "recall_at_fpr_le_1pct": 0.14285714285714285,
+        "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+        "roc_auc": 0.6773313492063493,
+        "rows": 192,
+        "threshold": 0.9363242387771606
+      },
+      "first_process_id": 31599,
+      "global_step": 36,
+      "next_learning_rate": 0.00173625106649344,
+      "onnx_parity": {
+        "all_rows_match": true,
+        "atol": 1e-06,
+        "max_absolute_error": 2.086162567138672e-07,
+        "rows": 960,
+        "rtol": 1e-05
+      },
+      "onnx_sha256": "83de614dbf185817c38653013e27311bd6e5a5295930d930c96936462eabae87",
+      "resume_equivalent": true,
+      "resumed_process_id": 31605,
+      "scheduler_decay_steps": 5,
+      "sessions": [
+        {
+          "best_metric": 0.9016073428426644,
+          "checkpoint": "checkpoints/step-000000000018-aaff5fc7a4f4",
+          "checkpoint_manifest_sha256": "fc1a4b706bd0d37134015b1b3c16c75a81d68185cd5a496ebf1fcd43fecaaddb",
+          "config_sha256": "2fd43ee1edf20763546edb50e7d826f3a4182f819134abadc4ad078d4e0073e8",
+          "cumulative_optimizer_seconds": 0.0055664080009592,
+          "cumulative_wall_seconds": 0.3317104810003002,
+          "cursor": 0,
+          "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+          "ended_at_unix": 1793079594.6213038,
+          "epoch": 2,
+          "global_step": 18,
+          "process_id": 31599,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 218271744,
+            "peak_tree_rss_bytes": 218271744,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440905728
+          },
+          "run_id": "fbd3c1dc86864568af1ac823d78c0d7b",
+          "session_id": "9e68708864a54a15a388c6a26d88fe87",
+          "session_optimizer_seconds": 0.0055664080009592,
+          "session_wall_seconds": 0.3787588440000036,
+          "started_at_unix": 1793079594.2425585,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false,
+          "started_at": "2026-10-27T12:39:54.242+07:00",
+          "ended_at": "2026-10-27T12:39:54.621+07:00"
+        },
+        {
+          "best_metric": 0.9179554128993026,
+          "checkpoint": "checkpoints/step-000000000036-95af02628246",
+          "checkpoint_manifest_sha256": "b17c8ce86ef07033619bb7296ffd0314b7c4ab89b243249538d19c543c629b6b",
+          "config_sha256": "2fd43ee1edf20763546edb50e7d826f3a4182f819134abadc4ad078d4e0073e8",
+          "cumulative_optimizer_seconds": 0.010740991002421652,
+          "cumulative_wall_seconds": 0.6558091830011108,
+          "cursor": 0,
+          "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+          "ended_at_unix": 1793079595.6506965,
+          "epoch": 4,
+          "global_step": 36,
+          "process_id": 31605,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 218394624,
+            "peak_tree_rss_bytes": 218394624,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440905728
+          },
+          "run_id": "fbd3c1dc86864568af1ac823d78c0d7b",
+          "session_id": "2453d031acb3426a97de35a4ef10472e",
+          "session_optimizer_seconds": 0.005174583001462452,
+          "session_wall_seconds": 0.3711938080004984,
+          "started_at_unix": 1793079595.279516,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false,
+          "started_at": "2026-10-27T12:39:55.279+07:00",
+          "ended_at": "2026-10-27T12:39:55.650+07:00"
+        }
+      ],
+      "threshold": 0.9363242387771606,
+      "training_rows": 576
+    }
+  },
+  "optimizer_seconds_synthetic": 0.01553844900263357,
+  "outside_training_session_wall_seconds": 6.801925410310105,
+  "preprocessing_resources": {
+    "address_space_limit_effective": 12884901888,
+    "affinity_effective": [
+      0,
+      1
+    ],
+    "effective_cpus_before_cap": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+    "max_threads": 2,
+    "memory_guard": "process-tree RSS at optimizer boundaries",
+    "memory_limit_bytes": 12884901888,
+    "peak_rss_bytes": 174911488,
+    "peak_tree_rss_bytes": 174911488,
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "python": "3.12.14",
+    "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+    "total_host_memory_bytes": 32440905728
+  },
+  "preprocessing_wall_seconds_not_training": 1.0674999769998976,
+  "production_quality_claim": false,
+  "purpose": "S0 pipeline/resume verification on synthetic fixtures",
+  "real_data_training_hours": 0.0,
+  "rows": {
+    "test": 192,
+    "train": 576,
+    "val": 192
+  },
+  "source_observations": {
+    "observations": 3403,
+    "requests": 960
+  },
+  "split": {
+    "cutoffs": [
+      1767235847.3612952,
+      1767239447.346566
+    ],
+    "embargo_seconds": 300,
+    "group_columns": [
+      "campaign_key",
+      "client_key",
+      "user_key",
+      "session_key"
+    ],
+    "groups": 15,
+    "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+    "reviewed_rows": {
+      "test": 192,
+      "train": 576,
+      "val": 192
+    }
+  },
+  "started_at_unix": 1793079592.6872609,
+  "synthetic": true,
+  "wall_seconds": 9.20933485031128,
+  "started_at": "2026-10-27T12:39:52.687+07:00",
+  "ended_at": "2026-10-27T12:40:01.896+07:00",
+  "timezone": "Asia/Saigon (+07:00)",
+  "source_commit": "fbe078d8fe2e35bf60f7a08c7d21331f4522221e",
+  "source_working_tree": "AI implementation uncommitted at measurement; source hashes below bind exact implementation",
+  "requirements_sha256": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5",
+  "source_files_sha256": {
+    "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+    "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+    "src/idps_ai/cli.py": "3b92b06ebf84df448ace622d7232dfcb7e21f9dfafc1452efed5dd4fb9690952",
+    "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+    "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+    "src/idps_ai/data/dataset.py": "98450f980a499f1b314993ccaa1bdc967773a736891e2c54f296036a97fe8d01",
+    "src/idps_ai/data/privacy.py": "bd2468ab8a306841cfd30646e90d97ef4679621313f27052bb52b2e75b05be1b",
+    "src/idps_ai/data/readers.py": "d4789a3ab80730e621a968c1e43c6e311448a124e3ef86b0a52f685bfceac67f",
+    "src/idps_ai/data/split.py": "9ededc96e552fdf31f0ad35b89c623d40cf34363e2406c860e3755f2003306b1",
+    "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+    "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+    "src/idps_ai/export/onnx.py": "9a3d229f6eb6d07ef4e17c5310771b7f7543256a4363ec2da2844faa123fd0d4",
+    "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+    "src/idps_ai/features/pipeline.py": "49d7c355a87f39eebe92177ddef58eccde675c21c01548ca306782b070c87ebb",
+    "src/idps_ai/inference.py": "8c82268669e013ea3f8978169c4ea95eda4dfb82ee7a82b095c0877fa211b5c4",
+    "src/idps_ai/smoke.py": "ac32067888c7f288ac15bb58a5d2b64b2e29c17b8faa132c6a42944c5d08e646",
+    "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+    "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+    "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+    "src/idps_ai/training/models.py": "be9651e76943adc9d9ea7d20aa88913f38138ee1cd6b33f7e64de536e37e97c5",
+    "src/idps_ai/training/resources.py": "fddd3dbfb572f48e8e94093dbf0cfd4280dc8e9a33ea77de1a07a84b35c16403",
+    "src/idps_ai/training/runner.py": "1e491be33a14ce630894da9b1612e8347cb9774a70a97b2b0035d368ccfa397e"
+  },
+  "configuration_files_sha256": {
+    "configs/anomaly_config.yaml": "5a3271a1fb17079d2b5a5268ed0280c44931f462b9e81783af5f8f6e307830a3",
+    "configs/schema_contract.yaml": "49a7c4ee1f4081a5d812efa582385f1d35b89ba3aaf516cc30e24a7b8eb4b59e",
+    "configs/train_config.yaml": "8be71c1b72df7271972d8b952f6db25acca2e6956c1a492aee58ca069ee2217c"
+  },
+  "protected_services": {
+    "tracked_files_checked": 356,
+    "all_sha256_unchanged": true,
+    "git_diff_against": "fbe078d8fe2e35bf60f7a08c7d21331f4522221e",
+    "status": "PASS"
+  },
+  "validation": {
+    "pytest": "PASS: 42 passed, 0 skipped (9.08s final-checks.log)",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "compileall": "PASS",
+    "pip_check": "PASS",
+    "schema_contract": "PASS",
+    "protected_services_diff": "PASS",
+    "mvn_test": "NOT_RUN: no Student changes",
+    "cargo_test": "NOT_RUN: no Security changes",
+    "real_data_training": "NOT_RUN",
+    "rust_feature_parity": "NOT_RUN: Python reference only",
+    "long_session_thermal_cgroup_acceptance": "NOT_RUN"
+  },
+  "known_limits": [
+    "Synthetic pipeline/resume verification only, not model quality or zero-day detection evidence",
+    "Real-data training hours 0; no production FPR claim",
+    "Local ignored artifacts only; no shared artifact store allocated",
+    "Linux allocation ceiling and process-tree RSS guard; not hard cgroup group enforcement",
+    "No Rust integration or service configuration changes",
+    "Producer-masked query/object identity cannot be reconstructed",
+    "No 2-3 hour endurance or target laptop thermal acceptance"
+  ],
+  "artifacts_integrity": {
+    "autoencoder": {
+      "model_manifest_sha256": "ef0a72ff352032f7396658d084cb550cbf75e969cd4d36ef9764055727fc2abf",
+      "files_sha256": {
+        "evaluation.json": "56e29015f9e605e8faf13647f1572c020062ba251c4ebc3c832644d7c6839080",
+        "feature_spec.json": "1eec80eae30c3e5ec8e59276c3d2c3b4b90e18c0f70da9c7f54c0a09734edc43",
+        "golden_vectors.json": "8091a309f85f776c0012ccfea2e8a7e4614f2caf18a14bd9cce69649569c7027",
+        "model.onnx": "24ce67057c7616abc9d68a38596ce1d601455bd2679194d5ac0c91bb1548dc18"
+      },
+      "onnx_bytes": 33136,
+      "parameter_count": 8157
+    },
+    "mlp": {
+      "model_manifest_sha256": "3cf2ae0322eb58a45ce23df4b4375d30a3143765e8022b71188d318fe46cecef",
+      "files_sha256": {
+        "evaluation.json": "5ad262666e722e7be1d4627868b380f626d8c094e1c2ac242889789806fabc63",
+        "feature_spec.json": "1eec80eae30c3e5ec8e59276c3d2c3b4b90e18c0f70da9c7f54c0a09734edc43",
+        "golden_vectors.json": "e474a37fbf1d0a55c3478bfc790fe12a6c1c993f31941edab7e8289bf7b3a0f5",
+        "model.onnx": "83de614dbf185817c38653013e27311bd6e5a5295930d930c96936462eabae87"
+      },
+      "onnx_bytes": 17678,
+      "parameter_count": 4296
+    }
+  },
+  "new_package_files": [
+    "ai-training/.gitignore",
+    "ai-training/README.md",
+    "ai-training/configs/anomaly_config.yaml",
+    "ai-training/configs/schema_contract.yaml",
+    "ai-training/configs/train_config.yaml",
+    "ai-training/pyproject.toml",
+    "ai-training/reports/S0_20261027.json",
+    "ai-training/requirements.txt",
+    "ai-training/scripts/bootstrap.sh",
+    "ai-training/scripts/check.sh",
+    "ai-training/src/idps_ai/__init__.py",
+    "ai-training/src/idps_ai/__main__.py",
+    "ai-training/src/idps_ai/cli.py",
+    "ai-training/src/idps_ai/common.py",
+    "ai-training/src/idps_ai/data/__init__.py",
+    "ai-training/src/idps_ai/data/dataset.py",
+    "ai-training/src/idps_ai/data/privacy.py",
+    "ai-training/src/idps_ai/data/readers.py",
+    "ai-training/src/idps_ai/data/split.py",
+    "ai-training/src/idps_ai/data/synthetic.py",
+    "ai-training/src/idps_ai/export/__init__.py",
+    "ai-training/src/idps_ai/export/onnx.py",
+    "ai-training/src/idps_ai/features/__init__.py",
+    "ai-training/src/idps_ai/features/pipeline.py",
+    "ai-training/src/idps_ai/inference.py",
+    "ai-training/src/idps_ai/smoke.py",
+    "ai-training/src/idps_ai/training/__init__.py",
+    "ai-training/src/idps_ai/training/checkpoint.py",
+    "ai-training/src/idps_ai/training/evaluation.py",
+    "ai-training/src/idps_ai/training/models.py",
+    "ai-training/src/idps_ai/training/resources.py",
+    "ai-training/src/idps_ai/training/runner.py",
+    "ai-training/tests/conftest.py",
+    "ai-training/tests/fixtures/preprocessing_golden.json",
+    "ai-training/tests/test_cli.py",
+    "ai-training/tests/test_contracts.py",
+    "ai-training/tests/test_dataset.py",
+    "ai-training/tests/test_export.py",
+    "ai-training/tests/test_features.py",
+    "ai-training/tests/test_models.py",
+    "ai-training/tests/test_readers.py",
+    "ai-training/tests/test_safety.py",
+    "ai-training/tests/test_splits.py",
+    "ai-training/tests/test_training.py"
+  ],
+  "updated_documents": [
+    "docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md",
+    "docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md",
+    "docs/03_AI_MODEL_AND_TRAINING_PLAN.md",
+    "docs/04_ROADMAP_AND_TEAM_TASKS.md",
+    "docs/06_AI_HANDOFF_AND_RUN_LEDGER.md"
+  ],
+  "test_files_sha256": {
+    "tests/conftest.py": "6e7bfe5139030b3c90f9c5403c87e782c3ac63361e0c9b8b1c1b69baf1929d41",
+    "tests/fixtures/preprocessing_golden.json": "0af26f730b91042a464e884575dfd7b04188db410b36447c6c48f072b8d09ab5",
+    "tests/test_cli.py": "3a577c689d8ecc1e89538e6d552b3f85bcc7556ab74bb53005af949a9482cd57",
+    "tests/test_contracts.py": "b039564609243517a77908def138043b49bbf40df1a4988a66b28a5a60524cbd",
+    "tests/test_dataset.py": "c2670513b3c33a38afd69f46e0e399b0688e1224ae7daa9cdad9cce071ffdf92",
+    "tests/test_export.py": "4be5e7f093d8e58cd118a9ea6a897ae8d0f3397e92d18a6cff5796809aa8ad00",
+    "tests/test_features.py": "7485b316fc514f750bcf3f3e0fed00d5baf4d5cd728bbf8ed10b5f82313f75ba",
+    "tests/test_models.py": "d036476289237000228d18c8d53024320d1f73a43adae9fd145f51bcbb1bbe2a",
+    "tests/test_readers.py": "bc55d15b86a3ed0ca60f9a8613792f17510663920b4baa9d69f54b4e2deae724",
+    "tests/test_safety.py": "e6c5bfedb31bef63f6c5b8205a326be1d189ce325ece85f1e035c67409a2adc6",
+    "tests/test_splits.py": "cc8034124c14f05f289fb456e42317dc691d3cc051f66325624caa7b3cea143e",
+    "tests/test_training.py": "f68a5270bd9f8ecb069c1f2ea2fea080303ea87b7ed7dedc7904b21a54f98415"
+  }
+}

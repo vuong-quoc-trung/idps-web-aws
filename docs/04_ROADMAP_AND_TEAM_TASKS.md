@@ -10,6 +10,12 @@ Có thể tách hai luồng theo contract đã khóa: A tiếp IPS/Infra/benchma
 
 Phần lộ trình dưới đây giữ thứ tự/định nghĩa ban đầu; các câu “chỉ tạo tài liệu” là lịch sử, được yêu cầu triển khai của phiên mới thay thế.
 
+## Cập nhật luồng AI 27/10/2026
+
+Nhánh **`feat/ai-model-training`**, base`fbe078d`: package [`ai-training/`](../ai-training/README.md) đã triển khai offline. R24/R32 có adapters/labels/grouped temporal split/Parquet manifests/causal features; P4 có MLP/benign-onlyAE, first-class resume,42tests PASS; phần exportONNX/Pythonreference của P5 PASS960/960mẫu mỗi model trong S0synthetic. **Chưa coi R30–R34/P4/P5 hoàn tất cho dữ liệu thật**: public intake, real lab corpus, review nhãn, rule-only comparison, target-machine long benchmark, Rust port/parity/live shadow vẫn cần làm. Giờ train dữ liệu thật0; [06 mục16](06_AI_HANDOFF_AND_RUN_LEDGER.md#16-ai-data--training-pipeline--27102026) ghi bằng chứng.
+
+Ranh giới user hiện hành: chỉ sửa `ai-training/` +docs, không sửa bất kỳ file Student/Security. Contract v1.0 giữ nguyên; branchname này do user chỉ định, thay ví dụ `codex/…` cho task AI. Không cần chờ thay đổi IPS/Infra để viết/rà soát pipeline offline, nhưng cần data-readiness trước train thật.
+
 ## 1. Mục tiêu và thứ tự phụ thuộc
 
 Mục tiêu là một pilot IDPS có bằng chứng: thu đủ log, phân tích hai lõi không chặn lẫn nhau, phản ứng có giới hạn/khôi phục, model nhẹ được đánh giá trên Student Web thật và hai thành viên tiếp tục công việc được qua `/docs`. “Enterprise-grade” trong lộ trình là tập năng lực kiểm chứng được, không phải nhãn chứng nhận hoặc lời hứa đạt ngay nhờ đổi model.
@@ -42,7 +48,7 @@ Có thể làm P1 và P2 song song sau P0; không train mô hình hành vi đầ
 | Deployment/CI | Host/TLS/secrets, Rust/Java/FE checks | CPU launcher, resource test, training/export smoke | Lock/runtime compatibility, artifact integrity/rollback |
 | Docs | 01 và phần code/status 00/04 | 02/03 và ledger training 06 | Mỗi người cập nhật việc của mình, reviewer đối chiếu |
 
-Các đường dẫn package ML/data/contract tương lai **chưa tạo**. Khi bắt đầu code, chọn một layout có owner rõ, ví dụ `ml/` cho Python training và `contracts/` cho schema/golden vectors; chốt bằng decision entry trước khi tạo. Không nhân bản định nghĩa feature trong hai branch rồi merge theo tên gần giống.
+Đã có `contracts/` cho canonicalv1 và `ai-training/` cho Python offline/data/features/trainer/tests/report. Quyết định D08 ở06 chốt layout và scope read-only; golden preprocessing vectors của AI nằm trong package, chưa portRust. Không nhân bản định nghĩa feature trong hai branch rồi merge theo tên gần giống.
 
 ## 3. P0 — Baseline, contract và môi trường
 
