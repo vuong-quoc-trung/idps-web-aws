@@ -4,6 +4,32 @@
 
 **Foundation update26/10/2026:** đã có exporter/canonical metadata cho successful reads/sessionHMAC/requestID/UA/HTTP/flow, nên các mô tả thiếu metadata ở baseline bên dưới cần đọc cùng02 hiện hành. Tại snapshot foundation chưa có trainer/model; cập nhật27/10 bên dưới thay thế trạng thái đó. Chưa có corpus thật/payload được phép train hoặc giờ training dữ liệu thật.
 
+## 0A. Gate trước train — cập nhật27/10/2026
+
+AI có `lab-start/capture/finish/stop`, `snapshot`, `observer-labels`,
+`review-export/import`, `readiness`, `capacity-check`. Các bước này không fit model.
+`lab-finish` chuẩn bị Parquet/features/provenance/report và in lệnh train, không
+thực thi chúng. `train --readiness-report` kiểm reportPASS, dataset và sourceSHA;
+source đổi phải chạy gate lại. CLI cũ khôngreport vẫn phục vụ technicalfixtures,
+không phải đường bàn giao pilot đã duyệt.
+
+Featurev2 có148input (thêm UAallowlistmulti-hot/missing/unknown); MLP148→32→8 có
+5.032tham số, AE148→32→148 có9.652tham số khi bắt đầurunmới. Chưa fit hai model này
+trên corpuspilot. Cấu hình optimizer/checkpoint không bị đổi; không force-resume
+checkpoint125input cũ. Canonicalv1.0 không bị thay.
+
+`configs/experiment_plan.yaml` khóa đề xuất firstpilot5epoch, tốiđa150phút/phiên,
+2threads/12GiB; chọn trênval, không tunethreshold trêntest. Đây là planNOT_STARTED,
+không phải yêu cầu train đủ sốgiờ. Rulebaseline trướcfit chỉ đo bốn Nginxmapflags
+trênvalidation, không gọi là fullRust/Suricataensemble. Capacityreport là read-only
+I/O/RAM/disk estimate, không giả thành epoch/thermalbenchmark.
+
+READY_FOR_OFFLINE_PILOT chỉ chứng minh preconditions của corpuslab theo policy.
+Cần review inputavailability (labquery khác edge đãmask), humanrealism, campaign dài,
+modelquality/FPR, response429/statusablation, Rustport/parity, shadow và targetmachine
+endurance trước khi chọnchampion hoặc cho phảnứng. Sổ06 mục18 ghi hash/count/test
+và giờtraincorpus=0; kết quả S0 v1 ở mục0 là lịch sử.
+
 ## 0. Triển khai và bằng chứng S0 — 27/10/2026
 
 Nhánh `feat/ai-model-training`, base `fbe078d`; toàn bộ source/env/config/checkpoint dưới [`ai-training/`](../ai-training/README.md), chỉ đọc snapshot/export. Không sửa Student/Security hay tích hợp inference vào Rust. Quyết định D08 và ledger6phiên ở [06 mục16](06_AI_HANDOFF_AND_RUN_LEDGER.md#16-ai-data--training-pipeline--27102026).

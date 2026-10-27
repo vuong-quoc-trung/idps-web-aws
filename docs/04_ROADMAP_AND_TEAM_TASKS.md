@@ -16,6 +16,17 @@ Nhánh **`feat/ai-model-training`**, base`fbe078d`: package [`ai-training/`](../
 
 Ranh giới user hiện hành: chỉ sửa `ai-training/` +docs, không sửa bất kỳ file Student/Security. Contract v1.0 giữ nguyên; branchname này do user chỉ định, thay ví dụ `codex/…` cho task AI. Không cần chờ thay đổi IPS/Infra để viết/rà soát pipeline offline, nhưng cần data-readiness trước train thật.
 
+## Cập nhật pre-training27/10/2026
+
+LuồngB đã bổ sung boundedlabrunner/observer, read-only snapshot, review/provenance,
+readiness/capacity và planfirstpilot dướiAI. R31/R32 đạt phần **offline labpilot**,
+không đồng nghĩa coverageđủmọinghiệpvụ, corpusproduction hoặc EVEcapture thật.
+Featurev2/148cột vànormalizer2 nằm trongAI; schemaJava/Rust vẫn1.0. Trước train cần
+reportREADY_FOR_OFFLINE_PILOT gắn dataset/source; kếhoạch5epoch chưa thực thi.
+XemREADMEAI và ledger06 mục18. R30publicdata, R34load, fullrulecomparison,
+Rustintegration và nghiệmthu ca dài vẫn là công việc riêng theo gate phụ thuộc;
+không sửa luồngA/Student/Security trong task này.
+
 ## 1. Mục tiêu và thứ tự phụ thuộc
 
 Mục tiêu là một pilot IDPS có bằng chứng: thu đủ log, phân tích hai lõi không chặn lẫn nhau, phản ứng có giới hạn/khôi phục, model nhẹ được đánh giá trên Student Web thật và hai thành viên tiếp tục công việc được qua `/docs`. “Enterprise-grade” trong lộ trình là tập năng lực kiểm chứng được, không phải nhãn chứng nhận hoặc lời hứa đạt ngay nhờ đổi model.

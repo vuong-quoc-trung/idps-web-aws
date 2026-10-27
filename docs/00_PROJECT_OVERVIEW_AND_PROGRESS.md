@@ -6,6 +6,23 @@
 
 ## 1. Hiện trạng AI pipeline — 27/10/2026
 
+**Cập nhật pre-training:** luồng AI bổ sung lifecycle lab cô lập, snapshot chỉ đọc,
+observer/label provenance, manual review CSV, readiness/capacity và baseline rule
+Nginx trên validation. Feature hiện hành **v2/148cột**, có UA product families
+multi-hot/missing/unknown; normalizer2. Canonicalv1.0 và toàn bộ Student/Security
+source/config giữ nguyên. Corpus pilot được thu qua request thật trên Student
+build riêng + PostgreSQL rỗng/tài khoản giả, không lấy dữ liệu người dùng đang chạy.
+**Kết quả:**4.875request/15campaign,9.750observations; train2.925/val975/test975,
+nhóm9/3/3. Readiness23checksPASS,capacityPASS,58testsPASS. Corpus chưafitmodel,
+giờtrainmới0. [Report cóhash](../ai-training/reports/PRETRAIN_20261027.json).
+Xem [runbook pre-training](../ai-training/README.md#chuẩn-bị-trước-train--luồng-lab-riêng)
+và ledger06 mục18; thay đổi đã được chia commit theo mục19, chưa push.
+
+Phần báo cáo S0 bên dưới là **snapshot lịch sử featurev1/125cột**, không phải vector
+v2 hoặc kết quả chất lượng của corpus mới. Trước mỗi train dùng report readiness
+đúngdataset/source; READY_FOR_OFFLINE_PILOT không phải production-ready.
+
+
 **Nhánh hiện hành:** `feat/ai-model-training`, tạo từ `fbe078d8fe2e35bf60f7a08c7d21331f4522221e`. Chỉ thêm package độc lập [`ai-training/`](../ai-training/README.md) và cập nhật docs00/02/03/04/06; đã chia commit theo phần, xem06 mục17; chưa push. Đã đối chiếu SHA-256 **356 file tracked** và Git diff với base: `student-web/`, `security-web/` giữ nguyên. Không đổi cấu hình, restart dịch vụ, truy cập DB live hoặc áp firewall.
 
 Package đã có adapters read-only, privacy/correlation, explicit labels, temporal/grouped split, Parquet manifests, 125 features nhân quả, CPU MLP8 lớp + benign-only autoencoder, checkpoint/resume và ONNX CPU parity. **42 tests PASS**. S0 thực tế 27/10/2026 12:39:52–12:40:01+07:00: 960 request synthetic, hai model đều chạy2epoch rồi tiến trình mới resume đến4epoch, bằng reference chạy4epoch liên tục; ONNX khớp960/960 mỗi model. Chi tiết/hash ở [báo cáo S0](../ai-training/reports/S0_20261027.json) và [06 mục16](06_AI_HANDOFF_AND_RUN_LEDGER.md#16-ai-data--training-pipeline--27102026).
@@ -109,7 +126,7 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 | Security dashboard/API | PASS API/build; UI trực quan NOT_RUN | Tab Audit ứng dụng, filters/page/detail/correlation; header refresh đã nối audit. Kiểm tra trước commit:50 Rust +3 frontend PASS; catalog rule tĩnh không chứng minh Suricata đã nạp rule |
 | Correlation student/proxy | PASS smoke và cross-source counter test | Request ID thống nhất; Rust live flow-to-request correlation chưa triển khai. AI offline có past-only flow context theo flowID, xem02 |
 | Auth burst detector | PASS Rust PostgreSQL | Theo IP+route, cửa sổ/thành công reset/cooldown; dedup request ID Nginx+audit; chưa distributed spraying theo account |
-| AI features/trainer/export | PASS offline + S0 synthetic | `ai-training/`:125 features, MLP/AE, durable resume,42 tests;960/960 parity mỗi model. Rust/live inference và dữ liệu thật NOT_RUN |
+| AI features/trainer/export | PASS offline/S0; pre-training pilotPASS | Featurev2/148cột,58tests;4.875requestlab đãprepare/23gatechecksPASS. S0v1/125cột làlịchsử; corpusmới chưafit, Rust/liveinferenceNOT_RUN |
 | CI | CÓ CẤU HÌNH | Java/PG, Rust/PG, frontend build; chưa xác minh trạng thái run mới nhất |
 | Ubuntu host deployment | CÓ CONFIG + HƯỚNG DẪN | Service/helper/config cần host acceptance; không áp dụng trong phiên này |
 | AWS, HA, backup/restore đã diễn tập | ĐỀ XUẤT / CHƯA XÁC MINH | Không có IaC hoặc bằng chứng diễn tập trong repo |
@@ -119,15 +136,15 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 
 | Sổ theo dõi | Giá trị đã biết |
 |---|---|
-| Dataset IDPS đã đăng ký | `synthetic_s0_20261027_final`:960 request/3403 observations; train576/val192/test192,15campaign; chưa có corpus thật |
-| Log runtime / corpus đại diện | Không thu log live trong phiên AI; cần snapshot bất biến và nhãn đã review trước train thật |
-| Canonical schema / normalizer | v1.0 giữ nguyên; derived `ai-features-1`,125 cột, feature_spec/scaler/golden vectors đã có |
-| Model baseline / champion / ONNX | MLP4296 và AE8157 tham số; ONNX17.678/33.136byte, parity PASS; chưa chọn champion |
+| Dataset IDPS đã đăng ký | `pretrain_lab_20261027_v2_ready`:4.875requestHTTPthật trênlabfixture,9.750observations; train2.925/val975/test975; S0synthetic giữlịchsử |
+| Log runtime / corpus đại diện | ĐãthuStudent/Nginxlabriêng cóscriptedintent; chưatrafficproduction/representativerealismreview/EVEcapture |
+| Canonical schema / normalizer | Canonical1.0 giữnguyên; ai-normalizer-2 vàai-features-2/148cột; preparedspec/scaler/goldenvectors cóhash |
+| Model baseline / champion / ONNX | V2 MLP5.032/AE9.652tham số khi khởitạorunmới, chưafitcorpuspilot. ONNXv1/S0parity làlịchsử; chưachampion |
 | Ca train đã ghi nhận | **4 phiên synthetic của2run chính +2phiên reference**; S0 verification, không tính là ca train thật |
 | Giờ train có bằng chứng | Synthetic optimizer0,015538449s; reference0,015986770s tách riêng; **dữ liệu thật0giờ**; ngoài repo chưa biết |
 | Latest / best checkpoint | Local ignored `.artifacts/synthetic_s0_20261027_final/{mlp,autoencoder}-resumed/checkpoints`; checksum ở06/report; chưa có shared artifact store |
 | Metrics PR-AUC/recall/FPR/latency | Có trong report synthetic; không dùng làm chất lượng production. Warm ORT model-only p95 MLP0,004404ms/AE0,005234ms |
-| Ca tiếp theo | Snapshot log thật → review labels → split/data-readiness → benchmark ca có kiểm soát trên máy đích; chưa mở train dài hay enforce |
+| Ca tiếp theo | Cóthểbắtđầupilot5epoch trênlabdata bằngNEXT_COMMANDS+readinessreport; chưa thực thi, chưa choenforce. Sourceavailability/realism/productiongates vẫn riêng |
 
 Thiết bị mục tiêu do người dùng cung cấp: ASUS Zenbook 14 OLED, RAM 32GB. Chưa biết SKU CPU, số luồng, OS train, GPU/NPU, dung lượng SSD trống hoặc thermal profile. Kế hoạch [03](03_AI_MODEL_AND_TRAINING_PLAN.md) dùng CPU-first, RAM dưới 16GB và ca 2–3 giờ; chưa lấy phần cứng máy thực thi chat làm thông số laptop.
 

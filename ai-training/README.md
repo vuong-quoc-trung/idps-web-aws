@@ -4,7 +4,7 @@ Nhánh `feat/ai-model-training`, nền code `fbe078d`. Package chạy offline, c
 
 ## Khởi tạo và kiểm tra
 
-Đã kiểm chứng trên Linux/Python **3.12.14**, CPU. Thư viện được pin cả trực tiếp lẫn bắc cầu trong `requirements.txt`; Python3.12 là môi trường chuẩn để tái lập checkpoint. Hai mô hình dùng NumPy FP32 và Adam có trạng thái tường minh: MLP8 lớp cho supervised baseline, autoencoder cho anomaly. Không yêu cầu Torch/CUDA/LightGBM để chạy S0. Đây là lựa chọn triển khai MLP/AE nhẹ của nhánh, chưa chọn champion trên dữ liệu thật.
+Đã kiểm chứng trên Linux/Python **3.12.14**, CPU. Thư viện được pin cả trực tiếp lẫn bắc cầu trong `requirements.txt`; Python3.12 là môi trường chuẩn để tái lập checkpoint. Feature hiện hành là `ai-features-2` (148cột), bổ sung multi-hot UA product families và missing/unknown; `ai-normalizer-2` mở rộng allowlist family cố định. Canonicalv1.0 không đổi. Hai mô hình dùng NumPy FP32 và Adam có trạng thái tường minh: MLP8 lớp cho supervised baseline, autoencoder cho anomaly. Không yêu cầu Torch/CUDA/LightGBM để chạy S0. Đây là lựa chọn triển khai MLP/AE nhẹ của nhánh, chưa chọn champion trên dữ liệu thật.
 
 ```bash
 cd ai-training
@@ -22,7 +22,7 @@ Nếu venv đã tồn tại thì bootstrap giữ interpreter của venv. `AI_PYT
 
 Chọn đường dẫn mới cho mỗi lần chạy. S0 sinh15campaign ×64request, log đúng cấu trúc Student/Nginx/EVE, ground truth riêng. Mỗi nhánh MLP/AE chạy **2 epoch → checkpoint → tiến trình mới resume đến tổng4 epoch**. Một tiến trình khác chạy4epoch liên tục để đối chiếu weights, moments Adam, scheduler, Python/NumPy RNG và sampler. Sau đó export ONNX, kiểm tất cả hàng dataset, đánh giá holdout và benchmark batch1. `s0_report.json` chứa hash và giờ optimizer thực; preprocessing/export/reference-run tách riêng. **Không dùng kết quả synthetic để tuyên bố chất lượng thật, FPR production hoặc zero-day detection.**
 
-Kết quả đã đo **27/10/2026 12:39:52–12:40:01+07:00**:42tests PASS;960requests/3403observations,125features,train576/val192/test192; exactresume và ONNX960/960 mỗi model. PeakRSS cao nhất208.77MiB,2threads; wall9.209335s. Report metadata có checksum: [`reports/S0_20261027.json`](reports/S0_20261027.json). Hai run chính optimizer0.015538449s, reference0.015986770s riêng; **train dữ liệu thật0giờ**. Artifact binary/checkpoint local nằm `.artifacts/synthetic_s0_20261027_final`, không có trong Git. Model metrics ở report chỉ kiểm việc tính/xuất metrics, không là bằng chứng phát hiện tốt.
+Kết quả S0 **lịch sử featurev1/125cột** đã đo **27/10/2026 12:39:52–12:40:01+07:00**:42tests PASS;960requests/3403observations,125features,train576/val192/test192; exactresume và ONNX960/960 mỗi model. PeakRSS cao nhất208.77MiB,2threads; wall9.209335s. Report metadata có checksum: [`reports/S0_20261027.json`](reports/S0_20261027.json). Hai run chính optimizer0.015538449s, reference0.015986770s riêng; **train dữ liệu thật0giờ**. Artifact binary/checkpoint local nằm `.artifacts/synthetic_s0_20261027_final`, không có trong Git. Model metrics ở report chỉ kiểm việc tính/xuất metrics, không là bằng chứng phát hiện tốt.
 
 ## Thu log thật thành snapshot
 
@@ -66,7 +66,7 @@ Splitter temporal60/20/20, nhóm liên thông campaign/IP/user/session, embargo3
 
 Feature pipeline gồm lexical/structural numeric projection, method/status/role/auth, latency/bytes, flow context, và windows10/60/300s cho IP/user: count/rate,4xx/5xx, auth streak, URI diversity, API/read ratios. Counter gồm event hiện tại một lần; event đến muộn bị từ chối. Có lookback300s, LRU/cardinality/event cap và cờ context incomplete khi clip/khởi động. Không đưa IP/user/request/campaign IDs vào model. Counter Suricata alert có trong context, **bị loại khỏi input model mặc định** để tránh học lại rule.
 
-`feature_spec.json` lưu thứ tự cột, fixed one-hot vocab, imputation0, raw clipping, mean/std train-only, FP32 output/clipping, window/missing semantics và implementation hash. Scaler được fit **chỉ benign thuộc train**, nên autoencoder không học cả phân phối attack qua normalization. Unknown rows trong partition vẫn đóng góp context, chỉ các hàng nhãn được review mới có vector train.
+`feature_spec.json` v2 lưu thứ tự cột, fixed one-hot vocab, imputation0, raw clipping, mean/std train-only, FP32 output/clipping, window/missing semantics và implementation hash. Scaler được fit **chỉ benign thuộc train**, nên autoencoder không học cả phân phối attack qua normalization. Unknown rows trong partition vẫn đóng góp context, chỉ các hàng nhãn được review mới có vector train.
 
 Nhiều query/path đã mask ở producer: không thể tái dựng payload hay object ID. Feature lexical có availability flags, `query_original_*` chỉ có khi producer thực sự cung cấp counters; query length/entropy từ view đã lọc privacy, không giả là độ dài bí mật. URI diversity/bulk API chỉ là tín hiệu phụ trợ, **không đủ chứng minh IDOR**. Model này dùng dữ liệu post-response, chưa dùng để chặn request đầu tiên.
 
@@ -102,3 +102,104 @@ Bundle có `model.onnx`, `model_manifest.json`, `feature_spec.json`, `golden_vec
 `idps_ai.inference.InferencePipeline` là reference streaming cho **fused-request row**, dùng lại FeatureExtractor/transform, load ORT session một lần. Tests so vector online với offline từng hàng. Không truyền một raw log line vào model rồi coi đó là cùng preprocessing. Model graph chỉ nhận tensor đã chuẩn hóa; Rust cần port đúng feature contract + golden vectors và nghiệm thu parity riêng. Không có thay đổi Rust, live inference service, shadow integration hoặc enforcement trong nhánh này. Anomaly score chỉ là candidate để review, không phải bằng chứng zero-day hay nhãn attack tự động.
 
 Artifact/key/raw/data/model chỉ lưu trong `.artifacts/` (ignored) hoặc kho được kiểm soát ngoài Git; repo chỉ giữ code/config/tests/report metadata. Không lưu credential hay dataset thật vào Git.
+
+## Chuẩn bị trước train — luồng lab riêng
+
+Bổ sung27/10: package có `snapshot`, `review-export/import`, `observer-labels`,
+`readiness`, `capacity-check` và lifecycle `lab-start/capture/finish/stop`.
+Các bước này không fit model. Featurev2 gồm148cột; UA là inputfact từallowlist, không làruledecision. Khi tạo corpus sẽ sinhfeature_spec mới; không ghiđèartifactv1. `train --readiness-report <readiness.json>` kiểm
+reportPASS, datasetSHA và sourceSHA trước khi fit; code/dataset đổi phải chạy lại gate.
+Checkpoint/dataset v1 cũ không resume bằng source v2 mới; S0report cũ giữ nguyên lịch sử.
+CLI cũ không kèm report vẫn giữ cho các kiểm thử kỹ thuật/fixture; đó không phải
+đường bàn giao train dữ liệu lab đã duyệt.
+
+`configs/pretrain_policy.yaml` là ngưỡng data-readiness cho **offline lab pilot**:
+ít nhất3.000request,90%nhãn reviewed,200benign/partition,8mẫu/family/partition,
+2connectedgroups/partition,3role,Student+Nginx,benignreads/mutations/errors,
+identity/splitdisjoint/embargo300s và replayvectorparity. `readiness` trả exit3 khi
+NOT_READY, vẫn ghi đầy đủ lý do. Không hạ policy để biến corpus thiếu thành PASS.
+Đây chưa là chứng nhận dữ liệu đại diện hoặc model đạt chất lượng production.
+
+### Tái lập corpus lab bằng request thực, không tạo log giả
+
+Cần Java25, Docker với imagePostgreSQL17 đã có, Maven wrapper và Nginx binary tin
+cậy. Không cài Nginx/Suricata hay thay cấu hình hệ thống. Mọi output nằm trong
+`.artifacts/`; sourceStudent được `git archive` sang vùng này và build tại đó.
+Lab dùng DB mới,15tài khoản giả (3ADMIN/6STAFF/6STUDENT), bản ghi khoa giả, mail/reset
+workflows tắt và portsloopback18880/18881/55435. Không đọc .env/credential hoặc DB
+ứng dụng hiện có. Port bận thì từ chối, không tái sử dụng dịch vụ đang chạy.
+
+```bash
+.venv/bin/idps-ai lab-start --output .artifacts/my-lab \
+  --nginx-bin /absolute/path/to/trusted/nginx
+.venv/bin/idps-ai lab-capture --lab-dir .artifacts/my-lab \
+  --requests-per-campaign 320 --gap-seconds 620
+.venv/bin/idps-ai lab-finish --lab-dir .artifacts/my-lab \
+  --output .artifacts/my-pretrain-v1
+```
+
+Capture tạo15campaign theo9/3/3temporalbands với hai khoảng chờ620s thật.
+SourceIP127.0.0.10–24 được bind thật trên loopback; mỗi campaign dùng user/session
+riêng, không spoofXFF, không sửa timestamps. Các URIprobes có giới hạn chỉ đến
+loopbacklab; không scan mạng ngoài, không gọi reset/mail, không cần app có lỗ hổng.
+Normal/hardnegative và attackattempt được xác định bởi scenario/intent độc lập với
+rule; observer ghi requestID từ response và expectedHTTPstatus, không ghi body,
+cookie/token hoặc password. Payload/agent views khác nhau giữa temporalbands.
+
+Để dừng thu, tạo file`.artifacts/my-lab/STOP`; không tiếp tục dùng một observer bị
+ngắt như thể capture đã hoàn tất. Chạy`lab-stop --lab-dir .artifacts/my-lab` để dọn
+đúng ownedPID/create-time và containerlabel. Raw capture lỗi vẫn giữ private để
+chẩn đoán; không reset nguồn hoặc thay timestamp. Nếu `lab-finish` lỗi, giữ nguyên
+artifact và xử lý nguyên nhân, không ghi đè dataset cũ.
+
+`lab-finish` dừng lab, lọc đúng requestIDs củaobserver (giữcảpending; warmup ngoài chiến dịch cócount/hash riêng),
+snapshot complete-line prefixes có checksum/read-back,
+tạo labelsidecar, collect/prepare, bindprovenance và chạygate/capacity. Nó xuất
+`handoff.json`, `NEXT_COMMANDS.txt`, datasetParquet/feature_spec và reviewqueue.
+**Không tự thực thi lệnh train.** Giai đoạn train dự kiến trong
+`configs/experiment_plan.yaml`; bắt đầu5epoch để đo, không ép chạy đủ150phút.
+
+Giới hạn của corpus đầu:
+
+- Đây là HTTP thật qua Student/Nginx với tài khoản/đối tượng giả, không phải traffic
+  production hoặc bộ hành vi người dùng đại diện.
+- Để nghiên cứu lexicalfeatures, lab giữ một NginxJSON view riêng có queryprobes
+  không nhạy cảm. Templateedge hiện hành bỏqueryvalues. Trước deployment phải
+  nghiệm thu nguồnfeature tương thích hoặc đổi inputprofile; modelpilot không
+  được giả định hoạt động giống hệt trên metadata đãmask.
+- Không có EVEcapture thật nếu thiếu quyềnpacket-socket. Không sinh EVEgiả để
+  thay thế. Flowfeatures giữmissing; pilotnày không nghiệm thu nhánhnetworkflow.
+- Nhãn chứng minh scriptedintent và responsecontract, không chứng minh exploit
+  thành công. Behavioralclass là scriptedbulkreadattempt; cần dữ liệu/hardnegative
+  thực tế và review thêm để đánh giá ý nghĩa phát hiện hành vi.
+- Nhiều campaign ngắn nên windows60/300s cócontextincomplete; report ghi tần suất
+  flags và cộtconstant. Cần chiến dịch dài hơn trước đánh giá hành vi dài hạn.
+- RoleSTUDENT chưa có hồ sơ cá nhân gắn với fixture; một sốprofile404 làhardnegative
+  dự kiến. Không dùng corpus này làm bằng chứng toàn bộStudentworkflow đã coverage.
+
+### Review dữ liệu đã có từ VM hoặc snapshot riêng
+
+```bash
+.venv/bin/idps-ai snapshot --input student=/snapshot/student-audit.log \
+  --input nginx=/snapshot/access.log --data-kind lab_capture \
+  --output .artifacts/raw-snapshot-v1
+.venv/bin/idps-ai review-export --dataset .artifacts/collected-v1 \
+  --output .artifacts/review-page-1 --offset 0 --limit 1000
+# Chỉ điền cột family/campaign/confidence/review_status/evidence_ref của labels.csv.
+.venv/bin/idps-ai review-import --review-dir .artifacts/review-page-1 \
+  --dataset .artifacts/collected-v1 --reviewer reviewer-a \
+  --hmac-key-file .artifacts/private/training-redaction.key \
+  --output .artifacts/approved-labels-v1
+```
+
+CSV chỉ chứa requestkeyHMAC và context đã lọc; không export query/body/PII.
+Import kiểm nguyên vẹn context/dataset, cấm sửa request metadata, yêu cầu evidence
+và revieweridentifier không nhạy cảm. Blank/pending không được tự chuyển benign.
+Chuẩn bị version mới bằng labelsidecar đã review; không sửa dataset cũ.
+Provenance là hồ sơ có checksum để audit, không phải chữ ký chứng minh người khai
+báo trung thực. Snapshot nhiều nguồn là cácprefix độc lập, không atomiccross-source.
+
+Nhãn observer đầu có correctionđược ghi riêng cho benignHEAD/OPTIONScatalog403:
+SpringSecuritygrantGET không tự grant hai method này. Các lỗi bất ngờ khác vẫn
+pending; không map403→attack hoặc success→benign. Cần giữ reportcorrection và
+sourcecontract, không xóa bất lợi để làm đẹp số liệu.

@@ -1,0 +1,795 @@
+{
+  "format_version": 1,
+  "purpose": "Pre-training offline lab pilot readiness; no model fitting on this corpus",
+  "branch": "feat/ai-model-training",
+  "source_commit": "b5d4a64f6b711b14a8a6d04cc6a66807f6cd2e73",
+  "source_state": "AI/docs uncommitted at validation; source hashes bind this implementation",
+  "created_at": "2026-10-27T20:21:02+07:00",
+  "capture": {
+    "authenticity": "Actual HTTP against isolated Student build and disposable PostgreSQL with synthetic accounts/objects; not production traffic",
+    "campaigns": 15,
+    "capture_id": "db5b986eeab9453ba892905baaabf307",
+    "data_kind": "lab_capture",
+    "ended_at_unix": 1793107079.430755,
+    "format_version": 1,
+    "intent_counts": {
+      "behavioral_anomaly": 240,
+      "benign": 3195,
+      "brute_force": 240,
+      "cmd_injection": 240,
+      "path_traversal": 240,
+      "scanner_recon": 240,
+      "sqli": 240,
+      "xss": 240
+    },
+    "label_semantics": "Scripted intent + observed HTTP expectation; pending on unexpected status; no exploit success claim",
+    "limits": [
+      "Loopback identities are distinct actual bound source addresses, not forged headers",
+      "3 ADMIN/6 STAFF/6 STUDENT fixtures; no real profiles or personal records",
+      "Behavioral label denotes scripted attempt, not verified real-world abuse",
+      "Payload variants differ across temporal bands; only three views per family, not representative coverage"
+    ],
+    "observer_sha256": "10f234091d90ef4927df92a666df3e03dd790c8a9fb5f0643bd4afc45f3c3b9b",
+    "real_training_hours": 0,
+    "requests": 4875,
+    "source_commit": "b5d4a64f6b711b14a8a6d04cc6a66807f6cd2e73",
+    "started_at_unix": 1793105305.6641285,
+    "started_at": "2026-10-27T19:48:25.664+07:00",
+    "ended_at": "2026-10-27T20:17:59.430+07:00",
+    "wall_seconds": 1773.7666263580322
+  },
+  "student_build_jar_sha256": "b39d20cd89fb31290c2e805d63b075a1da157be32948b9ddfbf3b76686de6a4e",
+  "artifacts_root": "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready",
+  "handoff": {
+    "approved_label_rows": 4875,
+    "capacity_status": "CAPACITY_ESTIMATE_PASS",
+    "collected_dataset_sha256": "9e1fddceaa7dd6af59a595d581468055de7d81b4b9295b6a545042825baf1adc",
+    "experiment_plan_sha256": "23308b5360d8382a567b97b1a626adb375c0ada0857771936e3907324c4e0759",
+    "feature_count": 148,
+    "format_version": 1,
+    "limits": [
+      "Isolated real Student HTTP execution with synthetic accounts/data, not representative production traffic",
+      "Private lab-only Nginx query view preserves scripted non-sensitive probes; current edge template masks query. Deployment feature availability must be reviewed or model input profile revised",
+      "EVE capture NOT_RUN because packet-socket permission was unavailable; flow features are missing, no fake EVE used",
+      "Role and missing-profile cases are fixture workloads; representative real user sessions and benign hard negatives need later coverage review",
+      "Labels prove scripted intent/expected HTTP outcomes, not successful SQLi/XSS/RCE/IDOR exploitation",
+      "Only three payload/agent views per family and loopback lab identities; this is an offline pilot corpus, not a production benchmark",
+      "No independent human label/realism review; observer contract checks and review-export are available"
+    ],
+    "next_training_commands": {
+      "autoencoder": [
+        "/home/trung/projects/idps-web-aws/ai-training/.venv/bin/idps-ai",
+        "train",
+        "--dataset",
+        "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready/prepared",
+        "--config",
+        "/home/trung/projects/idps-web-aws/ai-training/configs/anomaly_config.yaml",
+        "--run-dir",
+        "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready/runs/autoencoder",
+        "--readiness-report",
+        "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready/readiness/readiness.json",
+        "--epochs",
+        "5",
+        "--max-threads",
+        "2",
+        "--max-duration-minutes",
+        "150"
+      ],
+      "mlp": [
+        "/home/trung/projects/idps-web-aws/ai-training/.venv/bin/idps-ai",
+        "train",
+        "--dataset",
+        "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready/prepared",
+        "--config",
+        "/home/trung/projects/idps-web-aws/ai-training/configs/train_config.yaml",
+        "--run-dir",
+        "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready/runs/mlp",
+        "--readiness-report",
+        "/home/trung/projects/idps-web-aws/ai-training/.artifacts/pretrain_lab_20261027_v2_ready/readiness/readiness.json",
+        "--epochs",
+        "5",
+        "--max-threads",
+        "2",
+        "--max-duration-minutes",
+        "150"
+      ]
+    },
+    "nginx_rule_baseline": {
+      "matched_rows": 975,
+      "partition": "val",
+      "scope": "Nginx four-map flags only, not the full Rust/Suricata rule ensemble"
+    },
+    "planned_initial_total_epochs": 5,
+    "prepared_dataset_sha256": "599166880745d6da7042c39c0639478f2150e5d518db8050d839ca56460926db",
+    "readiness_report_sha256": "470ad7a872accfdadd440dd4d510e72032a7f82b6cb2c7c6235aa70c9487a038",
+    "real_training_hours": 0,
+    "rows": {
+      "test": 975,
+      "train": 2925,
+      "val": 975
+    },
+    "scope": {
+      "format_version": 1,
+      "inputs": [
+        {
+          "excluded_outside_declared_capture": 3,
+          "file": "00-student.jsonl",
+          "kept": 4875,
+          "sha256": "0fc75b315d1f3ace1b751da29b8f92144781f37c8abaa93fb7b1d5a9709ad809",
+          "source": "student",
+          "source_sha256": "475b40ee73c169e3f54b08af40943401c3630202e15f2ffb7475331a59a62c6b"
+        },
+        {
+          "excluded_outside_declared_capture": 2,
+          "file": "01-nginx.jsonl",
+          "kept": 4875,
+          "sha256": "836db42caaf2f90ede138d404c2bc67eff9f9edf3a296f4afe88d364fb5db169",
+          "source": "nginx",
+          "source_sha256": "c7644cbe6f294140e316da6e64c4cb78d735cedac7def1b631203ca22fd0cee8"
+        }
+      ],
+      "observer_sha256": "10f234091d90ef4927df92a666df3e03dd790c8a9fb5f0643bd4afc45f3c3b9b",
+      "policy": "Exact observed request IDs only; keep pending/unknown/outcome mismatches; never filter by label/status/rule",
+      "requests": 4875
+    },
+    "scope_manifest_sha256": "0199e73a12299a2fe0792afec1e0b2101a3b817192a72fbd817501aab25c3a88",
+    "status": "READY_FOR_OFFLINE_PILOT",
+    "training_executed": false,
+    "unknown_label_rows": 0
+  },
+  "readiness": {
+    "checks": [
+      {
+        "detail": "Real lab pilot requires a bound capture/observer provenance file; synthetic/demo cannot certify readiness",
+        "id": "provenance",
+        "pass": true
+      },
+      {
+        "detail": "Provenance references this immutable dataset",
+        "id": "provenance_binding",
+        "pass": true
+      },
+      {
+        "detail": {
+          "actual": 4875,
+          "minimum": 3000
+        },
+        "id": "volume",
+        "pass": true
+      },
+      {
+        "detail": {
+          "coverage": 1.0,
+          "known": 4875,
+          "unknown": 0
+        },
+        "id": "reviewed_labels",
+        "pass": true
+      },
+      {
+        "detail": "No ambiguous or ungrouped observation can be approved",
+        "id": "approved_identity",
+        "pass": true
+      },
+      {
+        "detail": "Trusted source/request identity coverage; this does not prove topology attribution acceptance",
+        "id": "identity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "ADMIN": 921,
+          "STAFF": 1842,
+          "STUDENT": 1842,
+          "UNKNOWN": 270
+        },
+        "id": "roles",
+        "pass": true
+      },
+      {
+        "detail": {
+          "NGINX": 4875,
+          "STUDENT_AUDIT": 4875
+        },
+        "id": "sources",
+        "pass": true
+      },
+      {
+        "detail": "Reviewed benign reads, mutations and hard-negative HTTP errors must all exist",
+        "id": "http_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "accepted": 9750,
+          "duplicates": 0
+        },
+        "id": "parser_quality",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cutoffs": [
+            1793105947.5905905,
+            1793106671.766537
+          ],
+          "embargo_seconds": 300,
+          "group_columns": [
+            "campaign_key",
+            "client_key",
+            "user_key",
+            "session_key"
+          ],
+          "groups": 15,
+          "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+          "reviewed_rows": {
+            "test": 975,
+            "train": 2925,
+            "val": 975
+          }
+        },
+        "id": "temporal_split",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 144,
+          "benign": 1917,
+          "brute_force": 144,
+          "cmd_injection": 144,
+          "path_traversal": 144,
+          "scanner_recon": 144,
+          "sqli": 144,
+          "xss": 144
+        },
+        "id": "train_classes",
+        "pass": true
+      },
+      {
+        "detail": 9,
+        "id": "train_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 48,
+          "benign": 639,
+          "brute_force": 48,
+          "cmd_injection": 48,
+          "path_traversal": 48,
+          "scanner_recon": 48,
+          "sqli": 48,
+          "xss": 48
+        },
+        "id": "val_classes",
+        "pass": true
+      },
+      {
+        "detail": 3,
+        "id": "val_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 48,
+          "benign": 639,
+          "brute_force": 48,
+          "cmd_injection": 48,
+          "path_traversal": 48,
+          "scanner_recon": 48,
+          "sqli": 48,
+          "xss": 48
+        },
+        "id": "test_classes",
+        "pass": true
+      },
+      {
+        "detail": 3,
+        "id": "test_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_identities": 0
+        },
+        "id": "identity_disjoint",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variant_rows": 0,
+          "distinct_scripted_views": 21,
+          "missing_variant_rows": 0
+        },
+        "id": "heldout_variants",
+        "pass": true
+      },
+      {
+        "detail": "Rule facts and identities are not model inputs",
+        "id": "rule_free_features",
+        "pass": true
+      },
+      {
+        "detail": "Feature order and implementation fingerprint match the current source",
+        "id": "feature_contract",
+        "pass": true
+      },
+      {
+        "detail": {
+          "nonfinite": 0,
+          "vectors": 4875
+        },
+        "id": "finite_vectors",
+        "pass": true
+      },
+      {
+        "detail": {
+          "mismatched_vectors": 0
+        },
+        "id": "offline_replay_parity",
+        "pass": true
+      }
+    ],
+    "constant_feature_columns": [
+      "dollar",
+      "gt",
+      "lt",
+      "object_identity_available",
+      "pipe",
+      "query_lexical_available",
+      "query_original_available",
+      "query_original_length",
+      "query_original_operator_count",
+      "query_original_parameter_count",
+      "query_original_percent_count",
+      "query_original_quote_count",
+      "quote_double",
+      "quote_single",
+      "semicolon",
+      "uri_lexical_available",
+      "method_PUT",
+      "method_PATCH",
+      "method_DELETE",
+      "method_CONNECT",
+      "method_TRACE",
+      "method_OTHER",
+      "role_ANONYMOUS",
+      "ua_nmap",
+      "ua_gobuster",
+      "ua_ffuf",
+      "ua_dirbuster",
+      "ua_masscan",
+      "ua_acunetix",
+      "ua_zgrab",
+      "ua_Chrome",
+      "ua_Chromium",
+      "ua_Safari",
+      "ua_Edge",
+      "ua_curl",
+      "ua_wget",
+      "ua_python-requests",
+      "ua_PostmanRuntime",
+      "ua_Go-http-client",
+      "user_agent_missing",
+      "user_agent_unknown",
+      "status_3xx",
+      "status_5xx",
+      "status_missing",
+      "latency_ms_missing",
+      "request_bytes_missing",
+      "response_bytes_missing",
+      "flow_duration_seconds_missing",
+      "flow_duration_seconds_log1p",
+      "flow_bytes_to_server_missing",
+      "flow_bytes_to_server_log1p",
+      "flow_bytes_to_client_missing",
+      "flow_bytes_to_client_log1p",
+      "flow_packets_to_server_missing",
+      "flow_packets_to_server_log1p",
+      "flow_packets_to_client_missing",
+      "flow_packets_to_client_log1p",
+      "context_suricata_alerts_10s",
+      "context_suricata_alerts_60s",
+      "context_suricata_alerts_300s",
+      "ip_10s_error5_ratio",
+      "ip_10s_api_ratio",
+      "ip_60s_error5_ratio",
+      "ip_60s_api_ratio",
+      "ip_60s_context_incomplete",
+      "ip_300s_error5_ratio",
+      "ip_300s_api_ratio",
+      "ip_300s_context_incomplete",
+      "user_10s_error5_ratio",
+      "user_10s_auth_failure_streak",
+      "user_60s_error5_ratio",
+      "user_60s_auth_failure_streak",
+      "user_60s_context_incomplete",
+      "user_300s_error5_ratio",
+      "user_300s_auth_failure_streak",
+      "user_300s_context_incomplete"
+    ],
+    "data_kind": "lab_capture",
+    "dataset_sha256": "599166880745d6da7042c39c0639478f2150e5d518db8050d839ca56460926db",
+    "feature_count": 148,
+    "format_version": 1,
+    "groups_per_partition": {
+      "test": 3,
+      "train": 9,
+      "val": 3
+    },
+    "implementation_sha256": "ac7cb2c2ad6c39d4fd2a4fadaa7a9e91c28f69762f70238c325f131e714cbafc",
+    "label_distributions": {
+      "test": {
+        "behavioral_anomaly": 48,
+        "benign": 639,
+        "brute_force": 48,
+        "cmd_injection": 48,
+        "path_traversal": 48,
+        "scanner_recon": 48,
+        "sqli": 48,
+        "xss": 48
+      },
+      "train": {
+        "behavioral_anomaly": 144,
+        "benign": 1917,
+        "brute_force": 144,
+        "cmd_injection": 144,
+        "path_traversal": 144,
+        "scanner_recon": 144,
+        "sqli": 144,
+        "xss": 144
+      },
+      "val": {
+        "behavioral_anomaly": 48,
+        "benign": 639,
+        "brute_force": 48,
+        "cmd_injection": 48,
+        "path_traversal": 48,
+        "scanner_recon": 48,
+        "sqli": 48,
+        "xss": 48
+      }
+    },
+    "limits": [
+      "This gate checks offline pilot data readiness, not detection quality or production acceptance",
+      "No training is executed; rule comparison, quality metrics and held-out performance follow training",
+      "Rust preprocessing/inference parity and target-machine endurance remain separate acceptance tasks",
+      "Isolated real Student HTTP execution with synthetic accounts/data, not representative production traffic",
+      "Private lab-only Nginx query view preserves scripted non-sensitive probes; current edge template masks query. Deployment feature availability must be reviewed or model input profile revised",
+      "EVE capture NOT_RUN because packet-socket permission was unavailable; flow features are missing, no fake EVE used",
+      "Role and missing-profile cases are fixture workloads; representative real user sessions and benign hard negatives need later coverage review",
+      "Labels prove scripted intent/expected HTTP outcomes, not successful SQLi/XSS/RCE/IDOR exploitation",
+      "Only three payload/agent views per family and loopback lab identities; this is an offline pilot corpus, not a production benchmark",
+      "No independent human label/realism review; observer contract checks and review-export are available"
+    ],
+    "offline_pilot_training_permitted": true,
+    "partition_time_ranges": {
+      "test": [
+        1793106981.775688,
+        1793107079.410021
+      ],
+      "train": [
+        1793105305.66822,
+        1793105637.579803
+      ],
+      "val": [
+        1793106257.601378,
+        1793106361.757386
+      ]
+    },
+    "policy_sha256": "2fa0e4afdd0a046a2cf596fc433bb9b99b84d4fff0e7de76cb2336145c39f2a1",
+    "provenance_sha256": "2a9731ce3b5aef510cf96517b83b39a88d17ec40828fe27dd9e8c9e949172b53",
+    "purpose": "offline_lab_pilot",
+    "quality_feature_counts": {
+      "flow_bytes_to_client_missing": 4875,
+      "flow_bytes_to_server_missing": 4875,
+      "flow_duration_seconds_missing": 4875,
+      "flow_packets_to_client_missing": 4875,
+      "flow_packets_to_server_missing": 4875,
+      "ip_10s_context_incomplete": 1428,
+      "ip_300s_context_incomplete": 4875,
+      "ip_60s_context_incomplete": 4875,
+      "latency_ms_missing": 0,
+      "request_bytes_missing": 0,
+      "response_bytes_missing": 0,
+      "status_missing": 0,
+      "user_10s_context_incomplete": 1615,
+      "user_300s_context_incomplete": 4875,
+      "user_60s_context_incomplete": 4875,
+      "user_agent_missing": 0
+    },
+    "report_sha256": "76292c6b6261a0e9e6d83a081d920b0ea258f12384659142f1ceeb9bc0868ee7",
+    "rows": 4875,
+    "source_files_sha256": {
+      "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+      "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+      "src/idps_ai/cli.py": "19b51bfed277b6ae97c5b301162a9752946fe61d99665e383b8fc74b25971806",
+      "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+      "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+      "src/idps_ai/data/baseline.py": "49e308bafc4c08873ffeda2d897415aaf1bd023dea530d7f535cf352a0f47aaf",
+      "src/idps_ai/data/capacity.py": "822b77e05e25a5444519eb2991fc6a49870a9a37d183d93bd7bdd7d164c00343",
+      "src/idps_ai/data/dataset.py": "8fd6796b8754a2bf9723196156cb3037a2fe6db5a452bb0e25969be3fccd3ecb",
+      "src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+      "src/idps_ai/data/lab_runtime.py": "44313b4730ccbae726bcb8877ce3081c01624d952a22f1119723388476c8ca12",
+      "src/idps_ai/data/pretrain.py": "ff7f236a8a16426343b1c6c272caac2c29786fb93133251367e8ea7de6e032be",
+      "src/idps_ai/data/privacy.py": "2483b597c464b09e7c3261f3e286aea90cac6788b7e48fb536c79c4f286aa184",
+      "src/idps_ai/data/provenance.py": "eb44212b5a1814f462e1ce40db7f9af4f55c9efd83717a6bd6ca20901efce3d1",
+      "src/idps_ai/data/readers.py": "d4789a3ab80730e621a968c1e43c6e311448a124e3ef86b0a52f685bfceac67f",
+      "src/idps_ai/data/readiness.py": "a6f4a82e1e5dacb04cfb0eda8255d461b53dd1e2039a1a03de60c92d4c3c2f9f",
+      "src/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+      "src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+      "src/idps_ai/data/split.py": "9ededc96e552fdf31f0ad35b89c623d40cf34363e2406c860e3755f2003306b1",
+      "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+      "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+      "src/idps_ai/export/onnx.py": "9a3d229f6eb6d07ef4e17c5310771b7f7543256a4363ec2da2844faa123fd0d4",
+      "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+      "src/idps_ai/features/pipeline.py": "9f8c4da0fbd8b7210df78e43b10b15bcbe19695e6627bacea5eb33c985bbfbb6",
+      "src/idps_ai/inference.py": "8c82268669e013ea3f8978169c4ea95eda4dfb82ee7a82b095c0877fa211b5c4",
+      "src/idps_ai/smoke.py": "ac32067888c7f288ac15bb58a5d2b64b2e29c17b8faa132c6a42944c5d08e646",
+      "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+      "src/idps_ai/training/models.py": "be9651e76943adc9d9ea7d20aa88913f38138ee1cd6b33f7e64de536e37e97c5",
+      "src/idps_ai/training/resources.py": "fddd3dbfb572f48e8e94093dbf0cfd4280dc8e9a33ea77de1a07a84b35c16403",
+      "src/idps_ai/training/runner.py": "1e491be33a14ce630894da9b1612e8347cb9774a70a97b2b0035d368ccfa397e"
+    },
+    "status": "READY_FOR_OFFLINE_PILOT",
+    "training_executed": false
+  },
+  "capacity": {
+    "available_cpus_before_cap": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "available_memory_bytes": 17985699840,
+    "current_affinity": [
+      0,
+      1
+    ],
+    "dataset_sha256": "599166880745d6da7042c39c0639478f2150e5d518db8050d839ca56460926db",
+    "disk_free_bytes": 176066539520,
+    "feature_cache_estimate_bytes": 2925000,
+    "feature_count": 148,
+    "feature_rows": 4875,
+    "format_version": 1,
+    "host_total_memory_bytes": 32440909824,
+    "limits": [
+      "Read-only I/O/capacity estimate, not a training-speed/thermal/endurance benchmark",
+      "No cgroup controller or machine power profile changed",
+      "This host is not assumed to be the target Zenbook",
+      "Actual epoch duration must be measured by a later authorized pilot training run"
+    ],
+    "platform": "Linux",
+    "proposed_memory_limit_gib": 12,
+    "python": "3.12.14",
+    "report_sha256": "42be8dc4ebc7068b88975b8954e614207a8602ea040694114fc34b5e16d53bc9",
+    "requested_max_threads": 2,
+    "requirements_sha256": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5",
+    "sampled_process_rss_bytes": 164175872,
+    "status": "CAPACITY_ESTIMATE_PASS",
+    "stream_read_wall_seconds": 0.020898892999866803,
+    "stream_rows_per_second": 233265.9438005195,
+    "training_executed": false
+  },
+  "label_review": {
+    "approved_rows": 4875,
+    "unknown_rows": 0,
+    "outcome_contract_corrections": {
+      "benign_HEAD_OPTIONS_catalog_403": 435
+    },
+    "reviewer": "automated_scenario_contract_only; human realism/coverage review still required",
+    "ground_truth": "Runner intent and observed HTTP contract; no rule hit/status-only benign inference; no exploit success assertion"
+  },
+  "nginx_rule_baseline_validation_only": {
+    "confusion_matrix": [
+      [
+        639,
+        0
+      ],
+      [
+        144,
+        192
+      ]
+    ],
+    "dataset_sha256": "599166880745d6da7042c39c0639478f2150e5d518db8050d839ca56460926db",
+    "engine": "Nginx four-map flags only, not the full Rust/Suricata rule ensemble",
+    "format_version": 1,
+    "fpr": 0.0,
+    "limits": [
+      "No final-test metrics computed or threshold tuning performed",
+      "Scanner/auth/stateful/Suricata detections are not represented by these four flags",
+      "Labels come from reviewed scenario intent, never from these flags"
+    ],
+    "matched_rows": 975,
+    "partition": "val",
+    "per_family": {
+      "behavioral_anomaly": {
+        "count": 48,
+        "flagged": 0
+      },
+      "benign": {
+        "count": 639,
+        "flagged": 0
+      },
+      "brute_force": {
+        "count": 48,
+        "flagged": 0
+      },
+      "cmd_injection": {
+        "count": 48,
+        "flagged": 48
+      },
+      "path_traversal": {
+        "count": 48,
+        "flagged": 48
+      },
+      "scanner_recon": {
+        "count": 48,
+        "flagged": 0
+      },
+      "sqli": {
+        "count": 48,
+        "flagged": 48
+      },
+      "xss": {
+        "count": 48,
+        "flagged": 48
+      }
+    },
+    "precision": 1.0,
+    "recall": 0.5714285714285714,
+    "signal_counts": {
+      "COMMAND_INJECTION": 48,
+      "PATH_TRAVERSAL": 48,
+      "SQLI": 48,
+      "XSS": 48
+    },
+    "signals": [
+      "SQLI",
+      "XSS",
+      "PATH_TRAVERSAL",
+      "COMMAND_INJECTION"
+    ],
+    "source_file_sha256": "836db42caaf2f90ede138d404c2bc67eff9f9edf3a296f4afe88d364fb5db169",
+    "training_executed": false,
+    "unmatched_rows": 0
+  },
+  "files_sha256": {
+    "handoff.json": "ba43abc901f905bdcf4f242d2690c8f3a1c181a01f5596b5fd0cb2500452fdbd",
+    "prepared/dataset_manifest.json": "9b3926a20bb18f4eaabd986e2abd213915589c1a7a541d938a104b67386a5c57",
+    "prepared/feature_spec.json": "4e463a9fc3f8b235d6ed7ce99b12128e72eba44e4f9373acf904c7c6d9ebb26e",
+    "snapshot/snapshot_manifest.json": "b89db36bc75ec1c28e8376448fe442e28176187cfb5b43b3bd951f30fa703edb",
+    "scoped-inputs/scope_manifest.json": "0199e73a12299a2fe0792afec1e0b2101a3b817192a72fbd817501aab25c3a88",
+    "labels/label_evidence.json": "0cceaac5974847aec42a98263f664cd6e9f80e4f70538b4e9d513c907192223d",
+    "readiness/readiness.json": "470ad7a872accfdadd440dd4d510e72032a7f82b6cb2c7c6235aa70c9487a038",
+    "capacity.json": "3038422bfeaeb8a5f40ddfcf81928667b74118cff952e8beaf0ce21b804ac57b",
+    "prepared_provenance.json": "2a9731ce3b5aef510cf96517b83b39a88d17ec40828fe27dd9e8c9e949172b53"
+  },
+  "requirements_sha256": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5",
+  "new_configs_sha256": {
+    "configs/pretrain_policy.yaml": "2fa0e4afdd0a046a2cf596fc433bb9b99b84d4fff0e7de76cb2336145c39f2a1",
+    "configs/experiment_plan.yaml": "23308b5360d8382a567b97b1a626adb375c0ada0857771936e3907324c4e0759"
+  },
+  "validation": {
+    "pytest": "PASS: 58 passed, 0 skipped (see pretrain-final-checks-v2.log)",
+    "ruff": "PASS",
+    "format": "PASS",
+    "compileall": "PASS",
+    "schema": "PASS",
+    "capacity": "PASS",
+    "readiness": "PASS: 23 checks",
+    "source_scope": "PASS: protected356files unchanged",
+    "derived_secret_canary_screening": "PASS: actual synthetic fixture password and training key absent from prepared outputs",
+    "lifecycle_recheck": {
+      "http_statuses": {
+        "catalog": 200,
+        "csrf": 200,
+        "login": 204,
+        "mutation": 201
+      },
+      "status": "PASS",
+      "training_executed": false
+    },
+    "main_lab_cleanup": {
+      "database": "already_stopped",
+      "nginx": "already_stopped",
+      "student": "already_stopped"
+    },
+    "recheck_lab_cleanup": {
+      "database": "stopped",
+      "nginx": "stopped",
+      "student": "stopped"
+    },
+    "suricata_live_capture": "NOT_RUN: packet-socket capability unavailable; no EVE fabricated",
+    "mvn_test": "NOT_RUN: service source unchanged; isolated build and real HTTP smoke executed",
+    "cargo_test": "NOT_RUN: no Security change",
+    "model_quality": "NOT_EVALUATED: no fitting on new corpus",
+    "production_acceptance": "NOT_RUN"
+  },
+  "regression_fixes": [
+    "First lab finalization returned FAIL after readiness: capacity halved already-capped affinity again; corrected to use pre-cap CPU inventory, added regression test and finalized a new immutable output version",
+    "Startup/health probes excluded by exact declared observer request IDs with original hashes/counts; pending outcomes retained, no status/label/rule filtering",
+    "UA observability added as featurev2; nmaple substring does not become a scanner product"
+  ],
+  "source_files_sha256": {
+    "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+    "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+    "src/idps_ai/cli.py": "19b51bfed277b6ae97c5b301162a9752946fe61d99665e383b8fc74b25971806",
+    "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+    "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+    "src/idps_ai/data/baseline.py": "49e308bafc4c08873ffeda2d897415aaf1bd023dea530d7f535cf352a0f47aaf",
+    "src/idps_ai/data/capacity.py": "822b77e05e25a5444519eb2991fc6a49870a9a37d183d93bd7bdd7d164c00343",
+    "src/idps_ai/data/dataset.py": "8fd6796b8754a2bf9723196156cb3037a2fe6db5a452bb0e25969be3fccd3ecb",
+    "src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+    "src/idps_ai/data/lab_runtime.py": "44313b4730ccbae726bcb8877ce3081c01624d952a22f1119723388476c8ca12",
+    "src/idps_ai/data/pretrain.py": "ff7f236a8a16426343b1c6c272caac2c29786fb93133251367e8ea7de6e032be",
+    "src/idps_ai/data/privacy.py": "2483b597c464b09e7c3261f3e286aea90cac6788b7e48fb536c79c4f286aa184",
+    "src/idps_ai/data/provenance.py": "eb44212b5a1814f462e1ce40db7f9af4f55c9efd83717a6bd6ca20901efce3d1",
+    "src/idps_ai/data/readers.py": "d4789a3ab80730e621a968c1e43c6e311448a124e3ef86b0a52f685bfceac67f",
+    "src/idps_ai/data/readiness.py": "a6f4a82e1e5dacb04cfb0eda8255d461b53dd1e2039a1a03de60c92d4c3c2f9f",
+    "src/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+    "src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+    "src/idps_ai/data/split.py": "9ededc96e552fdf31f0ad35b89c623d40cf34363e2406c860e3755f2003306b1",
+    "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+    "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+    "src/idps_ai/export/onnx.py": "9a3d229f6eb6d07ef4e17c5310771b7f7543256a4363ec2da2844faa123fd0d4",
+    "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+    "src/idps_ai/features/pipeline.py": "9f8c4da0fbd8b7210df78e43b10b15bcbe19695e6627bacea5eb33c985bbfbb6",
+    "src/idps_ai/inference.py": "8c82268669e013ea3f8978169c4ea95eda4dfb82ee7a82b095c0877fa211b5c4",
+    "src/idps_ai/smoke.py": "ac32067888c7f288ac15bb58a5d2b64b2e29c17b8faa132c6a42944c5d08e646",
+    "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+    "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+    "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+    "src/idps_ai/training/models.py": "be9651e76943adc9d9ea7d20aa88913f38138ee1cd6b33f7e64de536e37e97c5",
+    "src/idps_ai/training/resources.py": "fddd3dbfb572f48e8e94093dbf0cfd4280dc8e9a33ea77de1a07a84b35c16403",
+    "src/idps_ai/training/runner.py": "1e491be33a14ce630894da9b1612e8347cb9774a70a97b2b0035d368ccfa397e"
+  },
+  "test_files_sha256": {
+    "tests/conftest.py": "6e7bfe5139030b3c90f9c5403c87e782c3ac63361e0c9b8b1c1b69baf1929d41",
+    "tests/test_cli.py": "3a577c689d8ecc1e89538e6d552b3f85bcc7556ab74bb53005af949a9482cd57",
+    "tests/test_contracts.py": "b039564609243517a77908def138043b49bbf40df1a4988a66b28a5a60524cbd",
+    "tests/test_dataset.py": "c2670513b3c33a38afd69f46e0e399b0688e1224ae7daa9cdad9cce071ffdf92",
+    "tests/test_export.py": "4be5e7f093d8e58cd118a9ea6a897ae8d0f3397e92d18a6cff5796809aa8ad00",
+    "tests/test_features.py": "7485b316fc514f750bcf3f3e0fed00d5baf4d5cd728bbf8ed10b5f82313f75ba",
+    "tests/test_models.py": "d036476289237000228d18c8d53024320d1f73a43adae9fd145f51bcbb1bbe2a",
+    "tests/test_pretrain.py": "8d113aef4fb43401c5b0b810302095be8c8623a2b1d02cfb3ad2684a5b7d928b",
+    "tests/test_readers.py": "bc55d15b86a3ed0ca60f9a8613792f17510663920b4baa9d69f54b4e2deae724",
+    "tests/test_safety.py": "e6c5bfedb31bef63f6c5b8205a326be1d189ce325ece85f1e035c67409a2adc6",
+    "tests/test_splits.py": "cc8034124c14f05f289fb456e42317dc691d3cc051f66325624caa7b3cea143e",
+    "tests/test_training.py": "f68a5270bd9f8ecb069c1f2ea2fea080303ea87b7ed7dedc7904b21a54f98415"
+  },
+  "protected_services": {
+    "files": 356,
+    "all_sha256_unchanged": true
+  },
+  "real_data_training_hours": 0,
+  "new_corpus_training_hours": 0,
+  "champion_created": false,
+  "production_ready": false,
+  "limits": [
+    "Isolated real Student HTTP execution with synthetic accounts/data, not representative production traffic",
+    "Private lab-only Nginx query view preserves scripted non-sensitive probes; current edge template masks query. Deployment feature availability must be reviewed or model input profile revised",
+    "EVE capture NOT_RUN because packet-socket permission was unavailable; flow features are missing, no fake EVE used",
+    "Role and missing-profile cases are fixture workloads; representative real user sessions and benign hard negatives need later coverage review",
+    "Labels prove scripted intent/expected HTTP outcomes, not successful SQLi/XSS/RCE/IDOR exploitation",
+    "Only three payload/agent views per family and loopback lab identities; this is an offline pilot corpus, not a production benchmark",
+    "No independent human label/realism review; observer contract checks and review-export are available",
+    "Window60/300s context is often incomplete in these short campaigns; report includes flags and constant feature columns",
+    "READY_FOR_OFFLINE_PILOT is not a model performance or production certification",
+    "Original S0_20261027.json remains historical featurev1 evidence"
+  ]
+}

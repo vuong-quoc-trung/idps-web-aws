@@ -2,7 +2,10 @@
 
 **Handoff hiện hành:**27/10/2026, nhánh `feat/ai-model-training`, base`fbe078d8fe2e35bf60f7a08c7d21331f4522221e`; AI/docs được chia thành4commit theo mục17; chưa push. Package `ai-training/` offline đã hoàn thiện và kiểm chứng S0synthetic. **Không sửa bất kỳ file Student/Security**; SHA356file và gitdiffPASS. Không restart dịch vụ hay truy cập DB live. Foundation trước đó đã commit như mục15; các entry cũ giữ lại để tra lịch sử.
 
-Hiện trạng:42testsPASS,2run chính MLP/AE mỗi run2phiên2+2epoch,2run reference4epoch, ONNX960/960 mỗi model. **Giờ training dữ liệu thật0**; xem report metadata và bảng từng phiên ở mục16. Thời gian làm code/test/preprocessing/export không cộng vào giờ optimizer.
+**Cập nhật hiện hành:**pre-training labpilot ởmục18:4.875requestthật,featurev2/148cột,
+readiness23checksPASS,capacityPASS,58testsPASS. Khôngfitcorpusmới,giờtrain0.
+Featurev1/S0 ở16 và4commit ở17 giữlịch sử; cập nhậtpre-training được chia3commit ở19, chưa push.
+Thời gianthu/chờembargo/prep/test không cộng vào optimizerhours.
 
 ## 1. Quy trình cho câu “Đọc lại project”
 
@@ -24,8 +27,8 @@ Không thể đảm bảo chat mới biết 100% trạng thái ở laptop/artifa
 | Foundation có sẵn | Canonicalv1.0, JavaauditJSONL, Rustdurableingest/rules/AuditAPI+tab; chuỗi8commit và tests nền ở mục15 |
 | Vừa hoàn thiện | ai-training read-only adapters/privacy/correlation/Parquet/labels/split/features/MLP/AE/checkpoint/evaluate/ONNX/Pythonreference |
 | Contract | Canonicalv1 giữ nguyên; AI schema snapshot có source hashes; derived ai-features-1 có125cột |
-| Validation phiên AI |42pytestPASS, ruff/format/compileall/pipcheck/contractPASS; S0 exactresume/ONNXPASS;356protectedfileSHA+gitdiffPASS |
-| AI data/models | Chỉ synthetic960requests; MLP/AE localignored candidates, chưa champion; realtraining0giờ |
+| Validation hiện hành |58pytestPASS,ruff/format/compileall/contractPASS;23readinesschecks+capacity+ownedlifecycleHTTPsmokePASS;356protectedfileSHA+gitdiffPASS. S0v1metrics ở16lịchsử |
+| AI data/models | Pretraininglab4.875requests/148features;23gatechecksPASS,corpuschưafit. S0v1synthetic làlịchsử, chưa champion; giờtraincorpus0 |
 | Runtime | Không thay đổi service/DB/config/host; không đọc credential; kết quả Java89/Rust50 thuộc phiên15, không là test đã chạy lại ở phiên AI |
 | Chưa thử | Corpus thật, rule-only comparison, Rustport/parity/shadow, targetZenbook ca2–3h/thermal, hardcgroup quota, VM/AWS/kernel enforcement |
 | Việc tiếp theo | Snapshot log bất biến→nhãnreview→data-readiness→train/benchmark máyđích; shared artifact store/reviewer chưa cấp |
@@ -485,3 +488,152 @@ Bàn giao CLIcopy/paste tại [README](../ai-training/README.md): `s0` dùng out
 | Java/Rust tests, real training, VM/AWS deploy, Rust integration | NOT_RUN |Không sửa dịch vụ; không tính các kết quả foundation cũ là test chạy lại |
 
 Không có FAIL/SKIPPED mới trong phiên đóng gói commit. Không rerun caS0 lớn960requests vì source không đổi; giữ evidence S0 mục16, suite42tests đã chạy lại ở index snapshot và bao gồm S0 nhỏ thực qua subprocess. Các snapshot tạm đã xóa sau test, logs còn localignored. Hash service giữ nguyên, không restart dịch vụ hay chạm DB/firewall. Working tree sạch sau commit cuối; người dùng tự push nhánh khi sẵn sàng. Còn lại real corpus/data-readiness/target-machine long benchmark và Rust integration như mục16.
+
+
+## 18. Chuẩn bị trước train: corpus lab + gate — 27/10/2026 20:23 +07:00
+
+**Yêu cầu user:** hoàn thiện các bước trước train, chỉ luồngAI; sau khi biết chưa
+códata/labels,user cho phép tựtạo/chạy/thu. OwnerCodex,khôngspawnagent; chưa có
+reviewer thứhai. Branch`feat/ai-model-training`,base`b5d4a64f6b711b14a8a6d04cc6a66807f6cd2e73`.
+Tại thời điểm nghiệm thu pre-training chưa commit/push; yêu cầu đóng gói tiếp theo được ghi riêng ở19. Chỉ sửa `ai-training/` vàdocs00/02/03/04/06;
+SHA356fileStudent/Security,canonical/rootinfra giữ nguyên. Không dùng.env/credential
+hoặcDBứngdụng. Chỉ khởi động/dừng fixturedoAI sởhữu,trongprivateartifacts.
+
+### 18.1. Triển khai và scope dữ liệu
+
+Thêm snapshotreadonlyprefix/checksum/readback; manualreviewCSV/contextbinding;
+observerlabels/captureprovenance; datagate/capacity và Nginx4flagvalbaseline;
+CLI`lab-start/capture/finish/stop`. BuildStudent từGitexport dướiAIartifacts,
+khôngbuildtrongStudenttarget. PostgreSQL17disposable512MiB/1CPU,Javaheap512MiB/2CPU,
+Nginxloopbackports18880/18881/55435. Seed15accountgiả với3ADMIN/6STAFF/6STUDENT,
+facultygiả,mail/resetworkflowtắt. Scope chỉHTTPloopback,noroutescanngoàilab.
+
+Actual capture **19:48:25.664→20:17:59.430+07:00**,wall1773.766626s;
+15campaign×325observedrequests=4.875. Ba bands9/3/3,hai khoảngchờ620giâythật;
+sourceIP127.0.0.10–24 đượcbindthật,user/sessionriêng. Khôngđổitimestamp/IP;
+khônggánno-alertthànhbenign. ObserverlấyrequestIDtrảvềvàHTTPoutcome;nhãnscriptedintent
+vàexpectedstatus,khôngclaimexploitthànhcông.435HEAD/OPTIONScatalog403đượcsửa
+expectedcontractnarrow,savedcount/sourceSHA; ngoàiđó khôngunexpectedoutcomes.
+Giữobservergốc,khôngghiđèđểgiấupending.3Student/2NginxwarmupngoàideclaredIDs
+đượcscopeoutvớirawhash/count;mọipendingcase trongcapture vẫnđượcgiữ.
+
+**4.875approved intentlabels**,0unknown scopedrequests,9.750observations.
+Parquettrain2.925/val975/test975;groups9/3/3;benign1.917/639/639;
+mỗiattackfamily144/48/48. VariantIDs/scriptedviews khôngchéo temporalpartitions;
+chỉ3view/family,khôngphảibao phủmọibiếnthể. Role/dataset/skew/shortwindowlimitations
+đượcgiữtrongreport;corpuskhôngđại diệnproduction.
+
+Featuregap phát hiệntrướcfreeze: UA familylưutrữnhưngchưathànhmodelinput.
+Đãbổsungmultihot21family+missing/unknown=23cột,mởallowlistmasscan/acunetix/zgrab,
+matchproductboundariesđểcampus-nmaple-browserkhôngthànhnmap. Tăngderivedfeature
+**ai-features-2/148cột**,normalizer2,goldenvectorsv2. Canonicalv1.0khôngđổi;
+modelrunmớiMLP148→32→8=5.032params,AE148→32→148=9.652params,chưafitcorpusnày.
+Khôngforce-resumev1checkpoint. SID/ruleflags/identityvẫnkhônglàmodelinput.
+
+### 18.2. Evidence hiện hành
+
+Publicreport [PRETRAIN_20261027.json](../ai-training/reports/PRETRAIN_20261027.json),
+SHA-256`b7f6e28c1380c39d8838e06bdde66be8f6e88c6c03ff822bfba9bb95455acadd`. DatasetSHA
+`599166880745d6da7042c39c0639478f2150e5d518db8050d839ca56460926db`;readinessfileSHA
+`470ad7a872accfdadd440dd4d510e72032a7f82b6cb2c7c6235aa70c9487a038`. Source/config/test/provenance/artifacthash,
+counts,metricsvànextCLIargvtrongreport. Privateartifactroot thật:
+`ai-training/.artifacts/pretrain_lab_20261027_v2_ready/`; chưa sharedstore/upload.
+Raw/keys/accounts/Parquet không vàoGit. BáocáoS0v1khôngsửabằngsốv2.
+
+**READY_FOR_OFFLINE_PILOT:23checksPASS**, parserquality0invalid/partial/oversized,
+source/roles/labels/confidence/reads/mutations/benignerrors đủngưỡng,identity/group/
+variantdisjoint,finitevectors vàreplayparity.58testsPASS,0skipped. CapacityPASS:
+cacheestimate2.925.000byte,sampledRSS156.57MiB;đây làI/O/capacityestimate,khôngphải
+peaktrainingRSS,epochspeed,thermal hoặchardcgroupbenchmark.
+
+Nginx4mapflags trên**validationonly975rows**:confusion`[[639,0],[144,192]]`,
+precision1,recall0.5714285714,FPR0trênfixture. KhôngfullRust/Suricataensemble;
+khôngtínhmetricstest/tunethreshold vàkhôngdùngflagslàmnhãn.0FP trên639benignlab
+khôngchứngnhậnFPRproduction. Modelqualitychưađo,khôngtạochampion.
+
+### 18.3. Commands và trạng thái
+
+| Lệnh / kiểm tra | Kết quả | Bằng chứng |
+|---|---|---|
+| ProtectedsourcebaselineSHA/Gitstatus/log đọc trước sửa | PASS | Baseb5d4a64,sạch banđầu;branchđúng |
+| IsolatedStudent `./mvnw -q -DskipTests package` | PASS | Build trongAIprivateGitexport;Java25,không sửaStudenttarget/source |
+| Actuallabcapture15campaign | PASS |4.875HTTPrequests,4875uniqueobserverIDs; haiwait620s,khôngtrain |
+| `idps-ai lab-finish ...pretrain_lab_20261027_v2` lầnđầu | FAIL→PASS | ReadinessđãPASSnhưngcapacitychiađôiaffinityđãcaplần2. Đãsửa dùngpre-capinventory,thêmregressiontest,khônglowergate hoặc sửa data |
+| `idps-ai lab-finish ...pretrain_lab_20261027_v2_ready` | PASS | Snapshot/labels/collect/prepare/23gate/capacity/baseline/reviewqueue/nextcommands;outputversionmới,handofftraining_executed=false |
+| `ai-training/scripts/check.sh` | PASS | **58tests,0skipped,8.52s**,ruff/format/compileall/schema+protectedgitdiff; private`.artifacts/pretrain-final-checks-v2.log` |
+| TDD newboundarytests | FAIL→PASS | ExpectedREDmissingmodule/UAfeatures/capacityarg;testschođúngpublicAPI/CLI,khôngmockinternalpipeline |
+| CLIownedlifecycle recheck từsourcecuối | PASS | `lab-start` trênfixturemới,CSRF200/login204/catalog200/createfaculty201,`lab-stop` đúngPID/create-time/containerlabel |
+| Dọnmainlab vàrechecklab | PASS | Student/Nginx/DBđềustopped;dockerpskhôngcòncontainerlab;khôngdừngservicekhác |
+| Deriveddatasecretscan | PASS | Actualfixturepassword vàtrainingkeykhôngxuấthiệnởpreparedParquet/readiness;khônginsecret |
+| Protected356fileSHA;gitdiffStudent/Security/contracts/rootinfra | PASS | Khôngthayđổisource/configluồngA |
+| Final source/test/artifact hashes, report hash, docs links, secret/ignored scope | PASS |51local links;14newfileschỉAI+5docs;actualfixturesecretskhôngxuấthiệntrongchanged/untrackedtext;pipcheckPASS;gitdiffwhitespacePASS |
+| Suricatalivecapture | NOT_RUN | Rootlesspacketsocketdenied;khôngthaysettings/permissions,chưacóEVEthậtvàkhôngfake |
+| `mvn test`;`cargo test` | NOT_RUN | Dịchvụkhôngsửa;Javafreshbuild+HTTPsmokeđãchạy,khônggánbaseline89/50thànhtestphiênnày |
+| Fittingcorpusmới/champion/Rustinference/productionacceptance | NOT_RUN | **0giờtraincorpus**,khôngcóweights/ONNXmới từcorpusnày |
+
+Regressiontests cóoptimizer/S0fixture nhỏ để kiểm cơchế,khôngphảifitcorpusscenario.
+Cácbảnartifacts trướcfix giữlịch sử;chỉ`...v2_ready` làđầuvàobàngiao hiện hành.
+
+### 18.4. Giới hạn và quyết định trước khi train
+
+D09 IMPLEMENTED: chấpnhận **offline labpilot**,khôngtuyênbốproductionready.
+Lab cóqueryviewNginx riêng vớiprobesgiả;edgehiệnhànhmaskquery. Cầnđốichiếuinput
+availability hoặcđổifeatureprofiletrướcdeployment. EVE/flowthiếu phải giữmissing;
+khôngcoihttp/tabularpilotlànetworkbenchmark. STUDENTkhôngcóprofilepersonfixture,
+profile404/hardnegativecóđịnhnghĩa;behaviorallabellàbulkreadattemptscripted,
+khôngprovenIDOR/zero-day. Campaignngắn khiếnwindow60/300contextincomplete;
+76cộtconstant đượcreport,khônggiấuthoáihoácoverage. Cầnhumancoverage/realismreview,
+phiêndài,representativelabels,ablation vàquality/FPR trướcproduction.
+
+`configs/experiment_plan.yaml` plannedNOT_STARTED:5epoch đầu,mỗiarchitecture
+run-dirriêng,2threads,max150phút,12GiB. Khôngépđủ150phút. Modelselectiontrênval,
+testkhóacholầnđánhgiácuối. Rule/fullensemblecomparison vàRustparity làgate sau.
+`NEXT_COMMANDS.txt`/handoffJSON cóargv `train --readiness-report ... --epochs 5`,
+đãchuẩnbịnhưng**chưathựcthi**. Reportgắndataset/sourcehash;codethayđổiphảiauditlại.
+
+Filescode/configthêm: `data/snapshot.py`, `review.py`, `provenance.py`,
+`readiness.py`, `capacity.py`, `baseline.py`, `lab_capture.py`, `lab_runtime.py`,
+`pretrain.py`;`configs/pretrain_policy.yaml`,`experiment_plan.yaml`;
+`tests/test_pretrain.py`;`PRETRAINING.md`;reportmetadata. SửaCLI,privacyPRODUCTS,
+featurepipeline/datasetderivedversion,goldenfixture vàREADME;docs00/02/03/04/06.
+KhôngthêmMLdependency,khôngcàipackageshệthống;nginxexisting/Studentexport/PGimage
+đượctáidùng.ExtractSuricataUbuntu vàoAIprivateđểkhảosát nhưngkhôngdùngthayEVEcapture.
+
+
+## 19. Commit pre-training và định hướng cloud — 27/10/2026 20:46 +07:00
+
+Người dùng yêu cầu git add/commit các thay đổi hiện có, chưa viết code cho dự tính
+cloud. Nhánh giữ nguyên `feat/ai-model-training`, base trước chuỗi commit là
+`b5d4a64f6b711b14a8a6d04cc6a66807f6cd2e73`. Không thay code chức năng trong phiên
+đóng gói này, không train corpus, không khởi động lab lại, không push hoặc merge.
+Chỉ cập nhật trạng thái bàn giao và ghi định hướng người dùng trong tài liệu.
+
+| Commit | Nội dung |
+|---|---|
+| `dd4c719` | `feat(ai-features): add private user-agent features in schema v2` — UA allowlist/boundaries,148features, normalizer2 và golden vectors |
+| `59f3da2` | `feat(ai-data): add isolated lab collection and pretraining readiness gates` — CLI/lab lifecycle, snapshot, labels/provenance/review, readiness/capacity/baseline, configs và tests |
+| Commit chứa mục này | `docs(ai): record pretraining corpus validation and handoff` — README/PRETRAINING/public report metadata và docs00/02/03/04/06 |
+
+Mỗi index được export sang thư mục tạm, dùng venv hiện có nhưng PYTHONPATH trỏ vào
+snapshot. Mốc feature chạy **42tests PASS/8.58s**; mốc pre-training chạy **58tests
+PASS/9.05s**,0skipped. Logs private `.artifacts/commit-features-v2-tests.log` và
+`.artifacts/commit-pretrain-index-tests.log`. Các snapshot tạm đã dọn. Không đưa
+source chưa stage vào kiểm chứng cho commit trước.
+
+Kiểm tra bổ sung PASS: source/test SHA khớp public report;356protectedservicefileSHA
+không đổi; gitdiff rootcontracts/Student/Security/infra rỗng; pipcheck;
+stagedwhitespace/scope, actualfixturepassword/trainingkey screening và loại trừ
+rawlogs/Parquet/NPZ/ONNX/.venv/.artifacts. Report PRETRAIN/S0 giữ nguyên hash và
+trạng thái source tại thời điểm đo, không gán lại evidence lịch sử cho GitHEAD mới.
+Java/Rust service tests NOT_RUN trong phiên chỉ commit; kết quả tương ứng ở các
+entry trước vẫn là lịch sử. Không có FAIL/SKIPPED mới trong phiên đóng gói.
+
+**Định hướng user cho công việc tiếp theo, chưa triển khai:** bổ sung dữ liệu còn
+thiếu và rà/cập nhật model trước khi bắt đầu train; sau pilot có thể thu dữ liệu
+trên lab cloud do nhóm sở hữu để cải thiện model. Dữ liệu cloud cần provenance,
+privacy, nhãn/holdout và kiểm tra feature availability (TLS/EVE/query masks).
+Đổi dataset không dùng `--resume-from` như cùng run hiện tại: cần bổ sung workflow
+fine-tune/retrain với parent model, version mới và đánh giá cả dữ liệu cũ/mới.
+Không tự học từ mọi traffic live hoặc tự coi alert là nhãn. Model mới được so với
+bản cũ, shadow/review rồi mới promote/rollback theo quyết định sau. Chưa tạo cloud
+resource, chạy kiểm thử cloud hoặc nâng cấp thuật toán trong phiên commit này.

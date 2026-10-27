@@ -4,6 +4,49 @@ Ngày khảo sát: **26/10/2026** (Asia/Ho_Chi_Minh). Baseline code: `37bc4d2ae1
 
 **Cập nhật foundation 26/10/2026:** canonical v1.0 đã có code, JSON Schema, fixture và validation; Java xuất JSONL, Rust thu cả Student/Nginx/EVE khi bật dataset. Foundation đã được commit đến `fbe078d` (xem06 mục15); branch AI hiện hành là `feat/ai-model-training`. Phần1 là bằng chứng khảo sát lịch sử tại37bc4d2; phần2 dưới đây là **contract hiện hành đã khóa**. Tại mốc foundation chưa tải public dataset hoặc tạo model; cập nhật AI dưới đây thay thế phần trạng thái đó, không đổi contract v1.0.
 
+## 0A. Pre-training pilot — cập nhật27/10/2026
+
+Chỉ sửa packageAI và docs. Đã bổ sung snapshot complete-line prefix có read-back
+checksum, observer intent/HTTPexpected-outcome, importlabel cóboundcapture,
+reviewCSV giữcontextimmutable, policyreadiness và lifecycle lab riêng.
+`configs/pretrain_policy.yaml` chốt ngưỡng cho offlinepilot; không tự gán no-alert
+thànhbenign, không sửa thời gian/IP để vượt splitter. Nhãn confidence vàsource tách
+biệt; unknown/pending không train. HEAD/OPTIONScatalog403 trong pilot có correction
+contract riêng dựa trên SpringSecurityGETmatcher, giữ count/evidence thay vì xóa lịch sử.
+
+Feature hiện hành **ai-features-2/148cột**, normalizer2; thêm UA family multi-hot và
+missing/unknown (allowlistproduct, có boundary để tránh nmaple→nmap). Không đưa
+arbitraryheader,rulefacts hoặc identity vào input. `feature_spec`/golden vectors và
+implementationhash đổi version; canonicalv1.0/sourceJava/Rust không đổi. Dataset và
+checkpointfeaturev1 cũ không được ép resume với source mới.
+
+Pilot dùng nguồn StudentJSONL và NginxJSON lab riêng giữ các queryprobe giả không
+nhạy cảm để nghiên cứu lexicalfeatures. **Đây là inputprofile khác với edge hiện
+hành đã bỏ queryvalues**; phải xác minh telemetrydeploy tương thích hoặc sửa
+profile/features trước tích hợp. Không có EVE capture thật khi host từ chối packet
+socket; flowfeatures giữmissing, không sinh EVE giả. Khả năngpháthiệnnetworkflow,
+bodypayload,failedusername hoặc object-levelIDOR chưa được nghiệm thu bằng corpus này.
+
+15campaign có sourceIPloopback bind thực, user/session tách biệt và ba temporalbands
+9/3/3; hai khoảngchờ620s là thời gianthật. Variantview được tách theo band và
+readiness kiểm variantIDs không chéo partitions. Benign gồmreads/mutations/errors,
+rolehardnegatives và fictionalFaculty; STUDENTfixture chưa gắn hồ sơ cá nhân nên
+profile404 có chủđích. Behavioralclass là scriptedbulkreadattempt, không khẳng định
+exploitthànhcông/zero-day. Humanrealismreview và campaigndài hơn vẫn cần trước
+productionbenchmark; contextincomplete/constantcolumns được báo rõ.
+
+**Đã chạy:**27/10/2026 19:48:25–20:17:59+07:00,4.875HTTPrequestthật với fixturegiả;
+9.750observations,4.875nhãn intentapproved,0unknown trong phạmvi chiến dịch. Bỏ3Studentaudit
+và2Nginxwarmup ngoài observer bằngrequestID, giữrawhash/count vàmọipendingcase;
+khônglọc theoHTTPstatus/label/rule. Split2.925/975/975,groups9/3/3,148features;
+23readinesschecksPASS.435benignHEAD/OPTIONS403 được correctionnarrow cócontractSHA.
+Xem [PRETRAIN_20261027.json](../ai-training/reports/PRETRAIN_20261027.json),
+[PRETRAINING.md](../ai-training/PRETRAINING.md) và06mục18. DatasetSHA
+`599166880745d6da7042c39c0639478f2150e5d518db8050d839ca56460926db`.
+Giờtraincorpus=0. Canonicalsource/config356filegiữnguyên.
+
+Phần0 dưới là evidence của lần triển khai offline/S0 v1 trước cập nhật này.
+
 ## 0. Data pipeline đã triển khai — 27/10/2026
 
 Owner triển khai: Codex, nhánh `feat/ai-model-training`, base `fbe078d`; chưa có review người thứ hai. [`ai-training/README.md`](../ai-training/README.md) là runbook CLI hiện hành; [`schema_contract.yaml`](../ai-training/configs/schema_contract.yaml) ghi đúng field/type/unit từ Java exporter, Nginx, EVE và16cột `normalized_events`, kèm hash source. Canonical v1.0 SHA-256 `7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4` **giữ nguyên**; không đổi producer, migration hay config dịch vụ.
