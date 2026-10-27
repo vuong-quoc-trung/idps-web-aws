@@ -24,6 +24,9 @@ PRODUCTS = (
     "nuclei",
     "ffuf",
     "dirbuster",
+    "masscan",
+    "acunetix",
+    "zgrab",
     "Mozilla",
     "Chrome",
     "Chromium",
@@ -86,7 +89,10 @@ def safe_agent(value):
         return None
     lower = str(value)[:4096].lower()
     names = [
-        name for name in PRODUCTS if name.lower() in lower or (name == "Edge" and "edg/" in lower)
+        name
+        for name in PRODUCTS
+        if re.search(r"(?<![a-z0-9])" + re.escape(name.lower()) + r"(?![a-z0-9])", lower)
+        or (name == "Edge" and re.search(r"(?<![a-z0-9])edg/", lower))
     ]
     return " ".join(names) if names else "[REDACTED]"
 

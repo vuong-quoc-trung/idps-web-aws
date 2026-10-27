@@ -173,7 +173,7 @@ def manifest(directory, stage, files, **metadata):
         "stage": stage,
         "schema_version": "1.0",
         "schema_sha256": file_sha256(REPO_ROOT / "contracts/canonical-event-v1.schema.json"),
-        "normalizer_version": "ai-normalizer-1",
+        "normalizer_version": "ai-normalizer-2",
         "files": files,
         **metadata,
     }

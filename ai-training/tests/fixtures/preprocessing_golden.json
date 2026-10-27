@@ -1,14 +1,77 @@
 {
-  "feature_version": "ai-features-1",
+  "feature_version": "ai-features-2",
   "purpose": "Independent hand-worked causal-window vectors for a future Rust preprocessing port",
   "events": [
-    {"timestamp": 0.0, "client_key": "0000000000000000000000000000000000000000000000000000000000000000", "user_key": "1111111111111111111111111111111111111111111111111111111111111111", "http_method": "GET", "uri_path": "/api/students", "status_code": 200, "role": "STUDENT", "latency_ms": 10, "numeric_json": "{\"uri_length\":13,\"path_depth\":2,\"uri_lexical_available\":1}"},
-    {"timestamp": 5.0, "client_key": "0000000000000000000000000000000000000000000000000000000000000000", "user_key": "1111111111111111111111111111111111111111111111111111111111111111", "http_method": "GET", "uri_path": "/api/faculties", "status_code": 404, "role": "STUDENT", "numeric_json": "{\"uri_length\":14,\"path_depth\":2,\"uri_lexical_available\":1}"},
-    {"timestamp": 11.0, "client_key": "0000000000000000000000000000000000000000000000000000000000000000", "user_key": null, "http_method": "POST", "uri_path": "/api/auth/login", "status_code": 401, "role": "ANONYMOUS", "numeric_json": "{\"uri_length\":15,\"path_depth\":3,\"uri_lexical_available\":1}"}
+    {
+      "timestamp": 0.0,
+      "client_key": "0000000000000000000000000000000000000000000000000000000000000000",
+      "user_key": "1111111111111111111111111111111111111111111111111111111111111111",
+      "http_method": "GET",
+      "uri_path": "/api/students",
+      "status_code": 200,
+      "role": "STUDENT",
+      "latency_ms": 10,
+      "numeric_json": "{\"uri_length\":13,\"path_depth\":2,\"uri_lexical_available\":1}",
+      "user_agent": "Mozilla Firefox"
+    },
+    {
+      "timestamp": 5.0,
+      "client_key": "0000000000000000000000000000000000000000000000000000000000000000",
+      "user_key": "1111111111111111111111111111111111111111111111111111111111111111",
+      "http_method": "GET",
+      "uri_path": "/api/faculties",
+      "status_code": 404,
+      "role": "STUDENT",
+      "numeric_json": "{\"uri_length\":14,\"path_depth\":2,\"uri_lexical_available\":1}",
+      "user_agent": "sqlmap"
+    },
+    {
+      "timestamp": 11.0,
+      "client_key": "0000000000000000000000000000000000000000000000000000000000000000",
+      "user_key": null,
+      "http_method": "POST",
+      "uri_path": "/api/auth/login",
+      "status_code": 401,
+      "role": "ANONYMOUS",
+      "numeric_json": "{\"uri_length\":15,\"path_depth\":3,\"uri_lexical_available\":1}"
+    }
   ],
   "expected_subsets": [
-    {"ip_10s_count": 1, "ip_10s_rate": 0.1, "ip_10s_error4_ratio": 0.0, "ip_10s_unique_uri_ratio": 1.0, "user_10s_count": 1, "authenticated": 1, "uri_length": 13, "latency_ms_log1p": 2.3978952727983707},
-    {"ip_10s_count": 2, "ip_10s_rate": 0.2, "ip_10s_error4_ratio": 0.5, "ip_10s_unique_uri_ratio": 1.0, "user_10s_count": 2, "latency_ms_missing": 1},
-    {"ip_10s_count": 2, "ip_60s_count": 3, "ip_10s_error4_ratio": 1.0, "ip_60s_auth_failure_streak": 1, "ip_10s_context_incomplete": 0, "ip_60s_context_incomplete": 1, "user_10s_count": 0, "authenticated": 0, "role_ANONYMOUS": 1}
+    {
+      "ip_10s_count": 1,
+      "ip_10s_rate": 0.1,
+      "ip_10s_error4_ratio": 0.0,
+      "ip_10s_unique_uri_ratio": 1.0,
+      "user_10s_count": 1,
+      "authenticated": 1,
+      "uri_length": 13,
+      "latency_ms_log1p": 2.3978952727983707,
+      "ua_Mozilla": 1,
+      "ua_Firefox": 1,
+      "ua_sqlmap": 0,
+      "user_agent_missing": 0
+    },
+    {
+      "ip_10s_count": 2,
+      "ip_10s_rate": 0.2,
+      "ip_10s_error4_ratio": 0.5,
+      "ip_10s_unique_uri_ratio": 1.0,
+      "user_10s_count": 2,
+      "latency_ms_missing": 1,
+      "ua_sqlmap": 1,
+      "ua_Firefox": 0
+    },
+    {
+      "ip_10s_count": 2,
+      "ip_60s_count": 3,
+      "ip_10s_error4_ratio": 1.0,
+      "ip_60s_auth_failure_streak": 1,
+      "ip_10s_context_incomplete": 0,
+      "ip_60s_context_incomplete": 1,
+      "user_10s_count": 0,
+      "authenticated": 0,
+      "role_ANONYMOUS": 1,
+      "user_agent_missing": 1
+    }
   ]
 }

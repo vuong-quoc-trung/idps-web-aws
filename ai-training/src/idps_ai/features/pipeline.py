@@ -6,7 +6,7 @@ from collections import OrderedDict, deque
 from pathlib import Path
 
 from idps_ai.common import PipelineError, digest, file_sha256
-from idps_ai.data.privacy import METHODS, ROLES, request_numbers
+from idps_ai.data.privacy import METHODS, PRODUCTS, ROLES, request_numbers, safe_agent
 
 WINDOWS = (10, 60, 300)
 NUMERIC_COLUMNS = tuple(sorted(request_numbers("/", None)))
@@ -53,6 +53,13 @@ class FeatureExtractor:
         result = {name: float(numbers.get(name, 0.0)) for name in NUMERIC_COLUMNS}
         result.update({"method_" + name: float(method == name) for name in METHODS})
         result.update({"role_" + name: float(role == name) for name in ROLES})
+        agent = safe_agent(event.get("user_agent"))
+        products = set((agent or "").split())
+        result.update({"ua_" + name: float(name in products) for name in PRODUCTS})
+        result["user_agent_missing"] = float(event.get("user_agent") in (None, ""))
+        result["user_agent_unknown"] = float(
+            agent == "[REDACTED]" and not result["user_agent_missing"]
+        )
         for family in (2, 3, 4, 5):
             result[f"status_{family}xx"] = float(status is not None and status // 100 == family)
         result["status_missing"] = float(status is None)
@@ -160,8 +167,8 @@ def fit_spec(rows, columns):
     if not count:
         raise PipelineError("No reviewed training examples after temporal/group purge")
     return {
-        "feature_version": "ai-features-1",
-        "normalizer_version": "ai-normalizer-1",
+        "feature_version": "ai-features-2",
+        "normalizer_version": "ai-normalizer-2",
         "columns": list(columns),
         "imputation": 0.0,
         "raw_clip": [-1e6, 1e6],
@@ -180,7 +187,11 @@ def fit_spec(rows, columns):
         "inference_stage": "post_response",
         "rule_context_default": "excluded",
         "identity_columns": "never model inputs",
-        "input_contract": "chronological fused requests.parquet row; ai-normalizer-1 correlation/enrichment; not an individual raw producer line",
+        "input_contract": "chronological fused requests.parquet row; ai-normalizer-2 correlation/enrichment; not an individual raw producer line",
+        "user_agent_semantics": {
+            "vocabulary": list(PRODUCTS),
+            "encoding": "multi-hot fixed product families plus missing/unknown; no free text or rule decision",
+        },
         "lexical_semantics": "privacy-filtered numeric structure; upstream-masked values remain unavailable",
         "object_access_limitation": "template cardinality/bulk API proxy only; target identity unavailable, no proof of IDOR",
     }
