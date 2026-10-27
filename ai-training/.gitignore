@@ -1,0 +1,14 @@
+.venv/
+.artifacts/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+build/
+dependency-install.log
+protected-baseline.json
+*.log
+*.parquet
+*.onnx
+*.npz
+*.npy
+*.jsonl

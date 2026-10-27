@@ -1,0 +1,354 @@
+schema_version: '1.0'
+canonical_json_schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  $id: urn:idps:canonical-event:1.0
+  title: IDPS Canonical Event v1.0
+  description: Redacted observation, not an attack label. IP strings are literal addresses
+    checked by the consumer. Missing source features remain null. No request body,
+    credential or arbitrary extension object is permitted.
+  type: object
+  additionalProperties: false
+  required:
+  - schema_version
+  - event_id
+  - source
+  - source_instance
+  - timestamp
+  - request_id
+  - client_ip
+  - peer_ip
+  - user_id
+  - username
+  - role
+  - session_hmac
+  - http_method
+  - uri_path
+  - query_string
+  - status_code
+  - latency_ms
+  - user_agent
+  - event_type
+  - outcome
+  - redacted
+  - truncated
+  properties:
+    schema_version:
+      const: '1.0'
+    event_id:
+      type: string
+      pattern: ^[A-Za-z0-9._:-]{1,128}$
+    source:
+      enum:
+      - STUDENT_AUDIT
+      - NGINX
+      - SURICATA
+    source_instance:
+      type: string
+      pattern: ^[A-Za-z0-9._:-]{1,128}$
+    timestamp:
+      type: string
+      format: date-time
+      pattern: Z$
+    request_id:
+      type:
+      - string
+      - 'null'
+      pattern: ^[A-Za-z0-9._:-]{1,128}$
+    client_ip:
+      type:
+      - string
+      - 'null'
+      maxLength: 45
+    peer_ip:
+      type:
+      - string
+      - 'null'
+      maxLength: 45
+    user_id:
+      type:
+      - string
+      - 'null'
+      pattern: ^hmac-sha256:[a-f0-9]{64}$
+    username:
+      type:
+      - string
+      - 'null'
+      pattern: ^hmac-sha256:[a-f0-9]{64}$
+    role:
+      enum:
+      - ADMIN
+      - STAFF
+      - STUDENT
+      - ANONYMOUS
+      - null
+    session_hmac:
+      type:
+      - string
+      - 'null'
+      pattern: ^hmac-sha256:[a-f0-9]{64}$
+    http_method:
+      type:
+      - string
+      - 'null'
+      maxLength: 16
+    uri_path:
+      type:
+      - string
+      - 'null'
+      maxLength: 512
+    query_string:
+      type:
+      - string
+      - 'null'
+      maxLength: 4096
+    status_code:
+      type:
+      - integer
+      - 'null'
+      minimum: 100
+      maximum: 599
+    latency_ms:
+      type:
+      - number
+      - 'null'
+      minimum: 0
+    user_agent:
+      type:
+      - string
+      - 'null'
+      maxLength: 1024
+    event_type:
+      enum:
+      - http_request
+      - flow
+      - alert
+      - dns
+      - tls
+      - other
+    outcome:
+      enum:
+      - success
+      - failure
+      - unknown
+    dest_ip:
+      type:
+      - string
+      - 'null'
+      maxLength: 45
+    src_port:
+      type:
+      - integer
+      - 'null'
+      minimum: 0
+      maximum: 65535
+    dest_port:
+      type:
+      - integer
+      - 'null'
+      minimum: 0
+      maximum: 65535
+    transport:
+      type:
+      - string
+      - 'null'
+      maxLength: 32
+    flow_id:
+      type:
+      - string
+      - 'null'
+      maxLength: 128
+    request_bytes:
+      type:
+      - integer
+      - 'null'
+      minimum: 0
+      maximum: 18446744073709551615
+    response_bytes:
+      type:
+      - integer
+      - 'null'
+      minimum: 0
+      maximum: 18446744073709551615
+    flow:
+      type:
+      - object
+      - 'null'
+      additionalProperties: false
+      properties:
+        duration_seconds:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+        bytes_to_server:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 18446744073709551615
+        bytes_to_client:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 18446744073709551615
+        packets_to_server:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 18446744073709551615
+        packets_to_client:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          maximum: 18446744073709551615
+        state:
+          type:
+          - string
+          - 'null'
+          maxLength: 64
+    query_features:
+      type:
+      - object
+      - 'null'
+      additionalProperties: false
+      required:
+      - length
+      - parameter_count
+      - percent_count
+      - quote_count
+      - operator_count
+      properties:
+        length:
+          type: integer
+          minimum: 0
+        parameter_count:
+          type: integer
+          minimum: 0
+        percent_count:
+          type: integer
+          minimum: 0
+        quote_count:
+          type: integer
+          minimum: 0
+        operator_count:
+          type: integer
+          minimum: 0
+    redacted:
+      type: boolean
+    truncated:
+      type: boolean
+canonical_schema_sha256: 7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4
+database:
+  table: normalized_events
+  columns:
+    id: BIGSERIAL
+    event_key: TEXT
+    schema_version: TEXT
+    source: TEXT
+    source_instance: TEXT
+    source_event_id: TEXT
+    occurred_at: TIMESTAMPTZ
+    observed_at: TIMESTAMPTZ
+    request_id: TEXT
+    client_ip: INET
+    dest_ip: INET
+    event_type: TEXT
+    http_method: TEXT
+    uri_path: TEXT
+    status_code: INTEGER
+    canonical: JSONB
+  export_adapter: 'canonical JSONL or {canonical: object}; never train from security_alerts
+    alone'
+native_nginx:
+  fields:
+  - schema_version
+  - source
+  - timestamp
+  - request_id
+  - client_ip
+  - http_method
+  - uri_path
+  - query_string
+  - status
+  - latency_seconds
+  - request_bytes
+  - response_bytes
+  - user_agent
+  - rule_signals
+  latency_seconds_to_ms: 1000
+  legacy_combined_supported: true
+  rule_signals_are_labels: false
+  field_types:
+    schema_version: string = 1.0
+    source: string = nginx_access
+    timestamp: ISO-8601 with timezone offset
+    request_id: string
+    client_ip: literal IPv4/IPv6 string
+    http_method: string
+    uri_path: string
+    query_string: null in current producer; optional string in legacy input
+    status: integer HTTP100..599
+    latency_seconds: nonnegative JSON number, seconds
+    request_bytes: unsigned integer
+    response_bytes: unsigned integer
+    user_agent: string
+    rule_signals: 'object(SQLI,XSS,PATH_TRAVERSAL,COMMAND_INJECTION: integer0/1),
+      excluded from independent AI inputs'
+native_suricata:
+  time: timestamp with offset
+  client_ip: src_ip
+  destination: dest_ip
+  http_fields:
+  - http_method
+  - url
+  - http_user_agent
+  - status
+  - length
+  - request_id
+  flow_fields:
+  - age
+  - bytes_toserver
+  - bytes_toclient
+  - pkts_toserver
+  - pkts_toclient
+  - state
+  request_id_optional: true
+  ip_time_is_only_context: true
+  field_types:
+    event_type: string, http maps to http_request
+    timestamp: ISO-8601 offset/Z string
+    src_ip: IPv4/IPv6 string
+    dest_ip: IPv4/IPv6 string
+    src_port: optional uint16
+    dest_port: optional uint16
+    flow_id: uint64 native; canonical string, never converted through float
+    http: 'optional object(http_method,url,http_user_agent: string; status,length:
+      integer; request_id optional string)'
+    flow: 'optional object(age: seconds number; bytes/packet counters: uint64; state:
+      string)'
+    alert: optional object(signature_id uint64,severity integer,signature string);
+      not ground truth
+protected_source_hashes:
+  student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.java: 8f1cc65f97a475478c7635c83e5b36c9bfcef7da2c94142389b29b3cdb476888
+  security-web/src/ingest.rs: ea0cc113abec6921289d7e77bce203a35fb70f015c9bafc4348d07b04b321848
+  security-web/migrations/0001_initial.sql: 61644039add9f1a3dcdc7dc72e4ed1f7132231106cb890fafbb1750143b42e42
+  security-web/migrations/0002_reliability.sql: c80dde062540e2dcbfe9704bbf115efda1f33774d0709becb007c0a70d3ea868
+  security-web/migrations/0003_shared_foundation.sql: 26b59640f9f416351492f7e901c393c3ece996a0d337d7cda4d9380e454800ba
+  security-web/migrations/0004_response_deadlines.sql: 6d5889a01d9ed58221e74f6c23db6ae4949101b176aaa434061cd45a67f4d93d
+derived_dataset:
+  identity: purpose-separated HMAC keys; raw IP/user/session/request values are never
+    stored
+  time: UTC Unix seconds float64 at microsecond precision
+  uri_path: safe route template
+  numeric_json: finite numeric structure only, no query text
+  flow_json: finite numeric same-flow context only
+  label_source:
+  - scenario_manifest
+  - human_review
+  - weak_rule
+  - unknown
+  unknown_labels: never train, never auto-benign
+  inputs_are_read_only: true
