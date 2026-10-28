@@ -1,10 +1,36 @@
 # 03 — Thiết kế AI và training theo ca 2–3 giờ
 
-**Ngày thiết kế:**26/10/2026; **cập nhật triển khai:**27/10/2026. MLP/autoencoder offline, causal features, trainer/checkpoint và ONNX đã được triển khai trong `ai-training/`; xem mục0. Byte-CNN/TCN, corpus thật, Rust inference và champion/release vẫn là đề xuất. Hiện trạng code và data ở [00](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md).
+## Cập nhật resource sau pilot — 28/10/2026
 
-**Foundation update26/10/2026:** đã có exporter/canonical metadata cho successful reads/sessionHMAC/requestID/UA/HTTP/flow, nên các mô tả thiếu metadata ở baseline bên dưới cần đọc cùng02 hiện hành. Tại snapshot foundation chưa có trainer/model; cập nhật27/10 bên dưới thay thế trạng thái đó. Chưa có corpus thật/payload được phép train hoặc giờ training dữ liệu thật.
+Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
+swap0,Nice10; BLAS/OpenMP8,ONNX intra8/inter1 sequential. CPU là50% của16luồng;
+16GiB là**52,96% RAM OS-visible** trên máy32GB danh nghĩa, được user chỉ định rõ.
+77testsPASS,35readinesschecksPASS, guardprobe0optimizerstep; **không train chính thức
+hoặc chạy lại pilot corpus thật**. [Báo cáo resource](../ai-training/reports/RESOURCE_GUARD_20261028.json).
 
-## 0A. Gate trước train — cập nhật27/10/2026
+Dataset prepared và pilot-ready giữ nguyên hash; readiness-final cũ cũng được giữ.
+Readiness mới`readiness-resource8` gắn source hiện hành và được handoff/script sử dụng.
+Các metric/giới hạn2CPU/12GiB ở các snapshot pilot phía dưới là lịch sử. Các attempt
+fail/stale/cache/NEXT_COMMANDS cũ đã dọn; giữ raw capture evidence, runtime và venv
+cần thiết. Xem ledger06 mục21 cho kiểm tra, danh sách dọn và commit.
+
+**Ngày thiết kế:**26/10/2026; **cập nhật triển khai:**28/10/2026. MLP/autoencoder offline, causal features, trainer/checkpoint và ONNX đã được triển khai trong `ai-training/`; xem mục0. Byte-CNN/TCN, corpus production, Rust inference và champion/release vẫn là đề xuất. Hiện trạng code và data ở [00](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md).
+
+**Foundation update26/10/2026:** đã có exporter/canonical metadata cho successful reads/sessionHMAC/requestID/UA/HTTP/flow, nên các mô tả thiếu metadata ở baseline bên dưới cần đọc cùng02 hiện hành. Tại snapshot foundation chưa có trainer/model; cập nhật27/10 bên dưới thay thế trạng thái đó. Câu trạng thái thiếu corpus/trainer của baseline cũ đã được mục0B bên dưới thay thế cho phạm vi lab offline.
+
+## 0B. Snapshot pilot trước nâng resource — 28/10/2026
+
+**Trạng thái28/10/2026:** corpus mới có **19.275 request thật / 80.556 observations**, đủ Student audit + Nginx + Suricata EVE từ PCAP thật trong namespace lab. Split **11.565 / 3.855 / 3.855**, nhóm 9/3/3; mỗi campaign ≥420 giây, hai khoảng nghỉ 620 giây thật. Feature v3 / normalizer3, 148 cột, `edge_masked_v1`; canonical v1.0 giữ nguyên. Readiness **35 checks PASS**, **77 tests PASS / 0 skipped**. MLP/AE/residual đều chạy 2 epoch → tiến trình mới resume đến 5 epoch, exact với reference 5 epoch; ONNX parity toàn bộ prepared rows. Chỉ đánh giá validation; test metric chưa mở. [Report có hash](../ai-training/reports/PRETRAIN_PILOT_20261028.json).
+
+Chưa chạy ca chính thức 2–3 giờ, chọn champion, port Rust hoặc bật AI response. Corpus vẫn là loopback với fixture giả / scripted intent; chưa đại diện production. Query bị mask thống nhất nên metadata AI không thấy nội dung payload. Flow chỉ lấy flow client đã kết thúc ≥65 giây trước đó, không backfill bằng đóng flow tương lai. Live receipt-time/TLS/feature parity và human realism review còn riêng.
+
+Candidate mới là residual tabular148→64→64+skip→8,14.216 params FP32: `h1=ReLU(xW1+b1); h2=ReLU(h1Wr+br+h1); p=softmax(h2W2+b2)`. CE+Adam hiện có; finite-difference gradient, checkpoint/optimizer và ONNX có test. Lấy cảm hứng từ [tabular residual baselines](https://arxiv.org/abs/2106.11959), không khẳng định tái lập benchmark hoặc luôn thắng MLP. Không thêm framework nặng. Params/activations/AdamFP32; affine accumulationFP64 rồi roundFP32 trong cảNumPy/ONNX để giữ parity1e-5/1e-6 gầnzero; khôngnới tolerance. Byte-CNN/TCN vẫn cần contract/telemetry tương ứng.
+
+Pilot có missing-flow/actor/response sensitivity ở threshold giữ nguyên, không phải ablation retraining. Rule baseline gồm bốn Nginxmap và Suricata thật, có subset web loại SYN-rate định trước; không chạy Ruststateful. OR fusion có báo khả thi budgetFPR1%, không so model và rule ở budget khác rồi kết luận hơn. Metric validation đồng thời dùng calibration nên lạc quan; test khóa cho nghiệm thu sau chọn protocol.
+
+Launcher `python -m idps_ai.training.session` bắt buộc current three-source readiness và đọc lại cgroup. Máy đang chạy có 16 logical CPU affinity/RAM~32GB; CPUQuota 200%=2CPU≈12,5%,MemoryMax 12 GiB,MemoryHigh≤10GiB,swap0,Nice10. Hard quota áp cả service và child, affinity/BLAS thêm cap2. Kiểm thermal/endurance2–3giờ chưa làm. `scripts/train-first-session.sh` chuẩn bị residual100epoch/patience8/max150phút/checkpoint 300s; run mới, không resume pilot bằng config đổi. Script tự resume cùngrun khi cólatest tương thích; early-stopped run là terminal. Chưa thực thi; dừng sớm khi xong, không train cho đủ giờ.
+
+## 0A. Gate trước train — snapshot lịch sử27/10/2026
 
 AI có `lab-start/capture/finish/stop`, `snapshot`, `observer-labels`,
 `review-export/import`, `readiness`, `capacity-check`. Các bước này không fit model.
@@ -112,7 +138,7 @@ Ngân sách training áp dụng **cho toàn bộ cây tiến trình train**, g�
 | CPU hard quota cả nhóm | `CPUQuota = 50 × N %` vì systemd 100% là một CPU; N=16 → 800%, N=8 → 400% |
 | Affinity | Tối đa khoảng nửa logical CPU phù hợp topology; không mặc định CPU 0..T-1 là cách chia tốt nhất |
 | RAM working set | Mục tiêu 4–8GiB; ngưỡng can thiệp khi trên 10GiB |
-| RAM cgroup | `MemoryHigh=10G`, `MemoryMax=12G` (12GiB ≈12,9GB, dưới 16GB) cho cả cây tiến trình |
+| RAM cgroup | Hiện hành: `MemoryHigh=15G`, `MemoryMax=16G`, cả cây tiến trình;16GiB là mức user chỉ định (52,96% RAM OS-visible) |
 | Swap | Ưu tiên `MemorySwapMax=0` nếu controller hỗ trợ, để tránh máy bị ì; phải chừa RAM cho OS/code/VM |
 | DataLoader | `num_workers=0` ở lần đầu để resume rõ ràng; chỉ thử 1–2 khi đã đo; không preload corpus |
 | Torch/BLAS | intra-op T, inter-op 1; OMP/MKL/OpenBLAS cap T, tránh nested parallelism |

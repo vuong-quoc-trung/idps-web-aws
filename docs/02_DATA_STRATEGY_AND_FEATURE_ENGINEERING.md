@@ -1,10 +1,32 @@
 # 02 — Chiến lược dữ liệu và Feature Engineering
 
+## Cập nhật resource sau pilot — 28/10/2026
+
+Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
+swap0,Nice10; BLAS/OpenMP8,ONNX intra8/inter1 sequential. CPU là50% của16luồng;
+16GiB là**52,96% RAM OS-visible** trên máy32GB danh nghĩa, được user chỉ định rõ.
+77testsPASS,35readinesschecksPASS, guardprobe0optimizerstep; **không train chính thức
+hoặc chạy lại pilot corpus thật**. [Báo cáo resource](../ai-training/reports/RESOURCE_GUARD_20261028.json).
+
+Dataset prepared và pilot-ready giữ nguyên hash; readiness-final cũ cũng được giữ.
+Readiness mới`readiness-resource8` gắn source hiện hành và được handoff/script sử dụng.
+Các metric/giới hạn2CPU/12GiB ở các snapshot pilot phía dưới là lịch sử. Các attempt
+fail/stale/cache/NEXT_COMMANDS cũ đã dọn; giữ raw capture evidence, runtime và venv
+cần thiết. Xem ledger06 mục21 cho kiểm tra, danh sách dọn và commit.
+
 Ngày khảo sát: **26/10/2026** (Asia/Ho_Chi_Minh). Baseline code: `37bc4d2ae1552939659a10647898e2228f1b801f`.
 
 **Cập nhật foundation 26/10/2026:** canonical v1.0 đã có code, JSON Schema, fixture và validation; Java xuất JSONL, Rust thu cả Student/Nginx/EVE khi bật dataset. Foundation đã được commit đến `fbe078d` (xem06 mục15); branch AI hiện hành là `feat/ai-model-training`. Phần1 là bằng chứng khảo sát lịch sử tại37bc4d2; phần2 dưới đây là **contract hiện hành đã khóa**. Tại mốc foundation chưa tải public dataset hoặc tạo model; cập nhật AI dưới đây thay thế phần trạng thái đó, không đổi contract v1.0.
 
-## 0A. Pre-training pilot — cập nhật27/10/2026
+## 0B. Corpus ba nguồn và featurev3 — 28/10/2026
+
+**Trạng thái28/10/2026:** corpus mới có **19.275 request thật / 80.556 observations**, đủ Student audit + Nginx + Suricata EVE từ PCAP thật trong namespace lab. Split **11.565 / 3.855 / 3.855**, nhóm 9/3/3; mỗi campaign ≥420 giây, hai khoảng nghỉ 620 giây thật. Feature v3 / normalizer3, 148 cột, `edge_masked_v1`; canonical v1.0 giữ nguyên. Readiness **35 checks PASS**, **77 tests PASS / 0 skipped**. MLP/AE/residual đều chạy 2 epoch → tiến trình mới resume đến 5 epoch, exact với reference 5 epoch; ONNX parity toàn bộ prepared rows. Chỉ đánh giá validation; test metric chưa mở. [Report có hash](../ai-training/reports/PRETRAIN_PILOT_20261028.json).
+
+Chưa chạy ca chính thức 2–3 giờ, chọn champion, port Rust hoặc bật AI response. Corpus vẫn là loopback với fixture giả / scripted intent; chưa đại diện production. Query bị mask thống nhất nên metadata AI không thấy nội dung payload. Flow chỉ lấy flow client đã kết thúc ≥65 giây trước đó, không backfill bằng đóng flow tương lai. Live receipt-time/TLS/feature parity và human realism review còn riêng.
+
+DatasetSHA`eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5`. Flow availability sau warmup/delay: train: 9757/11565, val: 3233/3855, test: 3236/3855. Các mẫu đầu vẫn thiếu có cờ; không sửa dữ liệu để đạt100%. Duration lấy EVE end−start khi có, fallbackage; byte/packet không dựng từ audit. HTTP response headers nhận qua Unix socket rồi allowlist X-Request-Id trước ghi; hostname/redirect/body/cookie không đi vào EVE xuất hoặc features. Nginx/Student được scope bằng observerID kể cảpending; EVE giữ mọi event trong privatePCAP. Source/capture/labels/dataset/model có hash riêng; inventory capture ghi version đã load, processing/training ghi source cuối. Native generic adapter vẫn phục vụ fixtures; ca chính thức yêu cầu gate ba nguồn + long-window, không chỉ policy hai nguồn cũ.
+
+## 0A. Pre-training pilot — snapshot lịch sử27/10/2026
 
 Chỉ sửa packageAI và docs. Đã bổ sung snapshot complete-line prefix có read-back
 checksum, observer intent/HTTPexpected-outcome, importlabel cóboundcapture,
@@ -14,7 +36,7 @@ thànhbenign, không sửa thời gian/IP để vượt splitter. Nhãn confiden
 biệt; unknown/pending không train. HEAD/OPTIONScatalog403 trong pilot có correction
 contract riêng dựa trên SpringSecurityGETmatcher, giữ count/evidence thay vì xóa lịch sử.
 
-Feature hiện hành **ai-features-2/148cột**, normalizer2; thêm UA family multi-hot và
+Feature tại snapshot27/10 **ai-features-2/148cột**, normalizer2; thêm UA family multi-hot và
 missing/unknown (allowlistproduct, có boundary để tránh nmaple→nmap). Không đưa
 arbitraryheader,rulefacts hoặc identity vào input. `feature_spec`/golden vectors và
 implementationhash đổi version; canonicalv1.0/sourceJava/Rust không đổi. Dataset và

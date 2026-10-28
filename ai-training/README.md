@@ -2,9 +2,13 @@
 
 Nhánh `feat/ai-model-training`, nền code `fbe078d`. Package chạy offline, chỉ đọc file log hoặc bản export PostgreSQL. Không sửa hay kết nối để cấu hình Student/Security, không gọi firewall, không triển khai model vào Rust. Source, venv, configs và artifact AI nằm riêng trong thư mục này.
 
+**Hiện hành28/10, sau nâng resource:** 8CPU/16GiB (MemoryHigh15GiB,swap0,Nice10), báo cáo [RESOURCE_GUARD](reports/RESOURCE_GUARD_20261028.json). Pilot cũ vẫn là kết quả đo2CPU/12GiB.
+
+**Workflow:** đọc [PRETRAINING.md](PRETRAINING.md) và mục “Nâng cấp ba nguồn” cho workflow được bàn giao; CLI cơ bản/S0 bên dưới còn dùng cho technical fixtures. Ca chính thức dùng launcher cgroup và report readiness ba nguồn.
+
 ## Khởi tạo và kiểm tra
 
-Đã kiểm chứng trên Linux/Python **3.12.14**, CPU. Thư viện được pin cả trực tiếp lẫn bắc cầu trong `requirements.txt`; Python3.12 là môi trường chuẩn để tái lập checkpoint. Feature hiện hành là `ai-features-2` (148cột), bổ sung multi-hot UA product families và missing/unknown; `ai-normalizer-2` mở rộng allowlist family cố định. Canonicalv1.0 không đổi. Hai mô hình dùng NumPy FP32 và Adam có trạng thái tường minh: MLP8 lớp cho supervised baseline, autoencoder cho anomaly. Không yêu cầu Torch/CUDA/LightGBM để chạy S0. Đây là lựa chọn triển khai MLP/AE nhẹ của nhánh, chưa chọn champion trên dữ liệu thật.
+Đã kiểm chứng trên Linux/Python **3.12.14**, CPU. Thư viện được pin cả trực tiếp lẫn bắc cầu trong `requirements.txt`; Python3.12 là môi trường chuẩn để tái lập checkpoint. Feature hiện hành là `ai-features-3` (148cột), normalizer3; profile ba nguồn `edge_masked_v1` và conservative past-flow context. UA product families/missing/unknown vẫn dùng vocab cố định. Canonicalv1.0 không đổi. Ba ứng viên dùng NumPy với tham số/activations/gradient/AdamFP32 (affine tích lũyFP64→roundFP32 để parity ổn định) có trạng thái tường minh: MLP8 lớp, benign-only autoencoder và residual tabular nhỏ; xem phần28/10 phía dưới. Không yêu cầu Torch/CUDA/LightGBM để chạy S0. Đây là lựa chọn triển khai MLP/AE nhẹ của nhánh, chưa chọn champion trên dữ liệu thật.
 
 ```bash
 cd ai-training
@@ -42,7 +46,7 @@ openssl rand 32 > .artifacts/private/training-redaction.key
 
 Nếu chỉ có một/hai nguồn thì bỏ input còn lại. Adapter `canonical=/path/events.jsonl` hoặc `postgres-export=/path/events.jsonl` đọc mỗi dòng là canonical JSON hoặc `{ "canonical": {...} }`. Có thể xuất bằng query `SELECT canonical FROM normalized_events ORDER BY occurred_at,id` trong transaction **REPEATABLE READ, READ ONLY** bằng tài khoản read-only hiện có; package không tạo DB role, không sửa DB/config và không tự mở kết nối PostgreSQL. Không dùng riêng `security_alerts` làm dataset benign.
 
-Output `observations.parquet` giữ quan sát đã lọc; `requests.parquet` gộp HTTP theo requestID + IP tương thích + cửa sổ2s. Student ưu tiên actor/role, Nginx/EVE bổ sung bytes/metadata. Cùng IP/thời gian chỉ là context, không merge các request NAT. Flow chỉ gắn qua cùng flowID đã HMAC và timestamp không vượt quyết định; counters là snapshot flow, không giả thành packet counters của một request.
+Output `observations.parquet` giữ quan sát đã lọc; `requests.parquet` gộp HTTP theo requestID + IP tương thích + cửa sổ2s. Student ưu tiên actor/role, Nginx/EVE bổ sung bytes/metadata. Cùng IP/thời gian chỉ là context, không merge các request NAT. Profile `native` giữ same-flow context đã quan sát. Profile `edge_masked_v1` dùng flow client đã hoàn tất ít nhất65giây trước request; không giả thành packet counters của request hiện tại. Xem PRETRAINING cho receipt-time limitation.
 
 ## Gán nhãn, chuẩn bị split/feature
 
@@ -66,7 +70,7 @@ Splitter temporal60/20/20, nhóm liên thông campaign/IP/user/session, embargo3
 
 Feature pipeline gồm lexical/structural numeric projection, method/status/role/auth, latency/bytes, flow context, và windows10/60/300s cho IP/user: count/rate,4xx/5xx, auth streak, URI diversity, API/read ratios. Counter gồm event hiện tại một lần; event đến muộn bị từ chối. Có lookback300s, LRU/cardinality/event cap và cờ context incomplete khi clip/khởi động. Không đưa IP/user/request/campaign IDs vào model. Counter Suricata alert có trong context, **bị loại khỏi input model mặc định** để tránh học lại rule.
 
-`feature_spec.json` v2 lưu thứ tự cột, fixed one-hot vocab, imputation0, raw clipping, mean/std train-only, FP32 output/clipping, window/missing semantics và implementation hash. Scaler được fit **chỉ benign thuộc train**, nên autoencoder không học cả phân phối attack qua normalization. Unknown rows trong partition vẫn đóng góp context, chỉ các hàng nhãn được review mới có vector train.
+`feature_spec.json` v3 lưu thứ tự cột, fixed one-hot vocab, imputation0, raw clipping, mean/std train-only, FP32 output/clipping, window/missing semantics và implementation hash. Scaler được fit **chỉ benign thuộc train**, nên autoencoder không học cả phân phối attack qua normalization. Unknown rows trong partition vẫn đóng góp context, chỉ các hàng nhãn được review mới có vector train.
 
 Nhiều query/path đã mask ở producer: không thể tái dựng payload hay object ID. Feature lexical có availability flags, `query_original_*` chỉ có khi producer thực sự cung cấp counters; query length/entropy từ view đã lọc privacy, không giả là độ dài bí mật. URI diversity/bulk API chỉ là tín hiệu phụ trợ, **không đủ chứng minh IDOR**. Model này dùng dữ liệu post-response, chưa dùng để chặn request đầu tiên.
 
@@ -75,7 +79,7 @@ Nhiều query/path đã mask ở producer: không thể tái dựng payload hay 
 ```bash
 .venv/bin/idps-ai train --dataset .artifacts/prepared-v1 \
   --config configs/train_config.yaml --run-dir .artifacts/runs/tabular-v1 \
-  --epochs 20 --max-threads 4 --max-duration-minutes 150
+  --epochs 20 --cpus 8 --memory-limit-gib 16 --max-duration-minutes 150
 # Chạy ở ca sau, tiếp tục đúng cursor/optimizer step:
 .venv/bin/idps-ai train --dataset .artifacts/prepared-v1 \
   --config configs/train_config.yaml --run-dir .artifacts/runs/tabular-v1 \
@@ -85,7 +89,7 @@ Nhiều query/path đã mask ở producer: không thể tái dựng payload hay 
 
 `--epochs` là **tổng epoch đích**. Chạy2epoch rồi thêm2 thì resume với `--epochs 4`. `--max-steps` là số step tối đa của phiên, dùng kiểm thử dừng giữa epoch. `configs/anomaly_config.yaml` chọn autoencoder; dùng run-dir mới, autoencoder chỉ fit benign. Training/calibration yêu cầu có benign và attack đã review ở validation để chọn threshold theo FPR; không tự tạo nhãn cho corpus chưa đủ.
 
-CPU mặc định≤4threads và≤nửa affinity ban đầu, BLAS/OpenMP cùng cap, inter-op ONNX1. Linux affinity và RLIMIT_AS12GiB được kiểm hiệu lực; guard đo RSS cả process tree tại optimizer boundaries. Trainer không sinh dataloader/subprocess; S0 workers chạy nối tiếp. RLIMIT_AS là allocation ceiling từng process, không thay cgroup host. Memory guard tree không phải hard group cgroup; nếu bổ sung worker sau này phải nghiệm thu lại. Không bảo đảm nhiệt độ chỉ bằng thread cap; S0 không thay benchmark ca2–3giờ trên máy đích.
+CPU mặc định≤8threads và≤nửa affinity ban đầu, BLAS/OpenMP cùng cap, inter-op ONNX1. Linux affinity và RLIMIT_AS16GiB được kiểm hiệu lực; guard đo RSS cả process tree tại optimizer boundaries. Trainer không sinh dataloader/subprocess; S0 workers chạy nối tiếp. RLIMIT_AS là allocation ceiling từng process, không thay cgroup host. Memory guard tree không phải hard group cgroup; nếu bổ sung worker sau này phải nghiệm thu lại. Không bảo đảm nhiệt độ chỉ bằng thread cap; S0 không thay benchmark ca2–3giờ trên máy đích.
 
 SIGINT/SIGTERM chỉ đặt cờ; save sau step hoàn tất, mỗi300s và cuối phiên. Checkpoint có optimizer/scheduler, RNG, permutation/cursor, epoch/step/best/patience, shard/dataset/config/feature/environment/code hash. Ghi temp cùng filesystem +fsync +rename, pointer latest/previous/best và run lock. Latest hỏng có thể fallback previous đã kiểm SHA. Mất điện/OOM/SIGKILL có thể mất phần tính toán **sau checkpoint gần nhất**; không hứa zero-loss tuyệt đối. Run early-stopped là terminal; đổi learning config/dataset/env/code cần run mới thay vì ép resume.
 
@@ -103,7 +107,9 @@ Bundle có `model.onnx`, `model_manifest.json`, `feature_spec.json`, `golden_vec
 
 Artifact/key/raw/data/model chỉ lưu trong `.artifacts/` (ignored) hoặc kho được kiểm soát ngoài Git; repo chỉ giữ code/config/tests/report metadata. Không lưu credential hay dataset thật vào Git.
 
-## Chuẩn bị trước train — luồng lab riêng
+<a id="chuẩn-bị-trước-train--luồng-lab-riêng"></a>
+
+## Chuẩn bị trước train — snapshot lịch sử27/10
 
 Bổ sung27/10: package có `snapshot`, `review-export/import`, `observer-labels`,
 `readiness`, `capacity-check` và lifecycle `lab-start/capture/finish/stop`.
@@ -203,3 +209,92 @@ Nhãn observer đầu có correctionđược ghi riêng cho benignHEAD/OPTIONSca
 SpringSecuritygrantGET không tự grant hai method này. Các lỗi bất ngờ khác vẫn
 pending; không map403→attack hoặc success→benign. Cần giữ reportcorrection và
 sourcecontract, không xóa bất lợi để làm đẹp số liệu.
+
+## Nâng cấp ba nguồn và pilot — 28/10/2026
+
+Feature hiện hành **v3/148cột**, normalizer3, profile `edge_masked_v1`.
+Đọc [PRETRAINING.md](PRETRAINING.md) trước khi thu/train. Report27 và S0 là lịch sử.
+Các lệnh dưới chạy từ gốc repo, chỉ sử dụng lab do AI tạo:
+
+```bash
+ai-training/.venv/bin/idps-ai lab-start \
+  --output ai-training/.artifacts/my-three-source-lab \
+  --nginx-bin /absolute/path/to/trusted/nginx
+ai-training/.venv/bin/idps-ai lab-capture-eve \
+  --lab-dir ai-training/.artifacts/my-three-source-lab \
+  --campaign-seconds 420 --requests-per-campaign 1280
+ai-training/.venv/bin/idps-ai lab-stop \
+  --lab-dir ai-training/.artifacts/my-three-source-lab
+ai-training/.venv/bin/idps-ai decode-pcap \
+  --pcap ai-training/.artifacts/my-three-source-lab/traffic.pcap \
+  --runtime /absolute/path/to/trusted-suricata8-runtime \
+  --output ai-training/.artifacts/my-three-source-lab/eve
+ai-training/.venv/bin/idps-ai lab-finish \
+  --lab-dir ai-training/.artifacts/my-three-source-lab \
+  --output ai-training/.artifacts/my-three-source-dataset
+```
+
+Runtime có `usr/bin/suricata`, `etc/suricata/` và thư viện tương ứng, hoặc dùng `/`
+nếu máy đã được quản trị cài runtime đúng phiên bản. Phiên này chỉ tải/extract
+các gói Ubuntu8.0.3 trong artifact riêng; không cài global. Nginx/Java25/Podman/
+PostgreSQL17 và quyền user namespace là prerequisite. Máy khác có thể cần quản
+trị cấp quyền; không dùng host-network/privileged để né lỗi rootless.
+
+`lab-capture-eve` chuyển proxy/client sang namespace riêng; backend/DB vẫn là
+fixture đã tạo. File `STOP` trong lab hủy capture, không chứng nhận output dở dang.
+Lỗi hoặc ngắt capture cần `lab-stop` để dọn backend/DB trước khi tạo lab mới.
+`lab-finish` phát hiện profile/capture ba nguồn, kiểm PCAP/EVE hash và dùng policy
+ba nguồn. Không ép corpus cũ qua policy bằng cách hạ các ngưỡng thực.
+
+```bash
+ai-training/.venv/bin/idps-ai pilot \
+  --dataset ai-training/.artifacts/my-three-source-dataset/prepared \
+  --readiness-report ai-training/.artifacts/my-three-source-dataset/readiness/readiness.json \
+  --output ai-training/.artifacts/my-three-source-pilot --max-threads 2
+```
+
+Pilot chạy tuần tự MLP/AE/residual:2epoch→tiến trình mới resume đến5epoch,
+reference 5 epoch, ONNX parity trên mọi prepared row. Metric/threshold chỉ ởval;
+có thêm missing-flow/actor/response sensitivity và rule-or-AI diagnostic nếu
+`validation-rule-facts.json` đi kèm dataset. Đây không là ablation retraining hay
+champion selection. Dùng cgroup cho toàn pilot nếu cần hard cap cả nhóm; bằng
+chứng phiên này ghi ở report/ledger.
+
+Ca chính thức dùng launcher có hard cgroup (bắt buộc report readiness):
+
+```bash
+ai-training/.venv/bin/python -m idps_ai.training.session \
+  --dataset /absolute/path/to/prepared \
+  --readiness-report /absolute/path/to/readiness.json \
+  --config ai-training/configs/formal_residual_config.yaml \
+  --run-dir /absolute/path/to/new-run \
+  --epochs 100 --max-duration-minutes 150 --cpus 8 \
+  --memory-limit-gib 16 --checkpoint-every-seconds 300
+```
+
+Không tự chạy lệnh này sau pilot. Run mới có config học riêng; resume cùng run
+thì thêm `--resume-from` và giữ dataset/config/source không đổi. Nếu job xong sớm,
+không kéo dài cho đủ2–3giờ. Launcher từ chối vượt50% CPU affinity hoặc trầnRAM16GiB do user chỉ định,
+kiểm cgroup thực; MemoryHigh15GiB,Nice10/swap0.16GiB là52,96% RAM OS-visible
+trên máy này; không gọi là chính xác50%. Giới hạn tài nguyên riêng job không giới
+hạn CPU/RAM của các app/VM khác trên máy.
+
+Kiểm đầy đủ gồm engine thật và packet integration:
+
+```bash
+IDPS_AI_TEST_SURICATA_RUNTIME=/absolute/path/to/trusted-suricata8-runtime \
+  ai-training/scripts/check.sh
+```
+
+Nếu không cấp runtime test engine sẽ ghiSKIPPED rõ ràng. Kiểm packet namespace
+cần Linux `unshare`, `ip`, `tcpdump` và AppArmor cho phép dừng process. Không bỏ qua
+một lỗi capture rồi báo corpus ba nguồn đã sẵn sàng.
+
+
+## Handoff sau nâng tài nguyên
+
+Script ca đầu dùng `dataset-ready/readiness-resource8/readiness.json`; artifact
+`readiness-final` và `pilot-ready` trước đó vẫn bất biến. Các directory fail/stale,
+NEXT_COMMANDS cũ, cache và log tạm đã dọn; metadata lịch sử trong reports vẫn giữ.
+Source/config/script/test và dataset đã duyệt không bị xóa. Venv và native runtime
+Suricata đang dùng cho tests được giữ; không có dữ liệu/model/khóa vào Git.

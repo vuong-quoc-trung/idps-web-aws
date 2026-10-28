@@ -1,8 +1,30 @@
 # 01 — Khảo sát hệ thống và kiến trúc nâng cấp IDPS
 
+## Cập nhật resource sau pilot — 28/10/2026
+
+Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
+swap0,Nice10; BLAS/OpenMP8,ONNX intra8/inter1 sequential. CPU là50% của16luồng;
+16GiB là**52,96% RAM OS-visible** trên máy32GB danh nghĩa, được user chỉ định rõ.
+77testsPASS,35readinesschecksPASS, guardprobe0optimizerstep; **không train chính thức
+hoặc chạy lại pilot corpus thật**. [Báo cáo resource](../ai-training/reports/RESOURCE_GUARD_20261028.json).
+
+Dataset prepared và pilot-ready giữ nguyên hash; readiness-final cũ cũng được giữ.
+Readiness mới`readiness-resource8` gắn source hiện hành và được handoff/script sử dụng.
+Các metric/giới hạn2CPU/12GiB ở các snapshot pilot phía dưới là lịch sử. Các attempt
+fail/stale/cache/NEXT_COMMANDS cũ đã dọn; giữ raw capture evidence, runtime và venv
+cần thiết. Xem ledger06 mục21 cho kiểm tra, danh sách dọn và commit.
+
 **Ngày khảo sát:** 2026-10-26, Asia/Ho_Chi_Minh. **Mốc code:** `37bc4d2ae1552939659a10647898e2228f1b801f`. **Phạm vi:** đọc source, cấu hình, SQL, test và tài liệu; không chạy ứng dụng, không chạm DB/firewall và không sửa code chức năng.
 
 Đọc cùng [hiện trạng và tiến độ](00_PROJECT_OVERVIEW_AND_PROGRESS.md), [chiến lược dữ liệu](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md), [AI/training](03_AI_MODEL_AND_TRAINING_PLAN.md) và [roadmap](04_ROADMAP_AND_TEAM_TASKS.md). Đường dẫn và số dòng bên dưới tính từ gốc repository tại mốc trên; phải đối chiếu lại khi code thay đổi.
+
+## Cập nhật AI offline — 28/10/2026
+
+**Trạng thái28/10/2026:** corpus mới có **19.275 request thật / 80.556 observations**, đủ Student audit + Nginx + Suricata EVE từ PCAP thật trong namespace lab. Split **11.565 / 3.855 / 3.855**, nhóm 9/3/3; mỗi campaign ≥420 giây, hai khoảng nghỉ 620 giây thật. Feature v3 / normalizer3, 148 cột, `edge_masked_v1`; canonical v1.0 giữ nguyên. Readiness **35 checks PASS**, **77 tests PASS / 0 skipped**. MLP/AE/residual đều chạy 2 epoch → tiến trình mới resume đến 5 epoch, exact với reference 5 epoch; ONNX parity toàn bộ prepared rows. Chỉ đánh giá validation; test metric chưa mở. [Report có hash](../ai-training/reports/PRETRAIN_PILOT_20261028.json).
+
+Chưa chạy ca chính thức 2–3 giờ, chọn champion, port Rust hoặc bật AI response. Corpus vẫn là loopback với fixture giả / scripted intent; chưa đại diện production. Query bị mask thống nhất nên metadata AI không thấy nội dung payload. Flow chỉ lấy flow client đã kết thúc ≥65 giây trước đó, không backfill bằng đóng flow tương lai. Live receipt-time/TLS/feature parity và human realism review còn riêng.
+
+LuồngA/Student/Security source/config vẫn giữ nguyên356SHA. Chỉ có lab riêng trongAI và quyền nhận signal của profile tcpdump do user tự cấp. Rust hiện chưa có port featurev3/live receipt-time correlation; không gán kết quả offline cho đường enforce.
 
 ## Foundation update — 26/10/2026, base `1925764`, working tree
 

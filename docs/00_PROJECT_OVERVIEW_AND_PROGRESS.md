@@ -1,10 +1,30 @@
 # 00 — Tổng quan dự án và tiến độ
 
+## Cập nhật resource sau pilot — 28/10/2026
+
+Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
+swap0,Nice10; BLAS/OpenMP8,ONNX intra8/inter1 sequential. CPU là50% của16luồng;
+16GiB là**52,96% RAM OS-visible** trên máy32GB danh nghĩa, được user chỉ định rõ.
+77testsPASS,35readinesschecksPASS, guardprobe0optimizerstep; **không train chính thức
+hoặc chạy lại pilot corpus thật**. [Báo cáo resource](../ai-training/reports/RESOURCE_GUARD_20261028.json).
+
+Dataset prepared và pilot-ready giữ nguyên hash; readiness-final cũ cũng được giữ.
+Readiness mới`readiness-resource8` gắn source hiện hành và được handoff/script sử dụng.
+Các metric/giới hạn2CPU/12GiB ở các snapshot pilot phía dưới là lịch sử. Các attempt
+fail/stale/cache/NEXT_COMMANDS cũ đã dọn; giữ raw capture evidence, runtime và venv
+cần thiết. Xem ledger06 mục21 cho kiểm tra, danh sách dọn và commit.
+
 **Mốc khảo sát:** 26/10/2026, múi giờ Asia/Ho_Chi_Minh. **Code nền:** `37bc4d2ae1552939659a10647898e2228f1b801f`.
 
 **Phạm vi khảo sát ban đầu (lịch sử):** đọc và phân tích; chỉ thêm tài liệu trong `docs/`. Không sửa mã chức năng, không cài thư viện, không chạy training, server, migration, firewall, deploy hay gửi traffic thử nghiệm. Worktree sạch trước khi tạo bộ tài liệu. Đây là kết quả đọc tĩnh và thiết kế đề xuất, không phải chứng nhận hệ thống đang chạy hoặc đã đạt chuẩn doanh nghiệp.
 
-## 1. Hiện trạng AI pipeline — 27/10/2026
+## 1. Hiện trạng AI pipeline — 28/10/2026
+
+**Trạng thái28/10/2026:** corpus mới có **19.275 request thật / 80.556 observations**, đủ Student audit + Nginx + Suricata EVE từ PCAP thật trong namespace lab. Split **11.565 / 3.855 / 3.855**, nhóm 9/3/3; mỗi campaign ≥420 giây, hai khoảng nghỉ 620 giây thật. Feature v3 / normalizer3, 148 cột, `edge_masked_v1`; canonical v1.0 giữ nguyên. Readiness **35 checks PASS**, **77 tests PASS / 0 skipped**. MLP/AE/residual đều chạy 2 epoch → tiến trình mới resume đến 5 epoch, exact với reference 5 epoch; ONNX parity toàn bộ prepared rows. Chỉ đánh giá validation; test metric chưa mở. [Report có hash](../ai-training/reports/PRETRAIN_PILOT_20261028.json).
+
+Chưa chạy ca chính thức 2–3 giờ, chọn champion, port Rust hoặc bật AI response. Corpus vẫn là loopback với fixture giả / scripted intent; chưa đại diện production. Query bị mask thống nhất nên metadata AI không thấy nội dung payload. Flow chỉ lấy flow client đã kết thúc ≥65 giây trước đó, không backfill bằng đóng flow tương lai. Live receipt-time/TLS/feature parity và human realism review còn riêng.
+
+### Snapshot pre-training27/10 — lịch sử
 
 **Cập nhật pre-training:** luồng AI bổ sung lifecycle lab cô lập, snapshot chỉ đọc,
 observer/label provenance, manual review CSV, readiness/capacity và baseline rule
@@ -27,7 +47,7 @@ v2 hoặc kết quả chất lượng của corpus mới. Trước mỗi train d
 
 Package đã có adapters read-only, privacy/correlation, explicit labels, temporal/grouped split, Parquet manifests, 125 features nhân quả, CPU MLP8 lớp + benign-only autoencoder, checkpoint/resume và ONNX CPU parity. **42 tests PASS**. S0 thực tế 27/10/2026 12:39:52–12:40:01+07:00: 960 request synthetic, hai model đều chạy2epoch rồi tiến trình mới resume đến4epoch, bằng reference chạy4epoch liên tục; ONNX khớp960/960 mỗi model. Chi tiết/hash ở [báo cáo S0](../ai-training/reports/S0_20261027.json) và [06 mục16](06_AI_HANDOFF_AND_RUN_LEDGER.md#16-ai-data--training-pipeline--27102026).
 
-**Giờ training dữ liệu thật: 0.** Chưa có champion, Rust preprocessing/inference, chất lượng production hoặc nghiệm thu ca2–3giờ/thermal trên Zenbook. Query/object identity đã mask ở producer không thể khôi phục; đây là baseline post-response, không phải model payload đầy đủ hay bằng chứng zero-day detection.
+**Tại snapshot S0: giờ training dữ liệu thật là 0.** Chưa có champion, Rust preprocessing/inference, chất lượng production hoặc nghiệm thu ca2–3giờ/thermal trên Zenbook. Query/object identity đã mask ở producer không thể khôi phục; đây là baseline post-response, không phải model payload đầy đủ hay bằng chứng zero-day detection.
 
 ### Shared Foundation — snapshot 26/10/2026
 
@@ -126,7 +146,7 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 | Security dashboard/API | PASS API/build; UI trực quan NOT_RUN | Tab Audit ứng dụng, filters/page/detail/correlation; header refresh đã nối audit. Kiểm tra trước commit:50 Rust +3 frontend PASS; catalog rule tĩnh không chứng minh Suricata đã nạp rule |
 | Correlation student/proxy | PASS smoke và cross-source counter test | Request ID thống nhất; Rust live flow-to-request correlation chưa triển khai. AI offline có past-only flow context theo flowID, xem02 |
 | Auth burst detector | PASS Rust PostgreSQL | Theo IP+route, cửa sổ/thành công reset/cooldown; dedup request ID Nginx+audit; chưa distributed spraying theo account |
-| AI features/trainer/export | PASS offline/S0; pre-training pilotPASS | Featurev2/148cột,58tests;4.875requestlab đãprepare/23gatechecksPASS. S0v1/125cột làlịchsử; corpusmới chưafit, Rust/liveinferenceNOT_RUN |
+| AI features/trainer/export | PASS offline ba nguồn/pilot | v3/148features,77tests,19,275request,35gatechecks;3models5epoch/resume/ONNX PASS; chưachampion/Rustlive |
 | CI | CÓ CẤU HÌNH | Java/PG, Rust/PG, frontend build; chưa xác minh trạng thái run mới nhất |
 | Ubuntu host deployment | CÓ CONFIG + HƯỚNG DẪN | Service/helper/config cần host acceptance; không áp dụng trong phiên này |
 | AWS, HA, backup/restore đã diễn tập | ĐỀ XUẤT / CHƯA XÁC MINH | Không có IaC hoặc bằng chứng diễn tập trong repo |
@@ -136,15 +156,15 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 
 | Sổ theo dõi | Giá trị đã biết |
 |---|---|
-| Dataset IDPS đã đăng ký | `pretrain_lab_20261027_v2_ready`:4.875requestHTTPthật trênlabfixture,9.750observations; train2.925/val975/test975; S0synthetic giữlịchsử |
-| Log runtime / corpus đại diện | ĐãthuStudent/Nginxlabriêng cóscriptedintent; chưatrafficproduction/representativerealismreview/EVEcapture |
-| Canonical schema / normalizer | Canonical1.0 giữnguyên; ai-normalizer-2 vàai-features-2/148cột; preparedspec/scaler/goldenvectors cóhash |
-| Model baseline / champion / ONNX | V2 MLP5.032/AE9.652tham số khi khởitạorunmới, chưafitcorpuspilot. ONNXv1/S0parity làlịchsử; chưachampion |
-| Ca train đã ghi nhận | **4 phiên synthetic của2run chính +2phiên reference**; S0 verification, không tính là ca train thật |
-| Giờ train có bằng chứng | Synthetic optimizer0,015538449s; reference0,015986770s tách riêng; **dữ liệu thật0giờ**; ngoài repo chưa biết |
-| Latest / best checkpoint | Local ignored `.artifacts/synthetic_s0_20261027_final/{mlp,autoencoder}-resumed/checkpoints`; checksum ở06/report; chưa có shared artifact store |
-| Metrics PR-AUC/recall/FPR/latency | Có trong report synthetic; không dùng làm chất lượng production. Warm ORT model-only p95 MLP0,004404ms/AE0,005234ms |
-| Ca tiếp theo | Cóthểbắtđầupilot5epoch trênlabdata bằngNEXT_COMMANDS+readinessreport; chưa thực thi, chưa choenforce. Sourceavailability/realism/productiongates vẫn riêng |
+| Dataset IDPS đã đăng ký | `upgrade_20261028/dataset-ready`: 19,275request/80,556observations;3nguồn thật; split11,565/3,855/3,855; report27/S0 giữlịchsử |
+| Log runtime / corpus đại diện | Student/Nginx/Suricata EVE lab thật với fixture giả; không phải trafficproduction hoặc representative acceptance |
+| Canonical schema / normalizer | Canonical1.0 giữ nguyên; ai-normalizer-3,ai-features-3/148cột; edge_masked_v1,past-completed-client-flow≥65s |
+| Model baseline / champion / ONNX | MLP5.032/AE9.652/residual14.216params; pilot5epoch,exactresume,ONNX PASS cả3; chưachampion |
+| Ca train đã ghi nhận | Pilot corpus mới:6phiên chính (2→5epoch) +3reference; S0synthetic cũ ghi riêng |
+| Giờ train có bằng chứng | Corpuslab optimizer0.573299s (0.000159250h), reference0.569272s riêng; productiondata0h; không cộngdataprep/export vàooptimizer |
+| Latest / best checkpoint | `.artifacts/upgrade_20261028/pilot-ready/{mlp,autoencoder,residual}-resumed`; checksums trong report28; kho artifact chung chưa cấp |
+| Metrics PR-AUC/recall/FPR/latency | Validation-only trong report28; threshold/calibration dùng cùngval nên sơ bộ; test giữ kín, không là productionFPR |
+| Ca tiếp theo | `bash ai-training/scripts/train-first-session.sh`: candidate residual100epoch/patience8,max150phút,8CPU/16GiB cgroup; chưa thực thi, có thể xong sớm |
 
 Thiết bị mục tiêu do người dùng cung cấp: ASUS Zenbook 14 OLED, RAM 32GB. Chưa biết SKU CPU, số luồng, OS train, GPU/NPU, dung lượng SSD trống hoặc thermal profile. Kế hoạch [03](03_AI_MODEL_AND_TRAINING_PLAN.md) dùng CPU-first, RAM dưới 16GB và ca 2–3 giờ; chưa lấy phần cứng máy thực thi chat làm thông số laptop.
 

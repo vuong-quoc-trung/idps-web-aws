@@ -1,5 +1,19 @@
 # 04 — Lộ trình kỹ thuật và phân chia công việc
 
+## Cập nhật resource sau pilot — 28/10/2026
+
+Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
+swap0,Nice10; BLAS/OpenMP8,ONNX intra8/inter1 sequential. CPU là50% của16luồng;
+16GiB là**52,96% RAM OS-visible** trên máy32GB danh nghĩa, được user chỉ định rõ.
+77testsPASS,35readinesschecksPASS, guardprobe0optimizerstep; **không train chính thức
+hoặc chạy lại pilot corpus thật**. [Báo cáo resource](../ai-training/reports/RESOURCE_GUARD_20261028.json).
+
+Dataset prepared và pilot-ready giữ nguyên hash; readiness-final cũ cũng được giữ.
+Readiness mới`readiness-resource8` gắn source hiện hành và được handoff/script sử dụng.
+Các metric/giới hạn2CPU/12GiB ở các snapshot pilot phía dưới là lịch sử. Các attempt
+fail/stale/cache/NEXT_COMMANDS cũ đã dọn; giữ raw capture evidence, runtime và venv
+cần thiết. Xem ledger06 mục21 cho kiểm tra, danh sách dọn và commit.
+
 **Baseline:** 26/10/2026, commit `37bc4d2ae1552939659a10647898e2228f1b801f`. Đây là backlog đề xuất sau khảo sát, **chưa phải thay đổi code được thực hiện**. Không áp ngày hoàn thành cố định khi chưa có benchmark/data. Tham chiếu finding IDs trong [01](01_SYSTEM_AUDIT_AND_ARCHITECTURE.md), data contract [02](02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md), training gates [03](03_AI_MODEL_AND_TRAINING_PLAN.md).
 
 ## Cập nhật foundation 26/10/2026
@@ -26,6 +40,14 @@ reportREADY_FOR_OFFLINE_PILOT gắn dataset/source; kếhoạch5epoch chưa th�
 XemREADMEAI và ledger06 mục18. R30publicdata, R34load, fullrulecomparison,
 Rustintegration và nghiệmthu ca dài vẫn là công việc riêng theo gate phụ thuộc;
 không sửa luồngA/Student/Security trong task này.
+
+## Cập nhật luồng AI28/10/2026
+
+**Trạng thái28/10/2026:** corpus mới có **19.275 request thật / 80.556 observations**, đủ Student audit + Nginx + Suricata EVE từ PCAP thật trong namespace lab. Split **11.565 / 3.855 / 3.855**, nhóm 9/3/3; mỗi campaign ≥420 giây, hai khoảng nghỉ 620 giây thật. Feature v3 / normalizer3, 148 cột, `edge_masked_v1`; canonical v1.0 giữ nguyên. Readiness **35 checks PASS**, **77 tests PASS / 0 skipped**. MLP/AE/residual đều chạy 2 epoch → tiến trình mới resume đến 5 epoch, exact với reference 5 epoch; ONNX parity toàn bộ prepared rows. Chỉ đánh giá validation; test metric chưa mở. [Report có hash](../ai-training/reports/PRETRAIN_PILOT_20261028.json).
+
+Chưa chạy ca chính thức 2–3 giờ, chọn champion, port Rust hoặc bật AI response. Corpus vẫn là loopback với fixture giả / scripted intent; chưa đại diện production. Query bị mask thống nhất nên metadata AI không thấy nội dung payload. Flow chỉ lấy flow client đã kết thúc ≥65 giây trước đó, không backfill bằng đóng flow tương lai. Live receipt-time/TLS/feature parity và human realism review còn riêng.
+
+R31/R32 và P4 offline có thêm EVE thật, campaign dài, parity/resume trên corpus mới và residual candidate. Chưa hoàn tất R30publicdata, Rustintegration, humanrealism/cloud/receipt-time/thermal gates hoặc productionchampion. Quyền AppArmor do user cấp chỉ để dừngtcpdump; không triển khai IPS, cloud hoặc thay source/config luồngA. Bước tiếp là experiment chính thức bằng script được bàn giao, sau đó review errors/campaign, dữ liệu thực tế và shadow theo gate riêng.
 
 ## 1. Mục tiêu và thứ tự phụ thuộc
 

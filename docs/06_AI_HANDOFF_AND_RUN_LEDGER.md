@@ -637,3 +637,259 @@ fine-tune/retrain với parent model, version mới và đánh giá cả dữ li
 Không tự học từ mọi traffic live hoặc tự coi alert là nhãn. Model mới được so với
 bản cũ, shadow/review rồi mới promote/rollback theo quyết định sau. Chưa tạo cloud
 resource, chạy kiểm thử cloud hoặc nâng cấp thuật toán trong phiên commit này.
+
+
+## 20. Ba nguồn thật + featurev3 + pilot — 2026-10-28T11:10:41.404613+07:00
+
+OwnerCodex, tự review; chưa reviewer độc lập; không spawn agent. Branch`feat/ai-model-training`, base`b9617ccd6afeebf0207e5fd2fd220e8639f61eea`; thay đổi chưa commit/push. User cho phép bổ sung data/model, xử lý quyền nếu cần và chạy pilot; ca train chính thức chỉ chuẩn bị lệnh.
+
+**Trạng thái28/10/2026:** corpus mới có **19.275 request thật / 80.556 observations**, đủ Student audit + Nginx + Suricata EVE từ PCAP thật trong namespace lab. Split **11.565 / 3.855 / 3.855**, nhóm 9/3/3; mỗi campaign ≥420 giây, hai khoảng nghỉ 620 giây thật. Feature v3 / normalizer3, 148 cột, `edge_masked_v1`; canonical v1.0 giữ nguyên. Readiness **35 checks PASS**, **77 tests PASS / 0 skipped**. MLP/AE/residual đều chạy 2 epoch → tiến trình mới resume đến 5 epoch, exact với reference 5 epoch; ONNX parity toàn bộ prepared rows. Chỉ đánh giá validation; test metric chưa mở. [Report có hash](../ai-training/reports/PRETRAIN_PILOT_20261028.json).
+
+Chưa chạy ca chính thức 2–3 giờ, chọn champion, port Rust hoặc bật AI response. Corpus vẫn là loopback với fixture giả / scripted intent; chưa đại diện production. Query bị mask thống nhất nên metadata AI không thấy nội dung payload. Flow chỉ lấy flow client đã kết thúc ≥65 giây trước đó, không backfill bằng đóng flow tương lai. Live receipt-time/TLS/feature parity và human realism review còn riêng.
+
+
+### 20.1. Capture, privacy và provenance
+
+Capture2026-10-28T10:15:00.258847+07:00→2026-10-28T10:56:41.661908+07:00,wall2501.403061s.15campaign,IP/user/session riêng,1280workload +5setup/logout mỗi campaign;9/3/3band,haiwait620s thật. ActualStudentbuild/DBgiả, Nginx thật, PCAP tronguser/netnamespace riêng; Suricata8.0.3decode offline nguyên9SID. Không syntheticEVE, không sửaIP/timestamp, không xóa pending dựa label/status/rule.
+
+Sourcecounts`{'NGINX': 19275, 'STUDENT_AUDIT': 19275, 'SURICATA': 42006}`; parserquality`{'accepted': 80556, 'duplicates': 0}`. Flow coverage: train: 9757/11565, val: 3233/3855, test: 3236/3855. Readiness35PASS, sourcebinding/PCAP/EVE/labels/featureSHA và parity kiểm đầy đủ. DatasetSHA`eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5`. PCAP ghi nhận16packetdrops/199523captured; mộtHTTP thiếuSuri nhưng khôngxóarequest/khôngfake. Dataset đầu`dataset` bịNOT_READY do cộnggrace65s lần2; đãsửathànhavailable_at=max(EVEtimestamp,flow.end+65), giữnguyênrawtimestamp vàgatemin75%, tạo`dataset-ready`; modelarithmeticsourceđổi thìauditsang`readiness-final`. PCAP và credentialfixture chỉprivate; EVE được lọc trước disk, sourcequeryprofileđồngnhất. Thay đổi source capture sau khi worker load chỉ thêm lifecycle/progress/privacy/model; inventory version capture và sourceprocessing giữ riêng.
+
+RootlessPodman host-network capability không cấp hostpacket socket. User đã tự thêm `signal (receive) peer=chatgpt,` vào `/etc/apparmor.d/local/usr.bin.tcpdump`, reload profile và dừng4probe. Không tắt AppArmor/không grant capturehost. FailedlabNginxUIDnobody được dọn, chạy capture mới vớiuserroot chỉ trongnamespace mappeduid1000. GenericSuricatacustomheaderkhôngtrảRID; sửa bằngprivateUnixEVE+allowlistresponseheaders, testcanaryredirect/host/cookiePASS. User service AppArmorkhôngcho tạo namespace nênpackettests/captureởcontextCodexđãđượcphép;train/exportởsystemdquota, khôngbroadeningrootpolicy.
+
+### 20.2. Pilot và tài nguyên
+
+Pilot-ready3model đều2epoch→processmới resume đến5, so exactweights/Adam/RNG/scheduler/permutation/best/patience với5continuous; ONNX19,275/19,275 mỗi model. MLP5.032/AE9.652/residual14.216params; AE/scalerbenigntrainonly.6phiên chính +3reference. Pilotwall47.449917s, optimizerchính0.573298903s (0.000159249695h); referenceoptimizer0.569272400s tách riêng; không cộngdataprep/PCAP/export vàooptimizer. Productiondatatrain0h. Attemptpilotcũcóoptimizer0.265067463s vàreference0.256101581s, ghi riêng; tổngmainoptimizercorpuslabkểcảattemptfail0.838366366s. AttemptcũAEparityFAIL21elements(max3.22e-6); đãsửaaffineaccumulationFP64→roundFP32, gradient/Adam/weightsvẫnFP32, khôngnớitol1e-5/1e-6. Có4096-rowwide-range regression. Oldpilot/sourcegiữlịchsử, khôngforce-resume.
+
+| Model | Global step | Precision val | Recall val | FPR val | Latest checkpoint manifest SHA |
+|---|---:|---:|---:|---:|---|
+| autoencoder | 750 | 0.693878 | 0.101190 | 0.009425 | 56f5e3b5c95ac8835093e6fa3359083c47a3adeb9153059575013f58d3a71513 |
+| mlp | 905 | 0.906832 | 0.434524 | 0.009425 | f8d8b55b8500782c9401d195262e717c58523543f9204cd10edea455f67036b0 |
+| residual | 905 | 0.906542 | 0.433036 | 0.009425 | 96ea6d5d507f676281f75cb286975f825aeb47eea2281dae4c76652bce555fed |
+
+Validation dùng cùngcalibration nên chỉsơbộ; testmetricsNOT_RUN. Missing-input sensitivity không phảiablationretraining. Rule-or-AI cóbudgetFPRflag; Nginx+SuricatabaselinekhônggánthànhfullRustensemble. Khôngchọnchampion/promote/enforce.
+
+PilotuserunitCPUQuota 200%,MemoryMax 12 GiB,MemoryHigh 10 GiB,swap0,Nice10; readbackcpu.max/memory.max/swap vàmemory/cpustat trongsessionreport.16CPUhost→2CPU≈12,5%;RAMcapdưới50%. Captureclient/proxy2CPUaffinity; Javafixtuređượcsiết2CPU trongembargocuối, khônggánquotađómộtcáchhồtốchotoànbộcapture. Khôngbenchmarkthermal/endurance2–3giờ.
+
+### 20.3. Commands và kết quả
+
+| Lệnh/kiểm tra | Trạng thái | Evidence |
+|---|---|---|
+| ĐọcPRETRAINING/report27/docs + source/branchstatus | PASS | Baseb9617cc,workingtreesạchbanđầu |
+| `idps-ai lab-start .../upgrade_20261028/lab` | PASS | GitexportStudentbuild+disposablePG,khôngđụngDBuser |
+| `capture_lab(...duration=420,requests=1280)` | PASS | actualobserver/PCAP/hash,nguyên15campaign |
+| `idps-ai decode-pcap ... --output .../lab/eve` | PASS | actualSuricata8.0.3,HTTP/flow/alerts/stats |
+| `idps-ai lab-finish ... --output .../dataset` | FAIL | NOT_READY: grace65s bị cộng hai lần; giữ artifact cũ, không train |
+| `idps-ai lab-finish ... --output .../dataset-ready`; `readiness .../readiness-final` | PASS | 35gate/capacity/rulebaseline/reviewqueue; source sau sửa precision được bind lại |
+| `systemd-run --user ... CPUQuota=200% MemoryMax=12G ... idps-ai pilot ...` | PASS |3model5epoch,resumeexact,ONNXallrows;sourceđãfreeze |
+| `IDPS_AI_TEST_SURICATA_RUNTIME=... taskset -c 0,1 ai-training/scripts/check.sh` | PASS |77 tests,0skipped;ruff/format/compileall/contract/protecteddiff;`.artifacts/upgrade_20261028/checks-final-supported-context.log` |
+| Fullsuite trongsystemduserunit | FAIL→PASS theo đúngcontext |2packettests bịAppArmordenyuserns; khôngnới policy; rerun contextđãđượcphép. Testlauncherportabilitysửa1threadassertdướiaffinity2 |
+| TDD/gradient/privacy regression | FAIL→PASS | missingmodule/model/headerprojection; finite-differencegradient; secretcanarybefore-disk |
+| `pip check`,shellsyntax,derivedsecretlogicalscan,356protectedSHA | PASS | reportmetadata cóhash;khôngraw/key/modelvàoGit |
+| Dọnfixture | PASS | `{'database': 'already_stopped', 'student': 'already_stopped'}`; khôngcònownedcontainer/tcpdump/nginx/java |
+| `mvn test`;`cargo test` | NOT_RUN | Student/Securitysourcekhôngđổi;Studentisolatedbuild+HTTPthậtđãchạy |
+| Ca chính thức/champion/Rust/live/cloud/thermal | NOT_RUN | Chỉchuẩnbịscript;khôngclaimproductionready |
+
+Publicreport [PRETRAIN_PILOT_20261028.json](../ai-training/reports/PRETRAIN_PILOT_20261028.json),SHA`b19ac674e67c0780249a009b9025ec08f9d9ea936188c4bb36d076d6f7f73fb6`. Localprivateartifactroot`ai-training/.artifacts/upgrade_20261028`; sharedstorechưacấp. Report27/S0giữhashvàýnghĩalịchsử.
+
+### 20.4. Bàn giao
+
+Lệnhđầutiênđãchuẩnbị,**chưathựcthi**: `bash ai-training/scripts/train-first-session.sh`. Residualcandidate100epoch/patience8,maximum150phút,2CPU/12GiB/checkpoint 300s,hardcgroup+readback. Gateformalbuộcba nguồn/windowdài/currentSHA; khôngdùngpolicyhai nguồn cũ. Cólatestthìresumeđúngrun; đổilearning/source/data bịtừchối. Xongsớmthìdừng,khônglặpchođủgiờ.
+
+Cònreviewthựctế/campaignđộc lập, studentprofileđầyđủ, TLS/receipt-time/Rustparity, cloudcorpusvàfine-tuneworkflow. Querymaskedkhôngthànhpayloadmodel; anomalykhôngtựlàattack/zero-day. ChỉHTTPfixtureloopback,khôngproductionbenchmark.
+
+Danh sáchfilethayđổi của phiên:
+
+- `ai-training/PRETRAINING.md`
+- `ai-training/README.md`
+- `ai-training/configs/experiment_plan.yaml`
+- `ai-training/configs/formal_residual_config.yaml`
+- `ai-training/configs/residual_config.yaml`
+- `ai-training/configs/three_source_policy.yaml`
+- `ai-training/reports/PRETRAIN_PILOT_20261028.json`
+- `ai-training/scripts/train-first-session.sh`
+- `ai-training/src/idps_ai/cli.py`
+- `ai-training/src/idps_ai/data/baseline.py`
+- `ai-training/src/idps_ai/data/campaigns.py`
+- `ai-training/src/idps_ai/data/dataset.py`
+- `ai-training/src/idps_ai/data/lab_runtime.py`
+- `ai-training/src/idps_ai/data/pretrain.py`
+- `ai-training/src/idps_ai/data/provenance.py`
+- `ai-training/src/idps_ai/data/readers.py`
+- `ai-training/src/idps_ai/data/readiness.py`
+- `ai-training/src/idps_ai/data/sensor_decode.py`
+- `ai-training/src/idps_ai/data/sensor_lab.py`
+- `ai-training/src/idps_ai/data/split.py`
+- `ai-training/src/idps_ai/export/onnx.py`
+- `ai-training/src/idps_ai/features/pipeline.py`
+- `ai-training/src/idps_ai/inference.py`
+- `ai-training/src/idps_ai/pilot.py`
+- `ai-training/src/idps_ai/training/models.py`
+- `ai-training/src/idps_ai/training/resources.py`
+- `ai-training/src/idps_ai/training/runner.py`
+- `ai-training/src/idps_ai/training/session.py`
+- `ai-training/tests/fixtures/preprocessing_golden.json`
+- `ai-training/tests/test_cli.py`
+- `ai-training/tests/test_export.py`
+- `ai-training/tests/test_models.py`
+- `ai-training/tests/test_pretrain.py`
+- `ai-training/tests/test_sensor_lab.py`
+- `docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md`
+- `docs/01_SYSTEM_AUDIT_AND_ARCHITECTURE.md`
+- `docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md`
+- `docs/03_AI_MODEL_AND_TRAINING_PLAN.md`
+- `docs/04_ROADMAP_AND_TEAM_TASKS.md`
+- `docs/06_AI_HANDOFF_AND_RUN_LEDGER.md`
+
+
+## 21. Resource8CPU/16GiB, cleanup và commit — 2026-10-28T12:28:35.118730+07:00
+
+User yêu cầu nâng resource, xóa stale/cache và chia4commit trên`feat/ai-model-training`;
+**tuyệt đối không chạy ca train chính thức**. OwnerCodex, tự review, không spawnagent.
+Base trước chuỗi là`b9617cc`; ba commit chức năng đã tạo, commit chứa mục này chốt docs.
+
+### 21.1. Policy và bằng chứng không training
+
+- CPU8logical trên16affinity: `CPUQuota=800%`, `Nice=10`; chấp nhận`--cpus6/8`,
+  `--cpus` là alias của`--max-threads`. Giữ trần nửa CPU affinity và tối đa8thread.
+- `MemoryMax=17179869184` (16GiB), `MemoryHigh=16106127360` (15GiB),swap0.
+  User chỉ định16GiB; OS-visibleRAM`32440909824`byte,
+  tỷ lệ thực tế**52.96%**, không gán sai thành50%.
+- OMP/OpenBLAS/MKL/NumExpr8; ORT intra8/inter1, sequential, tránh pool8×8.
+  CPU/memory/high/swap được đọc lại trong guard; RLIMIT_AS16GiB và affinity bổ sung.
+- Probe dùng chính cgroup envelope của session nhưng chạy`probe_resources`, không
+  đọc dataset vào optimizer, không tạo run chính thức: **optimizer_steps=0**.
+  `cpu.max=800000 100000`,memory.max/high/swap đúng như trên.
+  Report guard xác nhận BLAS8 và ORT8/1. Ca dài/thermal/throughput8CPU vẫnNOT_RUN.
+
+Nguồn chuẩn bị thay đổi nên report cũ được giữ nguyên và tạo
+`dataset-ready/readiness-resource8/readiness.json`: **35/35checks PASS**,
+SHA`387ba70ff41a599700328953b6de1e46508fabc0c6dcb8c9447c27afba3afa30`. DatasetSHA vẫn
+`eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5`. `FINAL_TRAINING_HANDOFF.json` vàscript ca đầu trỏ gate mới,
+đồng thời lưu đường dẫn readiness-final gốc. Không nới gate hoặc sửa timestamp/labels.
+
+Báo cáo [RESOURCE_GUARD_20261028.json](../ai-training/reports/RESOURCE_GUARD_20261028.json),
+SHA`d0370e9849da7df9dab8442a7557768c4327f78a2677e712c42b35389174b36c`. Report PRETRAIN_PILOT giữ nguyên số đo2CPU/12GiB và metric pilot cũ;
+không gán chúng thành benchmark8CPU. Checkpoint pilot là bằng chứng lịch sử; source
+mới không force-resume checkpoint cũ. Ca tiếp theo là experiment mới đã chuẩn bị.
+
+### 21.2. Cleanup có kiểm kê
+
+Đã dọn **625file/directory entries**, khoảng
+**682.87MiB**. Chi tiết trong localignored
+`.artifacts/resource_upgrade_20261028/cleanup-result.json`.
+
+Nhóm chính đã xóa:
+
+- `upgrade_20261028/dataset`, `pilot`, `pilot-failed-source`,
+  `failed-namespace-nginx-user`, `parity-diagnostics`, cácprobe/decoded-prefix cũ.
+- `dataset-ready/readiness` stale và`NEXT_COMMANDS.txt`/handoff cũ không còn dùng;
+  không xóa readiness-final hoặc readiness-resource8.
+- Các lab/recheck27/10, pretrainv2 failed/v2_ready đã stale và syntheticS0 duplicate;
+  giữ S0final nhỏ và report lịch sử chính thức.
+- Gitexport/build tạm của lab, PCAPprefix/ONNXdiagnostic, cácgói.deb cache đã extract,
+  scriptsdebug/log tạm đã dừng; giữ nativeSuricata runtime và realcapture evidence.
+- `__pycache__`, `.pytest_cache`, `.ruff_cache`, `.pyc/.tmp/.bak/.coverage` phát sinh.
+  Xóa3bytecode tracked trong`.agents/skills/ui-ux-pro-max/scripts/__pycache__`,
+  giữ toàn bộ source skill. Venv không bị xóa; chỉ dọn bytecodecache bên trong.
+
+**176tệp được bảo vệ giữ nguyên toàn bộ SHA**, gồm tất cảprepared/pilot-ready,
+readiness-final gốc và cácreport chính thức. Giữ source/config/test/script đang
+hoạt động, datasetparent/provenance/key, realPCAP/EVE/audit/observer và runtime.
+Handoff được cập nhật theo yêu cầu, không bị xóa. Không đổi356file Student/Security,
+canonical schema, serviceconfig, DB hoặc firewall.
+
+`.gitignore` root và AI bổ sung artifact/venv/rawPCAP/Parquet/ONNX/checkpoints/weights,
+secretkey/privatecredentials/runtime logs/cache. Giữ ngoại lệ fixture canonical
+được review và `.env.example`. Scan Git index không thấy actualfixturepassword,
+trainingkey hoặc binaryartifact mới. Dữ liệu/model/raw vẫn localignored, chưa push.
+
+### 21.3. Kiểm tra và commit
+
+| Kiểm tra | Trạng thái | Bằng chứng |
+|---|---|---|
+| TDD publicsession policy6/8CPU và16GiB | FAIL→PASS | RED thiếualias`--cpus`, GREEN validator/command/env/ORTpolicy;17GiB vàCPUvượt nửa bịtừchối |
+| Fullpytest trên source hiện hành | PASS | **77passed/0skipped/17.92s**, fixture nhỏ; log`resource_upgrade_20261028/pytest.log` |
+| Guardprobe systemd8CPU/16GiB/high15GiB/swap0 | PASS |0optimizerstep; cgroupreadback thực, BLAS8/ORT8/1 |
+| Data-readiness35checks | PASS | gate mới gắn dataset/source; chuẩn bị readonly, khôngfit |
+| Snapshot index commitdata | PASS | **58tests/8.58s**, PYTHONPATHtrỏ source từindex, không dùngfile chưa stage |
+| Snapshot index commitmodel/resource | PASS | **63tests/8.72s** |
+| Snapshot index commitlab/tests | PASS | **77tests/36.20s**, tempcheckout dọn sau test |
+| Ruff/format/pipcheck/bashsyntax/gitdiffcheck | PASS | Không thêm dependency; không sửa numerical model/dataset để nâng tài nguyên |
+| Protected176SHA, Student/Security356SHA, indexsecret/artifact scan | PASS | Không có file protected thay đổi; chỉcachetracked3file bị xóa theo yêu cầu |
+| Full corpuscapture/pilot/formaltrain | NOT_RUN | User cấm trainchínhthức; chỉtinyregressionfixtures vàguardprobe0step |
+| Push/cloud/enforcement | NOT_RUN | Chỉ commit local, không thay luồngIPS |
+
+| Commit | Nhóm |
+|---|---|
+| `cea18c4` | `feat(ai-data): add three-source pipeline and feature schema v3` |
+| `1d526b3` | `feat(ai-train): add residual model and 8-CPU/16GiB resource guard` |
+| `6f432a2` | `test(ai-pilot): add lab capture, 77 tests and pretrain evidence` |
+| Commit chứa mục21 | Docs00–06, README root/AI vàPRETRAINING, policy8CPU/16GiB và cleanup/handoff |
+
+Lệnh user có thể chạy sau, **chưa thực thi trong phiên này**:
+
+```bash
+bash /home/trung/projects/idps-web-aws/ai-training/scripts/train-first-session.sh
+```
+
+Trần150phút,100epoch/patience8,checkpoint300giây. Có thể xong sớm; không lặp cho đủgiờ.
+Sau commit docs phải kiểm `git status` sạch và`git log -n6`; cácartifact được giữ
+sẵn sàng cho experimentoffline, không là nghiệm thuproduction hoặc champion.
+
+File thay đổi/xóa trong chuỗi commit này (so với b9617cc):
+
+- `.agents/skills/ui-ux-pro-max/scripts/__pycache__/core.cpython-314.pyc`
+- `.agents/skills/ui-ux-pro-max/scripts/__pycache__/design_system.cpython-314.pyc`
+- `.agents/skills/ui-ux-pro-max/scripts/__pycache__/reasoning_contract.cpython-314.pyc`
+- `.gitignore`
+- `README.md`
+- `ai-training/.gitignore`
+- `ai-training/PRETRAINING.md`
+- `ai-training/README.md`
+- `ai-training/configs/anomaly_config.yaml`
+- `ai-training/configs/experiment_plan.yaml`
+- `ai-training/configs/formal_residual_config.yaml`
+- `ai-training/configs/residual_config.yaml`
+- `ai-training/configs/three_source_policy.yaml`
+- `ai-training/configs/train_config.yaml`
+- `ai-training/reports/PRETRAIN_PILOT_20261028.json`
+- `ai-training/reports/RESOURCE_GUARD_20261028.json`
+- `ai-training/scripts/train-first-session.sh`
+- `ai-training/src/idps_ai/cli.py`
+- `ai-training/src/idps_ai/data/baseline.py`
+- `ai-training/src/idps_ai/data/campaigns.py`
+- `ai-training/src/idps_ai/data/capacity.py`
+- `ai-training/src/idps_ai/data/dataset.py`
+- `ai-training/src/idps_ai/data/lab_runtime.py`
+- `ai-training/src/idps_ai/data/pretrain.py`
+- `ai-training/src/idps_ai/data/provenance.py`
+- `ai-training/src/idps_ai/data/readers.py`
+- `ai-training/src/idps_ai/data/readiness.py`
+- `ai-training/src/idps_ai/data/sensor_decode.py`
+- `ai-training/src/idps_ai/data/sensor_lab.py`
+- `ai-training/src/idps_ai/data/split.py`
+- `ai-training/src/idps_ai/export/onnx.py`
+- `ai-training/src/idps_ai/features/pipeline.py`
+- `ai-training/src/idps_ai/inference.py`
+- `ai-training/src/idps_ai/pilot.py`
+- `ai-training/src/idps_ai/smoke.py`
+- `ai-training/src/idps_ai/training/models.py`
+- `ai-training/src/idps_ai/training/resources.py`
+- `ai-training/src/idps_ai/training/runner.py`
+- `ai-training/src/idps_ai/training/session.py`
+- `ai-training/tests/fixtures/preprocessing_golden.json`
+- `ai-training/tests/test_cli.py`
+- `ai-training/tests/test_export.py`
+- `ai-training/tests/test_models.py`
+- `ai-training/tests/test_pretrain.py`
+- `ai-training/tests/test_safety.py`
+- `ai-training/tests/test_sensor_lab.py`
+- `docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md`
+- `docs/01_SYSTEM_AUDIT_AND_ARCHITECTURE.md`
+- `docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md`
+- `docs/03_AI_MODEL_AND_TRAINING_PLAN.md`
+- `docs/04_ROADMAP_AND_TEAM_TASKS.md`
+- `docs/05_DISCOVERY_EVIDENCE_AND_INVENTORY.md`
+- `docs/06_AI_HANDOFF_AND_RUN_LEDGER.md`
+
+Kiểm tra trước commit docs: PASS176artifactSHA,356serviceSHA,35gate,79local links,0cache còn lại,0optimizerstep probe,workingtree chỉ còn docs đang chờ commit. Không có lab container hoặc idps-ai user unit đang chạy.

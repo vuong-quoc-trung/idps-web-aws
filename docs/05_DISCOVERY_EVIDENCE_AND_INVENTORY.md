@@ -1,5 +1,19 @@
 # 05 — Bằng chứng khảo sát, phạm vi và giới hạn xác minh
 
+## Cập nhật resource sau pilot — 28/10/2026
+
+Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
+swap0,Nice10; BLAS/OpenMP8,ONNX intra8/inter1 sequential. CPU là50% của16luồng;
+16GiB là**52,96% RAM OS-visible** trên máy32GB danh nghĩa, được user chỉ định rõ.
+77testsPASS,35readinesschecksPASS, guardprobe0optimizerstep; **không train chính thức
+hoặc chạy lại pilot corpus thật**. [Báo cáo resource](../ai-training/reports/RESOURCE_GUARD_20261028.json).
+
+Dataset prepared và pilot-ready giữ nguyên hash; readiness-final cũ cũng được giữ.
+Readiness mới`readiness-resource8` gắn source hiện hành và được handoff/script sử dụng.
+Các metric/giới hạn2CPU/12GiB ở các snapshot pilot phía dưới là lịch sử. Các attempt
+fail/stale/cache/NEXT_COMMANDS cũ đã dọn; giữ raw capture evidence, runtime và venv
+cần thiết. Xem ledger06 mục21 cho kiểm tra, danh sách dọn và commit.
+
 **Snapshot khảo sát lịch sử (không phải hash code foundation):** 26/10/2026, Asia/Ho_Chi_Minh. **Git HEAD được khảo sát:** `37bc4d2ae1552939659a10647898e2228f1b801f`. Worktree ban đầu sạch. Bản ghi này mô tả cách có được kết luận trong 00–04; không thay thế kết quả kiểm thử runtime.
 
 ## 1. Phạm vi thực sự đã kiểm kê
