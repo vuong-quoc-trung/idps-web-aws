@@ -257,7 +257,9 @@ def stop_lab(directory):
     if marker.get("purpose") != "ai-pretrain-disposable":
         raise PipelineError("Refusing to stop an unowned lab")
     results = {}
-    for name, identity in marker.get("processes", {}).items():
+    for name, identity in sorted(
+        marker.get("processes", {}).items(), key=lambda item: item[0] != "sensor_namespace"
+    ):
         try:
             process = psutil.Process(identity["pid"])
             if process.create_time() != identity["create_time"] or str(directory) not in " ".join(

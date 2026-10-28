@@ -84,7 +84,7 @@ def parser():
     capacity = commands.add_parser("capacity-check")
     capacity.add_argument("--dataset", required=True)
     capacity.add_argument("--output", required=True)
-    capacity.add_argument("--max-threads", type=int, default=2)
+    capacity.add_argument("--max-threads", "--cpus", dest="max_threads", type=int, default=8)
     owned = commands.add_parser("lab-start", help="Create an AI-owned disposable fixture only")
     owned.add_argument("--output", required=True)
     owned.add_argument("--nginx-bin", required=True)
@@ -99,6 +99,16 @@ def parser():
     lab.add_argument("--lab-dir", required=True)
     lab.add_argument("--requests-per-campaign", type=int, default=320)
     lab.add_argument("--gap-seconds", type=int, default=620)
+    sensor = commands.add_parser(
+        "lab-capture-eve", help="Capture real TCP in a private rootless namespace"
+    )
+    sensor.add_argument("--lab-dir", required=True)
+    sensor.add_argument("--campaign-seconds", type=float, default=420)
+    sensor.add_argument("--requests-per-campaign", type=int, default=1280)
+    decode = commands.add_parser("decode-pcap")
+    decode.add_argument("--pcap", required=True)
+    decode.add_argument("--runtime", required=True)
+    decode.add_argument("--output", required=True)
     synth = commands.add_parser("synthetic")
     synth.add_argument("--output", required=True)
     synth.add_argument("--campaigns", type=int, default=15)
@@ -142,13 +152,19 @@ def parser():
     export.add_argument("--dataset", required=True)
     export.add_argument("--checkpoint", required=True)
     export.add_argument("--output", required=True)
+    export.add_argument("--validation-only", action="store_true")
     smoke = commands.add_parser("s0")
     smoke.add_argument("--output", required=True)
     smoke.add_argument("--campaigns", type=int, default=15)
     smoke.add_argument("--requests-per-campaign", type=int, default=64)
     for command in (collection, prep, training, export, smoke):
-        command.add_argument("--max-threads", type=int)
+        command.add_argument("--max-threads", "--cpus", dest="max_threads", type=int)
         command.add_argument("--memory-limit-gib", type=float)
+    pilot = commands.add_parser("pilot")
+    pilot.add_argument("--dataset", required=True)
+    pilot.add_argument("--readiness-report", required=True)
+    pilot.add_argument("--output", required=True)
+    pilot.add_argument("--max-threads", "--cpus", dest="max_threads", type=int, default=8)
     inspect = commands.add_parser("inspect")
     inspect.add_argument("--dataset", required=True)
     return root
@@ -158,7 +174,7 @@ def main(argv=None):
     args = parser().parse_args(argv)
     from idps_ai.training.resources import configure_threads
 
-    configure_threads(getattr(args, "max_threads", None) or 4)
+    configure_threads(getattr(args, "max_threads", None) or 8)
     try:
         check_contract()
         if args.command == "check-contract":
@@ -224,6 +240,20 @@ def main(argv=None):
             from idps_ai.data.lab_capture import run_campaigns
 
             result = run_campaigns(args.lab_dir, args.requests_per_campaign, args.gap_seconds)
+        elif args.command == "lab-capture-eve":
+            from idps_ai.data.sensor_lab import capture_lab
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = capture_lab(
+                    args.lab_dir, args.campaign_seconds, args.requests_per_campaign
+                )
+        elif args.command == "decode-pcap":
+            from idps_ai.data.sensor_decode import decode_pcap
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = decode_pcap(args.pcap, args.output, args.runtime)
         elif args.command == "synthetic":
             from idps_ai.data.synthetic import synthetic_s0
 
@@ -251,8 +281,8 @@ def main(argv=None):
             from idps_ai.training.resources import resource_envelope
 
             with resource_envelope(
-                args.max_threads if args.max_threads is not None else 4,
-                args.memory_limit_gib if args.memory_limit_gib is not None else 12,
+                args.max_threads if args.max_threads is not None else 8,
+                args.memory_limit_gib if args.memory_limit_gib is not None else 16,
             ):
                 result = collect(
                     inputs,
@@ -266,8 +296,8 @@ def main(argv=None):
             from idps_ai.training.resources import resource_envelope
 
             with resource_envelope(
-                args.max_threads if args.max_threads is not None else 4,
-                args.memory_limit_gib if args.memory_limit_gib is not None else 12,
+                args.max_threads if args.max_threads is not None else 8,
+                args.memory_limit_gib if args.memory_limit_gib is not None else 16,
             ):
                 result = prepare(
                     args.dataset,
@@ -298,10 +328,10 @@ def main(argv=None):
                 else envelope.get("max_duration_minutes", 150),
                 max_threads=args.max_threads
                 if args.max_threads is not None
-                else envelope.get("max_threads", 4),
+                else envelope.get("max_threads", 8),
                 memory_limit_gib=args.memory_limit_gib
                 if args.memory_limit_gib is not None
-                else envelope.get("memory_limit_gib", 12),
+                else envelope.get("memory_limit_gib", 16),
                 checkpoint_every_seconds=args.checkpoint_every_seconds
                 if args.checkpoint_every_seconds is not None
                 else envelope.get("checkpoint_every_seconds", 300),
@@ -312,12 +342,20 @@ def main(argv=None):
             from idps_ai.training.resources import resource_envelope
 
             with resource_envelope(
-                args.max_threads if args.max_threads is not None else 2,
-                args.memory_limit_gib if args.memory_limit_gib is not None else 12,
+                args.max_threads if args.max_threads is not None else 8,
+                args.memory_limit_gib if args.memory_limit_gib is not None else 16,
             ) as (_, resources):
                 result = export_bundle(
-                    args.dataset, args.checkpoint, args.output, resources["max_threads"]
+                    args.dataset,
+                    args.checkpoint,
+                    args.output,
+                    resources["max_threads"],
+                    evaluation_partition="val" if args.validation_only else "test",
                 )
+        elif args.command == "pilot":
+            from idps_ai.pilot import run_pilot
+
+            result = run_pilot(args.dataset, args.readiness_report, args.output, args.max_threads)
         elif args.command == "s0":
             from idps_ai.smoke import run_s0
 
@@ -325,8 +363,8 @@ def main(argv=None):
                 args.output,
                 args.campaigns,
                 args.requests_per_campaign,
-                args.max_threads if args.max_threads is not None else 2,
-                args.memory_limit_gib if args.memory_limit_gib is not None else 12,
+                args.max_threads if args.max_threads is not None else 8,
+                args.memory_limit_gib if args.memory_limit_gib is not None else 16,
             )
         else:
             from idps_ai.data.dataset import verify_dataset

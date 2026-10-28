@@ -5,3 +5,45 @@ student-web/backend/.env
 /.local-dev/
 **/__pycache__/
 student-web/backend/logs/
+
+# Local AI/lab artifacts, virtual environments and generated caches.
+.artifacts/
+.venv/
+venv/
+**/.pytest_cache/
+**/.ruff_cache/
+*.pyc
+.coverage
+.coverage.*
+*.tmp
+*.bak
+
+# Runtime data and fitted model material never belong in Git.
+*.log
+*.pcap
+*.pcapng
+*.parquet
+*.onnx
+*.npz
+*.npy
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+checkpoints/
+weights/
+*.jsonl
+!contracts/fixtures/*.jsonl
+!contracts/fixtures/*.log
+
+# Credentials; keep deliberately sanitized environment examples reviewable.
+.env
+.env.*
+!**/.env.example
+!**/.env.sample
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+*-private.json

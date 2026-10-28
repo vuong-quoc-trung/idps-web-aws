@@ -1,0 +1,3559 @@
+{
+  "all_lab_main_optimizer_seconds": 0.8383663660197271,
+  "artifacts_root": "/home/trung/projects/idps-web-aws/ai-training/.artifacts/upgrade_20261028",
+  "attempts_and_resolutions": [
+    {
+      "issue": "First real-corpus pilot AE export failed strict reconstruction parity:21 elements,max3.22e-6; score parity passed",
+      "resolution": "BLAS/MLAS cancellation near zero; FP64 affine accumulation withFP32 parameters/activations/optimizer, matching ONNX casts;4096-row wide-range regression; tolerance unchanged. Fresh pilot-ready with new arithmetic contract; old pilot and source preserved",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "Dataset gate rejected train/test flow coverage because65s grace was added on top of EVE emission timestamp",
+      "resolution": "Preserve original timestamp, store separate available_at=max(EVE timestamp,flow.end+65); regression test; rebuild immutable dataset-ready without lowering gates",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "AppArmor tcpdump could capture in private namespace but refused Codex stop signals",
+      "resolution": "User added signal(receive) peer=chatgpt and reloaded only tcpdump profile; all four probes stopped",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "Initial private Nginx used unmapped nobody UID",
+      "resolution": "user root only inside one-user namespace mapping; failed lab stopped; fresh capture created",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "Suricata custom arbitrary X-Request-Id did not produce correlation headers",
+      "resolution": "Private Unix-stream sink receives response headers transiently, persists ID allowlist only; real PCAP preflight verified correlation",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "Privacy regression found hostname/redirect free text in sensor projection",
+      "resolution": "HTTP field allowlist drops unused text/redirects; canary regression passes",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "Full tests in a systemd service cannot create user/network namespace under unprivileged_userns AppArmor profile",
+      "resolution": "Capture tests executed in existing permitted Codex context with2CPU affinity; train/export cgroup service verified separately; no policy broadening",
+      "status": "FAIL -> PASS"
+    },
+    {
+      "issue": "Launcher test assumed2 threads under an already2CPU test affinity",
+      "resolution": "Portable1thread policy assertion; production50% cap retained",
+      "status": "FAIL -> PASS"
+    }
+  ],
+  "branch": "feat/ai-model-training",
+  "capacity": {
+    "available_cpus_before_cap": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "available_memory_bytes": 20974116864,
+    "current_affinity": [
+      0,
+      1
+    ],
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "disk_free_bytes": 175498731520,
+    "feature_cache_estimate_bytes": 11565000,
+    "feature_count": 148,
+    "feature_rows": 19275,
+    "format_version": 1,
+    "host_total_memory_bytes": 32440909824,
+    "limits": [
+      "Read-only I/O/capacity estimate, not a training-speed/thermal/endurance benchmark",
+      "No cgroup controller or machine power profile changed",
+      "This host is not assumed to be the target Zenbook",
+      "Actual epoch duration must be measured by a later authorized pilot training run"
+    ],
+    "platform": "Linux",
+    "proposed_memory_limit_gib": 12,
+    "python": "3.12.14",
+    "report_sha256": "11b6f0d1d29169b13bea4b24b908c249ce137d163b4c007a465cf24c439527c3",
+    "requested_max_threads": 2,
+    "requirements_sha256": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5",
+    "sampled_process_rss_bytes": 216449024,
+    "status": "CAPACITY_ESTIMATE_PASS",
+    "stream_read_wall_seconds": 0.08878578999974707,
+    "stream_rows_per_second": 217095.55098912687,
+    "training_executed": false
+  },
+  "capture": {
+    "campaign_durations": [
+      {
+        "band": 0,
+        "campaign": 0,
+        "duration_seconds": 420.1041153240001
+      },
+      {
+        "band": 0,
+        "campaign": 1,
+        "duration_seconds": 420.1043683959999
+      },
+      {
+        "band": 0,
+        "campaign": 2,
+        "duration_seconds": 420.055184176
+      },
+      {
+        "band": 0,
+        "campaign": 3,
+        "duration_seconds": 420.104008155
+      },
+      {
+        "band": 0,
+        "campaign": 4,
+        "duration_seconds": 420.0840540779998
+      },
+      {
+        "band": 0,
+        "campaign": 5,
+        "duration_seconds": 420.03495773400005
+      },
+      {
+        "band": 0,
+        "campaign": 6,
+        "duration_seconds": 420.06616499000006
+      },
+      {
+        "band": 0,
+        "campaign": 7,
+        "duration_seconds": 420.0426106090001
+      },
+      {
+        "band": 0,
+        "campaign": 8,
+        "duration_seconds": 420.07766182599994
+      },
+      {
+        "band": 1,
+        "campaign": 9,
+        "duration_seconds": 420.144217392
+      },
+      {
+        "band": 1,
+        "campaign": 10,
+        "duration_seconds": 420.15507331499975
+      },
+      {
+        "band": 1,
+        "campaign": 11,
+        "duration_seconds": 420.15946904700013
+      },
+      {
+        "band": 2,
+        "campaign": 12,
+        "duration_seconds": 420.02522488999966
+      },
+      {
+        "band": 2,
+        "campaign": 13,
+        "duration_seconds": 420.02441024699965
+      },
+      {
+        "band": 2,
+        "campaign": 14,
+        "duration_seconds": 420.0265138240002
+      }
+    ],
+    "campaigns": 15,
+    "capture_id": "6fd9d0c682a44e1d9f71dae1be355e66",
+    "data_kind": "lab_capture",
+    "ended_at_local": "2026-10-28T10:56:41.661908+07:00",
+    "ended_at_unix": 1793159801.6619081,
+    "format_version": 1,
+    "intent_counts": {
+      "behavioral_anomaly": 480,
+      "benign": 15915,
+      "brute_force": 480,
+      "cmd_injection": 480,
+      "path_traversal": 480,
+      "scanner_recon": 480,
+      "sqli": 480,
+      "xss": 480
+    },
+    "label_semantics": "Scripted intent + expected HTTP outcome; no exploit success assertion",
+    "limits": [
+      "Isolated real HTTP with fictional records; not production traffic",
+      "No independent human realism/label review",
+      "Payloads masked consistently; no claim to see hidden query payloads"
+    ],
+    "observer_sha256": "1dba8f92f1e940d53f72a361d79aaae6be8becd08189d3456ca10ff23dd6c592",
+    "query_profile": "edge_masked_v1",
+    "real_training_hours": 0,
+    "requests": 19275,
+    "source_commit": "b9617ccd6afeebf0207e5fd2fd220e8639f61eea",
+    "started_at_local": "2026-10-28T10:15:00.258847+07:00",
+    "started_at_unix": 1793157300.258847,
+    "wall_seconds": 2501.4030611515045
+  },
+  "capture_code_inventory_sha256": "13841959bc5bda43af8383461fffddc24eed23024561e837716484efd65d30f3",
+  "capture_code_note": "Capture workers loaded the recorded source before later formatting/lifecycle diagnostics changes; request plan/observed outcomes preserved",
+  "champion_selected": false,
+  "collection": {
+    "correlation_window_seconds": 2.0,
+    "dataset_sha256": "d6a6329c2b9521824645885a8d1bffc0544c00b8c3f103012caacfcda0b303eb",
+    "files": {
+      "observations.parquet": {
+        "bytes": 7688086,
+        "sha256": "29187d857520f4f5678b970c3db978bedd1e5bcc13b0f6a84ef3464c5a67c3ae"
+      },
+      "requests.parquet": {
+        "bytes": 2896653,
+        "sha256": "ef24e8fa0f2025711b258377307d3d1440405b813b543476a809ea9d7ca394c6"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "edge_masked_v1",
+    "input_semantics": "finite immutable snapshots; raw input files never written",
+    "inputs": [
+      {
+        "bytes": 18183655,
+        "sha256": "0079557f38868a0651b4bed6263d42132cf7b1c392303305478eaf3270bc630f",
+        "source": "student"
+      },
+      {
+        "bytes": 8000158,
+        "sha256": "8ffc6e0a00e0f2cf8b0be792e0ddca124b4e73a0e8d3e7df8e499bcb5923b288",
+        "source": "nginx"
+      },
+      {
+        "bytes": 24173151,
+        "sha256": "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19",
+        "source": "suricata"
+      }
+    ],
+    "label_manifest_sha256": "510d488e4154fee477134f4506303f14ee6554eb1ac0b6c09e43c3bce0093c55",
+    "labels": "explicit_review_only",
+    "normalizer_version": "ai-normalizer-3",
+    "quality": {
+      "accepted": 80556,
+      "duplicates": 0
+    },
+    "redaction_key_fingerprint": "4d7e69ccf384879353242f30f1153a02be560a88424b01849e35e34658f928cc",
+    "rows": {
+      "observations": 80556,
+      "requests": 19275
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "sources": {
+      "NGINX": 19275,
+      "STUDENT_AUDIT": 19275,
+      "SURICATA": 42006
+    },
+    "stage": "collected",
+    "time_range": [
+      1793157300.284087,
+      1793159801.648574
+    ]
+  },
+  "configs_sha256": {
+    "configs/anomaly_config.yaml": "5a3271a1fb17079d2b5a5268ed0280c44931f462b9e81783af5f8f6e307830a3",
+    "configs/experiment_plan.yaml": "495c456e6531a8eed4da243bd6fc46b3be20042f3f50a386eeb466bf04a29f5e",
+    "configs/formal_residual_config.yaml": "91956c03010247b59415ff17b7e091e5dcbfbd926571e0d1228289f73b00679c",
+    "configs/pretrain_policy.yaml": "2fa0e4afdd0a046a2cf596fc433bb9b99b84d4fff0e7de76cb2336145c39f2a1",
+    "configs/residual_config.yaml": "b7e4fc974cc1deaab2b5ef758cf022b0d7db51607539ed3e07805e6cd86521ee",
+    "configs/schema_contract.yaml": "49a7c4ee1f4081a5d812efa582385f1d35b89ba3aaf516cc30e24a7b8eb4b59e",
+    "configs/three_source_policy.yaml": "6f718a189d6624c08e2304b5125576eb54fde552c1eb89add48bc402dd936f6f",
+    "configs/train_config.yaml": "8be71c1b72df7271972d8b952f6db25acca2e6956c1a492aee58ca069ee2217c"
+  },
+  "created_at": "2026-10-28T11:10:41.404613+07:00",
+  "dataset": {
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "feature_count": 148,
+    "feature_rows": 19275,
+    "files": {
+      "feature_spec.json": {
+        "bytes": 8216,
+        "sha256": "ac2f812ae2d4d1036a51e5b31275ed71c93c7f877017869caf40ef7ab6e953a6"
+      },
+      "features.parquet": {
+        "bytes": 1416031,
+        "sha256": "ac2257dc371fb75e7150a26b4cb8809a58882fd3e38434cb5839fc7f6484e6e6"
+      },
+      "observations.parquet": {
+        "bytes": 7688086,
+        "sha256": "29187d857520f4f5678b970c3db978bedd1e5bcc13b0f6a84ef3464c5a67c3ae"
+      },
+      "requests.parquet": {
+        "bytes": 2920256,
+        "sha256": "8b7dfd04dbff41fcaf177f2ce9b9c0559400fa85f098ebcc281a77ad639a5600"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "edge_masked_v1",
+    "label_distribution": {
+      "test": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      },
+      "train": {
+        "behavioral_anomaly": 288,
+        "benign": 9549,
+        "brute_force": 288,
+        "cmd_injection": 288,
+        "path_traversal": 288,
+        "scanner_recon": 288,
+        "sqli": 288,
+        "xss": 288
+      },
+      "val": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      }
+    },
+    "label_manifest_sha256": "510d488e4154fee477134f4506303f14ee6554eb1ac0b6c09e43c3bce0093c55",
+    "normalizer_version": "ai-normalizer-3",
+    "note": "Synthetic metrics verify plumbing only when the capture is synthetic; unknown/weak labels never trained",
+    "parent_dataset_sha256": "d6a6329c2b9521824645885a8d1bffc0544c00b8c3f103012caacfcda0b303eb",
+    "redaction_key_fingerprint": "4d7e69ccf384879353242f30f1153a02be560a88424b01849e35e34658f928cc",
+    "rows": {
+      "test": 3855,
+      "train": 11565,
+      "val": 3855
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "split": {
+      "cutoffs": [
+        1793158031.0849135,
+        1793159071.4455955
+      ],
+      "embargo_seconds": 300,
+      "group_columns": [
+        "campaign_key",
+        "client_key",
+        "user_key",
+        "session_key"
+      ],
+      "groups": 15,
+      "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+      "reviewed_rows": {
+        "test": 3855,
+        "train": 11565,
+        "val": 3855
+      }
+    },
+    "stage": "prepared"
+  },
+  "failed_dataset_preserved": "dataset:NOT_READY because flow grace was counted twice; dataset-ready is the only approved version",
+  "failed_pilot_optimizer_seconds": 0.2650674630122012,
+  "failed_pilot_reference_optimizer_seconds": 0.25610158102062996,
+  "files_sha256": {
+    "dataset-ready/prepared/dataset_manifest.json": "e88e1dafbbb743338d4b7c2a0e87c93b2ece9e1b72c5a515a35ac47df9af1382",
+    "dataset-ready/prepared/feature_spec.json": "ac2f812ae2d4d1036a51e5b31275ed71c93c7f877017869caf40ef7ab6e953a6",
+    "dataset-ready/prepared_provenance.json": "39b9ffb54d2f19235358f641bbfeb81738540dbec0ada3a316b78d05f43b7fc2",
+    "dataset-ready/readiness-final/readiness.json": "0d683779610ec81251f3e6a88ef34559cf948e41045f6de09016f4132ffe2c86",
+    "lab/capture-result.json": "c00cbb923a8a371111c7ccdcfd3a9249ceb309fb4602f279cc67ef3df70edd26",
+    "lab/eve/decode-manifest.json": "e121414984189ecbbc6f59a36d1bf0d2471c7837f50cb099f455931abdaa0a0e",
+    "lab/pcap-manifest.json": "a19d49f4c3a29d1ebd94a188570113ba1a9635e449e450b5a0057086b1ce77f8",
+    "pilot-ready/pilot-report.json": "efd0321c6f132a2d553bf6d5ad1e69e3fe18803c118df86d03d2dab470bd2525"
+  },
+  "first_formal_command": "bash /home/trung/projects/idps-web-aws/ai-training/scripts/train-first-session.sh",
+  "first_formal_script_sha256": "07adc5935c685c13cd05264f0981fe3d0706e1d24b10d7f42203ecea470fe90a",
+  "formal_candidate": "residual; candidate experiment, not a selected champion;100 epoch target with patience8,may finish early",
+  "formal_command_executed": false,
+  "format_version": 1,
+  "lab_optimizer_hours": 0.00015924969527986833,
+  "limits": [
+    "Actual HTTP and PCAP/EVE on isolated loopback fixture; not representative production traffic",
+    "edge_masked_v1 drops query lexical/original counters from every source; hidden query payload families may be indistinguishable to AI",
+    "Completed-client-flow context reserves 65s after packet end; event-time replay is not acceptance of live sensor receipt delays",
+    "420s campaigns with real 620s gaps; three temporal bands and disjoint identities; only one host/topology",
+    "Scenario labels describe intent/expected outcomes; no exploit success or independent human realism review",
+    "No Rust inference, production champion, shadow or firewall enforcement accepted",
+    "Validation metrics share calibration data; test labels remain sealed",
+    "Loopback fixture workload, no production quality or zero-day acceptance",
+    "No time-filling epochs; short pilot is not a 2–3h thermal/endurance test",
+    "Missing-flow warmup remains explicit; no future close totals or fictitious EVE used",
+    "Native Rust currently needs separate response-header correlation and feature/arrival-time parity integration; AI-only changes do not implement it",
+    "Benign fixture profiles are not complete real student sessions; no cloud traffic or independent human label/realism review",
+    "Variant IDs are predeclared scenario groups; this is not proof of independent real-world exploit families",
+    "Nginx/Suricata rule comparison does not execute the Rust stateful engine; per-request alerts differ from incident-level detection",
+    "No2–3h endurance/thermal acceptance; pilot is intentionally short,optimizer and reference time separated",
+    "Cloud fine-tune/retrain-on-new-data workflow remains a later task; resume requires same dataset/config/source",
+    "Raw PCAP contains fictional fixture credentials/cookies and stays private; keys/Parquet/weights are ignored by Git; shared artifact store not provisioned"
+  ],
+  "nginx_rules_validation": {
+    "confusion_matrix": [
+      [
+        3183,
+        0
+      ],
+      [
+        306,
+        366
+      ]
+    ],
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "engine": "Nginx four-map flags only, not the full Rust/Suricata rule ensemble",
+    "format_version": 1,
+    "fpr": 0.0,
+    "limits": [
+      "No final-test metrics computed or threshold tuning performed",
+      "Scanner/auth/stateful/Suricata detections are not represented by these four flags",
+      "Labels come from reviewed scenario intent, never from these flags"
+    ],
+    "matched_rows": 3855,
+    "partition": "val",
+    "per_family": {
+      "behavioral_anomaly": {
+        "count": 96,
+        "flagged": 0
+      },
+      "benign": {
+        "count": 3183,
+        "flagged": 0
+      },
+      "brute_force": {
+        "count": 96,
+        "flagged": 0
+      },
+      "cmd_injection": {
+        "count": 96,
+        "flagged": 96
+      },
+      "path_traversal": {
+        "count": 96,
+        "flagged": 78
+      },
+      "scanner_recon": {
+        "count": 96,
+        "flagged": 0
+      },
+      "sqli": {
+        "count": 96,
+        "flagged": 96
+      },
+      "xss": {
+        "count": 96,
+        "flagged": 96
+      }
+    },
+    "precision": 1.0,
+    "recall": 0.5446428571428571,
+    "signal_counts": {
+      "COMMAND_INJECTION": 96,
+      "PATH_TRAVERSAL": 78,
+      "SQLI": 96,
+      "XSS": 96
+    },
+    "signals": [
+      "SQLI",
+      "XSS",
+      "PATH_TRAVERSAL",
+      "COMMAND_INJECTION"
+    ],
+    "source_file_sha256": "8ffc6e0a00e0f2cf8b0be792e0ddca124b4e73a0e8d3e7df8e499bcb5923b288",
+    "training_executed": false,
+    "unmatched_rows": 0
+  },
+  "nginx_suricata_rules_validation": {
+    "all_nine_sids": {
+      "confusion_matrix": [
+        [
+          2982,
+          201
+        ],
+        [
+          188,
+          484
+        ]
+      ],
+      "f1": 0.7133382461311717,
+      "families": {
+        "behavioral_anomaly": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              96,
+              0
+            ]
+          ],
+          "count": 96,
+          "detected": 0
+        },
+        "benign": {
+          "count": 3183,
+          "false_positives": 201
+        },
+        "brute_force": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              92,
+              4
+            ]
+          ],
+          "count": 96,
+          "detected": 4
+        },
+        "cmd_injection": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "path_traversal": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "scanner_recon": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "sqli": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "xss": {
+          "confusion_matrix_vs_benign": [
+            [
+              2982,
+              201
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        }
+      },
+      "pr_auc_average_precision": 0.5576659917851091,
+      "pr_auc_trapezoidal": 0.7377876361428153,
+      "precision": 0.7065693430656934,
+      "recall": 0.7202380952380952,
+      "recall_at_fpr_le_1pct": 0.0,
+      "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+      "roc_auc": 0.8285450608141466,
+      "rows": 3855,
+      "threshold": 0.5
+    },
+    "campaign_family_summary": {
+      "behavioral_anomaly": {
+        "all_rules_detected_cases": 0,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 0
+      },
+      "benign": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 3
+      },
+      "brute_force": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 1
+      },
+      "cmd_injection": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 3
+      },
+      "path_traversal": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 3
+      },
+      "scanner_recon": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 3
+      },
+      "sqli": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 3
+      },
+      "xss": {
+        "all_rules_detected_cases": 3,
+        "campaign_family_cases": 3,
+        "web_rules_detected_cases": 3
+      }
+    },
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "format_version": 1,
+    "limits": [
+      "HTTP/flow joining is retrospective diagnostic, not a live alert-latency acceptance",
+      "Web subset is predefined to exclude SID1000001 SYN-rate observations",
+      "No rule facts or alert labels enter model training"
+    ],
+    "partition": "val",
+    "scope": "Nginx four maps + actual Suricata; no Rust stateful execution",
+    "source_sha256": [
+      "8ffc6e0a00e0f2cf8b0be792e0ddca124b4e73a0e8d3e7df8e499bcb5923b288",
+      "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19"
+    ],
+    "unmatched_or_ambiguous_alerts": 0,
+    "web_sids_excluding_syn_rate": {
+      "confusion_matrix": [
+        [
+          3177,
+          6
+        ],
+        [
+          191,
+          481
+        ]
+      ],
+      "f1": 0.8300258843830889,
+      "families": {
+        "behavioral_anomaly": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              96,
+              0
+            ]
+          ],
+          "count": 96,
+          "detected": 0
+        },
+        "benign": {
+          "count": 3183,
+          "false_positives": 6
+        },
+        "brute_force": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              95,
+              1
+            ]
+          ],
+          "count": 96,
+          "detected": 1
+        },
+        "cmd_injection": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "path_traversal": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "scanner_recon": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "sqli": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        },
+        "xss": {
+          "confusion_matrix_vs_benign": [
+            [
+              3177,
+              6
+            ],
+            [
+              0,
+              96
+            ]
+          ],
+          "count": 96,
+          "detected": 96
+        }
+      },
+      "pr_auc_average_precision": 0.756501285127223,
+      "pr_auc_trapezoidal": 0.8764997625401442,
+      "precision": 0.9876796714579056,
+      "recall": 0.7157738095238095,
+      "recall_at_fpr_le_1pct": 0.7157738095238095,
+      "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+      "roc_auc": 0.8569443976931017,
+      "rows": 3855,
+      "threshold": 0.5
+    }
+  },
+  "numeric_contract": "FP32 parameters, activations, gradients and Adam; affine reductions accumulate in FP64 then round toFP32 in NumPy and ONNX; tolerance unchanged at1e-5/1e-6",
+  "packet_capture_counters": [
+    "tcpdump: listening on lo, link-type EN10MB (Ethernet), snapshot length 262144 bytes",
+    "199523 packets captured",
+    "399062 packets received by filter",
+    "16 packets dropped by kernel"
+  ],
+  "pilot": {
+    "models": {
+      "autoencoder": {
+        "benign_only_training": true,
+        "calibration": {
+          "benign_count": 3183,
+          "finite_sample_warning": "Empirical FPR only; small synthetic samples do not certify production FPR",
+          "fit_partition": "val",
+          "target_fpr": 0.01,
+          "threshold": 0.20619527995586395,
+          "validation_fpr": 0.00942507068803016,
+          "validation_recall": 0.10119047619047619
+        },
+        "checkpoint_manifest_sha256": "56f5e3b5c95ac8835093e6fa3359083c47a3adeb9153059575013f58d3a71513",
+        "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+        "epoch": 5,
+        "exact_resume": true,
+        "global_step": 750,
+        "missing_input_sensitivity": {
+          "available_inputs": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 15
+            },
+            "fpr": 0.00942507068803016,
+            "precision": 0.6938775510204082,
+            "recall": 0.10119047619047619
+          },
+          "without_actor": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 873
+            },
+            "fpr": 0.9666980835689601,
+            "precision": 0.17262705028233397,
+            "recall": 0.9553571428571429
+          },
+          "without_flow": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 355
+            },
+            "fpr": 0.3402450518378888,
+            "precision": 0.2494802494802495,
+            "recall": 0.5357142857142857
+          },
+          "without_response": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 392
+            },
+            "fpr": 0.3107131636820609,
+            "precision": 0.2619402985074627,
+            "recall": 0.5223214285714286
+          }
+        },
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 19275,
+          "rtol": 1e-05
+        },
+        "onnx_sha256": "7d0dfe9434e7511c3fd6bce9ca181786ff611017d91ca2ba4216cce306100e99",
+        "parameter_count": 9652,
+        "reference_session": {
+          "best_metric": 0.3089705787533144,
+          "checkpoint": "checkpoints/step-000000000750-fd5dd2acd5f8",
+          "checkpoint_manifest_sha256": "a27452bb57887466e40e2e77cbf2352252f09d760766d3fa712f2f217144fdc1",
+          "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+          "cumulative_optimizer_seconds": 0.14315398799772083,
+          "cumulative_wall_seconds": 2.6306496569995943,
+          "cursor": 0,
+          "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+          "ended_at_unix": 1793160609.337788,
+          "epoch": 5,
+          "global_step": 750,
+          "process_id": 53195,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "cgroup_v2": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 21577212\nuser_usec 17396690\nsystem_usec 4180522\nnice_usec 17406000\ncore_sched.force_idle_usec 0\nnr_periods 208\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "247230464",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "270831616",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "cgroup_v2_final": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 24198703\nuser_usec 18959365\nsystem_usec 5239337\nnice_usec 18968000\ncore_sched.force_idle_usec 0\nnr_periods 235\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "280764416",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "281567232",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 188719104,
+            "peak_tree_rss_bytes": 188719104,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440909824
+          },
+          "run_id": "63f6adc7bcf8498991966ad274f4f7c9",
+          "session_id": "bd77ca89ac914ee2af392866c7f53d4e",
+          "session_optimizer_seconds": 0.14315398799772083,
+          "session_wall_seconds": 2.688775149999856,
+          "started_at_unix": 1793160606.6490283,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false
+        },
+        "rule_or_ai": {
+          "all_rules": {
+            "confusion_matrix": [
+              [
+                2953,
+                230
+              ],
+              [
+                122,
+                550
+              ]
+            ],
+            "empirical_fpr": 0.0722588752748979,
+            "f1": 0.7575757575757576,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 230
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    26,
+                    70
+                  ]
+                ],
+                "count": 96,
+                "detected": 70
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2953,
+                    230
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "meets_1pct_false_alert_budget": false,
+            "pr_auc_average_precision": 0.6087610697776068,
+            "pr_auc_trapezoidal": 0.7776138987471672,
+            "precision": 0.7051282051282052,
+            "recall": 0.8184523809523809,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.8730967528387414,
+            "rows": 3855,
+            "threshold": 0.5
+          },
+          "web_rules": {
+            "confusion_matrix": [
+              [
+                3148,
+                35
+              ],
+              [
+                123,
+                549
+              ]
+            ],
+            "empirical_fpr": 0.010995915802701853,
+            "f1": 0.8742038216560509,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 35
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    27,
+                    69
+                  ]
+                ],
+                "count": 96,
+                "detected": 69
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3148,
+                    35
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "meets_1pct_false_alert_budget": false,
+            "pr_auc_average_precision": 0.7999089998153465,
+            "pr_auc_trapezoidal": 0.8944696968254814,
+            "precision": 0.940068493150685,
+            "recall": 0.8169642857142857,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9029841849557918,
+            "rows": 3855,
+            "threshold": 0.5
+          }
+        },
+        "sessions": [
+          {
+            "best_metric": 0.27678322734948013,
+            "checkpoint": "checkpoints/step-000000000300-dc4ee8b84891",
+            "checkpoint_manifest_sha256": "b9442b1a581d8c18636a987777407ac134ad58d65d0617d49a0bbc6d413ff522",
+            "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+            "cumulative_optimizer_seconds": 0.05859523899471242,
+            "cumulative_wall_seconds": 1.2304503550003574,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160603.6263483,
+            "epoch": 2,
+            "global_step": 300,
+            "process_id": 53181,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 17297104\nuser_usec 14340940\nsystem_usec 2956163\nnice_usec 14344000\ncore_sched.force_idle_usec 0\nnr_periods 165\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "235634688",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "248188928",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 18458799\nuser_usec 15053312\nsystem_usec 3405487\nnice_usec 15059000\ncore_sched.force_idle_usec 0\nnr_periods 178\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "270319616",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "270340096",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188522496,
+              "peak_tree_rss_bytes": 188522496,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "6f78bc95053c47de82d78231c42251f3",
+            "session_id": "c295cd6a8862431ebb613b2afb0fc204",
+            "session_optimizer_seconds": 0.05859523899471242,
+            "session_wall_seconds": 1.2821490110000013,
+            "started_at_unix": 1793160602.3442147,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          },
+          {
+            "best_metric": 0.3089705787533144,
+            "checkpoint": "checkpoints/step-000000000750-df104dd5de88",
+            "checkpoint_manifest_sha256": "56f5e3b5c95ac8835093e6fa3359083c47a3adeb9153059575013f58d3a71513",
+            "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+            "cumulative_optimizer_seconds": 0.14362299299409642,
+            "cumulative_wall_seconds": 2.92251614900033,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160605.9943295,
+            "epoch": 5,
+            "global_step": 750,
+            "process_id": 53189,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 19170640\nuser_usec 15699153\nsystem_usec 3471486\nnice_usec 15705000\ncore_sched.force_idle_usec 0\nnr_periods 184\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "247083008",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "270340096",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 20843976\nuser_usec 16728153\nsystem_usec 4115823\nnice_usec 16736000\ncore_sched.force_idle_usec 0\nnr_periods 201\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "269819904",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "270831616",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188911616,
+              "peak_tree_rss_bytes": 188911616,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "6f78bc95053c47de82d78231c42251f3",
+            "session_id": "30c87146496845fd964dab27afe55e56",
+            "session_optimizer_seconds": 0.085027753999384,
+            "session_wall_seconds": 1.7413909970000532,
+            "started_at_unix": 1793160604.2529523,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          }
+        ],
+        "threshold": 0.20619527995586395,
+        "training_rows": 9549,
+        "validation_metrics": {
+          "confusion_matrix": [
+            [
+              3153,
+              30
+            ],
+            [
+              604,
+              68
+            ]
+          ],
+          "empirical_fpr": 0.00942507068803016,
+          "f1": 0.17662337662337663,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "benign": {
+              "count": 3183,
+              "false_positives": 30
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  28,
+                  68
+                ]
+              ],
+              "count": 96,
+              "detected": 68
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            }
+          },
+          "final_test_metrics_computed": false,
+          "latency_ms": {
+            "native": {
+              "p50": 0.0117745,
+              "p95": 0.0127414,
+              "p99": 0.013412880000000014
+            },
+            "onnxruntime": {
+              "p50": 0.008646500000000001,
+              "p95": 0.0093197,
+              "p99": 0.009876760000000014
+            },
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "partition": "val",
+          "pr_auc_average_precision": 0.3089705787533144,
+          "precision": 0.6938775510204082,
+          "recall": 0.10119047619047619,
+          "roc_auc": 0.6212199201861077,
+          "rows": 3855
+        }
+      },
+      "mlp": {
+        "benign_only_training": false,
+        "calibration": {
+          "benign_count": 3183,
+          "finite_sample_warning": "Empirical FPR only; small synthetic samples do not certify production FPR",
+          "fit_partition": "val",
+          "target_fpr": 0.01,
+          "threshold": 0.6317335963249207,
+          "validation_fpr": 0.00942507068803016,
+          "validation_recall": 0.43452380952380953
+        },
+        "checkpoint_manifest_sha256": "f8d8b55b8500782c9401d195262e717c58523543f9204cd10edea455f67036b0",
+        "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+        "epoch": 5,
+        "exact_resume": true,
+        "global_step": 905,
+        "missing_input_sensitivity": {
+          "available_inputs": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "fpr": 0.00942507068803016,
+            "precision": 0.906832298136646,
+            "recall": 0.43452380952380953
+          },
+          "without_actor": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 97
+            },
+            "fpr": 0.3669494187873076,
+            "precision": 0.3445566778900112,
+            "recall": 0.9136904761904762
+          },
+          "without_flow": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "fpr": 0.12409676405906378,
+            "precision": 0.5,
+            "recall": 0.5877976190476191
+          },
+          "without_response": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "fpr": 0.00471253534401508,
+            "precision": 0.9210526315789473,
+            "recall": 0.2604166666666667
+          }
+        },
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.7881393432617188e-07,
+          "rows": 19275,
+          "rtol": 1e-05
+        },
+        "onnx_sha256": "4908b61a0895b53445976ba377a00c70100abd872172018b9730eb9409c18159",
+        "parameter_count": 5032,
+        "reference_session": {
+          "best_metric": 0.7613331102785559,
+          "checkpoint": "checkpoints/step-000000000905-02e293aab8d5",
+          "checkpoint_manifest_sha256": "998d7dfe24e230c1e0d222be40f589b1ebf8c52cfc6832fc266c244aba7ce95f",
+          "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+          "cumulative_optimizer_seconds": 0.1508280489970275,
+          "cumulative_wall_seconds": 2.9712721490004697,
+          "cursor": 0,
+          "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+          "ended_at_unix": 1793160594.359098,
+          "epoch": 5,
+          "global_step": 905,
+          "process_id": 53164,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "cgroup_v2": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 5830873\nuser_usec 4305598\nsystem_usec 1525274\nnice_usec 4301000\ncore_sched.force_idle_usec 0\nnr_periods 55\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "180330496",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "203001856",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "cgroup_v2_final": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 8819257\nuser_usec 6052490\nsystem_usec 2766766\nnice_usec 6052000\ncore_sched.force_idle_usec 0\nnr_periods 85\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "214695936",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "214958080",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 188653568,
+            "peak_tree_rss_bytes": 188653568,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440909824
+          },
+          "run_id": "85d50e8e004040878dfa1c2722c241cb",
+          "session_id": "ee0d6301d05c44809f77b82fae98414a",
+          "session_optimizer_seconds": 0.1508280489970275,
+          "session_wall_seconds": 3.0192735250002443,
+          "started_at_unix": 1793160591.3398383,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false
+        },
+        "rule_or_ai": {
+          "all_rules": {
+            "confusion_matrix": [
+              [
+                2959,
+                224
+              ],
+              [
+                5,
+                667
+              ]
+            ],
+            "empirical_fpr": 0.07037386113729187,
+            "f1": 0.853486884197057,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 224
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    5,
+                    91
+                  ]
+                ],
+                "count": 96,
+                "detected": 91
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2959,
+                    224
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "meets_1pct_false_alert_budget": false,
+            "pr_auc_average_precision": 0.7443241800272713,
+            "pr_auc_trapezoidal": 0.8712268113005792,
+            "precision": 0.7485970819304153,
+            "recall": 0.9925595238095238,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.961092831336116,
+            "rows": 3855,
+            "threshold": 0.5
+          },
+          "web_rules": {
+            "confusion_matrix": [
+              [
+                3147,
+                36
+              ],
+              [
+                5,
+                667
+              ]
+            ],
+            "empirical_fpr": 0.011310084825636193,
+            "f1": 0.9701818181818181,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 36
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    5,
+                    91
+                  ]
+                ],
+                "count": 96,
+                "detected": 91
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "meets_1pct_false_alert_budget": false,
+            "pr_auc_average_precision": 0.9430284569479225,
+            "pr_auc_trapezoidal": 0.9713237184150302,
+            "precision": 0.9487908961593172,
+            "recall": 0.9925595238095238,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9906247194919436,
+            "rows": 3855,
+            "threshold": 0.5
+          }
+        },
+        "sessions": [
+          {
+            "best_metric": 0.7493134528939981,
+            "checkpoint": "checkpoints/step-000000000362-4ceecd0d09a9",
+            "checkpoint_manifest_sha256": "9d8c23685b59682fd6f4a0008d212b356c5be61d9f6a4d1e65910d63536f0ad6",
+            "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+            "cumulative_optimizer_seconds": 0.05937267100398458,
+            "cumulative_wall_seconds": 1.3351390740008355,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160588.2470436,
+            "epoch": 2,
+            "global_step": 362,
+            "process_id": 53146,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 1227786\nuser_usec 1113898\nsystem_usec 113887\nnice_usec 1114000\ncore_sched.force_idle_usec 0\nnr_periods 10\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "166723584",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "168685568",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 2527623\nuser_usec 1908470\nsystem_usec 619152\nnice_usec 1907000\ncore_sched.force_idle_usec 0\nnr_periods 24\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "201928704",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "202113024",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188534784,
+              "peak_tree_rss_bytes": 188534784,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "f20236b9ecf645429b12d6c89f6e43bd",
+            "session_id": "3cea9d58f07a4b65a34ec76e02a049ef",
+            "session_optimizer_seconds": 0.05937267100398458,
+            "session_wall_seconds": 1.383831595000629,
+            "started_at_unix": 1793160586.8632283,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          },
+          {
+            "best_metric": 0.7613331102785559,
+            "checkpoint": "checkpoints/step-000000000905-4edd315e956b",
+            "checkpoint_manifest_sha256": "f8d8b55b8500782c9401d195262e717c58523543f9204cd10edea455f67036b0",
+            "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+            "cumulative_optimizer_seconds": 0.1510860950083952,
+            "cumulative_wall_seconds": 3.217623454000204,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160590.7547996,
+            "epoch": 5,
+            "global_step": 905,
+            "process_id": 53157,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 3222042\nuser_usec 2532033\nsystem_usec 690009\nnice_usec 2531000\ncore_sched.force_idle_usec 0\nnr_periods 30\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "180097024",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "202113024",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 5130116\nuser_usec 3682954\nsystem_usec 1447161\nnice_usec 3679000\ncore_sched.force_idle_usec 0\nnr_periods 49\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "202543104",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "203001856",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188833792,
+              "peak_tree_rss_bytes": 188833792,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "f20236b9ecf645429b12d6c89f6e43bd",
+            "session_id": "73fff0a4940745d2aa73549609ee72a3",
+            "session_optimizer_seconds": 0.09171342400441063,
+            "session_wall_seconds": 1.932111958999485,
+            "started_at_unix": 1793160588.8227012,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          }
+        ],
+        "threshold": 0.6317335963249207,
+        "training_rows": 11565,
+        "validation_metrics": {
+          "confusion_matrix": [
+            [
+              3153,
+              30
+            ],
+            [
+              380,
+              292
+            ]
+          ],
+          "empirical_fpr": 0.00942507068803016,
+          "f1": 0.5875251509054326,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  0,
+                  96
+                ]
+              ],
+              "count": 96,
+              "detected": 96
+            },
+            "benign": {
+              "count": 3183,
+              "false_positives": 30
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  6,
+                  90
+                ]
+              ],
+              "count": 96,
+              "detected": 90
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  91,
+                  5
+                ]
+              ],
+              "count": 96,
+              "detected": 5
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  93,
+                  3
+                ]
+              ],
+              "count": 96,
+              "detected": 3
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  1,
+                  95
+                ]
+              ],
+              "count": 96,
+              "detected": 95
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  95,
+                  1
+                ]
+              ],
+              "count": 96,
+              "detected": 1
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  94,
+                  2
+                ]
+              ],
+              "count": 96,
+              "detected": 2
+            }
+          },
+          "final_test_metrics_computed": false,
+          "latency_ms": {
+            "native": {
+              "p50": 0.009798999999999999,
+              "p95": 0.01061755,
+              "p99": 0.011824770000000005
+            },
+            "onnxruntime": {
+              "p50": 0.00655,
+              "p95": 0.0072432,
+              "p99": 0.007439250000000014
+            },
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "partition": "val",
+          "pr_auc_average_precision": 0.7569710125463878,
+          "precision": 0.906832298136646,
+          "recall": 0.43452380952380953,
+          "roc_auc": 0.9253958436186287,
+          "rows": 3855
+        }
+      },
+      "residual": {
+        "benign_only_training": false,
+        "calibration": {
+          "benign_count": 3183,
+          "finite_sample_warning": "Empirical FPR only; small synthetic samples do not certify production FPR",
+          "fit_partition": "val",
+          "target_fpr": 0.01,
+          "threshold": 0.6971818208694458,
+          "validation_fpr": 0.00942507068803016,
+          "validation_recall": 0.4330357142857143
+        },
+        "checkpoint_manifest_sha256": "96ea6d5d507f676281f75cb286975f825aeb47eea2281dae4c76652bce555fed",
+        "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+        "epoch": 5,
+        "exact_resume": true,
+        "global_step": 905,
+        "missing_input_sensitivity": {
+          "available_inputs": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 0
+            },
+            "fpr": 0.00942507068803016,
+            "precision": 0.9065420560747663,
+            "recall": 0.4330357142857143
+          },
+          "without_actor": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 437
+            },
+            "fpr": 0.6682375117813384,
+            "precision": 0.234341252699784,
+            "recall": 0.96875
+          },
+          "without_flow": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "fpr": 0.012880929940307886,
+            "precision": 0.8346774193548387,
+            "recall": 0.3080357142857143
+          },
+          "without_response": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "fpr": 0.003770028275212064,
+            "precision": 0.9411764705882353,
+            "recall": 0.2857142857142857
+          }
+        },
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 19275,
+          "rtol": 1e-05
+        },
+        "onnx_sha256": "4b043896dd4c09957d8b3ef1fff5984c6a6bdbd2c2638d7d1b1e370710441472",
+        "parameter_count": 14216,
+        "reference_session": {
+          "best_metric": 0.7678729108354447,
+          "checkpoint": "checkpoints/step-000000000905-eb4386d20258",
+          "checkpoint_manifest_sha256": "774ececb3b009c627bb859bd75095c8afaac004e4606cb0b6bf807cb9e665b0a",
+          "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+          "cumulative_optimizer_seconds": 0.27529036299984,
+          "cumulative_wall_seconds": 3.343984639000155,
+          "cursor": 0,
+          "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+          "ended_at_unix": 1793160625.9227784,
+          "epoch": 5,
+          "global_step": 905,
+          "process_id": 53258,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "cgroup_v2": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 40347174\nuser_usec 33418063\nsystem_usec 6929110\nnice_usec 33431000\ncore_sched.force_idle_usec 0\nnr_periods 367\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "285376512",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "315576320",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "cgroup_v2_final": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 46224806\nuser_usec 37917615\nsystem_usec 8307191\nnice_usec 37934000\ncore_sched.force_idle_usec 0\nnr_periods 401\nnr_throttled 4\nthrottled_usec 4578\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "320167936",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "321220608",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 189042688,
+            "peak_tree_rss_bytes": 189042688,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440909824
+          },
+          "run_id": "187573fe11c44976bee976fe093f439c",
+          "session_id": "a0aa6f9d818f4516b3e4d4ee0fb7b6fc",
+          "session_optimizer_seconds": 0.27529036299984,
+          "session_wall_seconds": 3.3950566369994704,
+          "started_at_unix": 1793160622.5277367,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false
+        },
+        "rule_or_ai": {
+          "all_rules": {
+            "confusion_matrix": [
+              [
+                2957,
+                226
+              ],
+              [
+                12,
+                660
+              ]
+            ],
+            "empirical_fpr": 0.07100219918316054,
+            "f1": 0.8472400513478819,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 226
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    12,
+                    84
+                  ]
+                ],
+                "count": 96,
+                "detected": 84
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2957,
+                    226
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "meets_1pct_false_alert_budget": false,
+            "pr_auc_average_precision": 0.7347316731015601,
+            "pr_auc_trapezoidal": 0.865088345418887,
+            "precision": 0.744920993227991,
+            "recall": 0.9821428571428571,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9555703289798483,
+            "rows": 3855,
+            "threshold": 0.5
+          },
+          "web_rules": {
+            "confusion_matrix": [
+              [
+                3147,
+                36
+              ],
+              [
+                12,
+                660
+              ]
+            ],
+            "empirical_fpr": 0.011310084825636193,
+            "f1": 0.9649122807017544,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 36
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    12,
+                    84
+                  ]
+                ],
+                "count": 96,
+                "detected": 84
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3147,
+                    36
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "meets_1pct_false_alert_budget": false,
+            "pr_auc_average_precision": 0.9344552049989457,
+            "pr_auc_trapezoidal": 0.9667657798393744,
+            "precision": 0.9482758620689655,
+            "recall": 0.9821428571428571,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9854163861586105,
+            "rows": 3855,
+            "threshold": 0.5
+          }
+        },
+        "sessions": [
+          {
+            "best_metric": 0.7619093198374448,
+            "checkpoint": "checkpoints/step-000000000362-96e41928dc3a",
+            "checkpoint_manifest_sha256": "27d0cfb0ded7b032d694e5080bea6dc6e3c406697443ab18ca10f5d9b4662073",
+            "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+            "cumulative_optimizer_seconds": 0.11241558499114035,
+            "cumulative_wall_seconds": 1.4870340739998937,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160619.0557315,
+            "epoch": 2,
+            "global_step": 362,
+            "process_id": 53243,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 32821773\nuser_usec 27419773\nsystem_usec 5402000\nnice_usec 27434000\ncore_sched.force_idle_usec 0\nnr_periods 316\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "271380480",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 35313149\nuser_usec 29350994\nsystem_usec 5962155\nnice_usec 29364000\ncore_sched.force_idle_usec 0\nnr_periods 332\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "307167232",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 189112320,
+              "peak_tree_rss_bytes": 189112320,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "343233c6757344b0b553f6995f7eb273",
+            "session_id": "a71ade923d954d9dba4f5d009c077fd1",
+            "session_optimizer_seconds": 0.11241558499114035,
+            "session_wall_seconds": 1.537371778999841,
+            "started_at_unix": 1793160617.5183742,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          },
+          {
+            "best_metric": 0.7678729108354447,
+            "checkpoint": "checkpoints/step-000000000905-2142289f5660",
+            "checkpoint_manifest_sha256": "96ea6d5d507f676281f75cb286975f825aeb47eea2281dae4c76652bce555fed",
+            "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+            "cumulative_optimizer_seconds": 0.2785898150050343,
+            "cumulative_wall_seconds": 3.6792490190000535,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160621.8979697,
+            "epoch": 5,
+            "global_step": 905,
+            "process_id": 53250,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 36023405\nuser_usec 29998348\nsystem_usec 6025057\nnice_usec 30012000\ncore_sched.force_idle_usec 0\nnr_periods 338\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "284192768",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 39635052\nuser_usec 32772986\nsystem_usec 6862065\nnice_usec 32786000\ncore_sched.force_idle_usec 0\nnr_periods 360\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "307261440",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 189083648,
+              "peak_tree_rss_bytes": 189083648,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "343233c6757344b0b553f6995f7eb273",
+            "session_id": "81fde5d453984ee4bd236761872c8616",
+            "session_optimizer_seconds": 0.16617423001389398,
+            "session_wall_seconds": 2.2404320340001505,
+            "started_at_unix": 1793160619.6575534,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          }
+        ],
+        "threshold": 0.6971818208694458,
+        "training_rows": 11565,
+        "validation_metrics": {
+          "confusion_matrix": [
+            [
+              3153,
+              30
+            ],
+            [
+              381,
+              291
+            ]
+          ],
+          "empirical_fpr": 0.00942507068803016,
+          "f1": 0.5861027190332326,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  0,
+                  96
+                ]
+              ],
+              "count": 96,
+              "detected": 96
+            },
+            "benign": {
+              "count": 3183,
+              "false_positives": 30
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  12,
+                  84
+                ]
+              ],
+              "count": 96,
+              "detected": 84
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  91,
+                  5
+                ]
+              ],
+              "count": 96,
+              "detected": 5
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  89,
+                  7
+                ]
+              ],
+              "count": 96,
+              "detected": 7
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  0,
+                  96
+                ]
+              ],
+              "count": 96,
+              "detected": 96
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  95,
+                  1
+                ]
+              ],
+              "count": 96,
+              "detected": 1
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  94,
+                  2
+                ]
+              ],
+              "count": 96,
+              "detected": 2
+            }
+          },
+          "final_test_metrics_computed": false,
+          "latency_ms": {
+            "native": {
+              "p50": 0.015772,
+              "p95": 0.016408799999999998,
+              "p99": 0.017328950000000017
+            },
+            "onnxruntime": {
+              "p50": 0.009505,
+              "p95": 0.010407350000000001,
+              "p99": 0.010735220000000014
+            },
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "partition": "val",
+          "pr_auc_average_precision": 0.7621378821336362,
+          "precision": 0.9065420560747663,
+          "recall": 0.4330357142857143,
+          "roc_auc": 0.9267619178522808,
+          "rows": 3855
+        }
+      }
+    },
+    "optimizer_seconds": 0.573298903007526,
+    "reference_optimizer_seconds": 0.5692723999945883,
+    "test_metrics_computed": false,
+    "wall_seconds": 47.44991707801819
+  },
+  "production_data_training_hours": 0,
+  "production_ready": false,
+  "purpose": "Upgraded three-source data preparation and five-epoch offline pilot; no formal session or champion promotion",
+  "readiness": {
+    "checks": [
+      {
+        "detail": "Real lab pilot requires a bound capture/observer provenance file; synthetic/demo cannot certify readiness",
+        "id": "provenance",
+        "pass": true
+      },
+      {
+        "detail": "Provenance references this immutable dataset",
+        "id": "provenance_binding",
+        "pass": true
+      },
+      {
+        "detail": {
+          "actual": 19275,
+          "minimum": 15000
+        },
+        "id": "volume",
+        "pass": true
+      },
+      {
+        "detail": {
+          "coverage": 1.0,
+          "known": 19275,
+          "unknown": 0
+        },
+        "id": "reviewed_labels",
+        "pass": true
+      },
+      {
+        "detail": "No ambiguous or ungrouped observation can be approved",
+        "id": "approved_identity",
+        "pass": true
+      },
+      {
+        "detail": "Trusted source/request identity coverage; this does not prove topology attribution acceptance",
+        "id": "identity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "ADMIN": 3688,
+          "STAFF": 7384,
+          "STUDENT": 7384,
+          "UNKNOWN": 819
+        },
+        "id": "roles",
+        "pass": true
+      },
+      {
+        "detail": {
+          "NGINX": 19275,
+          "STUDENT_AUDIT": 19275,
+          "SURICATA": 42006
+        },
+        "id": "sources",
+        "pass": true
+      },
+      {
+        "detail": "Reviewed benign reads, mutations and hard-negative HTTP errors must all exist",
+        "id": "http_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "accepted": 80556,
+          "duplicates": 0
+        },
+        "id": "parser_quality",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cutoffs": [
+            1793158031.0849135,
+            1793159071.4455955
+          ],
+          "embargo_seconds": 300,
+          "group_columns": [
+            "campaign_key",
+            "client_key",
+            "user_key",
+            "session_key"
+          ],
+          "groups": 15,
+          "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+          "reviewed_rows": {
+            "test": 3855,
+            "train": 11565,
+            "val": 3855
+          }
+        },
+        "id": "temporal_split",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 288,
+          "benign": 9549,
+          "brute_force": 288,
+          "cmd_injection": 288,
+          "path_traversal": 288,
+          "scanner_recon": 288,
+          "sqli": 288,
+          "xss": 288
+        },
+        "id": "train_classes",
+        "pass": true
+      },
+      {
+        "detail": 9,
+        "id": "train_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 96,
+          "benign": 3183,
+          "brute_force": 96,
+          "cmd_injection": 96,
+          "path_traversal": 96,
+          "scanner_recon": 96,
+          "sqli": 96,
+          "xss": 96
+        },
+        "id": "val_classes",
+        "pass": true
+      },
+      {
+        "detail": 3,
+        "id": "val_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 96,
+          "benign": 3183,
+          "brute_force": 96,
+          "cmd_injection": 96,
+          "path_traversal": 96,
+          "scanner_recon": 96,
+          "sqli": 96,
+          "xss": 96
+        },
+        "id": "test_classes",
+        "pass": true
+      },
+      {
+        "detail": 3,
+        "id": "test_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_identities": 0
+        },
+        "id": "identity_disjoint",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variant_rows": 0,
+          "distinct_scripted_views": 84,
+          "missing_variant_rows": 0
+        },
+        "id": "heldout_variants",
+        "pass": true
+      },
+      {
+        "detail": "edge_masked_v1",
+        "id": "input_availability_profile",
+        "pass": true
+      },
+      {
+        "detail": {
+          "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+          "checksum_validation": "disabled only for loopback capture/offload checksums",
+          "config_sha256": "f5c53737a7478e5edb62395bd5b9f8f8bdce229a1ec010781221838262a3c207",
+          "eve_sha256": "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19",
+          "event_counts": {
+            "alert": 3456,
+            "flow": 19275,
+            "http": 19274,
+            "stats": 1
+          },
+          "format_version": 1,
+          "http_headers": "response headers transiently through private Unix socket; only X-Request-Id persisted; query/UA redacted before disk; no body dump",
+          "limits": [
+            "Real TCP over loopback, not a production network benchmark",
+            "Closed flow totals are available only after flow close; pipeline uses past completed client flow context"
+          ],
+          "pcap_sha256": "a98320cec297376522bbcb12c43bb73323382f07841fa98b0ad30a749196b07e",
+          "repository_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+          "request_ids": 19274,
+          "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+          "signature_counts": {
+            "1000001": 1200,
+            "1000002": 201,
+            "1000003": 480,
+            "1000004": 228,
+            "1000005": 480,
+            "1000006": 228,
+            "1000007": 480,
+            "1000008": 138,
+            "1000009": 21
+          },
+          "source": "offline real packet capture",
+          "status": "PASS"
+        },
+        "id": "real_eve_evidence",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 11564,
+          "total": 11565
+        },
+        "id": "train_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 9757,
+          "reserved_delay_seconds": 65,
+          "total": 11565
+        },
+        "id": "train_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 9,
+          "minimum_seconds": 420.58282709121704
+        },
+        "id": "train_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 3855,
+          "total": 3855
+        },
+        "id": "val_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 3233,
+          "reserved_delay_seconds": 65,
+          "total": 3855
+        },
+        "id": "val_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 3,
+          "minimum_seconds": 420.23167610168457
+        },
+        "id": "val_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 3855,
+          "total": 3855
+        },
+        "id": "test_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 3236,
+          "reserved_delay_seconds": 65,
+          "total": 3855
+        },
+        "id": "test_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 3,
+          "minimum_seconds": 420.1364288330078
+        },
+        "id": "test_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": "Rule facts and identities are not model inputs",
+        "id": "rule_free_features",
+        "pass": true
+      },
+      {
+        "detail": "Feature order and implementation fingerprint match the current source",
+        "id": "feature_contract",
+        "pass": true
+      },
+      {
+        "detail": {
+          "nonfinite": 0,
+          "vectors": 19275
+        },
+        "id": "finite_vectors",
+        "pass": true
+      },
+      {
+        "detail": {
+          "mismatched_vectors": 0
+        },
+        "id": "offline_replay_parity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "complete_rows": 6213,
+          "total": 19275
+        },
+        "id": "window_300s_depth",
+        "pass": true
+      }
+    ],
+    "constant_feature_columns": [
+      "digit_ratio",
+      "dollar",
+      "gt",
+      "lt",
+      "object_identity_available",
+      "parameter_count",
+      "percent",
+      "pipe",
+      "query_entropy",
+      "query_length",
+      "query_lexical_available",
+      "query_original_available",
+      "query_original_length",
+      "query_original_operator_count",
+      "query_original_parameter_count",
+      "query_original_percent_count",
+      "query_original_quote_count",
+      "quote_double",
+      "quote_single",
+      "semicolon",
+      "sqli_keywords",
+      "traversal_tokens",
+      "xss_tokens",
+      "method_PUT",
+      "method_PATCH",
+      "method_DELETE",
+      "method_CONNECT",
+      "method_TRACE",
+      "method_OTHER",
+      "role_ANONYMOUS",
+      "ua_Chrome",
+      "ua_Chromium",
+      "ua_Safari",
+      "ua_Edge",
+      "ua_curl",
+      "ua_wget",
+      "ua_python-requests",
+      "ua_PostmanRuntime",
+      "ua_Go-http-client",
+      "user_agent_missing",
+      "user_agent_unknown",
+      "status_3xx",
+      "status_5xx",
+      "status_missing",
+      "latency_ms_missing",
+      "request_bytes_missing",
+      "response_bytes_missing",
+      "ip_10s_error5_ratio",
+      "ip_10s_api_ratio",
+      "ip_60s_error5_ratio",
+      "ip_60s_api_ratio",
+      "ip_300s_error5_ratio",
+      "ip_300s_api_ratio",
+      "user_10s_error5_ratio",
+      "user_10s_auth_failure_streak",
+      "user_60s_error5_ratio",
+      "user_60s_auth_failure_streak",
+      "user_300s_error5_ratio",
+      "user_300s_auth_failure_streak"
+    ],
+    "data_kind": "lab_capture",
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "feature_count": 148,
+    "format_version": 1,
+    "groups_per_partition": {
+      "test": 3,
+      "train": 9,
+      "val": 3
+    },
+    "implementation_sha256": "0141b359c2c251246e4b85bf039d5b25bae73d1d1bcd36aa9a1829d7fd38a032",
+    "label_distributions": {
+      "test": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      },
+      "train": {
+        "behavioral_anomaly": 288,
+        "benign": 9549,
+        "brute_force": 288,
+        "cmd_injection": 288,
+        "path_traversal": 288,
+        "scanner_recon": 288,
+        "sqli": 288,
+        "xss": 288
+      },
+      "val": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      }
+    },
+    "limits": [
+      "This gate checks offline pilot data readiness, not detection quality or production acceptance",
+      "No training is executed; rule comparison, quality metrics and held-out performance follow training",
+      "Rust preprocessing/inference parity and target-machine endurance remain separate acceptance tasks",
+      "Actual HTTP and PCAP/EVE on isolated loopback fixture; not representative production traffic",
+      "edge_masked_v1 drops query lexical/original counters from every source; hidden query payload families may be indistinguishable to AI",
+      "Completed-client-flow context reserves 65s after packet end; event-time replay is not acceptance of live sensor receipt delays",
+      "420s campaigns with real 620s gaps; three temporal bands and disjoint identities; only one host/topology",
+      "Scenario labels describe intent/expected outcomes; no exploit success or independent human realism review",
+      "No Rust inference, production champion, shadow or firewall enforcement accepted"
+    ],
+    "offline_pilot_training_permitted": true,
+    "partition_time_ranges": {
+      "test": [
+        1793159381.482227,
+        1793159801.648574
+      ],
+      "train": [
+        1793157300.284087,
+        1793157721.004716
+      ],
+      "val": [
+        1793158341.165111,
+        1793158761.408964
+      ]
+    },
+    "policy_sha256": "6f718a189d6624c08e2304b5125576eb54fde552c1eb89add48bc402dd936f6f",
+    "provenance_sha256": "39b9ffb54d2f19235358f641bbfeb81738540dbec0ada3a316b78d05f43b7fc2",
+    "purpose": "offline_lab_pilot",
+    "quality_feature_counts": {
+      "flow_bytes_to_client_missing": 3049,
+      "flow_bytes_to_server_missing": 3049,
+      "flow_duration_seconds_missing": 3049,
+      "flow_packets_to_client_missing": 3049,
+      "flow_packets_to_server_missing": 3049,
+      "ip_10s_context_incomplete": 489,
+      "ip_300s_context_incomplete": 13062,
+      "ip_60s_context_incomplete": 2685,
+      "latency_ms_missing": 0,
+      "request_bytes_missing": 0,
+      "response_bytes_missing": 0,
+      "status_missing": 0,
+      "user_10s_context_incomplete": 1284,
+      "user_300s_context_incomplete": 13650,
+      "user_60s_context_incomplete": 3441,
+      "user_agent_missing": 0
+    },
+    "report_sha256": "b6f55828cc11f1f84c07f03811845acb4e52fbef6ec78266b03622c26e671973",
+    "rows": 19275,
+    "source_files_sha256": {
+      "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+      "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+      "src/idps_ai/cli.py": "514ce715f91647d5bf240fdd628d7355bb52e1b5657c9ca8398ab4917355d3ce",
+      "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+      "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+      "src/idps_ai/data/baseline.py": "da29d8572a798def34d5285b76ad63780c94e6efe7cf15e73de4acae295d00e9",
+      "src/idps_ai/data/campaigns.py": "fb10230dfa4c2f9ce3e0417517e634ed020b96ab9fd1a9ea08be0cd8fd7e9284",
+      "src/idps_ai/data/capacity.py": "822b77e05e25a5444519eb2991fc6a49870a9a37d183d93bd7bdd7d164c00343",
+      "src/idps_ai/data/dataset.py": "ad4061bad556c0b0b56bcd4488cb832453ff91112fb5b42e0e9e33219703983d",
+      "src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+      "src/idps_ai/data/lab_runtime.py": "0d032f6ee481e39f6146aec4627b254adbe67458c10e67867b42dfac096e2d2d",
+      "src/idps_ai/data/pretrain.py": "9d91b95163fd4963b76855e0dc381049431922c4552607def20eb853092a7dc6",
+      "src/idps_ai/data/privacy.py": "2483b597c464b09e7c3261f3e286aea90cac6788b7e48fb536c79c4f286aa184",
+      "src/idps_ai/data/provenance.py": "c6213c080f09111f5feaf800b77c60aa1c4a3428c55d94b71be45ba2b3e5d436",
+      "src/idps_ai/data/readers.py": "715e77a156d8479a317799e11ff262022ed02433ac1025adbaf979633a08eb0d",
+      "src/idps_ai/data/readiness.py": "ec2acffa621bd391714bce6dfc0036ba52c34d9d392d656f6a6b2ab64d9b06e0",
+      "src/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+      "src/idps_ai/data/sensor_decode.py": "3b9da285e3a19f3ac25c038f39bab727731973d4d5d68a96118f23c3f2e429b2",
+      "src/idps_ai/data/sensor_lab.py": "ac679951862c8e813e1c35e75482156a9af33467a9b43f51430eb5197da3708d",
+      "src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+      "src/idps_ai/data/split.py": "e7a4bae3a40101de68555b83e26a6512582b46a0ea0147e7109ab843d758df84",
+      "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+      "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+      "src/idps_ai/export/onnx.py": "649274cd7b32cc654df8a49014af626d07396006ec4323c5a250bbeb519b7031",
+      "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+      "src/idps_ai/features/pipeline.py": "8d60b468ab0d92e61ce8f0b76be3fe77d261533aeffe810a1d7db12d591094bb",
+      "src/idps_ai/inference.py": "b65b34dfe04c9de6e5767571ab571e5752180cb82a59eda4d88e33f2c9253a5d",
+      "src/idps_ai/pilot.py": "53ca5b0922414a7eafd390b2df5c6243de96f32b47a767d9155c30974e5bceb8",
+      "src/idps_ai/smoke.py": "ac32067888c7f288ac15bb58a5d2b64b2e29c17b8faa132c6a42944c5d08e646",
+      "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+      "src/idps_ai/training/models.py": "58790a31712827e8e00390627c49aaf82f9b8cd719c287107c4f63e29278aac6",
+      "src/idps_ai/training/resources.py": "1a6c879843c5933a5e5377ff85fdc07f104f481fdaf192ce951ea8c98e938227",
+      "src/idps_ai/training/runner.py": "9f3619e13db6de9338c911ae76915e020626136ac3a597ff31592d4e77ae7ce2",
+      "src/idps_ai/training/session.py": "63d4c4d3f2f661bddf45c23bc2567599cb749232a2c7ca57b69060c7c67c867b"
+    },
+    "status": "READY_FOR_OFFLINE_PILOT",
+    "training_executed": false
+  },
+  "resource_policy": {
+    "cpu_quota_cores": 2,
+    "cpu_quota_systemd": "200%",
+    "formal_checkpoint_seconds": 300,
+    "formal_minutes": 150,
+    "max_threads": 2,
+    "memory_max_bytes": 12884901888,
+    "memory_swap_max": 0,
+    "scope": "Entire pilot user service; formal launcher reads back controllers. Capture runs in the permitted Codex context because unconfined user service cannot create a network namespace on this host"
+  },
+  "scope": {
+    "format_version": 1,
+    "inputs": [
+      {
+        "excluded_outside_declared_capture": 1,
+        "file": "00-student.jsonl",
+        "kept": 19275,
+        "sha256": "0079557f38868a0651b4bed6263d42132cf7b1c392303305478eaf3270bc630f",
+        "source": "student",
+        "source_sha256": "1c9ba5d6d5edf049e7735f7bdf8ec1a7136bcd6551a678d3d7df57ee95c9fe95"
+      },
+      {
+        "excluded_outside_declared_capture": 1,
+        "file": "01-nginx.jsonl",
+        "kept": 19275,
+        "sha256": "8ffc6e0a00e0f2cf8b0be792e0ddca124b4e73a0e8d3e7df8e499bcb5923b288",
+        "source": "nginx",
+        "source_sha256": "d5e249a193f2b53a95f648d20bf33b9ffb1fc1bec5d7594f83f97db0ca056247"
+      },
+      {
+        "excluded_outside_declared_capture": 0,
+        "file": "02-suricata.jsonl",
+        "kept": 42006,
+        "sha256": "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19",
+        "source": "suricata",
+        "source_sha256": "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19"
+      }
+    ],
+    "observer_sha256": "1dba8f92f1e940d53f72a361d79aaae6be8becd08189d3456ca10ff23dd6c592",
+    "policy": "Student/Nginx: exact observer IDs including pending; Suricata: every record from the private bounded PCAP, including benign HTTP/flow/stats; never filter by label/status/rule",
+    "requests": 19275
+  },
+  "sensor": {
+    "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "checksum_validation": "disabled only for loopback capture/offload checksums",
+    "config_sha256": "f5c53737a7478e5edb62395bd5b9f8f8bdce229a1ec010781221838262a3c207",
+    "eve_sha256": "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19",
+    "event_counts": {
+      "alert": 3456,
+      "flow": 19275,
+      "http": 19274,
+      "stats": 1
+    },
+    "format_version": 1,
+    "http_headers": "response headers transiently through private Unix socket; only X-Request-Id persisted; query/UA redacted before disk; no body dump",
+    "limits": [
+      "Real TCP over loopback, not a production network benchmark",
+      "Closed flow totals are available only after flow close; pipeline uses past completed client flow context"
+    ],
+    "pcap_sha256": "a98320cec297376522bbcb12c43bb73323382f07841fa98b0ad30a749196b07e",
+    "repository_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+    "request_ids": 19274,
+    "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "signature_counts": {
+      "1000001": 1200,
+      "1000002": 201,
+      "1000003": 480,
+      "1000004": 228,
+      "1000005": 480,
+      "1000006": 228,
+      "1000007": 480,
+      "1000008": 138,
+      "1000009": 21
+    },
+    "source": "offline real packet capture",
+    "status": "PASS"
+  },
+  "source_commit": "b9617ccd6afeebf0207e5fd2fd220e8639f61eea",
+  "source_files_sha256": {
+    "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+    "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+    "src/idps_ai/cli.py": "514ce715f91647d5bf240fdd628d7355bb52e1b5657c9ca8398ab4917355d3ce",
+    "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+    "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+    "src/idps_ai/data/baseline.py": "da29d8572a798def34d5285b76ad63780c94e6efe7cf15e73de4acae295d00e9",
+    "src/idps_ai/data/campaigns.py": "fb10230dfa4c2f9ce3e0417517e634ed020b96ab9fd1a9ea08be0cd8fd7e9284",
+    "src/idps_ai/data/capacity.py": "822b77e05e25a5444519eb2991fc6a49870a9a37d183d93bd7bdd7d164c00343",
+    "src/idps_ai/data/dataset.py": "ad4061bad556c0b0b56bcd4488cb832453ff91112fb5b42e0e9e33219703983d",
+    "src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+    "src/idps_ai/data/lab_runtime.py": "0d032f6ee481e39f6146aec4627b254adbe67458c10e67867b42dfac096e2d2d",
+    "src/idps_ai/data/pretrain.py": "9d91b95163fd4963b76855e0dc381049431922c4552607def20eb853092a7dc6",
+    "src/idps_ai/data/privacy.py": "2483b597c464b09e7c3261f3e286aea90cac6788b7e48fb536c79c4f286aa184",
+    "src/idps_ai/data/provenance.py": "c6213c080f09111f5feaf800b77c60aa1c4a3428c55d94b71be45ba2b3e5d436",
+    "src/idps_ai/data/readers.py": "715e77a156d8479a317799e11ff262022ed02433ac1025adbaf979633a08eb0d",
+    "src/idps_ai/data/readiness.py": "ec2acffa621bd391714bce6dfc0036ba52c34d9d392d656f6a6b2ab64d9b06e0",
+    "src/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+    "src/idps_ai/data/sensor_decode.py": "3b9da285e3a19f3ac25c038f39bab727731973d4d5d68a96118f23c3f2e429b2",
+    "src/idps_ai/data/sensor_lab.py": "ac679951862c8e813e1c35e75482156a9af33467a9b43f51430eb5197da3708d",
+    "src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+    "src/idps_ai/data/split.py": "e7a4bae3a40101de68555b83e26a6512582b46a0ea0147e7109ab843d758df84",
+    "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+    "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+    "src/idps_ai/export/onnx.py": "649274cd7b32cc654df8a49014af626d07396006ec4323c5a250bbeb519b7031",
+    "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+    "src/idps_ai/features/pipeline.py": "8d60b468ab0d92e61ce8f0b76be3fe77d261533aeffe810a1d7db12d591094bb",
+    "src/idps_ai/inference.py": "b65b34dfe04c9de6e5767571ab571e5752180cb82a59eda4d88e33f2c9253a5d",
+    "src/idps_ai/pilot.py": "53ca5b0922414a7eafd390b2df5c6243de96f32b47a767d9155c30974e5bceb8",
+    "src/idps_ai/smoke.py": "ac32067888c7f288ac15bb58a5d2b64b2e29c17b8faa132c6a42944c5d08e646",
+    "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+    "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+    "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+    "src/idps_ai/training/models.py": "58790a31712827e8e00390627c49aaf82f9b8cd719c287107c4f63e29278aac6",
+    "src/idps_ai/training/resources.py": "1a6c879843c5933a5e5377ff85fdc07f104f481fdaf192ce951ea8c98e938227",
+    "src/idps_ai/training/runner.py": "9f3619e13db6de9338c911ae76915e020626136ac3a597ff31592d4e77ae7ce2",
+    "src/idps_ai/training/session.py": "63d4c4d3f2f661bddf45c23bc2567599cb749232a2c7ca57b69060c7c67c867b"
+  },
+  "source_state": "AI/docs changes uncommitted; processing/training source hashes frozen in readiness",
+  "student_build_jar_sha256": "a726aae0364ddcde8c74d2fd5532d8c46d856f099822ce4bf9f35a8d0938067b",
+  "validation": {
+    "cargo_test": "NOT_RUN:Security source unchanged",
+    "compileall": "PASS",
+    "contract": "PASS",
+    "derived_secret_screening": "PASS",
+    "formal_session": "NOT_RUN",
+    "format": "PASS",
+    "lab_cleanup": {
+      "database": "already_stopped",
+      "student": "already_stopped"
+    },
+    "mvn_test": "NOT_RUN:Student source unchanged; isolated build and actual HTTP executed",
+    "onnx": "PASS:all prepared rows for each model",
+    "pip_check": "PASS",
+    "production_acceptance": "NOT_RUN",
+    "protected_files": 356,
+    "protected_sha_unchanged": true,
+    "readiness": "PASS",
+    "resume": "PASS:2+3 epochs versus5 continuous,all3 models",
+    "ruff": "PASS",
+    "test_log_sha256": "ab8ab10dcb911627b9221793ec90c0c1874bf7dc8ad039683ef17589b7a26248",
+    "tests": "PASS:77 passed,0 skipped",
+    "scope_review": "PASS: AI/docs only, protected356SHA unchanged, no artifact/credential in Git candidates"
+  }
+}
