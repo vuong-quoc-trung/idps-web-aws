@@ -5,8 +5,6 @@
  */
 import { lazy, Suspense, type JSX } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import StudentAcademicPage from './StudentAcademicPage';
 import AppHeader from '../components/AppHeader';
 import './CatalogPage.css';
 
@@ -88,11 +86,6 @@ function TabSpinner() {
 }
 
 export default function CatalogPage() {
-  const { user } = useAuth();
-  return user?.role === 'STUDENT' ? <StudentAcademicPage /> : <ManagementCatalogPage />;
-}
-
-function ManagementCatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlTab = searchParams.get('tab') as TabId;
   const activeTab: TabId = TABS.some(t => t.id === urlTab) ? urlTab : 'faculty';

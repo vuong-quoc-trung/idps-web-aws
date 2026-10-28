@@ -654,6 +654,3 @@
   .completion-card-header { flex-direction: column; }
   .completion-card-right { width: 100%; justify-content: space-between; }
 }
-
-.completion-compact .completion-progress-track, .completion-compact .completion-card-desc { display: none; }
-.completion-compact.dashboard-completion-card { padding: 18px 24px; }

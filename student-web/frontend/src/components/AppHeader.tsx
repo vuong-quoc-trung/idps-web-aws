@@ -17,11 +17,13 @@ const ROLE_CLASSES: Record<CurrentUser['role'], string> = {
 };
 
 function Avatar({ user, size = 28 }: { user: CurrentUser; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  return <div className="avatar" style={{ width: size, height: size, overflow: 'hidden' }} aria-hidden="true">
-    {user.avatarUrl && !failed ? <img src={user.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setFailed(true)} /> :
-      <span>{(user.fullName || user.username).trim().split(/\s+/).slice(-2).map(part => part[0]).join('').toUpperCase()}</span>}
-  </div>;
+  const initials = (user.fullName ?? user.username)
+    .split(' ').map(w => w[0]).slice(-2).join('').toUpperCase();
+  return (
+    <div className="avatar" style={{ width: size, height: size }} aria-hidden="true">
+      <span>{initials}</span>
+    </div>
+  );
 }
 
 function ThemeToggleBtn() {
@@ -204,8 +206,20 @@ export default function AppHeader() {
 
         {/* Logo */}
         <Link to="/" className="header-logo" id="header-logo" aria-label="Trang chủ">
-          <div className="header-logo-icon"><img src="/images/dut-logo.jpg" alt="Logo Đại học Bách khoa Đà Nẵng" /></div>
-          <span className="header-logo-text">DUT - THÔNG TIN SINH VIÊN</span>
+          <div className="header-logo-icon">
+            <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="7" fill="url(#hg2)"/>
+              <path d="M16 7L7 12v8l9 5 9-5v-8L16 7z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+              <path d="M16 7v13M7 12l9 5 9-5" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+              <defs>
+                <linearGradient id="hg2" x1="0" y1="0" x2="32" y2="32">
+                  <stop stopColor="#007acc"/>
+                  <stop offset="1" stopColor="#005f9e"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span className="header-logo-text">Student Web</span>
         </Link>
 
         {/* Desktop Nav */}

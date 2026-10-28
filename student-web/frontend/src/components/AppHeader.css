@@ -365,18 +365,3 @@
   .header-inner       { gap: var(--space-2); }
 }
 
-
-/* DUT branding: preserve the complete square logo without cropping. */
-.header-logo-icon { width: 34px; height: 34px; border-radius: 4px; background: #fff; }
-.header-logo-icon img, .avatar-dut img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.avatar.avatar-dut { background: #fff; border-radius: 4px; overflow: hidden; }
-.header-logo-text { max-width: 210px; font-size: .8rem; line-height: 1.35; }
-@media (max-width: 1100px) {
-  .app-header .mobile-menu-toggle { display: flex; }
-  .app-header .header-nav { display: none; }
-}
-@media (max-width: 480px) {
-  .header-logo-text { max-width: 145px; font-size: .65rem; }
-  .header-inner { padding-inline: 12px; }
-  .header-logo-icon { width: 28px; height: 28px; }
-}

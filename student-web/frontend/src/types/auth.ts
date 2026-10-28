@@ -10,7 +10,6 @@ export interface CurrentUser {
   role: 'ADMIN' | 'STAFF' | 'STUDENT';
   enabled: boolean;
   fullName?: string;
-  avatarUrl?: string;
   studentCode?: string;
 }
 

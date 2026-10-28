@@ -5,8 +5,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: "127.0.0.1",
-    strictPort: true,
     proxy: {
       // Proxy /api/* → Spring Boot backend (same-origin CSRF requirement)
       '/api': {
