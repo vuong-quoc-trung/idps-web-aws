@@ -181,7 +181,7 @@ def test_deadline_stops_at_a_checkpoint_and_can_resume(prepared, tmp_path):
     resumed = train(prepared, run, config, epochs=1, resume_from=run, max_threads=1)
     assert resumed["epoch"] == 1
     assert resumed["resources"]["peak_tree_rss_bytes"] < 16_000_000_000
-    assert resumed["resources"]["address_space_limit_effective"] <= 12 * 1024**3
+    assert resumed["resources"]["address_space_limit_effective"] <= 16 * 1024**3
 
 
 def test_resume_mid_epoch_does_not_repeat_or_skip_optimizer_steps(prepared, tmp_path):

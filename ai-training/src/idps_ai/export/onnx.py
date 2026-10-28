@@ -22,11 +22,36 @@ def graph_for(model):
         numpy_helper.from_array(array, name) for name, array in model.parameters.items()
     ]
     nodes = [
-        helper.make_node("Gemm", ["input", "W1", "b1"], ["hidden_linear"]),
-        helper.make_node("Relu", ["hidden_linear"], ["hidden"]),
-        helper.make_node("Gemm", ["hidden", "W2", "b2"], ["output_linear"]),
+        helper.make_node("Cast", [name], [name + "_fp64"], to=TensorProto.DOUBLE)
+        for name in model.parameters
     ]
-    if model.kind == "mlp":
+
+    def affine_nodes(source, weight, bias, target):
+        nodes.extend(
+            [
+                helper.make_node("Cast", [source], [target + "_input64"], to=TensorProto.DOUBLE),
+                helper.make_node(
+                    "MatMul", [target + "_input64", weight + "_fp64"], [target + "_dot64"]
+                ),
+                helper.make_node("Add", [target + "_dot64", bias + "_fp64"], [target + "_sum64"]),
+                helper.make_node("Cast", [target + "_sum64"], [target], to=TensorProto.FLOAT),
+            ]
+        )
+
+    affine_nodes("input", "W1", "b1", "hidden_linear")
+    nodes.append(helper.make_node("Relu", ["hidden_linear"], ["hidden"]))
+    output_source = "hidden"
+    if model.kind == "residual":
+        affine_nodes("hidden", "Wr", "br", "residual_linear")
+        nodes.extend(
+            [
+                helper.make_node("Add", ["residual_linear", "hidden"], ["residual_sum"]),
+                helper.make_node("Relu", ["residual_sum"], ["residual_hidden"]),
+            ]
+        )
+        output_source = "residual_hidden"
+    affine_nodes(output_source, "W2", "b2", "output_linear")
+    if model.kind != "autoencoder":
         initializers += [
             numpy_helper.from_array(np.array(0, np.int64), "benign_index"),
             numpy_helper.from_array(np.array(1, np.float32), "one"),
@@ -70,17 +95,25 @@ def graph_for(model):
     return result
 
 
-def cpu_session(path, max_threads=1):
+def session_options(max_threads=8):
     options = ort.SessionOptions()
-    options.intra_op_num_threads = max(1, int(max_threads))
+    if not 1 <= int(max_threads) <= 8:
+        raise PipelineError("ONNX CPU thread count must be1–8")
+    options.intra_op_num_threads = int(max_threads)
     options.inter_op_num_threads = 1
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     options.add_session_config_entry("session.intra_op.allow_spinning", "0")
     options.add_session_config_entry("session.inter_op.allow_spinning", "0")
-    return ort.InferenceSession(str(path), sess_options=options, providers=["CPUExecutionProvider"])
+    return options
 
 
-def infer_bundle(directory, x, max_threads=1):
+def cpu_session(path, max_threads=8):
+    return ort.InferenceSession(
+        str(path), sess_options=session_options(max_threads), providers=["CPUExecutionProvider"]
+    )
+
+
+def infer_bundle(directory, x, max_threads=8):
     directory = Path(directory)
     manifest = load_json(directory / "model_manifest.json")
     for name in ("model.onnx", "feature_spec.json"):
@@ -96,7 +129,9 @@ def infer_bundle(directory, x, max_threads=1):
     return cpu_session(directory / "model.onnx", max_threads).run(None, {"input": values})
 
 
-def export_bundle(dataset, checkpoint, output, max_threads=1):
+def export_bundle(dataset, checkpoint, output, max_threads=8, evaluation_partition="test"):
+    if evaluation_partition not in ("val", "test"):
+        raise PipelineError("Invalid evaluation partition")
     dataset, output = Path(dataset).resolve(), Path(output).resolve()
     data_manifest = verify_dataset(dataset, "prepared")
     loaded = load_checkpoint(checkpoint)
@@ -115,12 +150,15 @@ def export_bundle(dataset, checkpoint, output, max_threads=1):
         spec = load_json(work / "feature_spec.json")
         # Parity covers every prepared row, including attacks excluded from AE
         # fitting. This is inference-only; anomaly weights still learn benign only.
-        arrays = load_arrays(dataset, work, "mlp", model.input_dim, 12 * 1024**3)
+        arrays = load_arrays(dataset, work, "mlp", model.input_dim, 16 * 1024**3)
         val_scores, _ = predict_batches(model, arrays["val"][0])
         calibration = threshold_at_fpr((arrays["val"][1] != 0).astype(np.int64), val_scores)
-        test_scores, test_probabilities = predict_batches(model, arrays["test"][0])
+        test_scores, test_probabilities = predict_batches(model, arrays[evaluation_partition][0])
         metrics = evaluate(
-            arrays["test"][1], test_scores, calibration["threshold"], test_probabilities
+            arrays[evaluation_partition][1],
+            test_scores,
+            calibration["threshold"],
+            test_probabilities,
         )
         onnx.save_model(graph_for(model), work / "model.onnx")
         session = cpu_session(work / "model.onnx", max_threads)
@@ -152,6 +190,8 @@ def export_bundle(dataset, checkpoint, output, max_threads=1):
                 lambda x: session.run(None, {"input": x}), arrays["test"][0][:1]
             ),
         }
+        metrics["partition"] = evaluation_partition
+        metrics["final_test_metrics_computed"] = evaluation_partition == "test"
         atomic_json(work / "evaluation.json", metrics)
         atomic_json(work / "golden_vectors.json", golden)
         result = {
@@ -166,6 +206,10 @@ def export_bundle(dataset, checkpoint, output, max_threads=1):
                     "golden_vectors.json",
                 )
             },
+            "evaluation_partition": evaluation_partition,
+            "final_test_metrics_computed": evaluation_partition == "test",
+            "input_profile": spec.get("input_profile", "native"),
+            "flow_semantics": spec.get("flow_semantics"),
             "dataset_sha256": data_manifest["dataset_sha256"],
             "config_sha256": state["config_sha256"],
             "checkpoint_manifest_sha256": file_sha256(loaded.path / "manifest.json"),
@@ -177,10 +221,11 @@ def export_bundle(dataset, checkpoint, output, max_threads=1):
             "classes": list(CLASSES),
             "input_shape": [None, model.input_dim],
             "input_dtype": "float32",
+            "affine_accumulation": model.metadata()["affine_accumulation"],
             "opset": 18,
             "ir_version": 9,
             "score_semantics": "1 - P(benign)"
-            if model.kind == "mlp"
+            if model.kind != "autoencoder"
             else "mean squared reconstruction error; not probability of attack",
             "environment": environment_identity(),
             "runtime": "ONNX Runtime CPUExecutionProvider",
@@ -197,7 +242,14 @@ def export_bundle(dataset, checkpoint, output, max_threads=1):
         }
         atomic_json(work / "model_manifest.json", result)
         (work / "MODEL_CARD.md").write_text(
-            "# Offline IDPS candidate\n\nThis artifact is an offline candidate. Synthetic S0 results validate the pipeline and resume only.\nNo production FPR, real-traffic quality, Rust preprocessing parity or deployment has been accepted.\nRead feature_spec.json availability limits, validation calibration and evaluation.json before reuse.\n"
+            f"# Offline IDPS candidate: {model.kind}\n\n"
+            f"Dataset SHA-256: {data_manifest['dataset_sha256']}\n\n"
+            f"Input profile: {spec.get('input_profile', 'native')}; feature version: {spec['feature_version']}.\n\n"
+            f"Evaluation partition: {evaluation_partition}; final test metrics computed: {evaluation_partition == 'test'}.\n\n"
+            "Threshold calibration uses validation only. Validation metrics share calibration data and are preliminary.\n"
+            "Read feature_spec.json for missing query/flow semantics and evaluation.json for per-family metrics.\n"
+            "No production FPR, Rust/live receipt-time parity, champion promotion or enforcement has been accepted.\n"
+            "A lab capture with fictional accounts is not representative production traffic.\n"
         )
         shutil.rmtree(work / "cache")
         for file in work.iterdir():

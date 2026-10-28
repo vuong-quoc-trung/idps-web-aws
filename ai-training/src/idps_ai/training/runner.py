@@ -26,7 +26,7 @@ from idps_ai.data.dataset import iter_rows, verify_dataset
 from idps_ai.training.checkpoint import RunLock, load_checkpoint, save_checkpoint
 from idps_ai.training.evaluation import threshold_at_fpr
 from idps_ai.training.models import Model
-from idps_ai.training.resources import resource_envelope
+from idps_ai.training.resources import cgroup_readback, resource_envelope
 
 
 def environment_identity():
@@ -93,7 +93,7 @@ def predict_batches(model, x, batch_size=512):
     for start in range(0, len(x), batch_size):
         score, output = model.predict(x[start : start + batch_size])
         scores.append(score)
-        if model.kind == "mlp":
+        if model.kind != "autoencoder":
             outputs.append(output)
     return np.concatenate(scores), np.concatenate(outputs) if outputs else None
 
@@ -109,8 +109,8 @@ def train(
     epochs=20,
     resume_from=None,
     max_duration_minutes=150,
-    max_threads=4,
-    memory_limit_gib=12,
+    max_threads=8,
+    memory_limit_gib=16,
     checkpoint_every_seconds=300,
     max_steps=None,
 ):
@@ -327,6 +327,7 @@ def train(
                 peak_rss_bytes=memory.peak_rss_bytes, peak_tree_rss_bytes=memory.peak_tree_rss_bytes
             )
             latest = checkpoint()
+            resources["cgroup_v2_final"] = cgroup_readback()
             report = {
                 "session_id": session_id,
                 "process_id": os.getpid(),

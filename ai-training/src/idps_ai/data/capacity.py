@@ -13,7 +13,7 @@ from idps_ai.data.dataset import iter_rows, verify_dataset
 from idps_ai.data.snapshot import new_destination
 
 
-def capacity_check(dataset, output, max_threads=2, effective_cpus_before_cap=None):
+def capacity_check(dataset, output, max_threads=8, effective_cpus_before_cap=None):
     manifest = verify_dataset(dataset, "prepared")
     output = new_destination(output)
     current_affinity = sorted(os.sched_getaffinity(0))
@@ -48,7 +48,7 @@ def capacity_check(dataset, output, max_threads=2, effective_cpus_before_cap=Non
         "available_cpus_before_cap": available_cpus,
         "current_affinity": current_affinity,
         "requested_max_threads": max_threads,
-        "proposed_memory_limit_gib": 12,
+        "proposed_memory_limit_gib": 16,
         "disk_free_bytes": free,
         "feature_rows": rows,
         "feature_count": n_features,

@@ -1,9 +1,11 @@
 """Limits affect this training process only; never changes IDPS or host services."""
 
+import json
 import os
 import platform
 import resource
 from contextlib import contextmanager
+from pathlib import Path
 
 import psutil
 
@@ -18,9 +20,9 @@ def effective_cpus():
     )
 
 
-def configure_threads(requested=4):
+def configure_threads(requested=8):
     count = len(effective_cpus())
-    threads = max(1, min(int(requested), max(1, count // 2)))
+    threads = max(1, min(int(requested), 8, max(1, count // 2)))
     for name in (
         "OMP_NUM_THREADS",
         "MKL_NUM_THREADS",
@@ -31,6 +33,30 @@ def configure_threads(requested=4):
         os.environ[name] = str(threads)
     os.environ["OMP_MAX_ACTIVE_LEVELS"] = "1"
     return threads
+
+
+def cgroup_readback():
+    try:
+        membership = Path("/proc/self/cgroup").read_text().strip().split(":", 2)[2]
+        root = Path("/sys/fs/cgroup") / membership.lstrip("/")
+        return {
+            "path": membership,
+            **{
+                name: (root / name).read_text().strip()
+                for name in (
+                    "cpu.max",
+                    "memory.max",
+                    "memory.high",
+                    "memory.swap.max",
+                    "memory.current",
+                    "memory.peak",
+                    "memory.events",
+                    "cpu.stat",
+                )
+            },
+        }
+    except (OSError, IndexError):
+        return {"status": "unavailable"}
 
 
 class MemoryGuard:
@@ -54,9 +80,9 @@ class MemoryGuard:
 
 
 @contextmanager
-def resource_envelope(max_threads=4, memory_limit_gib=12):
-    if not 0.125 <= float(memory_limit_gib) <= 12:
-        raise PipelineError("Memory limit must be 0.125–12 GiB (strictly below 16 GB)")
+def resource_envelope(max_threads=8, memory_limit_gib=16):
+    if not 0.125 <= float(memory_limit_gib) <= 16:
+        raise PipelineError("Memory limit must be 0.125–16 GiB (explicit operator ceiling)")
     if max_threads < 1:
         raise PipelineError("max-threads must be positive")
     cpus = effective_cpus()
@@ -65,8 +91,32 @@ def resource_envelope(max_threads=4, memory_limit_gib=12):
     limit = int(memory_limit_gib * 1024**3)
     if old_as[0] != resource.RLIM_INFINITY:
         limit = min(limit, old_as[0])
+    if limit > psutil.virtual_memory().total:
+        raise PipelineError("Requested RAM limit exceeds OS-visible host memory")
     guard = MemoryGuard(limit)
+    cgroup = cgroup_readback()
+    if os.environ.get("IDPS_AI_CGROUP_POLICY"):
+        policy = json.loads(os.environ["IDPS_AI_CGROUP_POLICY"])
+        try:
+            quota, period = cgroup["cpu.max"].split()
+            valid = (
+                quota != "max"
+                and int(quota) / int(period) <= policy["cpu_quota_cores"]
+                and int(cgroup["memory.max"]) <= policy["memory_max_bytes"]
+                and cgroup["memory.swap.max"] == "0"
+                and (
+                    policy.get("memory_high_bytes") is None
+                    or int(cgroup["memory.high"]) <= policy["memory_high_bytes"]
+                )
+            )
+        except (KeyError, ValueError):
+            valid = False
+        if not valid:
+            raise PipelineError(
+                "Delegated CPU/RAM/swap cgroup limits failed readback; refusing training"
+            )
     report = {
+        "cgroup_v2": cgroup,
         "python": platform.python_version(),
         "platform": platform.platform(),
         "effective_cpus_before_cap": cpus,
@@ -95,3 +145,98 @@ def resource_envelope(max_threads=4, memory_limit_gib=12):
         resource.setrlimit(resource.RLIMIT_AS, old_as)
         if hasattr(os, "sched_setaffinity"):
             os.sched_setaffinity(0, set(cpus))
+
+
+def probe_resources(output, max_threads=8, memory_limit_gib=16):
+    """Read actual controller/thread limits; no dataset, optimizer or fitted model."""
+    from idps_ai.common import atomic_json
+
+    with resource_envelope(max_threads, memory_limit_gib) as (_, report):
+        import numpy as np
+        from threadpoolctl import threadpool_info
+
+        from idps_ai.export.onnx import session_options
+
+        # Load BLAS but perform no training or model creation.
+        np.zeros((1,), dtype=np.float32)
+        options = session_options(report["max_threads"])
+        report.update(
+            purpose="resource guard initialization only",
+            optimizer_steps=0,
+            training_executed=False,
+            thread_environment={
+                name: os.environ[name]
+                for name in (
+                    "OMP_NUM_THREADS",
+                    "OPENBLAS_NUM_THREADS",
+                    "MKL_NUM_THREADS",
+                    "NUMEXPR_NUM_THREADS",
+                )
+            },
+            blas_pools=threadpool_info(),
+            onnx_intra_op_threads=options.intra_op_num_threads,
+            onnx_inter_op_threads=options.inter_op_num_threads,
+            onnx_execution_mode=str(options.execution_mode),
+        )
+        if any(p["num_threads"] > report["max_threads"] for p in report["blas_pools"]):
+            raise PipelineError("BLAS pool exceeds the requested CPU budget")
+    atomic_json(output, report)
+    return report
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Initialize a resource guard without training")
+    parser.add_argument("--probe-output", required=True)
+    parser.add_argument("--cpus", type=int, default=8)
+    parser.add_argument("--memory-limit-gib", type=float, default=16)
+    args = parser.parse_args()
+    probe_resources(args.probe_output, args.cpus, args.memory_limit_gib)
+
+
+def probe_resources(output, max_threads=8, memory_limit_gib=16):
+    """Read actual controller/thread limits; no dataset, optimizer or fitted model."""
+    from idps_ai.common import atomic_json
+
+    with resource_envelope(max_threads, memory_limit_gib) as (_, report):
+        import numpy as np
+        from threadpoolctl import threadpool_info
+
+        from idps_ai.export.onnx import session_options
+
+        np.zeros((1,), dtype=np.float32)
+        options = session_options(report["max_threads"])
+        report.update(
+            purpose="resource guard initialization only",
+            optimizer_steps=0,
+            training_executed=False,
+            thread_environment={
+                name: os.environ[name]
+                for name in (
+                    "OMP_NUM_THREADS",
+                    "OPENBLAS_NUM_THREADS",
+                    "MKL_NUM_THREADS",
+                    "NUMEXPR_NUM_THREADS",
+                )
+            },
+            blas_pools=threadpool_info(),
+            onnx_intra_op_threads=options.intra_op_num_threads,
+            onnx_inter_op_threads=options.inter_op_num_threads,
+            onnx_execution_mode=str(options.execution_mode),
+        )
+        if any(p["num_threads"] > report["max_threads"] for p in report["blas_pools"]):
+            raise PipelineError("BLAS pool exceeds the requested CPU budget")
+    atomic_json(output, report)
+    return report
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Initialize a resource guard without training")
+    parser.add_argument("--probe-output", required=True)
+    parser.add_argument("--cpus", type=int, default=8)
+    parser.add_argument("--memory-limit-gib", type=float, default=16)
+    args = parser.parse_args()
+    probe_resources(args.probe_output, args.cpus, args.memory_limit_gib)

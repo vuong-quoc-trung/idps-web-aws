@@ -17,7 +17,7 @@ from idps_ai.data.synthetic import synthetic_s0
 from idps_ai.training.checkpoint import load_checkpoint
 
 
-def run_s0(output, campaigns=15, requests_per_campaign=64, max_threads=2, memory_limit_gib=12):
+def run_s0(output, campaigns=15, requests_per_campaign=64, max_threads=8, memory_limit_gib=16):
     output = Path(output).resolve()
     if output.exists():
         raise PipelineError("S0 destination already exists; create a new run version")

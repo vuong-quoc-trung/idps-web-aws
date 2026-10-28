@@ -1,32 +1,48 @@
 format_version: 1
-status: planned_not_started
+status: pilot_verified_formal_not_started
 purpose: first_offline_lab_pilot
 entry_gate: READY_FOR_OFFLINE_PILOT
 candidate_models:
-  - {kind: mlp, config: train_config.yaml, input: ai-features-2, hidden_dim: 32}
-  - {kind: autoencoder, config: anomaly_config.yaml, fit_labels: benign_only}
+- kind: mlp
+  config: train_config.yaml
+  input: ai-features-3
+  hidden_dim: 32
+- kind: autoencoder
+  config: anomaly_config.yaml
+  fit_labels: benign_only
+- kind: residual
+  config: residual_config.yaml
+  hidden_dim: 64
+  input: ai-features-3
+  selection: candidate only; no presumed improvement
 initial_total_epochs: 5
 max_session_minutes: 150
-max_threads: 2
-memory_limit_gib: 12
+max_threads: 8
+memory_limit_gib: 16
 checkpoint_every_seconds: 300
 selection_partition: val
 final_evaluation_partition: test
 threshold_target_empirical_fpr: 0.01
-# These are release questions, not achieved scores or pre-training guarantees.
 required_comparisons:
-  - same_split_rule_only_vs_ai_only
-  - rule_plus_ai_at_equal_false_alert_budget
-  - benign_error_and_role_hard_negatives
-  - missing_query_flow_and_actor_ablation
-  - response_status_and_rate_limit_reaction_ablation
-  - per_family_and_per_campaign_error_review
-  - native_vs_onnx_parity
+- same_split_rule_only_vs_ai_only
+- rule_plus_ai_at_equal_false_alert_budget
+- benign_error_and_role_hard_negatives
+- missing_query_flow_and_actor_ablation
+- response_status_and_rate_limit_reaction_ablation
+- per_family_and_per_campaign_error_review
+- native_vs_onnx_parity
 forbidden_shortcuts:
-  - label_from_no_alert_or_status_only
-  - rule_hits_or_identity_as_model_input
-  - timestamp_ip_rewriting_for_split
-  - test_set_threshold_tuning
-  - claiming_zero_day_from_anomaly_score
-  - extending_training_only_to_fill_hours
+- label_from_no_alert_or_status_only
+- rule_hits_or_identity_as_model_input
+- timestamp_ip_rewriting_for_split
+- test_set_threshold_tuning
+- claiming_zero_day_from_anomaly_score
+- extending_training_only_to_fill_hours
 production_release: not_authorized_by_this_pilot
+input_profile: edge_masked_v1
+approved_dataset: .artifacts/upgrade_20261028/dataset-ready/prepared
+approved_readiness: .artifacts/upgrade_20261028/dataset-ready/readiness-resource8/readiness.json
+pilot_report: .artifacts/upgrade_20261028/pilot-ready/pilot-report.json
+arithmetic_contract: FP32 params/activations/gradients/Adam; FP64 affine accumulation
+  then roundFP32
+memory_high_gib: 15

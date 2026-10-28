@@ -10,7 +10,7 @@ training:
   scheduler_decay_steps: 100
   early_stopping_patience: 0
 resources:
-  max_threads: 4
-  memory_limit_gib: 12
+  max_threads: 8
+  memory_limit_gib: 16
   max_duration_minutes: 150
   checkpoint_every_seconds: 300

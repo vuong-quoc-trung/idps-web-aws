@@ -14,7 +14,7 @@ from idps_ai.features.pipeline import FeatureExtractor, implementation_fingerpri
 
 
 class InferencePipeline:
-    def __init__(self, bundle, max_threads=1):
+    def __init__(self, bundle, max_threads=8):
         bundle = Path(bundle)
         self.manifest = load_json(bundle / "model_manifest.json")
         for name in ("model.onnx", "feature_spec.json"):
@@ -33,7 +33,7 @@ class InferencePipeline:
         vector = transform(self.spec, self.extractor.observe(fused_request))
         score, output = self.session.run(None, {"input": vector[np.newaxis, :]})
         above = float(score[0]) >= self.manifest["threshold"]
-        supervised = self.manifest["model_kind"] == "mlp"
+        supervised = self.manifest["model_kind"] != "autoencoder"
         result = {
             "score": float(score[0]),
             "above_threshold": above,
