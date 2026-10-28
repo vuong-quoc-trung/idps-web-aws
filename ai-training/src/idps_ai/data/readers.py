@@ -53,7 +53,29 @@ def canonical_validator():
     return Draft202012Validator(schema, format_checker=FormatChecker())
 
 
-def normalize_record(source, value, key, identity):
+def eve_request_id(http):
+    # Edge overwrites incoming request IDs. Only its response header is trusted.
+    headers = http.get("response_headers") or []
+    values = [
+        h.get("value")
+        for h in headers
+        if isinstance(h, dict) and str(h.get("name", "")).lower() == "x-request-id"
+    ]
+    if values:
+        return (
+            values[0]
+            if len(values) == 1
+            and isinstance(values[0], str)
+            and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", values[0])
+            else None
+        )
+    # Native fixture/approved custom adapters may supply this explicit field.
+    return http.get("request_id")
+
+
+def normalize_record(source, value, key, identity, input_profile="native"):
+    if input_profile not in ("native", "edge_masked_v1"):
+        raise PipelineError("Unsupported input availability profile")
     canonical = source in ("student", "canonical", "postgres-export")
     if canonical:
         value = value.get("canonical", value)
@@ -82,7 +104,7 @@ def normalize_record(source, value, key, identity):
             http_method=http.get("http_method"),
             uri_path=http.get("url"),
             query_string=None,
-            request_id=http.get("request_id"),
+            request_id=eve_request_id(http),
             status_code=http.get("status"),
             response_bytes=http.get("length"),
             user_agent=http.get("http_user_agent"),
@@ -121,12 +143,24 @@ def normalize_record(source, value, key, identity):
             ("packets_to_client", "pkts_toclient"),
         )
     }
+    if mapped["source"] == "SURICATA" and flow.get("start") and flow.get("end"):
+        duration = event_time(flow["end"]) - event_time(flow["start"])
+        if duration < 0:
+            raise PipelineError("Invalid reversed flow time range")
+        flow_values["duration_seconds"] = duration
+    available_at = timestamp
+    if input_profile == "edge_masked_v1" and mapped.get("event_type") == "flow":
+        # EVE flow timestamp may ALREADY be later than packet end (timeout).
+        # Keep the original timestamp and combine bounds, do not add65 twice.
+        end = event_time(flow["end"]) if flow.get("end") else timestamp
+        available_at = max(timestamp, end + 65)
     method = mapped.get("http_method")
     role = mapped.get("role")
     return {
         "event_key": pseudonym(key, "event", identity),
         "source": mapped["source"],
         "timestamp": timestamp,
+        "available_at": available_at,
         "request_key": pseudonym(key, "request", mapped.get("request_id")),
         "client_key": pseudonym(key, "ip", address),
         "flow_key": pseudonym(key, "flow", mapped.get("flow_id")),
@@ -144,7 +178,9 @@ def normalize_record(source, value, key, identity):
         "request_bytes": finite(mapped.get("request_bytes")),
         "response_bytes": finite(mapped.get("response_bytes")),
         "flow": flow_values,
-        "numeric": request_numbers(path, query, mapped.get("query_features")),
+        "numeric": request_numbers(safe_route(path) if path is not None else None, None, None)
+        if input_profile == "edge_masked_v1"
+        else request_numbers(path, query, mapped.get("query_features")),
         "redacted": True,
         "truncated": bool(mapped.get("truncated", False)),
         "provenance": "canonical" if canonical else "native_log",
@@ -156,7 +192,9 @@ COMBINED = re.compile(
 )
 
 
-def read_events(inputs, key, stats=None, max_line_bytes=65536, max_records=2_000_000):
+def read_events(
+    inputs, key, stats=None, max_line_bytes=65536, max_records=2_000_000, input_profile="native"
+):
     stats = stats if stats is not None else {}
     count = 0
     for item in inputs:
@@ -202,7 +240,7 @@ def read_events(inputs, key, stats=None, max_line_bytes=65536, max_records=2_000
                     else:
                         value = json.loads(line)
                     event = normalize_record(
-                        item.source, value, key, hashlib.sha256(line).hexdigest()
+                        item.source, value, key, hashlib.sha256(line).hexdigest(), input_profile
                     )
                 except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
                     stats["invalid"] = stats.get("invalid", 0) + 1

@@ -195,6 +195,64 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
                 "distinct_scripted_views": len(variant_partitions),
             },
         )
+    if policy.get("required_input_profile"):
+        check(
+            "input_availability_profile",
+            source.get("input_profile") == policy["required_input_profile"],
+            source.get("input_profile"),
+        )
+        sensor = proof.get("sensor_evidence") or {}
+        check(
+            "real_eve_evidence",
+            sensor.get("status") == "PASS"
+            and sensor.get("event_counts", {}).get("flow", 0) > 0
+            and sensor.get("event_counts", {}).get("http", 0) > 0,
+            sensor,
+        )
+        for partition in ("train", "val", "test"):
+            part = [r for r in rows if assignment.get(r["event_key"], ("",))[0] == partition]
+            matched = sum(set(policy["required_sources"]).issubset(r["sources"]) for r in part)
+            available = sum(
+                all(
+                    json.loads(r["flow_json"]).get(n) is not None
+                    for n in (
+                        "bytes_to_server",
+                        "bytes_to_client",
+                        "packets_to_server",
+                        "packets_to_client",
+                        "duration_seconds",
+                    )
+                )
+                for r in part
+            )
+            check(
+                partition + "_three_source_correlation",
+                matched / max(len(part), 1) >= policy["minimum_three_source_fraction"],
+                {"matched": matched, "total": len(part)},
+            )
+            check(
+                partition + "_past_flow_coverage",
+                available / max(len(part), 1) >= policy["minimum_flow_fraction"],
+                {"available": available, "total": len(part), "reserved_delay_seconds": 65},
+            )
+            durations = {}
+            for row in part:
+                span = durations.setdefault(
+                    row["campaign_key"], [row["timestamp"], row["timestamp"]]
+                )
+                span[0], span[1] = min(span[0], row["timestamp"]), max(span[1], row["timestamp"])
+            check(
+                partition + "_long_campaigns",
+                bool(durations)
+                and all(
+                    end - start >= policy["minimum_campaign_seconds"]
+                    for start, end in durations.values()
+                ),
+                {
+                    "campaigns": len(durations),
+                    "minimum_seconds": min((b - a for a, b in durations.values()), default=0),
+                },
+            )
     spec_file = Path(dataset) / "feature_spec.json"
     vector_count = nonfinite = mismatch = 0
     quality_counts = Counter()
@@ -265,6 +323,13 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
         check("offline_replay_parity", mismatch == 0, {"mismatched_vectors": mismatch})
     else:
         check("prepared_features", False, "Collected observations must be prepared before training")
+    if policy.get("minimum_complete_300s_fraction"):
+        complete = len(rows) - quality_counts.get("ip_300s_context_incomplete", len(rows))
+        check(
+            "window_300s_depth",
+            complete / max(len(rows), 1) >= policy["minimum_complete_300s_fraction"],
+            {"complete_rows": complete, "total": len(rows)},
+        )
     passed = all(c["pass"] for c in checks)
     result = {
         "format_version": 1,

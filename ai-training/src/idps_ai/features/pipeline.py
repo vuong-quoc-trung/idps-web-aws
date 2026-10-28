@@ -167,8 +167,8 @@ def fit_spec(rows, columns):
     if not count:
         raise PipelineError("No reviewed training examples after temporal/group purge")
     return {
-        "feature_version": "ai-features-2",
-        "normalizer_version": "ai-normalizer-2",
+        "feature_version": "ai-features-3",
+        "normalizer_version": "ai-normalizer-3",
         "columns": list(columns),
         "imputation": 0.0,
         "raw_clip": [-1e6, 1e6],
@@ -187,7 +187,7 @@ def fit_spec(rows, columns):
         "inference_stage": "post_response",
         "rule_context_default": "excluded",
         "identity_columns": "never model inputs",
-        "input_contract": "chronological fused requests.parquet row; ai-normalizer-2 correlation/enrichment; not an individual raw producer line",
+        "input_contract": "chronological fused requests.parquet row; ai-normalizer-3 correlation/enrichment; not an individual raw producer line",
         "user_agent_semantics": {
             "vocabulary": list(PRODUCTS),
             "encoding": "multi-hot fixed product families plus missing/unknown; no free text or rule decision",

@@ -124,7 +124,9 @@ def observer_labels(observer, capture_result, output, key):
     return result
 
 
-def register_provenance(dataset, snapshot_dir, capture_result, label_evidence, output, limits=()):
+def register_provenance(
+    dataset, snapshot_dir, capture_result, label_evidence, output, limits=(), sensor_evidence=None
+):
     dataset = verify_dataset(dataset)
     capture = load_json(capture_result)
     snapshot = verify_snapshot(snapshot_dir)
@@ -140,6 +142,11 @@ def register_provenance(dataset, snapshot_dir, capture_result, label_evidence, o
         raise PipelineError("Snapshot inputs do not match collected dataset")
     if dataset["label_manifest_sha256"] != evidence["labels_sha256"]:
         raise PipelineError("Labels are not bound to this collected dataset")
+    if sensor_evidence and not any(
+        i["source"] == "suricata" and i["sha256"] == sensor_evidence.get("eve_sha256")
+        for i in snapshot["inputs"]
+    ):
+        raise PipelineError("Sensor EVE hash does not match snapshot")
     value = {
         "format_version": 1,
         "data_kind": snapshot["data_kind"],
@@ -149,6 +156,7 @@ def register_provenance(dataset, snapshot_dir, capture_result, label_evidence, o
         "observer_sha256": capture["observer_sha256"],
         "label_evidence_sha256": file_sha256(label_evidence),
         "capture_metadata": capture,
+        "sensor_evidence": sensor_evidence,
         "collection_quality": dataset.get("quality", {}),
         "collection_sources": dataset.get("sources", {}),
         "label_evidence": evidence,
@@ -226,7 +234,10 @@ def scope_capture_inputs(inputs, observer, capture_result, output):
                         value = json.loads(line)
                     except ValueError:
                         raise PipelineError("Invalid JSON in capture source") from None
-                    if value.get("request_id") in identities:
+                    # The PCAP is captured inside a private namespace with an
+                    # exact edge-port BPF; all EVE HTTP/flows/alerts/stats belong
+                    # to that capture. Preserve non-HTTP context, not only alerts.
+                    if item.source == "suricata" or value.get("request_id") in identities:
                         dest.write(line)
                         kept += 1
                     else:
@@ -251,7 +262,7 @@ def scope_capture_inputs(inputs, observer, capture_result, output):
             "observer_sha256": capture["observer_sha256"],
             "requests": len(identities),
             "inputs": entries,
-            "policy": "Exact observed request IDs only; keep pending/unknown/outcome mismatches; never filter by label/status/rule",
+            "policy": "Student/Nginx: exact observer IDs including pending; Suricata: every record from the private bounded PCAP, including benign HTTP/flow/stats; never filter by label/status/rule",
         }
         atomic_json(work / "scope_manifest.json", result)
         os.replace(work, output)

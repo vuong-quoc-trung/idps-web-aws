@@ -30,6 +30,7 @@ OBSERVATION_SCHEMA = pa.schema(
         ("event_key", pa.string()),
         ("source", pa.string()),
         ("timestamp", pa.float64()),
+        ("available_at", pa.float64()),
         ("request_key", pa.string()),
         ("client_key", pa.string()),
         ("user_key", pa.string()),
@@ -173,7 +174,7 @@ def manifest(directory, stage, files, **metadata):
         "stage": stage,
         "schema_version": "1.0",
         "schema_sha256": file_sha256(REPO_ROOT / "contracts/canonical-event-v1.schema.json"),
-        "normalizer_version": "ai-normalizer-2",
+        "normalizer_version": "ai-normalizer-3",
         "files": files,
         **metadata,
     }
@@ -209,7 +210,15 @@ def verify_dataset(directory, required_stage=None):
     return value
 
 
-def collect(inputs, output, key, labels_path=None, correlation_seconds=2.0, max_records=2_000_000):
+def collect(
+    inputs,
+    output,
+    key,
+    labels_path=None,
+    correlation_seconds=2.0,
+    max_records=2_000_000,
+    input_profile="native",
+):
     output = Path(output).resolve()
     if output.exists():
         raise PipelineError("Dataset destination already exists; choose a new immutable version")
@@ -233,16 +242,19 @@ def collect(inputs, output, key, labels_path=None, correlation_seconds=2.0, max_
         connection = sqlite3.connect(work / "scratch.sqlite")
         try:
             connection.executescript("""PRAGMA cache_size=-16384; PRAGMA temp_store=FILE;
-                CREATE TABLE events (eid TEXT PRIMARY KEY,t REAL,rid TEXT,ip TEXT,fid TEXT,source TEXT,kind TEXT,payload TEXT,used INTEGER DEFAULT 0);
+                CREATE TABLE events (eid TEXT PRIMARY KEY,t REAL,a REAL,rid TEXT,ip TEXT,fid TEXT,source TEXT,kind TEXT,payload TEXT,used INTEGER DEFAULT 0);
                 CREATE INDEX rid_time ON events(rid,t); CREATE INDEX ip_time ON events(ip,t,kind);
-                CREATE INDEX flow_time ON events(fid,t);
+                CREATE INDEX flow_time ON events(fid,t); CREATE INDEX client_flow_time ON events(ip,kind,a);
                 CREATE INDEX pending ON events(kind,used,source,t);""")
-            for event in read_events(inputs, key, quality, max_records=max_records):
+            for event in read_events(
+                inputs, key, quality, max_records=max_records, input_profile=input_profile
+            ):
                 inserted = connection.execute(
-                    "INSERT OR IGNORE INTO events(eid,t,rid,ip,fid,source,kind,payload) VALUES(?,?,?,?,?,?,?,?)",
+                    "INSERT OR IGNORE INTO events(eid,t,a,rid,ip,fid,source,kind,payload) VALUES(?,?,?,?,?,?,?,?,?)",
                     (
                         event["event_key"],
                         event["timestamp"],
+                        event["available_at"],
                         event["request_key"],
                         event["client_key"],
                         event["flow_key"],
@@ -323,13 +335,23 @@ def collect(inputs, output, key, labels_path=None, correlation_seconds=2.0, max_
                         e["numeric"]["uri_lexical_available"],
                     ),
                 )["numeric"]
-                if event["flow_key"] is not None:
+                if event["flow_key"] is not None and input_profile == "native":
                     observed_flow = connection.execute(
                         "SELECT payload FROM events WHERE fid=? AND kind='flow' AND t<=? AND t>=? ORDER BY t DESC LIMIT 1",
                         (event["flow_key"], event["timestamp"], event["timestamp"] - 300),
                     ).fetchone()
                     if observed_flow:
                         event["flow"] = json.loads(observed_flow[0])["flow"]
+                if input_profile == "edge_masked_v1":
+                    event["flow"] = {name: None for name in event["flow"]}
+                    # Closed-flow counters belong to previous completed flows. NEVER
+                    # backfill a request with its own future TCP close totals.
+                    prior = connection.execute(
+                        "SELECT payload FROM events WHERE source='SURICATA' AND kind='flow' AND ip=? AND a<=? AND t>=? ORDER BY a DESC,t DESC,eid LIMIT 1",
+                        (event["client_key"], event["timestamp"], event["timestamp"] - 300),
+                    ).fetchone()
+                    if prior:
+                        event["flow"] = json.loads(prior[0])["flow"]
                 row = storage_row(event)
                 row.update(
                     observation_count=len(matches),
@@ -395,6 +417,10 @@ def collect(inputs, output, key, labels_path=None, correlation_seconds=2.0, max_
             "collected",
             ["observations.parquet", "requests.parquet"],
             inputs=input_info,
+            input_profile=input_profile,
+            flow_semantics="most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate"
+            if input_profile == "edge_masked_v1"
+            else "same-flow past-only",
             label_manifest_sha256=file_sha256(labels_path) if labels_path else None,
             redaction_key_fingerprint=pseudonym(key, "fingerprint", "v1"),
             rows={"observations": n_observations, "requests": n_requests},

@@ -156,6 +156,8 @@ def prepare(dataset, output, labels_path=None, key=None):
                 yield row
 
         write_rows(work / "requests.parquet", assigned_rows(), REQUEST_SCHEMA)
+        spec["input_profile"] = source_manifest.get("input_profile", "native")
+        spec["flow_semantics"] = source_manifest.get("flow_semantics", "same-flow past-only")
         atomic_json(work / "feature_spec.json", spec)
         schema = pa.schema(
             [
@@ -194,6 +196,8 @@ def prepare(dataset, output, labels_path=None, key=None):
             "prepared",
             ["observations.parquet", "requests.parquet", "features.parquet", "feature_spec.json"],
             parent_dataset_sha256=source_manifest["dataset_sha256"],
+            input_profile=source_manifest.get("input_profile", "native"),
+            flow_semantics=source_manifest.get("flow_semantics", "same-flow past-only"),
             split=split_report,
             rows=dict(counts),
             feature_rows=total,

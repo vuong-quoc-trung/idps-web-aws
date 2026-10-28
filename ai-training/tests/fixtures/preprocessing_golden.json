@@ -1,5 +1,5 @@
 {
-  "feature_version": "ai-features-2",
+  "feature_version": "ai-features-3",
   "purpose": "Independent hand-worked causal-window vectors for a future Rust preprocessing port",
   "events": [
     {

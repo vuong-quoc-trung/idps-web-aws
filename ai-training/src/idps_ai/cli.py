@@ -112,6 +112,9 @@ def parser():
     )
     collection.add_argument("--output", required=True)
     collection.add_argument("--labels")
+    collection.add_argument(
+        "--input-profile", choices=("native", "edge_masked_v1"), default="native"
+    )
     collection.add_argument("--hmac-key-file")
     collection.add_argument("--hmac-key-env", default="IDPS_TRAINING_HMAC_KEY")
     prep = commands.add_parser("prepare")
@@ -251,7 +254,13 @@ def main(argv=None):
                 args.max_threads if args.max_threads is not None else 4,
                 args.memory_limit_gib if args.memory_limit_gib is not None else 12,
             ):
-                result = collect(inputs, args.output, key_from_args(args), args.labels)
+                result = collect(
+                    inputs,
+                    args.output,
+                    key_from_args(args),
+                    args.labels,
+                    input_profile=args.input_profile,
+                )
         elif args.command == "prepare":
             from idps_ai.data.split import prepare
             from idps_ai.training.resources import resource_envelope

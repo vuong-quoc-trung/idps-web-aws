@@ -258,7 +258,7 @@ def test_agent_families_are_observable_features_without_free_text_or_rule_hit_in
     assert not any("CANARY" in name for name in feature_columns())
     missing = FeatureExtractor().observe({"timestamp": 0})
     assert missing["user_agent_missing"] == 1
-    assert fit_spec(iter([values]), feature_columns())["feature_version"] == "ai-features-2"
+    assert fit_spec(iter([values]), feature_columns())["feature_version"] == "ai-features-3"
 
 
 def test_scanner_product_features_do_not_match_a_benign_substring_name():
