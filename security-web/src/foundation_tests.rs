@@ -281,6 +281,79 @@ fn nft_timeout_elements_are_understood() {
 }
 
 #[sqlx::test(migrations = "./migrations")]
+async fn extended_sensor_rules_use_audited_bounded_response_only_when_enabled(pool: PgPool) {
+    let mut s = state(pool, true);
+    let sids = vec![1000008, 1000010, 1000011, 1000012, 1000013, 1000014];
+    let logs = Logs::new();
+    let path = logs.path("eve.json");
+    for sid in &sids {
+        append(
+            &s,
+            "SURICATA",
+            &path,
+            &format!(
+                "{}\n",
+                json!({
+                    "timestamp":Utc::now(), "event_type":"alert", "src_ip":"192.168.1.50",
+                    "alert":{"signature_id":sid,"severity":1}
+                })
+            ),
+        )
+        .await;
+    }
+    assert_eq!(count(&s.pool, "security_alerts").await, 6);
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
+
+    s.policy = PolicyEngine::new(true, sids.clone(), false);
+    Arc::make_mut(&mut s.safety).mode = "OFF".into();
+    for sid in sids {
+        append(
+            &s,
+            "SURICATA",
+            &path,
+            &format!(
+                "{}\n",
+                json!({
+                    "timestamp":Utc::now(), "event_type":"alert", "src_ip":"192.168.1.50",
+                    "alert":{"signature_id":sid,"severity":1}
+                })
+            ),
+        )
+        .await;
+    }
+    assert_eq!(count(&s.pool, "firewall_actions").await, 6);
+    assert!(
+        !firewall::process_one(&s, |_, _, _| async { panic!("OFF must not call a helper") })
+            .await
+            .unwrap()
+    );
+
+    Arc::make_mut(&mut s.safety).mode = "ENFORCE".into();
+    for _ in 0..6 {
+        assert!(
+            firewall::process_one(&s, |_, _, ttl| async move {
+                assert!(ttl.is_some_and(|seconds| (1..=300).contains(&seconds)));
+                Ok(()) // Mock actuator: never invokes the real helper or kernel.
+            })
+            .await
+            .unwrap()
+        );
+    }
+    let successful: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='SUCCESS' AND actor='system' AND event_id IS NOT NULL")
+        .fetch_one(&s.pool).await.unwrap();
+    assert_eq!(successful, 6);
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>(
+            "SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'"
+        )
+        .fetch_one(&s.pool)
+        .await
+        .unwrap(),
+        6
+    );
+}
+
+#[sqlx::test(migrations = "./migrations")]
 async fn historical_alerts_and_expired_pending_jobs_never_enforce(pool: PgPool) {
     let mut s = state(pool, true);
     s.policy = PolicyEngine::new(true, vec![1000002], true);

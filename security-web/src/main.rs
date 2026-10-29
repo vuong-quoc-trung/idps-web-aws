@@ -374,8 +374,11 @@ async fn unblock_ip(
     ))
 }
 async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
-    let policy = &state.policy;
-    let rules = vec![
+    Json(suricata_rule_catalog(&state.policy))
+}
+
+fn suricata_rule_catalog(policy: &PolicyEngine) -> Vec<RuleInfo> {
+    vec![
         RuleInfo {
             sid: 1000001,
             name: "TCP SYN Burst Threshold",
@@ -394,7 +397,7 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
         },
         RuleInfo {
             sid: 1000008,
-            name: "SQL Injection - Generic Keywords Attempt",
+            name: "SQL Injection - Time/Blind, Error or Statement (URI)",
             category: "Web Application Attack",
             severity: 1,
             auto_block_eligible: policy.evaluate_suricata(Some(1000008))
@@ -448,8 +451,47 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
             auto_block_eligible: policy.evaluate_suricata(Some(1000009))
                 == EventPolicyDecision::EligibleForAutoBlock,
         },
-    ];
-    Json(rules)
+        RuleInfo {
+            sid: 1000010,
+            name: "HTTP Request Flood (100 requests / 10s per source)",
+            category: "Denial of Service",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000010))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000011,
+            name: "Suspicious Web Shell File Upload",
+            category: "Malicious File Upload",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000011))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000012,
+            name: "Possible SSRF to Internal/Metadata Target (URI)",
+            category: "Server-Side Request Forgery",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000012))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000013,
+            name: "SQL Injection - Time/Blind Request Body",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000013))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000014,
+            name: "Possible SSRF to Internal/Metadata Target (Request Body)",
+            category: "Server-Side Request Forgery",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000014))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+    ]
 }
 
 #[cfg(test)]
@@ -508,6 +550,72 @@ mod integration_tests;
 #[cfg(test)]
 mod parser_tests {
     use super::*;
+    #[test]
+    fn catalog_sids_and_severity_match_the_installed_rule_source() {
+        let rules = suricata_rule_catalog(&PolicyEngine::new(false, vec![], false));
+        let pattern = Regex::new(r"priority:(\d+); sid:(\d+);").unwrap();
+        let sensor: std::collections::BTreeMap<u32, i16> = pattern
+            .captures_iter(include_str!("../suricata/pbl4.rules"))
+            .map(|m| (m[2].parse().unwrap(), m[1].parse().unwrap()))
+            .collect();
+        assert_eq!(rules.len(), sensor.len());
+        for rule in rules {
+            assert_eq!(sensor.get(&rule.sid), Some(&rule.severity));
+            assert!(!rule.auto_block_eligible);
+        }
+    }
+
+    #[test]
+    fn extended_rules_require_explicit_response_opt_in() {
+        let sids = vec![1000008, 1000010, 1000011, 1000012, 1000013, 1000014];
+        let off = PolicyEngine::new(false, sids.clone(), false);
+        let original = PolicyEngine::new(true, vec![1000002], false);
+        let enabled = PolicyEngine::new(true, sids.clone(), false);
+        for sid in sids {
+            assert_eq!(
+                off.evaluate_suricata(Some(sid)),
+                EventPolicyDecision::AlertOnly
+            );
+            assert_eq!(
+                original.evaluate_suricata(Some(sid)),
+                EventPolicyDecision::AlertOnly
+            );
+            assert_eq!(
+                enabled.evaluate_suricata(Some(sid)),
+                EventPolicyDecision::EligibleForAutoBlock
+            );
+        }
+    }
+
+    #[test]
+    fn extended_alerts_have_named_metadata_without_raw_payloads() {
+        for (sid, severity) in [
+            (1000008, 1),
+            (1000010, 2),
+            (1000011, 1),
+            (1000012, 2),
+            (1000013, 1),
+            (1000014, 2),
+        ] {
+            let parsed = events::parse("SURICATA", &serde_json::json!({
+                "timestamp":"2026-10-29T10:00:00Z", "event_type":"alert",
+                "src_ip":"192.168.10.10", "dest_ip":"192.168.10.1", "proto":"TCP",
+                "alert":{"signature_id":sid,"severity":severity,"signature":"RAW_CANARY_SECRET"},
+                "payload":"RAW_CANARY_SECRET"
+            }).to_string()).unwrap();
+            let native = parsed.native_alert.unwrap();
+            assert_eq!(native.sid, Some(sid));
+            assert_eq!(native.severity, severity);
+            assert_ne!(native.category.as_deref(), Some("Sensor Alert"));
+            assert!(!native.signature.contains("RAW_CANARY_SECRET"));
+            assert!(
+                !serde_json::to_string(&parsed.canonical)
+                    .unwrap()
+                    .contains("RAW_CANARY_SECRET")
+            );
+        }
+    }
+
     #[test]
     fn validates_lab_hosts_and_rejects_subnets() {
         for ip in ["192.168.10.2", "192.168.10.254", "192.168.10.10/32"] {

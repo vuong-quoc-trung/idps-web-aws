@@ -479,10 +479,24 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                     Some(1000006) => ("Sensitive File Probe", "Reconnaissance"),
                     Some(1000007) => ("Automated Scanner User-Agent", "Reconnaissance"),
                     Some(1000008) => (
-                        "SQL Injection Time or Error Attempt",
+                        "SQL Injection Time/Blind or Error Attempt",
                         "Web Application Attack",
                     ),
                     Some(1000009) => ("Repeated Authentication Failures", "Authentication Abuse"),
+                    Some(1000010) => ("HTTP Request Flood Threshold", "Denial of Service"),
+                    Some(1000011) => ("Suspicious Web Shell File Upload", "Malicious File Upload"),
+                    Some(1000012) => (
+                        "Possible SSRF to Internal or Metadata Target",
+                        "Server-Side Request Forgery",
+                    ),
+                    Some(1000013) => (
+                        "SQL Injection Time/Blind Request Body",
+                        "Web Application Attack",
+                    ),
+                    Some(1000014) => (
+                        "Possible SSRF Request Body to Internal or Metadata Target",
+                        "Server-Side Request Forgery",
+                    ),
                     _ => ("Suricata Alert", "Sensor Alert"),
                 };
                 native_alert = Some(NativeAlert {
