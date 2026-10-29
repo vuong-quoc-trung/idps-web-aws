@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 @RequestMapping("/api/auth/activation")
 public class StudentActivationController {
     private final StudentActivationService service;
@@ -40,6 +41,12 @@ public class StudentActivationController {
         try {
             if (!service.send(request.proof(), request.email())) throw new IllegalArgumentException("Phiên xác minh đã hết hạn hoặc đã dùng. Vui lòng đối chiếu lại thông tin.");
         } catch (org.springframework.mail.MailException e) {
+            String category = e instanceof org.springframework.mail.MailAuthenticationException
+                ? "SMTP_AUTHENTICATION_FAILED: check SMTP username and app password"
+                : e instanceof org.springframework.mail.MailPreparationException
+                    ? "MAIL_PREPARATION_FAILED: check PUBLIC_APP_URL and sender configuration"
+                    : "SMTP_DELIVERY_FAILED: check SMTP connectivity, TLS and sender configuration";
+            log.warn("Activation email delivery failed; {} (type={})", category, e.getClass().getSimpleName());
             return ResponseEntity.status(503).body(new Message("Chưa gửi được email. Vui lòng thử lại sau."));
         }
         return ResponseEntity.accepted().body(new Message("Link kích hoạt đã được gửi. Vui lòng kiểm tra hộp thư và thư rác."));

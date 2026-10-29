@@ -4,6 +4,16 @@
 
 Dừng backend, chạy `sql/017_student_activation_email.sql`, rồi khởi động lại. Giữ các biến SMTP đã cấu hình; chức năng gửi link dùng chung cờ `PASSWORD_RESET_MAIL_ENABLED`. Thêm `PUBLIC_APP_URL=http://localhost:5173` khi chạy local. Production phải là URL HTTPS frontend thực tế; không lấy host của request làm URL email. Profile prod bắt buộc khai báo PUBLIC_APP_URL.
 
+Chỉ giữ một dòng `PUBLIC_APP_URL` trong `.env`, vì `run.sh` dùng giá trị khai báo
+cuối cùng. HTTP chỉ được phép cho localhost/loopback; địa chỉ HTTP qua LAN như
+`http://192.168.10.1` sẽ bị từ chối ngay khi tạo email, trước bước kết nối SMTP.
+Khi chạy trên máy local, dùng `http://localhost:5173`; khi truy cập qua LAN, dùng
+URL HTTPS người dùng thực sự mở. Sau khi sửa `.env`, khởi động lại backend.
+Log backend phân biệt
+`MAIL_PREPARATION_FAILED` (URL/nội dung email), `SMTP_AUTHENTICATION_FAILED`
+(xác thực SMTP) và `SMTP_DELIVERY_FAILED` (kết nối/TLS/gửi thư), không ghi token
+hoặc thông tin tài khoản SMTP.
+
 ## Luồng
 
 1. `/activate` khi không có token hiển thị đối chiếu hồ sơ: mã sinh viên, họ tên, ngày sinh, giới tính, CCCD, mã lớp và điện thoại gia đình nếu đã được trường lưu. Không yêu cầu ngân hàng. Mã lớp cần được trường cung cấp, không có API công khai để tra cứu hồ sơ.

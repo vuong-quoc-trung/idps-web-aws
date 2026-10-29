@@ -44,7 +44,12 @@ public class PasswordResetMailService {
     }
 
     public void sendActivation(String recipient, String token) {
-        var base = java.net.URI.create(publicBaseUrl);
+        java.net.URI base;
+        try {
+            base = java.net.URI.create(publicBaseUrl);
+        } catch (IllegalArgumentException e) {
+            throw new MailPreparationException("Invalid activation public URL");
+        }
         if (base.getHost() == null || base.getRawQuery() != null || base.getRawFragment() != null
                 || base.getUserInfo() != null || !("https".equals(base.getScheme())
                 || ("http".equals(base.getScheme()) && SetLocal.host(base.getHost()))))
