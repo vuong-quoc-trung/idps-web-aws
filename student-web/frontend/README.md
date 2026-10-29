@@ -1,4 +1,28 @@
-# React + TypeScript + Vite
+# DUT - THÔNG TIN SINH VIÊN
+
+Frontend React/TypeScript của Student Web. Từ gốc repository, chạy
+`bash student-web/frontend/run.sh`; script dùng Node local tại `.local-node/24`
+nếu có và cài dependencies khi thiếu `node_modules`. Backend cần chạy ở cổng 8080.
+Khi cập nhật dependencies, chạy `npm ci` trong thư mục này với Node phù hợp Vite 8.
+
+Kiểm tra bản production bằng `npm run build`. Nếu Web VM phục vụ thư mục `dist`
+qua Nginx, cần build lại trên Web VM sau khi pull; nếu dùng Vite dev, khởi động lại
+frontend và tải lại trình duyệt. Bản build không được lưu vào Git.
+
+## Giữ các cập nhật khi tích hợp nhánh
+
+Logo DUT, title/favicon, footer liên hệ, header tài khoản, trang học vụ sinh viên
+và phản hồi khi sửa hồ sơ được khôi phục từ `feat/student-database` (mốc `c823127`).
+Commit `e1447b2` từng ghi đè các phần này khi lấy frontend từ `feat/student-ui`.
+Nhánh nguồn đã nằm trong lịch sử hiện tại nên merge lại đơn thuần không phục hồi
+những file đã bị xóa/ghi đè bởi commit sau đó.
+
+Khi nhận thay đổi từ nhánh UI, so sánh và tích hợp theo phần thay vì thay nguyên
+thư mục frontend. Giữ `AppFooter`, asset `public/images/dut-logo.jpg`, layout trong
+`App.tsx`, phân quyền trang học vụ và các sửa lỗi xác thực/URL hiện hành. Đối chiếu
+API Student mới và audit trước khi thay backend bằng phiên bản của nhánh cũ.
+
+## Tài liệu template Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
