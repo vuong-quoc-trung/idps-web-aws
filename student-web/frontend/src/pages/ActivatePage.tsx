@@ -160,21 +160,9 @@ export default function ActivatePage() {
       <div className="auth-container auth-container--wide">
         {/* Branding */}
         <div className="auth-brand">
-          <div className="brand-icon">
-            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
-              <rect width="44" height="44" rx="12" fill="url(#act-brand-grad)" />
-              <path d="M22 10L10 17v10l12 7 12-7V17L22 10z" stroke="white" strokeWidth="1.8" strokeLinejoin="round" fill="none" />
-              <path d="M22 10v17M10 17l12 7 12-7" stroke="white" strokeWidth="1.8" strokeLinejoin="round" />
-              <defs>
-                <linearGradient id="act-brand-grad" x1="0" y1="0" x2="44" y2="44">
-                  <stop stopColor="#6f42c1" />
-                  <stop offset="1" stopColor="#4c2e8e" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
+          <div className="brand-icon"><img src="/images/dut-logo.jpg" alt="Logo Đại học Bách khoa Đà Nẵng" /></div>
           <div className="brand-text">
-            <span className="brand-name">Student Web</span>
+            <span className="brand-name">DUT - THÔNG TIN SINH VIÊN</span>
             <span className="brand-sub">Kích hoạt tài khoản lần đầu</span>
           </div>
         </div>
@@ -342,7 +330,7 @@ export default function ActivatePage() {
         </div>
 
         <p className="auth-footer">
-          © {new Date().getFullYear()} Student Web · Token có hiệu lực trong 24 giờ
+          © {new Date().getFullYear()} DUT - THÔNG TIN SINH VIÊN · Token có hiệu lực trong 24 giờ
         </p>
       </div>
     </div>

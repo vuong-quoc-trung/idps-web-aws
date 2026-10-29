@@ -11,7 +11,19 @@ import {
   type ReactNode,
 } from 'react';
 import { clearAuthTokens, fetchMe, login as apiLogin, logout as apiLogout } from '../api/authApi';
+import { apiGet } from '../api/client';
 import type { CurrentUser } from '../types/auth';
+
+async function enrichedUser() {
+  const user = await fetchMe();
+  if (user?.role === 'STUDENT') {
+    try {
+      const profile = await apiGet<{ fullName: string; studentCode: string; avatarUrl?: string }>('/me/profile');
+      return { ...user, fullName: profile.fullName, studentCode: profile.studentCode, avatarUrl: profile.avatarUrl };
+    } catch { return user; }
+  }
+  return user;
+}
 
 interface AuthContextValue {
   user: CurrentUser | null;
@@ -29,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const me = await fetchMe();
+    const me = await enrichedUser();
     setUser(me);
   }, []);
 
@@ -39,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (username: string, password: string) => {
     await apiLogin(username, password);
-    const me = await fetchMe();
+    const me = await enrichedUser();
     setUser(me);
   }, []);
 
