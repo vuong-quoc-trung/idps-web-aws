@@ -9,7 +9,7 @@ Bắt đầu tại [docs/00](../docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md), [sche
 - Security Compose mặc định `127.0.0.1:${SECURITY_DB_PORT:-5434}:5432`; Student dùng5433. DATABASE_URL trong `.env.example` đã đổi5434; **kiểm và cập nhật port trong `.env` riêng** khi chuyển cấu hình cũ. Không tự đổi mật khẩu/volume DB đã có.
 - `STUDENT_AUDIT_LOG_PATH` bật watcherStudent khi path không rỗng. Nginx structured/combined và EVE alert/http/flow đều được normalize; `COLLECT_ALL_EVENTS=true` lưu observations vào normalized_events, false vẫn parse/detect nhưng không backfill dữ liệu đã bỏ qua.
 - Retention dataset7ngày, cap1triệu rows, sweep60s; INGEST_MAX_LINE_BYTES mặc định65536. Oversized records bị cách ly theo hash/range, không copy raw secrets; partial/rotation/dedup tiếp tục dùng durable cursor.
-- Rust có SQLi/XSS/traversal/command/scanner và auth-burst theo IP+route; auth counter dedup Nginx/Student theo request ID. Suricata có9SID, SYNburst được đặt tên đúng và không auto eligible mặc định. Các family Rust mới là alert-only.
+- Rust có SQLi/XSS/traversal/command/scanner và auth-burst theo IP+route; auth counter dedup Nginx/Student theo request ID. Suricata có14 SID, SYNburst được đặt tên đúng và không auto eligible mặc định. Các family Rust mới là alert-only.
 - **ENFORCEMENT_MODE=OFF** mặc định chặn mọi thực thi PENDING/RESTORE. MANUAL chỉ cho BLOCK nguồnAPI; ENFORCE vẫn phải qua protected-target/deadline/freshness/policy. AUTO_BLOCK=false riêng lẻ vẫn không là global stop.
 - `ENFORCE_ALLOWED_SUBNETS` mặc định các dảiIPv4 private; WEB_SERVER_IP/PROTECTED_GATEWAY_IP và IP_WHITELIST bổ sung miễn trừ. Backend/helper khám phá host/default gateways; khi không xác minh an toàn thì từ chốiBLOCK. IPv6 collect-only, không block.
 - Helper mới gồm wrapper + root-owned Python policy module; phải cài đồng bộ theo update trong HOST_SECURITY_SETUP.md trước bật enforcement. TTL/deadline tối đa300s, restore giữ deadline gốc. Chưa áp ruleset host bởi script dev.
@@ -18,6 +18,11 @@ Bắt đầu tại [docs/00](../docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md), [sche
 Từ gốc repo chạy `scripts/dev-up-and-verify.sh --bootstrap-nginx` để dùng hai DB demo riêng55433/55434 và Security3001; thêm--expose-lan để mở dev edge18780 ra mạng. `scripts/dev-up-and-verify.sh --stop` chỉ dừng stackdemo, giữ dữ liệu. Credentials dev trong ignored `.local-dev/foundation/credentials.json`, không in vào Git/docs. Service cũ3000 và DB5433/5434 được giữ nguyên.
 
 ## Các thay đổi chính
+
+- Bộ rule mở rộng có HTTP flood, Time/Blind SQLi URI/body, web shell upload và SSRF
+  URI/body. Xem [phạm vi, kiểm thử và chính sách phản ứng](docs/EXTENDED_RULES.md).
+  AUTO_BLOCK=false/ENFORCEMENT_MODE=OFF vẫn là mặc định; source rule phải được cài
+  riêng vào Suricata, danh mục API không chứng minh sensor đã nạp đúng phiên bản.
 
 - Đăng nhập admin/viewer bằng mật khẩu Argon2id. Session ngẫu nhiên 256 bit, hết hạn sau một giờ, lưu hash ở server; frontend giữ token trong bộ nhớ. Logout thu hồi session. Restart backend hoặc reload trang yêu cầu đăng nhập lại.
 - Mọi API dữ liệu cần Bearer token; chỉ admin gửi block/unblock. Không dùng cookie xác thực hoặc bật CORS; trình duyệt không tự đính kèm quyền vào request từ website khác.

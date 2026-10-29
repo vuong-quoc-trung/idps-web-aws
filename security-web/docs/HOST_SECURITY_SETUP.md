@@ -1,5 +1,9 @@
 # Nghiệm thu Security trên Ubuntu host
 
+> Bộ rule hiện hành có 14 SID, bổ sung HTTP flood, Time/Blind SQLi URI/body, web shell
+> upload và SSRF URI/body. Xem [EXTENDED_RULES.md](EXTENDED_RULES.md) để kiểm thử và
+> nâng bản rule; các mô tả số lượng rule trong hướng dẫn lịch sử bên dưới là bản cũ.
+
 > **Cập nhật foundation26/10/2026:** dùng `ENFORCEMENT_MODE=OFF` khi nghiệm thu; code/config đã hỗ trợ dảiprivate, host/gateway exclusions và TTL, thay cho dảiKali cố định trong hướng dẫn lịch sử. Không áp helper/ruleset cũ lẫn bản mới. Cài đồng bộ **wrapper**, **policy module** và `pbl4.nft` sau khi kiểm tra backup/management access; scriptdev không thực hiện việc này.
 >
 > Module mới: `scripts/pbl4-firewall-policy.py` → `/usr/local/libexec/pbl4-firewall-policy.py`, root-owned0755; wrapper vẫn `/usr/local/bin/pbl4-firewall`, root-owned0755. Policy tùy chọn `config/firewall-policy.json.example` → `/etc/pbl4/firewall-policy.json`, root-owned0644, protectedIPs phải gồm WebVM/gateway và assets quản trị thực tế. ENV backend không thay thế policy root. Tệp root policy không được group/world writable.
