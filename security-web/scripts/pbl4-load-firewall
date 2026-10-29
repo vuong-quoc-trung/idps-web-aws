@@ -1,0 +1,138 @@
+#!/usr/bin/python3
+"""Boot loader for the PBL4 table only; never removes an existing table."""
+
+import fcntl
+import json
+import os
+from pathlib import Path
+import shlex
+import stat
+import subprocess
+import sys
+import tempfile
+
+NFT = "/usr/sbin/nft"
+RULESET = Path("/etc/pbl4/pbl4.nft")
+LOCK = Path("/run/lock/pbl4-firewall.lock")
+
+
+def validate_scope(text):
+    """Accept one table declaration, with no includes or imperative commands."""
+    lexer = shlex.shlex(text, posix=False, punctuation_chars="{};")
+    lexer.whitespace_split = True
+    tokens = []
+    for token in lexer:
+        tokens.extend(token if token and set(token) <= set("{};") else [token])
+    if tokens[:4] != ["table", "inet", "pbl4_demo", "{"]:
+        raise ValueError("ruleset must declare only table inet pbl4_demo")
+    forbidden = {"include", "table", "flush", "delete", "destroy", "add", "insert",
+                 "replace", "define", "reset", "rename", "import", "export"}
+    depth = 1
+    for index, token in enumerate(tokens[4:], start=4):
+        if token in forbidden:
+            raise ValueError(f"unsupported statement in PBL4 ruleset: {token}")
+        if token == "{":
+            depth += 1
+        elif token == "}":
+            depth -= 1
+        if depth == 0 and index != len(tokens) - 1:
+            raise ValueError("content outside table inet pbl4_demo")
+        if depth < 0:
+            raise ValueError("unbalanced ruleset")
+    if depth != 0:
+        raise ValueError("unbalanced ruleset")
+    for kind, name in [("set", "protected_ips"), ("set", "blocked_ips"),
+                       ("chain", "input"), ("chain", "forward")]:
+        if not any(tokens[i:i + 3] == [kind, name, "{"] for i in range(len(tokens) - 2)):
+            raise ValueError(f"missing {kind} {name}")
+
+
+def read_trusted_ruleset(path):
+    for parent in path.parents:
+        info = parent.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+            raise ValueError(f"ruleset parent must be a root-owned, non-shared directory: {parent}")
+    with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), "r") as source:
+        info = os.fstat(source.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+            raise ValueError("ruleset must be root-owned and not group/world writable")
+        text = source.read(1024 * 1024 + 1)
+    if len(text) > 1024 * 1024:
+        raise ValueError("ruleset exceeds 1 MiB")
+    validate_scope(text)
+    return text
+
+
+def nft(*args):
+    return subprocess.run([NFT, *map(str, args)], check=True, capture_output=True,
+                          text=True, timeout=10).stdout
+
+
+def table_exists(run=nft):
+    # A failed listing is an error, never evidence that the table is absent.
+    document = json.loads(run("-j", "list", "tables"))
+    return any(item.get("table", {}).get("family") == "inet"
+               and item.get("table", {}).get("name") == "pbl4_demo"
+               for item in document["nftables"])
+
+
+def check_existing_table(run=nft):
+    document = json.loads(run("-j", "list", "table", "inet", "pbl4_demo"))
+    sets = {item["set"]["name"]: item["set"] for item in document["nftables"] if "set" in item}
+    chains = {item["chain"]["name"] for item in document["nftables"] if "chain" in item}
+    if not {"protected_ips", "blocked_ips"} <= sets.keys() or not {"input", "forward"} <= chains:
+        raise ValueError("existing PBL4 table is incompatible; left unchanged (missing set/chain)")
+    if any(sets[name].get("type") != "ipv4_addr" for name in ("protected_ips", "blocked_ips")):
+        raise ValueError("existing PBL4 sets have incompatible types; left unchanged")
+    if "timeout" not in sets["blocked_ips"].get("flags", []):
+        raise ValueError("existing blocked_ips lacks timeout support; left unchanged")
+
+
+def ensure_table(text, ruleset=RULESET, run=nft):
+    validate_scope(text)
+    run("-c", "-f", ruleset)
+    if table_exists(run):
+        check_existing_table(run)
+        print("PBL4 table already exists; preserved rules, counters and blocked IPs.")
+        return "preserved"
+    # 'create' fails if another process creates the table meanwhile. Both
+    # statements are one atomic nft batch, so a race cannot append duplicate rules.
+    with tempfile.NamedTemporaryFile(mode="w", prefix="pbl4-firewall-", suffix=".nft") as transaction:
+        transaction.write("create table inet pbl4_demo\n" + text)
+        transaction.flush()
+        try:
+            run("-c", "-f", transaction.name)
+            run("-f", transaction.name)
+        except subprocess.CalledProcessError:
+            if table_exists(run):
+                check_existing_table(run)
+                print("PBL4 table appeared concurrently; existing table preserved.")
+                return "preserved"
+            raise
+    print("PBL4 table loaded from /etc/pbl4/pbl4.nft.")
+    return "loaded"
+
+
+def main():
+    if len(sys.argv) != 1:
+        raise ValueError("pbl4-load-firewall takes no arguments")
+    if os.geteuid() != 0:
+        raise ValueError("pbl4-load-firewall must run as root")
+    text = read_trusted_ruleset(RULESET)
+    fd = os.open(LOCK, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "w") as lock:
+        info = os.fstat(lock.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+            raise ValueError("unsafe PBL4 loader lock")
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        ensure_table(text)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (ValueError, OSError, KeyError, subprocess.SubprocessError) as failure:
+        print(f"PBL4 firewall loader failed: {failure}", file=sys.stderr)
+        if isinstance(failure, subprocess.CalledProcessError) and failure.stderr:
+            print(failure.stderr.rstrip(), file=sys.stderr)
+        sys.exit(1)

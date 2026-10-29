@@ -66,6 +66,10 @@ Sau đó mở `http://127.0.0.1:3000` trên máy quản trị. Nếu triển kha
 
 ## Triển khai Security Host
 
+Để tự nạp riêng bảng `inet pbl4_demo` sau reboot, dùng
+[hướng dẫn service firewall boot](docs/FIREWALL_BOOT.md). Bộ cài có syntax check,
+sao lưu file hệ thống và giữ nguyên bảng đang tồn tại; không thay `/etc/nftables.conf`.
+
 Các file Suricata, Nginx và nftables vẫn dùng topology lab:
 
 - Kali: `192.168.10.10` → Security `192.168.10.1` / `vmnet2`.
