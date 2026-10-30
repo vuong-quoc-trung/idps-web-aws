@@ -2,9 +2,30 @@
 
 ## Trạng thái và giới hạn
 
-Bộ triển khai trong repo, CHƯA cài lên hai máy, chưa cutover. Host thiếu module
-RELP; sudo cần mật khẩu và SSH BatchMode tới Web VM chưa xác thực. Không đổi `.env`,
-SSHFS, DB, Suricata hoặc AUTO_BLOCK. UI polling để task riêng; nút Tải lại audit vẫn cần.
+**SSHFS: deprecated / rollback-only.** Pipeline đã cutover sang RELP và backend đọc
+`STUDENT_AUDIT_LOG_PATH=/var/log/pbl4/student-audit.log`.
+
+Ngày 30/10/2026 (Asia/Ho_Chi_Minh), đã unmount sạch SSHFS thủ công bằng fusermount3;
+mountpoint `~/.local/share/pbl4/student-vm-live` được giữ rỗng. Không gỡ package/key,
+không xóa log, queue hoặc checkpoint/DB. AUTO_BLOCK=false, ENFORCEMENT_MODE=OFF.
+
+Receiver active, listener chỉ 192.168.20.1:2514; kết nối từ 192.168.20.10 được quan sát.
+GET /api/auth/me (401 bình thường do chưa đăng nhập) sau unmount tạo event
+`402fed1a-0265-4364-bc4b-28c1d2ae2e51`, request ID
+`sshfs-retire-fe80da21-d110-4dc7-825e-4817a02b9764`.
+File local tăng từ 685372 lên 686073 byte; DB có event lúc 22:27:53 giờ Việt Nam,
+khoảng một giây sau lúc phát sinh. Đây là bằng chứng forwarding + ingest sau unmount.
+Chưa kiểm tra trực tiếp hiển thị trình duyệt có đăng nhập; bấm Tải lại audit để xem.
+
+Không tìm thấy autostart SSHFS trong repo, /etc/fstab, systemd system/user, user
+autostart, profile/zshrc và cron đã kiểm tra. Mount unit cũ do /proc/self/mountinfo,
+không có FragmentPath/UnitFileState: mount thủ công, không có unit cần disable.
+SSH BatchMode vào VM chưa xác thực nên chưa xác nhận trực tiếp systemctl sender;
+forwarding mới đã được chứng minh bằng event tới file local/DB. Trên VM có thể kiểm
+tra bổ sung: `systemctl is-active pbl4-audit-sender.service`.
+
+Các bước cài đặt bên dưới là hướng dẫn tái triển khai, không cần chạy lại trên hệ
+thống đã hoạt động. UI polling vẫn là task riêng; nút Tải lại audit vẫn cần.
 
 Lab dùng **RELP/TCP không mã hóa**, port 2514 chỉ bind 192.168.20.1, firewall giới hạn
 vmnet3 + 192.168.20.10, receiver lọc source/schema. Không dùng UDP. Không tuyên bố
@@ -210,7 +231,7 @@ https://docs.rsyslog.com/doc/configuration/modules/omrelp.html,
 https://docs.rsyslog.com/doc/configuration/modules/imrelp.html,
 https://docs.rsyslog.com/doc/concepts/queues.html.
 
-## Kết quả kiểm tra bộ triển khai trong phiên chuẩn bị
+## Lịch sử kiểm tra bộ triển khai trước cutover (không phải trạng thái hiện tại)
 
 - Host rsyslog8.2512.0, có imfile/mmjsonparse, thiếu imrelp/omrelp.
 - Chỉ tải/extract rsyslog-relp/librelp vào /tmp để thử; KHÔNG cài package.
