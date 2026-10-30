@@ -1,7 +1,7 @@
-# Bốn nhóm phát hiện HTTP bổ sung
+# Các nhóm phát hiện HTTP bổ sung
 
 Các chữ ký nằm trong `suricata/pbl4.rules`, dành cho Suricata 8.0.3 và HTTP nhìn thấy
-trên interface capture. Có 14 chữ ký trong danh mục, gồm các biến thể URI/body.
+trên interface capture. Có 18 chữ ký trong danh mục, gồm các biến thể URI/body.
 Backend normalize SID thành tên/category cố định, lưu cảnh báo và dùng hàng đợi
 firewall/audit hiện có khi operator bật chính sách. Không đổi canonical event hoặc
 feature schema AI, không thu thêm request body vào DB/log.
@@ -12,6 +12,22 @@ feature schema AI, không thu thêm request body vào DB/log.
 | Time/Blind SQLi | 1000008 URI; 1000013 body | 1 | sleep/pg_sleep, benchmark, WAITFOR DELAY, DBMS_LOCK/DBMS_PIPE; URI giữ các nhánh error/statement cũ |
 | Web shell upload | 1000011 | 1 | Tên file thực thi PHP/JSP/ASP và dấu hiệu thực thi server-side trong cùng một multipart part |
 | Possible SSRF | 1000012 URI; 1000014 body | 2 | Tham số URL có đích loopback, IPv4 private, metadata hoặc file:// |
+| Possible HTTP Request Smuggling | 1000015 | 1 | HTTP/1 request có cả Content-Length và Transfer-Encoding, không phụ thuộc thứ tự/case header |
+| Possible XXE | 1000016 | 1 | Body có khai báo ENTITY ngoài SYSTEM/PUBLIC, gồm parameter entity |
+| Possible Host Header Injection | 1000017 | 2 | Host chứa ký tự authority bất thường: @, slash, backslash, ?, # hoặc dấu phẩy |
+| Dangerous Method / WebDAV | 1000018 | 2 | TRACE/TRACK/CONNECT/PROPFIND/PROPPATCH/MKCOL/COPY/MOVE/LOCK/UNLOCK |
+
+Bốn SID 1000015–1000018 ban đầu chỉ cảnh báo, không thêm vào AUTO_BLOCK_SIDS.
+Smuggling chỉ phát hiện tổ hợp CL+TE, không chứng minh proxy/backend parse khác nhau;
+chưa bao phủ duplicate Content-Length, TE obfuscation, HTTP/2 downgrade hoặc mọi biến thể.
+XXE phát hiện khai báo ngoài, không chứng minh parser mở entity. DTD hợp lệ hoặc XML
+trong comment có thể khớp; chưa bao phủ UTF-16, body nén hay mọi cách làm rối.
+Chỉ cân nhắc auto-block XXE khi xác nhận app không dùng XML/DTD hợp lệ.
+Host rule không áp allowlist domain: Host khác tên miền nhưng đúng cú pháp, duplicate
+Host và X-Forwarded-Host chưa được nhóm này phát hiện. Không tự chặn tên miền mới.
+Method rule là policy observation; WebDAV có thể hợp lệ. PUT/PATCH/DELETE và OPTIONS
+được giữ ngoài rule để không gắn cờ REST API/CORS thông thường. SID này gộp các method,
+chỉ opt-in chặn khi toàn bộ danh sách đều bị cấm; nếu cần policy từng method hãy tách SID.
 
 SQLi/SSRF body áp dụng với form-urlencoded, application/json và text/plain; giải mã
 URL tối đa hai lần. Không giải mã JSON Unicode escapes hay mọi định dạng body.
@@ -48,6 +64,18 @@ python3 scripts/test-config-contracts.py SensorRuleTests
 PCAP được tạo trong thư mục tạm và decode offline. Kiểm tra SQLi URI/POST, upload
 PHP/JSP và file bình thường, hai multipart part không được ghép nhầm, SSRF URL nội
 bộ/public/domain giả, flood 99/100 request, keep-alive, từng IP và window 10 giây.
+Bốn test bổ sung kiểm CL+TE ở hai thứ tự và CL/TE đơn lẻ; ENTITY SYSTEM/PUBLIC
+so với XML/internal entity hợp lệ; Host bất thường so với IPv4/domain/IPv6 có port;
+10 method policy so với REST/CORS. Các mẫu smuggling/XXE được phát lại offline,
+không gửi vào app thật. Có thể chạy riêng:
+
+```bash
+python3 scripts/test-extended-rules.py ExtendedRuleTests.test_http_framing_ambiguity
+python3 scripts/test-extended-rules.py ExtendedRuleTests.test_external_xml_entity_and_benign_xml
+python3 scripts/test-extended-rules.py ExtendedRuleTests.test_host_authority_and_normal_hosts
+python3 scripts/test-extended-rules.py ExtendedRuleTests.test_method_policy_preserves_rest_and_cors
+```
+
 Body canary không xuất hiện trong EVE. Không chạy tấn công live hoặc thực thi file.
 
 Rust có test catalog SID/severity khớp file rule, tên cố định/không lưu payload,
@@ -90,7 +118,7 @@ Upload probe chỉ chứa marker PHP trong comment không thực thi. Không t�
 upload/fetch trên Student; đường dẫn probe có thể trả 404 nhưng sensor vẫn quan sát.
 Script không sinh flood live; kiểm ngưỡng bằng PCAP để tránh tải bất ngờ lên lab.
 Đối chiếu SID/IP/thời gian trong EVE, DB và tab Cảnh báo; danh mục Luật phát hiện
-hiển thị đủ 14 SID. Nhiều chữ ký/nguồn có thể quan sát cùng request.
+hiển thị đủ 18 SID. Nhiều chữ ký/nguồn có thể quan sát cùng request.
 
 ## Chính sách chặn: cấu hình sẵn khả năng, chưa bật trên host
 

@@ -1,6 +1,6 @@
 # Nghiệm thu Security trên Ubuntu host
 
-> Bộ rule hiện hành có 14 SID, bổ sung HTTP flood, Time/Blind SQLi URI/body, web shell
+> Bộ rule hiện hành có 18 SID, bổ sung HTTP flood, Time/Blind SQLi URI/body, web shell
 > upload và SSRF URI/body. Xem [EXTENDED_RULES.md](EXTENDED_RULES.md) để kiểm thử và
 > nâng bản rule; các mô tả số lượng rule trong hướng dẫn lịch sử bên dưới là bản cũ.
 
