@@ -24,9 +24,11 @@ from idps_ai.common import (
 )
 from idps_ai.data.dataset import iter_rows, verify_dataset
 from idps_ai.training.checkpoint import RunLock, load_checkpoint, save_checkpoint
+from idps_ai.training.deep import AUTOENCODERS, DEEP_KINDS
 from idps_ai.training.evaluation import threshold_at_fpr
 from idps_ai.training.models import Model
 from idps_ai.training.resources import cgroup_readback, resource_envelope
+from idps_ai.training.schedule import learning_rate
 
 
 def environment_identity():
@@ -52,7 +54,11 @@ def implementation_identity():
 def load_arrays(dataset, directory, kind, feature_count, memory_limit):
     counts = {part: 0 for part in ("train", "val", "test")}
     for row in iter_rows(Path(dataset) / "features.parquet", columns=["split", "label"]):
-        if kind == "autoencoder" and row["split"] == "train" and row["label"] != 0:
+        if row["split"] == "calibration":
+            counts.setdefault("calibration", 0)
+        if row["split"] not in counts:
+            raise PipelineError("Unknown prepared feature partition")
+        if kind in AUTOENCODERS and row["split"] == "train" and row["label"] != 0:
             continue
         counts[row["split"]] += 1
     if any(count == 0 for count in counts.values()):
@@ -72,7 +78,7 @@ def load_arrays(dataset, directory, kind, feature_count, memory_limit):
         arrays[part] = (x, y)
     offsets = dict.fromkeys(counts, 0)
     for row in iter_rows(Path(dataset) / "features.parquet"):
-        if kind == "autoencoder" and row["split"] == "train" and row["label"] != 0:
+        if kind in AUTOENCODERS and row["split"] == "train" and row["label"] != 0:
             continue
         part = row["split"]
         x, y = arrays[part]
@@ -93,7 +99,7 @@ def predict_batches(model, x, batch_size=512):
     for start in range(0, len(x), batch_size):
         score, output = model.predict(x[start : start + batch_size])
         scores.append(score)
-        if model.kind != "autoencoder":
+        if model.kind not in AUTOENCODERS:
             outputs.append(output)
     return np.concatenate(scores), np.concatenate(outputs) if outputs else None
 
@@ -137,15 +143,32 @@ def train(
     env, code_sha = environment_identity(), implementation_identity()
     model_config, training = config["model"], config["training"]
     kind = model_config["kind"]
+    weighting = training.get("class_weighting", "none")
+    if weighting not in ("none", "balanced_sqrt") or (kind in AUTOENCODERS and weighting != "none"):
+        raise PipelineError("Unsupported class weighting for this model")
     batch_size = int(training["batch_size"])
-    if (
-        not 1 <= batch_size <= 4096
-        or not 0 < training["learning_rate"] <= 1
-        or not 0 < training["scheduler_gamma"] <= 1
-        or training["scheduler_decay_steps"] < 1
-    ):
+    if not 1 <= batch_size <= 4096 or not 0 < training["learning_rate"] <= 1:
         raise PipelineError("Invalid learning configuration")
-    if kind == "autoencoder" and spec.get("fit_labels") != "benign_only":
+    learning_rate(training, 0)
+    if not training.get("validation_during_training", True) and training.get(
+        "early_stopping_patience", 0
+    ):
+        raise PipelineError("No-validation fitting requires fixed epochs without early stopping")
+    if kind == "residual_glu":
+        if training.get("regime") == "technical_pilot":
+            if epochs > 2 or max_duration_minutes > 8 or max_steps is not None and max_steps > 1024:
+                raise PipelineError(
+                    "Technical main-model pilots are capped at2epochs/8minutes/1024 explicit steps per session"
+                )
+        elif training.get("regime") == "formal_scale":
+            from idps_ai.data.corpus import require_scale_dataset
+
+            require_scale_dataset(dataset)
+        else:
+            raise PipelineError(
+                "Main model requires an explicit technical_pilot or formal_scale regime"
+            )
+    if kind in AUTOENCODERS and spec.get("fit_labels") != "benign_only":
         raise PipelineError("Autoencoder requires a benign-only train-fitted scaler")
     start = time.monotonic()
     session_id = uuid.uuid4().hex
@@ -166,11 +189,22 @@ def train(
             dataset, run_dir, kind, len(spec["columns"]), int(memory_limit_gib * 1024**3)
         )
         x, y = arrays["train"]
+        class_weights = None
+        if weighting == "balanced_sqrt":
+            counts = np.bincount(y, minlength=len(CLASSES))
+            if (counts == 0).any():
+                raise PipelineError("Balanced classifier requires every training class")
+            class_weights = np.sqrt(len(y) / (len(CLASSES) * counts))
+            class_weights = (class_weights / class_weights.mean()).astype(np.float32)
         rng = np.random.default_rng(training["seed"])
         random.seed(training["seed"])
         if resume_from is not None:
             loaded = load_checkpoint(resume_from)
             model, state, permutation = loaded.model, loaded.state, loaded.permutation
+            if (model.class_weights is None) != (class_weights is None) or (
+                class_weights is not None and not np.array_equal(model.class_weights, class_weights)
+            ):
+                raise PipelineError("Resume class weighting differs from train-only counts")
             if (model.input_dim, model.hidden_dim, model.kind) != (
                 len(spec["columns"]),
                 model_config["hidden_dim"],
@@ -203,8 +237,7 @@ def train(
                 raise PipelineError("Optimizer/global-step mismatch")
             expected_scheduler = {
                 "global_step": model.steps,
-                "next_learning_rate": training["learning_rate"]
-                * training["scheduler_gamma"] ** (model.steps // training["scheduler_decay_steps"]),
+                "next_learning_rate": learning_rate(training, model.steps),
             }
             if state.get("scheduler") != expected_scheduler:
                 raise PipelineError(
@@ -214,7 +247,14 @@ def train(
             random.setstate(tuple_tree(state["python_rng"]))
             state["used_previous_checkpoint"] = loaded.used_previous
         else:
-            model = Model(len(spec["columns"]), model_config["hidden_dim"], kind, training["seed"])
+            model = Model(
+                len(spec["columns"]),
+                model_config["hidden_dim"],
+                kind,
+                training["seed"],
+                class_weights=class_weights,
+                regularization=model_config.get("regularization"),
+            )
             permutation = rng.permutation(len(x)).astype(np.int64)
             state = {
                 "run_id": uuid.uuid4().hex,
@@ -231,6 +271,11 @@ def train(
                 "history": [],
                 "optimizer_seconds": 0.0,
                 "wall_seconds": 0.0,
+                "epoch_loss_sum": 0.0,
+                "epoch_loss_samples": 0,
+                "class_weighting": weighting,
+                "training_loss_semantics": "sample-count weighted mean of per-batch objectives",
+                "validation_loss_semantics": "fixed train-derived weighted CE, or benign-only AE MSE; all-class unweighted loss reported separately",
             }
         state["shard"] = {
             "file": "features.parquet",
@@ -258,9 +303,7 @@ def train(
                 wall_seconds=session_base_wall + time.monotonic() - start,
                 scheduler={
                     "global_step": model.steps,
-                    "next_learning_rate": training["learning_rate"]
-                    * training["scheduler_gamma"]
-                    ** (model.steps // training["scheduler_decay_steps"]),
+                    "next_learning_rate": learning_rate(training, model.steps),
                 },
                 stop_reason=reason,
                 resources=resources,
@@ -273,6 +316,8 @@ def train(
             while state["epoch"] < epochs:
                 if memory.check():
                     reason = reason or "memory_limit"
+                if memory.thermal_limit_reached:
+                    reason = reason or "thermal_limit"
                 if time.monotonic() - start >= max_duration_minutes * 60:
                     reason = reason or "duration_limit"
                 if max_steps is not None and model.steps - initial_step >= max_steps:
@@ -281,36 +326,79 @@ def train(
                     break
                 stop_at = min(state["cursor"] + batch_size, len(x))
                 indices = permutation[state["cursor"] : stop_at]
-                lr = training["learning_rate"] * training["scheduler_gamma"] ** (
-                    model.steps // training["scheduler_decay_steps"]
-                )
+                lr = learning_rate(training, model.steps)
                 before = time.perf_counter()
                 loss = model.train_batch(x[indices], y[indices], lr)
                 session_optimizer += time.perf_counter() - before
                 state["cursor"] = stop_at
                 state["global_step"] = model.steps
                 state["last_loss"] = loss
+                state["epoch_loss_sum"] += loss * len(indices)
+                state["epoch_loss_samples"] += len(indices)
                 if stop_at == len(x):
                     state["epoch"] += 1
                     state["cursor"] = 0
                     permutation = rng.permutation(len(x)).astype(np.int64)
-                    val_score, _ = predict_batches(model, arrays["val"][0])
-                    val_binary = (arrays["val"][1] != 0).astype(np.int64)
-                    calibration = threshold_at_fpr(val_binary, val_score)
-                    from sklearn.metrics import average_precision_score
+                    if training.get("validation_during_training", True):
+                        val_score, val_probabilities = predict_batches(model, arrays["val"][0])
+                        val_y = arrays["val"][1]
+                        if kind in AUTOENCODERS:
+                            val_errors = val_score
+                            val_loss = float(val_score[val_y == 0].mean())
+                        else:
+                            val_errors = -np.log(
+                                np.maximum(val_probabilities[np.arange(len(val_y)), val_y], 1e-12)
+                            )
+                            if kind in DEEP_KINDS:
+                                val_errors = np.concatenate(
+                                    [
+                                        model.classification_errors(
+                                            arrays["val"][0][i : i + 512], val_y[i : i + 512]
+                                        )
+                                        for i in range(0, len(val_y), 512)
+                                    ]
+                                )
+                            if model.class_weights is None:
+                                val_loss = float(val_errors.mean())
+                            else:
+                                weights = model.class_weights[val_y]
+                                val_loss = float((val_errors * weights).sum() / weights.sum())
+                        val_binary = (arrays["val"][1] != 0).astype(np.int64)
+                        # A true calibration partition remains sealed until export.
+                        calibration = (
+                            None
+                            if "calibration" in arrays
+                            else threshold_at_fpr(val_binary, val_score)
+                        )
+                        from sklearn.metrics import average_precision_score
 
-                    metric = float(average_precision_score(val_binary, val_score))
-                    improved = state["best_metric"] is None or metric > state["best_metric"]
-                    state["best_metric"] = metric if improved else state["best_metric"]
-                    state["patience"] = 0 if improved else state["patience"] + 1
+                        metric = float(average_precision_score(val_binary, val_score))
+                        improved = state["best_metric"] is None or metric > state["best_metric"]
+                        state["best_metric"] = metric if improved else state["best_metric"]
+                        state["patience"] = 0 if improved else state["patience"] + 1
+                    else:
+                        metric = val_loss = val_errors = calibration = None
+                        improved = True
+                        state["best_metric"] = None
+                        state["patience"] = 0
                     state["history"].append(
                         {
                             "epoch": state["epoch"],
                             "global_step": model.steps,
                             "validation_pr_auc": metric,
+                            "validation_average_precision": metric,
+                            "training_loss": state["epoch_loss_sum"]
+                            / max(state["epoch_loss_samples"], 1),
+                            "validation_loss": val_loss,
+                            "last_learning_rate": lr,
+                            "validation_unweighted_all_class_loss": float(val_errors.mean())
+                            if val_errors is not None
+                            else None,
                             "calibration": calibration,
                         }
                     )
+                    state["epoch_loss_sum"] = 0.0
+                    state["epoch_loss_samples"] = 0
                     if (
                         training.get("early_stopping_patience", 0)
                         and state["patience"] >= training["early_stopping_patience"]
@@ -323,9 +411,7 @@ def train(
                     last_checkpoint = time.monotonic()
             reason = reason or "epochs_complete"
             memory.check()
-            resources.update(
-                peak_rss_bytes=memory.peak_rss_bytes, peak_tree_rss_bytes=memory.peak_tree_rss_bytes
-            )
+            resources.update(memory.metrics())
             latest = checkpoint()
             resources["cgroup_v2_final"] = cgroup_readback()
             report = {

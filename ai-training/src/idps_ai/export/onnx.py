@@ -13,6 +13,7 @@ from onnx import TensorProto, helper, numpy_helper
 from idps_ai.common import CLASSES, PipelineError, atomic_json, file_sha256, fsync_dir, load_json
 from idps_ai.data.dataset import verify_dataset
 from idps_ai.training.checkpoint import load_checkpoint
+from idps_ai.training.deep import AUTOENCODERS, DEEP_KINDS
 from idps_ai.training.evaluation import evaluate, latency_ms, threshold_at_fpr
 from idps_ai.training.runner import environment_identity, load_arrays, predict_batches
 
@@ -38,20 +39,146 @@ def graph_for(model):
             ]
         )
 
-    affine_nodes("input", "W1", "b1", "hidden_linear")
-    nodes.append(helper.make_node("Relu", ["hidden_linear"], ["hidden"]))
-    output_source = "hidden"
-    if model.kind == "residual":
-        affine_nodes("hidden", "Wr", "br", "residual_linear")
-        nodes.extend(
+    if model.kind == "residual_glu":
+        initializers.extend(
             [
-                helper.make_node("Add", ["residual_linear", "hidden"], ["residual_sum"]),
-                helper.make_node("Relu", ["residual_sum"], ["residual_hidden"]),
+                numpy_helper.from_array(np.array([1], np.int64), "norm_axes"),
+                numpy_helper.from_array(np.array(1e-5, np.float64), "norm_epsilon"),
+                numpy_helper.from_array(np.array(-80.0, np.float64), "sigmoid_min"),
+                numpy_helper.from_array(np.array(80.0, np.float64), "sigmoid_max"),
+                numpy_helper.from_array(np.array(0.5, np.float32), "residual_scale"),
             ]
         )
-        output_source = "residual_hidden"
-    affine_nodes(output_source, "W2", "b2", "output_linear")
-    if model.kind != "autoencoder":
+
+        def normalized(source, suffix):
+            target = "norm" + suffix
+            nodes.extend(
+                [
+                    helper.make_node("Cast", [source], [target + "_64"], to=TensorProto.DOUBLE),
+                    helper.make_node(
+                        "ReduceMean", [target + "_64", "norm_axes"], [target + "_mean"], keepdims=1
+                    ),
+                    helper.make_node(
+                        "Sub", [target + "_64", target + "_mean"], [target + "_center"]
+                    ),
+                    helper.make_node(
+                        "Mul", [target + "_center", target + "_center"], [target + "_square"]
+                    ),
+                    helper.make_node(
+                        "ReduceMean",
+                        [target + "_square", "norm_axes"],
+                        [target + "_var"],
+                        keepdims=1,
+                    ),
+                    helper.make_node("Add", [target + "_var", "norm_epsilon"], [target + "_eps"]),
+                    helper.make_node("Sqrt", [target + "_eps"], [target + "_std"]),
+                    helper.make_node(
+                        "Div", [target + "_center", target + "_std"], [target + "_standard64"]
+                    ),
+                    helper.make_node(
+                        "Cast",
+                        [target + "_standard64"],
+                        [target + "_standard"],
+                        to=TensorProto.FLOAT,
+                    ),
+                    helper.make_node(
+                        "Mul", [target + "_standard", "gamma" + suffix], [target + "_scaled"]
+                    ),
+                    helper.make_node("Add", [target + "_scaled", "beta" + suffix], [target]),
+                ]
+            )
+            return target
+
+        affine_nodes("input", "Win", "bin", "projection")
+        nodes.append(helper.make_node("Relu", ["projection"], ["hidden0"]))
+        h = "hidden0"
+        for i in range(3):
+            suffix = str(i)
+            n = normalized(h, suffix)
+            affine_nodes(n, "Wvalue" + suffix, "bvalue" + suffix, "value" + suffix)
+            affine_nodes(n, "Wgate" + suffix, "bgate" + suffix, "gate" + suffix)
+            g = "gate" + suffix
+            a = "activation" + suffix
+            nodes.extend(
+                [
+                    helper.make_node("Cast", [g], [g + "_64"], to=TensorProto.DOUBLE),
+                    helper.make_node(
+                        "Clip", [g + "_64", "sigmoid_min", "sigmoid_max"], [g + "_clipped"]
+                    ),
+                    helper.make_node("Sigmoid", [g + "_clipped"], [g + "_sig64"]),
+                    helper.make_node("Cast", [g + "_sig64"], [g + "_sig"], to=TensorProto.FLOAT),
+                    helper.make_node("Mul", [g, g + "_sig"], [g + "_silu"]),
+                    helper.make_node("Mul", ["value" + suffix, g + "_silu"], [a]),
+                ]
+            )
+            affine_nodes(a, "Wdown" + suffix, "bdown" + suffix, "down" + suffix)
+            nodes.extend(
+                [
+                    helper.make_node(
+                        "Mul", ["down" + suffix, "residual_scale"], ["scaled" + suffix]
+                    ),
+                    helper.make_node("Add", [h, "scaled" + suffix], ["hidden" + str(i + 1)]),
+                ]
+            )
+            h = "hidden" + str(i + 1)
+        h = normalized(h, "out")
+        affine_nodes(h, "Wout", "bout", "output_linear")
+    elif model.kind == "gated_residual":
+        initializers.extend(
+            [
+                numpy_helper.from_array(np.array(0.5, np.float32), "half"),
+                numpy_helper.from_array(np.array(-80.0, np.float64), "gate_min"),
+                numpy_helper.from_array(np.array(80.0, np.float64), "gate_max"),
+            ]
+        )
+        affine_nodes("input", "Win", "bin", "first_linear")
+        nodes.append(helper.make_node("Relu", ["first_linear"], ["first_hidden"]))
+        h = "first_hidden"
+        for i in range(3):
+            a, g, n = "block" + str(i), "gate" + str(i), "next" + str(i)
+            affine_nodes(h, "W" + a, "b" + a, a + "_linear")
+            nodes.append(helper.make_node("Relu", [a + "_linear"], [a]))
+            affine_nodes(h, "W" + g, "b" + g, g + "_linear")
+            nodes.extend(
+                [
+                    helper.make_node(
+                        "Cast", [g + "_linear"], [g + "_double"], to=TensorProto.DOUBLE
+                    ),
+                    helper.make_node(
+                        "Clip", [g + "_double", "gate_min", "gate_max"], [g + "_clipped"]
+                    ),
+                    helper.make_node("Sigmoid", [g + "_clipped"], [g + "_sigmoid"]),
+                    helper.make_node("Cast", [g + "_sigmoid"], [g], to=TensorProto.FLOAT),
+                    helper.make_node("Mul", [a, "half"], [a + "_scaled"]),
+                    helper.make_node("Mul", [a + "_scaled", g], [a + "_gated"]),
+                    helper.make_node("Add", [h, a + "_gated"], [n]),
+                ]
+            )
+            h = n
+        affine_nodes(h, "Wout", "bout", "output_linear")
+    elif model.kind in DEEP_KINDS:
+        h = "input"
+        for i in range(len(model.layer_dims) - 1):
+            target = "output_linear" if i == len(model.layer_dims) - 2 else "linear" + str(i)
+            affine_nodes(h, "W" + str(i), "b" + str(i), target)
+            if i < len(model.layer_dims) - 2:
+                h = "hidden" + str(i)
+                nodes.append(helper.make_node("Relu", [target], [h]))
+    else:
+        affine_nodes("input", "W1", "b1", "hidden_linear")
+        nodes.append(helper.make_node("Relu", ["hidden_linear"], ["hidden"]))
+        output_source = "hidden"
+        if model.kind == "residual":
+            affine_nodes("hidden", "Wr", "br", "residual_linear")
+            nodes.extend(
+                [
+                    helper.make_node("Add", ["residual_linear", "hidden"], ["residual_sum"]),
+                    helper.make_node("Relu", ["residual_sum"], ["residual_hidden"]),
+                ]
+            )
+            output_source = "residual_hidden"
+        affine_nodes(output_source, "W2", "b2", "output_linear")
+    if model.kind not in AUTOENCODERS:
         initializers += [
             numpy_helper.from_array(np.array(0, np.int64), "benign_index"),
             numpy_helper.from_array(np.array(1, np.float32), "one"),
@@ -129,7 +256,14 @@ def infer_bundle(directory, x, max_threads=8):
     return cpu_session(directory / "model.onnx", max_threads).run(None, {"input": values})
 
 
-def export_bundle(dataset, checkpoint, output, max_threads=8, evaluation_partition="test"):
+def export_bundle(
+    dataset,
+    checkpoint,
+    output,
+    max_threads=8,
+    evaluation_partition="test",
+    independent_validation=False,
+):
     if evaluation_partition not in ("val", "test"):
         raise PipelineError("Invalid evaluation partition")
     dataset, output = Path(dataset).resolve(), Path(output).resolve()
@@ -151,20 +285,49 @@ def export_bundle(dataset, checkpoint, output, max_threads=8, evaluation_partiti
         # Parity covers every prepared row, including attacks excluded from AE
         # fitting. This is inference-only; anomaly weights still learn benign only.
         arrays = load_arrays(dataset, work, "mlp", model.input_dim, 16 * 1024**3)
-        val_scores, _ = predict_batches(model, arrays["val"][0])
-        calibration = threshold_at_fpr((arrays["val"][1] != 0).astype(np.int64), val_scores)
-        test_scores, test_probabilities = predict_batches(model, arrays[evaluation_partition][0])
-        metrics = evaluate(
-            arrays[evaluation_partition][1],
-            test_scores,
-            calibration["threshold"],
-            test_probabilities,
-        )
+        val_scores, val_probabilities = predict_batches(model, arrays["val"][0])
+        if evaluation_partition == "val":
+            test_scores, test_probabilities = val_scores, val_probabilities
+        else:
+            test_scores, test_probabilities = predict_batches(
+                model, arrays[evaluation_partition][0]
+            )
+        if "calibration" in arrays:
+            calibration_scores, _ = predict_batches(model, arrays["calibration"][0])
+            calibration = threshold_at_fpr(
+                (arrays["calibration"][1] != 0).astype(np.int64), calibration_scores
+            )
+            calibration["fit_partition"] = "calibration"
+            metrics = evaluate(
+                arrays[evaluation_partition][1],
+                test_scores,
+                calibration["threshold"],
+                test_probabilities,
+            )
+        elif independent_validation:
+            if evaluation_partition != "val":
+                raise PipelineError("Independent pilot export must keep test quality sealed")
+            from idps_ai.training.protocol import evaluate_independent, validation_groups
+
+            independent_report = evaluate_independent(
+                arrays["val"][1], val_scores, val_probabilities, validation_groups(dataset)
+            )
+            calibration = independent_report["calibration"]
+            metrics = independent_report["selection"]
+            atomic_json(work / "independent_validation.json", independent_report)
+        else:
+            calibration = threshold_at_fpr((arrays["val"][1] != 0).astype(np.int64), val_scores)
+            metrics = evaluate(
+                arrays[evaluation_partition][1],
+                test_scores,
+                calibration["threshold"],
+                test_probabilities,
+            )
         onnx.save_model(graph_for(model), work / "model.onnx")
         session = cpu_session(work / "model.onnx", max_threads)
         parity_rows, maximum = 0, 0.0
         golden = []
-        for part in ("train", "val", "test"):
+        for part in arrays:
             x = arrays[part][0]
             for start in range(0, len(x), 512):
                 batch = np.asarray(x[start : start + 512], dtype=np.float32)
@@ -184,13 +347,18 @@ def export_bundle(dataset, checkpoint, output, max_threads=8, evaluation_partiti
                         }
                     )
         metrics["latency_ms"] = {
+            "sample_partition": evaluation_partition,
             "scope": "warm batch1 model inference; preprocessing excluded",
-            "native": latency_ms(model.predict, arrays["test"][0][:1]),
+            "native": latency_ms(model.predict, arrays[evaluation_partition][0][:1]),
             "onnxruntime": latency_ms(
-                lambda x: session.run(None, {"input": x}), arrays["test"][0][:1]
+                lambda x: session.run(None, {"input": x}), arrays[evaluation_partition][0][:1]
             ),
         }
-        metrics["partition"] = evaluation_partition
+        metrics["partition"] = (
+            "val_selection_groups"
+            if independent_validation and "calibration" not in arrays
+            else evaluation_partition
+        )
         metrics["final_test_metrics_computed"] = evaluation_partition == "test"
         atomic_json(work / "evaluation.json", metrics)
         atomic_json(work / "golden_vectors.json", golden)
@@ -225,7 +393,7 @@ def export_bundle(dataset, checkpoint, output, max_threads=8, evaluation_partiti
             "opset": 18,
             "ir_version": 9,
             "score_semantics": "1 - P(benign)"
-            if model.kind != "autoencoder"
+            if model.kind not in AUTOENCODERS
             else "mean squared reconstruction error; not probability of attack",
             "environment": environment_identity(),
             "runtime": "ONNX Runtime CPUExecutionProvider",
@@ -246,8 +414,12 @@ def export_bundle(dataset, checkpoint, output, max_threads=8, evaluation_partiti
             f"Dataset SHA-256: {data_manifest['dataset_sha256']}\n\n"
             f"Input profile: {spec.get('input_profile', 'native')}; feature version: {spec['feature_version']}.\n\n"
             f"Evaluation partition: {evaluation_partition}; final test metrics computed: {evaluation_partition == 'test'}.\n\n"
-            "Threshold calibration uses validation only. Validation metrics share calibration data and are preliminary.\n"
-            "Read feature_spec.json for missing query/flow semantics and evaluation.json for per-family metrics.\n"
+            + (
+                "Threshold fit on the separate calibration partition; validation is used for candidate selection.\n"
+                if "calibration" in arrays
+                else "Threshold calibration uses validation groups; inspect calibration/selection separation in the report.\n"
+            )
+            + "Read feature_spec.json for missing query/flow semantics and evaluation.json for per-family metrics.\n"
             "No production FPR, Rust/live receipt-time parity, champion promotion or enforcement has been accepted.\n"
             "A lab capture with fictional accounts is not representative production traffic.\n"
         )

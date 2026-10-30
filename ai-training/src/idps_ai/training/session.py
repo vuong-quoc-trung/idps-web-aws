@@ -110,6 +110,28 @@ def validate_formal_readiness(report_path, dataset):
     )
     if not all(checks.get(name) is True for name in required):
         raise PipelineError("Formal sessions require the three-source, long-window data gate")
+    profile = next(c["detail"] for c in report["checks"] if c["id"] == "input_availability_profile")
+    if profile in ("safe_query_numeric_v1", "safe_query_numeric_v2"):
+        deeper = {"independent_campaign_plans"}
+        deeper.update(
+            part + suffix
+            for part in ("train", "val", "test")
+            for suffix in (
+                "_query_projection",
+                "_payload_diversity",
+                "_payload_visibility",
+                "_benign_methods",
+            )
+        )
+        if not all(checks.get(name) is True for name in deeper):
+            raise PipelineError("Numeric-query formal sessions require the diverse-corpus gate")
+        if profile == "safe_query_numeric_v2":
+            deeper = {"structural_signal_variation", "numeric_projection_version"}
+            deeper.update(p + "_hard_negative_holdout" for p in ("train", "val", "test"))
+            if not all(checks.get(n) is True for n in deeper):
+                raise PipelineError(
+                    "Expanded formal session requires structural and hard-negative holdout gates"
+                )
     return report
 
 

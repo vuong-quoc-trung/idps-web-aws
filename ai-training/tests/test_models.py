@@ -44,3 +44,14 @@ def test_residual_candidate_learns_and_its_gradient_matches_a_numerical_referenc
     for _ in range(30):
         model.train_batch(x, y, 0.01)
     assert model.loss_and_gradients(x, y)[0] < initial * 0.5
+
+
+def test_class_weighted_cross_entropy_matches_a_worked_two_example_gradient():
+    model = Model(3, 4, "mlp", 17, class_weights=[1, 3, 1, 1, 1, 1, 1, 1])
+    for value in model.parameters.values():
+        value.fill(0)
+    loss, grads = model.loss_and_gradients(np.zeros((2, 3), np.float32), np.array([0, 1]))
+    assert loss == pytest.approx(2.07944154, abs=1e-6)
+    np.testing.assert_allclose(
+        grads["b2"], [-0.125, -0.625, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125], atol=1e-7
+    )

@@ -1,0 +1,21 @@
+format_version: 1
+model:
+  kind: residual_glu
+  hidden_dim: 1024
+training:
+  regime: technical_pilot
+  seed: 17
+  batch_size: 128
+  learning_rate: 0.0003
+  scheduler: warmup_cosine
+  warmup_steps: 30
+  total_steps: 1000
+  min_lr_ratio: 0.05
+  early_stopping_patience: 0
+  validation_during_training: false
+  class_weighting: none
+resources:
+  max_threads: 8
+  memory_limit_gib: 16
+  max_duration_minutes: 8
+  checkpoint_every_seconds: 30

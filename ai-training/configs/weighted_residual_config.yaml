@@ -1,0 +1,17 @@
+format_version: 1
+model:
+  kind: residual
+  hidden_dim: 64
+training:
+  seed: 17
+  batch_size: 64
+  learning_rate: 0.002
+  scheduler_gamma: 0.98
+  scheduler_decay_steps: 100
+  early_stopping_patience: 12
+  class_weighting: balanced_sqrt
+resources:
+  max_threads: 8
+  memory_limit_gib: 16
+  max_duration_minutes: 150
+  checkpoint_every_seconds: 300

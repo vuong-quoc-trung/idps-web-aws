@@ -1,0 +1,16 @@
+format_version: 1
+model:
+  kind: deep_mlp
+  hidden_dim: 256
+training:
+  seed: 17
+  batch_size: 128
+  learning_rate: 0.0005
+  scheduler_gamma: 0.98
+  scheduler_decay_steps: 200
+  early_stopping_patience: 15
+resources:
+  max_threads: 8
+  memory_limit_gib: 16
+  max_duration_minutes: 150
+  checkpoint_every_seconds: 300
