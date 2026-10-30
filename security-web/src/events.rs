@@ -497,6 +497,22 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                         "Possible SSRF Request Body to Internal or Metadata Target",
                         "Server-Side Request Forgery",
                     ),
+                    Some(1000015) => (
+                        "Possible HTTP Request Smuggling CL TE",
+                        "HTTP Request Smuggling",
+                    ),
+                    Some(1000016) => (
+                        "Possible XML External Entity Declaration",
+                        "XML External Entity",
+                    ),
+                    Some(1000017) => (
+                        "Possible Host Header Injection Invalid Authority",
+                        "Host Header Injection",
+                    ),
+                    Some(1000018) => (
+                        "Dangerous HTTP Method or WebDAV Observation",
+                        "HTTP Method Policy",
+                    ),
                     _ => ("Suricata Alert", "Sensor Alert"),
                 };
                 native_alert = Some(NativeAlert {

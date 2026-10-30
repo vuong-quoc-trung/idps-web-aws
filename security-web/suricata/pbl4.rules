@@ -49,3 +49,17 @@ alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Time Bl
 
 # 14. Same SSRF indicators in form/JSON/plain-text request bodies.
 alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible SSRF Request Body to Internal or Metadata Target"; flow:established,to_server; http.content_type; pcre:"/^(?:application\/(?:x-www-form-urlencoded|json)|text\/plain)(?:[\x3b\s]|$)/i"; http.request_body; url_decode; url_decode; pcre:"/(?:[?&]|^|\x22)(?:url|uri|target|dest|destination|endpoint|callback|webhook|proxy|feed|image_url|avatar_url)(?:=|\x22[+\s]*:[+\s]*\x22)(?:(?:https?|gopher|dict)\x3a\/\/(?:[^\s\/?#@]{1,128}@)?(?:127(?:\.[0-9]{1,3}){3}|10(?:\.[0-9]{1,3}){3}|192\.168(?:\.[0-9]{1,3}){2}|172\.(?:1[6-9]|2[0-9]|3[01])(?:\.[0-9]{1,3}){2}|169\.254\.169\.254|localhost(?:\.localdomain)?|metadata\.google\.internal|\[::1\])(?=[:\/?&#\x22\x27]|$)|file\x3a\/\/\/)/i"; classtype:web-application-attack; priority:2; sid:1000014; rev:1;)
+
+# 15. HTTP/1 framing ambiguity: both Content-Length and Transfer-Encoding.
+# Indicator only; does not prove a front/back-end parser disagreement.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible HTTP Request Smuggling CL TE"; flow:established,to_server; http.header.raw; pcre:"/(?:^|\r\n)Content-Length[\x20\t]*:/i"; pcre:"/(?:^|\r\n)Transfer-Encoding[\x20\t]*:/i"; classtype:web-application-attack; priority:1; sid:1000015; rev:1;)
+
+# 16. External XML entity declaration; legitimate XML/DTD may also match.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible XML External Entity Declaration"; flow:established,to_server; http.request_body; content:"<!ENTITY"; fast_pattern; pcre:"/<!ENTITY\s+(?:%\s+)?[A-Za-z_:][A-Za-z0-9_.:-]{0,127}\s+(?:SYSTEM\s+[\x22\x27]|PUBLIC\s+[\x22\x27][^\x22\x27\r\n]{0,256}[\x22\x27]\s+[\x22\x27])/"; classtype:web-application-attack; priority:1; sid:1000016; rev:1;)
+
+# 17. Suspicious Host authority syntax, not a site-specific domain allowlist.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible Host Header Injection Invalid Authority"; flow:established,to_server; http.header.raw; pcre:"/(?:^|\r\n)Host[\x20\t]*:[\x20\t]*[^\r\n]*[@\x2f\x5c\x3f\x23\x2c]/i"; classtype:web-application-attack; priority:2; sid:1000017; rev:1;)
+
+# 18. Methods outside this Student API policy. Not proof of exploitation.
+# Do not include normal REST PUT/PATCH/DELETE or CORS OPTIONS.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Dangerous HTTP Method or WebDAV Observation"; flow:established,to_server; http.method; pcre:"/^(?:TRACE|TRACK|CONNECT|PROPFIND|PROPPATCH|MKCOL|COPY|MOVE|LOCK|UNLOCK)$/"; classtype:web-application-attack; priority:2; sid:1000018; rev:1;)

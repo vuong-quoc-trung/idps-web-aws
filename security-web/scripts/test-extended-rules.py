@@ -19,8 +19,8 @@ packet = SUPPORT["packet"]
 NEW_SIDS = {1000008, 1000010, 1000011, 1000012, 1000013, 1000014}
 
 
-def request(target="/normal", *, client="192.168.10.10", method="GET", body=b"", content_type=None, at=0):
-    return dict(target=target, client=client, method=method, body=body, content_type=content_type, at=at)
+def request(target="/normal", *, client="192.168.10.10", method="GET", body=b"", content_type=None, at=0, raw=None):
+    return dict(target=target, client=client, method=method, body=body, content_type=content_type, at=at, raw=raw)
 
 
 def multipart(files):
@@ -49,7 +49,7 @@ def write_transactions(path, requests, keepalive=False):
         headers += f'Content-Length: {len(item["body"])}\r\n'
         if item["content_type"]:
             headers += f'Content-Type: {item["content_type"]}\r\n'
-        payload = (headers + "\r\n").encode() + item["body"]
+        payload = item.get("raw") or (headers + "\r\n").encode() + item["body"]
         reply = b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n"
         frames.append((now + .0003, packet(client, server, sport, 80, seq, ack, 24, payload)))
         frames.append((now + .0004, packet(server, client, 80, sport, ack, seq + len(payload), 24, reply)))
@@ -90,6 +90,35 @@ class ExtendedRuleTests(unittest.TestCase):
             raw = (work / "eve.json").read_text()
             self.assertNotIn("WEB_SHELL_FIXTURE_CANARY", raw, "request body must not be logged to EVE")
             return [event for line in raw.splitlines() if (event := json.loads(line)).get("event_type") == "alert"]
+
+    def test_http_framing_ambiguity(self):
+        headers = [b"Content-Length: 5\r\nTransfer-Encoding: chunked\r\n",
+                   b"transfer-encoding: chunked\r\ncontent-length: 5\r\n",
+                   b"Transfer-Encoding: chunked\r\n", b"Content-Length: 5\r\n",
+                   b"X-Note: Content-Length: 5 Transfer-Encoding: chunked\r\n"]
+        requests = [request(raw=b"POST /probe HTTP/1.1\r\nHost: lab\r\n" + h + b"\r\n0\r\n\r\n") for h in headers]
+        hits = {e["src_port"] - 40000 for e in self.inspect(requests) if e["alert"]["signature_id"] == 1000015}
+        self.assertEqual(hits, {0, 1})
+
+    def test_external_xml_entity_and_benign_xml(self):
+        bodies = [b'<!DOCTYPE a [<!ENTITY x SYSTEM "file:///pbl4-fixture">]><a>&x;</a>',
+                  b'<!DOCTYPE a [<!ENTITY % x SYSTEM "https://example.invalid/probe">]><a/>',
+                  b'<!DOCTYPE a [<!ENTITY x PUBLIC "fixture" "https://example.invalid/probe">]><a/>',
+                  b'<!DOCTYPE a [<!ENTITY x "hello">]><a>&x;</a>', b'<a>hello</a>']
+        hits = {e["src_port"] - 40000 for e in self.inspect([request(method="POST", content_type="application/xml", body=b) for b in bodies]) if e["alert"]["signature_id"] == 1000016}
+        self.assertEqual(hits, {0, 1, 2})
+
+    def test_host_authority_and_normal_hosts(self):
+        hosts = [b"lab@evil.invalid", b"lab/evil", b"lab,evil.invalid", b"192.168.10.1", b"student.example:80", b"[::1]:80"]
+        requests = [request(raw=b"GET / HTTP/1.1\r\nHost: " + h + b"\r\n\r\n") for h in hosts]
+        hits = {e["src_port"] - 40000 for e in self.inspect(requests) if e["alert"]["signature_id"] == 1000017}
+        self.assertEqual(hits, {0, 1, 2})
+
+    def test_method_policy_preserves_rest_and_cors(self):
+        methods = ["TRACE", "TRACK", "CONNECT", "PROPFIND", "PROPPATCH", "MKCOL", "COPY", "MOVE", "LOCK", "UNLOCK", "GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+        requests = [request(method=m, target="lab:80" if m == "CONNECT" else "/probe") for m in methods]
+        hits = {e["src_port"] - 40000 for e in self.inspect(requests) if e["alert"]["signature_id"] == 1000018}
+        self.assertEqual(hits, set(range(10)))
 
     def test_time_blind_sqli_uri_and_post_with_benign_controls(self):
         requests = [

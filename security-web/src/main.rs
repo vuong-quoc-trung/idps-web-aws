@@ -491,6 +491,38 @@ fn suricata_rule_catalog(policy: &PolicyEngine) -> Vec<RuleInfo> {
             auto_block_eligible: policy.evaluate_suricata(Some(1000014))
                 == EventPolicyDecision::EligibleForAutoBlock,
         },
+        RuleInfo {
+            sid: 1000015,
+            name: "Possible HTTP Request Smuggling CL TE",
+            category: "HTTP Request Smuggling",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000015))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000016,
+            name: "Possible XML External Entity Declaration",
+            category: "XML External Entity",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000016))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000017,
+            name: "Possible Host Header Injection Invalid Authority",
+            category: "Host Header Injection",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000017))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000018,
+            name: "Dangerous HTTP Method or WebDAV Observation",
+            category: "HTTP Method Policy",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000018))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
     ]
 }
 
@@ -567,7 +599,10 @@ mod parser_tests {
 
     #[test]
     fn extended_rules_require_explicit_response_opt_in() {
-        let sids = vec![1000008, 1000010, 1000011, 1000012, 1000013, 1000014];
+        let sids = vec![
+            1000008, 1000010, 1000011, 1000012, 1000013, 1000014, 1000015, 1000016, 1000017,
+            1000018,
+        ];
         let off = PolicyEngine::new(false, sids.clone(), false);
         let original = PolicyEngine::new(true, vec![1000002], false);
         let enabled = PolicyEngine::new(true, sids.clone(), false);
@@ -596,6 +631,10 @@ mod parser_tests {
             (1000012, 2),
             (1000013, 1),
             (1000014, 2),
+            (1000015, 1),
+            (1000016, 1),
+            (1000017, 2),
+            (1000018, 2),
         ] {
             let parsed = events::parse("SURICATA", &serde_json::json!({
                 "timestamp":"2026-10-29T10:00:00Z", "event_type":"alert",
