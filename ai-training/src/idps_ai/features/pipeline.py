@@ -7,6 +7,7 @@ from pathlib import Path
 
 from idps_ai.common import PipelineError, digest, file_sha256
 from idps_ai.data.privacy import METHODS, PRODUCTS, ROLES, request_numbers, safe_agent
+from idps_ai.data.structure import STRUCTURE_KEYS
 
 WINDOWS = (10, 60, 300)
 NUMERIC_COLUMNS = tuple(sorted(request_numbers("/", None)))
@@ -19,8 +20,11 @@ def implementation_fingerprint():
             str(path.relative_to(root)): file_sha256(path)
             for path in (
                 root / "features/pipeline.py",
+                root / "features/behavior.py",
                 root / "data/privacy.py",
                 root / "data/readers.py",
+                root / "data/query_numeric.py",
+                root / "data/structure.py",
             )
         }
     )
@@ -33,12 +37,20 @@ class FeatureExtractor:
     intentionally observable through context_incomplete, never hidden as zero.
     """
 
-    def __init__(self, max_entities=100_000, max_events_per_entity=2048):
+    def __init__(
+        self,
+        max_entities=100_000,
+        max_events_per_entity=2048,
+        query_structure=False,
+        behavior_dynamics=False,
+    ):
         if max_entities < 1 or max_events_per_entity < 1:
             raise PipelineError("Feature state limits must be positive")
         self.max_entities, self.cap = max_entities, max_events_per_entity
         self.state = OrderedDict()
         self.last_timestamp = -math.inf
+        self.query_structure = query_structure
+        self.behavior_dynamics = behavior_dynamics
 
     def observe(self, event):
         timestamp = float(event["timestamp"])
@@ -51,6 +63,8 @@ class FeatureExtractor:
         role = event.get("role")
         numbers = json.loads(event.get("numeric_json") or "{}")
         result = {name: float(numbers.get(name, 0.0)) for name in NUMERIC_COLUMNS}
+        if self.query_structure:
+            result.update({name: float(numbers.get(name, 0.0)) for name in sorted(STRUCTURE_KEYS)})
         result.update({"method_" + name: float(method == name) for name in METHODS})
         result.update({"role_" + name: float(role == name) for name in ROLES})
         agent = safe_agent(event.get("user_agent"))
@@ -101,6 +115,10 @@ class FeatureExtractor:
                 self.state[key] = (history, clipped_at, first_seen)
                 while len(self.state) > self.max_entities:
                     self.state.popitem(last=False)
+            if self.behavior_dynamics:
+                from idps_ai.features.behavior import dynamics
+
+                result.update({scope + "_" + k: v for k, v in dynamics(history).items()})
             for seconds in WINDOWS:
                 entries = [item for item in history if item[0] >= timestamp - seconds]
                 prefix = f"{scope}_{seconds}s_"
@@ -141,11 +159,14 @@ class FeatureExtractor:
         return result
 
 
-def feature_columns(include_rule_context=False):
+def feature_columns(include_rule_context=False, *, input_profile="native", behavior_dynamics=False):
     template = {"timestamp": 0, "client_key": None, "user_key": None}
     return sorted(
         name
-        for name in FeatureExtractor().observe(template)
+        for name in FeatureExtractor(
+            query_structure=input_profile == "safe_query_numeric_v2",
+            behavior_dynamics=behavior_dynamics,
+        ).observe(template)
         if include_rule_context or not name.startswith("context_suricata_")
     )
 

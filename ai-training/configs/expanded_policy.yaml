@@ -1,0 +1,56 @@
+format_version: 1
+purpose: expanded_3_source_offline_pilot
+allowed_data_kinds:
+- lab_capture
+minimum_requests: 60000
+minimum_label_coverage: 0.95
+minimum_label_confidence: 0.8
+minimum_groups_per_partition: 9
+minimum_benign_per_partition: 1000
+minimum_family_per_partition: 250
+required_families:
+- benign
+- sqli
+- xss
+- path_traversal
+- cmd_injection
+- scanner_recon
+- brute_force
+- behavioral_anomaly
+required_sources:
+- STUDENT_AUDIT
+- NGINX
+- SURICATA
+required_roles:
+- ADMIN
+- STAFF
+- STUDENT
+require_variant_provenance: true
+maximum_invalid_fraction: 0.01
+maximum_unknown_identity_fraction: 0.01
+embargo_seconds: 300
+required_input_profile: safe_query_numeric_v2
+minimum_three_source_fraction: 0.95
+minimum_flow_fraction: 0.75
+minimum_campaign_seconds: 450
+minimum_complete_300s_fraction: 0.25
+minimum_query_projection_fraction: 0.95
+minimum_payload_query_fraction: 0.95
+require_independent_campaign_plans: true
+minimum_payload_variants_per_partition: 12
+payload_variant_families:
+- sqli
+- xss
+- path_traversal
+- cmd_injection
+required_benign_methods:
+- GET
+- HEAD
+- OPTIONS
+- POST
+- PUT
+- PATCH
+- DELETE
+maximum_requests: 80000
+minimum_hard_negative_variants: 12
+minimum_structure_varying_columns: 15

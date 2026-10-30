@@ -1,0 +1,29 @@
+format_version: 1
+purpose: offline_diverse_lab_pilot
+# Floors for a deeper owned-lab corpus, not production acceptance criteria.
+allowed_data_kinds: [lab_capture]
+minimum_requests: 40000
+minimum_label_coverage: 0.95
+minimum_label_confidence: 0.8
+minimum_groups_per_partition: 6
+minimum_benign_per_partition: 1000
+minimum_family_per_partition: 100
+required_families: [benign, sqli, xss, path_traversal, cmd_injection, scanner_recon, brute_force, behavioral_anomaly]
+required_sources: [STUDENT_AUDIT, NGINX, SURICATA]
+required_roles: [ADMIN, STAFF, STUDENT]
+require_variant_provenance: true
+maximum_invalid_fraction: 0.01
+maximum_unknown_identity_fraction: 0.01
+embargo_seconds: 300
+required_input_profile: safe_query_numeric_v1
+minimum_three_source_fraction: 0.95
+minimum_flow_fraction: 0.75
+minimum_campaign_seconds: 450
+minimum_complete_300s_fraction: 0.25
+minimum_query_projection_fraction: 0.95
+minimum_payload_query_fraction: 0.95
+require_independent_campaign_plans: true
+# Decoding can collapse two different URL encodings to one payload identity.
+minimum_payload_variants_per_partition: 6
+payload_variant_families: [sqli, xss, path_traversal, cmd_injection]
+required_benign_methods: [GET, HEAD, OPTIONS, POST, PUT, PATCH, DELETE]

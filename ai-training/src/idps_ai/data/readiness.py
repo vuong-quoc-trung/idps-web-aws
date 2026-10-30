@@ -53,7 +53,7 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
         proof = {}
     check(
         "volume",
-        len(rows) >= policy["minimum_requests"],
+        policy["minimum_requests"] <= len(rows) <= policy.get("maximum_requests", 2_000_000),
         {"actual": len(rows), "minimum": policy["minimum_requests"]},
     )
     known = [r for r in rows if r["label"] is not None]
@@ -172,6 +172,66 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
         {"cross_partition_identities": overlaps},
     )
     variants = proof.get("label_evidence", {}).get("campaign_variant_groups", {})
+    negative_views = proof.get("label_evidence", {}).get("campaign_hard_negative_groups", {})
+    negative_owners = {}
+    if policy.get("require_independent_campaign_plans"):
+        capture = proof.get("capture_metadata", {})
+        plans = capture.get("campaign_durations", [])
+        signatures = [entry.get("plan_sha256") for entry in plans]
+        check(
+            "independent_campaign_plans",
+            len(plans) == capture.get("campaigns")
+            and len(plans) >= sum(groups.values())
+            and all(isinstance(s, str) and len(s) == 64 for s in signatures)
+            and len(set(signatures)) == len(signatures),
+            {
+                "declared_campaigns": capture.get("campaigns"),
+                "distinct_plans": len(set(signatures)),
+            },
+        )
+    for partition in ("train", "val", "test"):
+        part = [r for r in known if assignment.get(r["event_key"], ("",))[0] == partition]
+        if policy.get("required_benign_methods"):
+            methods = Counter(r["http_method"] for r in part if r["label"] == 0)
+            check(
+                partition + "_benign_methods",
+                all(methods[m] > 0 for m in policy["required_benign_methods"]),
+                dict(methods),
+            )
+        if policy.get("minimum_payload_variants_per_partition"):
+            if policy.get("minimum_hard_negative_variants"):
+                views = {v for r in part for v in negative_views.get(r["campaign_key"], [])}
+                overlap = sum(
+                    v in negative_owners and negative_owners[v] != partition for v in views
+                )
+                negative_owners.update({v: partition for v in views})
+                check(
+                    partition + "_hard_negative_holdout",
+                    len(views) >= policy["minimum_hard_negative_variants"] and overlap == 0,
+                    {"distinct_variants": len(views), "cross_partition_variants": overlap},
+                )
+            identifiers = {v for r in part for v in variants.get(r["campaign_key"], [])}
+            counts = {
+                f: sum(v.startswith(f + "-") for v in identifiers)
+                for f in policy["payload_variant_families"]
+            }
+            check(
+                partition + "_payload_diversity",
+                all(n >= policy["minimum_payload_variants_per_partition"] for n in counts.values()),
+                counts,
+            )
+        if policy.get("minimum_payload_query_fraction"):
+            visible = {}
+            for family in policy["payload_variant_families"]:
+                cases = [r for r in part if r["attack_family"] == family]
+                visible[family] = sum(
+                    json.loads(r["numeric_json"]).get("query_length", 0) > 0 for r in cases
+                ) / max(len(cases), 1)
+            check(
+                partition + "_payload_visibility",
+                all(n >= policy["minimum_payload_query_fraction"] for n in visible.values()),
+                visible,
+            )
     variant_partitions = {}
     variant_overlap = 0
     missing_variant = 0
@@ -211,6 +271,15 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
         )
         for partition in ("train", "val", "test"):
             part = [r for r in rows if assignment.get(r["event_key"], ("",))[0] == partition]
+            if policy.get("minimum_query_projection_fraction"):
+                projected = sum(
+                    json.loads(r["numeric_json"]).get("query_lexical_available") == 1 for r in part
+                )
+                check(
+                    partition + "_query_projection",
+                    projected / max(len(part), 1) >= policy["minimum_query_projection_fraction"],
+                    {"available": projected, "total": len(part)},
+                )
             matched = sum(set(policy["required_sources"]).issubset(r["sources"]) for r in part)
             available = sum(
                 all(
@@ -254,6 +323,7 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
                 },
             )
     spec_file = Path(dataset) / "feature_spec.json"
+    spec = {}
     vector_count = nonfinite = mismatch = 0
     quality_counts = Counter()
     feature_ranges = {}
@@ -278,7 +348,11 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
         )
         check(
             "feature_contract",
-            spec["columns"] == feature_columns()
+            spec["columns"]
+            == feature_columns(
+                input_profile=spec.get("input_profile", "native"),
+                behavior_dynamics=spec.get("state_limits", {}).get("behavior_dynamics", False),
+            )
             and spec.get("implementation_sha256") == implementation_fingerprint(),
             "Feature order and implementation fingerprint match the current source",
         )
@@ -290,7 +364,7 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
         # Replay each causal state independently; compare every persisted feature.
         def replay():
             for partition in ("train", "val", "test"):
-                extractor = FeatureExtractor()
+                extractor = FeatureExtractor(**spec["state_limits"])
                 for row in rows:
                     if row.get("split") != partition:
                         continue
@@ -329,6 +403,21 @@ def audit_readiness(dataset, output, data_kind, policy_path=None, provenance=Non
             "window_300s_depth",
             complete / max(len(rows), 1) >= policy["minimum_complete_300s_fraction"],
             {"complete_rows": complete, "total": len(rows)},
+        )
+    if policy.get("minimum_structure_varying_columns"):
+        from idps_ai.data.structure import STRUCTURE_KEYS
+
+        count = sum(name in STRUCTURE_KEYS and b[0] != b[1] for name, b in feature_ranges.items())
+        check(
+            "structural_signal_variation",
+            count >= policy["minimum_structure_varying_columns"],
+            {"varying": count, "total": len(STRUCTURE_KEYS)},
+        )
+        check(
+            "numeric_projection_version",
+            source.get("input_profile") == "safe_query_numeric_v2"
+            and spec.get("query_projection", {}).get("version") == 2,
+            "Requires projection2 and versioned structural features",
         )
     passed = all(c["pass"] for c in checks)
     result = {

@@ -103,7 +103,7 @@ def entropy(text):
     return -sum((n / len(text)) * math.log2(n / len(text)) for n in Counter(text).values())
 
 
-def request_numbers(path, query, original=None):
+def request_numbers(path, query, original=None, *, decoded_operators=False):
     """Ephemeral lexical analysis; raw strings are NEVER returned or persisted.
 
     Credential values/PII are removed before numeric analysis. Upstream-masked
@@ -177,7 +177,12 @@ def request_numbers(path, query, original=None):
         ("dollar", "$"),
         ("pipe", "|"),
     ):
-        result[name] = float(view.count(token))
+        # New numeric-only EVE profile decodes operators after redaction so
+        # URL encoding does not erase command/XSS punctuation. Legacy profiles
+        # retain their original counter semantics. Percent counts stay raw.
+        result[name] = float(
+            (decoded if decoded_operators and name != "percent" else view).count(token)
+        )
     for name in ("length", "parameter_count", "percent_count", "quote_count", "operator_count"):
         value = original.get(name) if isinstance(original, dict) else None
         result["query_original_" + name] = (

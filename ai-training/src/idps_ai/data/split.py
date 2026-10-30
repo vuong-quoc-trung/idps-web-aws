@@ -18,6 +18,7 @@ from idps_ai.data.dataset import (
     write_rows,
 )
 from idps_ai.data.privacy import pseudonym
+from idps_ai.data.query_numeric import PROFILE, PROFILE_V2
 from idps_ai.features.pipeline import (
     FeatureExtractor,
     feature_columns,
@@ -91,7 +92,7 @@ def temporal_groups(rows, train_fraction=0.6, val_fraction=0.2, embargo_seconds=
     }
 
 
-def prepare(dataset, output, labels_path=None, key=None):
+def prepare(dataset, output, labels_path=None, key=None, behavior_dynamics=False):
     dataset, output = Path(dataset).resolve(), Path(output).resolve()
     source_manifest = verify_dataset(dataset, "collected")
     if output.exists() or dataset.is_relative_to(output):
@@ -127,10 +128,16 @@ def prepare(dataset, output, labels_path=None, key=None):
         for row in labeled_rows()
     ]
     assignment, split_report = temporal_groups(metadata)
-    columns = feature_columns()
+    profile = source_manifest.get("input_profile", "native")
+    state_options = {"query_structure": True} if profile == PROFILE_V2 else {}
+    if behavior_dynamics:
+        if profile != PROFILE_V2:
+            raise PipelineError("Behavior revision5 requires the numeric v2 input profile")
+        state_options["behavior_dynamics"] = True
+    columns = feature_columns(input_profile=profile, behavior_dynamics=behavior_dynamics)
 
     def feature_rows(partition):
-        extractor = FeatureExtractor()
+        extractor = FeatureExtractor(**state_options)
         for row in labeled_rows():
             split, _ = assignment[row["event_key"]]
             if split != partition:
@@ -143,6 +150,7 @@ def prepare(dataset, output, labels_path=None, key=None):
         (numbers for row, numbers in feature_rows("train") if row["label"] == 0), columns
     )
     spec["fit_labels"] = "benign_only"
+    spec["state_limits"].update(state_options)
     spec["implementation_sha256"] = implementation_fingerprint()
     output.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     with tempfile.TemporaryDirectory(prefix=".prepare-", dir=output.parent) as temporary:
@@ -157,6 +165,19 @@ def prepare(dataset, output, labels_path=None, key=None):
 
         write_rows(work / "requests.parquet", assigned_rows(), REQUEST_SCHEMA)
         spec["input_profile"] = source_manifest.get("input_profile", "native")
+        if spec["input_profile"] in (PROFILE, PROFILE_V2):
+            revision = "5" if behavior_dynamics else "4.1" if profile == PROFILE_V2 else "4"
+            spec["feature_version"] = "ai-features-" + revision
+            spec["normalizer_version"] = "ai-normalizer-" + revision
+            spec["query_projection"] = {
+                "version": 2 if profile == PROFILE_V2 else 1,
+                "producer": "idps-ai EVE numeric bridge, before URL redaction",
+                "privacy": "bounded numeric structure only; credential fields and PII filtered; no raw query or rule decision",
+                "availability": "requires the same bridge at inference; missing stays missing",
+            }
+            spec["input_contract"] = (
+                f"chronological fused requests.parquet row; ai-normalizer-{revision}; numeric query projection v{spec['query_projection']['version']}; not an individual producer line"
+            )
         spec["flow_semantics"] = source_manifest.get("flow_semantics", "same-flow past-only")
         atomic_json(work / "feature_spec.json", spec)
         schema = pa.schema(
@@ -195,6 +216,7 @@ def prepare(dataset, output, labels_path=None, key=None):
             work,
             "prepared",
             ["observations.parquet", "requests.parquet", "features.parquet", "feature_spec.json"],
+            normalizer_version=spec["normalizer_version"],
             parent_dataset_sha256=source_manifest["dataset_sha256"],
             input_profile=source_manifest.get("input_profile", "native"),
             flow_semantics=source_manifest.get("flow_semantics", "same-flow past-only"),

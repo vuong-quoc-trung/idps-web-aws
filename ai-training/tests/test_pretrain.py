@@ -335,3 +335,96 @@ def test_capacity_uses_inventory_before_the_launcher_cap_without_halving_twice(p
         )
         assert report["available_cpus_before_cap"] == original
         assert len(report["current_affinity"]) == requested
+
+
+def test_observer_excludes_decoded_payload_overlap_from_later_holdouts_without_rewriting_logs(
+    tmp_path,
+):
+    import json
+
+    from idps_ai.common import atomic_json, file_sha256
+    from idps_ai.data.provenance import observer_labels
+
+    observer = tmp_path / "observer.jsonl"
+    records = []
+    for i, (campaign, variant) in enumerate([(0, "a"), (1, "a"), (1, "b"), (2, "c")]):
+        records.append(
+            {
+                "request_id": f"request-{i}",
+                "campaign_id": f"fixture-{campaign:02d}",
+                "attack_family": "path_traversal",
+                "label": 1,
+                "label_source": "scenario_manifest",
+                "label_confidence": 1.0,
+                "review_status": "approved",
+                "status_code": 200,
+                "expected_status_codes": [200],
+                "variant_group": "path_traversal-" + variant * 64,
+            }
+        )
+    observer.write_text("".join(json.dumps(r) + "\n" for r in records))
+    before = observer.read_bytes()
+    capture = tmp_path / "capture.json"
+    atomic_json(
+        capture,
+        {
+            "data_kind": "lab_capture",
+            "requests": 4,
+            "observer_sha256": file_sha256(observer),
+            "query_profile": "safe_query_numeric_v1",
+            "campaign_durations": [{"campaign": i, "band": i} for i in range(3)],
+        },
+    )
+    proof = observer_labels(observer, capture, tmp_path / "labels", b"k" * 32)
+    assert proof["heldout_overlap_excluded_rows"] == 1
+    assert (
+        proof["heldout_overlap_exclusions"][0]["reason"] == "decoded_payload_seen_in_earlier_band"
+    )
+    assert proof["heldout_overlap_exclusions"][0]["earliest_band"] == 0
+    assert proof["heldout_overlap_exclusions"][0]["excluded_band"] == 1
+    assert proof["approved_rows"] == 3 and proof["unknown_rows"] == 1
+    approved = [
+        json.loads(line) for line in (tmp_path / "labels/labels.jsonl").read_text().splitlines()
+    ]
+    assert {r["request_id"] for r in approved} == {"request-0", "request-2", "request-3"}
+    assert observer.read_bytes() == before
+
+
+def test_structural_corpus_excludes_repeated_benign_challenge_labels_in_later_bands(tmp_path):
+    from idps_ai.common import atomic_json, file_sha256
+    from idps_ai.data.provenance import observer_labels
+
+    observer = tmp_path / "observer.jsonl"
+    values = []
+    for i, view in enumerate(("a", "a", "b")):
+        values.append(
+            {
+                "request_id": f"r-{i}",
+                "campaign_id": f"campaign-{i:02d}",
+                "label": 0,
+                "attack_family": "benign",
+                "label_source": "scenario_manifest",
+                "label_confidence": 1.0,
+                "review_status": "approved",
+                "status_code": 200,
+                "expected_status_codes": [200],
+                "scenario": "hard_negative_search",
+                "variant_group": "hard_negative-" + view * 64,
+            }
+        )
+    observer.write_text("".join(json.dumps(v) + "\n" for v in values))
+    capture = tmp_path / "capture.json"
+    atomic_json(
+        capture,
+        {
+            "query_profile": "safe_query_numeric_v2",
+            "data_kind": "lab_capture",
+            "requests": 3,
+            "observer_sha256": file_sha256(observer),
+            "campaign_durations": [{"campaign": i, "band": i} for i in range(3)],
+        },
+    )
+    evidence = observer_labels(observer, capture, tmp_path / "labels", b"k" * 32)
+    assert evidence["approved_rows"] == 2 and evidence["unknown_rows"] == 1
+    assert evidence["heldout_overlap_excluded_rows"] == 1
+    assert len(evidence["campaign_hard_negative_groups"]) == 2

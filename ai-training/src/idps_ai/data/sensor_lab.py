@@ -124,6 +124,9 @@ def probe_capture(directory):
 
 class _Relay(socketserver.ThreadingUnixStreamServer):
     daemon_threads = True
+    # Nginx uses nonblocking Unix connects. The default backlog of five can
+    # return EAGAIN/502 when 18 independent campaigns initialize together.
+    request_queue_size = 128
 
 
 class _RelayHandler(socketserver.BaseRequestHandler):
@@ -179,7 +182,12 @@ def _campaign_worker(directory, duration, requests):
             time.sleep(0.3)
             if nginx.poll() is not None:
                 raise PipelineError("Private namespace Nginx failed")
-            run_extended_campaigns(directory, count=requests, duration=duration)
+            if marker.get("scenario_version") == "request-challenge-1":
+                from idps_ai.data.request_campaigns import run_challenge
+
+                run_challenge(directory, count=requests, duration=duration)
+            else:
+                run_extended_campaigns(directory, count=requests, duration=duration)
         finally:
             nginx.send_signal(signal.SIGQUIT)
             nginx.wait(timeout=20)
@@ -194,7 +202,7 @@ def _campaign_worker(directory, duration, requests):
             "source": "real Linux TCP, no packet synthesis",
             "tcpdump_log_sha256": file_sha256(directory / "tcpdump.log"),
             "nginx_template_sha256": marker["nginx_template_sha256"],
-            "query_profile": "edge_masked_v1",
+            "query_profile": marker.get("ai_input_profile", "edge_masked_v1"),
         },
     )
 

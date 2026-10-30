@@ -1,6 +1,28 @@
 import json
 
 
+def test_private_relay_buffers_all_45_campaign_bootstrap_connections(tmp_path):
+    import errno
+    import socket
+
+    from idps_ai.data.sensor_lab import _Relay, _RelayHandler
+
+    # Exercise the kernel queue before the accept loop gets CPU, as happens
+    # during a simultaneous Nginx bootstrap. EAGAIN becomes upstream HTTP 502.
+    server = _Relay(str(tmp_path / "student.sock"), _RelayHandler)
+    clients = []
+    try:
+        for _ in range(45):
+            client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            client.setblocking(False)
+            clients.append(client)
+            assert client.connect_ex(server.server_address) in (0, errno.EINPROGRESS)
+    finally:
+        for client in clients:
+            client.close()
+        server.server_close()
+
+
 def test_private_namespace_captures_real_http_without_host_packet_privileges(tmp_path):
     from idps_ai.data.sensor_lab import probe_capture
 

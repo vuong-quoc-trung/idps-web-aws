@@ -23,6 +23,7 @@ from idps_ai.common import (
     load_json,
 )
 from idps_ai.data.privacy import pseudonym
+from idps_ai.data.query_numeric import CAUSAL_PROFILES, PROFILE, PROFILE_V2
 from idps_ai.data.readers import read_events
 
 OBSERVATION_SCHEMA = pa.schema(
@@ -174,7 +175,11 @@ def manifest(directory, stage, files, **metadata):
         "stage": stage,
         "schema_version": "1.0",
         "schema_sha256": file_sha256(REPO_ROOT / "contracts/canonical-event-v1.schema.json"),
-        "normalizer_version": "ai-normalizer-3",
+        "normalizer_version": "ai-normalizer-4.1"
+        if metadata.get("input_profile") == PROFILE_V2
+        else "ai-normalizer-4"
+        if metadata.get("input_profile") == PROFILE
+        else "ai-normalizer-3",
         "files": files,
         **metadata,
     }
@@ -342,7 +347,7 @@ def collect(
                     ).fetchone()
                     if observed_flow:
                         event["flow"] = json.loads(observed_flow[0])["flow"]
-                if input_profile == "edge_masked_v1":
+                if input_profile in CAUSAL_PROFILES:
                     event["flow"] = {name: None for name in event["flow"]}
                     # Closed-flow counters belong to previous completed flows. NEVER
                     # backfill a request with its own future TCP close totals.
@@ -419,7 +424,7 @@ def collect(
             inputs=input_info,
             input_profile=input_profile,
             flow_semantics="most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate"
-            if input_profile == "edge_masked_v1"
+            if input_profile in CAUSAL_PROFILES
             else "same-flow past-only",
             label_manifest_sha256=file_sha256(labels_path) if labels_path else None,
             redaction_key_fingerprint=pseudonym(key, "fingerprint", "v1"),

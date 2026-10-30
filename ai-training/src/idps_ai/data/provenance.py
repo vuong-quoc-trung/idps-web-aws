@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import tempfile
 from collections import Counter
 from pathlib import Path
@@ -18,8 +19,55 @@ from idps_ai.common import (
 )
 from idps_ai.data.dataset import load_labels, verify_dataset
 from idps_ai.data.privacy import pseudonym
+from idps_ai.data.query_numeric import PROFILE, PROFILE_V2
 from idps_ai.data.review import SLUG
 from idps_ai.data.snapshot import new_destination, verify_snapshot
+
+PAYLOAD_FAMILIES = frozenset(("sqli", "xss", "path_traversal", "cmd_injection"))
+
+
+def _observer_records(path):
+    with Path(path).open("rb") as stream:
+        while line := stream.readline(65537):
+            if len(line) > 65536 or not line.endswith(b"\n"):
+                raise PipelineError("Oversized/partial observer record")
+            try:
+                value = json.loads(line)
+                if not isinstance(value, dict):
+                    raise ValueError
+            except (ValueError, TypeError):
+                raise PipelineError("Invalid observer record") from None
+            yield value
+
+
+def _payload_owners(observer, capture):
+    """Declare held-out identity exclusions before fitting, never from metrics."""
+    bands = {entry["campaign"]: entry["band"] for entry in capture.get("campaign_durations", [])}
+    if not bands or any(type(b) is not int or b not in (0, 1, 2) for b in bands.values()):
+        raise PipelineError("Numeric corpus requires declared temporal campaign bands")
+
+    def band(value):
+        try:
+            return bands[int(value["campaign_id"].rsplit("-", 1)[1])]
+        except (KeyError, ValueError, AttributeError, IndexError):
+            raise PipelineError("Observer campaign does not match declared temporal band") from None
+
+    owners = {}
+    for value in _observer_records(observer):
+        family = value.get("attack_family")
+        if (
+            capture.get("query_profile") == PROFILE_V2
+            and family == "benign"
+            and value.get("scenario") == "hard_negative_search"
+        ):
+            family = "hard_negative"
+        if family not in (*PAYLOAD_FAMILIES, "hard_negative"):
+            continue
+        variant = value.get("variant_group")
+        if not isinstance(variant, str) or not re.fullmatch(family + r"-[a-f0-9]{64}", variant):
+            raise PipelineError("Numeric corpus requires decoded payload identity hashes")
+        owners[variant] = min(owners.get(variant, 2), band(value))
+    return owners, band
 
 
 def observer_labels(observer, capture_result, output, key):
@@ -30,18 +78,20 @@ def observer_labels(observer, capture_result, output, key):
     output = new_destination(output)
     counts = Counter()
     pending = corrections = 0
+    excluded_overlap = Counter()
+    overlap_records = []
+    owners, band = (
+        _payload_owners(observer, capture)
+        if capture.get("query_profile") in (PROFILE, PROFILE_V2)
+        else ({}, None)
+    )
     seen = set()
     variants = {}
+    hard_negatives = {}
     with tempfile.TemporaryDirectory(prefix=".observer-labels-", dir=output.parent) as temporary:
         work = Path(temporary)
-        with Path(observer).open("rb") as stream, (work / "labels.jsonl").open("w") as dest:
-            while line := stream.readline(65537):
-                if len(line) > 65536:
-                    raise PipelineError("Oversized observer record")
-                try:
-                    value = json.loads(line)
-                except (ValueError, TypeError):
-                    raise PipelineError("Invalid observer record") from None
+        with (work / "labels.jsonl").open("w") as dest:
+            for value in _observer_records(observer):
                 rid = value.get("request_id")
                 family = value.get("attack_family")
                 campaign = value.get("campaign_id")
@@ -74,6 +124,32 @@ def observer_labels(observer, capture_result, output, key):
                 if not approved:
                     pending += 1
                     continue
+                variant_family = (
+                    "hard_negative"
+                    if capture.get("query_profile") == PROFILE_V2
+                    and family == "benign"
+                    and value.get("scenario") == "hard_negative_search"
+                    else family
+                )
+                if (
+                    band
+                    and variant_family in (*PAYLOAD_FAMILIES, "hard_negative")
+                    and band(value) > owners[value["variant_group"]]
+                ):
+                    # Keep the real request as unlabeled causal context. It may
+                    # not become an approved holdout example seen in an earlier band.
+                    excluded_overlap[family] += 1
+                    overlap_records.append(
+                        {
+                            "request_key": pseudonym(key, "request", rid),
+                            "family": family,
+                            "variant_group": value["variant_group"],
+                            "earliest_band": owners[value["variant_group"]],
+                            "excluded_band": band(value),
+                            "reason": "decoded_payload_seen_in_earlier_band",
+                        }
+                    )
+                    continue
                 item = {
                     k: value[k]
                     for k in (
@@ -93,12 +169,18 @@ def observer_labels(observer, capture_result, output, key):
                 )
                 dest.write(json.dumps(item, sort_keys=True) + "\n")
                 counts[family] += 1
+                if variant_family == "hard_negative":
+                    hard_negatives.setdefault(pseudonym(key, "campaign", campaign), set()).add(
+                        value["variant_group"]
+                    )
                 if family != "benign":
                     variants.setdefault(pseudonym(key, "campaign", campaign), set()).add(
                         value.get("variant_group", "unknown")
                     )
         if len(seen) != capture["requests"]:
             raise PipelineError("Observer count does not match capture manifest")
+        if file_sha256(observer) != observer_sha:
+            raise PipelineError("Observer changed during label preparation")
         os.chmod(work / "labels.jsonl", 0o600)
         load_labels(work / "labels.jsonl", key)
         result = {
@@ -107,9 +189,17 @@ def observer_labels(observer, capture_result, output, key):
             "observer_sha256": file_sha256(observer),
             "labels_sha256": file_sha256(work / "labels.jsonl"),
             "approved_rows": sum(counts.values()),
-            "unknown_rows": pending,
+            "unknown_rows": pending + sum(excluded_overlap.values()),
+            "contract_pending_rows": pending,
+            "heldout_overlap_excluded_rows": sum(excluded_overlap.values()),
+            "heldout_overlap_excluded_families": dict(excluded_overlap),
+            "heldout_overlap_exclusions": overlap_records,
+            "heldout_overlap_policy": "keep earliest declared temporal band; later decoded-payload duplicates are context only, never training/evaluation labels"
+            if band
+            else "legacy capture; no numeric payload identity contract",
             "label_counts": dict(counts),
             "campaign_variant_groups": {k: sorted(v) for k, v in variants.items()},
+            "campaign_hard_negative_groups": {k: sorted(v) for k, v in hard_negatives.items()},
             "outcome_contract_corrections": {"benign_HEAD_OPTIONS_catalog_403": corrections},
             "outcome_contract_source_sha256": file_sha256(
                 REPO_ROOT

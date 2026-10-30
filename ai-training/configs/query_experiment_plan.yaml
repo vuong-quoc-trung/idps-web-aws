@@ -1,0 +1,33 @@
+format_version: 1
+purpose: query_numeric_corpus_offline_comparison
+input_profile: safe_query_numeric_v1
+feature_version: ai-features-4
+canonical_schema: '1.0'
+entry_policy: query_numeric_policy.yaml
+candidate_configs:
+  mlp: train_config.yaml
+  autoencoder: anomaly_config.yaml
+  residual: residual_config.yaml
+  weighted_residual: weighted_residual_config.yaml
+pilot_epochs: 5
+formal_total_epochs_cap: 100
+seeds_for_later_replication: [17, 29, 43]
+class_weighting: train_counts_only_inverse_square_root
+max_session_minutes: 150
+max_threads: 8
+memory_limit_gib: 16
+selection_partition: val
+final_evaluation_partition: test
+test_metrics_sealed_until_model_and_threshold_frozen: true
+champion_selected: false
+required_diagnostics:
+  - training_and_validation_objectives
+  - per_family_and_benign_http_error_false_alerts
+  - missing_query_flow_actor_response_sensitivity
+  - rule_or_ai_at_equal_false_alert_budget
+  - fresh_process_resume_and_full_row_onnx_parity
+limits:
+  - Numeric projection cannot reconstruct semantic request intent or request bodies.
+  - The live AI input must use the same bridge before URL redaction; Rust serving acceptance is separate.
+  - Scripted fixture data and one topology do not establish production generalization.
+  - A 150 minute cap does not require a run to last 150 minutes.

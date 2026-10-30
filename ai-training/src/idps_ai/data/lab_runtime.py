@@ -22,7 +22,10 @@ from idps_ai.data.lab_capture import ROLES, LabClient
 from idps_ai.data.snapshot import new_destination
 
 
-def start_lab(output, nginx_bin):
+def start_lab(output, nginx_bin, campaigns=15):
+    if campaigns not in (15, 30, 45):
+        raise PipelineError("Owned lab campaign count must be15,30or45")
+    roles = ROLES if campaigns == 15 else ["ADMIN", "STAFF", "STUDENT"] * (campaigns // 3)
     output = new_destination(output)
     nginx_bin = Path(nginx_bin).resolve()
     if not nginx_bin.is_file():
@@ -48,6 +51,19 @@ def start_lab(output, nginx_bin):
             ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True
         ).strip(),
         "edge_port": 18881,
+        "roles": roles,
+        "campaign_band_sizes": [campaigns * 3 // 5, campaigns // 5, campaigns // 5],
+        "scenario_version": "diverse-3"
+        if campaigns == 45
+        else "diverse-2"
+        if campaigns > 15
+        else "legacy",
+        "scenario_seed": secrets.randbits(31) if campaigns == 45 else 0,
+        "ai_input_profile": "safe_query_numeric_v2"
+        if campaigns == 45
+        else "safe_query_numeric_v1"
+        if campaigns > 15
+        else "edge_masked_v1",
         "backend_port": 18880,
         "database_port": 55435,
         "database_container": "idps-ai-pretrain-" + capture_id[:10],
@@ -129,6 +145,7 @@ def start_lab(output, nginx_bin):
             STUDENT_BIND_ADDRESS="127.0.0.1",
             STUDENT_AUDIT_LOG_PATH=str(output / "student-audit.log"),
             STUDENT_AUDIT_HMAC_KEY=producer_key,
+            STUDENT_AUDIT_MAX_BYTES="268435456",
             STUDENT_SOURCE_INSTANCE="ai-isolated-" + capture_id,
             TRUSTED_PROXIES="127.0.0.0/8",
             AUDIT_INCLUDE_SUCCESSFUL_READS="true",
@@ -166,7 +183,7 @@ def start_lab(output, nginx_bin):
         atomic_json(output / "accounts-private.json", {"password": password})
         sql = "CREATE EXTENSION IF NOT EXISTS pgcrypto;\n" + "\n".join(
             f"INSERT INTO users(username,role,password_hash,password_setup_required,enabled,created_at,updated_at) VALUES('ai_lab_{i:02d}','{role}',crypt('{password}',gen_salt('bf',10)),false,true,now(),now());"
-            for i, role in enumerate(ROLES)
+            for i, role in enumerate(roles)
         )
         subprocess.run(
             [

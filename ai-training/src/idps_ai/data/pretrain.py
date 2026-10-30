@@ -18,6 +18,7 @@ from idps_ai.data.provenance import (
     register_provenance,
     scope_capture_inputs,
 )
+from idps_ai.data.query_numeric import CAUSAL_PROFILES, PROFILE, PROFILE_V2
 from idps_ai.data.readers import Input
 from idps_ai.data.readiness import audit_readiness
 from idps_ai.data.review import export_review
@@ -29,14 +30,15 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
     lab = Path(lab_dir).resolve()
     output = new_destination(output)
     capture = load_json(lab / "capture-result.json")
-    if capture.get("campaigns") != 15 or capture.get("data_kind") != "lab_capture":
+    if capture.get("campaigns") not in (15, 30, 45) or capture.get("data_kind") != "lab_capture":
         raise PipelineError("Lab capture must complete before finalizing its dataset")
     stop_lab(lab)
     output.mkdir(mode=0o700)
     key = secrets.token_bytes(32)
     (output / "training-redaction.key").write_bytes(key)
     os.chmod(output / "training-redaction.key", 0o600)
-    three_source = capture.get("query_profile") == "edge_masked_v1"
+    profile = capture.get("query_profile", "native")
+    three_source = profile in CAUSAL_PROFILES
     source_inputs = [
         Input("student", lab / "student-audit.log"),
         Input("nginx", lab / ("access.log" if three_source else "access-lab.log")),
@@ -51,8 +53,16 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
             or sensor_evidence["pcap_sha256"] != file_sha256(lab / "traffic.pcap")
         ):
             raise PipelineError("PCAP/EVE evidence checksum mismatch")
+        if sensor_evidence.get("input_profile", "edge_masked_v1") != profile:
+            raise PipelineError("Capture and EVE query availability profiles differ")
         source_inputs.append(Input("suricata", lab / "eve/eve.json"))
-        policy_path = policy_path or AI_ROOT / "configs/three_source_policy.yaml"
+        policy_path = policy_path or AI_ROOT / "configs" / (
+            "expanded_policy.yaml"
+            if profile == PROFILE_V2
+            else "query_numeric_policy.yaml"
+            if profile == PROFILE
+            else "three_source_policy.yaml"
+        )
     scope = scope_capture_inputs(
         source_inputs, lab / "observer.jsonl", lab / "capture-result.json", output / "scoped-inputs"
     )
@@ -72,7 +82,7 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
         output / "collected",
         key,
         output / "labels/labels.jsonl",
-        input_profile="edge_masked_v1" if three_source else "native",
+        input_profile=profile if three_source else "native",
     )
     limits = [
         "Isolated real Student HTTP execution with synthetic accounts/data, not representative production traffic",
@@ -92,6 +102,18 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
             "Scenario labels describe intent/expected outcomes; no exploit success or independent human realism review",
             "No Rust inference, production champion, shadow or firewall enforcement accepted",
         ]
+        if profile in (PROFILE, PROFILE_V2):
+            limits[1] = (
+                f"{profile} requires the identical pre-redaction AI EVE bridge at inference; "
+                "current Rust serving path has not accepted this new profile. No raw query is persisted"
+            )
+            limits[3] = (
+                "Independent campaign plans, real 620s gaps and disjoint identities across three temporal bands; "
+                "one host/topology and scripted workload still limit generalization"
+            )
+            limits.append(
+                "Decoded payloads repeated in earlier temporal bands remain context only in later bands; label evidence records each holdout exclusion"
+            )
     register_provenance(
         output / "collected",
         output / "snapshot",
@@ -146,13 +168,35 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
         effective_cpus_before_cap=(resource_inventory or {}).get("effective_cpus_before_cap"),
     )
     export_review(output / "collected", output / "human-review", limit=1000)
-    plan = yaml.safe_load((AI_ROOT / "configs/experiment_plan.yaml").read_text())
+    plan_path = (
+        AI_ROOT
+        / "configs"
+        / (
+            "expanded_experiment_plan.yaml"
+            if profile == PROFILE_V2
+            else "query_experiment_plan.yaml"
+            if profile == PROFILE
+            else "experiment_plan.yaml"
+        )
+    )
+    plan = yaml.safe_load(plan_path.read_text())
+    pilot_epochs = plan.get("pilot_epochs", plan.get("initial_total_epochs", 5))
     commands = {}
-    for name, config in [
+    candidates = [
         ("mlp", "train_config.yaml"),
         ("autoencoder", "anomaly_config.yaml"),
         ("residual", "residual_config.yaml"),
-    ]:
+    ]
+    if profile == PROFILE:
+        candidates.append(("weighted_residual", "weighted_residual_config.yaml"))
+    if profile == PROFILE_V2:
+        candidates = [
+            ("residual", "residual_config.yaml"),
+            ("deep_mlp", "deep_mlp_config.yaml"),
+            ("denoising_autoencoder", "denoising_config.yaml"),
+            ("gated_residual", "gated_residual_config.yaml"),
+        ]
+    for name, config in candidates:
         commands[name] = [
             str(AI_ROOT / ".venv/bin/idps-ai"),
             "train",
@@ -165,7 +209,7 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
             "--readiness-report",
             str(output / "readiness/readiness.json"),
             "--epochs",
-            str(plan["initial_total_epochs"]),
+            str(pilot_epochs),
             "--cpus",
             "8",
             "--memory-limit-gib",
@@ -175,6 +219,7 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
         ]
     result = {
         "format_version": 1,
+        "input_profile": profile,
         "status": report["status"],
         "training_executed": False,
         "real_training_hours": 0,
@@ -191,10 +236,11 @@ def finish_lab(lab_dir, output, resource_inventory=None, policy_path=None):
         },
         "approved_label_rows": labels["approved_rows"],
         "unknown_label_rows": labels["unknown_rows"],
+        "heldout_overlap_excluded_rows": labels.get("heldout_overlap_excluded_rows", 0),
         "rows": prepared["rows"],
         "feature_count": prepared["feature_count"],
-        "planned_initial_total_epochs": plan["initial_total_epochs"],
-        "experiment_plan_sha256": file_sha256(AI_ROOT / "configs/experiment_plan.yaml"),
+        "planned_initial_total_epochs": pilot_epochs,
+        "experiment_plan_sha256": file_sha256(plan_path),
         "next_training_commands": commands,
         "limits": limits,
     }

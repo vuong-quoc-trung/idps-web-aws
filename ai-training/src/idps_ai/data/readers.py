@@ -14,6 +14,7 @@ from pathlib import Path
 
 from idps_ai.common import REPO_ROOT, PipelineError
 from idps_ai.data.privacy import METHODS, ROLES, pseudonym, request_numbers, safe_agent, safe_route
+from idps_ai.data.query_numeric import CAUSAL_PROFILES, PROFILE, PROFILE_V2, validate_projection
 
 
 @dataclass(frozen=True)
@@ -74,7 +75,7 @@ def eve_request_id(http):
 
 
 def normalize_record(source, value, key, identity, input_profile="native"):
-    if input_profile not in ("native", "edge_masked_v1"):
+    if input_profile not in ("native", *CAUSAL_PROFILES):
         raise PipelineError("Unsupported input availability profile")
     canonical = source in ("student", "canonical", "postgres-export")
     if canonical:
@@ -149,13 +150,27 @@ def normalize_record(source, value, key, identity, input_profile="native"):
             raise PipelineError("Invalid reversed flow time range")
         flow_values["duration_seconds"] = duration
     available_at = timestamp
-    if input_profile == "edge_masked_v1" and mapped.get("event_type") == "flow":
+    if input_profile in CAUSAL_PROFILES and mapped.get("event_type") == "flow":
         # EVE flow timestamp may ALREADY be later than packet end (timeout).
         # Keep the original timestamp and combine bounds, do not add65 twice.
         end = event_time(flow["end"]) if flow.get("end") else timestamp
         available_at = max(timestamp, end + 65)
     method = mapped.get("http_method")
     role = mapped.get("role")
+    numeric = (
+        request_numbers(safe_route(path) if path is not None else None, None, None)
+        if input_profile in CAUSAL_PROFILES
+        else request_numbers(path, query, mapped.get("query_features"))
+    )
+    if (
+        input_profile in (PROFILE, PROFILE_V2)
+        and mapped["source"] == "SURICATA"
+        and mapped.get("event_type") == "http_request"
+        and mapped.get("ai_query_numeric") is not None
+    ):
+        numeric = validate_projection(
+            mapped["ai_query_numeric"], version=2 if input_profile == PROFILE_V2 else 1
+        )
     return {
         "event_key": pseudonym(key, "event", identity),
         "source": mapped["source"],
@@ -178,9 +193,7 @@ def normalize_record(source, value, key, identity, input_profile="native"):
         "request_bytes": finite(mapped.get("request_bytes")),
         "response_bytes": finite(mapped.get("response_bytes")),
         "flow": flow_values,
-        "numeric": request_numbers(safe_route(path) if path is not None else None, None, None)
-        if input_profile == "edge_masked_v1"
-        else request_numbers(path, query, mapped.get("query_features")),
+        "numeric": numeric,
         "redacted": True,
         "truncated": bool(mapped.get("truncated", False)),
         "provenance": "canonical" if canonical else "native_log",
