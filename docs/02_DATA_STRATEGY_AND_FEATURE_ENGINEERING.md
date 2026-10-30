@@ -1,5 +1,228 @@
 # 02 — Chiến lược dữ liệu và Feature Engineering
 
+## Dữ liệu, privacy và kiểm soát leakage hiện hành — 2026-10-30T21:35:36.891996+07:00
+
+Canonical Event Schema v1.0 và 207 feature v5 **không đổi**. Profile riêng `request-structure-v1` có 70 số từ URI/query trước mask: encoding/entropy/parameter lengths, SQL comment/boolean/comparison, HTML/event handler, traversal, shell và HTTP method. Tên tham số được thay bằng alias, giữ quan hệ key lặp; credentials/PII được bỏ trước khi tính số. Không đưa raw text, key name, source/actor/status/UA/rule/SID/clock vào model này. Availability metadata không vào tensor.
+
+| Nguồn | Số lượng và cách dùng |
+| --- | --- |
+| Lab cũ | 69.345 HTTP từ 3 nguồn; chỉ train/val cũ dùng ghép profile mới. Original test chất lượng vẫn kín |
+| Cohort mới | 1.935 HTTP thật trong 360 giây, 3 client concurrent; embargo so dữ liệu cũ 41.276,23 giây. Một cohort ở thời điểm mới, cùng môi trường. 1.882 hợp đồng intent/HTTP tự động đúng; 53 HEAD/OPTIONS trả 403 pending |
+| CSIC published normal training | 36.000 record đã có; chỉ source training gốc, không dùng public test cũ làm train |
+| PKDD mirror TRAIN | 24.504 record thực tế toàn `Valid`; bổ sung normal public/AE, không giả positive corpus |
+| PKDD mirror TEST | 25.612 record: 10.502 normal, 15.110 anomalous. Parse/score sau khi khóa study 300 update; không tuning. Hiện đã exposed |
+| OpenCitations | 90.334 observations thật chưa nhãn từ lượt trước; 0 admission cho supervised hoặc AE benign |
+
+Corpus mới 115.980 record có 86.275 train, 12.303 calibration, 17.402 validation; một scaler chỉ fit benign train. Chỉ có 1.233 view supervised lab khác nhau: 1.027 positive, 206 benign. AE có 18.713 view benign khác nhau từ nhiều nguồn. Để tránh public normal-only tạo shortcut source→label, MLP/GLU supervised chỉ fit lab. Source/identity không là feature, nhưng cú pháp vẫn có thể lộ domain; phải kiểm định ngoài nguồn.
+
+Audit có 28.830 numeric view trên toàn fitting corpus: 600 nhóm có view giao partition, 0 nhóm trộn nhãn 0/1. Collision sau privacy/quantization không chứng minh raw request trùng; cũng không cho phép khẳng định grammar độc lập. Public split theo hash view, không bịa timestamp/context 300 giây. Calibration/selection lab cũ vẫn concurrent, chưa độc lập thời gian. Cohort mới là holdout ở thời điểm thật; giữ cả primary approved-task, full intent, pending và novel-view sensitivity, không lọc ca khó để làm đẹp.
+
+[Mirror WebRequests V1](https://doi.org/10.60895/redata/RWUUSV) có metadata CC BY 4; MD5/SHA và attribution trong report. PKDD mirror thực tế là flattened text, thiếu Context/inContext/attackIntervall của [challenge gốc](https://www.lirmm.fr/pkdd2007-challenge/). URI không quan sát được mọi attack trong body/header. Không đoán family/location, không dùng TF-IDF toàn cục. Original publisher license lineage chưa xác minh độc lập, raw giữ private.
+
+[Nguồn tác giả Biblio-US17](https://dtstc.ugr.es/neus-cslab/recursos/ds-biblio/) mô tả 47 triệu HTTP thật trong 6 tháng, nhãn bán tự động có chuyên gia. [Repository](https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e) yêu cầu quyền tải. Chưa tải/chưa xác minh dataset terms, không tự gửi liên hệ. Metadata CC0 không là license raw dataset. Tổng lab 71.280 HTTP vẫn một môi trường; 0 scale admission cho mục tiêu 2M, thiếu nhãn độc lập và positive đa nguồn.
+
+[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+
+## Data admission đã triển khai; corpus 2M NOT_READY — 30/10/2026
+
+Đầu vào hiện chỉ 69.345 request, một fixture localhost và kịch bản tự động. Không
+đếm bản sao PCAP/snapshot, re-projection, checkpoint cache hoặc dòng flow thành
+HTTP request mới. Bộ cũ vẫn là baseline riêng; test cũ không được đưa ngược vào train.
+
+Nâng cấp theo registry immutable có hash và scope/label provenance, kiểm trùng
+capture, thứ tự thời gian/embargo và các holdout. Một instance/container clone
+không tự chứng minh một môi trường độc lập. Gate lớn phải phản ánh số request,
+nguồn, môi trường, ngày, campaign và bằng chứng review thực; thiếu dữ liệu thì
+NOT_READY. Không tự lấy CSV flow công khai làm request/schema ứng dụng hoặc điền
+các cột thiếu bằng dữ liệu bịa. Corpus lab vẫn phục vụ technical pilot.
+
+**Đo thực cuối phiên:**134 tests và53 gate kỹ thuật PASS trên69.345 request cũ;
+fit scaler benign train29.511 rows; split41.607/13.869/13.869. v5 giữ source3/flow/
+embargo300s như snapshot cũ. Registry chỉ có reference, scale-admitted=0. Không có
+nguồn độc lập mới hoặc human review. Multi-environment shared-scaler assembly chưa
+được triển khai/nghiệm thu; không tự ghép các feature đã normalize riêng.
+[Báo cáo](../ai-training/reports/SCALE_UPGRADE_20261030.json) ghi đầy đủ giới hạn và hashes.
+
+## Temporal dynamics v5 và admission — triển khai 30/10/2026
+
+`ai-features-5` / `ai-normalizer-5`:207 cột=189 cột cũ+18 dynamics, vẫn dùng numeric
+projection v2 và canonical 1.0. Opt-in bằng `prepare --behavior-dynamics`; default
+profile cũ giữ nguyên số cột/ngữ nghĩa. Không force-resume checkpoint cũ bằng v5.
+
+Mỗi scope IP/user thêm: interarrival log1p và cờ missing; burst10/60 và60/300;
+URI/method transition; CV khoảng cách request trong60/300s; gia tốc tỷ lệ auth
+failure giữa10/60s. Chỉ lịch sử đã quan sát và request hiện tại, tối đa2048events/
+entity như trước; thiếu/evict/truncate vẫn có cờ context incomplete. Không thêm raw
+query, bí mật, identity hoặc rule/SID vào vector. Scaler fit benign train duy nhất.
+
+`corpus-audit` đọc Parquet và provenance immutable bằng SQLite index trên đĩa;
+chống duplicate dataset/PCAP kể cả re-project, không gán lại test cũ vào train,
+kiểm tra holdout identity/payload, thứ tự thời gian/embargo, coverage nguồn và nhãn.
+Review phải là attestation độc lập gắn hash dataset/provenance/environment; nhãn
+automatic của lab không được tự nhận là human review. Attestation không tự chứng
+minh sự thật; người review phải kiểm realism/topology/nhãn.
+
+Policy scale ban đầu đặt2M eligible requests,3 environments,7capture days,120 campaign,
+4 roles train/calibration/validation/test,≥95%three-source. Các floor ngoài2M là
+engineering proposal cần review, không là chuẩn chất lượng phổ quát. Registry
+chỉ audit; không concatenate các vector dùng scaler khác nhau. Shared-scaler corpus
+assembly và kiểm định trên nguồn mới còn phải hoàn tất trước formal.
+
+**Nguồn hiện có:** cùng69.345HTTP thật của lab, chưa thêm request hoặc môi trường.
+V5 là re-extraction, không cộng lại thành corpus mới. Tập này là reference/technical
+pilot, chưa đạt scale admission vì thiếu independent labels/environments. Flow CSV
+công khai không tương đương HTTP requests: [CICIDS2017 chính thức](https://www.unb.ca/cic/datasets/ids-2017.html)
+phân biệt PCAP với labeled flow CSV. Không điền giả Student fields để nhập CSV đó
+vào hợp đồng ba nguồn của model này.
+
+## Corpus revision 4.1 đã nghiệm thu offline — 2026-10-30T09:08:21+07:00
+
+| Hạng mục | Kết quả đo thực |
+| --- | --- |
+| Corpus | 69,345 request; 297,685 observations từ Student, Nginx và Suricata thật |
+| Split và nhãn | 69,345 vectors có nhãn được duyệt; train: 41,607 / val: 13,869 / test: 13,869; groups 27/9/9 |
+| Đặc trưng | ai-features-4.1 / normalizer 4.1, 189 cột, projection v2; canonical 1.0 giữ nguyên |
+| Mô hình | Residual nhỏ đối chứng; MLP 248.072 / DAE 294.717 / gated residual 445.448 tham số |
+| Readiness | 53/53 PASS; payload và hard negatives có identity riêng giữa các temporal bands |
+| Pilot | 4 mô hình × 5 epoch; resume qua process mới khớp reference; ONNX 69,345/69,345 vectors PASS từng mô hình |
+| Kiểm thử và phạm vi | 118 pytest PASS, 0 skipped; giữ nguyên hash 366 file dịch vụ/contract và 1.946 artifact cũ |
+| Train dài / chất lượng trên test / deploy | NOT_RUN; chưa chọn Champion Model hoặc nghiệm thu Rust/live/enforcement |
+
+Nhãn pending theo HTTP contract: 0; loại khỏi nhãn
+do trùng identity giữa holdout: 0.
+Packet counters: `{'captured': 717792, 'dropped_by_kernel': 4, 'received_by_filter': 1435588}`.
+Parser quality: `{'accepted': 297685, 'duplicates': 0}`. Không hạ gate hoặc đổi timestamp/embargo
+để đạt điều kiện. Dataset SHA `f143742a7dd5c130a3adcbc40b611f14938a4759a50816efada9b59308b18f50`.
+
+[Báo cáo](../ai-training/reports/PRETRAIN_EXPANDED_20261030.json) ghi coverage, các cột hằng, bằng chứng campaign/variant và giới
+hạn thực nghiệm. Chưa tính chất lượng trên test; canonical schema 1.0 giữ nguyên.
+
+## Mở rộng cấu trúc Query/URI, revision 4.1 — 29/10/2026
+
+`safe_query_numeric_v2` mở rộng adapter AI, giữ **canonical v1.0** và các profile
+cũ nguyên nghĩa. Vector mới có **189 cột**: 148 cột cũ + 41 số cấu trúc. Vì v4/148
+đã có checkpoint, revision mới ghi `ai-features-4.1`/`ai-normalizer-4.1`, projection
+version 2, state option và hash riêng. Không sửa nhãn/version của artifact cũ.
+
+| Nhóm mới | Đặc trưng điển hình | Mục đích và giới hạn |
+| --- | --- | --- |
+| Availability/encoding |structure_available, decoded URI/query length, encoding rounds, valid/invalid escapes, contraction ratio |Đếm trên view trong memory trước mask; tối đa hai lần decode |
+| Phân bố ký tự |Unicode/uppercase/whitespace ratios |Không giữ ký tự, byte n-gram hoặc từ tự do |
+| Cấu trúc tham số |max/mean/std length, duplicate/empty counts, numeric value ratio |Chỉ trên key được phép; không đo giá trị password/token |
+| SQL/punctuation |block/line comment delimiters, comparisons, boolean operators, commas, parenthesis counts/depth |Các bộ đếm số, không là rule match/nhãn attack |
+| HTML/URI |tag open/close, HTML entity, event assignment, URI scheme counts |Có hard negatives tài liệu/lập trình hợp lệ; cùng ký hiệu có thể mang ý nghĩa khác |
+| Path/shell |parent/dot segments, slashes/backslashes/dots, &&/\|\|/substitution/backticks/newlines/null counts |Không chạy lệnh hoặc đọc file target; chỉ phân tích chuỗi request |
+
+Allowlist 69 key số = 28 key của projection v1 + 41 key trong `structure.py`. Envelope
+v2 chỉ chấp nhận `{version:2,numbers:{...}}` đúng key và số finite trong giới hạn.
+Collector chọn v2 bằng profile; thiếu projection giữ unavailable. Không chấp nhận
+envelope v1 như v2 hoặc tự tính đặc trưng từ query đã mask để lấp trường thiếu.
+
+Key query được decode bounded rồi kiểm allowlist. Bỏ các key nhạy cảm/không được
+phép; PII hoặc giá trị đã redaction không góp nội dung vào thống kê. URI giữ view
+encoded để đo encoding, nhưng cắt đuôi credential path/PII trước tính số. Test
+thay token/password/path-secret bằng chuỗi khác phải cho cùng projection; các
+secret canary không xuất hiện trong output. Credential tail được loại cả khi
+dấu phân cách là `/`, `%2F`, `%252F`, `%5C` hoặc `%255C`; encoded traversal
+vẫn được đếm nếu không chứa credential tail. Không ghi query/body/header tự do
+vào EVE dành cho AI hay Parquet. PCAP raw vẫn là evidence private của fixture giả.
+
+Offline Suricata decoder và `project-eve --projection-version 2` gọi cùng hàm.
+Decoder dùng `--query-numeric --projection-version 2`; normalizer/feature state,
+scaler train-only và reference inference cùng revision. Model vẫn post-response;
+Rust live, TLS vantage, receipt-time và mất nguồn chưa được nghiệm thu bởi việc
+thêm numeric projection. Không phát biểu rằng các bộ đếm hiểu đầy đủ ngữ nghĩa
+SQL/HTML/shell hoặc thấy nội dung đã bị loại vì privacy.
+
+Corpus mới dùng45 campaign với seed độc lập,27/9/9 nhóm, nhịp lognormal/jitter,
+parameter keys/order/paging và bốn catalog endpoint thay đổi. Mỗi họ payload có
+16 views/band; hard negatives có12 views/band riêng. Identity tính từ decoded payload;
+approved attack **và hard-negative identity** không giao giữa train/val/test.
+Nếu phát hiện identity lặp ở band sau, giữ request context nhưng loại nhãn khỏi
+fit/quality evaluation, lưu evidence. Identity của các view mới đã được test
+disjoint trước capture; không gán nhãn bằng rule/status hoặc số liệu model.
+
+Embargo của splitter giữ 300 giây; gap thật 620 giây để có khoảng trống ở cả hai phía
+cutoff. Không viết lại timestamp/IP để đạt split. Gate mở rộng yêu cầu 60.000–80.000
+request, ≥9 nhóm/partition, ≥12 payload views/họ/partition và ≥12 hard-negative views
+độc lập mỗi partition, cùng source/flow/300s coverage và variation của cấu trúc.
+Các ngưỡng này là floor cho offline pilot, không phải chứng nhận production.
+
+## AI input contract v4 — nâng cấp ngày 29/10/2026
+
+Canonical Event Schema **1.0 giữ nguyên**. `safe_query_numeric_v1` là extension
+của adapter AI cho Suricata EVE, không thêm field vào JSON Schema hay bảng sự kiện
+của Student/Security. Corpus và checkpoint `edge_masked_v1` cũ được giữ riêng;
+không trộn hoặc force-resume với feature/normalizer v4.
+
+| Thành phần | Contract mới |
+| --- | --- |
+| Input profile | `safe_query_numeric_v1`, opt-in khi decode PCAP bằng `--query-numeric` |
+| EVE extension | `ai_query_numeric: {version: 1, numbers: {...}}`; đúng 28 key số finite, không có chuỗi payload |
+| Feature/normalizer | `ai-features-4` / `ai-normalizer-4`, vẫn 148 cột; có fingerprint implementation |
+| Shared transform | `project-eve` và offline decoder cùng gọi `redact_eve` → `project_query` trước khi bỏ query |
+| Thiếu projection | Ghi unavailable; không phục hồi query từ bản đã mask hoặc từ rule hit |
+| Flow | Chỉ flow client đã hoàn tất, `available_at=max(EVE timestamp, flow.end+65s)`; không lấy flow tương lai |
+
+28 key gồm `uri_length`, `path_depth`, `uri_entropy`, `query_length`,
+`query_entropy`, `parameter_count`, `digit_ratio`, `special_ratio`,
+`uri_lexical_available`, `query_lexical_available`, `object_identity_available`,
+`sqli_keywords`, `xss_tokens`, `traversal_tokens`, tám bộ đếm
+`quote_single/quote_double/semicolon/percent/lt/gt/dollar/pipe`, năm bộ đếm có
+prefix `query_original_` (`length/parameter_count/percent_count/quote_count/operator_count`)
+và `query_original_available`. Original counters và object identity vẫn unavailable
+nếu producer không cung cấp. Tên key đầy đủ được kiểm bằng allowlist trong code.
+Operator counters mới đếm trên view đã decode tối đa hai lần sau redaction;
+`percent` giữ trên view encoded. Profile cũ giữ nguyên ngữ nghĩa.
+
+Tham số password/token/secret/cookie/CSRF/OTP và PII được loại trước tính số.
+URL, UA và response header được allowlist trước khi ghi EVE. Không lưu body,
+Cookie/Set-Cookie, hostname, referer hay alert text vào EVE dành cho AI. Snapshot,
+Parquet và model input không chứa plaintext query/credential. **PCAP riêng của lab
+vẫn chứa HTTP thô và session của tài khoản giả**; file 0600 dưới thư mục private,
+không đưa lên Git hay phát hành cùng model.
+
+`query_numeric_policy.yaml` đặt floor 40.000 request, ≥6 nhóm mỗi partition,
+campaign ≥450 giây, đủ GET/HEAD/OPTIONS/POST/PUT/PATCH/DELETE benign, ≥95%
+projection và query visibility của bốn họ payload. Mỗi partition cần ≥6 payload
+identity đã decode khác nhau mỗi họ; hash identity không được giao giữa các tập.
+Plan hash phải riêng cho từng campaign. Đây là gate dữ liệu cho offline pilot,
+không chứng nhận chất lượng phát hiện.
+
+Identity payload được tính từ probe đã decode/lowercase, không dùng tên campaign
+để giả định hai probe khác nhau. Nếu một identity xuất hiện ở temporal band trước,
+bản ở band sau giữ trong raw log và request context nhưng bị loại khỏi nhãn
+train/evaluation. `label_evidence.json` lưu HMAC request key, hai band, identity
+và lý do loại. Đây là dedup trước fit, không chọn mẫu theo kết quả model; không
+sửa timestamp/IP, không gán bản trùng thành benign và không hạ floor của gate.
+
+**Điều kiện dùng model ở edge:** bridge phải thấy cùng HTTP view trước redaction
+(sau TLS termination nếu có), chạy đúng projection v1, rồi mới đưa số vào AI.
+Python bridge dùng chung hàm với decoder; Rust live serving/receipt-time parity
+chưa được nghiệm thu. Không dùng model v4 với stream v3 đã bỏ query. Response
+status/latency là tín hiệu sau request, không phải quyết định chặn trước request.
+
+| Tiến độ dữ liệu v4 ngày29 | Kết quả đã xác minh |
+| --- | --- |
+| Corpus ba nguồn |46.230request /198.765observations; PCAP0kernel drops, parser0invalid/oversized/partial |
+| Nhãn/split |46.134approved vectors sau96overlap exclusions; train27.738/val9.150/test9.246, nhóm18/6/6 |
+| Readiness |48/48PASS;38/148cột hằng, so với59/148ở corpus cũ |
+| Pilot |Bốn model5epoch, exactresume và ONNX toàn bộ vectorPASS; chỉ chất lượng validation |
+| Chưa nghiệm thu |Đại diện production, human realism review, Rust live/TLS/receipt-time, thiếu nguồn và champion |
+
+Corpus mới nằm private ở `upgrade_20261029_query/dataset-ready`; checksum và kết
+quả cuối ở [report nâng cấp](../ai-training/reports/PRETRAIN_UPGRADE_20261029.json)
+và ledger06 mục23. Các snapshot bên dưới là lịch sử.
+
+## Ca residual đầu tiên — 29/10/2026
+
+Đã chạy một experiment residual offline với trần150phút: data-readiness35/35PASS,
+dừng sớm tại14epoch sau11,616giây bởi patience8, best tại6epoch. Checkpoint và
+ONNX19.275/19.275PASS; chỉ tính chất lượng validation (recall44,20%,FPR0,943%).
+Dataset/schema/features giữ nguyên; đây vẫn là lab có fixture giả, chưa champion,
+Rust/live hoặc nghiệm thu endurance150phút. Xem [báo cáo ca residual](../ai-training/reports/FORMAL_RESIDUAL_20261029.json) và ledger06 mục22.
+Các trạng thái “chưa train chính thức” trong snapshot28/10 bên dưới giữ ý nghĩa lịch sử.
+
 ## Cập nhật resource sau pilot — 28/10/2026
 
 Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,

@@ -1,5 +1,89 @@
 # 01 — Khảo sát hệ thống và kiến trúc nâng cấp IDPS
 
+## Biên kiến trúc AI hiện hành — 2026-10-30T21:35:36.891996+07:00
+
+Chỉ thay AI và tài liệu. **689 đường dẫn được bảo vệ** giữ SHA, gồm 366 file service/contract/docker và artifact/report lượt trước. Guard 4.233 artifact cũ từ lượt trước vẫn nguyên vẹn. Không đổi canonical v1.0, API, DB, Nginx, rule, firewall hoặc deployment của hai Web.
+
+Có hai hợp đồng độc lập: `ai-features-5` gồm 207 cột dùng actor/flow/behavior thật; `request-structure-v1` gồm 70 cột URI/query structure/method dành cho nguồn thiếu context. Không nối vector đã scale riêng hoặc giả flow/time cho public data. Scaler của profile mới chỉ fit benign thuộc train. ONNX giữ hợp đồng FP32/FP64 reduction, rtol=1e-5 và atol=1e-6.
+
+AI có adapter EVE opt-in trước mask: `project-request-eve.py`, JSONL giới hạn 64 KiB, chỉ xuất số và envelope đã khử bí mật. Input malformed/oversized báo lỗi không echo raw. Không tự nối adapter vào Web hoặc đổi sensor config đang chạy. `RequestInferencePipeline` kiểm tra profile/fingerprint/hash, nhận batch 1–4096, chỉ trả candidate nhị phân; family output tắt, 0 enforcement. Live receipt-time/TLS/IPS acceptance **NOT_RUN**.
+
+Cohort mới nối đủ 1.935 request từ 3 nguồn, nhưng chỉ 1.567 request có **ngữ cảnh flow quá khứ đã hoàn tất** dùng được; 368 request có cột flow null. Không gọi là có flow chỉ vì dictionary có key. Private lab đã dừng. 53 HEAD/OPTIONS trả 403 được ghi nhận để chủ sở hữu Web rà soát ngoài phạm vi AI, không tự sửa Web.
+
+[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+
+## Biên tích hợp AI v5 — 2026-10-30T15:52:59+07:00
+
+Nâng cấp chỉ trong AI: 207 numeric inputs, residual SwiGLU 9.675.784 tham số,
+ONNX/reference preprocessing và offline shadow512 request. Canonical 1.0, schema/API
+Student/Security và source của hai web giữ nguyên hash (366 file). Không gọi DB live,
+firewall/block API hoặc sửa Nginx/Suricata/app config. Quyền CPU/RAM chỉ áp job AI.
+
+Luồng đã thử: fused ordered request → FeatureExtractor v5 cùng scaler train-only →
+ONNX → score/family candidate + telemetry. Shadow output chỉ event_key và kết quả,
+không raw query/headers/PII, không ghi normalized_events hoặc phát enforcement.
+Standalone raw EVE/canonical line chưa thay thế được fused contract. Receipt-time,
+TLS vantage, source outage, auth/service rollout và live shadow cần nghiệm thu riêng;
+nếu cần đổi web apps, chỉ đề xuất trong luồng sở hữu tương ứng. Hiện corpus 2M,
+independent labels/environments và shared-scaler multi-corpus assembly chưa có.
+
+134 tests/53 gate kỹ thuật và bounded pilot PASS; không coi đây là production-ready.
+[Báo cáo](../ai-training/reports/SCALE_UPGRADE_20261030.json), ledger06 mục25.
+
+## Kết quả AI revision 4.1 — 2026-10-30T09:08:21+07:00
+
+45 campaign thuộc ba temporal bands đã tạo 69,345 HTTP request thật.
+Nginx, Student audit và EVE cùng quan sát fixture riêng, được dựng từ commit
+`fd0fea47dbc30a56dc8a9bed819b15cf3dc66d11`. Không sửa code/config Student hoặc Security;
+không dùng credential hoặc DB live.
+
+Bổ sung 41 cột cấu trúc, tổng 189 đặc trưng; mô hình sâu tối đa 445.448 tham số.
+Projection chỉ trả về số sau khi loại dữ liệu nhạy cảm, trước redaction URL;
+không đưa raw query, body, cờ rule hoặc SID vào model. Readiness
+53/53 PASS,
+118 tests PASS; cả bốn pilot đều resume chính xác và ONNX parity toàn bộ vectors.
+Source snapshot, provenance và giới hạn 8 CPU / 16 GiB nằm trong [báo cáo](../ai-training/reports/PRETRAIN_EXPANDED_20261030.json).
+
+Rust serving, góc nhìn TLS, receipt-time, mất nguồn, shadow và IPS còn cần nghiệm
+thu riêng. Model dùng feature 4.1 không nhận profile v1 với 148 cột.
+
+## Bổ sung kiến trúc adapter AI — 29/10/2026
+
+Đường offline mới: HTTP thật trong lab riêng → PCAP → Suricata EVE qua Unix
+socket → shared numeric projection → EVE đã redaction → snapshot/correlation →
+featurev4 → model. Projection chạy trước khi URL mất query và chỉ xuất28 số;
+không truyền raw payload, body hay rule decision vào model. Canonical1.0 và
+đường ingestion của Student/Security được giữ nguyên.
+
+| Hạng mục | Trạng thái đã kiểm |
+| --- | --- |
+| Privacy/adapter/correlation v4 | Có unit và end-to-end test tới weighted model/ONNX/reference streaming |
+| Lab relay | Backlog128; test45 kết nối chờ; bootstrap stagger và bounded GET-CSRF retry có observer |
+| Mô hình | Thêm train-only weighted CE, objective history và exact mid-epoch resume |
+| Nghiệm thu live | Chưa có Rust projection/serving, receipt-time/TLS vantage hoặc missing-source fallback acceptance |
+| Dữ liệu/pilot mới |46.230requests/198.765observations;48/48gatePASS;4model5epoch exactresume/ONNX46.134rowsPASS |
+| Kiểm thử cuối |AI93/93,Java100/100,Rust50/50PASS; Java/Rust rerun trên HEADfd0fea4 với DB riêng |
+
+Không dùng modelv4 với đầu vào v3 đã mask query. Shared Python transform làm
+contract có thể tái lập cho luồng AI; triển khai consumer bền vững ở edge và kiểm
+parity với Rust là hạng mục tích hợp tiếp theo. Score hiện là post-response,
+không coi đây là bộ chặn trước request. Thiếu actor/flow có thể làm FPR tăng;
+gate dữ liệu offline không thay thế nghiệm thu mất nguồn khi chạy thật.
+
+Capture dùng Git export8171289; HEAD sau đó nhận fast-forwardfd0fea4 gồm các
+thay đổi UI/email/firewall đã commit từ luồng khác. Không reset hoặc sửa chúng.
+Report ghi21file trong inventory cũ đổi do các commit này, và không có diff ứng
+dụng chưa commit tại thời điểm chốt.461artifact cũ vẫn nguyên byte.
+
+## Ca residual đầu tiên — 29/10/2026
+
+Đã chạy một experiment residual offline với trần150phút: data-readiness35/35PASS,
+dừng sớm tại14epoch sau11,616giây bởi patience8, best tại6epoch. Checkpoint và
+ONNX19.275/19.275PASS; chỉ tính chất lượng validation (recall44,20%,FPR0,943%).
+Dataset/schema/features giữ nguyên; đây vẫn là lab có fixture giả, chưa champion,
+Rust/live hoặc nghiệm thu endurance150phút. Xem [báo cáo ca residual](../ai-training/reports/FORMAL_RESIDUAL_20261029.json) và ledger06 mục22.
+Các trạng thái “chưa train chính thức” trong snapshot28/10 bên dưới giữ ý nghĩa lịch sử.
+
 ## Cập nhật resource sau pilot — 28/10/2026
 
 Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,

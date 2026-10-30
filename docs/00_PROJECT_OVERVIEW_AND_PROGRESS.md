@@ -1,5 +1,116 @@
 # 00 — Tổng quan dự án và tiến độ
 
+## Hiện trạng AI sau profile mới và hai holdout mới — 2026-10-30T21:35:36.891996+07:00
+
+**Kỹ thuật PASS; chất lượng tổng quát hóa/triển khai NOT_READY, chưa chọn champion.** Chỉ sửa AI và tài liệu; Student/Security/contracts/docker giữ nguyên. **160 pytest PASS, 0 skip**; 53 gate kỹ thuật legacy PASS. Không chạy training chính thức.
+
+| Hạng mục | Kết quả và giới hạn |
+| --- | --- |
+| Thu thập thật | Thêm 1.935 HTTP, đủ 3 nguồn; tổng 71.280 HTTP lab, vẫn một môi trường. 1.882 lượt đúng hợp đồng intent/HTTP tự động; 53 HEAD/OPTIONS trả 403 đang chờ rà soát; chưa có review người độc lập |
+| Privacy/feature | Profile riêng `request-structure-v1`, 70 số; alias tên tham số và bỏ secrets/PII. Không đưa plaintext query, rule, status, role, source, flow hoặc time vào model này. 207 cột v5 giữ nguyên |
+| Corpus | 115.980 record ghép lab cũ và public normal training. Supervised chỉ có 1.233 view lab khác nhau; AE có 18.713 view benign khác nhau. Projection/bản ghi benchmark không được tính thành HTTP lab mới |
+| Pilot | 3 ứng viên × 2 study: 2 epoch và 300 update. Resume chính xác; ONNX 115.980 vector/model/study PASS tại rtol=1e-5, atol=1e-6. Chỉ diagnostic ngắn |
+| Holdout | PKDD 25.612 record và cohort 3 nguồn mới; khoảng cách thời gian thật 41.276 giây. Đã xem kết quả, không dùng lại làm test mới sau tuning |
+| Chất lượng | Request MLP mới: lab recall 40,625%, FPR 0 trên 1.378 benign. GLU: recall 0 tại ngưỡng khóa. AE: public recall 40,21% nhưng lab FPR 18,58%. Chưa model nào đạt nghiệm thu |
+| Mục tiêu 2M | Scale-admitted=0. Thiếu positive đa nguồn và human review. Không nhân bản, gán unknown thành benign hoặc kéo dài train để che thiếu dữ liệu |
+
+[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+
+## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
+
+**Đã kiểm chứng phần kỹ thuật; chưa hoàn thành mục tiêu dữ liệu/production.**
+Chỉ sửa AI và docs. Corpus vẫn **69.345 request duy nhất, một lab**, nhãn scripted
+intent; không thêm request hoặc môi trường. Re-extraction v5 không phải dữ liệu mới.
+Chưa có review nhãn độc lập, **0 request được admission cho formal scale**; mục tiêu
+2M đa dạng chưa đạt. Không nhân bản hoặc cộng các bản projection/cache vào số lượng.
+
+| Giai đoạn | Trạng thái cuối phiên |
+| --- | --- |
+| Data | Catalog/provenance/replay/holdout checks đã có; corpus 2M và shared-scaler assembly nhiều môi trường còn thiếu |
+| Features/architecture/algorithms | v5/207 cột, thêm 18 dynamics; residual SwiGLU **9.675.784** tham số thực; AdamW/smoothing/dropout/warmup-cosine |
+| Tests/readiness | **134/134 pytest PASS, 0 skipped**; **53/53 gate kỹ thuật PASS** trên cùng 69k |
+| Pilot | 4 neural candidates × 2 epoch, fresh-process resume và reference khớp chính xác; ONNX mọi 69.345 vectors/candidate PASS |
+| Evaluation | Calibration 3 campaign, selection 6 campaign; fit không nhìn validation; test quality giữ kín; tree32 iteration đối chứng |
+| Integration | Offline shadow512 request PASS, không gọi Web/firewall; live/TLS/receipt-time/response NOT_RUN |
+| Formal/champion | NOT_RUN / chưa chọn; không tự chạy ca dài và chưa đủ data gate |
+| Cleanup | Chỉ cache tái tạo được: giải phóng 498.14 MiB; giữ raw/checkpoint/log/evidence cũ |
+
+AP selection cao nhất ở lượt ngắn: **gated_residual**. Main challenger
+AP **0.997228**, recall **98.92%**, FPR **0.823%**,
+p95 ONNX model-only **5.363 ms**. Model lớn không mặc định tốt hơn;
+khác biệt thuật toán/regularization không phải thí nghiệm riêng tác dụng số tham số.
+Một lab và sáu nhóm selection không chứng minh FPR/zero-day/production generalization.
+
+[Báo cáo đo thực](../ai-training/reports/SCALE_UPGRADE_20261030.json), [handoff hiện hành](../ai-training/FINAL_TRAINING_HANDOFF.json),
+ledger06 mục25. Tất cả snapshot cũ bên dưới là lịch sử; không dùng readiness/source
+cũ cho source hiện hành hoặc force-resume checkpoint khác contract.
+
+## Bàn giao corpus và mô hình sâu revision 4.1 — 2026-10-30T09:08:21+07:00
+
+| Hạng mục | Kết quả đo thực |
+| --- | --- |
+| Corpus | 69,345 request; 297,685 observations từ Student, Nginx và Suricata thật |
+| Split và nhãn | 69,345 vectors có nhãn được duyệt; train: 41,607 / val: 13,869 / test: 13,869; groups 27/9/9 |
+| Đặc trưng | ai-features-4.1 / normalizer 4.1, 189 cột, projection v2; canonical 1.0 giữ nguyên |
+| Mô hình | Residual nhỏ đối chứng; MLP 248.072 / DAE 294.717 / gated residual 445.448 tham số |
+| Readiness | 53/53 PASS; payload và hard negatives có identity riêng giữa các temporal bands |
+| Pilot | 4 mô hình × 5 epoch; resume qua process mới khớp reference; ONNX 69,345/69,345 vectors PASS từng mô hình |
+| Kiểm thử và phạm vi | 118 pytest PASS, 0 skipped; giữ nguyên hash 366 file dịch vụ/contract và 1.946 artifact cũ |
+| Train dài / chất lượng trên test / deploy | NOT_RUN; chưa chọn Champion Model hoặc nghiệm thu Rust/live/enforcement |
+
+Ứng viên lớn cho thí nghiệm tiếp: **gated_residual** (AP 0.999077, precision 97.61%, recall 99.16%, FPR 0.996%).
+Residual đối chứng: AP 0.999165, precision 97.64%, recall 99.55%, FPR 0.986%. Các số đo trên validation còn sơ bộ
+vì cùng tập này được dùng để calibration và so sánh ứng viên. Tăng tham số không
+bảo đảm tốt hơn; không kéo dài train chỉ để đủ thời gian.
+
+Manifest hiện hành: [FINAL_TRAINING_HANDOFF.json](../ai-training/FINAL_TRAINING_HANDOFF.json).
+Xem [báo cáo](../ai-training/reports/PRETRAIN_EXPANDED_20261030.json) và mục 24 của ledger 06. Các snapshot bên dưới là lịch sử.
+
+## Nâng cấp dữ liệu/model sau ca ngắn — 29/10/2026
+
+Đã hoàn tất corpus mới: **46.230 request / 198.765 observations** từ Student,
+Nginx và Suricata thật. 30campaign có plan riêng,480giây/campaign, hai gap620giây;
+nhóm18/6/6. Loại96nhãn path traversal trùng sau decode ở holdout, giữ nguyên log
+và context; còn46.134mẫu được duyệt, split27.738/9.150/9.246. Capture không ghi
+packet drop; parser không ghi invalid/oversized/partial. Canonical1.0 giữ nguyên;
+profile `safe_query_numeric_v1`, features/normalizerv4,148cột.
+
+| Hạng mục hiện hành | Kết quả |
+| --- | --- |
+| Data readiness | **48/48 PASS**; cột hằng38, giảm từ59; query projection và flow có coverage kiểm riêng |
+| Pilot bốn ứng viên |5epoch,2→5qua process mới exact với reference; ONNX46.134/46.134PASS từng model |
+| Residual validation |AP0,99875; precision98,13%; recall99,23%; FPR0,747% (49/6.558benign) |
+| Next experiment |Residual không trọng số, chọn để thử tiếp theo AP validation; chưa chọn champion |
+| Formal ca mới |**NOT_RUN**; script riêng `bash ai-training/scripts/train-query-session.sh`,100epoch/max150phút/8CPU/16GiB |
+| Test quality / live acceptance |Chưa mở test metrics; chưa Rust serving, TLS/receipt-time parity hoặc enforcement |
+
+Pilot wall163,57giây gồm train/resume/reference/export/diagnostics; không coi là
+train150phút. Metric dùng cùng validation để calibration/selection nên sơ bộ;
+corpus scripted một topology chưa chứng minh production. Thiếu flow/actor vẫn
+có thể tăng FPR. Xem [report nâng cấp](../ai-training/reports/PRETRAIN_UPGRADE_20261029.json)
+và ledger06 mục23. Các mục ngày28/ca đầu bên dưới là lịch sử.
+
+Corpus được thu từ Student export tại `8171289`. Trong lúc làm, HEAD nhận
+fast-forward tới `fd0fea4` từ luồng khác; các commit UI/email/firewall được giữ.
+Luồng AI không sửa ứng dụng/contract ngoài các commit đã nhận đó; report tách
+source capture, processing snapshot và source kiểm thử hiện hành.
+
+## Ca residual đầu tiên — 29/10/2026
+
+Đã thực hiện yêu cầu kiểm data rồi chạy ca tối đa **150 phút** trên source `8171289`.
+Data gate mới **35/35 PASS**, dataset **19.275 request / 148 features** giữ nguyên hash.
+Ca chạy **17:21:05–17:21:17 +07:00**, hoàn thành sau **11,616 giây**, dừng tại
+**epoch 14 / step 2.534** do `early_stopping` (patience 8); checkpoint tốt nhất
+ở **epoch 6 / step 1.086**. Không ép chạy tiếp để lấp đầy ngân sách thời gian.
+Quota thực **8 CPU / 16 GiB**, MemoryHigh 15 GiB, swap 0; có job nền/log riêng và
+sleep inhibitor trong lúc chạy. Đã kiểm checkpoint và ONNX parity **19.275/19.275 PASS**.
+
+Validation-only: precision **90,83%**, recall **44,20%**, FPR **0,943%**, AP **0,7757**;
+threshold chọn trên cùng validation nên kết quả sơ bộ. **Không mở test metrics,
+chưa chọn champion hoặc triển khai Rust/live/enforcement**. Chưa nghiệm thu endurance
+150 phút. Xem [báo cáo ca residual](../ai-training/reports/FORMAL_RESIDUAL_20261029.json) và ledger06 mục22. Các mốc “chưa train” ngày28/S0 phía dưới
+là lịch sử. Run early-stopped là terminal; không force-resume bằng script ca đầu.
+
 ## Cập nhật resource sau pilot — 28/10/2026
 
 Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
@@ -152,7 +263,7 @@ Quy ước trạng thái: **CÓ CODE** = tìm thấy triển khai; **CÓ TEST** 
 | AWS, HA, backup/restore đã diễn tập | ĐỀ XUẤT / CHƯA XÁC MINH | Không có IaC hoặc bằng chứng diễn tập trong repo |
 | Bộ nhớ dự án | HOÀN THÀNH TRONG PHIÊN TÀI LIỆU | `docs/00`–`06`; cần duy trì theo mỗi PR/run |
 
-## 6. Tiến độ AI và dữ liệu
+## 6. Tiến độ AI và dữ liệu — snapshot lịch sử 28/10
 
 | Sổ theo dõi | Giá trị đã biết |
 |---|---|

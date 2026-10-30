@@ -1,0 +1,382 @@
+{
+  "authorization": "User requested data checks then the planned training session capped at150minutes.",
+  "branch": "feat/ai-model-training",
+  "bundle_files_sha256": {
+    "evaluation.json": "8ae87eb2156d672acb6619c7fef84193c23d50ca9656f9165d2638bfc7da14bf",
+    "feature_spec.json": "ac2f812ae2d4d1036a51e5b31275ed71c93c7f877017869caf40ef7ab6e953a6",
+    "golden_vectors.json": "56b665ec1b6eddde2f57d1a081d69cada0c12807e9ad345c0c7c4f33a7be2f10",
+    "model.onnx": "0cc25e41ffd038c57d8a6104e728fb7797b952c2dc32ba323bb69c5f6d2dcffe"
+  },
+  "champion_selected": false,
+  "checkpoints": {
+    "best": {
+      "epoch": 6,
+      "global_step": 1086,
+      "manifest_sha256": "496b589f0852e09084045a892962cc83e66fd8ac82f14e84c0d11b275a8ed17e",
+      "path": ".artifacts/upgrade_20261028/formal/residual-seed17/checkpoints/step-000000001086-cf71f146d74f"
+    },
+    "latest": {
+      "epoch": 14,
+      "global_step": 2534,
+      "manifest_sha256": "b806b4eb60568118eb960fe44ed1950cb27477a6ef22d25d441bcdd918817db4",
+      "path": ".artifacts/upgrade_20261028/formal/residual-seed17/checkpoints/step-000000002534-4cae1aed7618"
+    },
+    "previous": {
+      "epoch": 14,
+      "global_step": 2534,
+      "manifest_sha256": "9c53b78d799937b836012785785860c7d46043394204bd9212a2c0c61508c89f",
+      "path": ".artifacts/upgrade_20261028/formal/residual-seed17/checkpoints/step-000000002534-82502ec01f09"
+    }
+  },
+  "checks": {
+    "150minute_endurance": "NOT_RUN: early stopping after11.616seconds",
+    "capacity": "PASS",
+    "checkpoint_integrity": "PASS:latest,previous,best",
+    "detached_guard_and_inhibitor": "PASS:0optimizersteps",
+    "formal_training": "PASS:exit0,early_stopping",
+    "frozen_reports": "PASS:4SHAunchanged",
+    "full_readiness_replay": "PASS:35/35;0nonfinite,0replay mismatch",
+    "live_integration_enforcement": "NOT_RUN",
+    "onnx_export_parity": "PASS:19275/19275",
+    "pip_check": "PASS",
+    "prepared_hash_and_source_gate": "PASS",
+    "protected_prepared_pilot_files": "PASS:172SHAunchanged",
+    "pytest_mvn_cargo": "NOT_RUN: no tracked application/trainer source changes; historical77tests not recounted"
+  },
+  "created_at": "2026-10-29T17:25:07.929419+07:00",
+  "data_kind": "lab_capture",
+  "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+  "feature_count": 148,
+  "feature_version": "ai-features-3",
+  "final_test_metrics_computed": false,
+  "formal_training_executed": true,
+  "format_version": 1,
+  "input_profile": "edge_masked_v1",
+  "limits": [
+    "Real HTTP/PCAP lab with fictional accounts and scripted intent; not production acceptance.",
+    "Metadata input masks query payloads consistently; payload-family recall remains poor.",
+    "Neither extra epochs nor runtime alone guarantee detection quality.",
+    "Validation-only quality; test vectors replayed only for numerical parity, not threshold/model selection.",
+    "No Rust feature/inference port, champion promotion, live deployment or firewall change.",
+    "Early-stopped run is terminal; do not force-resume it to fill150minutes.",
+    "Native and ORT latency are warm batch1 model-only timings; preprocessing and queue excluded."
+  ],
+  "local_artifacts": {
+    "bundle_manifest_sha256": "0b8691a428cc2a152b712f0cc08d8e771273e4be352c241b9fe8887488e628a5",
+    "preflight": ".artifacts/upgrade_20261028/formal/preflight-20261029-171850",
+    "readiness": ".artifacts/upgrade_20261028/formal/preflight-20261029-171850/readiness/readiness.json",
+    "run": ".artifacts/upgrade_20261028/formal/residual-seed17",
+    "session_report_sha256": "455ffc78b327808c51bdb915cee8d90849080bd9c6fdb5cce7343f42f9ee0e7a"
+  },
+  "model": {
+    "architecture": "148 -> 64 -> 64+skip -> 8",
+    "batch_size": 64,
+    "kind": "residual",
+    "learning_rate": 0.002,
+    "parameter_count": 14216,
+    "seed": 17
+  },
+  "next_action": "Review low payload-family recall and telemetry/data design; choose a separate experiment only after review. Do not deploy or force-resume this terminal run.",
+  "normalizer_version": "ai-normalizer-3",
+  "onnx_parity": {
+    "all_rows_match": true,
+    "atol": 1e-06,
+    "max_absolute_error": 1.7881393432617188e-07,
+    "rows": 19275,
+    "rtol": 1e-05
+  },
+  "preflight_attempt_note": "Initial audit wrapper used a directory as a JSON file; corrected the generated report path. No dataset/source edits or optimization.",
+  "production_data_training_hours": 0,
+  "production_ready": false,
+  "readiness_checks_passed": 35,
+  "requested_budget": {
+    "checkpoint_every_seconds": 300,
+    "early_stopping_patience": 8,
+    "epochs_target": 100,
+    "logical_cpus": 8,
+    "max_duration_minutes": 150,
+    "memory_high_gib": 15,
+    "memory_max_gib": 16,
+    "memory_swap_max": 0,
+    "nice": 10
+  },
+  "resources": {
+    "address_space_limit_effective": 17179869184,
+    "affinity_effective": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "cgroup_v2": {
+      "cpu.max": "800000 100000",
+      "cpu.stat": "usage_usec 2315543\nuser_usec 2221521\nsystem_usec 94022\nnice_usec 2219000\ncore_sched.force_idle_usec 0\nnr_periods 13\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "memory.current": "95129600",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "memory.high": "16106127360",
+      "memory.max": "17179869184",
+      "memory.peak": "95612928",
+      "memory.swap.max": "0",
+      "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-train-residual-20261029-172104.service"
+    },
+    "cgroup_v2_final": {
+      "cpu.max": "800000 100000",
+      "cpu.stat": "usage_usec 29387743\nuser_usec 23636402\nsystem_usec 5751341\nnice_usec 23633000\ncore_sched.force_idle_usec 0\nnr_periods 129\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "memory.current": "130441216",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "memory.high": "16106127360",
+      "memory.max": "17179869184",
+      "memory.peak": "131305472",
+      "memory.swap.max": "0",
+      "path": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-ai-train-residual-20261029-172104.service"
+    },
+    "effective_cpus_before_cap": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+    "max_threads": 8,
+    "memory_guard": "process-tree RSS at optimizer boundaries",
+    "memory_limit_bytes": 17179869184,
+    "peak_rss_bytes": 196595712,
+    "peak_tree_rss_bytes": 196595712,
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "python": "3.12.14",
+    "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+    "total_host_memory_bytes": 32440909824
+  },
+  "service_results": {
+    "export": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "4545221000",
+      "ExecMainStatus": "0",
+      "MainPID": "0",
+      "MemoryPeak": "154939392",
+      "Result": "success",
+      "SubState": "exited",
+      "unit": "idps-ai-export-residual-20261029-172249.service"
+    },
+    "guard": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "2924711000",
+      "ExecMainStatus": "0",
+      "MainPID": "0",
+      "MemoryPeak": "182759424",
+      "Result": "success",
+      "SubState": "exited",
+      "unit": "idps-ai-guard-probe-20261029-172035.service"
+    },
+    "training": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "29570785000",
+      "ExecMainStatus": "0",
+      "MainPID": "0",
+      "MemoryPeak": "131305472",
+      "Result": "success",
+      "SubState": "exited",
+      "unit": "idps-ai-train-residual-20261029-172104.service"
+    }
+  },
+  "session": {
+    "best_metric": 0.7756679232444825,
+    "cumulative_optimizer_seconds": 0.8858494019823411,
+    "cumulative_wall_seconds": 11.563423634000173,
+    "ended_at_local": "2026-10-29T17:21:17.479104+07:00",
+    "epoch": 14,
+    "global_step": 2534,
+    "optimizer_hours": 0.0002460692783284281,
+    "run_id": "8ea1ded50c7b43aabd98d2ef93236ef9",
+    "session_id": "142fb445007b47e880c986c76b48436d",
+    "session_optimizer_seconds": 0.8858494019823411,
+    "session_wall_seconds": 11.616398387999652,
+    "started_at_local": "2026-10-29T17:21:05.862726+07:00",
+    "stop_reason": "early_stopping",
+    "wall_hours": 0.0032267773299999034
+  },
+  "source_commit": "8171289400453d41c3a095af040c6a85e2880b77",
+  "split_rows": {
+    "test": 3855,
+    "train": 11565,
+    "val": 3855
+  },
+  "status": "FORMAL_EXPERIMENT_COMPLETED_EARLY_STOPPING",
+  "validation": {
+    "average_precision": 0.7756679232444825,
+    "calibration_note": "Threshold fitted on the same validation set; metrics are preliminary.",
+    "confusion_matrix": [
+      [
+        3153,
+        30
+      ],
+      [
+        375,
+        297
+      ]
+    ],
+    "f1": 0.5945945945945946,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            0,
+            96
+          ]
+        ],
+        "count": 96,
+        "detected": 96
+      },
+      "benign": {
+        "count": 3183,
+        "false_positives": 30
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            0,
+            96
+          ]
+        ],
+        "count": 96,
+        "detected": 96
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            93,
+            3
+          ]
+        ],
+        "count": 96,
+        "detected": 3
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            95,
+            1
+          ]
+        ],
+        "count": 96,
+        "detected": 1
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            0,
+            96
+          ]
+        ],
+        "count": 96,
+        "detected": 96
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            95,
+            1
+          ]
+        ],
+        "count": 96,
+        "detected": 1
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            92,
+            4
+          ]
+        ],
+        "count": 96,
+        "detected": 4
+      }
+    },
+    "fpr": 0.00942507068803016,
+    "latency_ms": {
+      "native": {
+        "p50": 0.022887499999999998,
+        "p95": 0.02440985,
+        "p99": 0.026054860000000006
+      },
+      "onnxruntime": {
+        "p50": 0.0139805,
+        "p95": 0.015192699999999998,
+        "p99": 0.015583380000000011
+      },
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "partition": "val",
+    "precision": 0.908256880733945,
+    "recall": 0.4419642857142857,
+    "rows": 3855,
+    "threshold": 0.5809128284454346
+  },
+  "cleanup": {
+    "checked_at": "2026-10-29T17:27:19.571861+07:00",
+    "services": {
+      "export": {
+        "returncode": 0,
+        "state": "ActiveState=inactive\nSubState=dead\nMainPID=0",
+        "note": "Stopped only the already-exited transient unit after preserving successful result."
+      },
+      "guard": {
+        "returncode": 0,
+        "state": "ActiveState=inactive\nSubState=dead\nMainPID=0",
+        "note": "Stopped only the already-exited transient unit after preserving successful result."
+      },
+      "training": {
+        "returncode": 0,
+        "state": "ActiveState=inactive\nSubState=dead\nMainPID=0",
+        "note": "Stopped only the already-exited transient unit after preserving successful result."
+      }
+    },
+    "training_or_export_running": false,
+    "idps_sleep_inhibitor_released": true,
+    "student_security_demo_unchanged": true
+  }
+}

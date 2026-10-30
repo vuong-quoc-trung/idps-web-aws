@@ -1,5 +1,251 @@
 # AI-IDPS Data & Training Pipeline
 
+## Hiện trạng — 2026-10-30T21:35:36.891996+07:00
+
+**Engineering PASS; generalization/deployment NOT_READY.** 160 pytest PASS/0 skip, 53 legacy technical gate PASS. Chỉ AI/docs; không đổi Student/Security, chưa champion hoặc train dài. Tổng lab 71.280 HTTP đủ 3 nguồn sau cohort 1.935 request mới; vẫn một môi trường, 0 scale admission cho mục tiêu 2M. Không đếm projection hoặc public benchmark record thành HTTP mới.
+
+Nhánh riêng `request-structure-v1` gồm 70 số, hỗ trợ cấu trúc tham số không nhạy cảm rộng hơn; fused 207 v5 giữ nguyên. Đã chạy adapter PKDD flattened, shared train-benign scaler, partial unknown-family loss, 3 ứng viên × 2-epoch/300-update study, exact resume/ONNX toàn 115.980 vector và opt-in EVE bridge. Chất lượng mới vẫn chưa đạt: request MLP lab recall 40,6%; GLU recall 0 tại ngưỡng khóa; AE khá trên public nhưng lab FPR 18,6%. Chưa đủ cơ sở chọn champion.
+
+Xem [PRETRAINING](PRETRAINING.md), [báo cáo đo](reports/REQUEST_PROFILE_20261030.json), [handoff](FINAL_TRAINING_HANDOFF.json), ledger 06 mục 27. `RequestInferencePipeline` chỉ trả candidate nhị phân, 0 enforcement; 70 feature và 207 feature là hai contract riêng. Công cụ mới và giới hạn nằm trong PRETRAINING. Các lệnh train/snapshot phía dưới là lịch sử, không phải chỉ dẫn chạy formal hoặc chạy lại study đã hoàn tất.
+
+## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
+
+**Đã kiểm chứng phần kỹ thuật; chưa hoàn thành mục tiêu dữ liệu/production.**
+Chỉ sửa AI và docs. Corpus vẫn **69.345 request duy nhất, một lab**, nhãn scripted
+intent; không thêm request hoặc môi trường. Re-extraction v5 không phải dữ liệu mới.
+Chưa có review nhãn độc lập, **0 request được admission cho formal scale**; mục tiêu
+2M đa dạng chưa đạt. Không nhân bản hoặc cộng các bản projection/cache vào số lượng.
+
+| Giai đoạn | Trạng thái cuối phiên |
+| --- | --- |
+| Data | Catalog/provenance/replay/holdout checks đã có; corpus 2M và shared-scaler assembly nhiều môi trường còn thiếu |
+| Features/architecture/algorithms | v5/207 cột, thêm 18 dynamics; residual SwiGLU **9.675.784** tham số thực; AdamW/smoothing/dropout/warmup-cosine |
+| Tests/readiness | **134/134 pytest PASS, 0 skipped**; **53/53 gate kỹ thuật PASS** trên cùng 69k |
+| Pilot | 4 neural candidates × 2 epoch, fresh-process resume và reference khớp chính xác; ONNX mọi 69.345 vectors/candidate PASS |
+| Evaluation | Calibration 3 campaign, selection 6 campaign; fit không nhìn validation; test quality giữ kín; tree32 iteration đối chứng |
+| Integration | Offline shadow512 request PASS, không gọi Web/firewall; live/TLS/receipt-time/response NOT_RUN |
+| Formal/champion | NOT_RUN / chưa chọn; không tự chạy ca dài và chưa đủ data gate |
+| Cleanup | Chỉ cache tái tạo được: giải phóng 498.14 MiB; giữ raw/checkpoint/log/evidence cũ |
+
+AP selection cao nhất ở lượt ngắn: **gated_residual**. Main challenger
+AP **0.997228**, recall **98.92%**, FPR **0.823%**,
+p95 ONNX model-only **5.363 ms**. Model lớn không mặc định tốt hơn;
+khác biệt thuật toán/regularization không phải thí nghiệm riêng tác dụng số tham số.
+Một lab và sáu nhóm selection không chứng minh FPR/zero-day/production generalization.
+
+[Báo cáo đo thực](reports/SCALE_UPGRADE_20261030.json), [handoff hiện hành](FINAL_TRAINING_HANDOFF.json),
+ledger06 mục25. Tất cả snapshot cũ bên dưới là lịch sử; không dùng readiness/source
+cũ cho source hiện hành hoặc force-resume checkpoint khác contract.
+
+Các lệnh kỹ thuật, dùng output mới mỗi lần và giữ cgroup tối đa 8 CPU / 16 GiB:
+
+```bash
+# Audit thực tế: exit3/NOT_READY hiện là kết quả đúng, không phải lỗi cần hạ gate.
+ai-training/.venv/bin/idps-ai corpus-audit --output "$PWD/ai-training/.artifacts/catalog-next"
+
+# Chạy lại pilot kỹ thuật, không phải formal/champion. Output phải chưa tồn tại.
+systemd-run --user --wait --pipe --collect \
+  -p CPUQuota=800% -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 -p Nice=10 \
+  "$PWD/ai-training/.venv/bin/idps-ai" pilot --candidate-set scale \
+  --dataset "$PWD/ai-training/.artifacts/scale_upgrade_20261030/prepared-v5" \
+  --readiness-report "$PWD/ai-training/.artifacts/scale_upgrade_20261030/readiness/readiness.json" \
+  --output "$PWD/ai-training/.artifacts/scale-pilot-next" --cpus 8
+
+# AI-only offline integration, fused ordered rows; không đọc trực tiếp từng EVE line.
+ai-training/.venv/bin/idps-ai shadow-replay \
+  --dataset "$PWD/ai-training/.artifacts/scale_upgrade_20261030/prepared-v5" \
+  --bundle "$PWD/ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-bundle" \
+  --output "$PWD/ai-training/.artifacts/shadow-next" --max-requests 512 --cpus 8
+```
+
+Formal main-model config `scale_model_config.yaml` bị chặn trên 69k. Không có lệnh
+formal được khuyến nghị lúc này. Cần nguồn/nhãn được review, shared train-only scaler,
+corpus assembly bốn phần có lineage và current-source readiness trước khi xin chạy
+ca dài. Raw/data/model là artifact cục bộ được Git ignore; teammate cần chuyển
+artifact an toàn hoặc thu lại. Không force-resume bằng source/feature/config mới.
+Memmap `cache/*.npy` của pilot đã dọn vì có thể tái tạo từ dataset; checkpoint NPZ,
+latest/best/previous/session và báo cáo vẫn đầy đủ. `load_arrays` tự tạo cache trước
+fit/resume/export. Xem thuật toán ở docs03, admission ở docs02 và ledger25.
+
+<details>
+<summary>Lịch sử các workflow và kết quả trước v5</summary>
+
+
+## Bàn giao corpus và mô hình sâu revision 4.1 — 2026-10-30T09:08:21+07:00
+
+| Hạng mục | Kết quả đo thực |
+| --- | --- |
+| Corpus | 69,345 request; 297,685 observations từ Student, Nginx và Suricata thật |
+| Split và nhãn | 69,345 vectors có nhãn được duyệt; train: 41,607 / val: 13,869 / test: 13,869; groups 27/9/9 |
+| Đặc trưng | ai-features-4.1 / normalizer 4.1, 189 cột, projection v2; canonical 1.0 giữ nguyên |
+| Mô hình | Residual nhỏ đối chứng; MLP 248.072 / DAE 294.717 / gated residual 445.448 tham số |
+| Readiness | 53/53 PASS; payload và hard negatives có identity riêng giữa các temporal bands |
+| Pilot | 4 mô hình × 5 epoch; resume qua process mới khớp reference; ONNX 69,345/69,345 vectors PASS từng mô hình |
+| Kiểm thử và phạm vi | 118 pytest PASS, 0 skipped; giữ nguyên hash 366 file dịch vụ/contract và 1.946 artifact cũ |
+| Train dài / chất lượng trên test / deploy | NOT_RUN; chưa chọn Champion Model hoặc nghiệm thu Rust/live/enforcement |
+
+Ứng viên lớn cho thí nghiệm tiếp: **gated_residual** (AP 0.999077, precision 97.61%, recall 99.16%, FPR 0.996%).
+Residual đối chứng: AP 0.999165, precision 97.64%, recall 99.55%, FPR 0.986%. Các số đo trên validation còn sơ bộ
+vì cùng tập này được dùng để calibration và so sánh ứng viên. Tăng tham số không
+bảo đảm tốt hơn; không kéo dài train chỉ để đủ thời gian.
+
+Manifest hiện hành: [FINAL_TRAINING_HANDOFF.json](FINAL_TRAINING_HANDOFF.json).
+Xem [báo cáo](reports/PRETRAIN_EXPANDED_20261030.json) và mục 24 của ledger 06. Các snapshot bên dưới là lịch sử.
+
+Lệnh ca tiếp do người dùng tự chạy, **chưa được thực thi**:
+
+```bash
+bash /home/trung/projects/idps-web-aws/ai-training/scripts/train-expanded-session.sh gated_residual
+```
+
+## Corpus mở rộng và mạng sâu — revision 4.1
+
+Đợt hiện hành thêm41 đặc trưng số, đưa vector lên189 cột, projection
+`safe_query_numeric_v2` và feature/normalizer 4.1. Các artifact 4/148 cột và report
+ngày 28/đầu ngày 29 giữ lịch sử; không dùng checkpoint hoặc readiness cũ với source
+mới. `FINAL_TRAINING_HANDOFF.json` ở đầu package sẽ là manifest bàn giao hiện hành,
+trỏ artifact local đã kiểm; không chứa raw/key/model binary.
+
+Ba candidate mới: MLP bốn hidden layers / 248.072 tham số, denoising AE 294.717 tham số và
+gated residual ba blocks / 445.448 tham số. Có residual nhỏ làm đối chứng cùng dataset.
+Denoising AE chỉ fit benign, train noisy→clean, inference sạch; noise phụ thuộc
+seed + optimizer step để resume chính xác. FP32/FP64 affine reduction và parity 1e-5/1e-6
+giữ nguyên. Không thêm Torch/CUDA hoặc dependency mới. Xem
+[thuật toán và giới hạn](../docs/03_AI_MODEL_AND_TRAINING_PLAN.md#các-ứng-viên-sâu-revision-41--29102026).
+
+Để tái lập capture, chọn output mới (không chạy lại vào thư mục có sẵn):
+
+```bash
+capture_root="$PWD/ai-training/.artifacts/expanded-capture-next"
+ai-training/.venv/bin/idps-ai lab-start --output "$capture_root/lab" \
+  --nginx-bin "$PWD/.local-dev/foundation/tools/runtime/usr/sbin/nginx" --campaigns 45
+ai-training/.venv/bin/idps-ai lab-capture-eve --lab-dir "$capture_root/lab" \
+  --campaign-seconds 480 --requests-per-campaign 1536
+ai-training/.venv/bin/idps-ai lab-stop --lab-dir "$capture_root/lab"
+ai-training/.venv/bin/idps-ai decode-pcap --pcap "$capture_root/lab/traffic.pcap" \
+  --runtime "$PWD/ai-training/.artifacts/upgrade_20261028/tools/runtime" \
+  --output "$capture_root/lab/eve" --query-numeric --projection-version 2
+ai-training/.venv/bin/idps-ai lab-finish --lab-dir "$capture_root/lab" \
+  --output "$capture_root/dataset-ready"
+ai-training/.venv/bin/idps-ai pilot --dataset "$capture_root/dataset-ready/prepared" \
+  --readiness-report "$capture_root/dataset-ready/readiness/readiness.json" \
+  --output "$capture_root/pilot" --candidate-set expanded --cpus 8
+```
+
+45 campaign chia27/9/9, khoảng69.345 request kể cả setup/logout; seed lưu trong
+capture metadata. Nhịp lognormal/jitter và thứ tự độc lập, tham số/endpoint thay
+đổi, attack và hard-negative views tách giữa ba temporal bands. Split vẫn giữ
+embargo 300 giây; hai gap 620 giây là thời gian thật. Corpus gate 60–80k, không đổi timestamp
+để chia tập. Tăng cap audit chỉ trong environment của fixture lab, không sửa
+`student-web`/`security-web` hoặc cấu hình dịch vụ đang dùng. Lỗi capture phải
+`lab-stop` rồi dùng version mới; không gắn chứng nhận cho capture chưa hoàn tất.
+
+Live numeric bridge dùng cùng projection:
+
+```bash
+ai-training/.venv/bin/idps-ai project-eve --projection-version 2 \
+  --input raw-eve.json --output ai-eve.json
+```
+
+Chạy trên HTTP view trước redaction (sau TLS termination nếu có), không trên URL
+đã mất query. File output immutable; stdin/stdout cần consumer bền vững riêng.
+PCAP có credential/session của fixture giả, giữ private 0600 ngoài Git.
+Rust live/receipt-time/TLS/missing-source acceptance chưa được triển khai ở đây.
+
+Sau khi đọc handoff/readiness/pilot cuối, lệnh ca dài do người vận hành tự chạy:
+
+```bash
+bash /home/trung/projects/idps-web-aws/ai-training/scripts/train-expanded-session.sh gated_residual
+```
+
+Có thể thay đối số bằng `deep_mlp`, `denoising_autoencoder` hoặc `residual` để tạo
+experiment riêng. Mỗi ca tối đa 150 epoch / 150 phút, 8 CPU / 16 GiB, sleep inhibitor và
+checkpoint 300 giây. Early stopping có thể kết thúc sớm; model lớn không bảo đảm tốt
+hơn và không bắt buộc dùng hết 150 phút. Preparation/pilot không gọi script này.
+Các workflow bên dưới giữ nguyên ý nghĩa lịch sử của corpus trước.
+
+## Workflow numeric query — 29/10/2026
+
+Profile mới `safe_query_numeric_v1` dùng feature/normalizerv4,148cột và vẫn giữ
+canonical1.0. AI EVE bridge chỉ giữ28 số cấu trúc sau lọc secret/PII; không ghi
+plaintext query vào EVE/Parquet. Xem [contract](../docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md#ai-input-contract-v4--nâng-cấp-ngày-29102026).
+Corpus/checkpoint ngày28 và ca dừng sớm ngày29 là các snapshot lịch sử riêng.
+
+Một capture mới dùng30campaign chia18/6/6,1536workload request/campaign,480giây
+thật/campaign và hai khoảng nghỉ620giây thật. Tổng có thể thêm setup/logout hoặc
+retry bootstrap. Chọn **đường dẫn mới** mỗi lần; không chạy đè lab/dataset đã tồn tại.
+Từ repository root, sau khi venv và trusted Nginx/Suricata runtime đã có:
+
+```bash
+capture_root="$PWD/ai-training/.artifacts/query-capture-next"
+ai-training/.venv/bin/idps-ai lab-start --output "$capture_root/lab" \
+  --nginx-bin "$PWD/.local-dev/foundation/tools/runtime/usr/sbin/nginx" --campaigns 30
+ai-training/.venv/bin/idps-ai lab-capture-eve --lab-dir "$capture_root/lab" \
+  --campaign-seconds 480 --requests-per-campaign 1536
+ai-training/.venv/bin/idps-ai lab-stop --lab-dir "$capture_root/lab"
+ai-training/.venv/bin/idps-ai decode-pcap --pcap "$capture_root/lab/traffic.pcap" \
+  --runtime "$PWD/ai-training/.artifacts/upgrade_20261028/tools/runtime" \
+  --output "$capture_root/lab/eve" --query-numeric
+ai-training/.venv/bin/idps-ai lab-finish --lab-dir "$capture_root/lab" \
+  --output "$capture_root/dataset-ready"
+ai-training/.venv/bin/idps-ai pilot --dataset "$capture_root/dataset-ready/prepared" \
+  --readiness-report "$capture_root/dataset-ready/readiness/readiness.json" \
+  --output "$capture_root/pilot" --cpus 8 --include-weighted-residual
+```
+
+Capture cần rootless user/network namespace được phép; chỉ bắt TCP của fixture
+trong namespace riêng, không xin host packet socket. Nếu capture lỗi, chạy
+`lab-stop` trong bước dọn và tạo phiên bản mới. Raw PCAP chỉ private0600, chứa
+HTTP/session của fixture giả; không đưa lên Git. Không lấy credential/DB của dịch
+vụ đang chạy. Lệnh trên chuẩn bị và pilot, không tự train chính thức.
+
+`project-eve --input RAW_EVE --output AI_EVE` dùng cùng projection với offline
+decoder; `--input - --output -` hỗ trợ stream stdin/stdout. Output file là bản mới
+bất biến, công bố khi kết thúc stream; stdout dành cho consumer có lifecycle bền
+vững riêng. Không chạy bridge trên bản đã mất query rồi kỳ vọng phục hồi payload.
+Rust live adapter, TLS vantage và receipt-time parity vẫn cần nghiệm thu riêng.
+
+Config thứ tư `weighted_residual_config.yaml` dùng train-only inverse-sqrt class
+weights. Pilot kiểm2→5epoch/process mới, reference5epoch, history/Adam exact và
+ONNX mọi vector; chỉ tính chất lượng validation. Config/seed khác là experiment
+mới, không force-resume old run. `query_experiment_plan.yaml` ghi các so sánh.
+
+Ca kế tiếp dành cho corpus đã bàn giao ngày29:
+
+```bash
+bash /home/trung/projects/idps-web-aws/ai-training/scripts/train-query-session.sh
+```
+
+Script trỏ đúng `upgrade_20261029_query/dataset-ready`, buộc gate mới,8CPU/16GiB,
+100epoch và tối đa150phút. Có thể hoàn thành/dừng sớm; không lặp để lấp giờ.
+Chỉ chạy sau khi đọc kết quả readiness/pilot hiện hành trong handoff. Script
+`train-first-session.sh` phía dưới thuộc ca masked-query đã kết thúc.
+
+**Kết quả corpus ngày29:**46.230request/198.765observations;96nhãn duplicate
+holdout loại trước fit, còn46.134approved vectors, split27.738/9.150/9.246;
+48readinesschecksPASS. Pilot4model đều exactresume/ONNX toàn bộ vectorPASS.
+Residual APvalidation0,99875,precision98,13%,recall99,23%,FPR0,747%; chọn residual
+**không trọng số** cho experiment tiếp theo (`formal_residual_config.yaml`,patience8).
+Weighted residual là candidate so sánh. [Report hiện hành](reports/PRETRAIN_UPGRADE_20261029.json)
+ghi đủ sensitivity/learning curves; test quality còn niêm phong. Source capture
+là8171289, không phải các commit Student/firewall fast-forward nhận về giữa phiên.
+
+## Ca residual đầu tiên — 29/10/2026
+
+Đã thực hiện yêu cầu kiểm data rồi chạy ca tối đa **150 phút** trên source `8171289`.
+Data gate mới **35/35 PASS**, dataset **19.275 request / 148 features** giữ nguyên hash.
+Ca chạy **17:21:05–17:21:17 +07:00**, hoàn thành sau **11,616 giây**, dừng tại
+**epoch 14 / step 2.534** do `early_stopping` (patience 8); checkpoint tốt nhất
+ở **epoch 6 / step 1.086**. Không ép chạy tiếp để lấp đầy ngân sách thời gian.
+Quota thực **8 CPU / 16 GiB**, MemoryHigh 15 GiB, swap 0; có job nền/log riêng và
+sleep inhibitor trong lúc chạy. Đã kiểm checkpoint và ONNX parity **19.275/19.275 PASS**.
+
+Validation-only: precision **90,83%**, recall **44,20%**, FPR **0,943%**, AP **0,7757**;
+threshold chọn trên cùng validation nên kết quả sơ bộ. **Không mở test metrics,
+chưa chọn champion hoặc triển khai Rust/live/enforcement**. Chưa nghiệm thu endurance
+150 phút. Xem [báo cáo ca residual](reports/FORMAL_RESIDUAL_20261029.json) và [ledger06 mục22](../docs/06_AI_HANDOFF_AND_RUN_LEDGER.md#22-ca-train-residual-đầu-tiên--29102026). Các mốc “chưa train” ngày28/S0 phía dưới
+là lịch sử. Run early-stopped là terminal; không force-resume bằng script ca đầu.
+
 Nhánh `feat/ai-model-training`, nền code `fbe078d`. Package chạy offline, chỉ đọc file log hoặc bản export PostgreSQL. Không sửa hay kết nối để cấu hình Student/Security, không gọi firewall, không triển khai model vào Rust. Source, venv, configs và artifact AI nằm riêng trong thư mục này.
 
 **Hiện hành28/10, sau nâng resource:** 8CPU/16GiB (MemoryHigh15GiB,swap0,Nice10), báo cáo [RESOURCE_GUARD](reports/RESOURCE_GUARD_20261028.json). Pilot cũ vẫn là kết quả đo2CPU/12GiB.
@@ -298,3 +544,5 @@ Script ca đầu dùng `dataset-ready/readiness-resource8/readiness.json`; artif
 NEXT_COMMANDS cũ, cache và log tạm đã dọn; metadata lịch sử trong reports vẫn giữ.
 Source/config/script/test và dataset đã duyệt không bị xóa. Venv và native runtime
 Suricata đang dùng cho tests được giữ; không có dữ liệu/model/khóa vào Git.
+
+</details>

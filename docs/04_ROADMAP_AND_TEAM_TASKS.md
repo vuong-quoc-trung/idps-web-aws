@@ -1,5 +1,105 @@
 # 04 — Lộ trình kỹ thuật và phân chia công việc
 
+## Tiến độ AI tiếp nối — 2026-10-30T21:35:36.891996+07:00
+
+| Giai đoạn | Đã kiểm chứng | Còn mở |
+| --- | --- | --- |
+| Data/privacy | Profile 70 số; public adapter/shared scaler; 115.980 research record; thêm 1.935 HTTP thật đủ 3 nguồn | Chưa đạt 2M chất lượng; thiếu positive đa nguồn/human review; 53 HEAD/OPTIONS trả 403 pending |
+| Model/loss | Partial binary/unknown family; balanced train weights; AdamW/schedule; giữ baseline | Chưa champion; capacity không giải quyết visibility/source calibration |
+| Training | 3 model × 2 epoch và 300-update diagnostic; exact resume; 4 CPU/16 GiB có guard | Không formal/multi-hour; multi-seed và endurance chưa chạy |
+| Evaluation | PKDD test 25.612 record và cohort thật mới; frozen thresholds; per-family/full/novel diagnostics | Generalization chưa đạt; test đã exposed, tuning tiếp cần holdout mới |
+| Integration | ONNX 115.980 vector/model/study; request inference/opt-in bridge trước mask; 0 enforcement | Live TLS/receipt-time/IPS acceptance NOT_RUN; không sửa Web |
+| Checks/cleanup | 160 PASS/0 skip; 53 legacy gate PASS; 689 protected path giữ nguyên; private lab dừng; dọn 720.632 byte cache tái tạo được | Giữ raw/checkpoint/experiments; artifact vẫn private/local |
+
+Ưu tiên tiếp: review nhãn/realism độc lập; nguồn HTTP positive và benign đa môi trường có quyền sử dụng; cohort mới tách thời gian/grammar; xử lý missing body/header và calibration domain shift. Biblio-US17 cần quyền tải/terms. Chủ sở hữu Web có thể rà HEAD/OPTIONS ngoài scope; không đổi nhãn để hợp thức hóa. Sau data admission mới thiết kế formal multi-seed, và chỉ chạy ca dài khi user cho phép. Không lặp một fixture để đủ 2M.
+
+[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+
+## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
+
+**Đã kiểm chứng phần kỹ thuật; chưa hoàn thành mục tiêu dữ liệu/production.**
+Chỉ sửa AI và docs. Corpus vẫn **69.345 request duy nhất, một lab**, nhãn scripted
+intent; không thêm request hoặc môi trường. Re-extraction v5 không phải dữ liệu mới.
+Chưa có review nhãn độc lập, **0 request được admission cho formal scale**; mục tiêu
+2M đa dạng chưa đạt. Không nhân bản hoặc cộng các bản projection/cache vào số lượng.
+
+| Giai đoạn | Trạng thái cuối phiên |
+| --- | --- |
+| Data | Catalog/provenance/replay/holdout checks đã có; corpus 2M và shared-scaler assembly nhiều môi trường còn thiếu |
+| Features/architecture/algorithms | v5/207 cột, thêm 18 dynamics; residual SwiGLU **9.675.784** tham số thực; AdamW/smoothing/dropout/warmup-cosine |
+| Tests/readiness | **134/134 pytest PASS, 0 skipped**; **53/53 gate kỹ thuật PASS** trên cùng 69k |
+| Pilot | 4 neural candidates × 2 epoch, fresh-process resume và reference khớp chính xác; ONNX mọi 69.345 vectors/candidate PASS |
+| Evaluation | Calibration 3 campaign, selection 6 campaign; fit không nhìn validation; test quality giữ kín; tree32 iteration đối chứng |
+| Integration | Offline shadow512 request PASS, không gọi Web/firewall; live/TLS/receipt-time/response NOT_RUN |
+| Formal/champion | NOT_RUN / chưa chọn; không tự chạy ca dài và chưa đủ data gate |
+| Cleanup | Chỉ cache tái tạo được: giải phóng 498.14 MiB; giữ raw/checkpoint/log/evidence cũ |
+
+AP selection cao nhất ở lượt ngắn: **gated_residual**. Main challenger
+AP **0.997228**, recall **98.92%**, FPR **0.823%**,
+p95 ONNX model-only **5.363 ms**. Model lớn không mặc định tốt hơn;
+khác biệt thuật toán/regularization không phải thí nghiệm riêng tác dụng số tham số.
+Một lab và sáu nhóm selection không chứng minh FPR/zero-day/production generalization.
+
+[Báo cáo đo thực](../ai-training/reports/SCALE_UPGRADE_20261030.json), [handoff hiện hành](../ai-training/FINAL_TRAINING_HANDOFF.json),
+ledger06 mục25. Tất cả snapshot cũ bên dưới là lịch sử; không dùng readiness/source
+cũ cho source hiện hành hoặc force-resume checkpoint khác contract.
+
+## Bàn giao corpus và mô hình sâu revision 4.1 — 2026-10-30T09:08:21+07:00
+
+| Hạng mục | Kết quả đo thực |
+| --- | --- |
+| Corpus | 69,345 request; 297,685 observations từ Student, Nginx và Suricata thật |
+| Split và nhãn | 69,345 vectors có nhãn được duyệt; train: 41,607 / val: 13,869 / test: 13,869; groups 27/9/9 |
+| Đặc trưng | ai-features-4.1 / normalizer 4.1, 189 cột, projection v2; canonical 1.0 giữ nguyên |
+| Mô hình | Residual nhỏ đối chứng; MLP 248.072 / DAE 294.717 / gated residual 445.448 tham số |
+| Readiness | 53/53 PASS; payload và hard negatives có identity riêng giữa các temporal bands |
+| Pilot | 4 mô hình × 5 epoch; resume qua process mới khớp reference; ONNX 69,345/69,345 vectors PASS từng mô hình |
+| Kiểm thử và phạm vi | 118 pytest PASS, 0 skipped; giữ nguyên hash 366 file dịch vụ/contract và 1.946 artifact cũ |
+| Train dài / chất lượng trên test / deploy | NOT_RUN; chưa chọn Champion Model hoặc nghiệm thu Rust/live/enforcement |
+
+Ứng viên lớn cho thí nghiệm tiếp: **gated_residual** (AP 0.999077, precision 97.61%, recall 99.16%, FPR 0.996%).
+Residual đối chứng: AP 0.999165, precision 97.64%, recall 99.55%, FPR 0.986%. Các số đo trên validation còn sơ bộ
+vì cùng tập này được dùng để calibration và so sánh ứng viên. Tăng tham số không
+bảo đảm tốt hơn; không kéo dài train chỉ để đủ thời gian.
+
+Manifest hiện hành: [FINAL_TRAINING_HANDOFF.json](../ai-training/FINAL_TRAINING_HANDOFF.json).
+Xem [báo cáo](../ai-training/reports/PRETRAIN_EXPANDED_20261030.json) và mục 24 của ledger 06. Các snapshot bên dưới là lịch sử.
+
+## Gate tiếp tục training — 29/10/2026
+
+| Việc | Trạng thái thực |
+| --- | --- |
+| Chẩn đoán ca11,616giây |DONE: tiny model + early stop; query signal cũ bằng0; không ép chạy thêm giờ |
+| Telemetry số/featurev4 |DONE trong luồng AI: shared bridge trước redaction,148cột, canonical1.0 không đổi |
+| Corpus sâu hơn |DONE:30campaign/46.230request/198.765observations;96nhãn holdout trùng bị loại trước fit; log/context giữ nguyên |
+| Gate |PASS48/48; train/val/test27.738/9.150/9.246approved rows, nhóm18/6/6 |
+| Pilot |PASS bốn model5epoch, fresh-process exact resume, ONNX46.134rows từng model |
+| Ca formal tiếp theo |PREPARED,NOT_RUN:residual seed17,script `train-query-session.sh`,100epoch/max150phút |
+| Chọn champion |Chưa làm; thêm replication/corpus/error review rồi chốt model và threshold trước mở test |
+| Live/Rust/IPS |Ngoài phiên AI; bridge/receipt-time/TLS/mất nguồn/shadow cần acceptance riêng |
+
+Weighted residual đã sẵn sàng so sánh nhưng pilot chưa tốt hơn residual theo AP.
+Không tăng kích thước/epoch chỉ để đủ giờ. Bước kế tiếp là experiment mới trên
+corpusv4, đọc learning curve và lỗi từng campaign/họ ở validation; test metrics
+vẫn niêm phong. Xem [report](../ai-training/reports/PRETRAIN_UPGRADE_20261029.json)
+và ledger06 mục23 cho hash, lệnh kiểm tra và giới hạn.
+
+## Ca residual đầu tiên — 29/10/2026
+
+Đã thực hiện yêu cầu kiểm data rồi chạy ca tối đa **150 phút** trên source `8171289`.
+Data gate mới **35/35 PASS**, dataset **19.275 request / 148 features** giữ nguyên hash.
+Ca chạy **17:21:05–17:21:17 +07:00**, hoàn thành sau **11,616 giây**, dừng tại
+**epoch 14 / step 2.534** do `early_stopping` (patience 8); checkpoint tốt nhất
+ở **epoch 6 / step 1.086**. Không ép chạy tiếp để lấp đầy ngân sách thời gian.
+Quota thực **8 CPU / 16 GiB**, MemoryHigh 15 GiB, swap 0; có job nền/log riêng và
+sleep inhibitor trong lúc chạy. Đã kiểm checkpoint và ONNX parity **19.275/19.275 PASS**.
+
+Validation-only: precision **90,83%**, recall **44,20%**, FPR **0,943%**, AP **0,7757**;
+threshold chọn trên cùng validation nên kết quả sơ bộ. **Không mở test metrics,
+chưa chọn champion hoặc triển khai Rust/live/enforcement**. Chưa nghiệm thu endurance
+150 phút. Xem [báo cáo ca residual](../ai-training/reports/FORMAL_RESIDUAL_20261029.json) và ledger06 mục22. Các mốc “chưa train” ngày28/S0 phía dưới
+là lịch sử. Run early-stopped là terminal; không force-resume bằng script ca đầu.
+
 ## Cập nhật resource sau pilot — 28/10/2026
 
 Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,

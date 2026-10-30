@@ -1,5 +1,254 @@
 # 03 — Thiết kế AI và training theo ca 2–3 giờ
 
+## Kết luận AI từ hai holdout mới — 2026-10-30T21:35:36.891996+07:00
+
+**Không chọn champion, không train chính thức.** Giữ baseline MLP 252.680 và GLU 9.675.784 tham số/207 cột. Nhánh request 70 cột có MLP 217.608, GLU 9.535.496 và Denoising AE 233.670 tham số trainable; giảm input làm đổi count, không thêm padding.
+
+Partial-label loss mới dùng FP64 logsumexp cho tổng xác suất 7 head non-benign. Unknown family giữ `-1`, không gán bừa SQLi; known family có conditional CE weight 0,2. Binary smoothing 0,005; MLP/GLU dùng AdamW, decay W=1e-4, global gradient clip=1; GLU dropout=0,1. Diagnostic dùng balanced weights **train-only**, seed=17, batch=128, lr=0,0003, warmup=15 rồi cosine tới 300 update. AE chỉ fit benign đa nguồn. Ngưỡng là max source-specific benign calibration quantile tại target FPR 1%, không chọn bằng attack/test scores.
+
+Hai study ngắn: 2 epoch, tương đương chỉ 20 supervised update do 1.233 unique view; sau đó diagnostic 300 update cố định. Fresh-process 100→300 bằng continuous chính xác ở parameters/Adam/RNG/permutation/history. Mỗi study ONNX toàn 115.980 vector/model PASS rtol=1e-5, atol=1e-6. Diagnostic wall time 185,34 giây cho tất cả model/reference/export; riêng GLU optimizer 46,03 giây. Đây là kiểm tra ngắn, không phải train 3 giờ hoặc bằng chứng học tổng quát.
+
+| Request model | Validation AP | Fresh lab recall / FPR | PKDD test recall / FPR | Fresh lab batch-1 p95 |
+| --- | --- | --- | --- | --- |
+| MLP 217k | 0,82914 | 40,625% / 0% | 3,726% / 1,162% | 0,138 ms |
+| GLU 9,535M | 0,80711 | 0% / 0% | 1,132% / 0,724% | 4,483 ms |
+| Denoising AE 233k | 0,75786 | 36,458% / 18,578% | 40,212% / 0,105% | 0,135 ms |
+
+Fresh lab primary task gồm 1.378 approved benign và 288 attack thuộc 4 họ payload. Scanner/brute/sequence nằm trong secondary diagnostic vì request-only không quan sát đủ. Latency gồm warm envelope/scaling/ONNX, không gồm URI projection/capture/Web. 0/1.378 FP không chứng minh production FPR bằng 0: upper bound nhị thức một phía 95% khoảng 0,217%, còn giả định IID bị hạn chế do cùng cohort. AE đạt precision public 99,82% ở khoảng 59% attack prevalence; không được chuyển thành precision production.
+
+Vì sao model lớn chưa hơn baseline: profile cũ mask mất token payload ngoài allowlist; positive độc lập ít, campaign dễ đoán và validation concurrent; nhiều tham số không bù thiếu quan sát. Diagnostic cải thiện validation nhưng GLU vẫn overconfident trên OOD benign, ngưỡng max-calibration 0,998768 khiến fresh lab recall bằng 0 dù AP=0,808. Đây là bằng chứng về visibility/calibration/support, **chưa phải causal ablation chứng minh một nguyên nhân duy nhất**.
+
+Đối chứng frozen 207 feature trên đúng cohort mới đủ 3 nguồn: GLU gốc recall 71,18% / FPR 73,22%; GLU tuned 80,56% / 69,09%; MLP 253k 7,64% / 5,52%, tại ngưỡng cũ. Không thể giải thích thất bại này chỉ bằng thiếu flow của public data. Cần positive đa nguồn, human review, multi-seed và cohort sealed mới cho mọi tuning tiếp theo. Không ép GLU thắng hoặc hạ ngưỡng theo test. Original test quality vẫn kín.
+
+[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+
+## Challenger 9,68M — kết quả kỹ thuật/validation — 2026-10-30T15:52:59+07:00
+
+| Candidate | Tham số neural | AP | Precision | Recall | F1 | FPR | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| deep_mlp | 252680 | 0.999436 | 98.63% | 98.92% | 98.77% | 0.564% | 0.092 |
+| gated_residual | 450056 | 0.999526 | 97.78% | 99.78% | 98.77% | 0.930% | 0.146 |
+| hist_gradient_boosting | cây, không phải neural | 0.999115 | 99.74% | 99.37% | 99.55% | 0.107% | 1.697 |
+| residual | 17992 | 0.997758 | 98.14% | 97.99% | 98.06% | 0.762% | 0.014 |
+| residual_glu | 9675784 | 0.997228 | 98.01% | 98.92% | 98.46% | 0.823% | 5.363 |
+
+AP trên 6 campaign selection (9.246 request), threshold fit riêng trên 3 campaign
+calibration (4.623 request). Không dùng validation trong fit/early stop; checkpoint
+cuối fixed 2 epoch. ONNX p95 neural và sklearn p95 tree là backend khác nhau, warm
+batch1 model-only; không là network/end-to-end SLO. Báo cáo có bootstrap95% theo
+campaign với threshold cố định, precision/recall/F1/FPR,AP,per-family và latency.
+
+Pilot neural wall790.413s; optimizer chính
+126.775240s, reference riêng
+136.867438s. Cả 4 models exact resume và
+ONNX 69.345/69.345 PASS; test quality giữ kín, latency dùng val. Main AP trừ best-other
+**-0.002298**; không mặc định 10M tốt hơn. Best AP hiện
+`gated_residual`, chưa champion vì thiếu data/realism/independent
+environment acceptance. AE/baseline cũ còn nguyên như các snapshot lịch sử.
+
+Model/resource/source/checkpoint/algorithm metadata đầy đủ trong [báo cáo](../ai-training/reports/SCALE_UPGRADE_20261030.json).
+Formal 10M NOT_RUN và data gate NOT_READY; chỉ technical pilot≤2 epoch/8 phút/session.
+
+## Thiết kế đã triển khai: residual SwiGLU v5 — 30/10/2026
+
+Challenger `residual_glu`, **9.675.784 tham số trainable** với 207 đầu vào. Đây
+là ứng viên chính để nghiên cứu khi đủ dữ liệu, chưa thay champion/baseline.
+Không tăng tham số bằng padding, embedding ID hoặc tensor không dùng.
+
+| Thành phần | Kích thước | Tham số |
+| --- | --- | ---: |
+| Projection + ReLU | 207→1024 | 212.992 |
+| 3 residual blocks | mỗi block: LayerNorm, value/gate/down 1024→1024 | 9.452.544 |
+| Final LayerNorm + softmax head | 1024→8 | 10.248 |
+| Tổng | toàn bộ tensor tham gia forward/backprop | 9.675.784 |
+
+```text
+h = ReLU(x Win + bin)
+for block in 0..2:
+    n = LayerNorm(h, eps=1e-5)
+    a = (n Wvalue + bvalue) * SiLU(n Wgate + bgate)
+    h = h + 0.5 * (Dropout(a, p=0.1) Wdown + bdown)
+p = softmax(LayerNorm(h) Wout + bout)
+```
+
+Không gọi đây là Transformer/TCN/TabM. Gate học tương tác của các đặc trưng
+request và hành vi; ngữ cảnh thời gian đến từ aggregate nhân quả, không từ nhãn
+hoặc future flow. Quyết định chọn residual tabular cho CPU tham khảo nghiên cứu
+[ResNet/Transformer cho tabular](https://arxiv.org/abs/2106.11959) và
+[TabM](https://arxiv.org/abs/2410.24210), nhưng implementation là riêng và phải
+đấu baseline trên dữ liệu của dự án. Không có model tối ưu phổ quát chỉ từ paper.
+
+**Thuật toán:** cross-entropy từ logits bằng log-sum-exp với label smoothing 0,02;
+AdamW (betas 0,9/0,999, epsilon 1e-8), decay 1e-4 chỉ với W; gradient global L2
+clip 1,0. Warmup rồi cosine decay theo committed global step. LayerNorm thống kê
+FP64 rồi round FP32; affine vẫn FP64 reduction→FP32, params/grad/Adam FP32.
+SiLU dùng sigmoid FP64→FP32 như graph ONNX, tolerance giữ rtol=1e-5/atol=1e-6.
+
+Dropout chỉ trong train, PCG64 `SeedSequence(seed, optimizer_step, 23)`, độc lập
+sampler. Checkpoint giữ Adam moments, seed/corruption contract, sampler, schedule,
+loss history và learning config hash; resume không restart warmup. Inference và
+ONNX không dropout. Mọi tensor đã có kiểm thử gradient; kiểm thử số hữu hạn, resume
+và ONNX phải PASS trước pilot thật.
+
+**Protocol mới:** fixed 2 epoch technical pilot, cùng data/batch128/LR0,0003 và
+warmup30→cosine1000steps cho các neural candidates. Không dùng validation trong
+fit hoặc early stopping; dùng checkpoint epoch cuối. Tách1/3 campaign validation
+để fit threshold,2/3 để selection; không dựa nhãn/score để chọn nhóm. Báo precision,
+recall,F1,FPR,AP,ROC,per-family,latency và campaign-bootstrap CI với threshold cố định.
+Đây chưa là environment holdout. Tree baseline HistGradientBoosting32 iterations,
+hyperparams cố định trước, chỉ dùng train; không tạo deployment bundle/pickle.
+Không diễn giải các pipeline khác algorithm/regularizer như một architecture ablation.
+
+**Giới hạn:** technical pilot≤2 epoch/8 phút mỗi session, formal 10M bị chặn khi chưa
+có corpus 2M và calibration độc lập. Registry chưa tự ghép các shard có scaler khác
+nhau; cần shared train-only scaler/assembled dataset có lineage trước formal.
+Model lớn không bảo đảm tăng chất lượng hoặc chạy hết150phút. Chưa có human review,
+đa môi trường thật, official train, test quality hay production/shadow acceptance.
+
+## Pilot revision 4.1 đo thực — 2026-10-30T09:08:21+07:00
+
+Bốn ứng viên đều chạy 5 epoch: process đầu chạy 2 epoch, process mới resume tới 5;
+weights, Adam, lịch sử và sampler khớp reference chạy liền 5 epoch. ONNX parity
+69,345 vectors/model PASS với tolerance gốc. Chất lượng trên test
+vẫn niêm phong. Pilot mất 391.454 giây; thời gian optimizer
+chính 26.005729 giây, reference riêng
+29.627361 giây.
+
+| Model | AP val | Precision | Recall | FPR |
+| --- | ---: | ---: | ---: | ---: |
+| deep_mlp | 0.998798 | 97.68% | 99.11% | 0.966% |
+| denoising_autoencoder | 0.907042 | 96.06% | 58.68% | 0.986% |
+| gated_residual | 0.999077 | 97.61% | 99.16% | 0.996% |
+| residual | 0.999165 | 97.64% | 99.55% | 0.986% |
+
+Ứng viên lớn cho thí nghiệm tiếp là `gated_residual`; AP supervised cao nhất kể cả đối
+chứng thuộc `residual`. Chưa chọn champion. Báo cáo chứa đường
+học, lỗi theo campaign và độ nhạy khi thiếu đầu vào. Cần đọc recall cùng FPR;
+không coi recall tăng khi mất nguồn là cải thiện nếu false alarms cũng tăng.
+Corpus scripted trên một topology và validation chia sẻ calibration chưa chứng
+minh chất lượng production, zero-day hoặc độ bền ca 150 phút. [Báo cáo](../ai-training/reports/PRETRAIN_EXPANDED_20261030.json).
+
+## Các ứng viên sâu, revision 4.1 — 29/10/2026
+
+Yêu cầu mới mở rộng sức biểu diễn trong luồng AI. Các ứng viên dùng **189 đầu
+vào**, gồm 148 cột của profile cũ và 41 đặc trưng cấu trúc mới. Không thay canonical
+v1.0 hoặc đưa query/body nguyên văn vào mạng. Không dùng rule flags/SID làm đầu vào.
+`ai-features-4.1` và projection v2 có contract/hash riêng; không force-resume
+checkpoint `ai-features-4`/148 cột bằng revision này.
+
+| Ứng viên | Kiến trúc | Tham số | Vai trò |
+| --- | --- | ---: | --- |
+| Residual nhỏ |189→64→64+skip→8 |16.840 |Đối chứng trên cùng corpus/split mới |
+| Deep MLP |189→256→256→256→256→8 |248.072 |Học tương tác phi tuyến giữa cấu trúc request và cửa sổ hành vi |
+| Denoising AE |189→256→256→128→256→256→189 |294.717 |Chỉ học benign; khôi phục vector sạch từ bản bị làm nhiễu |
+| Gated residual |189→256, ba block gated, head 8 lớp |445.448 |Học mức đóng góp của từng nhánh residual theo request |
+
+Deep MLP có bốn hidden layer ReLU và head softmax 8 lớp. Gated residual dùng:
+
+```text
+h0 = ReLU(x Win + bin)
+a  = ReLU(h Wblock + bblock)
+g  = sigmoid(h Wgate + bgate)
+h_next = h + 0.5 * a * g       # lặp ba block; g là vector 256 chiều
+p = softmax(h_final Wout + bout)
+```
+
+Gate là phép nhân học được theo từng chiều, không phải self-attention hay
+Transformer. Bản này không thêm một sequence model riêng: ngữ cảnh thời gian
+vẫn là các cửa sổ nhân quả 10/60/300 giây trong feature pipeline. Đây là lựa chọn
+triển khai NumPy riêng, không khẳng định tái lập benchmark của
+[nghiên cứu tabular residual/Transformer](https://arxiv.org/abs/2106.11959).
+
+Denoising AE áp Gaussian noise σ=0,1 và masking probability=0,1 trên vector đã
+chuẩn hóa trong **bước train**, rồi tối ưu MSE với vector sạch. Inference/ONNX
+không thêm noise và dùng reconstruction MSE làm anomaly score; score không phải
+xác suất tấn công. Chỉ những hàng benign của train được dùng để cập nhật weights.
+Phương pháp lấy ý tưởng khôi phục đầu vào sạch từ
+[denoising autoencoders](https://jmlr.org/papers/v11/vincent10a.html); không coi
+noise trên feature là mô phỏng đầy đủ việc mất một nguồn log.
+
+Nhiễu dùng PCG64 với `SeedSequence(seed, committed_optimizer_step)`. Seed, phiên
+bản corruption và global step được kiểm khi load checkpoint. Cách lấy mẫu này
+không tiêu thụ RNG của sampler; resume giữa epoch tái tạo đúng batch/noise kế
+tiếp. Tests so weights, Adam moments và loss history với run liên tục, không chỉ
+so số epoch hoặc loss gần bằng nhau.
+
+Tất cả params/activations/gradient/Adam giữ FP32; mỗi affine reduction tích lũy
+FP64 rồi round FP32 ở cả native và ONNX. Gated sigmoid tính FP64 trên logits đã
+round FP32, clip [-80,80], rồi round FP32. Tensor graph dùng các op chuẩn, opset18;
+parity vẫn **rtol=1e-5, atol=1e-6**, không nới tolerance để nhận model lớn.
+Model metadata lưu architecture version, dimensions, corruption và arithmetic
+contract; NPZ/JSON không chứa pickle hoặc object thực thi.
+
+Classifier sâu tính cross-entropy từ logits bằng log-sum-exp với reduction FP64,
+thay vì lấy log xác suất đã clip 1e-12. Dự đoán sai có logit margin 1000 phải có
+loss 1000 và gradient hữu hạn, không bị làm phẳng thành 27,63. Forward probability
+và ONNX vẫn theo contract trên. Validation objective của các classifier sâu dùng
+cùng hàm ổn định; profile/model nhỏ cũ giữ ngữ nghĩa lịch sử.
+
+Các config sâu dùng Adam, batch 128, LR 0,0005, gamma 0,98 mỗi 200 step, patience 15.
+Đây là điểm xuất phát để đánh giá, không bảo đảm tránh bão hòa hay overfit. Model
+lớn hơn cũng có thể học vẹt nhanh hơn. So sánh với residual nhỏ trên cùng corpus,
+đọc train/validation loss, AP/FPR và từng campaign trước khi chọn ứng viên.
+Pilot 5 epoch chỉ kiểm pipeline; không tự chọn champion hoặc chạy ca dài.
+
+Ca do người vận hành khởi động dùng `train-expanded-session.sh`, tối đa 150 epoch
+và 150 phút, 8 CPU / 16 GiB, checkpoint mỗi 300 giây, cgroup/affinity/thread guard như trước.
+Early stop hoặc hoàn thành sớm vẫn hợp lệ. Không tăng epoch hoặc lặp ca chỉ để
+tiêu hết 150 phút. Các run mới có directory riêng; source/data/learning config
+khác bị từ chối resume. Metrics test cuối tiếp tục niêm phong.
+
+## Điều chỉnh sau ca dừng sớm — 29/10/2026
+
+150 phút là **trần wall-time**, không phải thời lượng bắt buộc. Residual 14.216
+tham số trên 19.275 request có thể hoàn thành nhiều epoch trong vài giây; patience8
+dừng khi AP validation không còn tốt hơn. Ca đầu dừng ở epoch14, best epoch6;
+đây là kết thúc hợp lệ. Recall payload thấp và 59/148 cột hằng số là lý do nâng
+telemetry/corpus trước khi tăng epoch hoặc kích thước mạng.
+
+Ứng viên thứ tư giữ residual148→64→64+skip→8, thêm weighted cross-entropy:
+`w_c ∝ sqrt(N_train / (8 * count_train[c]))`, chuẩn hóa trung bình trọng số bằng1.
+Chỉ đếm nhãn train, không dùng tần suất val/test để tính trọng số. Batch loss là
+`sum(w_y * -log(p_y)) / sum(w_y)`; Adam, clipping và ONNX inference giữ như cũ.
+Đây là candidate để kiểm tra, không mặc định tốt hơn residual không trọng số.
+Autoencoder vẫn chỉ fit benign, không dùng class weighting.
+
+Checkpoint lưu class weights, running loss/count giữa epoch và history, nên resume
+giữa epoch phải cho cùng weights/optimizer/history với run liên tục. Ghi thêm
+training loss, validation loss theo objective tương ứng và unweighted all-class
+validation loss. Với AE, validation objective dùng benign MSE; all-class MSE báo
+riêng. Training loss là trung bình batch trong lúc cập nhật, không phải full-train
+loss đo lại bằng weights cuối epoch.
+
+Pilot mới so sánh bốn candidate ở5epoch,2→5epoch qua process khác và reference
+5epoch, parity ONNX trên mọi vector. Threshold và các phép thử thiếu query/flow/
+actor/response dùng validation; không mở test để chọn candidate. Sensitivity là
+inference-only, không phải huấn luyện lại ablation. Query ablation tính lại view
+URI đã mask, nên cũng bỏ raw-URI numeric projection nếu URI đó bị redaction.
+
+Ca tiếp theo có config/script riêng, tối đa100epoch/150phút,8CPU/16GiB. Kết quả
+pilot chọn residual không trọng số để thử tiếp (APvalidation0,99875,recall99,23%,
+FPR0,747%), dùng `formal_residual_config.yaml`/patience8. Weighted residual với
+patience12 vẫn là candidate so sánh. Không resume checkpoint featurev3 bằng featurev4.
+Không lặp train để lấp giờ; cần nhiều seed/corpus và kiểm tra nguồn lỗi trước khi
+chọn champion. Byte-CNN/TCN chưa được triển khai chỉ từ28 bộ đếm số này.
+
+## Ca residual đầu tiên — 29/10/2026
+
+Đã thực hiện yêu cầu kiểm data rồi chạy ca tối đa **150 phút** trên source `8171289`.
+Data gate mới **35/35 PASS**, dataset **19.275 request / 148 features** giữ nguyên hash.
+Ca chạy **17:21:05–17:21:17 +07:00**, hoàn thành sau **11,616 giây**, dừng tại
+**epoch 14 / step 2.534** do `early_stopping` (patience 8); checkpoint tốt nhất
+ở **epoch 6 / step 1.086**. Không ép chạy tiếp để lấp đầy ngân sách thời gian.
+Quota thực **8 CPU / 16 GiB**, MemoryHigh 15 GiB, swap 0; có job nền/log riêng và
+sleep inhibitor trong lúc chạy. Đã kiểm checkpoint và ONNX parity **19.275/19.275 PASS**.
+
+Validation-only: precision **90,83%**, recall **44,20%**, FPR **0,943%**, AP **0,7757**;
+threshold chọn trên cùng validation nên kết quả sơ bộ. **Không mở test metrics,
+chưa chọn champion hoặc triển khai Rust/live/enforcement**. Chưa nghiệm thu endurance
+150 phút. Xem [báo cáo ca residual](../ai-training/reports/FORMAL_RESIDUAL_20261029.json) và ledger06 mục22. Các mốc “chưa train” ngày28/S0 phía dưới
+là lịch sử. Run early-stopped là terminal; không force-resume bằng script ca đầu.
+
 ## Cập nhật resource sau pilot — 28/10/2026
 
 Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,

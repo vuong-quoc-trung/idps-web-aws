@@ -1,5 +1,20 @@
 # 05 — Bằng chứng khảo sát, phạm vi và giới hạn xác minh
 
+## Bằng chứng AI hiện hành — 2026-10-30T21:35:36.891996+07:00
+
+Nguồn mới là [REQUEST_PROFILE report](../ai-training/reports/REQUEST_PROFILE_20261030.json), handoff format 5 và ledger 06 mục 27. Report GENERALIZATION cũ giữ SHA `ca7a3f7084584bf86512f69e0b83d009146c51c18d413b9683ac7753aae103cf`; không viết lại thí nghiệm cũ. 689 protected path không đổi; guard 4.233 artifact từ lượt trước còn nguyên. Không commit/push trong lượt này.
+
+- **PASS:** 160 pytest/0 skip (74,72 giây), Ruff 97 file/format, compile, canonical contract, Web git diff; 53/53 legacy readiness; 3 model × 2 study exact resume/ONNX toàn 115.980 vector; bounded EVE secret canary và unknown-family gradient/ONNX tests.
+- **FAIL về chất lượng:** frozen old GLU full-3-source FPR=73,22%; request GLU fresh lab recall=0; request AE fresh lab FPR=18,58%. Runner chạy được không biến các kết quả này thành nghiệm thu PASS.
+- **NOT_RUN:** original old test quality, formal/multi-seed, independent human review, live Web/TLS/IPS và 2M/long endurance.
+- PCAP mới SHA `edfaba826345dac1238014e8495b41ba4bd528cfe0eb50eec768ed7a08452589`; 0 kernel packet drop; 1.935 HTTP/flow và 364 alert. Không packet synthesis. Decoder pin runtime/rule/config/profile hash.
+- Profile SHA `e1c3df19f511be2773e56af61828ebe201bdbe8eae7cd8475de3b290fab4522b`; request dataset SHA `1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731`.
+- PKDD V1 metadata/source MD5+SHA verified; TRAIN=24.504 Valid, TEST=25.612. Thiếu native context/location; license lineage giới hạn trong report. Biblio cần quyền tải, chưa tải.
+- Source snapshots `source-frozen/` và `source-learning-curve/` giữ nguyên. Sau study chỉ sửa **reporting**: count flow dùng `bool(dict)` tính nhầm 1.935 thành 1.567. Giữ bản report trước sửa; model metrics/thresholds không tính lại. Chỉ `request_inference.py` khác frozen package source; không force-resume bằng source hash mới.
+- Cgroup readback lúc pilot 4 CPU/16 GiB/high 15 GiB/swap 0 có trong report. Thuộc tính transient unit sau cleanup không chứng minh resource lúc chạy. Dọn 720.632 byte generated Python/pytest cache, giữ raw/checkpoint/key/source snapshot.
+
+Artifact local ignored `ai-training/.artifacts/request_view_20261030/` chứa input manifest, frozen plan, log và kết quả đo. Chưa shared artifact store, chưa deploy model.
+
 ## Cập nhật resource sau pilot — 28/10/2026
 
 Ca tiếp theo dùng **8logicalCPU/16GiB RAM**, CPUQuota800%, MemoryHigh15GiB,
