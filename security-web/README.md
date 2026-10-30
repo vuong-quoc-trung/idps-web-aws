@@ -173,3 +173,5 @@ Danh sách IP hiển thị thời điểm chặn từ DB và phân biệt có �
 Tab Trạng thái hiển thị hostname, interface `ATTACKER_IFACE`, RX/TX theo KiB/s và bộ đếm tích lũy. Backend lấy mẫu nền (nghỉ 2 giây giữa các lượt), tính tốc độ bằng chênh lệch byte / thời gian thực giữa hai mẫu; không có interface, mẫu đầu tiên hoặc reset bộ đếm trả `null` thay vì tốc độ 0.
 
 `METRICS_DISK_PATH` mặc định `/`: đo tổng dung lượng và byte khả dụng của filesystem chứa đường dẫn bằng `df` (timeout 2 giây). Chọn đường dẫn log hoặc mount cần giám sát nếu khác `/`. Số đo không đại diện DB ở máy/volume khác. Các số liệu thuộc môi trường backend, không tự động là Security Host; container có thể giới hạn phạm vi quan sát. `sampled_at` là thời điểm công bố mẫu mạng/đĩa; lần dashboard tải API và lần nguồn nhận log mới hiển thị riêng.
+
+- Student audit qua RELP, triển khai theo phase và rollback SSHFS: [STUDENT_AUDIT_FORWARDING.md](docs/STUDENT_AUDIT_FORWARDING.md). Chưa cutover chỉ bằng git pull.
