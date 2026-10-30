@@ -1,0 +1,12 @@
+format_version: 1
+# This is the available reference corpus, NOT two million eligible training requests.
+# Add only new immutable captures with permission, provenance and independent review.
+sources:
+  - id: lab-20261030-reference
+    dataset: .artifacts/scale_upgrade_20261030/prepared-v5
+    provenance: .artifacts/scale_upgrade_20261030/prepared_provenance.json
+    environment_id: localhost-student-lab
+    collection_kind: scripted_lab
+    authorization_ref: user-owned-localhost-lab
+    review: null
+    partition_map: {train: reference, val: reference, test: reference}

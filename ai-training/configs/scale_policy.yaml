@@ -1,0 +1,15 @@
+format_version: 1
+purpose: scale_main_admission_not_production_certification
+minimum_requests: 2000000
+minimum_environments: 3
+minimum_capture_days: 7
+minimum_campaigns: 120
+minimum_label_confidence: 0.9
+minimum_three_source_fraction: 0.95
+minimum_family_per_partition: 250
+minimum_benign_per_partition: 5000
+embargo_seconds: 300
+required_profile: safe_query_numeric_v2
+required_feature_version: ai-features-5
+required_families: [benign, sqli, xss, path_traversal, cmd_injection, scanner_recon, brute_force, behavioral_anomaly]
+required_partitions: [train, calibration, validation, test]

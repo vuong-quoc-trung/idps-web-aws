@@ -1,0 +1,34 @@
+format_version: 1
+purpose: external_request_view_challenge_not_full_three_source_training
+doi: 10.60895/redata/RWUUSV
+repository: https://redata.anii.org.uy
+metadata_api: https://redata.anii.org.uy/api/datasets/:persistentId/?persistentId=doi:10.60895/redata/RWUUSV
+version: 1
+repository_license: CC BY 4.0
+attribution: Biardo, Deborah; Gonzalez Guzman; Lanzotti, Sabrina (2024), WebRequests, Repositorio ANII, V1
+limitations:
+  - Underlying CSIC 2010 generated e-commerce HTTP transcripts; not new live traffic.
+  - Repository license verified; original publisher license lineage not independently recovered. Raw files stay private.
+  - Publisher binary normal/anomalous labels; no independently reviewed families or exploit success.
+  - Missing time, actor, response and flow must remain unavailable.
+  - Derived TF-IDF CSV uses global vocabulary and overlaps original corpora; do not import it.
+  - Exact view collisions and body/header-only anomalies require full-test and filtered sensitivity reporting.
+files:
+  - id: 383
+    filename: csic_2010_anomalousTrafficTest.txt
+    bytes: 16090299
+    sha256: ec77d784966896330869c5b596ede6a716101c14b5f139144915bb10822a03e1
+    label: 1
+    partition: test
+  - id: 390
+    filename: csic_2010_normalTrafficTest.txt
+    bytes: 20643204
+    sha256: 89600eea871cd0770544a96f6580da14874c4a5211372ad56d23002e1c572603
+    label: 0
+    partition: test
+  - id: 389
+    filename: csic_2010_normalTrafficTraining.txt
+    bytes: 20640988
+    sha256: d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000
+    label: 0
+    partition: train
