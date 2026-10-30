@@ -1,0 +1,20 @@
+[Unit]
+Description=PBL4 Student audit RELP sender (separate from system rsyslog)
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=khang1901
+UMask=0077
+RuntimeDirectory=pbl4-audit-sender
+ExecStartPre=/usr/sbin/rsyslogd -N1 -f /etc/pbl4/audit/sender.conf
+ExecStart=/usr/sbin/rsyslogd -n -i /run/pbl4-audit-sender/pid -f /etc/pbl4/audit/sender.conf
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=120
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/pbl4-audit-sender
+PrivateTmp=yes
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+[Unit]
+Description=PBL4 Student audit RELP receiver (separate from system rsyslog)
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=syslog
+Group=@BACKEND_GROUP@
+UMask=0027
+RuntimeDirectory=pbl4-audit-receiver
+ExecStartPre=+/usr/local/libexec/pbl4-audit-guard --apply
+ExecStartPre=/usr/sbin/rsyslogd -N1 -f /etc/pbl4/audit/receiver.conf
+ExecStart=/usr/sbin/rsyslogd -n -i /run/pbl4-audit-receiver/pid -f /etc/pbl4/audit/receiver.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=120
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/pbl4-audit-receiver /var/log/pbl4 /var/lib/pbl4-audit-guard
+PrivateTmp=yes
+[Install]
+WantedBy=multi-user.target
