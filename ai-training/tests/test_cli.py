@@ -3,6 +3,8 @@ import os
 import subprocess
 import sys
 
+import pytest
+
 
 def test_s0_runs_training_resume_in_new_processes_and_onnx_on_both_branches(tmp_path):
     environment = os.environ | {
@@ -40,7 +42,10 @@ def test_s0_runs_training_resume_in_new_processes_and_onnx_on_both_branches(tmp_
         assert report["models"][model]["onnx_parity"]["all_rows_match"]
 
 
-def test_pilot_verifies_all_candidates_resume_and_seals_test_metrics(prepared, tmp_path):
+@pytest.mark.parametrize("candidate_set", ["baseline", "expanded", "scale"])
+def test_pilot_verifies_all_candidates_resume_and_seals_test_metrics(
+    prepared, tmp_path, candidate_set
+):
     import yaml
 
     from idps_ai.cli import main
@@ -88,17 +93,41 @@ def test_pilot_verifies_all_candidates_resume_and_seals_test_metrics(prepared, t
                 str(tmp_path / "pilot"),
                 "--max-threads",
                 "1",
+                *(
+                    ["--candidate-set", candidate_set]
+                    if candidate_set != "baseline"
+                    else ["--include-weighted-residual"]
+                ),
             ]
         )
         == 0
     )
     result = json.loads((tmp_path / "pilot/pilot-report.json").read_text())
-    assert set(result["models"]) == {"mlp", "autoencoder", "residual"}
+    expected = (
+        {"mlp", "autoencoder", "residual", "weighted_residual"}
+        if candidate_set == "baseline"
+        else {"residual", "deep_mlp", "gated_residual", "residual_glu"}
+        if candidate_set == "scale"
+        else {"residual", "deep_mlp", "denoising_autoencoder", "gated_residual"}
+    )
+    assert set(result["models"]) == expected
+    if candidate_set == "baseline":
+        assert result["models"]["weighted_residual"]["class_weights"] is not None
+    elif candidate_set == "scale":
+        assert result["models"]["residual_glu"]["parameter_count"] > 9_000_000
+        assert result["metric_partition"] == "val_selection_groups"
+    else:
+        assert result["models"]["denoising_autoencoder"]["benign_only_training"]
+        assert all(
+            result["models"][n]["parameter_count"] > 200_000 for n in expected - {"residual"}
+        )
     assert result["test_metrics_computed"] is False
     for model in result["models"].values():
         assert model["exact_resume"] is True
-        assert model["epoch"] == 5
+        assert model["epoch"] == (2 if candidate_set == "scale" else 5)
         assert model["onnx_parity"]["rows"] == 160
-        assert model["validation_evaluation"]["partition"] == "val"
+        assert model["validation_evaluation"]["partition"] == (
+            "val_selection_groups" if candidate_set == "scale" else "val"
+        )
         assert "without_flow" in model["validation_diagnostics"]
         assert "without_response" in model["validation_diagnostics"]

@@ -45,6 +45,83 @@ def parser():
     root = argparse.ArgumentParser(prog="idps-ai")
     commands = root.add_subparsers(dest="command", required=True)
     commands.add_parser("check-contract")
+    rp = commands.add_parser(
+        "request-prepare", help="Verified source registry -> separate request-only corpus"
+    )
+    rp.add_argument("--registry", required=True)
+    rp.add_argument("--output", required=True)
+    rt = commands.add_parser("request-train", help="Bounded2epoch request-only research candidate")
+    rt.add_argument("--dataset", required=True)
+    rt.add_argument("--run-dir", required=True)
+    rt.add_argument("--config", required=True)
+    rt.add_argument("--epochs", type=int, choices=(1, 2), default=2)
+    rt.add_argument("--resume", action="store_true")
+    rt.add_argument("--max-steps", type=int)
+    rt.add_argument(
+        "--diagnostic-updates",
+        type=int,
+        choices=(100, 300),
+        help="Explicit bounded learning-curve diagnostic; max180seconds",
+    )
+    rt.add_argument("--cpus", type=int, choices=(1, 2, 4, 8), default=4)
+    re = commands.add_parser(
+        "request-export", help="Strict ONNX parity and benign-only calibration"
+    )
+    re.add_argument("--dataset", required=True)
+    re.add_argument("--checkpoint", required=True)
+    re.add_argument("--output", required=True)
+    re.add_argument("--cpus", type=int, choices=(1, 2, 4, 8), default=4)
+    fetch = commands.add_parser("http-fetch", help="Restartable pinned public raw HTTP download")
+    fetch.add_argument("--output", required=True)
+    http = commands.add_parser(
+        "http-import", help="Verified raw HTTP benchmark; numeric-only, no invented flow"
+    )
+    http.add_argument("--registry", required=True)
+    http.add_argument("--output", required=True)
+    assembly = commands.add_parser(
+        "corpus-assemble", help="Recompute compatible numeric shards with one train-only scaler"
+    )
+    assembly.add_argument("--registry", required=True)
+    assembly.add_argument("--output", required=True)
+    diagnostic = commands.add_parser(
+        "shortcut-audit", help="Train-fitted development probes; final test stays sealed"
+    )
+    diagnostic.add_argument("--dataset", required=True)
+    diagnostic.add_argument("--output", required=True)
+    challenge = commands.add_parser(
+        "http-challenge", help="Frozen missing-view public HTTP stress test; no tuning"
+    )
+    challenge.add_argument("--benchmark", required=True)
+    challenge.add_argument(
+        "--bundles", required=True, help="JSON mapping names to frozen bundle directories"
+    )
+    challenge.add_argument("--output", required=True)
+    challenge.add_argument("--cpus", type=int, default=8)
+    tree = commands.add_parser("tree-baseline", help="Bounded CPU reference; no deployment")
+    tree.add_argument("--dataset", required=True)
+    tree.add_argument("--output", required=True)
+    tree.add_argument("--cpus", type=int, default=8)
+    tree.add_argument("--iterations", type=int, default=32)
+    shadow = commands.add_parser(
+        "shadow-replay", help="Bounded offline inference; no Web/firewall actions"
+    )
+    shadow.add_argument("--dataset", required=True)
+    shadow.add_argument("--bundle", required=True)
+    shadow.add_argument("--output", required=True)
+    shadow.add_argument("--partition", choices=("train", "val"), default="val")
+    shadow.add_argument("--max-requests", type=int, default=512)
+    shadow.add_argument("--cpus", type=int, default=8)
+    catalog = commands.add_parser(
+        "corpus-audit", help="Audit immutable source shards; never generates traffic"
+    )
+    catalog.add_argument("--registry", default=str(AI_ROOT / "configs/scale_sources.yaml"))
+    catalog.add_argument("--output", required=True)
+    projection = commands.add_parser(
+        "project-eve", help="Opt-in numeric-only EVE bridge; '-' streams stdio"
+    )
+    projection.add_argument("--input", required=True)
+    projection.add_argument("--output", required=True)
+    projection.add_argument("--projection-version", type=int, choices=(1, 2), default=1)
     snap = commands.add_parser("snapshot", help="Copy bounded complete-line prefixes read-only")
     snap.add_argument("--input", action="append", required=True)
     snap.add_argument(
@@ -88,6 +165,7 @@ def parser():
     owned = commands.add_parser("lab-start", help="Create an AI-owned disposable fixture only")
     owned.add_argument("--output", required=True)
     owned.add_argument("--nginx-bin", required=True)
+    owned.add_argument("--campaigns", type=int, choices=(15, 30, 45), default=15)
     cleanup = commands.add_parser("lab-stop")
     cleanup.add_argument("--lab-dir", required=True)
     finalize = commands.add_parser("lab-finish", help="Stop the lab and prepare data; never train")
@@ -109,6 +187,15 @@ def parser():
     decode.add_argument("--pcap", required=True)
     decode.add_argument("--runtime", required=True)
     decode.add_argument("--output", required=True)
+    decode.add_argument(
+        "--query-numeric", action="store_true", help="Emit the opt-in numeric query contract"
+    )
+    decode.add_argument("--projection-version", type=int, choices=(1, 2), default=1)
+    decode.add_argument(
+        "--request-structure",
+        action="store_true",
+        help="Separate application-neutral request projection",
+    )
     synth = commands.add_parser("synthetic")
     synth.add_argument("--output", required=True)
     synth.add_argument("--campaigns", type=int, default=15)
@@ -123,13 +210,16 @@ def parser():
     collection.add_argument("--output", required=True)
     collection.add_argument("--labels")
     collection.add_argument(
-        "--input-profile", choices=("native", "edge_masked_v1"), default="native"
+        "--input-profile",
+        choices=("native", "edge_masked_v1", "safe_query_numeric_v1", "safe_query_numeric_v2"),
+        default="native",
     )
     collection.add_argument("--hmac-key-file")
     collection.add_argument("--hmac-key-env", default="IDPS_TRAINING_HMAC_KEY")
     prep = commands.add_parser("prepare")
     prep.add_argument("--dataset", required=True)
     prep.add_argument("--output", required=True)
+    prep.add_argument("--behavior-dynamics", action="store_true")
     prep.add_argument("--labels")
     prep.add_argument("--hmac-key-file")
     prep.add_argument("--hmac-key-env", default="IDPS_TRAINING_HMAC_KEY")
@@ -153,6 +243,7 @@ def parser():
     export.add_argument("--checkpoint", required=True)
     export.add_argument("--output", required=True)
     export.add_argument("--validation-only", action="store_true")
+    export.add_argument("--independent-validation", action="store_true")
     smoke = commands.add_parser("s0")
     smoke.add_argument("--output", required=True)
     smoke.add_argument("--campaigns", type=int, default=15)
@@ -165,6 +256,10 @@ def parser():
     pilot.add_argument("--readiness-report", required=True)
     pilot.add_argument("--output", required=True)
     pilot.add_argument("--max-threads", "--cpus", dest="max_threads", type=int, default=8)
+    pilot.add_argument("--include-weighted-residual", action="store_true")
+    pilot.add_argument(
+        "--candidate-set", choices=("baseline", "expanded", "scale"), default="baseline"
+    )
     inspect = commands.add_parser("inspect")
     inspect.add_argument("--dataset", required=True)
     return root
@@ -179,6 +274,40 @@ def main(argv=None):
         check_contract()
         if args.command == "check-contract":
             result = check_contract()
+        elif args.command == "request-prepare":
+            from idps_ai.data.request_corpus import prepare_request_registry
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = prepare_request_registry(args.registry, args.output)
+        elif args.command == "request-train":
+            import yaml
+
+            from idps_ai.training.request_training import train_request
+
+            result = train_request(
+                args.dataset,
+                args.run_dir,
+                yaml.safe_load(Path(args.config).read_text()),
+                args.epochs,
+                args.resume,
+                args.max_steps,
+                args.cpus,
+                args.diagnostic_updates,
+            )
+        elif args.command == "request-export":
+            from idps_ai.training.request_training import export_request
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(args.cpus, 16):
+                result = export_request(args.dataset, args.checkpoint, args.output, args.cpus)
+        elif args.command == "project-eve":
+            from idps_ai.data.query_numeric import project_file
+
+            result = project_file(args.input, args.output, args.projection_version)
+            if args.output == "-":
+                print(json.dumps(result), file=sys.stderr)
+                return 0
         elif args.command == "snapshot":
             from idps_ai.data.readers import Input
             from idps_ai.data.snapshot import snapshot
@@ -223,7 +352,7 @@ def main(argv=None):
         elif args.command == "lab-start":
             from idps_ai.data.lab_runtime import start_lab
 
-            result = start_lab(args.output, args.nginx_bin)
+            result = start_lab(args.output, args.nginx_bin, args.campaigns)
         elif args.command == "lab-stop":
             from idps_ai.data.lab_runtime import stop_lab
 
@@ -253,7 +382,14 @@ def main(argv=None):
             from idps_ai.training.resources import resource_envelope
 
             with resource_envelope(2, 12):
-                result = decode_pcap(args.pcap, args.output, args.runtime)
+                result = decode_pcap(
+                    args.pcap,
+                    args.output,
+                    args.runtime,
+                    args.query_numeric,
+                    args.projection_version,
+                    args.request_structure,
+                )
         elif args.command == "synthetic":
             from idps_ai.data.synthetic import synthetic_s0
 
@@ -304,6 +440,7 @@ def main(argv=None):
                     args.output,
                     args.labels,
                     key_from_args(args) if args.labels else None,
+                    behavior_dynamics=args.behavior_dynamics,
                 )
         elif args.command == "train":
             import yaml
@@ -351,11 +488,73 @@ def main(argv=None):
                     args.output,
                     resources["max_threads"],
                     evaluation_partition="val" if args.validation_only else "test",
+                    independent_validation=args.independent_validation,
                 )
+        elif args.command == "tree-baseline":
+            from idps_ai.training.tree_baseline import benchmark_tree
+
+            result = benchmark_tree(args.dataset, args.output, args.cpus, args.iterations)
+        elif args.command == "shadow-replay":
+            from idps_ai.inference import shadow_replay
+
+            result = shadow_replay(
+                args.dataset, args.bundle, args.output, args.partition, args.max_requests, args.cpus
+            )
+        elif args.command == "http-fetch":
+            from idps_ai.data.http_benchmark import fetch_public_http
+
+            result = fetch_public_http(args.output)
+        elif args.command == "shortcut-audit":
+            from idps_ai.training.generalization import shortcut_audit
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = shortcut_audit(args.dataset, args.output)
+        elif args.command == "http-challenge":
+            from idps_ai.training.generalization import external_challenge
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(args.cpus, 16):
+                result = external_challenge(
+                    args.benchmark,
+                    json.loads(Path(args.bundles).read_text()),
+                    args.output,
+                    args.cpus,
+                )
+        elif args.command == "corpus-assemble":
+            from idps_ai.data.assembly import assemble
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = assemble(args.registry, args.output)
+        elif args.command == "http-import":
+            import yaml
+
+            from idps_ai.data.http_benchmark import import_http
+            from idps_ai.training.resources import resource_envelope
+
+            registry = yaml.safe_load(Path(args.registry).read_text())
+            with resource_envelope(2, 12):
+                result = import_http(registry["sources"], args.output, registry["provenance"])
+        elif args.command == "corpus-audit":
+            from idps_ai.data.corpus import audit_catalog
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = audit_catalog(args.registry, args.output)
+            print(json.dumps(result, sort_keys=True, allow_nan=False))
+            return 0 if result["status"] == "READY_FOR_SCALE_RESEARCH" else 3
         elif args.command == "pilot":
             from idps_ai.pilot import run_pilot
 
-            result = run_pilot(args.dataset, args.readiness_report, args.output, args.max_threads)
+            result = run_pilot(
+                args.dataset,
+                args.readiness_report,
+                args.output,
+                args.max_threads,
+                include_weighted_residual=args.include_weighted_residual,
+                candidate_set=args.candidate_set,
+            )
         elif args.command == "s0":
             from idps_ai.smoke import run_s0
 

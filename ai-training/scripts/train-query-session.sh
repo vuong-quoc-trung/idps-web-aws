@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Explicit operator invocation; never resumes the historical masked-query run.
+set -euo pipefail
+training_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+artifact_root="$training_root/.artifacts/upgrade_20261029_query"
+run_directory="$artifact_root/formal/residual-seed17"
+arguments=(
+  --dataset "$artifact_root/dataset-ready/prepared"
+  --readiness-report "$artifact_root/dataset-ready/readiness/readiness.json"
+  --config "$training_root/configs/formal_residual_config.yaml"
+  --run-dir "$run_directory"
+  --epochs 100
+  --max-duration-minutes 150
+  --cpus 8
+  --memory-limit-gib 16
+  --checkpoint-every-seconds 300
+)
+if [[ -f "$run_directory/latest.json" ]]; then
+  arguments+=(--resume-from "$run_directory")
+fi
+exec systemd-inhibit --no-ask-password --what=sleep:idle --mode=block \
+  --who=IDPS-AI-Training --why='Bounded AI training session with checkpoints' \
+  "$training_root/.venv/bin/python" -m idps_ai.training.session "${arguments[@]}"
