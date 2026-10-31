@@ -1,3 +1,4 @@
+import { applicationEvidence } from "./applicationEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
   alert: {
@@ -63,16 +64,19 @@ export function AlertDetail({
   onClose,
   onSelect,
   onAudit,
+  onBlock,
 }: {
   id: number;
   api: (path: string) => Promise<any>;
   onClose: () => void;
   onSelect: (id: number) => void;
   onAudit: (id: number) => void;
+  onBlock?: (alert: Detail["alert"]) => Promise<void>;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [data, setData] = useState<Detail | null>(null);
   const [error, setError] = useState("");
+  const [blocking, setBlocking] = useState(false);
   const [copied, setCopied] = useState("");
   useEffect(() => {
     dialog.current?.showModal();
@@ -95,6 +99,7 @@ export function AlertDetail({
   }, [id, api]);
   const a = data?.alert;
   const evidence = a ? evidenceInfo(a.evidence) : null;
+  const app = a ? applicationEvidence(a.evidence) : null;
   return (
     <dialog
       ref={dialog}
@@ -136,6 +141,18 @@ export function AlertDetail({
               </div>
             ))}
           </dl>
+          {app && <section aria-label="Phát hiện hành vi ứng dụng">
+            <h3>{app.code} · Tổng hợp hành vi</h3>
+            <p>{app.reason}</p>
+            <p>{app.count} sự kiện (đỉnh cửa sổ) · {app.endpoint}</p>
+            <p>Lần đầu: {new Date(app.first).toLocaleString()} · Gần nhất: {new Date(app.last).toLocaleString()}</p>
+            <p>Đề xuất: {app.recommendation}. Chế độ: chỉ cảnh báo, không tự chặn.</p>
+          </section>}
+          {onBlock && a.src_ip && <button disabled={blocking} onClick={async () => {
+            setBlocking(true);
+            try { await onBlock(a); } catch (e) { setError((e as Error).message); }
+            finally { setBlocking(false); }
+          }}>Yêu cầu chặn thủ công từ cảnh báo</button>}
           <h3>Request HTTP</h3>
           <dl className="detail-fields">
             {Object.entries({

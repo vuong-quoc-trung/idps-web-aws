@@ -1,3 +1,4 @@
+import { applicationEvidence } from "./applicationEvidence";
 import {
   Component,
   StrictMode,
@@ -99,7 +100,12 @@ type Audit = {
   created_at: string;
 };
 type Rule = {
-  sid: number;
+  sid: number | null;
+  code: string;
+  source: string;
+  action_mode: string;
+  threshold?: number;
+  window_seconds?: number;
   name: string;
   severity: number;
   auto_block_eligible: boolean;
@@ -903,6 +909,7 @@ function App() {
                   <option value="">Tất cả</option>
                   <option>ALERT</option>
                   <option>AUTO-BLOCK</option>
+                  <option>BLOCK</option>
                 </select>
               </label>
               <label>
@@ -931,6 +938,7 @@ function App() {
                     <th>IP nguồn → đích</th>
                     <th>Mức độ</th>
                     <th>Hành động</th>
+                    <th>Tổng hợp ứng dụng</th>
                     <th>Bằng chứng</th>
                   </tr>
                 </thead>
@@ -960,6 +968,12 @@ function App() {
                         >
                           {a.action}
                         </span>
+                      </td>
+                      <td>
+                        {(() => {
+                          const app = applicationEvidence(a.evidence);
+                          return app ? <><strong>{app.count} sự kiện (đỉnh cửa sổ)</strong><small>{app.endpoint}</small><small>{app.reason}</small><small>Đề xuất: {app.recommendation} · Không tự chặn</small></> : "—";
+                        })()}
                       </td>
                       <td>
                         <button onClick={() => setSelectedAlert(a.id)}>
@@ -1178,11 +1192,12 @@ function App() {
               rule đi kèm dự án.
             </p>
             {rules.map((r) => (
-              <div className="type-row" key={r.sid}>
+              <div className="type-row" key={r.code}>
                 <div>
                   <strong>{r.name}</strong>
                   <p>
-                    SID {r.sid} · Severity {r.severity}
+                    {r.source} · {r.code} · Severity {r.severity}
+                    {r.threshold ? ` · ${r.threshold}/${r.window_seconds}s` : ""}
                   </p>
                 </div>
                 <span className="badge">
@@ -1418,6 +1433,14 @@ function App() {
           <AlertDetail
             id={selectedAlert}
             api={api}
+            onBlock={admin ? async (alert) => {
+              if (!alert.src_ip) return;
+              const reason = window.prompt(`Lý do chặn ${alert.src_ip} từ cảnh báo #${alert.id}:`, alert.rule_name);
+              if (!reason?.trim()) return;
+              const result = await api("/api/blocked-ips", { method: "POST", body: JSON.stringify({ip: alert.src_ip, reason, event_id: alert.id}) });
+              setNotice(`Yêu cầu #${result.id} đang chờ xử lý; xem Nhật ký thao tác.`);
+              await refresh();
+            } : undefined}
             onClose={() => setSelectedAlert(null)}
             onSelect={setSelectedAlert}
             onAudit={(id) => {
