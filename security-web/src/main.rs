@@ -1,4 +1,5 @@
 mod application_audit;
+mod application_detection;
 mod auth;
 mod detection;
 mod events;
@@ -154,6 +155,7 @@ struct AlertQuery {
 struct BlockRequest {
     ip: String,
     reason: String,
+    event_id: Option<i64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -344,9 +346,29 @@ async fn block_ip(
     if req.reason.trim().is_empty() || req.reason.len() > 500 {
         return Err(bad_request("Reason must contain 1–500 characters"));
     }
-    let id = firewall::enqueue(&state.pool, ip, "BLOCK", &actor.username, &req.reason, None)
+    if let Some(event_id) = req.event_id {
+        let matches: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM security_alerts WHERE id=$1 AND src_ip=$2::inet)",
+        )
+        .bind(event_id)
+        .bind(ip.to_string())
+        .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
+        if !matches {
+            return Err(bad_request("Source alert does not match IP"));
+        }
+    }
+    let id = firewall::enqueue(
+        &state.pool,
+        ip,
+        "BLOCK",
+        &actor.username,
+        &req.reason,
+        req.event_id,
+    )
+    .await
+    .map_err(api_error)?;
     Ok((
         StatusCode::ACCEPTED,
         Json(serde_json::json!({"id":id,"status":"PENDING"})),
@@ -373,8 +395,29 @@ async fn unblock_ip(
         Json(serde_json::json!({"id":id,"status":"PENDING"})),
     ))
 }
-async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
-    Json(suricata_rule_catalog(&state.policy))
+async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>> {
+    let mut rules: Vec<_> = suricata_rule_catalog(&state.policy)
+        .into_iter()
+        .map(|r| {
+            let mut v = serde_json::to_value(&r).expect("rule metadata");
+            v["code"] = serde_json::json!(format!("SID {}", r.sid));
+            v["source"] = serde_json::json!("SURICATA");
+            v["action_mode"] = serde_json::json!(if r.auto_block_eligible {
+                "POLICY_CONTROLLED"
+            } else {
+                "ALERT_ONLY"
+            });
+            v
+        })
+        .collect();
+    rules.extend(application_detection::RULES.iter().map(|r| {
+        serde_json::json!({
+            "sid":null,"code":r.code,"source":"STUDENT_AUDIT","name":r.name,
+            "category":"Application Behavior","severity":2,"auto_block_eligible":false,
+            "action_mode":"ALERT_ONLY","threshold":r.threshold,"window_seconds":r.seconds
+        })
+    }));
+    Json(rules)
 }
 
 fn suricata_rule_catalog(policy: &PolicyEngine) -> Vec<RuleInfo> {
