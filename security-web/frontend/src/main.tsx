@@ -972,7 +972,18 @@ function App() {
                       <td>
                         {(() => {
                           const app = applicationEvidence(a.evidence);
-                          return app ? <><strong>{app.count} sự kiện (đỉnh cửa sổ)</strong><small>{app.endpoint}</small><small>{app.reason}</small><small>Đề xuất: {app.recommendation} · Không tự chặn</small></> : "—";
+                          return app ? (
+                            <>
+                              <strong>{app.count} sự kiện (đỉnh cửa sổ)</strong>
+                              <small>{app.endpoint}</small>
+                              <small>{app.reason}</small>
+                              <small>
+                                Đề xuất: {app.recommendation} · Không tự chặn
+                              </small>
+                            </>
+                          ) : (
+                            "—"
+                          );
                         })()}
                       </td>
                       <td>
@@ -1197,7 +1208,9 @@ function App() {
                   <strong>{r.name}</strong>
                   <p>
                     {r.source} · {r.code} · Severity {r.severity}
-                    {r.threshold ? ` · ${r.threshold}/${r.window_seconds}s` : ""}
+                    {r.threshold
+                      ? ` · ${r.threshold}/${r.window_seconds}s`
+                      : ""}
                   </p>
                 </div>
                 <span className="badge">
@@ -1433,14 +1446,30 @@ function App() {
           <AlertDetail
             id={selectedAlert}
             api={api}
-            onBlock={admin ? async (alert) => {
-              if (!alert.src_ip) return;
-              const reason = window.prompt(`Lý do chặn ${alert.src_ip} từ cảnh báo #${alert.id}:`, alert.rule_name);
-              if (!reason?.trim()) return;
-              const result = await api("/api/blocked-ips", { method: "POST", body: JSON.stringify({ip: alert.src_ip, reason, event_id: alert.id}) });
-              setNotice(`Yêu cầu #${result.id} đang chờ xử lý; xem Nhật ký thao tác.`);
-              await refresh();
-            } : undefined}
+            onBlock={
+              admin
+                ? async (alert) => {
+                    if (!alert.src_ip) return;
+                    const reason = window.prompt(
+                      `Lý do chặn ${alert.src_ip} từ cảnh báo #${alert.id}:`,
+                      alert.rule_name,
+                    );
+                    if (!reason?.trim()) return;
+                    const result = await api("/api/blocked-ips", {
+                      method: "POST",
+                      body: JSON.stringify({
+                        ip: alert.src_ip,
+                        reason,
+                        event_id: alert.id,
+                      }),
+                    });
+                    setNotice(
+                      `Yêu cầu #${result.id} đang chờ xử lý; xem Nhật ký thao tác.`,
+                    );
+                    await refresh();
+                  }
+                : undefined
+            }
             onClose={() => setSelectedAlert(null)}
             onSelect={setSelectedAlert}
             onAudit={(id) => {
