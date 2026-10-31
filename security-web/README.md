@@ -19,6 +19,10 @@ Từ gốc repo chạy `scripts/dev-up-and-verify.sh --bootstrap-nginx` để d�
 
 ## Các thay đổi chính
 
+- Layer 2 phát hiện hành vi từ Student Audit với APP-1001–APP-1005: tổng hợp theo
+  cửa sổ thời gian, chống trùng và hiển thị khuyến nghị chặn. Mặc định chỉ cảnh báo;
+  xem [kiến trúc, giới hạn và cách kiểm thử](docs/APPLICATION_DETECTION.md).
+
 - Bộ rule mở rộng có HTTP flood, Time/Blind SQLi URI/body, web shell upload và SSRF
   URI/body. Xem [phạm vi, kiểm thử và chính sách phản ứng](docs/EXTENDED_RULES.md).
   AUTO_BLOCK=false/ENFORCEMENT_MODE=OFF vẫn là mặc định; source rule phải được cài
