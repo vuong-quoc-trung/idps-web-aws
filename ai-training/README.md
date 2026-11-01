@@ -1,12 +1,26 @@
 # AI-IDPS Data & Training Pipeline
 
-## Hiện trạng — 2026-10-30T21:35:36.891996+07:00
+## Review nhãn và nguồn attack — 2026-11-01T07:36:28.147641+07:00
 
-**Engineering PASS; generalization/deployment NOT_READY.** 160 pytest PASS/0 skip, 53 legacy technical gate PASS. Chỉ AI/docs; không đổi Student/Security, chưa champion hoặc train dài. Tổng lab 71.280 HTTP đủ 3 nguồn sau cohort 1.935 request mới; vẫn một môi trường, 0 scale admission cho mục tiêu 2M. Không đếm projection hoặc public benchmark record thành HTTP mới.
+**Formal vẫn NOT_READY; không chạy trainer dài.** SOC-MLD mới đã audit198.082 HTTP observations, nhưng không có nhãn request-bound mới đủ tin cậy; 38 attack-instance IDs chung train/test và rule/time fallback phải được review. Không dùng precomputed future-window/SID features. Raw/provenance giữ private, không tạo traffic mới hoặc cộng observations thành request mới.
 
-Nhánh riêng `request-structure-v1` gồm 70 số, hỗ trợ cấu trúc tham số không nhạy cảm rộng hơn; fused 207 v5 giữ nguyên. Đã chạy adapter PKDD flattened, shared train-benign scaler, partial unknown-family loss, 3 ứng viên × 2-epoch/300-update study, exact resume/ONNX toàn 115.980 vector và opt-in EVE bridge. Chất lượng mới vẫn chưa đạt: request MLP lab recall 40,6%; GLU recall 0 tại ngưỡng khóa; AE khá trên public nhưng lab FPR 18,6%. Chưa đủ cơ sở chọn champion.
+Corpus gate hiện yêu cầu evidence review v2 theo từng event: capture + intent provenance + independent semantic review, thêm application oracle nếu khẳng định success/failure. Pending/unknown vẫn null, boolean-only approval không còn mở formal. Tool `scripts/audit-label-evidence.py` kiểm integrity/binding; không tự chứng nhận sự thật hoặc tạo nhãn mới. `scripts/audit-soc-mld.py` audit pinned ZIP offline trong resource envelope, không execute code publisher; kết quả active đã có, không cần chạy lại.
 
-Xem [PRETRAINING](PRETRAINING.md), [báo cáo đo](reports/REQUEST_PROFILE_20261030.json), [handoff](FINAL_TRAINING_HANDOFF.json), ledger 06 mục 27. `RequestInferencePipeline` chỉ trả candidate nhị phân, 0 enforcement; 70 feature và 207 feature là hai contract riêng. Công cụ mới và giới hạn nằm trong PRETRAINING. Các lệnh train/snapshot phía dưới là lịch sử, không phải chỉ dẫn chạy formal hoặc chạy lại study đã hoàn tất.
+Catalog đã cập nhật source screening và điều kiện balanced independent acceptance. Giữ kín toàn bộ holdout, gồm148WCP case files; scale-admitted0/2M, champion=null, formal_command=null. Xem [report](reports/ATTACK_EVIDENCE_20261101.json), [hợp đồng nhãn](../docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md) và ledger06 mục32. Kết quả model cũ giữ làm bằng chứng, không lặp HPO trên validation đã exposed.
+
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Hiện trạng dữ liệu và model — 2026-11-01T06:48:58.523006+07:00
+
+**Chưa sẵn sàng train chính thức hoặc chọn champion.** Đã thêm audit nguồn publisher-benign open-appsec có Apache-2.0: 811.129 record ngoài reserved, 756.548 signature biểu diễn HTTP khác nhau, 54.391 trùng/190 quarantine; 44.437 numeric projections. 148 website case files dự phòng chưa đọc/project/score. Không coi số signature là verified physical requests hoặc automatic training admission.
+
+Frozen weights/threshold MLP 219k và GLU 9,54M trên 13.290 validation/160 case: GLU 5 FP=0,0376%, MLP 174 FP=1,3093%. Ngược với hard negatives lab cũ, GLU FPR 10,73%/MLP 0%. Mô hình có điểm yếu theo miền; nguồn mới chỉ benign nên Recall/F1/PR-AUC không xác định, chưa champion. Trong 139 syntax-benign subset: GLU 2 FP, MLP 34 FP. Giữ toàn bộ primary sample, không retune threshold hoặc HPO từ kết quả này.
+
+**198 pytest PASS/0 skip**, 53 gate kỹ thuật legacy PASS; Student/Security/contracts/Docker giữ nguyên, 2.682 protected SHA giữ nguyên. 0 optimizer update thực mới, không training dài hạn/enforcement. Organization X vẫn unknown; tổng lab 75.150 HTTP giữ nguyên, scale-admitted 0/2M. Cần positive/nhãn/campaign và validation độc lập trước study tiếp.
+
+Xem [report](reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](FINAL_TRAINING_HANDOFF.json), [data protocol](../docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md), ledger 06 mục 31. Root private `ai-training/.artifacts/generalization_quality_20261101/CURRENT_WORK.json` giữ trạng thái tiếp tục. Existing baseline/checkpoint cần frozen source/config/data/environment đúng hash, không force-resume package hiện hành. `formal_command=null`; các lệnh/snapshot phía dưới là lịch sử, không phải authorization chạy formal.
+
+Công cụ mới đọc offline, không gửi traffic đến website gốc: `scripts/import-wcp-http.py` yêu cầu pinned source/provenance/key/protocol và output mới; `scripts/evaluate-wcp-http.py` yêu cầu frozen model registry, validation only và từ chối ghi đè. Không cần chạy lại audit/evaluation đã hoàn tất. Job dữ liệu/eval chạy user cgroup 4 CPU/MemoryMax 16 GiB; ceil toàn luồng≤8 CPU/16 GiB theo runbook.
 
 ## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
 

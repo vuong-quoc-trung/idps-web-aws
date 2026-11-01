@@ -1,20 +1,33 @@
 # 00 — Tổng quan dự án và tiến độ
 
-## Hiện trạng AI sau profile mới và hai holdout mới — 2026-10-30T21:35:36.891996+07:00
+## Hiện trạng bổ sung attack và kiểm định nhãn — 2026-11-01T07:36:28.147641+07:00
 
-**Kỹ thuật PASS; chất lượng tổng quát hóa/triển khai NOT_READY, chưa chọn champion.** Chỉ sửa AI và tài liệu; Student/Security/contracts/docker giữ nguyên. **160 pytest PASS, 0 skip**; 53 gate kỹ thuật legacy PASS. Không chạy training chính thức.
+**Chưa đủ điều kiện train chính thức/chọn champion.** Đã audit nguồn SOC-MLD v2 độc lập về publisher: 198.082 HTTP observations; 193.220 dòng log khác nhau; 6.856 biểu diễn method/URI/UA. Chưa xác minh physical request IDs hay nhãn intent theo từng request, nên **0 mẫu mới được admission**, không cộng EVE HTTP/flow thành request mới.
 
-| Hạng mục | Kết quả và giới hạn |
+Bản phát hành thực có 38 attack-instance IDs chung train/test; nhãn dùng time matching rồi fallback payload rule; đặc trưng có cửa sổ tương lai. Giữ raw, đưa nguồn vào chờ review, không chạy model trên đó. WAMM là dẫn xuất SR-BH; WAF Data v2 chưa rõ lineage; Biblio-US17 có giấy phép dataset CC BY-NC-ND 4.0 khác giấy phép bài báo; ModSec-WP cần kiểm tra cơ sở nhãn từng dòng. Không tự coi các nguồn này là final holdout hay nhãn đáng tin.
+
+Đã nâng cổng corpus: mỗi request đủ điều kiện phải có review v2 gắn hash capture, intent provenance và review ngữ nghĩa độc lập; boolean approved kiểu cũ không đủ. Intent và exploit outcome tách riêng; unknown không bị đổi nhãn. Tổng lab 75.150 HTTP giữ nguyên, scale-admitted 0/2M. Giữ kín toàn bộ holdout, gồm 148 website case files. Xem [report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json), handoff hiện hành và ledger 06 mục 32; các mục sau là lịch sử.
+
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Hiện trạng AI và dữ liệu — 2026-11-01T06:48:58.523006+07:00
+
+**Đã thêm nguồn benign công khai và kiểm chứng model trên miền mới; chưa đủ điều kiện train chính thức hoặc chọn champion.** Chỉ AI/docs; Student Web, Security Web, contracts và Docker giữ nguyên. Holdout cũ không được mở, không có cập nhật trọng số hoặc tự động chặn.
+
+| Hạng mục | Kết quả đã kiểm chứng |
 | --- | --- |
-| Thu thập thật | Thêm 1.935 HTTP, đủ 3 nguồn; tổng 71.280 HTTP lab, vẫn một môi trường. 1.882 lượt đúng hợp đồng intent/HTTP tự động; 53 HEAD/OPTIONS trả 403 đang chờ rà soát; chưa có review người độc lập |
-| Privacy/feature | Profile riêng `request-structure-v1`, 70 số; alias tên tham số và bỏ secrets/PII. Không đưa plaintext query, rule, status, role, source, flow hoặc time vào model này. 207 cột v5 giữ nguyên |
-| Corpus | 115.980 record ghép lab cũ và public normal training. Supervised chỉ có 1.233 view lab khác nhau; AE có 18.713 view benign khác nhau. Projection/bản ghi benchmark không được tính thành HTTP lab mới |
-| Pilot | 3 ứng viên × 2 study: 2 epoch và 300 update. Resume chính xác; ONNX 115.980 vector/model/study PASS tại rtol=1e-5, atol=1e-6. Chỉ diagnostic ngắn |
-| Holdout | PKDD 25.612 record và cohort 3 nguồn mới; khoảng cách thời gian thật 41.276 giây. Đã xem kết quả, không dùng lại làm test mới sau tuning |
-| Chất lượng | Request MLP mới: lab recall 40,625%, FPR 0 trên 1.378 benign. GLU: recall 0 tại ngưỡng khóa. AE: public recall 40,21% nhưng lab FPR 18,58%. Chưa model nào đạt nghiệm thu |
-| Mục tiêu 2M | Scale-admitted=0. Thiếu positive đa nguồn và human review. Không nhân bản, gán unknown thành benign hoặc kéo dài train để che thiếu dữ liệu |
+| Corpus mới | open-appsec legitimate captures, giấy phép Apache-2.0 được xác minh. Audit 811.129 record ngoài phần giữ kín; 756.548 chữ ký biểu diễn HTTP khác nhau, 54.391 bản trùng, 190 mẫu cách ly |
+| Đặc trưng | Mẫu HMAC cố định: 44.437 projections, 26.318 kiểu input bounded 76. Không thêm raw text, secret, PII, nhãn/source/SID vào tensor; không dựng timestamp/flow giả |
+| Benchmark mới | Hai model và ngưỡng cũ khóa trước khi chấm. Validation: 13.290 mẫu/160 nhóm website; GLU 5 FP = **0,0376%**, MLP 174 FP = **1,3093%** |
+| Hard negatives | Trong 139 mẫu publisher-benign có các bộ đếm cú pháp đã định trước: GLU 2 FP/139, MLP 34 FP/139. Không đổi nhãn hoặc ngưỡng theo kết quả |
+| Holdout | Giữ kín toàn bộ holdout cũ; thêm 148 file website dự phòng chưa đọc/project/score, số request chưa biết. Nguồn benign-only không chứng nhận recall |
+| Kiểm thử | **198 pytest PASS, 0 skip**; 53 gate kỹ thuật corpus legacy PASS. 2.682 file bảo vệ giữ nguyên SHA; các job riêng đã dừng |
 
-[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+Kết quả mới đảo chiều so với hard negatives của lab, nơi GLU có FPR 10,73% còn MLP 0%. Không có model tốt nhất trên mọi miền. Những con số mới phụ thuộc nhãn legitimate do publisher công bố và giả định nhóm độc lập; chưa có review ngữ nghĩa độc lập. **Không chọn champion**, không dùng nguồn mới để chỉnh threshold hoặc lặp HPO.
+
+Organization X vẫn unknown, không coi rule nonmatch hoặc HTTP 200 là benign. Tổng lab 75.150 HTTP thật giữ nguyên; dữ liệu công khai mới là các bản ghi capture được cung cấp, không phải traffic mới tự tạo hoặc đã xác minh physical request IDs. Không cộng projection/bản sao/unknown observations để đạt chỉ tiêu. **Scale-admitted=0/2M**; còn thiếu positive độc lập, nhãn và đánh giá cân bằng trên môi trường mới.
+
+[Báo cáo dữ liệu/tổng quát hóa](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](../ai-training/FINAL_TRAINING_HANDOFF.json), ledger 06 mục 31. Các snapshot phía dưới là lịch sử.
 
 ## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
 

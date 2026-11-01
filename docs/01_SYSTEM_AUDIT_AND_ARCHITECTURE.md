@@ -1,16 +1,30 @@
 # 01 — Khảo sát hệ thống và kiến trúc nâng cấp IDPS
 
-## Biên kiến trúc AI hiện hành — 2026-10-30T21:35:36.891996+07:00
+## AI label evidence và ranh giới tích hợp — 2026-11-01T07:36:28.147641+07:00
 
-Chỉ thay AI và tài liệu. **689 đường dẫn được bảo vệ** giữ SHA, gồm 366 file service/contract/docker và artifact/report lượt trước. Guard 4.233 artifact cũ từ lượt trước vẫn nguyên vẹn. Không đổi canonical v1.0, API, DB, Nginx, rule, firewall hoặc deployment của hai Web.
+Chỉ thay đổi luồng AI/docs. Không thay API, schema canonical, Student Web, Security Web, Docker hay cấu hình mạng. Model/counter/profile hiện hành và weights/threshold giữ nguyên; chưa có deployment hoặc auto-blocking mới.
 
-Có hai hợp đồng độc lập: `ai-features-5` gồm 207 cột dùng actor/flow/behavior thật; `request-structure-v1` gồm 70 cột URI/query structure/method dành cho nguồn thiếu context. Không nối vector đã scale riêng hoặc giả flow/time cho public data. Scaler của profile mới chỉ fit benign thuộc train. ONNX giữ hợp đồng FP32/FP64 reduction, rtol=1e-5 và atol=1e-6.
+`data/label_evidence.py` kiểm tra review manifest v2, hash ledger/artifact và binding event→nhãn thực tế trong dataset. `data/corpus.py` chỉ đếm các dòng đã có bằng chứng khớp; các dòng không có review vẫn unreviewed. Collector và reviewer phải khác ID, review độc lập cần artifact riêng với raw capture. Đây là kiểm định integrity của attestation, **không tự xác thực danh tính người hay chứng minh nhãn đúng về ngữ nghĩa**. Nhãn mâu thuẫn bị từ chối, không ghi đè dữ liệu cũ.
 
-AI có adapter EVE opt-in trước mask: `project-request-eve.py`, JSONL giới hạn 64 KiB, chỉ xuất số và envelope đã khử bí mật. Input malformed/oversized báo lỗi không echo raw. Không tự nối adapter vào Web hoặc đổi sensor config đang chạy. `RequestInferencePipeline` kiểm tra profile/fingerprint/hash, nhận batch 1–4096, chỉ trả candidate nhị phân; family output tắt, 0 enforcement. Live receipt-time/TLS/IPS acceptance **NOT_RUN**.
+`data/telemetry_audit.py` đọc offline SOC-MLD bằng parser có budget, SQLite trên đĩa, không execute code publisher hoặc tái phát traffic. Không nạp precomputed SID/alert/future-window features vào model. EVE và access log được thống kê riêng, không cộng hai observation của cùng giao dịch vào chỉ tiêu request.
 
-Cohort mới nối đủ 1.935 request từ 3 nguồn, nhưng chỉ 1.567 request có **ngữ cảnh flow quá khứ đã hoàn tất** dùng được; 368 request có cột flow null. Không gọi là có flow chỉ vì dictionary có key. Private lab đã dừng. 53 HEAD/OPTIONS trả 403 được ghi nhận để chủ sở hữu Web rà soát ngoài phạm vi AI, không tự sửa Web.
+Đánh giá balanced độc lập còn thiếu. Request profile URI-only không được giả có body/header/flow/timestamp ở public sources. Xem [bằng chứng mới](../ai-training/reports/ATTACK_EVIDENCE_20261101.json) và ledger 32; các audit cũ phía dưới được giữ làm lịch sử.
 
-[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Biên tích hợp AI và nguồn công khai — 2026-11-01T06:48:58.523006+07:00
+
+Chỉ AI/docs. Source/config/API/schema/firewall của hai Web giữ nguyên; 2.682 protected paths khớp SHA. Canonical 1.0, fused 207, request raw 70/bounded 76 và math/ONNX contracts không đổi. Không thêm code vào Student Web hoặc Security Web, không gọi endpoint block.
+
+Luồng mới: archive nguyên bản có nguồn/license/hash pin → chia website-case bằng HMAC trước khi đọc nội dung → bỏ hoàn toàn phần reserved → parser JSON streaming giới hạn → ledger từng record, loại signature trùng → projection privacy-safe theo mẫu HMAC → inference với weights/threshold đã khóa → FPR và bất định theo nhóm. Tất cả chỉ chạy offline, không replay request đến các website gốc.
+
+`wcp.py` xử lý ZIP không extract, chặn path traversal/symlink/member và expansion vượt budget. Object quá lớn không được nhận vào schema: scanner giới hạn bộ nhớ bỏ qua đúng object, ghi quarantine với member HMAC/index rồi đọc tiếp. Giới hạn object được nhận không tăng để lấy đủ số lượng. Cookie/header/body chỉ dùng transient HMAC để nhận diện bản ghi, không vào feature/report; raw gốc và key nằm riêng trong artifact private/ignored.
+
+`import-wcp-http.py` yêu cầu provenance/license/source SHA và protocol; `evaluate-wcp-http.py` chỉ dùng validation projections, kiểm model/bundle hash và ngưỡng cũ. Các role train_candidates/calibration là staging, **không phải quyền train hoặc calibration**. Nguồn mới chỉ có benign; giữ nguyên guard yêu cầu class support và không tự ghép nó thành shortcut nhãn của supervised model.
+
+Các marker holdout cũ giữ nguyên; 148 public case files mới không mở và có marker/hash riêng. Metadata archive có thể kiểm hash nhưng không đọc payload reserved. Đây là guard trong pipeline, không phải kiểm soát truy cập tuyệt đối nếu copy thủ công source ra đường khác. Live inference, receipt-time, TLS và Rust serving vẫn chưa được nghiệm thu trong lượt này.
+
+[Báo cáo dữ liệu/tổng quát hóa](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](../ai-training/FINAL_TRAINING_HANDOFF.json), ledger 06 mục 31. Các snapshot phía dưới là lịch sử.
 
 ## Biên tích hợp AI v5 — 2026-10-30T15:52:59+07:00
 

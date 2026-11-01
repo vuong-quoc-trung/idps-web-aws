@@ -1,26 +1,39 @@
 # 03 — Thiết kế AI và training theo ca 2–3 giờ
 
-## Kết luận AI từ hai holdout mới — 2026-10-30T21:35:36.891996+07:00
+## Trước study tiếp: dữ liệu và bằng chứng intent — 2026-11-01T07:36:28.147641+07:00
 
-**Không chọn champion, không train chính thức.** Giữ baseline MLP 252.680 và GLU 9.675.784 tham số/207 cột. Nhánh request 70 cột có MLP 217.608, GLU 9.535.496 và Denoising AE 233.670 tham số trainable; giảm input làm đổi count, không thêm padding.
+Giữ đối chứng MLP 219.144 và GLU 9.541.640 tham số, cùng weights/threshold đã freeze. Không thêm tham số, epoch, calibration fit hay optimizer update ở lượt này vì chưa có nguồn positive mới vượt quality gates. Checkpoint/resume và ONNX FP32/FP64 reduction / rtol=1e-5, atol=1e-6 giữ nguyên; source fingerprint đổi do admission code nên checkpoint cũ chỉ resume với frozen source/config/data/environment tương ứng.
 
-Partial-label loss mới dùng FP64 logsumexp cho tổng xác suất 7 head non-benign. Unknown family giữ `-1`, không gán bừa SQLi; known family có conditional CE weight 0,2. Binary smoothing 0,005; MLP/GLU dùng AdamW, decay W=1e-4, global gradient clip=1; GLU dropout=0,1. Diagnostic dùng balanced weights **train-only**, seed=17, batch=128, lr=0,0003, warmup=15 rồi cosine tới 300 update. AE chỉ fit benign đa nguồn. Ngưỡng là max source-specific benign calibration quantile tại target FPR 1%, không chọn bằng attack/test scores.
+Bằng chứng đã có: trên validation retrospective SR-BH, GLU recall31,37%/FPR0,289%, MLP22,83%/0%; trên lab GLU recall18,06%/FPR10,73%, MLP12,5%/0%. Frozen WCP benign-only thì GLU FPR0,0376% và MLP1,3093%. Đây là các thí nghiệm cũ, không phải số đo mới. Đảo chiều theo miền cho thấy không có champion chung; WCP không cho recall, SR-BH đã exposed, lab cùng fixture.
 
-Hai study ngắn: 2 epoch, tương đương chỉ 20 supervised update do 1.233 unique view; sau đó diagnostic 300 update cố định. Fresh-process 100→300 bằng continuous chính xác ở parameters/Adam/RNG/permutation/history. Mỗi study ONNX toàn 115.980 vector/model PASS rtol=1e-5, atol=1e-6. Diagnostic wall time 185,34 giây cho tất cả model/reference/export; riêng GLU optimizer 46,03 giây. Đây là kiểm tra ngắn, không phải train 3 giờ hoặc bằng chứng học tổng quát.
+Hypothesis kế tiếp chỉ được chạy khi source/labels/both-class coverage hợp lệ: thêm matched benign/attack từ môi trường mới có giúp giảm domain shortcut và tăng recall ở cùng FPR mà không làm hỏng từng nguồn cũ hay không. Đăng ký sampling/loss/regularization/calibration/ablations trước study; giữ controls, giới hạn updates và báo cả failure. Không dùng sources chưa review để hợp thức hóa domain adaptation.
 
-| Request model | Validation AP | Fresh lab recall / FPR | PKDD test recall / FPR | Fresh lab batch-1 p95 |
+Cần evaluation balanced độc lập, uncertainty theo campaign, family coverage và serving latency thực trước release freeze. Giữ 148 case files và holdout cũ kín; không chuyển data development thành final holdout. Formalcommand=null, không auto-blocking. [Báo cáo evidence](../ai-training/reports/ATTACK_EVIDENCE_20261101.json), ledger 32, catalog chứa acceptance requirements.
+
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Tổng quát hóa: frozen-model stress trên miền benign mới — 2026-11-01T06:48:58.523006+07:00
+
+**Không train hoặc chỉnh ngưỡng trong lượt này.** Khóa bundle/ONNX hashes và threshold MLP 219k/GLU 9,54M trước khi projection/evaluation nguồn mới. Giữ baseline, checkpoints và các study trước; không thêm tham số/epoch hoặc HPO lặp trên validation đã exposed.
+
+Chẩn đoán từ study trước: GLU có 79 FP/736 benign lab, đều là hard negatives và cả ba campaign bị ảnh hưởng. Pool fit sau dedup chỉ có 206 unique benign lab views; FP gần positive views hơn theo L1 trên 76 số (median 1,027 so 1,351 tới benign), là dấu hiệu thiếu độ phủ/semantics chứ không chứng minh nguyên nhân duy nhất. Sampling cân class/source/family không tạo thêm ngữ nghĩa hoặc nguồn positive độc lập. Source probe cũ 86,74% và missing body/header/context vẫn giới hạn. Không majority vote hoặc relabel các ca khó.
+
+Threshold GLU 0,9984238 và MLP 0,9999802 từ benign calibration cũ. FPR 10,73% ở hard negatives cho thấy distribution shift ở calibration tail; monotone temperature không sửa ranking ở cùng FPR. Không sửa threshold từ kết quả mới.
+
+| Frozen model | Public benign FP/N | FPR | Case-bootstrap95% FPR | Model-only p95 |
 | --- | --- | --- | --- | --- |
-| MLP 217k | 0,82914 | 40,625% / 0% | 3,726% / 1,162% | 0,138 ms |
-| GLU 9,535M | 0,80711 | 0% / 0% | 1,132% / 0,724% | 4,483 ms |
-| Denoising AE 233k | 0,75786 | 36,458% / 18,578% | 40,212% / 0,105% | 0,135 ms |
+| MLP 219k |174/13.290|1,3093%|0,8377–1,8849%|0,145 ms|
+| GLU 9,54M |5/13.290|0,0376%|0,0080–0,0716%|4,489 ms|
 
-Fresh lab primary task gồm 1.378 approved benign và 288 attack thuộc 4 họ payload. Scanner/brute/sequence nằm trong secondary diagnostic vì request-only không quan sát đủ. Latency gồm warm envelope/scaling/ONNX, không gồm URI projection/capture/Web. 0/1.378 FP không chứng minh production FPR bằng 0: upper bound nhị thức một phía 95% khoảng 0,217%, còn giả định IID bị hạn chế do cùng cohort. AE đạt precision public 99,82% ở khoảng 59% attack prevalence; không được chuyển thành precision production.
+160 website-case groups, sample chọn bằng signature HMAC trước scores. Macro-case FPR: MLP 1,0760% (48 case có FP), GLU 0,0595% (5 case có FP). Primary không xóa exact-input overlap; giữ novel-view sensitivity riêng. Trong 139 publisher-benign mẫu có bộ đếm syntax được định trước: MLP 34 FP/139=24,46%, GLU 2 FP/139=1,44%; đây là subset khó có annotation hợp lệ, không phải attack-family benchmark.
 
-Vì sao model lớn chưa hơn baseline: profile cũ mask mất token payload ngoài allowlist; positive độc lập ít, campaign dễ đoán và validation concurrent; nhiều tham số không bù thiếu quan sát. Diagnostic cải thiện validation nhưng GLU vẫn overconfident trên OOD benign, ngưỡng max-calibration 0,998768 khiến fresh lab recall bằng 0 dù AP=0,808. Đây là bằng chứng về visibility/calibration/support, **chưa phải causal ablation chứng minh một nguyên nhân duy nhất**.
+Kết quả **đảo chiều giữa hai miền**, không chứng minh GLU/MLP thắng chung. Public source chỉ có benign: Precision/Recall/F1/PR-AUC đặt null vì không xác định được; không chọn champion từ FPR. Metrics đầy đủ theo họ trên development cũ được bảo toàn trong report trước. Ba nhóm validation cũ quá ít để cấp cluster CI ở helper mới; IID Wilson chỉ là diagnostic có giả định. Case bootstrap mới 200 replicate cũng phụ thuộc cluster independence và publisher labels, không chứng nhận production safety. 0 FP ở lab của MLP không nghĩa 0 rủi ro.
 
-Đối chứng frozen 207 feature trên đúng cohort mới đủ 3 nguồn: GLU gốc recall 71,18% / FPR 73,22%; GLU tuned 80,56% / 69,09%; MLP 253k 7,64% / 5,52%, tại ngưỡng cũ. Không thể giải thích thất bại này chỉ bằng thiếu flow của public data. Cần positive đa nguồn, human review, multi-seed và cohort sealed mới cho mọi tuning tiếp theo. Không ép GLU thắng hoặc hạ ngưỡng theo test. Original test quality vẫn kín.
+Không có optimizer update thực mới. Existing resume/ONNX contracts, tolerance 1e-5/1e-6 và native/inference fixture tests nằm trong 198 pytest PASS. New public stress dùng ONNX cũ nguyên byte; không gọi inference mới là all-row native parity đã được đo lại. Model weights/checkpoints cũ cần đúng frozen package/config/data/environment nếu resume, không force active-source hash.
 
-[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+Cần nguồn positive độc lập và matched hard negatives có nhãn đáng tin, protocol prospective/leave-environment-out phù hợp trước short hypothesis study tiếp. Không dùng reserved holdout để điều chỉnh. Formal command=null, không automatic blocking.
+
+[Báo cáo dữ liệu/tổng quát hóa](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](../ai-training/FINAL_TRAINING_HANDOFF.json), ledger 06 mục 31. Các snapshot phía dưới là lịch sử.
 
 ## Challenger 9,68M — kết quả kỹ thuật/validation — 2026-10-30T15:52:59+07:00
 

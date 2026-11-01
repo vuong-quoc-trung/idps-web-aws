@@ -1,19 +1,35 @@
 # 04 — Lộ trình kỹ thuật và phân chia công việc
 
-## Tiến độ AI tiếp nối — 2026-10-30T21:35:36.891996+07:00
+## Tiến độ dữ liệu độc lập và review — 2026-11-01T07:36:28.147641+07:00
 
-| Giai đoạn | Đã kiểm chứng | Còn mở |
+| Hạng mục AI | Trạng thái |
+| --- | --- |
+| SOC-MLD source/license/hash + full raw metadata/split audit | Hoàn thành; nguồn chờ request-bound label review, không admission |
+| Review evidence v2 + request label binding + đóng boolean-only formal loophole | Triển khai, kiểm thử trong lượt này |
+| WAMM / WAF Data v2 / Biblio-US17 / ModSec-WP screening | Metadata/provenance audit; chưa đủ điều kiện tích hợp |
+| Source counts: physical / representations / eligibility | Tách riêng; không cộng observations, scale-admitted=0 |
+| Nguồn attack độc lập đủ tin cậy + matched benign | Còn thiếu; không ép trainer |
+| Balanced prospective acceptance / unseen environment | Chưa thu; catalog đã ghi điều kiện, không đánh dấu nghiệm thu |
+| Model tuning/long training/champion/automatic blocking | NOT_RUN, không được nghiệm thu từ pilot hoặc benign-only |
+
+Giữ các baseline và mọi raw/checkpoint/holdout. Hoàn tất tests/readiness và handoff ghi trong [report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json)/ledger 32. Phạm vi chỉ AI/docs; hai Web và canonical contract không đổi. Những milestone phía dưới là lịch sử.
+
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Tiến độ AI và điều kiện trước formal training — 2026-11-01T06:48:58.523006+07:00
+
+| Giai đoạn | Đã làm lượt này | Còn thiếu |
 | --- | --- | --- |
-| Data/privacy | Profile 70 số; public adapter/shared scaler; 115.980 research record; thêm 1.935 HTTP thật đủ 3 nguồn | Chưa đạt 2M chất lượng; thiếu positive đa nguồn/human review; 53 HEAD/OPTIONS trả 403 pending |
-| Model/loss | Partial binary/unknown family; balanced train weights; AdamW/schedule; giữ baseline | Chưa champion; capacity không giải quyết visibility/source calibration |
-| Training | 3 model × 2 epoch và 300-update diagnostic; exact resume; 4 CPU/16 GiB có guard | Không formal/multi-hour; multi-seed và endurance chưa chạy |
-| Evaluation | PKDD test 25.612 record và cohort thật mới; frozen thresholds; per-family/full/novel diagnostics | Generalization chưa đạt; test đã exposed, tuning tiếp cần holdout mới |
-| Integration | ONNX 115.980 vector/model/study; request inference/opt-in bridge trước mask; 0 enforcement | Live TLS/receipt-time/IPS acceptance NOT_RUN; không sửa Web |
-| Checks/cleanup | 160 PASS/0 skip; 53 legacy gate PASS; 689 protected path giữ nguyên; private lab dừng; dọn 720.632 byte cache tái tạo được | Giữ raw/checkpoint/experiments; artifact vẫn private/local |
+| Dữ liệu | Nguồn legitimate công khai có license/provenance pin; 811.129 record audit, 756.548 signature khác nhau, ledger và privacy projection | Positive độc lập và review ngữ nghĩa; source benign-only chưa admitted supervised |
+| Tổng quát hóa | Chẩn đoán 79 FP lab, độ phủ 206 benignviews, sampling/missing semantics; frozen public stress 13.290/160 case | Điểm yếu phụ thuộc miền; không model nào đạt evidence để chọn champion |
+| Độc lập | Bảo vệ holdout cũ, thêm 148 case dự phòng chưa đọc; thiết kế prospective campaigns trong catalog hiện có | Thiết kế chưa phải capture; thiếu clock/flow và human/source-owner evidence |
+| Kiểm thử |198 PASS/0 skip, 53 legacygatesPASS; 2.682 protected SHA nguyên; riêng data/eval cgroup 4 CPU/16 GiB | Long/endurance/live/IPS NOT_RUN |
 
-Ưu tiên tiếp: review nhãn/realism độc lập; nguồn HTTP positive và benign đa môi trường có quyền sử dụng; cohort mới tách thời gian/grammar; xử lý missing body/header và calibration domain shift. Biblio-US17 cần quyền tải/terms. Chủ sở hữu Web có thể rà HEAD/OPTIONS ngoài scope; không đổi nhãn để hợp thức hóa. Sau data admission mới thiết kế formal multi-seed, và chỉ chạy ca dài khi user cho phép. Không lặp một fixture để đủ 2M.
+Không cần làm lại SR-BH full audit, các study 300 update hoặc projection đã hoàn thành. Điểm tiếp tục: kiểm nhãn và lineage, nguồn/campaign mới có cả benign/attack, documentation/API hard negatives và nhiều thời điểm/ứng dụng thật. Role, template/session/time và curator phải được khóa trước đánh giá; giữ unknown, không future-label filtering rồi gọi là prospective acceptance. Chỉ study ngắn có hypothesis và validation chưa dùng tuning mới có giá trị.
 
-[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+Nếu cần bổ sung contract để quan sát body/header/behavior ở hai Web, chỉ ghi đề xuất cho luồng sở hữu. Chưa sửa ứng dụng hoặc giả context trong AI. Source collection plan chưa có authorized live targets mới. Scale-admitted 0/2M, không champion, formal command=null; engineering iteration hoàn tất, production objective còn mở.
+
+[Báo cáo dữ liệu/tổng quát hóa](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](../ai-training/FINAL_TRAINING_HANDOFF.json), ledger 06 mục 31. Các snapshot phía dưới là lịch sử.
 
 ## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
 

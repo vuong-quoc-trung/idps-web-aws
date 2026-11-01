@@ -1,27 +1,80 @@
 # 02 — Chiến lược dữ liệu và Feature Engineering
 
-## Dữ liệu, privacy và kiểm soát leakage hiện hành — 2026-10-30T21:35:36.891996+07:00
+## Admission nhãn v2 và nguồn attack mới — 2026-11-01T07:36:28.147641+07:00
 
-Canonical Event Schema v1.0 và 207 feature v5 **không đổi**. Profile riêng `request-structure-v1` có 70 số từ URI/query trước mask: encoding/entropy/parameter lengths, SQL comment/boolean/comparison, HTML/event handler, traversal, shell và HTTP method. Tên tham số được thay bằng alias, giữ quan hệ key lặp; credentials/PII được bỏ trước khi tính số. Không đưa raw text, key name, source/actor/status/UA/rule/SID/clock vào model này. Availability metadata không vào tensor.
+**Không có positive HTTP mới đủ điều kiện train ở lượt này.** Nguồn mới có cả nhãn normal/attack nhưng audit chưa xác minh được cơ sở nhãn theo request. Không đưa unknown vào supervised loss hay tính observations thành physical requests.
 
-| Nguồn | Số lượng và cách dùng |
-| --- | --- |
-| Lab cũ | 69.345 HTTP từ 3 nguồn; chỉ train/val cũ dùng ghép profile mới. Original test chất lượng vẫn kín |
-| Cohort mới | 1.935 HTTP thật trong 360 giây, 3 client concurrent; embargo so dữ liệu cũ 41.276,23 giây. Một cohort ở thời điểm mới, cùng môi trường. 1.882 hợp đồng intent/HTTP tự động đúng; 53 HEAD/OPTIONS trả 403 pending |
-| CSIC published normal training | 36.000 record đã có; chỉ source training gốc, không dùng public test cũ làm train |
-| PKDD mirror TRAIN | 24.504 record thực tế toàn `Valid`; bổ sung normal public/AE, không giả positive corpus |
-| PKDD mirror TEST | 25.612 record: 10.502 normal, 15.110 anomalous. Parse/score sau khi khóa study 300 update; không tuning. Hiện đã exposed |
-| OpenCitations | 90.334 observations thật chưa nhãn từ lượt trước; 0 admission cho supervised hoặc AE benign |
+| Nguồn | Số đo đã xác minh | Trạng thái học/đánh giá |
+| --- | --- | --- |
+| Lab hiện hữu | 75.150 HTTP thật đã phát/capture, không phát mới lượt này | Scripted intent; không phải independent human review |
+| SR-BH hiện hữu | 907.815 dòng đã audit trước; 310.314 structural research candidates | Retrospective development; không final holdout |
+| WCP nonreserved hiện hữu | 811.129 records audit / 756.548 request signatures / 44.437 projections | Publisher benign-only; chưa admission; 148 reserved files chưa đọc |
+| Organization X hiện hữu | 211.178 distinct complete-log observations | Unknown, không rule-derived benign |
+| SOC-MLD v2 mới | 198.122 access lines; 198.082 parseable; 193.220 complete-log identities; 6.856 method/URI/UA views | Toàn bộ mới chờ review; verified physical requests=null, training eligible=0 |
 
-Corpus mới 115.980 record có 86.275 train, 12.303 calibration, 17.402 validation; một scaler chỉ fit benign train. Chỉ có 1.233 view supervised lab khác nhau: 1.027 positive, 206 benign. AE có 18.713 view benign khác nhau từ nhiều nguồn. Để tránh public normal-only tạo shortcut source→label, MLP/GLU supervised chỉ fit lab. Source/identity không là feature, nhưng cú pháp vẫn có thể lộ domain; phải kiểm định ngoài nguồn.
+Không cộng các cột ở bảng hoặc cộng 11.679 EVE HTTP / 119.330 flow / 28.013 alert của SOC-MLD thành request mới. Raw archive và publisher labels được giữ nguyên. 40 access lines không parse được vẫn nằm trong raw. Biểu diễn method/URI/UA không bao gồm body, không đồng nghĩa encoded76 model views hay physical identity.
 
-Audit có 28.830 numeric view trên toàn fitting corpus: 600 nhóm có view giao partition, 0 nhóm trộn nhãn 0/1. Collision sau privacy/quantization không chứng minh raw request trùng; cũng không cho phép khẳng định grammar độc lập. Public split theo hash view, không bịa timestamp/context 300 giây. Calibration/selection lab cũ vẫn concurrent, chưa độc lập thời gian. Cohort mới là holdout ở thời điểm thật; giữ cả primary approved-task, full intent, pending và novel-view sensitivity, không lọc ca khó để làm đẹp.
+SOC-MLD: 6.600 operator rows đều timezone-naive, không có request ID; code consume nearest time±30s rồi fallback `label_l7_payload`/NORMAL, L3/L4 dùng signature. Không đoán timezone/offset để biến thành ground truth. CSV thực 4.786 train/1.220 test, 38 `attack_instance_id` chung và thời gian chồng lấn. Các số README 5.058/947 không thay thế readback. Published alert windows dùng ts±60s và whole-session aggregates; không nhập những feature này cho causal inference.
 
-[Mirror WebRequests V1](https://doi.org/10.60895/redata/RWUUSV) có metadata CC BY 4; MD5/SHA và attribution trong report. PKDD mirror thực tế là flattened text, thiếu Context/inContext/attackIntervall của [challenge gốc](https://www.lirmm.fr/pkdd2007-challenge/). URI không quan sát được mọi attack trong body/header. Không đoán family/location, không dùng TF-IDF toàn cục. Original publisher license lineage chưa xác minh độc lập, raw giữ private.
+### Hợp đồng review có bằng chứng
 
-[Nguồn tác giả Biblio-US17](https://dtstc.ugr.es/neus-cslab/recursos/ds-biblio/) mô tả 47 triệu HTTP thật trong 6 tháng, nhãn bán tự động có chuyên gia. [Repository](https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e) yêu cầu quyền tải. Chưa tải/chưa xác minh dataset terms, không tự gửi liên hệ. Metadata CC0 không là license raw dataset. Tổng lab 71.280 HTTP vẫn một môi trường; 0 scale admission cho mục tiêu 2M, thiếu nhãn độc lập và positive đa nguồn.
+Review manifest v2 gắn `dataset_sha256`, `provenance_sha256`, `environment_id`, reviewer/collector IDs khác nhau, scope, `decisions_file`, `decisions_sha256` và digest `review_sha256`. Ledger JSONL dùng `event_key` immutable và các trường:
 
-[Báo cáo hiện hành](../ai-training/reports/REQUEST_PROFILE_20261030.json), [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), sổ bàn giao 06 mục 27. Các snapshot phía dưới là lịch sử.
+- `intent`: benign / attack / unknown; `label`: 0 / 1 / null theo review, không theo HTTP status hay detection.
+- `review_status`: approved / pending / rejected; pending/rejected/unknown không cấp nhãn dùng để học.
+- `attack_family`: family được hỗ trợ hoặc null; unknown family không tự suy diễn.
+- `exploit_outcome`: unknown / succeeded / failed / not_applicable. Attack thất bại vẫn là positive intent.
+- `evidence`: tối đa 8 refs, mỗi ref có kind, file tương đối, SHA256, event_key và dataset_sha256. Approved intent cần đủ request_capture, intent_provenance, independent_semantic_review; review ngữ nghĩa phải có artifact khác capture. Success/failure còn cần application_oracle.
+
+Review có thể theo protocol/campaign và dùng chung artifact cho nhiều event nếu trace nguồn chứng minh được binding của từng request; không bắt buộc kiểm thủ công từng dòng trong hàng triệu request. Cần phân biệt review protocol/generator với manual semantic review từng mẫu, không tự tuyên bố đã review toàn bộ. Rule hits, model prediction, status-only hoặc time proximity không được dùng làm loại bằng chứng ground truth. Mỗi event chỉ review một lần; dòng dư ngoài dataset hoặc nhãn đã biết mâu thuẫn bị từ chối. Không đổi nhãn tại chỗ. Nếu review giải quyết unknown, tạo chain dataset/labels/provenance immutable mới rồi attestation đúng binding trước admission. Review v1 cũ vẫn dùng được cho research workflow cũ nhưng **không đạt cổng formal**; cached catalog không có evidence-v2 markers cũng không mở formal.
+
+`scripts/audit-label-evidence.py --review <review.json> --dataset <immutable-dataset> --provenance <provenance.json> --environment-id <id> --output <new-directory>` kiểm tra binding và tạo report/index. Hash/ID chỉ bảo vệ integrity; nguồn-owner và người review thật vẫn phải chịu trách nhiệm ngữ nghĩa/independence. Không tạo reviewer hoặc approved labels giả. Path/evidence dưới sealed markers bị từ chối.
+
+### Điều kiện trước study tiếp và formal
+
+Giữ nguyên yêu cầu 2 eligible dual-class sources cho research, tối thiểu 32 samples và 32 encoded views/class/source/role, group/view purge và embargo 300s. Benign-only WCP không được lách gate. Formal scale policy và toàn bộ holdout vẫn khóa; chưa có balanced independent acceptance corpus. Phải kiểm provenance/license, request-bound label/visibility, campaign/environment independence và fit-side preprocessing trước future labels; không lọc lỗi final theo nhãn tương lai.
+
+Protocol acceptance phải khóa trước scores: matched MLP/GLU/baseline, dữ liệu/feature visibility/ngân sách FPR, calibration hợp lệ, metrics theo source/campaign/family và cluster uncertainty; đo latency model-only riêng end-to-end. Không chọn threshold từ test, không dùng benign-only để kết luận recall. Chi tiết executable contract và nguồn được cập nhật ở `configs/public_http_sources.yaml`; [report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json) và ledger 32 giữ file hashes/lệnh/trạng thái.
+
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Corpus công khai, nhãn và giới hạn sử dụng — 2026-11-01T06:48:58.523006+07:00
+
+Tái sử dụng nguyên vẹn SR-BH audit 907.815 dòng, curation 310.314 candidates và corpus development hồi cứu 118.760 vectors; không làm lại projection/train đã hoàn thành. SR-BH và validation từng xem vẫn là development exposed, không test cuối độc lập.
+
+### Nguồn benign mới đã xác minh
+
+[Publisher open-appsec WCP](https://github.com/openappsec/waf-comparison-project) mô tả capture khi duyệt/thao tác website và cấp Apache-2.0 rõ ràng cho legitimate dataset. Pin revision `8ec8263eebba76816601f7c7052f8ffb83e31312`, README/LICENSE/config SHA. Archive 1.203.983.791 byte, SHA 256 `58faee18c54229759287a574f6f8cb1e3b951fa135e403ea9a679d2b18efd778`; nguồn không cung cấp checksum crypto riêng, local SHA được pin sau tải HTTPS/ETag/Content-Range xác minh. Raw gốc giữ private, không commit.
+
+Archive có 692 JSON case files; tài liệu publisher ghi 692 websites/14 categories nhưng README ghi 185/12. Báo actual case files, không tự coi là 692 môi trường độc lập đã review. Last-Modified của archive không là clock của từng request. Không nhập tập malicious đi kèm: payload collection có copyright/lineage hỗn hợp và không phải các HTTP độc lập được capture chỉ vì được bọc thành request.
+
+HMAC website roles khóa trước nội dung: bucket 0–1 reserved, 2 calibration, 3–4 validation, 5–9 train_candidates. 148 reserved files **không đọc/project/score**, không suy ra số request từ mô tả tổng. 544 file còn lại được audit hết:
+
+| Quyết định | Record |
+| --- | ---: |
+| Biểu diễn HTTP có signature khác nhau |756.548|
+| Trùng signature quan sát |54.391|
+| Quarantine URI thiếu/quá dài |170|
+| Quarantine object JSON chưa parse được/quá lớn |20|
+| Tổng record được kiểm tra ngoài reserved |811.129|
+
+Mỗi record có source SHA/member HMAC/index/decision, duplicate link hoặc lý do loại trong ledger. Signature là canonical observed request object, không chứng minh unique physical request IDs hoặc phiên người dùng độc lập. Không đếm projection/bản copy/duplicate là HTTP mới. Nhãn 0 được giữ theo **publisher legitimate-capture annotation**, không suy từ status/no-alert và chưa được nhóm này review ngữ nghĩa độc lập.
+
+### Biểu diễn và role không đồng nghĩa admission
+
+Staging roles:443.897 train_candidates, 87.189 calibration, 225.462 validation; chưa role nào được dùng fit trọng số/threshold. HMAC signature modulo 17 chọn 44.437 projections, không theo score hoặc nhãn khó/dễ. Có 26.318 unique bounded 76 model views; cùng population có 187.167 record chứa body nhưng body không vào request-only model, tất cả 756.548 thiếu timestamp. Trong projections:2.257 query-lexical unavailable và 1 URI-lexical unavailable; không khôi phục query đã mất hoặc giả behavior/flow.
+
+Các case groups disjoint, nhưng numeric input có overlap giữa role: train_candidates→cal 235, train_candidates→val 510, cal→val 207 unique views. Chưa train nên đây không phải model leakage của benchmark mới; nếu ghép để fit sau này phải xử lý lineage/template/views bằng protocol phù hợp. Primary benchmark giữ mọi mẫu validation hợp lệ, không lọc khó theo score; novel-view sensitivity chỉ bổ sung. Trong 13.290 validation projections, 144 khớp input train cũ:141 benign-view, 3 positive-view. Đây là mơ hồ của partial representation/nhãn cần review, không đủ để đổi nhãn hoặc kết luận HTTP gốc bị sao chép.
+
+### Unknown, holdout và bước tiếp
+
+Organization X vẫn 211.178 distinct log observations theo audit cũ, raw và report giữ nguyên; **unknown**, 0 nhãn mới. Các rule UA/method/readme/nonmatch chưa là ground truth. Cần source-owner/independent evidence-bound review; không gán benign mặc định hoặc dùng dự đoán model tự làm nhãn.
+
+Holdout cũ và public 148-case benign supplement giữ kín; không có recall/PR-AUC đáng tin từ nguồn chỉ có benign. `prospective_evaluation_plan` trong catalog hiện có thiết kế thêm browser catalog/cart, documentation/code search và API/auth campaigns có quyền, role/time/seed/template khóa trước, actual 10/60/300 s history và review evidence. Trạng thái **DESIGNED_NOT_COLLECTED**, không có target live nào được tự cấp quyền. Không biến row index thành timestamp hoặc giả source flow.
+
+Nguồn mới được phép audit và frozen external FPR stress, **supervised/formal admission=false**. Tổng lab 75.150 HTTP giữ nguyên, 0 traffic mới thu lượt này, scale-admitted 0/2M. Positive độc lập, nhãn ngữ nghĩa, clock/behavior và balanced independent evaluation còn thiếu; ưu tiên chúng thay vì tổng row count.
+
+[Báo cáo dữ liệu/tổng quát hóa](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](../ai-training/FINAL_TRAINING_HANDOFF.json), ledger 06 mục 31. Các snapshot phía dưới là lịch sử.
 
 ## Data admission đã triển khai; corpus 2M NOT_READY — 30/10/2026
 

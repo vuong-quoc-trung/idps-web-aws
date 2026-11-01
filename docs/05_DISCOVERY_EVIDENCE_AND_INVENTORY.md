@@ -1,19 +1,34 @@
 # 05 — Bằng chứng khảo sát, phạm vi và giới hạn xác minh
 
-## Bằng chứng AI hiện hành — 2026-10-30T21:35:36.891996+07:00
+## Nguồn và bằng chứng mới — 2026-11-01T07:36:28.147641+07:00
 
-Nguồn mới là [REQUEST_PROFILE report](../ai-training/reports/REQUEST_PROFILE_20261030.json), handoff format 5 và ledger 06 mục 27. Report GENERALIZATION cũ giữ SHA `ca7a3f7084584bf86512f69e0b83d009146c51c18d413b9683ac7753aae103cf`; không viết lại thí nghiệm cũ. 689 protected path không đổi; guard 4.233 artifact từ lượt trước còn nguyên. Không commit/push trong lượt này.
+Root private: `ai-training/.artifacts/attack_evidence_20261101`. Giữ snapshot source/docs và protected SHA từ đầu lượt; report máy [ATTACK_EVIDENCE_20261101.json](../ai-training/reports/ATTACK_EVIDENCE_20261101.json)/ledger 32 trỏ evidence thực, không ghi payload hoặc PII vào report.
 
-- **PASS:** 160 pytest/0 skip (74,72 giây), Ruff 97 file/format, compile, canonical contract, Web git diff; 53/53 legacy readiness; 3 model × 2 study exact resume/ONNX toàn 115.980 vector; bounded EVE secret canary và unknown-family gradient/ONNX tests.
-- **FAIL về chất lượng:** frozen old GLU full-3-source FPR=73,22%; request GLU fresh lab recall=0; request AE fresh lab FPR=18,58%. Runner chạy được không biến các kết quả này thành nghiệm thu PASS.
-- **NOT_RUN:** original old test quality, formal/multi-seed, independent human review, live Web/TLS/IPS và 2M/long endurance.
-- PCAP mới SHA `edfaba826345dac1238014e8495b41ba4bd528cfe0eb50eec768ed7a08452589`; 0 kernel packet drop; 1.935 HTTP/flow và 364 alert. Không packet synthesis. Decoder pin runtime/rule/config/profile hash.
-- Profile SHA `e1c3df19f511be2773e56af61828ebe201bdbe8eae7cd8475de3b290fab4522b`; request dataset SHA `1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731`.
-- PKDD V1 metadata/source MD5+SHA verified; TRAIN=24.504 Valid, TEST=25.612. Thiếu native context/location; license lineage giới hạn trong report. Biblio cần quyền tải, chưa tải.
-- Source snapshots `source-frozen/` và `source-learning-curve/` giữ nguyên. Sau study chỉ sửa **reporting**: count flow dùng `bool(dict)` tính nhầm 1.935 thành 1.567. Giữ bản report trước sửa; model metrics/thresholds không tính lại. Chỉ `request_inference.py` khác frozen package source; không force-resume bằng source hash mới.
-- Cgroup readback lúc pilot 4 CPU/16 GiB/high 15 GiB/swap 0 có trong report. Thuộc tính transient unit sau cleanup không chứng minh resource lúc chạy. Dọn 720.632 byte generated Python/pytest cache, giữ raw/checkpoint/key/source snapshot.
+- SOC-MLD Zenodo DOI10.5281/zenodo.23116148: CC BY 4.0 trong official metadata và LICENSE; ZIP10.430.367 bytes, MD5`764ca570a35753a90f6ac3046750c716`, SHA256`66aafa96a69ab54ee061abbb69284444476919295f1b16985122283dae2b3054`. Member hashes, SQLite index và report ở `soc-audit-v2/`; không execute publisher code. Attempt đầu chỉ hiểu combined log, đọc thiếu common-log rows; giữ kết quả superseded và sửa parser, active v2 tính đủ198.082 HTTP observations.
+- SOC-MLD metadata/card và source khác nhau về split/counts. Code evidence: `extract_features.py` dòng708 time consume,711 payload fallback,442 NORMAL fallback,266 future window,749 signature label. 38 attack-instance IDs chung giữa CSV train/test; không nhận claim independent split tự động.
+- WAMM revision`2783eab560c4355f5976a57fc2e97a2e6c5c79a1`: README thừa nhận SR-BH derivative, Burp augmentation, regex/LLM filtering; không tải archive hay coi là nguồn độc lập mới.
+- WAF Data v2 revision`b035dc17f875f1f732c10654709abed66a4e9742`: MIT claim, card không cung cấp capture/label lineage; SR-BH resemblance chỉ là nghi vấn cần kiểm, không kết luận đã chứng minh duplicate. Không tải data.
+- Biblio-US17 DOI10.12795/11441/148254: official idUS metadata ghi CC BY-NC-ND4.0, khác CC BY của bài báo. Cần kiểm compatibility và label-scope trước tích hợp; chưa tải data, không phát biểu toàn bộ dùng được chỉ vì paper open access.
+- ModSec-WP DOI10.5281/zenodo.21872151: official CC BY4.0, 108.883 publisher transactions, mixed scenario/time/regex/manual annotation; chưa có request-bound evidence chain được xác minh, chỉ lưu metadata.
 
-Artifact local ignored `ai-training/.artifacts/request_view_20261030/` chứa input manifest, frozen plan, log và kết quả đo. Chưa shared artifact store, chưa deploy model.
+Các nguồn chưa admission đóng góp0 vào mục tiêu formal. Không mở WCP148 hoặc các holdout cũ. Dataset identities/observations/modelviews không được tự coi là physical requests. Các công cụ mới chỉ đọc offline, không có traffic đến website gốc.
+
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
+
+## Bằng chứng nguồn mới và frozen evaluation — 2026-11-01T06:48:58.523006+07:00
+
+Root private `ai-training/.artifacts/generalization_quality_20261101/`; [report hiện hành](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json), handoff format 9, ledger 06 mục 31. Các report/checkpoint/source/holdout cũ giữ nguyên SHA.
+
+- **PASS:** 198 pytest/0 skip/102,03 s; Ruff/format/compile/canonical/originalWeb diff. 53/53 legacy technical readiness trên 69.345 fused-v5, không phải admission mới.
+- **PASS dữ liệu:** 811.129 row decisions và 756.548 unique-signature observations readback; 44.437 encoded keys kiểm lại; case groups disjoint. 190 quarantine và 54.391 duplicate có trace; 148 file reserved chưa mở, số request unknown.
+- **PASS frozen stress:** 13.290 validation/160 case, weights/ngưỡng nguyên; GLU 5 FP, MLP 174 FP. 200 replicate case bootstrap, macro-case và syntax subset báo riêng. Benign-only không xác định recall/PR-AUC hoặc chọn champion.
+- **NOT_READY:** independent reviewed labels, positive đa môi trường, prospective/campaign acceptance, formal scale và production quality. Organization X vẫn unknown, 0 relabel. Partial numeric overlap không tự thành rawHTTP duplicate hoặc lý do xóa lỗi validation.
+- **PASS tài nguyên:** data unit 482,698 s wall/423,5M memory peak; eval 6,773 s/453,3M; quota 4 CPU/16 GiB/high 15 GiB/swap 0. Đây là data/eval jobs, không train 2 h. Sensor samples tối đa 66 °C ở importer, không thermal trip; long endurance NOT_RUN.
+- **PASS bảo toàn:** 2.682 file bảo vệ, Web/contracts/Docker diff 0, HEAD nguyên. Chỉ dọn 838.709 byte/71 file cache tái tạo được; giữ raw ZIP/key/SQLite/ledgers/failed attempt/checkpoint/report. Các unit riêng đã dừng, không dừng service khác.
+
+Attempt đầu download bị budget/time guard dừng được resume Content-Range/If-Match và full SHA verified. Import đầu dừng ở object quá lớn, không có manifest hợp lệ/admission; giữ attempt, thêm bounded structural skip+quarantine và regression trước khi complete v2. Không tăng accepted-object cap. Một test fixture ban đầu sai source/warmup đã sửa ở fixture, không nới trainer guards; final suite PASS.
+
+Raw/private key không ở Git; artifact vẫn local, chưa shared store. Số record nguồn/labels/metrics có scope rõ trong report, không tuyên bố 2M, review độc lập hoặc production readiness.
 
 ## Cập nhật resource sau pilot — 28/10/2026
 

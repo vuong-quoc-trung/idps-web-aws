@@ -1,38 +1,26 @@
 # Chuẩn bị và pilot trước train chính thức
 
-## Hiện trạng — 2026-10-30T21:35:36.891996+07:00
+## Review nhãn và nguồn attack — 2026-11-01T07:36:28.147641+07:00
 
-**Engineering PASS; generalization/deployment NOT_READY.** Chỉ AI/docs; Student/Security/contracts/docker không đổi. 160 pytest PASS/0 skip, 53 gate legacy 69k PASS. Chưa champion hoặc train chính thức. Nguồn hiện hành: [REQUEST_PROFILE_20261030](reports/REQUEST_PROFILE_20261030.json), [handoff format 5](FINAL_TRAINING_HANDOFF.json), ledger 06 mục 27. Report GENERALIZATION trước đó giữ nguyên.
+**Formal vẫn NOT_READY; không chạy trainer dài.** SOC-MLD mới đã audit198.082 HTTP observations, nhưng không có nhãn request-bound mới đủ tin cậy; 38 attack-instance IDs chung train/test và rule/time fallback phải được review. Không dùng precomputed future-window/SID features. Raw/provenance giữ private, không tạo traffic mới hoặc cộng observations thành request mới.
 
-- Tổng lab 71.280 HTTP đủ 3 nguồn: 69.345 cũ + 1.935 mới/360 giây, embargo 41.276 giây. Có 1.882 hợp đồng intent/HTTP tự động đúng và 53 HEAD/OPTIONS trả 403 pending; chưa human review. Ba client concurrent vẫn cùng một môi trường và thời điểm. Lab đã dừng, 0 packet drop.
-- Profile riêng `request-structure-v1` có 70 số từ URI/query/method; alias tên tham số sau khi bỏ credential/PII. Không raw query, UA, status, actor, flow/time, source hoặc rule. Legacy 207 v5 giữ nguyên. EVE dual projection chạy trước mask; legacy causal past flow dùng được ở 1.567/1.935 request, 368 còn null.
-- Corpus 115.980 record: 86.275 train, 12.303 calibration, 17.402 validation; scaler chỉ fit benign train. Public training gốc có 36.000 CSIC normal + 24.504 PKDD normal; không test→train. Supervised chỉ 1.233 unique lab view; AE 18.713 unique benign view. Có 600 nhóm numeric view giao partition, không có nhóm trộn nhãn 0/1. Không coi projection/benchmark record là HTTP lab mới hoặc positive độc lập.
-- Hai study: 2 epoch và diagnostic 300 update, tối đa 180 giây/session diagnostic. MLP 217.608, GLU 9.535.496, DAE 233.670 tham số trainable. Cùng 300 update/seed 17/batch 128/calibration target FPR 1%; khác FLOPs và inductive bias, không equal compute. Exact resume 100→300 so continuous và ONNX toàn 115.980 vector/model/study PASS rtol=1e-5, atol=1e-6.
-- Fresh lab request task có 1.666 record: MLP recall 40,625% / FPR 0 trên 1.378 benign; GLU recall 0 / FPR 0; AE recall 36,46% / FPR 18,58%. PKDD test 25.612 record: AE recall 40,21% / FPR 0,105%; MLP 3,73% / 1,16%; GLU 1,13% / 0,724%. Frozen 207-feature GLU cũng có FPR 73,22% trên cohort 3 nguồn mới. **Không chọn champion**, không hạ threshold theo test. Các test mới nay đã exposed; cần test sealed khác cho phát triển tiếp. Original old lab test quality vẫn kín.
-- Study mới dùng 4 CPU/16 GiB/high 15 GiB/swap 0; pin source/config/data hash, checkpoint mỗi 30 giây và tại signal/resource boundary, có thermal guard. Sau study chỉ sửa reporting flow count trong `request_inference.py`; frozen source và before-report giữ nguyên, model metrics không đổi. Không force-resume khác source.
-- Mục tiêu 2M chưa đạt; scale-admitted=0. OpenCitations chưa nhãn không được gán benign; Biblio-US17 cần quyền tải/terms, chưa tự liên hệ. Thiếu positive đa nguồn/human review và live production acceptance. Không kéo dài train hoặc nhân bản dữ liệu để làm đẹp.
+Corpus gate hiện yêu cầu evidence review v2 theo từng event: capture + intent provenance + independent semantic review, thêm application oracle nếu khẳng định success/failure. Pending/unknown vẫn null, boolean-only approval không còn mở formal. Tool `scripts/audit-label-evidence.py` kiểm integrity/binding; không tự chứng nhận sự thật hoặc tạo nhãn mới. `scripts/audit-soc-mld.py` audit pinned ZIP offline trong resource envelope, không execute code publisher; kết quả active đã có, không cần chạy lại.
 
-Công cụ mới, chạy từ project root, output phải mới. Ví dụ để hiểu pipeline; **không cần chạy lại study đã hoàn tất**:
+Catalog đã cập nhật source screening và điều kiện balanced independent acceptance. Giữ kín toàn bộ holdout, gồm148WCP case files; scale-admitted0/2M, champion=null, formal_command=null. Xem [report](reports/ATTACK_EVIDENCE_20261101.json), [hợp đồng nhãn](../docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md) và ledger06 mục32. Kết quả model cũ giữ làm bằng chứng, không lặp HPO trên validation đã exposed.
 
-```bash
-ai-training/.venv/bin/idps-ai request-prepare --registry <request-sources.yaml> --output <new-request-corpus>
-ai-training/.venv/bin/python ai-training/scripts/request-pilot.py --dataset <new-request-corpus> --output <new-short-pilot> --cpus 4
-# Diagnostic tùy chọn: thêm --learning-curve; max 300 update/180 giây mỗi session.
-# Chạy trong cgroup tối đa 8 CPU/16 GiB theo runbook hiện có; study vừa rồi dùng 4 CPU.
-```
+Kiểm chứng cuối: **211 pytest PASS, 0 skip**; Ruff/format/compile/canonical PASS; **53/53 gate kỹ thuật legacy PASS**, corpus formal **NOT_READY/0 eligible** (exit 3 đúng thiết kế). Giữ nguyên SHA của **2.941 file** cũ và source/config freeze trong final test; không sửa hai Web. Handoff format 10, ledger 32.
 
-Inference offline trong Python với bundle 70 feature, **không dùng bundle 207 v5**:
+## Hiện trạng dữ liệu và model — 2026-11-01T06:48:58.523006+07:00
 
-```python
-from idps_ai.request_inference import RequestInferencePipeline
-pipeline = RequestInferencePipeline("<request-bundle>", max_threads=1)
-result = pipeline.observe_uri("/api/catalog?search=example", "GET")
-assert result["enforcement_actions"] == 0
-```
+**Chưa sẵn sàng train chính thức hoặc chọn champion.** Đã thêm audit nguồn publisher-benign open-appsec có Apache-2.0: 811.129 record ngoài reserved, 756.548 signature biểu diễn HTTP khác nhau, 54.391 trùng/190 quarantine; 44.437 numeric projections. 148 website case files dự phòng chưa đọc/project/score. Không coi số signature là verified physical requests hoặc automatic training admission.
 
-`project-request-eve.py` đọc stdin JSONL giới hạn 64 KiB, xuất stdout dual numeric v2 + request v1 sau privacy. Nguồn EVE phải được nối **trước mask**, không phục hồi query đã mask. Không lưu input thô ra file để làm bridge; lượt này không đổi Web/sensor config. Common threshold là nghiên cứu, chưa production calibration. Metric, family, confusion matrix và command đã chạy nằm trong report.
+Frozen weights/threshold MLP 219k và GLU 9,54M trên 13.290 validation/160 case: GLU 5 FP=0,0376%, MLP 174 FP=1,3093%. Ngược với hard negatives lab cũ, GLU FPR 10,73%/MLP 0%. Mô hình có điểm yếu theo miền; nguồn mới chỉ benign nên Recall/F1/PR-AUC không xác định, chưa champion. Trong 139 syntax-benign subset: GLU 2 FP, MLP 34 FP. Giữ toàn bộ primary sample, không retune threshold hoặc HPO từ kết quả này.
 
-Các lệnh train lịch sử bên dưới **không phải chỉ dẫn chạy formal lúc này**.
+**198 pytest PASS/0 skip**, 53 gate kỹ thuật legacy PASS; Student/Security/contracts/Docker giữ nguyên, 2.682 protected SHA giữ nguyên. 0 optimizer update thực mới, không training dài hạn/enforcement. Organization X vẫn unknown; tổng lab 75.150 HTTP giữ nguyên, scale-admitted 0/2M. Cần positive/nhãn/campaign và validation độc lập trước study tiếp.
+
+Xem [report](reports/GENERALIZATION_QUALITY_20261101.json), [handoff format 9](FINAL_TRAINING_HANDOFF.json), [data protocol](../docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md), ledger 06 mục 31. Root private `ai-training/.artifacts/generalization_quality_20261101/CURRENT_WORK.json` giữ trạng thái tiếp tục. Existing baseline/checkpoint cần frozen source/config/data/environment đúng hash, không force-resume package hiện hành. `formal_command=null`; các lệnh/snapshot phía dưới là lịch sử, không phải authorization chạy formal.
+
+Công cụ mới đọc offline, không gửi traffic đến website gốc: `scripts/import-wcp-http.py` yêu cầu pinned source/provenance/key/protocol và output mới; `scripts/evaluate-wcp-http.py` yêu cầu frozen model registry, validation only và từ chối ghi đè. Không cần chạy lại audit/evaluation đã hoàn tất. Job dữ liệu/eval chạy user cgroup 4 CPU/MemoryMax 16 GiB; ceil toàn luồng≤8 CPU/16 GiB theo runbook.
 
 ## Nâng cấp 9,68M / mục tiêu 2M — nghiệm thu kỹ thuật, dữ liệu còn thiếu — 2026-10-30T15:52:59+07:00
 
