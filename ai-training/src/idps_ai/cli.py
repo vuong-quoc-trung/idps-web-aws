@@ -50,6 +50,14 @@ def parser():
     )
     rp.add_argument("--registry", required=True)
     rp.add_argument("--output", required=True)
+    encoding = commands.add_parser(
+        "request-reencode", help="Fixed private numeric encoding; roles/labels unchanged"
+    )
+    encoding.add_argument("--dataset", required=True)
+    encoding.add_argument("--output", required=True)
+    encoding.add_argument(
+        "--encoding", choices=("bounded-security-v1", "bounded-request-v1"), required=True
+    )
     rt = commands.add_parser("request-train", help="Bounded2epoch request-only research candidate")
     rt.add_argument("--dataset", required=True)
     rt.add_argument("--run-dir", required=True)
@@ -280,6 +288,12 @@ def main(argv=None):
 
             with resource_envelope(2, 12):
                 result = prepare_request_registry(args.registry, args.output)
+        elif args.command == "request-reencode":
+            from idps_ai.data.request_corpus import reencode_requests
+            from idps_ai.training.resources import resource_envelope
+
+            with resource_envelope(2, 12):
+                result = reencode_requests(args.dataset, args.output, args.encoding)
         elif args.command == "request-train":
             import yaml
 

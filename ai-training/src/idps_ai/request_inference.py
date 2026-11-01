@@ -12,7 +12,7 @@ from idps_ai.data.dataset import iter_rows
 from idps_ai.data.readers import eve_request_id
 from idps_ai.data.request_corpus import PAYLOAD_FAMILIES
 from idps_ai.export.onnx import cpu_session
-from idps_ai.features.pipeline import transform
+from idps_ai.features.request_preprocessing import encode_request
 from idps_ai.features.request_view import PROFILE, fingerprint, project_request, validate_view
 from idps_ai.training.evaluation import latency_ms
 from idps_ai.training.generalization import binary_metrics
@@ -54,7 +54,7 @@ class RequestInferencePipeline:
     def predict_views(self, views):
         if not 1 <= len(views) <= 4096:
             raise PipelineError("Request inference batch must contain1–4096observations")
-        x = np.asarray([transform(self.spec, validate_view(v)) for v in views], np.float32)
+        x = np.asarray([encode_request(self.spec, validate_view(v)) for v in views], np.float32)
         if not len(x):
             raise PipelineError("No request observations")
         score, output = self.session.run(None, {"input": x})

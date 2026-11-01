@@ -43,3 +43,34 @@ def test_decoder_rejects_long_socket_path_before_creating_partial_artifacts(tmp_
     with pytest.raises(ValueError, match="socket path is too long"):
         decode_pcap(tmp_path / "absent.pcap", output, tmp_path / "runtime")
     assert not output.exists()
+
+
+def test_second_challenge_uses_unseen_grammars_with_reproducible_owned_targets():
+    from idps_ai.data.request_campaigns import challenge_plan
+
+    first = challenge_plan(314159)
+    second = challenge_plan(314159, generation=2)
+    assert second == challenge_plan(314159, generation=2)
+    assert {r["variant"] for r in first if r["family"] != "benign"}.isdisjoint(
+        r["variant"] for r in second if r["family"] != "benign"
+    )
+    assert all(r["target"].startswith("/api/") for r in second)
+    assert second[-1]["at_seconds"] == first[-1]["at_seconds"]
+
+
+def test_sealed_generation_three_is_long_enough_for_multiple_behavior_windows():
+    from idps_ai.data.request_campaigns import challenge_plan
+
+    previous = challenge_plan(77191, generation=2)
+    sealed = challenge_plan(991473, count=640, duration=720, generation=3)
+    assert sealed == challenge_plan(991473, count=640, duration=720, generation=3)
+    assert {
+        r["variant"]
+        for r in previous
+        if r["family"] in ["sqli", "xss", "path_traversal", "cmd_injection"]
+    }.isdisjoint(
+        r["variant"]
+        for r in sealed
+        if r["family"] in ["sqli", "xss", "path_traversal", "cmd_injection"]
+    )
+    assert sealed[-1]["at_seconds"] >= 719.99

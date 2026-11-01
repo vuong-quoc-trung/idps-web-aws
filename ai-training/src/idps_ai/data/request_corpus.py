@@ -21,7 +21,9 @@ from idps_ai.common import PipelineError, atomic_json, digest, file_sha256, load
 from idps_ai.data.dataset import iter_rows, write_rows
 from idps_ai.data.http_benchmark import read_http
 from idps_ai.data.snapshot import new_destination
-from idps_ai.features.pipeline import fit_spec, transform
+from idps_ai.features.pipeline import fit_spec
+from idps_ai.features.request_encoding import ENCODING, security_spec
+from idps_ai.features.request_preprocessing import FULL_ENCODING, bounded_spec, encode_request
 from idps_ai.features.request_view import (
     PROFILE,
     columns,
@@ -193,7 +195,9 @@ def public_training_rows(csic, pkdd, identity_key):
         yield {**row, "source_id": "pkdd-mirror-training", "split": public_role(row["group_key"])}
 
 
-def assemble_requests(records, output, provenance):
+def assemble_requests(records, output, provenance, encoding=None):
+    if encoding not in (None, ENCODING, FULL_ENCODING):
+        raise PipelineError("Unsupported opt-in request encoding")
     output = new_destination(output)
     with tempfile.TemporaryDirectory(prefix=".request-corpus-", dir=output.parent) as temporary:
         work = Path(temporary)
@@ -268,6 +272,10 @@ def assemble_requests(records, output, provenance):
             excluded="all actor/status/flow/time/UA/source/rule fields",
             temporal_features=False,
         )
+        if encoding == ENCODING:
+            spec = security_spec()
+        elif encoding == FULL_ENCODING:
+            spec = bounded_spec()
         atomic_json(work / "feature_spec.json", spec)
 
         def rows():
@@ -302,7 +310,10 @@ def assemble_requests(records, output, provenance):
         fschema = pa.schema(list(SCHEMA) + [("x", pa.list_(pa.float32(), len(spec["columns"])))])
         write_rows(
             work / "features.parquet",
-            ({**r, "x": transform(spec, json.loads(r["numeric_json"])).tolist()} for r in rows()),
+            (
+                {**r, "x": encode_request(spec, json.loads(r["numeric_json"])).tolist()}
+                for r in rows()
+            ),
             fschema,
         )
         unique = db.execute(
@@ -321,7 +332,8 @@ def assemble_requests(records, output, provenance):
             ],
             "unique_training_views": unique,
             "cross_partition_vector_collision_groups": collisions,
-            "fit_train_benign_only": True,
+            "fit_train_benign_only": encoding is None,
+            "encoding": encoding or "legacy_train_benign_affine",
             "formal_training_permitted": False,
             "champion_selected": False,
             "provenance": provenance,
@@ -349,16 +361,54 @@ def verify_requests(directory):
     expected = r.pop("dataset_sha256", None)
     if digest(r) != expected or r.get("profile") != PROFILE:
         raise PipelineError("Request dataset manifest/profile integrity mismatch")
+    allowed_files = {"requests.parquet", "features.parquet", "feature_spec.json"}
+    if r.get("provenance", {}).get("admission_file") == "admission.json":
+        allowed_files.update({"admission.json", "split-decisions.parquet", "full-curated.parquet"})
+        admission = load_json(directory / "admission.json")
+        if (
+            file_sha256(directory / "admission.json") != r["provenance"]["curated_admission_sha256"]
+            or admission != r.get("admission")
+            or admission.get("policy_version") != "curated-development-1"
+        ):
+            raise PipelineError("Curated admission proof mismatch")
     for f, sha in r["files"].items():
         if (
-            f not in ("requests.parquet", "features.parquet", "feature_spec.json")
+            f not in allowed_files
             or (directory / f).is_symlink()
             or file_sha256(directory / f) != sha
         ):
             raise PipelineError("Request dataset shard integrity mismatch")
     if load_json(directory / "feature_spec.json")["implementation_sha256"] != fingerprint():
         raise PipelineError("Request feature implementation differs from dataset")
+    spec = load_json(directory / "feature_spec.json")
+    if "encoding" in spec:
+        from idps_ai.features.request_view import project_request
+
+        encode_request(spec, project_request("/")["numbers"])
     return dict(r, dataset_sha256=expected)
+
+
+def reencode_requests(dataset, output, encoding):
+    """Derive vectors from stored private numbers; never change role or label."""
+    source = verify_requests(dataset)
+    if encoding not in (ENCODING, FULL_ENCODING):
+        raise PipelineError("Explicit versioned request encoding required")
+
+    def records():
+        for row in iter_rows(Path(dataset) / "requests.parquet"):
+            yield {**row, "numbers": json.loads(row["numeric_json"])}
+
+    return assemble_requests(
+        records(),
+        output,
+        {
+            "source_dataset_sha256": source["dataset_sha256"],
+            "roles_and_labels_unchanged": True,
+            "new_HTTP_requests": 0,
+            "quality_test_labels_used_for_fitting": False,
+        },
+        encoding=encoding,
+    )
 
 
 def prepare_request_registry(registry, output):

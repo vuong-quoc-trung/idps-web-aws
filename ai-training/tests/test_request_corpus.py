@@ -46,3 +46,27 @@ def test_request_corpus_has_one_train_only_scaler_and_never_trains_test_or_unkno
     rows = list(iter_rows(tmp_path / "corpus/features.parquet"))
     assert next(r for r in rows if r["event_key"] == "2")["label"] is None
     assert not result["formal_training_permitted"]
+    from idps_ai.cli import main
+    from idps_ai.common import file_sha256
+
+    before = file_sha256(tmp_path / "corpus/requests.parquet")
+    assert (
+        main(
+            [
+                "request-reencode",
+                "--dataset",
+                str(tmp_path / "corpus"),
+                "--output",
+                str(tmp_path / "derived"),
+                "--encoding",
+                "bounded-request-v1",
+            ]
+        )
+        == 0
+    )
+    original = list(iter_rows(tmp_path / "corpus/requests.parquet"))
+    derived = list(iter_rows(tmp_path / "derived/requests.parquet"))
+    assert [(r["event_key"], r["split"], r["label"]) for r in original] == [
+        (r["event_key"], r["split"], r["label"]) for r in derived
+    ]
+    assert file_sha256(tmp_path / "corpus/requests.parquet") == before

@@ -58,11 +58,98 @@ HARD_NEGATIVES = [
     "O'Reilly's database and scripting catalogue",
 ]
 
+SECOND_PAYLOADS = {
+    "sqli": [
+        "7 HAVING MIN(7)>0#",
+        "7' AND COALESCE(NULL,19)=19#",
+        "7 ORDER BY CASE WHEN 3=3 THEN 1 ELSE 2 END",
+        "7' UNION ALL SELECT CONCAT(CHAR(65),CHAR(66))#",
+    ],
+    "xss": [
+        "<marquee onstart=print()>",
+        "<video><source onerror=confirm(37)>",
+        "<math href='javascript:confirm(37)'>text</math>",
+        "<select autofocus onfocus=print()><option>one",
+    ],
+    "path_traversal": [
+        "..%5c..%5cboot.ini",
+        "%252e%252e%252f%252e%252e%252fvar/log/auth.log",
+        "..././..././etc/hosts",
+        "../../../../usr/local/etc/service.conf",
+    ],
+    "cmd_injection": [
+        "text;echo${IFS}VERIFY_ONLY",
+        "text`echo VERIFY_ONLY`",
+        "text||echo VERIFY_ONLY",
+        "text%0aecho${IFS}VERIFY_ONLY",
+    ],
+}
+SECOND_NEGATIVES = [
+    "Shopping list: bread; milk; fruit. Please print a receipt.",
+    "A textbook explains HAVING and GROUP BY in natural language.",
+    "HTML manual: <video controls> requires a <source> child element.",
+    "Windows tutorial names boot.ini and folder \\manual\\chapter.",
+    "Search notes about CONCAT and COALESCE, neither is a submitted SQL command.",
+    "Documentation displays `echo example` as quoted shell syntax.",
+    "A boolean logic lecture covers OR, AND, NOT and cases 1=1.",
+    "Meeting notes: status=ready && reviewed; priority high.",
+    "Dictionary entry about ../ as a relative path in a programming guide.",
+    "Phần hướng dẫn truy vấn, dấu ngoặc và ký hiệu trong tài liệu.",
+    "Literature query: O'Connor & Sons, edition 2026.",
+    "The browser example spells javascript: without executing a link.",
+]
 
-def challenge_plan(seed, count=640, duration=360):
+
+THIRD_PAYLOADS = {
+    "sqli": [
+        "5' AND NULLIF(23,24)=23--",
+        "5 UNION DISTINCT SELECT HEX(25)#",
+        "5' OR LENGTH('sample')>2#",
+        "5 AND EXISTS(SELECT 23)",
+    ],
+    "xss": [
+        "<object data='javascript:confirm(59)'>",
+        "<input onpointerenter=confirm(59)>",
+        "<style onload=print()></style>",
+        "<a href='&#106;avascript:print()'>go</a>",
+    ],
+    "path_traversal": [
+        "../../../etc/resolv.conf",
+        "..%2f..%2fusr/share/config.txt",
+        "..\\..\\ProgramData\\settings.ini",
+        "%2e%2e/%2e%2e/var/lib/app/config.yml",
+    ],
+    "cmd_injection": [
+        "value;printf${IFS}ONLY_TEST",
+        "value$(echo ONLY_TEST)",
+        "value|echo${IFS}ONLY_TEST",
+        "value&&echo${IFS}ONLY_TEST",
+    ],
+}
+THIRD_NEGATIVES = [
+    "The lecture compares NULLIF and EXISTS as database language concepts.",
+    "HTML reference describes object and input elements in a textbook.",
+    "A shell guide explains pipes | and echo without submitting commands.",
+    "The path ../../../manual is printed as an example in programming notes.",
+    "A chapter about escaping ampersands & and quotes in ordinary text.",
+    "Please find documents about pointer events and onpointerenter examples.",
+    "Example CSV: number, name, course; no executable instructions.",
+    "A book entitled Hex and the Art of Database Queries.",
+    "Tìm giáo trình về dữ liệu, mạng máy tính và lập trình giao diện.",
+    "Administrative notes: completed && reviewed | pending; literal punctuation.",
+    "A catalog title about Unix configuration files and resolv.conf.",
+    "Explanation of javascript: links in a security awareness handbook.",
+]
+
+
+def challenge_plan(seed, count=640, duration=360, generation=1):
     if not 320 <= count <= 1280 or not 360 <= duration <= 900:
         raise PipelineError("Held-out cohort requires320–1280requests and360–900real seconds")
     rng = random.Random(seed)
+    if generation not in (1, 2, 3):
+        raise PipelineError("Unknown challenge generation")
+    payloads = {1: PAYLOADS, 2: SECOND_PAYLOADS, 3: THIRD_PAYLOADS}[generation]
+    negatives = {1: HARD_NEGATIVES, 2: SECOND_NEGATIVES, 3: THIRD_NEGATIVES}[generation]
     families = [
         f
         for f in (*PAYLOADS, "scanner_recon", "brute_force", "behavioral_anomaly")
@@ -75,7 +162,7 @@ def challenge_plan(seed, count=640, duration=360):
     for i, family in enumerate(families):
         if i:
             clock += duration * increments[i - 1] / total
-        payload = rng.choice(PAYLOADS[family]) if family in PAYLOADS else rng.choice(HARD_NEGATIVES)
+        payload = rng.choice(payloads[family]) if family in payloads else rng.choice(negatives)
         # Meaningful numeric variation, no suffix that acts as a class flag.
         fields = [
             (rng.choice(("term", "hint", "criteria", "descriptionText")), payload),
@@ -102,9 +189,10 @@ def challenge_plan(seed, count=640, duration=360):
 def run_challenge(directory, count=640, duration=360):
     lab = Path(directory)
     marker = load_json(lab / "owned-lab.json")
-    if (
-        marker.get("purpose") != "ai-pretrain-disposable"
-        or marker.get("scenario_version") != "request-challenge-1"
+    if marker.get("purpose") != "ai-pretrain-disposable" or marker.get("scenario_version") not in (
+        "request-challenge-1",
+        "request-challenge-2",
+        "request-challenge-3",
     ):
         raise PipelineError("An explicitly owned challenge lab is required")
     observer = lab / "observer.jsonl"
@@ -125,7 +213,8 @@ def run_challenge(directory, count=640, duration=360):
             role = marker["roles"][index]
             cid = f"request-challenge-{marker['capture_id']}-{index}"
             local_seed = seed + index * 100003
-            plan = challenge_plan(local_seed, count, duration)
+            generation = int(marker["scenario_version"].rsplit("-", 1)[1])
+            plan = challenge_plan(local_seed, count, duration, generation)
             rng = random.Random(local_seed + 17)
 
             def send(
@@ -283,7 +372,7 @@ def run_challenge(directory, count=640, duration=360):
         "format_version": 1,
         "capture_id": marker["capture_id"],
         "data_kind": "lab_capture",
-        "scenario_version": "request-challenge-1",
+        "scenario_version": marker["scenario_version"],
         "started_at_unix": started,
         "ended_at_unix": time.time(),
         "requests": sum(counts.values()),

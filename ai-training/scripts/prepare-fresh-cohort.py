@@ -20,9 +20,9 @@ def run(lab, eve, output):
     output = new_destination(output)
     marker = load_json(lab / "owned-lab.json")
     capture = load_json(lab / "capture-result.json")
-    if (
-        marker.get("purpose") != "ai-pretrain-disposable"
-        or capture.get("scenario_version") != "request-challenge-1"
+    if marker.get("purpose") != "ai-pretrain-disposable" or capture.get("scenario_version") not in (
+        "request-challenge-1",
+        "request-challenge-2",
     ):
         raise PipelineError("Explicitly owned new temporal cohort is required")
     if file_sha256(lab / "observer.jsonl") != capture["observer_sha256"]:

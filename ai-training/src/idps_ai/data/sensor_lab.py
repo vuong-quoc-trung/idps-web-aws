@@ -182,7 +182,11 @@ def _campaign_worker(directory, duration, requests):
             time.sleep(0.3)
             if nginx.poll() is not None:
                 raise PipelineError("Private namespace Nginx failed")
-            if marker.get("scenario_version") == "request-challenge-1":
+            if marker.get("scenario_version") in (
+                "request-challenge-1",
+                "request-challenge-2",
+                "request-challenge-3",
+            ):
                 from idps_ai.data.request_campaigns import run_challenge
 
                 run_challenge(directory, count=requests, duration=duration)

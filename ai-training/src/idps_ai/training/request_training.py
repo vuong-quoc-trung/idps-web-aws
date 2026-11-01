@@ -30,7 +30,45 @@ from idps_ai.training.runner import environment_identity, implementation_identit
 from idps_ai.training.schedule import learning_rate
 
 
-def selected_training(dataset, kind):
+def selected_training(dataset, kind, config=None, return_sources=False):
+    config = config or {}
+    multisource = config.get("training_pool", "lab_supervised") == "multisource_benign"
+    curated = config.get("training_pool") == "curated_multisource"
+    if curated:
+        manifest = verify_requests(dataset)
+        admission = manifest.get("admission", {})
+        requested = config.get("training_sources")
+        if (
+            not admission.get("research_training_permitted")
+            or admission.get("failed_gates")
+            or not isinstance(requested, list)
+            or len(set(requested)) < 2
+            or not set(requested) <= set(admission.get("positive_training_sources", []))
+            or not set(requested) <= set(admission.get("benign_training_sources", []))
+        ):
+            raise PipelineError(
+                "Curated multisource training requires bound admission and explicit dual-class sources"
+            )
+        counts = {
+            (r["source"], r["split"], int(r["label"])): r["rows"]
+            for r in manifest["source_partition_labels"]
+            if r["label"] in ("0", "1")
+        }
+        for source in requested:
+            for role in ("train", "calibration", "val"):
+                if any(
+                    counts.get((source, role, y), 0)
+                    < admission.get("minimum_records_per_source_role_class", 1)
+                    for y in (0, 1)
+                ):
+                    raise PipelineError(
+                        "Curated source lacks temporally held-out binary class support"
+                    )
+        from idps_ai.data.curated_split import audit_curated_partitions
+
+        actual = audit_curated_partitions(dataset)
+        if actual["status"] != "PASS" or not actual["source_role_class_coverage"]:
+            raise PipelineError("Curated pilot lacks unique model-view class support")
     rows, seen = [], set()
     for row in iter_rows(Path(dataset) / "features.parquet"):
         if row["split"] != "train" or row["label"] is None:
@@ -40,16 +78,27 @@ def selected_training(dataset, kind):
                 continue
             key = row["feature_key"]
         else:
-            if row["source_id"] != "student-lab":
+            if curated and row["source_id"] not in config["training_sources"]:
                 continue
+            if (
+                not curated
+                and row["source_id"] != "student-lab"
+                and not (multisource and row["label"] == 0)
+            ):
+                continue
+            # Keep the same physical input-view pool for encoding ablations.
+            # Reduced encodings can collide; report that separately, never
+            # silently change sampling frequency with the representation.
             key = (row["feature_key"], row["label"], row["attack_family"])
+            if multisource or curated:
+                key += (row["source_id"],)
         if key in seen:
             continue
         seen.add(key)
         rows.append(row)
     if not rows:
         raise PipelineError("No eligible unique request training views")
-    return (
+    result = (
         np.array([r["x"] for r in rows], np.float32),
         np.array([r["label"] for r in rows], np.int64),
         np.array(
@@ -60,6 +109,37 @@ def selected_training(dataset, kind):
             np.int64,
         ),
     )
+    return (*result, np.array([r["source_id"] for r in rows])) if return_sources else result
+
+
+def training_permutation(rng, binary, family, sources, strategy=None):
+    """Sampler indices, not new observations; restore RNG and indices on resume."""
+    if strategy is None:
+        return rng.permutation(len(binary))
+    if strategy == "domain_family_balanced":
+        weights = np.zeros(len(binary), np.float64)
+        for label in (0, 1):
+            domains = np.unique(sources[binary == label])
+            if not len(domains):
+                raise PipelineError("Domain sampler requires both observed classes")
+            for domain in domains:
+                domain_mask = (binary == label) & (sources == domain)
+                groups = np.unique(family[domain_mask]) if label else [0]
+                for group in groups:
+                    mask = domain_mask & ((family == group) if label else True)
+                    weights[mask] = 0.5 / (len(domains) * len(groups) * int(mask.sum()))
+        return rng.choice(len(binary), size=len(binary), replace=True, p=weights)
+    if strategy != "source_family_balanced":
+        raise PipelineError("Unknown request sampling strategy")
+    weights = np.zeros(len(binary), np.float64)
+    for label, groups in ((0, sources), (1, family)):
+        available = np.unique(groups[binary == label])
+        if not len(available):
+            raise PipelineError("Balanced sampler requires both observed classes")
+        for group in available:
+            mask = (binary == label) & (groups == group)
+            weights[mask] = 0.5 / (len(available) * int(mask.sum()))
+    return rng.choice(len(binary), size=len(binary), replace=True, p=weights)
 
 
 def train_request(
@@ -85,6 +165,14 @@ def train_request(
             "Request pilot capped at250k train rows; scale training remains separate"
         )
     kind = config["kind"]
+    if (
+        config.get("training_pool", "lab_supervised")
+        not in ("lab_supervised", "multisource_benign", "curated_multisource")
+        or config.get("sampling") not in (None, "source_family_balanced", "domain_family_balanced")
+        or config.get("sampling")
+        and config.get("binary_weighting") == "balanced"
+    ):
+        raise PipelineError("Invalid request pool/sampler or double class balancing")
     if kind not in ("deep_mlp", "residual_glu", "denoising_autoencoder"):
         raise PipelineError("Unsupported request research candidate")
     identity = {
@@ -110,12 +198,15 @@ def train_request(
     }
     try:
         with RunLock(output), resource_envelope(cpus, 16) as (guard, resources):
-            x, binary, family = selected_training(dataset, kind)
+            x, binary, family, sources = selected_training(
+                dataset, kind, config, return_sources=True
+            )
             if diagnostic_updates:
                 epochs = math.ceil(diagnostic_updates / math.ceil(len(x) / 128))
             if kind not in AUTOENCODERS and len(np.unique(binary)) != 2:
                 raise PipelineError("Supervised request fitting needs both binary classes")
-            rng = np.random.default_rng(17)
+            seed = int(config.get("seed", 17))
+            rng = np.random.default_rng(seed)
             if resume:
                 loaded = load_checkpoint(output)
                 model, state, permutation = loaded.model, loaded.state, loaded.permutation
@@ -128,13 +219,19 @@ def train_request(
                 objective = (
                     None
                     if kind in AUTOENCODERS
-                    else {"kind": "partial_binary_v1", "smoothing": 0.005, "family_weight": 0.2}
+                    else {
+                        "kind": "partial_binary_v1",
+                        "smoothing": config.get("smoothing", 0.005),
+                        "family_weight": config.get("family_weight", 0.2),
+                    }
                 )
                 if objective is not None and config.get("binary_weighting") == "balanced":
                     counts = np.bincount(binary, minlength=2)
                     objective["binary_class_weights"] = (len(binary) / (2 * counts)).tolist()
-                model = Model(x.shape[1], config["width"], kind, 17, objective=objective)
-                permutation = rng.permutation(len(x))
+                model = Model(x.shape[1], config["width"], kind, seed, objective=objective)
+                permutation = training_permutation(
+                    rng, binary, family, sources, config.get("sampling")
+                )
                 state = {
                     **identity,
                     "epoch": 0,
@@ -146,6 +243,12 @@ def train_request(
                     "loss_rows": 0,
                     "training_views": len(x),
                     "kind": kind,
+                    "training_pool": config.get("training_pool", "lab_supervised"),
+                    "sampling": config.get("sampling", "uniform_epoch_without_replacement"),
+                    "physical_request_counts_unchanged": True,
+                    "training_source_counts": {
+                        str(s): int(np.sum(sources == s)) for s in np.unique(sources)
+                    },
                 }
             if state["epoch"] > epochs or len(permutation) != len(x):
                 raise PipelineError("Request checkpoint epoch/sampler mismatch")
@@ -195,7 +298,9 @@ def train_request(
                     }
                 )
                 state.update(cursor=0, loss_sum=0.0, loss_rows=0)
-                permutation = rng.permutation(len(x))
+                permutation = training_permutation(
+                    rng, binary, family, sources, config.get("sampling")
+                )
             state.update(rng=rng.bit_generator.state, stop_reason=reason or "epochs_complete")
             save_checkpoint(output, model, state, permutation)
         result = {
