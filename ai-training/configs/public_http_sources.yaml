@@ -5,30 +5,306 @@ repository: https://redata.anii.org.uy
 metadata_api: https://redata.anii.org.uy/api/datasets/:persistentId/?persistentId=doi:10.60895/redata/RWUUSV
 version: 1
 repository_license: CC BY 4.0
-attribution: Biardo, Deborah; Gonzalez Guzman; Lanzotti, Sabrina (2024), WebRequests, Repositorio ANII, V1
+attribution: Biardo, Deborah; Gonzalez Guzman; Lanzotti, Sabrina (2024), WebRequests,
+  Repositorio ANII, V1
 limitations:
-  - Underlying CSIC 2010 generated e-commerce HTTP transcripts; not new live traffic.
-  - Repository license verified; original publisher license lineage not independently recovered. Raw files stay private.
-  - Publisher binary normal/anomalous labels; no independently reviewed families or exploit success.
-  - Missing time, actor, response and flow must remain unavailable.
-  - Derived TF-IDF CSV uses global vocabulary and overlaps original corpora; do not import it.
-  - Exact view collisions and body/header-only anomalies require full-test and filtered sensitivity reporting.
+- Underlying CSIC 2010 generated e-commerce HTTP transcripts; not new live traffic.
+- Repository license verified; original publisher license lineage not independently
+  recovered. Raw files stay private.
+- Publisher binary normal/anomalous labels; no independently reviewed families or
+  exploit success.
+- Missing time, actor, response and flow must remain unavailable.
+- Derived TF-IDF CSV uses global vocabulary and overlaps original corpora; do not
+  import it.
+- Exact view collisions and body/header-only anomalies require full-test and filtered
+  sensitivity reporting.
 files:
-  - id: 383
-    filename: csic_2010_anomalousTrafficTest.txt
-    bytes: 16090299
-    sha256: ec77d784966896330869c5b596ede6a716101c14b5f139144915bb10822a03e1
-    label: 1
-    partition: test
-  - id: 390
-    filename: csic_2010_normalTrafficTest.txt
-    bytes: 20643204
-    sha256: 89600eea871cd0770544a96f6580da14874c4a5211372ad56d23002e1c572603
-    label: 0
-    partition: test
-  - id: 389
-    filename: csic_2010_normalTrafficTraining.txt
-    bytes: 20640988
-    sha256: d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000
-    label: 0
-    partition: train
+- id: 383
+  filename: csic_2010_anomalousTrafficTest.txt
+  bytes: 16090299
+  sha256: ec77d784966896330869c5b596ede6a716101c14b5f139144915bb10822a03e1
+  label: 1
+  partition: test
+- id: 390
+  filename: csic_2010_normalTrafficTest.txt
+  bytes: 20643204
+  sha256: 89600eea871cd0770544a96f6580da14874c4a5211372ad56d23002e1c572603
+  label: 0
+  partition: test
+- id: 389
+  filename: csic_2010_normalTrafficTraining.txt
+  bytes: 20640988
+  sha256: d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000
+  label: 0
+  partition: train
+additional_real_sources:
+- name: SR-BH2020
+  doi: 10.7910/DVN/OGOIXX
+  repository: https://dataverse.harvard.edu
+  metadata_api: https://dataverse.harvard.edu/api/datasets/export?exporter=dataverse_json&persistentId=doi:10.7910/DVN/OGOIXX
+  version: '1.2'
+  dataset_license: CC0 1.0
+  file_id: 6319496
+  filename: data_capec_multilabel.csv
+  bytes: 436437661
+  md5: 173ec515308bdce5aec19cfd5b792596
+  sha256: 9c73c90ce6564ae48b14f7179cd864d037a6a130ef69c68c1626ec5d7ce4a910
+  publisher_records: 907814
+  source_environment: one WordPress VM exposed to the Internet for12days inJuly2020
+  label_provenance: ModSecurity detection-only plus publisher manual/semi-automatic
+    review
+  use: exposed_development_curation_candidate
+  limitations:
+  - No Student audit, EVE flow or behavior context is invented for this source.
+  - Body/header attacks may be unobservable inURI-only features.
+  - Contradictory/missing publisher labels remain unknown; no LLM relabeling.
+  - CAPEC242CodeInjection is not guessed to be XSS; mixed families remain unknown.
+  - Source acquisition, duplicate audit and independent human realism review are separate
+    gates.
+  observed_records: 907815
+  curation_policy:
+    version: http-curation-1
+    positive_scope:
+    - sqli
+    - path_traversal
+    - cmd_injection
+    body_present: quarantine_for_URI_only_research
+    outside_documented_July: quarantine_not_correct
+    missing_clock_client_or_URI: quarantine_not_impute
+    contradictory_natural_or_model_view_labels: quarantine_all_members_not_majority_vote
+    duplicate: first_source_row_only_keep_every_index_reference
+    independent_human_review: false
+    production_admitted: false
+  research_training_gate:
+    sources_with_both_labels_minimum: 2
+    each_source_train_calibration_val_requires_both_labels: true
+    minimum_records_per_source_role_class: 32
+    temporal_embargo_seconds: 300
+    cross_partition_group_or_model_view_overlap: 0
+    fresh_holdout_used: false
+    current_status: RETROSPECTIVE_FORWARD_DEVELOPMENT_SUPPORT_PASS
+    minimum_unique_model_views_per_source_role_class: 32
+    prospective_temporal_acceptance: false
+    independent_campaign_acceptance: false
+    active_development_boundaries_UTC:
+    - '2020-07-18T00:00:00Z'
+    - '2020-07-19T00:00:00Z'
+- name: OrganizationXWebLogs
+  doi: 10.5281/zenodo.20001206
+  dataset_license: MIT
+  filename: organization-x.zip
+  bytes: 2135289
+  md5: b4bf79effa6f3ee1b9e53f278d916620
+  sha256: 1429caba2803c3e8c90e9fb287bc04f6f8249f8bb34712b39127044e134d631f
+  use: unlabeled_observability_research_only
+  parseable_access_rows: 213182
+  distinct_log_observations: 211178
+  trusted_labeled_training_requests: 0
+  labels: unknown; publisher pattern rules not applied, nonmatch never assumed benign
+  limitations:
+  - One independently described application environment, but no independent per-request
+    label review
+  - Duplicate rotated observations are removed from audit counts; no new physical
+    request-ID verification
+  - No fake Student audit/EVE flow or source timestamps generated
+- name: openappsec_WCP_legitimate
+  repository: https://github.com/openappsec/waf-comparison-project
+  revision: 8ec8263eebba76816601f7c7052f8ffb83e31312
+  download_url: https://downloads.openappsec.io/waf-comparison-project/legitimate.zip
+  dataset_license: Apache-2.0 explicit legitimate-data grant
+  bytes: 1203983791
+  sha256: 58faee18c54229759287a574f6f8cb1e3b951fa135e403ea9a679d2b18efd778
+  ETag: 7f7b53e6e8d780e4d390c8070bffce88-71
+  label_basis: Publisher recorded legitimate browsing/operations; not our independent
+    human review; not inferred from status or no-alert
+  publisher_declared_requests: 1040242
+  archive_case_files: 692
+  capture_time: not supplied per request; no invented timestamps
+  use: benign-only source audit and frozen external development FPR stress, no immediate
+    supervised fit
+  projections: existing raw70 tobounded76, fixed privateHMACsignature sampling modulo17
+  reserved_holdout: WebsitecaseHMACbuckets0,1 never opened; recorded requestcount
+    unknown
+  training_admitted: false
+  count_warning: Audit actual nonreserved rawrecords/duplicates separately. Distinct
+    storedHTTPsignatures are not verified physicalrequestIDs or newly generated traffic.
+  limitations:
+  - Source has no positive class; do not bypass dualclasssourceadmission or infer
+    attackrecall
+  - README185sites/12categories differs from docs692/14; archive692casefiles are group
+    proxies, not certified independent environments
+  - Requestbody/header/actor/flow/time unavailable to thisURI-onlymodel; no fabricated
+    context
+  - Malicious payload collection has mixed copyright lineage; not imported with thislicense
+  source_records_audited: 811129
+  distinct_recorded_HTTP_signatures: 756548
+  duplicate_records: 54391
+  quarantined_records: 190
+  nonreserved_case_files: 544
+  reserved_case_files_unopened: 148
+  reserved_request_count: null
+  projected_sample_records: 44437
+  supervised_training_permitted: false
+  independent_label_review: false
+- name: SOC_MLD_2026_v2
+  doi: 10.5281/zenodo.23116148
+  dataset_license: CC BY 4.0
+  attribution: Mai Hoang Dinh; Nguyen Phuc Thinh; Phan Ngoc Vuong; Le Dang Giap (2026),
+    SOC-MLD v2, Zenodo
+  download_url: https://zenodo.org/api/records/23116148/files/SOC-MLD-v1.zip/content
+  bytes: 10430367
+  md5: 764ca570a35753a90f6ac3046750c716
+  sha256: 66aafa96a69ab54ee061abbb69284444476919295f1b16985122283dae2b3054
+  use: quarantined_label_evidence_research_only
+  raw_access_lines: 198122
+  parseable_http_observations: 198082
+  distinct_complete_log_observations: 193220
+  distinct_method_URI_UA_representations: 6856
+  verified_physical_requests: null
+  trusted_labeled_training_requests: 0
+  supervised_training_permitted: false
+  label_state: unknown; no timestamp, rule, model, OK-status or nonmatch-derived truth
+  original_train_test_shared_attack_instances: 38
+  limitations:
+  - Operator ledger has 6600 timezone-naive rows, zero request IDs; nearest-time consume
+    then payload-rule fallback has no per-row basis trace.
+  - Published precomputed features include SID/alert information, future +/-60s Suricata
+    and whole-session context; not imported into model.
+  - Archive actually has train4786/test1220 versus README5058/947 and178941EVE events
+    versus documented partial counts; use audited artifacts, not claims.
+  - Synthetic traffic in a distinct publisher lab, not independently reviewed production
+    HTTP. EVE HTTP/flow/alert observations are not additional request counts.
+  - No model fitting/scoring, automatic relabeling, replay or final-holdout designation.
+reserved_holdout_sources:
+- name: ModSecurity production30day supplementary
+  doi: 10.5281/zenodo.17178461
+  license: CC BY 4.0
+  archive_bytes: 29524147
+  md5: 95b7a8237abc163d8ca31e49f7318efd
+  sha256: 3c4c976f58cd2da61a543a237ede770529ceee59cdb09295a5998d420a8b30b8
+  role: sealed_final_supplement
+  used_for_train_calibration_or_model_selection: false
+  extracted: false
+  label_basis: CRS-flagged/blocked only, no independenthumantruth
+  limits:
+  - Positive-only; cannot measure benignFPR orselectchampion
+  - Do notcount archivebytes asverifiedrequestcount
+  - Unseal only after futuremodel/preprocessor/threshold/sourcefreeze
+prospective_evaluation_plan:
+  status: DESIGNED_NOT_COLLECTED
+  purpose: Independent labeled HTTP acceptance, not another retuned SRBH retrospective
+    split
+  authorized_targets_only: true
+  new_live_target_allowlist: []
+  application_behavior_strata:
+  - browser catalog/search/cart with matched query hard negatives
+  - documentation/code search with legitimate hostile-looking syntax
+  - structured API read/mutation/auth sessions with observed outcomes
+  campaign_registration: Freeze source/environment/campaign/time/seed and payload-template
+    groups before requests, collect publisher/runner evidence separately from model
+    features
+  temporal_roles:
+  - train
+  - calibration
+  - development_validation
+  - sealed_final
+  embargo_seconds: 300
+  behavior_windows_seconds:
+  - 10
+  - 60
+  - 300
+  require_actual_clock_and_receipt_order_for_behavior: true
+  missing_clock_or_flow: Keep unavailable; never synthesize from array index or pretend
+    public requests are three-source events
+  label_review: Unknown stays unknown; independent reviewer/evidence/hash-bound attestation
+    required. No 200/no-alert/nonmatch-to-benign, no model-prediction labels. Controlled
+    intent is not exploit-success ground truth.
+  curation: Fit-side duplicate/conflict rules frozen before evaluation; do not filter
+    final heldout errors using future labels. Preserve every exclusion reason and
+    unfiltered sensitivity.
+  cross_source_lineage: Audit site/application/campaign/template/raw-signature and
+    actual encoded-vector overlap; correlated websites/day blocks are not independent
+    attacks
+  models: Keep MLP and GLU frozen controls; short hypothesis study only with eligible
+    fitting data and untouched validation; no automatic champion or blocking
+  acceptance: Precision/Recall/FPR/AP/family and latency plus cluster uncertainty;
+    benign-only public supplement cannot establish recall or select champion
+
+new_source_screening_20261101:
+- name: WAMM
+  url: https://github.com/CyShield-Security-R-D/WAMM-Dataset-Repository
+  revision: 2783eab560c4355f5976a57fc2e97a2e6c5c79a1
+  license_claim: CC BY 4.0
+  decision: not_downloaded_not_admitted
+  reason: Explicit SR-BH derivative plus Burp mutations; regex/LLM agreement filtering and expert sample
+    review. Need per-record lineage and label evidence; not an independent replacement for exposed SR-BH,
+    not automatically all human-reviewed.
+- name: puyang2025/waf_data_v2
+  url: https://huggingface.co/datasets/puyang2025/waf_data_v2
+  revision: b035dc17f875f1f732c10654709abed66a4e9742
+  license_claim: MIT
+  decision: metadata_only_not_admitted
+  reason: No capture provenance, relabeling methodology or campaign/time lineage in card; displayed records
+    resemble SR-BH. Independence unverified, not proven; do not assume 2.55M new real requests.
+- name: Biblio_US17
+  doi: 10.12795/11441/148254
+  metadata_api: https://idus.us.es/server/api/core/items/53034f60-d215-44b0-a198-eb8a5229218e
+  dataset_license: CC BY-NC-ND 4.0
+  paper_doi: 10.1186/s42400-024-00336-3
+  decision: metadata_only_pending_license_compatibility_and_label_scope_review
+  reason: Publisher reports real production benign and LVL1-4 attacks with expert sanitization; dataset
+    license differs from paper CC BY. Restricted grant not assumed compatible automatically; no data download/admission.
+    Missing full timestamps, body, client and flow; lower-confidence/contextual labels cannot automatically
+    become truth.
+- name: ModSec_WP_v2
+  doi: 10.5281/zenodo.21872151
+  dataset_license: CC BY 4.0
+  decision: metadata_only_pending_request_bound_label_basis
+  reason: 108883 publisher transactions, mixed scenario/timestamp/regex/manual-ambiguous-case labeling.
+    WordPress-only, near duplicates and rule/outcome columns. No row-level evidence chain verified, no
+    download or training.
+independent_label_evidence_contract:
+  version: 2
+  implementation: src/idps_ai/data/label_evidence.py
+  audit_command: scripts/audit-label-evidence.py
+  required_per_approved_request:
+  - capture artifact SHA256 and event key
+  - intent provenance artifact SHA256 and event key
+  - independent semantic-review artifact SHA256, distinct from raw capture
+  separate_fields:
+  - 'intent: benign/attack/unknown'
+  - 'attack_family: known supported family or null'
+  - 'exploit_outcome: unknown/succeeded/failed/not_applicable'
+  independence: Collector and independent human reviewer identifiers distinct; actual human identity/semantic
+    reliability must be verified externally. Hash integrity does not certify truth.
+  unknown_policy: Pending/rejected/unknown has null label; no status/rule/model/time proximity inference.
+    Existing approved dataset label must match evidence, no silent relabel. Resolve unknown through explicit
+    review and a new immutable labeled dataset/provenance chain before admission.
+  outcome_policy: Attack remains positive if exploit fails. Succeeded/failed needs application-oracle
+    evidence, not response status alone.
+  heldout_policy: Review or evidence paths under sealed markers fail closed. Do not open any of148WCP
+    reserved case files.
+generalization_acceptance_requirements:
+  status: NOT_READY
+  purpose: Prerequisites for a preregistered balanced acceptance experiment; not production certification
+  data:
+  - Approved use and source/capture provenance verified
+  - Request-bound independent intent evidence and visibility audit, unknown excluded from supervised loss
+  - Distinct request observations, representations and training admission reported separately
+  - At least two eligible dual-class sources in research fitting, no source-label confounding by benign-only
+    admission
+  - Independent benign/attack campaign and environment assessment registered before scores, final holdouts
+    unchanged
+  - No cross-role request/campaign/template leak; report view collisions without deleting future hard
+    cases
+  - Actual chronology and receipt-order required for behavior; no invented clock or future flow context
+  comparison:
+  - Same feature visibility, fitting data, random-seed protocol, calibration data and FPR budget for MLP/GLU/baselines
+  - Threshold and model selection from allowed calibration/development only; freeze before new acceptance
+    data
+  - Precision/Recall/F1/FPR/AP by source/campaign/family, fixed-threshold score/calibration distributions
+  - Cluster-aware uncertainty, adequate benign and attack counts; benign-only metrics cannot establish
+    recall
+  - Measured model and end-to-end latency reported separately; ONNX tolerances and exact resume retained
+  formal_gate: Existing scale policy remains closed (0 admitted requests); independent balanced acceptance
+    not collected, no formal command, champion or live blocking.
