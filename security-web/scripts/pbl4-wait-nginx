@@ -1,0 +1,35 @@
+#!/bin/bash
+# Root-owned boot recovery; never change interfaces or contact the Web VM.
+set -euo pipefail
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+readonly WAIT_SECONDS=90
+log() { printf 'pbl4-nginx-ready: %s\n' "$*"; }
+has_address() {
+    /usr/sbin/ip -4 -o addr show dev "$1" 2>/dev/null |
+        /usr/bin/awk -v expected="$2" '$4 == expected { found=1 } END { exit !found }'
+}
+ready() {
+    has_address vmnet2 192.168.10.1/24 && has_address vmnet3 192.168.20.1/24
+}
+log "Waiting up to ${WAIT_SECONDS}s for vmnet2=192.168.10.1/24 and vmnet3=192.168.20.1/24"
+deadline=$((SECONDS + WAIT_SECONDS))
+until ready; do
+    if (( SECONDS >= deadline )); then
+        log 'ERROR: timed out waiting for required VMware host IPv4 addresses.'
+        /usr/sbin/ip -br addr show dev vmnet2 || true
+        /usr/sbin/ip -br addr show dev vmnet3 || true
+        exit 1
+    fi
+    sleep 1
+done
+log 'Both host interfaces have the required addresses; validating Nginx.'
+/usr/bin/timeout 15 /usr/sbin/nginx -t
+if /usr/bin/systemctl is-active --quiet nginx.service; then
+    log 'Nginx already active; no restart needed.'
+else
+    # Clear a previous failed boot/start-limit, then start exactly once.
+    /usr/bin/systemctl reset-failed nginx.service
+    /usr/bin/timeout 25 /usr/bin/systemctl start nginx.service
+    /usr/bin/systemctl is-active --quiet nginx.service
+    log 'Nginx started successfully.'
+fi
