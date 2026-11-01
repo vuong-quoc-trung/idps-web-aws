@@ -23,6 +23,120 @@ from idps_ai.training.evaluation import threshold_at_fpr
 from idps_ai.training.protocol import validation_groups
 
 
+def grouped_binary_metrics(labels, scores, groups, threshold, replicates=200, seed=17):
+    """Fixed-operating-point diagnostics; never estimate independence from row count.
+
+    Cluster intervals resample observed groups with replacement. Fewer than eight
+    groups cannot support the interval here. Even many group IDs do not establish
+    independence or label truth; callers must report their actual provenance.
+    """
+    y, p, g = np.asarray(labels), np.asarray(scores, np.float64), np.asarray(groups)
+    if (
+        y.ndim != 1
+        or y.shape != p.shape
+        or y.shape != g.shape
+        or not len(y)
+        or not np.isin(y, [0, 1]).all()
+        or not np.isfinite(p).all()
+        or not 50 <= replicates <= 1000
+        or not np.isfinite(threshold)
+    ):
+        raise PipelineError("Invalid grouped evaluation sample")
+    unique, inverse = np.unique(g, return_inverse=True)
+    predictions = p >= threshold
+    # Aggregate confusion counts per cluster; bootstrap costs O(groups), not rows.
+    counts = np.column_stack(
+        [
+            np.bincount(inverse, weights=(y == a) & (predictions == b), minlength=len(unique))
+            for a, b in [(0, 0), (0, 1), (1, 0), (1, 1)]
+        ]
+    )
+    intervals = None
+    if len(unique) >= 8:
+        rng = np.random.default_rng(seed)
+        values = []
+        for _ in range(replicates):
+            tn, fp, fn, tp = counts[rng.integers(0, len(unique), len(unique))].sum(axis=0)
+            values.append(
+                [
+                    fp / (tn + fp) if tn + fp else np.nan,
+                    tp / (tp + fn) if tp + fn else np.nan,
+                    tp / (tp + fp) if tp + fp else np.nan,
+                ]
+            )
+        intervals = {}
+        for i, name in enumerate(["fpr", "recall", "precision"]):
+            valid = np.array(values)[:, i]
+            valid = valid[np.isfinite(valid)]
+            intervals[name] = (
+                np.quantile(valid, [0.025, 0.975]).tolist()
+                if len(valid) >= replicates * 0.9
+                else None
+            )
+    n = int(np.sum(y == 0))
+    wilson = None
+    if n:
+        phat = float(np.mean(predictions[y == 0]))
+        z = 1.959963984540054
+        center = (phat + z * z / (2 * n)) / (1 + z * z / n)
+        radius = z * np.sqrt(phat * (1 - phat) / n + z * z / (4 * n * n)) / (1 + z * z / n)
+        wilson = [max(0.0, float(center - radius)), min(1.0, float(center + radius))]
+    return {
+        "metrics": binary_metrics(y, p, threshold),
+        "threshold": float(threshold),
+        "threshold_fitted": False,
+        "observed_groups": len(unique),
+        "cluster_bootstrap_95pct": intervals,
+        "bootstrap_replicates": replicates,
+        "iid_wilson_FPR_95pct": wilson,
+        "independent_label_review": False,
+        "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+    }
+
+
+def calibration_audit(labels, scores, bins=10):
+    """Diagnostic probability reliability, not threshold fitting or acceptance."""
+    y, p = np.asarray(labels, np.float64), np.asarray(scores, np.float64)
+    if (
+        y.shape != p.shape
+        or y.ndim != 1
+        or not len(y)
+        or not np.isin(y, [0, 1]).all()
+        or not np.isfinite(p).all()
+        or (p < 0).any()
+        or (p > 1).any()
+        or not 2 <= bins <= 50
+    ):
+        raise PipelineError("Invalid probability calibration observations")
+    clipped = np.clip(p, 1e-12, 1 - 1e-12)
+    rows, error = [], 0.0
+    groups = np.minimum((p * bins).astype(np.int64), bins - 1)
+    for i in range(bins):
+        mask = groups == i
+        if not mask.any():
+            continue
+        confidence, frequency = float(p[mask].mean()), float(y[mask].mean())
+        error += int(mask.sum()) / len(y) * abs(confidence - frequency)
+        rows.append(
+            {
+                "bin": i,
+                "n": int(mask.sum()),
+                "mean_probability": confidence,
+                "attack_frequency": frequency,
+            }
+        )
+    return {
+        "brier": float(np.mean((p - y) ** 2)),
+        "negative_log_likelihood": float(
+            -np.mean(y * np.log(clipped) + (1 - y) * np.log1p(-clipped))
+        ),
+        "ece_equal_width": error,
+        "bins": rows,
+        "threshold_selected": False,
+        "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+    }
+
+
 def binary_metrics(labels, scores, threshold):
     labels, scores = np.asarray(labels), np.asarray(scores)
     if (
