@@ -1320,18 +1320,22 @@ function App() {
               </p>
               <p className="muted">
                 Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến trình
-                Nginx/Suricata đang chạy. Không có cảnh báo mới có thể là bình
-                thường.
+                Nginx/Suricata/Student Web hoặc đường truyền RELP đang hoạt
+                động. Không có cảnh báo mới có thể là bình thường.
               </p>
               <div className="overview-grid">
-                {["NGINX", "SURICATA"].map((name) => {
+                {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
                   const collection = health?.collection?.[name];
                   const time = (value: string | null | undefined) =>
                     value ? new Date(value).toLocaleString() : "Chưa ghi nhận";
                   return (
                     <article className="panel" key={name}>
-                      <h3>{name}</h3>
+                      <h3>
+                        {name === "STUDENT_AUDIT"
+                          ? "Student Audit — Tầng ứng dụng"
+                          : name}
+                      </h3>
                       <p
                         className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
                       >
@@ -1339,8 +1343,17 @@ function App() {
                           ? "Lỗi đọc / xử lý nguồn log"
                           : watcher?.state === "watching"
                             ? "Đọc log thành công"
-                            : "Chưa có kết quả kiểm tra"}
+                            : name === "STUDENT_AUDIT" && health && !watcher
+                              ? "Chưa cấu hình nguồn log"
+                              : "Chưa có kết quả kiểm tra"}
                       </p>
+                      {name === "STUDENT_AUDIT" && (
+                        <p className="muted">
+                          {health && !watcher
+                            ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
+                            : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                        </p>
+                      )}
                       {watcher?.error && (
                         <p className="error">{watcher.error}</p>
                       )}
@@ -1509,7 +1522,7 @@ function App() {
               </p>
               <p>
                 Lần thấy log mới:{" "}
-                {["NGINX", "SURICATA"]
+                {["NGINX", "SURICATA", "STUDENT_AUDIT"]
                   .map(
                     (name) =>
                       `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString() : "chưa ghi nhận"}`,
