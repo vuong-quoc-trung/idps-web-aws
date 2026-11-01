@@ -1,3 +1,4 @@
+import AuthBrand from '../components/AuthBrand';
 /* ============================================================
    LoginPage — /login
    ============================================================ */
@@ -6,11 +7,6 @@ import { useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './LoginPage.css';
-
-// VS Code logo SVG inline
-function BrandLogo() {
-  return <img src="/images/dut-logo.jpg" alt="Logo Đại học Bách khoa Đà Nẵng" />;
-}
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -74,7 +70,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="auth-page login-page">
       {/* Theme toggle */}
       <ThemeToggle />
 
@@ -86,15 +82,19 @@ export default function LoginPage() {
         <div className="grid-overlay" />
       </div>
 
+      <div className="login-layout">
+      <aside className="login-story" aria-label="Chào mừng đến với DUT">
+        <div className="login-story-copy">
+          <span className="login-eyebrow">ĐẠI HỌC BÁCH KHOA · ĐẠI HỌC ĐÀ NẴNG</span>
+          <h2>Kết nối hôm nay.<br />Kiến tạo ngày mai.</h2>
+          <p>Một nơi để cập nhật hồ sơ, theo dõi thông tin học vụ và kết nối với lớp của bạn.</p>
+          <div className="login-story-tags"><span>Hồ sơ cá nhân</span><span>Thông tin học vụ</span><span>Bạn cùng lớp</span></div>
+        </div>
+        <a className="login-photo-credit" href="https://tuyensinh.dut.udn.vn/co-so-vat-chat" target="_blank" rel="noreferrer">Khu D · Ảnh: Trường Đại học Bách khoa, ĐHĐN ↗</a>
+      </aside>
       <div className="auth-container">
         {/* Branding */}
-        <div className="auth-brand">
-          <div className="brand-icon"><BrandLogo /></div>
-          <div className="brand-text">
-            <span className="brand-name">DUT - THÔNG TIN SINH VIÊN</span>
-            <span className="brand-sub">Hệ thống quản lý sinh viên</span>
-          </div>
-        </div>
+        <AuthBrand />
 
         {/* Card */}
         <div className="auth-card">
@@ -208,6 +208,7 @@ export default function LoginPage() {
         <p className="auth-footer">
           © {new Date().getFullYear()} DUT - THÔNG TIN SINH VIÊN · Hệ thống quản lý thông tin sinh viên
         </p>
+      </div>
       </div>
     </div>
   );

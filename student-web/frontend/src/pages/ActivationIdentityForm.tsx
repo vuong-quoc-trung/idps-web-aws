@@ -1,3 +1,4 @@
+import AuthBrand from '../components/AuthBrand';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { apiPost } from '../api/client';
@@ -33,8 +34,8 @@ export default function ActivationIdentityForm() {
     ['classCode', 'Mã lớp', 'text', true],
     ['familyPhoneNumber', 'Số điện thoại gia đình (nếu nhà trường đã lưu)', 'tel', false],
   ];
-  return <main className="auth-page password-page"><div className="auth-container"><section className="auth-card">
-    <div className="auth-card-header"><h1>Kích hoạt tài khoản</h1><p>DUT student system · {sent ? 'Kiểm tra email' : proof ? 'Bước 2 — Email nhận liên kết' : 'Bước 1 — Đối chiếu thông tin'}</p></div>
+  return <main className="auth-page password-page"><div className="auth-container"><AuthBrand /><section className="auth-card">
+    <div className="auth-card-header"><h1>Kích hoạt tài khoản</h1><p>{sent ? 'Kiểm tra email' : proof ? 'Bước 2 — Email nhận liên kết' : 'Bước 1 — Đối chiếu thông tin'}</p></div>
     {sent ? <div role="status"><p>Link kích hoạt đã được gửi. Kiểm tra hộp thư và thư rác, sau đó mở link để đặt mật khẩu lần đầu. Link có hiệu lực 24 giờ.</p>
       <button className="btn-primary" onClick={() => setSent(false)}>Đối chiếu lại để gửi link mới</button></div>
       : <><p className="auth-hint">{proof ? 'Thông tin đã khớp. Nhập Gmail/email cá nhân bạn sử dụng. Hoàn thành bước này trong 5 phút.' : 'Nhập đúng thông tin nhà trường cung cấp. Không cần thông tin ngân hàng. Nếu hồ sơ chưa có ngày sinh, giới tính hoặc CCCD, hãy liên hệ nhà trường bổ sung.'}</p>
