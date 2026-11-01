@@ -410,6 +410,54 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>
             v
         })
         .collect();
+    // Existing Nginx detection families (raw access logs and trusted edge signals).
+    // Metadata only: no new detection or response policy is introduced here.
+    for (code, name, category, severity) in [
+        ("SQLI", "SQL Injection Attempt", "Web Application Attack", 1),
+        (
+            "XSS",
+            "Cross-Site Scripting Attempt",
+            "Web Application Attack",
+            2,
+        ),
+        (
+            "PATH_TRAVERSAL",
+            "Path Traversal or Sensitive File Probe",
+            "Web Application Attack",
+            2,
+        ),
+        (
+            "COMMAND_INJECTION",
+            "OS Command Injection Attempt",
+            "Web Application Attack",
+            1,
+        ),
+        (
+            "SCANNER_UA",
+            "Automated Scanner User-Agent",
+            "Reconnaissance",
+            3,
+        ),
+        (
+            "AUTH_BRUTE_FORCE",
+            "Repeated Authentication Failures",
+            "Authentication Abuse",
+            2,
+        ),
+    ] {
+        let eligible = code == "SQLI"
+            && state.policy.evaluate_nginx() == EventPolicyDecision::EligibleForAutoBlock;
+        let mut rule = serde_json::json!({
+            "sid":null,"code":code,"source":"NGINX","name":name,
+            "category":category,"severity":severity,"auto_block_eligible":eligible,
+            "action_mode":if eligible { "POLICY_CONTROLLED" } else { "ALERT_ONLY" }
+        });
+        if code == "AUTH_BRUTE_FORCE" {
+            rule["threshold"] = serde_json::json!(state.ingestion.auth_threshold);
+            rule["window_seconds"] = serde_json::json!(state.ingestion.auth_window_seconds);
+        }
+        rules.push(rule);
+    }
     rules.extend(application_detection::RULES.iter().map(|r| {
         serde_json::json!({
             "sid":null,"code":r.code,"source":"STUDENT_AUDIT","name":r.name,
