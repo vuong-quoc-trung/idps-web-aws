@@ -190,6 +190,7 @@ function App() {
   const [audit, setAudit] = useState<Audit[]>([]);
   const [applicationAuditRefresh, setApplicationAuditRefresh] = useState(0);
   const [rules, setRules] = useState<Rule[]>([]);
+  const [ruleSource, setRuleSource] = useState("SURICATA");
   const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -892,6 +893,7 @@ function App() {
                   <option value="">Tất cả</option>
                   <option>NGINX</option>
                   <option>SURICATA</option>
+                  <option value="STUDENT_AUDIT">Student Audit</option>
                 </select>
               </label>
               <label>
@@ -1202,24 +1204,103 @@ function App() {
               Chính sách được cấu hình trên server. Danh mục dưới đây mô tả bộ
               rule đi kèm dự án.
             </p>
-            {rules.map((r) => (
-              <div className="type-row" key={r.code}>
-                <div>
-                  <strong>{r.name}</strong>
-                  <p>
-                    {r.source} · {r.code} · Severity {r.severity}
-                    {r.threshold
-                      ? ` · ${r.threshold}/${r.window_seconds}s`
-                      : ""}
-                  </p>
-                </div>
-                <span className="badge">
-                  {r.auto_block_eligible
-                    ? "Cho phép auto-block"
-                    : "Chỉ cảnh báo"}
-                </span>
-              </div>
-            ))}
+            <div
+              className="rule-source-picker"
+              role="group"
+              aria-label="Chọn tầng phát hiện"
+            >
+              {[
+                {
+                  source: "SURICATA",
+                  title: "Mạng",
+                  label: "Suricata · Quan sát lưu lượng mạng",
+                },
+                {
+                  source: "NGINX",
+                  title: "Web/Proxy",
+                  label: "NGINX · Phân tích HTTP/access log",
+                },
+                {
+                  source: "STUDENT_AUDIT",
+                  title: "Ứng dụng",
+                  label: "Student Audit · Phân tích hành vi request",
+                },
+              ].map((group) => (
+                <button
+                  key={group.source}
+                  type="button"
+                  aria-pressed={ruleSource === group.source}
+                  aria-controls="rule-source-list"
+                  onClick={() => setRuleSource(group.source)}
+                >
+                  <span>
+                    <strong>{group.title}</strong>
+                    <small>{group.label}</small>
+                  </span>
+                  <span className="badge">
+                    {
+                      rules.filter(
+                        (r) =>
+                          (r.source === "APPLICATION"
+                            ? "STUDENT_AUDIT"
+                            : r.source) === group.source,
+                      ).length
+                    }{" "}
+                    luật
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div id="rule-source-list">
+              <h3>
+                {ruleSource === "SURICATA"
+                  ? "Mạng — Suricata"
+                  : ruleSource === "NGINX"
+                    ? "Web/Proxy — NGINX"
+                    : "Ứng dụng — Student Audit"}
+              </h3>
+              <p className="muted">
+                {ruleSource === "SURICATA"
+                  ? "Phát hiện từ gói tin và giao thức, bao gồm HTTP. Danh mục này không xác nhận Suricata đã nạp các luật trên máy chạy sensor."
+                  : ruleSource === "NGINX"
+                    ? "Phân tích HTTP request/access log đã thực sự tới reverse proxy. Các luật chạy trong Rust trên dữ liệu NGINX, không phải luật Suricata."
+                    : "Phân tích audit do Student Web ghi nhận, tổng hợp nhiều request theo cửa sổ thời gian. Khuyến nghị chặn không đồng nghĩa tự động chặn."}
+              </p>
+              {!rules.some(
+                (r) =>
+                  (r.source === "APPLICATION" ? "STUDENT_AUDIT" : r.source) ===
+                  ruleSource,
+              ) && (
+                <p className="muted">
+                  Chưa có luật từ nguồn này trong dữ liệu API.
+                </p>
+              )}
+              {rules
+                .filter(
+                  (r) =>
+                    (r.source === "APPLICATION"
+                      ? "STUDENT_AUDIT"
+                      : r.source) === ruleSource,
+                )
+                .map((r) => (
+                  <div className="type-row" key={r.code}>
+                    <div>
+                      <strong>{r.name}</strong>
+                      <p>
+                        {r.source} · {r.code} · Severity {r.severity}
+                        {r.threshold
+                          ? ` · ${r.threshold}/${r.window_seconds}s`
+                          : ""}
+                      </p>
+                    </div>
+                    <span className="badge">
+                      {r.auto_block_eligible
+                        ? "Cho phép auto-block"
+                        : "Chỉ cảnh báo"}
+                    </span>
+                  </div>
+                ))}
+            </div>
           </section>
         )}
         {tab === "status" && (

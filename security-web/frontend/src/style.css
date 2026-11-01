@@ -1177,3 +1177,34 @@ details > ul {
     padding: 16px;
   }
 }
+
+.rule-source-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.rule-source-picker button {
+  justify-content: space-between;
+  text-align: left;
+  padding: 18px;
+  background: var(--surface);
+}
+.rule-source-picker button[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+  background: var(--surface-raised);
+}
+.rule-source-picker strong {
+  display: block;
+  font-size: 1rem;
+}
+.rule-source-picker small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.rule-source-picker .badge {
+  flex-shrink: 0;
+}
