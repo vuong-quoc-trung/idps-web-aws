@@ -12,6 +12,7 @@ import yaml
 
 from idps_ai.common import AI_ROOT, PipelineError, atomic_json, digest, file_sha256, load_json
 from idps_ai.data.dataset import iter_rows, verify_dataset
+from idps_ai.data.label_evidence import iter_evidence_decisions
 from idps_ai.data.provenance import verify_provenance
 from idps_ai.data.snapshot import new_destination
 
@@ -34,7 +35,8 @@ def _reviewed(entry, manifest, proof):
         return False
     review = load_json(_path(entry["review"]))
     return (
-        review.get("approved") is True
+        review.get("format_version") == 2
+        and review.get("approved") is True
         and review.get("independent_review") is True
         and SLUG.fullmatch(str(review.get("reviewer_id", ""))) is not None
         and review.get("dataset_sha256") == manifest["dataset_sha256"]
@@ -66,6 +68,8 @@ def audit_catalog(registry, output, policy_path=None):
               PRIMARY KEY(scope,kind,id));
             CREATE TABLE events(scope TEXT,id TEXT,PRIMARY KEY(scope,id));
             CREATE TABLE payloads(id TEXT PRIMARY KEY,part TEXT);
+            CREATE TABLE reviews(source TEXT,event TEXT,y INTEGER,f TEXT,
+              seen INTEGER DEFAULT 0,PRIMARY KEY(source,event));
         """)
         try:
             for entry in registry["sources"]:
@@ -116,6 +120,25 @@ def audit_catalog(registry, output, policy_path=None):
                         raise PipelineError("Duplicate packet capture, even if reprojected/rekeyed")
                     capture_hashes.add(pcap)
                 reviewed = _reviewed(entry, manifest, proof)
+                if reviewed:
+                    for decision in iter_evidence_decisions(
+                        _path(entry["review"]),
+                        manifest["dataset_sha256"],
+                        proof["provenance_sha256"],
+                        entry["environment_id"],
+                    ):
+                        try:
+                            db.execute(
+                                "INSERT INTO reviews(source,event,y,f) VALUES(?,?,?,?)",
+                                (
+                                    entry["id"],
+                                    decision["event_key"],
+                                    decision["label"],
+                                    decision["attack_family"],
+                                ),
+                            )
+                        except sqlite3.IntegrityError:
+                            raise PipelineError("Duplicate evidence review event") from None
                 spec = load_json(directory / "feature_spec.json")
                 compatible = (
                     manifest.get("input_profile") == policy["required_profile"]
@@ -127,12 +150,32 @@ def audit_catalog(registry, output, policy_path=None):
                 scope = manifest["redaction_key_fingerprint"]
                 local, local_parts = Counter(), defaultdict(set)
                 for row in iter_rows(directory / "requests.parquet"):
+                    decision = (
+                        db.execute(
+                            "SELECT y,f,seen FROM reviews WHERE source=? AND event=?",
+                            (entry["id"], row["event_key"]),
+                        ).fetchone()
+                        if reviewed
+                        else None
+                    )
+                    if decision is not None:
+                        if decision[2]:
+                            raise PipelineError("Repeated reviewed event in source dataset")
+                        if decision[0] is not None and (decision[0], decision[1]) != (
+                            row["label"],
+                            row["attack_family"],
+                        ):
+                            raise PipelineError("Evidence review conflicts with dataset label")
+                        db.execute(
+                            "UPDATE reviews SET seen=1 WHERE source=? AND event=?",
+                            (entry["id"], row["event_key"]),
+                        )
                     role = mapping.get(row.get("split"), "reference")
                     local["actual_requests"] += 1
                     if role == "reference":
                         references += 1
                         continue
-                    if not reviewed or not compatible:
+                    if not reviewed or not compatible or decision is None or decision[0] is None:
                         unreviewed += 1
                         continue
                     if (
@@ -209,6 +252,13 @@ def audit_catalog(registry, output, policy_path=None):
                         "partition_map": mapping,
                     }
                 )
+                if (
+                    reviewed
+                    and db.execute(
+                        "SELECT count(*) FROM reviews WHERE source=? AND seen=0", (entry["id"],)
+                    ).fetchone()[0]
+                ):
+                    raise PipelineError("Review contains events outside the source dataset")
             db.commit()
         finally:
             db.close()
@@ -276,6 +326,8 @@ def audit_catalog(registry, output, policy_path=None):
         passed = all(c["pass"] for c in checks)
         report = {
             "format_version": 1,
+            "required_label_evidence_version": 2,
+            "reviewed_request_labels_bound_to_actual_rows": True,
             "status": "READY_FOR_SCALE_RESEARCH" if passed else "NOT_READY",
             "formal_training_permitted": False,
             "eligible_requests": eligible,
@@ -319,6 +371,8 @@ def require_scale_dataset(dataset):
     if (
         digest(report) != expected
         or report["status"] != "READY_FOR_SCALE_RESEARCH"
+        or report.get("required_label_evidence_version") != 2
+        or report.get("reviewed_request_labels_bound_to_actual_rows") is not True
         or not all(c["pass"] for c in report["checks"])
         or report["policy_sha256"] != file_sha256(AI_ROOT / "configs/scale_policy.yaml")
         or manifest.get("corpus_catalog_sha256") != file_sha256(report_path)
