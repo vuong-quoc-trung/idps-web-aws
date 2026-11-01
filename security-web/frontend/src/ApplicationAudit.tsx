@@ -1,3 +1,4 @@
+import { startAuditPolling } from "./auditPolling";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Icon } from "./Icon";
 import {
@@ -55,7 +56,8 @@ export function ApplicationAudit({
   const [draft, setDraft] = useState<Filters>(defaults);
   const [filters, setFilters] = useState(draft);
   const [offset, setOffset] = useState(0);
-  const [revision, setRevision] = useState(0);
+  const poller = useRef<ReturnType<typeof startAuditPolling> | null>(null);
+  const requestInFlight = useRef<Promise<void> | null>(null);
   const [data, setData] = useState<Page | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -64,26 +66,53 @@ export function ApplicationAudit({
   const [selected, setSelected] = useState<number | null>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
-    const controller = new AbortController();
     const params = auditQuery(filters, offset);
-    setLoading(true);
-    setError("");
     setData(null);
-    api(`/api/application-audit?${params}`, { signal: controller.signal })
-      .then((page: Page) => {
-        if (!controller.signal.aborted) {
-          setData(page);
-          setLoadedAt(time(new Date().toISOString()));
-        }
-      })
-      .catch((e: Error) => {
-        if (!controller.signal.aborted) setError(e.message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [api, filters, offset, revision, refreshSignal]);
+    setLoadedAt("");
+    const polling = startAuditPolling({
+      visible: () => document.visibilityState === "visible",
+      subscribe: (callback) => {
+        document.addEventListener("visibilitychange", callback);
+        return () => document.removeEventListener("visibilitychange", callback);
+      },
+      load: async (signal) => {
+        // Serialize across filter changes too; cleanup aborts the previous fetch.
+        await requestInFlight.current;
+        if (signal.aborted) return;
+        const request = (async () => {
+          setLoading(true);
+          try {
+            const page: Page = await api(`/api/application-audit?${params}`, {
+              signal,
+            });
+            if (!signal.aborted) {
+              setData(page);
+              setLoadedAt(time(new Date().toISOString()));
+              setError("");
+            }
+          } catch (e) {
+            if (!signal.aborted) setError((e as Error).message);
+          } finally {
+            if (!signal.aborted) setLoading(false);
+          }
+        })();
+        requestInFlight.current = request;
+        await request;
+      },
+    });
+    poller.current = polling;
+    return () => {
+      polling.stop();
+      poller.current = null;
+    };
+  }, [api, filters, offset]);
+  const previousRefresh = useRef(refreshSignal);
+  useEffect(() => {
+    if (previousRefresh.current !== refreshSignal) {
+      previousRefresh.current = refreshSignal;
+      poller.current?.refresh();
+    }
+  }, [refreshSignal]);
   function apply(event: FormEvent) {
     event.preventDefault();
     try {
@@ -124,11 +153,12 @@ export function ApplicationAudit({
           <p className="muted">
             Mỗi dòng là một lần quan sát theo Schema v1. Mặc định hiển thị
             Student audit trong 24 giờ qua. Thời gian theo múi giờ trình duyệt (
-            {Intl.DateTimeFormat().resolvedOptions().timeZone}). Bấm Tải lại
-            audit hoặc Làm mới phía trên để cập nhật bản ghi mới.
+            {Intl.DateTimeFormat().resolvedOptions().timeZone}). Tự tải lại sau
+            mỗi 5 giây khi lần tải trước hoàn tất và trang đang hiển thị. Bạn
+            vẫn có thể bấm Tải lại audit hoặc Làm mới.
           </p>
         </div>
-        <button onClick={() => setRevision((n) => n + 1)} disabled={loading}>
+        <button onClick={() => poller.current?.refresh()} disabled={loading}>
           <Icon name="refresh" className={loading ? "is-spinning" : ""} />
           Tải lại audit
         </button>
@@ -289,10 +319,10 @@ export function ApplicationAudit({
         aria-atomic="true"
         className="muted audit-result-count"
       >
-        {loading
-          ? "Đang tải sự kiện…"
-          : data
-            ? `${data.total.toLocaleString("vi-VN")} sự kiện khớp bộ lọc · tải lúc ${loadedAt}`
+        {data
+          ? `${data.total.toLocaleString("vi-VN")} sự kiện khớp bộ lọc · Audit tải thành công lúc ${loadedAt}${loading ? " · Đang cập nhật…" : ""}`
+          : loading
+            ? "Đang tải sự kiện…"
             : "Chưa tải được dữ liệu."}
       </div>
       {data && data.items.length === 0 && (

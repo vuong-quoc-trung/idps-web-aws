@@ -508,7 +508,7 @@ function App() {
             <p className="muted updated-at">
               <Icon name="clock" />
               {updated
-                ? `Dashboard tải dữ liệu thành công: ${updated}`
+                ? `${tab === "application-audit" ? "Dữ liệu chung (không gồm Audit)" : "Dashboard tải dữ liệu thành công"}: ${updated}`
                 : "Đang tải dữ liệu"}
             </p>
             <button
