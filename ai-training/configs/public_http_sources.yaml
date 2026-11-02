@@ -9,6 +9,9 @@ attribution: Biardo, Deborah; Gonzalez Guzman; Lanzotti, Sabrina (2024), WebRequ
   Repositorio ANII, V1
 limitations:
 - Underlying CSIC 2010 generated e-commerce HTTP transcripts; not new live traffic.
+- CSIC anomalous includes unintentional invalid requests with no malicious intent
+  according to the source catalog. Its binary 1 means anomalous, not verified attack
+  intent; earlier request-view benchmarks are anomaly research only.
 - Repository license verified; original publisher license lineage not independently
   recovered. Raw files stay private.
 - Publisher binary normal/anomalous labels; no independently reviewed families or
@@ -251,18 +254,139 @@ new_source_screening_20261101:
   metadata_api: https://idus.us.es/server/api/core/items/53034f60-d215-44b0-a198-eb8a5229218e
   dataset_license: CC BY-NC-ND 4.0
   paper_doi: 10.1186/s42400-024-00336-3
-  decision: metadata_only_pending_license_compatibility_and_label_scope_review
-  reason: Publisher reports real production benign and LVL1-4 attacks with expert sanitization; dataset
-    license differs from paper CC BY. Restricted grant not assumed compatible automatically; no data download/admission.
-    Missing full timestamps, body, client and flow; lower-confidence/contextual labels cannot automatically
-    become truth.
+  decision: strongest_independent_label_candidate_access_restricted_not_admitted
+  access_checked_20261102:
+    archive_content_http: 401
+    request_copy_page_http: 200
+    archive_bytes_repository_metadata: 1223176305
+    archive_downloaded: false
+    request_copy_url: https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e/request-a-copy?bitstream=17b2ff3b-90ea-48a4-8ecd-a12edc394361
+    needed_files: [RAW, LABEL, README]
+    permission_owner_action: Request legitimate copy and clarify private feature extraction,
+      model training, derived artifact sharing and non-commercial terms; no request sent by collector.
+  reason: Publisher describes 47,402,907 real web requests and 327,906 LVL1 attack records
+    manually confirmed in S2/S3; RID joins RAW and LABEL by day/order. CLEAN also includes
+    S2=-1/S3=-1 records not manually reviewed, so CLEAN as a whole is not independently
+    verified benign. A narrow S2=0/S3=-1/OOS=0 false-positive subset may qualify for
+    expert-reviewed benign research after row-level inspection. Official idUS metadata
+    says CC BY-NC-ND 4.0; archive content endpoint returned HTTP 401 on 2026-11-02,
+    requiring an authorized copy and usage check. No archive downloaded or rows admitted.
+    Only method/URI/response/day-order are documented; no full timestamp, body, client,
+    three-source flow or 207-feature parity. Author claims are not locally verified counts.
 - name: ModSec_WP_v2
   doi: 10.5281/zenodo.21872151
   dataset_license: CC BY 4.0
-  decision: metadata_only_pending_request_bound_label_basis
-  reason: 108883 publisher transactions, mixed scenario/timestamp/regex/manual-ambiguous-case labeling.
-    WordPress-only, near duplicates and rule/outcome columns. No row-level evidence chain verified, no
-    download or training.
+  workbook_sha256: f959c79e185502b03206f6fdeb29306a65571394c2f009dda503d43ba306d16d
+  workbook_md5: 6d02547829e0b460ef6473d5603a84db
+  workbook_bytes: 27822255
+  decision: local_source_audited_quarantined_pending_request_bound_label_basis
+  source_rows: 108883
+  distinct_transaction_ids: 27686
+  distinct_request_representations_method_url_body: 18474
+  repeated_transaction_rows: 81197
+  conflicting_transaction_label_keys: 20
+  event_years: {2024: 108823, 2026: 60}
+  supervised_training_admitted: 0
+  reason: Publisher calls each row a transaction, but the workbook repeats transaction IDs and full
+    request-event keys; 20 IDs have contradictory labels. Counts are rows, not independently verified
+    physical requests. Hybrid scenario/time/regex/manual annotation lacks per-request basis. One
+    WordPress testbed has no verifiable campaign IDs. WAF rule/response fields are excluded from
+    causal request features and cannot establish intent or exploit success. Private raw workbook retained;
+    no payload or PII in reports.
+- name: Polish_ecommerce_anonymized_2025
+  doi: 10.5281/zenodo.18895701
+  dataset_license: CC BY 4.0
+  publisher_declared_http_log_rows: 178939
+  decision: metadata_only_unlabeled_observability_candidate
+  reason: Independent production e-commerce application and pseudonymized identifiers are promising
+    for behavior/FPR research, but the public record supplies no per-request benign/attack intent
+    labels. Sanitized URI removes query strings, limiting attack-feature parity. No raw download,
+    review or training admission; non-alert and HTTP 200 cannot establish benign truth.
+label_source_screening_20261102:
+  - name: AIT_LDS_v2_1_russellmitchell
+    url: https://zenodo.org/records/19483937
+    doi: 10.5281/zenodo.19483937
+    license: CC BY-NC-SA 4.0, official Zenodo API; noncommercial research only
+    raw_private_file: ai-training/.artifacts/source_screen_20261102/ait/russellmitchell_no-pcaps.zip
+    archive_bytes: 522084364
+    archive_md5: abb43a46c70939ad9f98669e3510d2b7
+    archive_sha256: 51a03f51daea0fbbdcfe9b8abe0dbbe10633716f4f98074f861204a162ee1978
+    apache_attack_log_member_sha256: 4d3d700f50c6dde5295ebc57a00701b7c3049812c6f6709b3f809e36be362153
+    apache_attack_labels_member_sha256: ab6a834e2f9b8321cb7045cd78e0d88eea851a0f4b5231827f16e87ca7286154
+    apache_rules_member_sha256: b48be2f52951c47d2f14c518faae4a5a2dfa83c252c59017d6d11b15acce4868
+    observed_environment: independently published simulated enterprise testbed, not live Internet
+    request_observation_scope: Apache intranet access logs only; no physical request ID
+    publisher_labeled_attack_lines: 7695
+    preattack_parseable_benign_candidates: 2831
+    unknown_or_unparseable_intranet_lines: 658
+    request_view_76_unique: {benign_candidates: 25, publisher_attack: 3146, cross_label_overlap: 4}
+    decision: provenance_verified_research_candidate_not_training_eligible
+    reason: The official archive checksum, mirrored Apache line labels and attacker activity
+      log verify publisher scenario provenance. The labels are produced by publisher rules
+      and attacker schedule, not independent semantic review of each HTTP request. Only
+      intranet has an Apache access label file; 7,695 labeled lines are mostly scans.
+      Preattack benign candidates have just 25 distinct 76-feature views, below the
+      existing 32-per-source-role-class minimum even before split; 4 views cross labels.
+      One scenario/source cannot meet the two-source balanced research study gate.
+      Do not treat unlabeled attack-period traffic as benign, infer exploit outcome,
+      import status/host/rule labels as features, or admit this source formally.
+  - name: MWAD_2026
+    url: https://github.com/paul12345-cyber/Multimodal-web-attack-Dataset
+    revision: a7a19c525bfa94095120c7fa5731ccf33bf2022e
+    license: CC BY 4.0, author repository LICENSE
+    raw_private_dir: ai-training/.artifacts/source_screen_20261102/mwad
+    uri_csv_sha256: cdcaa60587a707b16023471d500c99dd2efb82e4ccfa69ad7ae36e844809a743
+    flow_csv_sha256: a7dcd061119ce61a07a43e2f3651230429aa8c00f29b47d012a02f1edd53e476
+    observed_rows: 1000
+    publisher_labels: {benign: 500, sqli: 500}
+    distinct_uri_sha256: 975
+    distinct_flow_vector_sha256: 989
+    decision: research_only_not_admitted
+    reason: Two CSV files have no request ID, timestamp, campaign or cryptographic URI-flow
+      join key; matching 1000 labels by row order does not establish paired physical
+      requests. Labels come from author-generated SQLi campaign, not independent semantic
+      review per request. One lab and one attack family; no verified three-source or
+      207-feature contract. Row-order label blocks are a shortcut risk. No training fit.
+  - name: OWASP_CRS_regression_tests
+    url: https://coreruleset.org/docs/index.print
+    decision: rule_regression_fixture_only_not_admitted
+    reason: Positive/negative expectations test a particular rule match. They do not
+      certify per-request malicious intent, exploit outcome or globally benign traffic.
+  - name: WAF_Bench_77
+    url: https://huggingface.co/datasets/netgoat-ai/WAF-Bench
+    revision: 674f8bdcfc2d177beaf323cb80d3d889baaff063
+    license: CC BY 4.0, dataset card
+    raw_private_file: ai-training/.artifacts/source_screen_20261102/waf_bench/test.jsonl
+    raw_file_sha256: 0065adf48f29f82c50652e788a8f89b418dd66888d32853dd3a79aa57c7b27f0
+    observed_rows: 77
+    unique_record_ids: 77
+    observed_labels: {malicious: 57, benign: 20}
+    query_object_rows: 56
+    body_only_rows: 13
+    body_only_malicious: 8
+    limitation: Query is a JSON object, not original wire bytes; URI encoding/order cannot be
+      reconstructed with certainty. Body and header-only attack evidence is outside the
+      76-column method/URI-only research profile.
+    publisher_declared_rows: 77
+    publisher_declared_labels: {malicious: 57, benign: 20}
+    decision: external_hand_curated_synthetic_fixture_only_not_admitted
+    reason: Request-level manually authored labels and hard-negative examples are useful
+      for request-view smoke checks, but the publisher says the 77 cases are synthetic,
+      not captured physical traffic. Benign count is below the 32 per role/source/class
+      research minimum even before split; no campaign/time, real application oracle,
+      three-source capture or independent final-evaluation basis. Test split is exposed.
+  - name: CICIDS2017
+    url: https://www.unb.ca/cic/datasets/ids-2017.html
+    decision: flow_campaign_metadata_only_not_admitted
+    reason: Published PCAP/flows are labeled using attack schedules and network tuples,
+      not independent semantic HTTP-request evidence or the current 207-feature contract.
+  - name: multi_agent_honeypot_2026
+    url: https://arxiv.org/html/2603.02963v1
+    publisher_claimed_pairs: 140973
+    decision: paper_only_not_admitted
+    reason: Paper describes generated requests and labels mapped from generator technique,
+      not independent request-level semantic review. No downloadable dataset or usage grant
+      was identified from the paper; claims are not locally verified HTTP rows.
 independent_label_evidence_contract:
   version: 2
   implementation: src/idps_ai/data/label_evidence.py
