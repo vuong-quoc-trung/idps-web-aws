@@ -1,5 +1,43 @@
 # 05 — Bằng chứng khảo sát, phạm vi và giới hạn xác minh
 
+## Development oracle pilot có capture thật — 2026-11-02T11:09+07:00
+
+Private root `ai-training/.artifacts/devgt1/`: `plan/plan.json` SHA nội dung `08361b0f05836e4e774b2050f96e3575a09d8803ecc942d9b10fb5a5e3e61936`; `run/lab/traffic.pcap`, `run/eve/eve.json`, `run/correlated/`, `run/capture/`, `run/application-oracle-before.json`, `run/application-oracle.json`, `run/cleanup-verification.json`, `run/oracle-verification/report.json` và `run/review/`. Oracle report SHA nội dung `973faa9afc23e2333d1f8444e5b56e6a0813d83c55084f11aa7b71be0c46db28`: 8 request vật lý/8 ba nguồn/8 response, 2 POST body byte match, DB 0→1 cho một mutation STAFF, cleanup PASS, 8 unknown/0 admission. `lineage-audit/report.json`: 170 distinct IDs, 79 target hashes, 91 repeated-target observations, 0 collision trong bốn capture pending; `lineage-audit-all-unsealed/report.json` thêm v1 cách ly thành 218 IDs/79 target hashes/139 lượt lặp, 0 collision. Historical sealed không đọc. PCAP/credential/DB evidence chỉ local, Git ignored. Signed plan-v3 ở mục dưới **vẫn chưa chạy**; báo cáo cũ về 0 request chỉ nói về signed pilot đó.
+
+## Gói phê duyệt và cleanup pilot — 2026-11-02
+
+Gói private `ai-training/.artifacts/ground_truth_pilot_20261102/APPROVAL_PACKAGE.md` mode 0600 có case/URI, phạm vi, rủi ro, SHA và lệnh ký; chỉ reviewer thật tạo private key/approval. Plan-v3 vẫn active, chưa có `approval-v3.json`, public key, PCAP/EVE/oracle của pilot. `verify_lab_cleanup` đã PASS trên hai lab EVE cũ: Docker disposable không còn, ports 18880/18881/55435 đóng; không biến capture cũ thành dữ liệu Ground Truth mới. Machine report/handoff và ledger 06 mục 42 ghi trạng thái kỹ thuật; **0 new requests/labels/admission**.
+
+## Pilot Ground Truth chưa capture — 2026-11-02
+
+Plan private active `ai-training/.artifacts/ground_truth_pilot_20261102/plan-v3/plan.json` pin 8 case, SHA nội dung `a38ecc02822e9a2618dcfaa442d00492ae4ce438efc5f6bdd73c3866a5129eb2`, file SHA `4a61049c9a8a6bf05345f203ef95d392c8f2ffd54b23366ba37b12b078d7f9e4`, collector SHA `30c5eee796b6a6544eebabb7268f24a135614efa5d5d9b6905cad9e8c367174e`. `plan-v1`/`plan-v2` là bản soạn superseded, chưa ký/chạy. Không có approval, PCAP/EVE, application-oracle artifact **thật** từ pilot; test fixture key/oracle không được tính. Nguồn hiện tại vẫn 162 pending UNKNOWN và 0 admission. Thông tin ở [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục 41.
+
+## Blind review artifact — 2026-11-02
+
+`ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3/auto-review.sqlite` là DB private 0600 với 162 request-bound records, 0 plaintext query/credential; `report.json` pin SHA DB và method source. Lượt 65→162→162 xác nhận batch/resume/idempotence; test còn giả lập report chưa kịp ghi sau commit và khôi phục bằng `--recover` với full record readback. `auto-review-v3-unblind/` chứa comparison JSONL riêng, chỉ tạo sau blind complete; 162 claim được so, 7 benign-claim có cue và 22 attack-claim không có cue. Không có oracle/application side-effect hoặc semantic human review, do đó comparison **không cấp nhãn**. V1/V2 là các lượt thử kỹ thuật, giữ private làm bằng chứng; active là v3. SHA chi tiết trong [machine report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json), ledger 06 mục 40.
+
+## Review registry và POST PCAP readback — 2026-11-02
+
+Private registry `ai-training/.artifacts/evidence_campaign_20261102/review-registry.json` pin ba queue 54 hồ sơ; SHA nội dung `28b6d001387679aece34f9be856d8fd343a8bd37f298815e0fcf2728672bdac0`. Hai artifact `eve3-1102b/body-evidence-v1/` và `eve3-1102c/body-evidence-v1/` kiểm lại PCAP gốc, response `X-Request-Id`, method/status/source IP/target hash: mỗi capture 54/54 request, 6 POST body thật. Ledger HMAC/field names 0600, khóa 0600 và PCAP private; không đưa giá trị credential vào report. Không có body tương ứng cho 6 POST của capture hai nguồn cũ. Human review decision artifacts hiện chưa tồn tại, 0 nhãn được xác minh/0 admission; HMAC không chứng nhận semantic intent. Xem [PRETRAINING](../ai-training/PRETRAINING.md) và ledger 06 mục 39.
+
+## Bằng chứng capture và review mới — 2026-11-02T08:54+07:00
+
+Private `ai-training/.artifacts/eve3-1102c/` có plan `evidence_campaign_20261102/plan-novel-v2`, frozen `collector-source-v4.py`, PCAP gốc, EVE đã redaction, `correlated-v3/`, `review/` và `assist-v2/`. Lượt mới 54 request/54 EVE HTTP/54 flow/18 alert; masked Nginx query null và EVE v2 numeric khớp 54/54. PCAP SHA `80efea9c0803722a28df75705b18b76feffb63002c75888aefea80641f27309e`; EVE SHA `0cb5fd45b0fa1b3e846a3d40b51815690db9aa4a37cde173a1f8aa015aa6784a`. `evidence_campaign_20261102/lineage-unsealed-v5/report.json` quét bốn captures và bảy Student logs chưa sealed: 210 IDs mới, 227.619 lịch sử được quét, 0 collision, 78 target hashes. Không mở sealed holdout. Facts/proposals của 54 cũ hai nguồn và 54 cũ ba nguồn nằm trong `assist-old54-v2/` và `assist-new54-v2/`; mọi label vẫn null, không có reviewer attestation. Raw/PCAP/credential chỉ local, Git ignored; SHA chi tiết trong [machine report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json).
+
+## Bằng chứng ba nguồn AI-owned — 2026-11-02T08:31+07:00
+
+Private artifacts: `ai-training/.artifacts/eve3-1102b/` chứa `lab/traffic.pcap`, `eve/eve.json`, `correlated-v2/three-source-evidence.jsonl`, `review-three-source-v2/blind-review.jsonl`; plan/frozen collector ở `.artifacts/evidence_campaign_20261102/plan-v1` và `collector-source-v3.py`. PCAP SHA `b9c4d623fb12c8c513cdaaa729c03466d9c135187caf737e8d41acd6c535a384`, EVE SHA `c36937f2fe3b1957d2a22614cc36dd38732b0ea57aecf949a8f1cac109da5e1a`, correlation ledger SHA `6521b8728410ca095d0088ff2e7bfed0a04d7bc3b7a36d03e88b906031dfc76d`; report JSON pin toàn bộ SHA. 54/54 three-source match; 54 flow/18 alert/1 stats; queue có 54 unknown/0 admitted. `lineage-audit-v3/report.json` ở root evidence 20261102 đối chiếu 156 ID qua ba capture và 73.218 ID lịch sử chưa sealed, không chứng nhận dedup toàn cục. Raw private không đưa vào Git.
+
+## Bằng chứng capture lab mới — 2026-11-01T11:21+07:00
+
+Private root `ai-training/.artifacts/evidence_campaign_20261101`: `plan-v2/plan.json` SHA file `82d37a82e5fc3296d304d792ca8aef454e980893fa70bb118464bbedba3660bb`; `capture-v2/report.json` SHA `3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b`; `review-v3/blind-review.jsonl` SHA `85c433dc4bcdf90bcbd9a0d01091a41fa3a50804d9d5eb1d880fde652e4dbf3d`. V1 48 request/45 auth 401 và source collector snapshot giữ lại để chứng minh quyết định cách ly; v2 54 request được reverify từ hai log. Review queue không có nhãn được duyệt, payload hoặc PII. `plan-v2` chỉ dùng development; future holdout chưa phát/request/score. Nginx/Student/DB fixture đã dừng.
+
+## Kiểm tra tiếp nguồn và hồ sơ review — 2026-11-01T10:53+07:00
+
+- SOC-MLD: `soc-pending-review-final-v2/report.json` và `pending-dossiers.jsonl` trong artifact root private; 64/64 locator/SHA raw khớp, 0 nhãn được duyệt. Mọi dossier giữ campaign/intent/outcome `unknown`, ghi riêng mức tin cậy; không xuất payload, IP, URI, query, UA. 38 attack-instance IDs chung train/test chứa 3.066 rows, trong đó 1.214/1.220 test rows.
+- ModSec-WP [Zenodo DOI](https://zenodo.org/records/21872151): API chính thức CC BY 4.0, workbook MD5 `6d02547829e0b460ef6473d5603a84db`, SHA256 `f959c79e185502b03206f6fdeb29306a65571394c2f009dda503d43ba306d16d`. Local private `modsec-wp-audit-final/report.json`: 108.883 rows, 27.686 transaction IDs/event keys, 81.197 repeated rows, 20 transaction IDs mâu thuẫn nhãn. 60 rows có timestamp năm 2026, còn 108.823 năm 2024. Không có campaign ID và per-row label-basis trail; chưa admission.
+- [Polish e-commerce logs](https://zenodo.org/records/18895701): CC BY 4.0, publisher 178.939 anonymized access rows từ môi trường e-commerce thật. Có ích cho observability, nhưng không có nhãn intent từng request và query đã bị bỏ; metadata-only, không download/admit.
+
 ## Nguồn và bằng chứng mới — 2026-11-01T07:36:28.147641+07:00
 
 Root private: `ai-training/.artifacts/attack_evidence_20261101`. Giữ snapshot source/docs và protected SHA từ đầu lượt; report máy [ATTACK_EVIDENCE_20261101.json](../ai-training/reports/ATTACK_EVIDENCE_20261101.json)/ledger 32 trỏ evidence thực, không ghi payload hoặc PII vào report.

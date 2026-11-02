@@ -1,5 +1,55 @@
 # 00 — Tổng quan dự án và tiến độ
 
+## Mốc AI development oracle — 2026-11-02T11:09+07:00
+
+Pilot AI-owned **khác** plan-v3 ký độc lập đã chạy thật 8 request: 8/8 có Student/Nginx/Suricata EVE từ PCAP offline, 8 response status, 2 POST body bytes và 1 mutation STAFF có DB `0→1`; lab đã dọn. Tất cả 8 intent vẫn `UNKNOWN`, benign/attack xác minh độc lập 0/0, formal admitted **0/2.000.000**. Bốn capture pending được audit có 170 ID không trùng; tính cả capture v1 cách ly thì năm capture có 218 ID, 79 target hashes/139 lượt lặp target, 0 va chạm trong phạm vi quét và 0 campaign/môi trường đánh giá độc lập. Signed plan-v3 vẫn chưa được ký hoặc chạy. Chi tiết [PRETRAINING](../ai-training/PRETRAINING.md), [machine report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json), ledger 06 mục 43. Model GLU 9.675.784/207 và MLP giữ nguyên; chưa train mới hay chọn champion.
+
+## Kiểm tra cuối Ground Truth pilot — 2026-11-02
+
+Plan 8 request vẫn khớp SHA collector đã khóa; gói phê duyệt riêng tư đã sẵn cho reviewer độc lập. Approval mới sẽ ký hash 10 file thực thi AI, Student Git tree và mẫu Nginx; collector kiểm chữ ký/plan/code trước traffic. Luồng cleanup đã có kiểm chứng container PostgreSQL `--rm`, process và ba cổng lab đóng; kiểm lại hai lab EVE cũ đều PASS. **Pilot mới chưa được ký, 0 request phát, 0 request ba nguồn mới, 0 nhãn xác minh, 0 admitted.** Gate evidence-v2, model và holdout không đổi. Xem [gói reviewer](../ai-training/.artifacts/ground_truth_pilot_20261102/APPROVAL_PACKAGE.md), [quy trình](../ai-training/PRETRAINING.md), ledger 06 mục 42.
+
+## Ground Truth prospective pilot — 2026-11-02
+
+Đã chuẩn bị plan có thể đọc và ký trước capture cho **8 request** trong lab AI-owned, với kiểm tra source/plan SHA, binding ba nguồn và oracle trạng thái DB cho thao tác tạo khoa. Chữ ký reviewer độc lập **chưa có**, pilot **chưa phát request**, oracle thật **chưa chạy**. Kiểm thử fixture chỉ chứng minh đường kỹ thuật; không cấp nhãn thật. **162 hồ sơ cũ UNKNOWN, 0 benign/0 attack độc lập, 0 admitted/2 triệu**; tổng capture reports vẫn 75.360 request (3,768%, chưa dedup toàn cục). GLU 9.675.784/207, MLP và admission gate giữ nguyên. Chi tiết thao tác ở [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục 41.
+
+## Tự động hóa review blind — 2026-11-02
+
+Đã chạy batch/resume trên **162/162 request** của ba queue; SQLite private pin kết quả đối chiếu ID/hash/Student–Nginx–EVE/PCAP. 39 cue cú pháp chỉ là triage, mở runner claim sau blind thấy 29 bất đồng tín hiệu, không có nhãn mới được chứng minh. **0 oracle-verified, 0 AI-proposed từ model, 0 human-reviewed; 162 intent UNKNOWN, 0 admitted.** 78 target views/162 request, 36 view dùng xuyên campaign; 9 campaign development trong một lab, 0 campaign/môi trường đánh giá độc lập. Tổng capture reports 75.360/2M chưa global dedup; formal train/champion/live enforcement vẫn chặn. Chi tiết ở [PRETRAINING](../ai-training/PRETRAINING.md) và ledger 06 mục 40.
+
+## Review 162 hồ sơ — 2026-11-02
+
+Đã có terminal review riêng tư gắn ba queue 54 request với hash/ID/campaign, tách facts khỏi proposal và lưu quyết định người review bất biến. Đối chiếu PCAP xác nhận body bytes cho 12/12 POST của hai capture ba nguồn; 6 POST hai nguồn cũ vẫn thiếu body. HMAC/field names không tự cho nhãn. **0 request admitted; 0 benign/0 attack được review độc lập; 0 campaign/môi trường đánh giá độc lập.** Không phát thêm request lượt này; tổng báo cáo capture vẫn 75.360/2 triệu (3,768%, chưa global dedup), 162 pending. GLU 9.675.784/207 và MLP giữ nguyên; formal training và live inference chưa sẵn sàng. Thao tác cụ thể của reviewer ở [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục 39.
+
+## AI admission và campaign khác target — 2026-11-02T08:54+07:00
+
+Lượt capture ba nguồn thứ hai **PASS 54/54 request**, dùng PCAP thật + Suricata EVE offline; đã có **42 target hash mới** và 30 target attack/hard-negative không trùng hai plan trước. Hai lượt EVE liên tiếp đều 54/54; đây là thử nghiệm ổn định của lab offline, **chưa phải realtime/production sensor**. Nginx masked và EVE numeric v2 khớp trong lab 54/54; live edge/inference 207 cột chưa được nghiệm thu. Hồ sơ tự động của **162 request pending** đã tách facts blind khỏi proposal của runner/cú pháp; không có nhãn nào được AI tự duyệt. 48 request v1 vẫn cách ly.
+
+Bốn lượt mới có **210 request ID riêng**, 78 target hashes; 0 va chạm với 227.619 ID trong bảy Student log lịch sử chưa sealed được quét. Sealed cohort chưa đọc, không tuyên bố dedup toàn cục. Tổng theo capture reports 75.360/2.000.000 request (**3,77%**) nhưng **0/2.000.000 admitted**. Có 9 campaign development hợp lệ và 3 campaign cách ly trong **một lab**, **0 campaign/môi trường đánh giá độc lập**. GLU 9.675.784/207 và MLP 252.680 giữ nguyên; formal train/champion/live enforcement chưa sẵn sàng. Xem [PRETRAINING](../ai-training/PRETRAINING.md) và ledger 06 mục 38.
+
+## AI evidence ba nguồn — 2026-11-02T08:31+07:00
+
+Collector AI mới đã thu **54 request HTTP thật trên fixture loopback được cấp phép**, mỗi request khớp `X-Request-Id`, method/status/IP, timestamp và hash giữa Student audit, Nginx và Suricata EVE HTTP/flow; 54 flow và 18 alert là observations, không phải request hoặc nhãn mới. PCAP/EVE thật được giữ ở artifact private `ai-training/.artifacts/eve3-1102b/`; lab đã dừng. Query numeric Nginx lab/EVE khớp 54/54, nhưng edge production mask khác nên feature parity 207 cột cho formal còn **chưa được chứng nhận**. Queue review ba nguồn 54/54 vẫn `unknown`, 0 nhãn được review độc lập, 0 admitted. Hai lượt 54 cũ không có EVE mới; không hồi tố gắn log.
+
+Ba capture mới có 156 ID riêng (48 cách ly + 54 hai nguồn + 54 ba nguồn), chỉ **36 target hash** và đều một lab; 0 campaign đánh giá hoặc môi trường độc lập mới. Tổng theo báo cáo 75.150 lịch sử +156 mới = **75.306 request ghi nhận/2.000.000 (3,77%)**, chưa có dedup toàn cục với sealed cohort; **0/2.000.000 admitted (0%)**. GLU 9.675.784/207 và MLP 252.680/207 vẫn là pilot, không fit/training thêm. **218 pytest PASS**, formal/champion/live inference vẫn NOT_READY. Xem [PRETRAINING](../ai-training/PRETRAINING.md), [report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json) và ledger 06 mục 37.
+
+## Tiếp tục evidence review và dedup có giới hạn — 2026-11-01T11:45+07:00
+
+54/54 blind-review item đã tái kiểm ID, plan, SHA, timestamp và hai log; **0 nhãn được tự phê duyệt, 0 admitted**. Hai capture mới có 102 ID không trùng, 36 target hash và 66 lượt lặp target. So với 73.218 ID trong ba log Student lịch sử *không niêm phong*, số ID va chạm là 0; log có setup event và cohort sealed chưa đọc nên không gọi 75.252 là số unique toàn cục đã chứng nhận. Catalog formal vẫn `NOT_READY`. Verifier đã được siết để đọc lại method/status/path/target/timestamp; review workflow nằm trong [PRETRAINING](../ai-training/PRETRAINING.md), artifact hash/count ở `ai-training/.artifacts/evidence_campaign_20261101/lineage-audit-v2/report.json`. Bundle pilot GLU **9.675.784/207** và MLP **252.680/207** còn đọc được, ONNX SHA khớp report và batch 1 output hữu hạn; study GLU 9.541.640/76 là contract khác. Mô hình và threshold không đổi; **217 pytest PASS**, formal gate từ chối đúng thiết kế, không chạy train.
+
+## Rà soát tổng thể AI — 2026-11-01T11:32+07:00
+
+Đối chiếu code, manifest dataset, catalog hiện hành và artifact capture (không chạy train hoặc mở holdout): `residual_glu` cấu hình 207 đầu vào/rộng 1024 có **9.675.784 tham số trainable** (96,76% mốc danh nghĩa 10 triệu). Đây là kích thước kiến trúc, chưa chứng minh chất lượng. Prepared lab v5 có **69.345 feature rows**; 75.150 request lab ba nguồn được báo cáo trước đó là tổng capture lịch sử. Hai capture AI-owned mới có **102 request ID khác nhau** (48 cách ly, 54 chờ review), nên tổng theo hai báo cáo capture là **75.252 request được ghi nhận** (3,76% mốc 2 triệu); chưa có kiểm định dedup toàn cục giữa các đợt để gọi toàn bộ 75.252 là unique đã chứng nhận. 102 mới chỉ có Nginx + Student, cùng một lab và không đủ điều kiện train. Không cộng staging, projections, log observations hoặc publisher rows vào số request vật lý này.
+
+Catalog scale hiện hành `NOT_READY`, **0 request admitted/2.000.000 (0%)**, 0 benign/0 attack mới được review độc lập, 0 campaign đánh giá độc lập. Ba campaign mới chỉ là development, cùng môi trường và thời điểm; 54 request vẫn null-label. Kết quả WCP benign-only đo FPR, không đo recall; SR-BH và lab đã lộ trong development, không là final holdout. Pipeline checkpoint/ONNX/cgroup đã có bằng chứng pilot, nhưng formal scale, live inference và tự động chặn chưa được nghiệm thu. Không thể suy ra một phần trăm hoàn thành chất lượng AI từ số tham số hoặc số request. Xem [handoff](../ai-training/FINAL_TRAINING_HANDOFF.json), [catalog](../ai-training/.artifacts/attack_evidence_20261101/scale-catalog-current/report.json), [báo cáo chất lượng](../ai-training/reports/GENERALIZATION_QUALITY_20261101.json) và ledger 06 mục 35.
+
+## Thu thập có bằng chứng trên lab được cấp phép — 2026-11-01T11:21+07:00
+
+Đã tạo plan trước khi gửi request và thu 54 request HTTP mới trên fixture Student/Nginx AI-owned loopback: 54 ID khớp cả hai log, 36 benign/hard-negative intent và 18 attack intent do runner khai báo. **Chưa có nhãn semantic được reviewer độc lập xác nhận, nên admission mới = 0 và formal vẫn NOT_READY.** Lượt thử đầu 48 request bị cách ly vì 45 trả 401 ở lớp xác thực. 3 campaign mới chỉ là development trong cùng lab; 0 campaign đánh giá độc lập, 0 môi trường triển khai độc lập. Blind review queue 54 null-label đã sẵn sàng trong artifact riêng tư; holdout hiện hữu và future holdout chưa dùng. [Report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json) và ledger 06 mục 34 ghi SHA, lệnh kiểm và bước còn thiếu.
+
+## Rà soát hồ sơ nhãn và nguồn mới — 2026-11-01T10:53+07:00
+
+**Formal NOT_READY; 0 request mới được admission, 0 positive/0 benign có nhãn độc lập và 0 campaign độc lập được xác minh.** Hồ sơ private cho 64 dòng pending SOC-MLD đã xác nhận 64/64 SHA từ raw; tất cả vẫn unknown. Split gốc có 38 attack-instance IDs chung và 1.214/1.220 dòng test nằm trong nhóm đã có ở train. Audit workbook ModSec-WP (CC BY 4.0) cho thấy 108.883 dòng nhưng chỉ 27.686 transaction IDs, 20 ID có nhãn mâu thuẫn. Các số này không đại diện cho request đủ điều kiện học. Đã cập nhật catalog, báo cáo và handoff; không chạy train mới. Chi tiết tại [report](../ai-training/reports/ATTACK_EVIDENCE_20261101.json) và ledger 06 mục 33.
+
 ## Hiện trạng bổ sung attack và kiểm định nhãn — 2026-11-01T07:36:28.147641+07:00
 
 **Chưa đủ điều kiện train chính thức/chọn champion.** Đã audit nguồn SOC-MLD v2 độc lập về publisher: 198.082 HTTP observations; 193.220 dòng log khác nhau; 6.856 biểu diễn method/URI/UA. Chưa xác minh physical request IDs hay nhãn intent theo từng request, nên **0 mẫu mới được admission**, không cộng EVE HTTP/flow thành request mới.
