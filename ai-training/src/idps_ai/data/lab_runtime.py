@@ -22,7 +22,7 @@ from idps_ai.data.lab_capture import ROLES, LabClient
 from idps_ai.data.snapshot import new_destination
 
 
-def start_lab(output, nginx_bin, campaigns=15):
+def start_lab(output, nginx_bin, campaigns=15, input_profile=None):
     if campaigns not in (15, 30, 45):
         raise PipelineError("Owned lab campaign count must be15,30or45")
     roles = ROLES if campaigns == 15 else ["ADMIN", "STAFF", "STUDENT"] * (campaigns // 3)
@@ -32,6 +32,9 @@ def start_lab(output, nginx_bin, campaigns=15):
         raise PipelineError("Provide an existing trusted Nginx binary")
     for port in (18880, 18881, 55435):
         with socket.socket() as connection:
+            # A completed loopback request may leave TIME_WAIT after the prior
+            # owned lab stops; Nginx/PostgreSQL can still bind this port.
+            connection.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 connection.bind(("127.0.0.1", port))
             except OSError:
@@ -42,6 +45,8 @@ def start_lab(output, nginx_bin, campaigns=15):
         ["git", "diff", "HEAD", "--name-only", "--", "student-web", "security-web"], cwd=REPO_ROOT
     ):
         raise PipelineError("Protected source is modified; review before exporting the lab fixture")
+    if input_profile not in (None, "safe_query_numeric_v2"):
+        raise PipelineError("Unsupported owned-lab input profile override")
     output.mkdir(mode=0o700)
     capture_id = uuid.uuid4().hex
     marker = {
@@ -59,11 +64,14 @@ def start_lab(output, nginx_bin, campaigns=15):
         if campaigns > 15
         else "legacy",
         "scenario_seed": secrets.randbits(31) if campaigns == 45 else 0,
-        "ai_input_profile": "safe_query_numeric_v2"
-        if campaigns == 45
-        else "safe_query_numeric_v1"
-        if campaigns > 15
-        else "edge_masked_v1",
+        "ai_input_profile": input_profile
+        or (
+            "safe_query_numeric_v2"
+            if campaigns == 45
+            else "safe_query_numeric_v1"
+            if campaigns > 15
+            else "edge_masked_v1"
+        ),
         "backend_port": 18880,
         "database_port": 55435,
         "database_container": "idps-ai-pretrain-" + capture_id[:10],
@@ -309,3 +317,55 @@ def stop_lab(directory):
         results["database"] = "already_stopped"
     atomic_json(directory / "cleanup.json", results)
     return results
+
+
+def verify_lab_cleanup(directory):
+    """Confirm the disposable DB and owned processes are gone after mutation."""
+    directory = Path(directory).resolve()
+    marker = load_json(directory / "owned-lab.json")
+    cleanup = load_json(directory / "cleanup.json")
+    container = marker.get("database_container", "")
+    if (
+        marker.get("purpose") != "ai-pretrain-disposable"
+        or not container.startswith("idps-ai-pretrain-")
+        or not {"student", "sensor_namespace"}.issubset(marker.get("processes", {}))
+        or cleanup.get("database") not in ("stopped", "already_stopped")
+        or any(
+            cleanup.get(name) not in ("stopped", "already_stopped")
+            for name in marker.get("processes", {})
+        )
+    ):
+        raise PipelineError("Owned lab cleanup record is incomplete")
+    for identity in marker.get("processes", {}).values():
+        try:
+            process = psutil.Process(identity["pid"])
+            if (
+                process.create_time() == identity["create_time"]
+                and process.is_running()
+                and process.status() != psutil.STATUS_ZOMBIE
+            ):
+                raise PipelineError("Owned lab process survived cleanup")
+        except psutil.NoSuchProcess:
+            pass
+    result = subprocess.run(
+        ["docker", "ps", "--all", "--quiet", "--filter", f"name=^/{container}$"],
+        capture_output=True,
+        text=True,
+        timeout=15,
+        check=False,
+    )
+    if result.returncode != 0 or result.stdout.strip():
+        raise PipelineError("Disposable lab DB container remains or Docker check failed")
+    for port in (18880, 18881, 55435):
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.2):
+                raise PipelineError("Owned lab port remains reachable after cleanup")
+        except OSError:
+            pass
+    return {
+        "status": "DISPOSABLE_LAB_REMOVED_AFTER_CAPTURE",
+        "cleanup_file_sha256": file_sha256(directory / "cleanup.json"),
+        "database_container": container,
+        "checked_loopback_ports": [18880, 18881, 55435],
+        "trust_limit": "The docker --rm container had no explicit persistence mount; this confirms it is absent now, not an independent application oracle.",
+    }

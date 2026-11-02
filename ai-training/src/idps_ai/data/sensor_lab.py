@@ -146,7 +146,17 @@ class _RelayHandler(socketserver.BaseRequestHandler):
                     peers[1 if source is peers[0] else 0].sendall(data)
 
 
-def _campaign_worker(directory, duration, requests):
+def _campaign_worker(
+    directory,
+    duration,
+    requests,
+    evidence_plan=None,
+    evidence_output=None,
+    collector_source=None,
+    protocol_approval=None,
+    trusted_reviewer_key=None,
+    development_oracle=False,
+):
     from idps_ai.data.campaigns import run_extended_campaigns
 
     subprocess.run(["ip", "link", "set", "lo", "up"], check=True)
@@ -160,10 +170,14 @@ def _campaign_worker(directory, duration, requests):
     marker = load_json(directory / "owned-lab.json")
     config = "user root;\n" + (directory / "nginx.conf").read_text()
     config = config.replace("127.0.0.1:18880", "unix:" + str(directory / "student.sock"))
-    # Match edge telemetry: only its masked idps_json view is retained.
-    config = "\n".join(
-        line for line in config.splitlines() if not ("access_log " in line and "idps_lab" in line)
-    )
+    # Evidence review needs the private native target alongside the masked edge
+    # view; no raw query is exported to EVE or public reports.
+    if evidence_plan is None:
+        config = "\n".join(
+            line
+            for line in config.splitlines()
+            if not ("access_log " in line and "idps_lab" in line)
+        )
     config += "\n"
     (directory / "sensor-nginx.conf").write_text(config)
     command = [
@@ -182,7 +196,25 @@ def _campaign_worker(directory, duration, requests):
             time.sleep(0.3)
             if nginx.poll() is not None:
                 raise PipelineError("Private namespace Nginx failed")
-            if marker.get("scenario_version") in (
+            if evidence_plan is not None:
+                if development_oracle:
+                    from idps_ai.data.dev_oracle_pilot import collect_development_observation
+
+                    collect_development_observation(
+                        evidence_plan, directory, evidence_output, collector_source
+                    )
+                else:
+                    from idps_ai.data.evidence_campaign import collect
+
+                    collect(
+                        evidence_plan,
+                        directory,
+                        evidence_output,
+                        collector_source,
+                        protocol_approval,
+                        trusted_reviewer_key,
+                    )
+            elif marker.get("scenario_version") in (
                 "request-challenge-1",
                 "request-challenge-2",
                 "request-challenge-3",
@@ -207,11 +239,26 @@ def _campaign_worker(directory, duration, requests):
             "tcpdump_log_sha256": file_sha256(directory / "tcpdump.log"),
             "nginx_template_sha256": marker["nginx_template_sha256"],
             "query_profile": marker.get("ai_input_profile", "edge_masked_v1"),
+            "evidence_capture_report_sha256": (
+                file_sha256(Path(evidence_output) / "report.json")
+                if evidence_plan is not None
+                else None
+            ),
         },
     )
 
 
-def capture_lab(directory, duration=360, requests=960):
+def capture_lab(
+    directory,
+    duration=360,
+    requests=960,
+    evidence_plan=None,
+    evidence_output=None,
+    collector_source=None,
+    protocol_approval=None,
+    trusted_reviewer_key=None,
+    development_oracle=False,
+):
     """Requires a lab from start_lab; shuts down only its host Nginx before capture."""
     import psutil
 
@@ -219,6 +266,38 @@ def capture_lab(directory, duration=360, requests=960):
     marker = load_json(directory / "owned-lab.json")
     if marker.get("purpose") != "ai-pretrain-disposable":
         raise PipelineError("Explicitly owned disposable lab required")
+    evidence_mode = evidence_plan is not None
+    if evidence_mode != (evidence_output is not None) or evidence_mode != (
+        collector_source is not None
+    ):
+        raise PipelineError("Evidence capture needs plan, output and frozen collector source")
+    if evidence_mode:
+        from idps_ai.data.http_curation import require_development_source
+
+        for path in (evidence_plan, collector_source):
+            require_development_source(path)
+        evidence_plan = Path(evidence_plan).resolve()
+        collector_source = Path(collector_source).resolve()
+        evidence_output = Path(evidence_output).resolve()
+        if not evidence_output.is_relative_to(directory.parent):
+            raise PipelineError("Evidence output must remain beside the owned lab")
+        if (protocol_approval is None) != (trusted_reviewer_key is None):
+            raise PipelineError("GT approval and trusted reviewer key must be supplied together")
+        if protocol_approval is not None:
+            protocol_approval = Path(protocol_approval).resolve()
+            trusted_reviewer_key = Path(trusted_reviewer_key).resolve()
+        if development_oracle:
+            from idps_ai.data.dev_oracle_pilot import verify_development_plan
+
+            if protocol_approval is not None:
+                raise PipelineError("Development observation cannot receive signed approval")
+            verify_development_plan(evidence_plan / "plan.json", collector_source)
+    elif development_oracle:
+        raise PipelineError("Development observation requires a sealed evidence plan")
+    if len(os.fsencode(str(directory / "student.sock"))) >= 108:
+        raise PipelineError(
+            "Private lab relay socket path is too long; choose a shorter output root"
+        )
     identity = marker["processes"]["nginx"]
     process = psutil.Process(identity["pid"])
     if process.create_time() != identity["create_time"] or str(directory) not in " ".join(
@@ -233,7 +312,11 @@ def capture_lab(directory, duration=360, requests=960):
             raise PipelineError("Host lab Nginx did not stop") from None
     marker["processes"].pop("nginx")
     marker["sensor_capture"] = "private user/network namespace TCP PCAP; offline Suricata"
-    marker["query_view"] = "edge_masked_v1; raw query view excluded"
+    marker["query_view"] = (
+        "masked edge plus private raw lab review view; not production feature parity"
+        if evidence_mode
+        else "edge_masked_v1; raw query view excluded"
+    )
     atomic_json(directory / "owned-lab.json", marker)
     socket_path = directory / "student.sock"
     relay = _Relay(str(socket_path), _RelayHandler)
@@ -241,23 +324,38 @@ def capture_lab(directory, duration=360, requests=960):
     threading.Thread(target=relay.serve_forever, daemon=True).start()
     try:
         with (directory / "namespace.log").open("wb") as log:
-            worker = subprocess.Popen(
-                [
-                    "unshare",
-                    "-Urn",
-                    sys.executable,
-                    "-m",
-                    __name__,
-                    "campaign-worker",
-                    str(directory),
-                    "--duration",
-                    str(duration),
-                    "--requests",
-                    str(requests),
-                ],
-                stdout=log,
-                stderr=log,
-            )
+            command = [
+                "unshare",
+                "-Urn",
+                sys.executable,
+                "-m",
+                __name__,
+                "campaign-worker",
+                str(directory),
+                "--duration",
+                str(duration),
+                "--requests",
+                str(requests),
+            ]
+            if evidence_mode:
+                command += [
+                    "--evidence-plan",
+                    str(evidence_plan),
+                    "--evidence-output",
+                    str(evidence_output),
+                    "--collector-source",
+                    str(collector_source),
+                ]
+                if protocol_approval is not None:
+                    command += [
+                        "--protocol-approval",
+                        str(protocol_approval),
+                        "--trusted-reviewer-key",
+                        str(trusted_reviewer_key),
+                    ]
+                if development_oracle:
+                    command += ["--development-oracle"]
+            worker = subprocess.Popen(command, stdout=log, stderr=log)
             marker["processes"]["sensor_namespace"] = {
                 "pid": worker.pid,
                 "create_time": psutil.Process(worker.pid).create_time(),
@@ -296,8 +394,24 @@ if __name__ == "__main__":
     parser.add_argument("directory", type=Path)
     parser.add_argument("--duration", type=float, default=360)
     parser.add_argument("--requests", type=int, default=960)
+    parser.add_argument("--evidence-plan", type=Path)
+    parser.add_argument("--evidence-output", type=Path)
+    parser.add_argument("--collector-source", type=Path)
+    parser.add_argument("--protocol-approval", type=Path)
+    parser.add_argument("--trusted-reviewer-key", type=Path)
+    parser.add_argument("--development-oracle", action="store_true")
     arguments = parser.parse_args()
     if arguments.action == "probe-worker":
         _probe_worker(arguments.directory)
     else:
-        _campaign_worker(arguments.directory, arguments.duration, arguments.requests)
+        _campaign_worker(
+            arguments.directory,
+            arguments.duration,
+            arguments.requests,
+            arguments.evidence_plan,
+            arguments.evidence_output,
+            arguments.collector_source,
+            arguments.protocol_approval,
+            arguments.trusted_reviewer_key,
+            arguments.development_oracle,
+        )
