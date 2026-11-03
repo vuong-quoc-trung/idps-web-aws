@@ -1,8 +1,46 @@
 import json
 
+import pytest
 import yaml
 
 from idps_ai.common import AI_ROOT
+
+
+def test_full_v5_shadow_refuses_partial_or_pre_response_input_before_scoring():
+    from idps_ai.inference import InferencePipeline
+
+    pipeline = object.__new__(InferencePipeline)
+    pipeline.spec = {"feature_version": "ai-features-5"}
+    complete = {
+        "request_key": "request-one",
+        "sources": ["STUDENT_AUDIT", "NGINX", "SURICATA"],
+        "correlation": "request_id",
+        "status_code": 200,
+        "latency_ms": 3.0,
+        "request_bytes": 120.0,
+        "response_bytes": 80.0,
+        "numeric_json": json.dumps(
+            {
+                "uri_lexical_available": 1.0,
+                "query_lexical_available": 1.0,
+                "structure_available": 1.0,
+            }
+        ),
+    }
+    cases = [
+        {**complete, "sources": ["STUDENT_AUDIT", "NGINX"]},
+        {**complete, "correlation": "ambiguous_request_id"},
+        {**complete, "status_code": None},
+        {**complete, "latency_ms": None},
+        {**complete, "numeric_json": "{}"},
+        {**complete, "request_key": None},
+    ]
+    for row in cases:
+        with pytest.raises(ValueError, match="inference"):
+            pipeline.observe(row)
+    pipeline._seen_request_keys = {"request-one"}
+    with pytest.raises(ValueError, match="Duplicate fused request"):
+        pipeline.observe(complete)  # Must reject before touching extractor or ONNX.
 
 
 def test_shadow_replay_is_read_only_bounded_and_never_emits_payload_or_actions(prepared, tmp_path):

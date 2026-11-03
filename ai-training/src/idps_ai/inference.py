@@ -4,6 +4,7 @@ Rust must implement this versioned preprocessing contract + golden vectors in
 its own integration task; this module never connects to the Security engine.
 """
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -28,9 +29,42 @@ class InferencePipeline:
             )
         self.extractor = FeatureExtractor(**self.spec["state_limits"])
         self.session = cpu_session(bundle / "model.onnx", max_threads)
+        # The collector deduplicates physical lines, but a live dispatcher can
+        # still redeliver the same fused request. Never advance behavior state
+        # or emit a second prediction for one request identity.
+        self._seen_request_keys = set()
 
     def observe(self, fused_request, include_features=False):
         """Consume one chronological post-response fused row exactly once."""
+        if self.spec.get("feature_version") == "ai-features-5":
+            if (
+                set(fused_request.get("sources") or ()) != {"STUDENT_AUDIT", "NGINX", "SURICATA"}
+                or fused_request.get("correlation") != "request_id"
+            ):
+                raise PipelineError("Incomplete or uncorrelated three-source inference input")
+            if any(
+                fused_request.get(name) is None
+                for name in ("status_code", "latency_ms", "request_bytes", "response_bytes")
+            ):
+                raise PipelineError("Post-response inference fields are unavailable")
+            try:
+                numeric = json.loads(fused_request.get("numeric_json") or "{}")
+            except (TypeError, ValueError):
+                raise PipelineError("Invalid numeric inference bridge") from None
+            if any(
+                numeric.get(name) != 1.0
+                for name in (
+                    "uri_lexical_available",
+                    "query_lexical_available",
+                    "structure_available",
+                )
+            ):
+                raise PipelineError("Required numeric inference bridge is unavailable")
+            request_key = fused_request.get("request_key")
+            if not isinstance(request_key, str) or not request_key:
+                raise PipelineError("Missing request identity for inference")
+            if request_key in self._seen_request_keys:
+                raise PipelineError("Duplicate fused request cannot be scored again")
         vector = transform(self.spec, self.extractor.observe(fused_request))
         score, output = self.session.run(None, {"input": vector[np.newaxis, :]})
         above = float(score[0]) >= self.manifest["threshold"]
@@ -47,6 +81,8 @@ class InferencePipeline:
         }
         if include_features:
             result["feature_vector"] = vector.tolist()
+        if self.spec.get("feature_version") == "ai-features-5":
+            self._seen_request_keys.add(request_key)
         return result
 
 
