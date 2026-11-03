@@ -63,3 +63,22 @@ alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible Host Header In
 # 18. Methods outside this Student API policy. Not proof of exploitation.
 # Do not include normal REST PUT/PATCH/DELETE or CORS OPTIONS.
 alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Dangerous HTTP Method or WebDAV Observation"; flow:established,to_server; http.method; pcre:"/^(?:TRACE|TRACK|CONNECT|PROPFIND|PROPPATCH|MKCOL|COPY|MOVE|LOCK|UNLOCK)$/"; classtype:web-application-attack; priority:2; sid:1000018; rev:1;)
+
+# 19. Literal JNDI lookup in request headers only; obfuscations/body not covered.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: JNDI Injection Attempt"; flow:established,to_server; http.request_header; pcre:"/\$\{jndi:(?:ldap|ldaps|rmi|dns|iiop):/i"; classtype:web-application-attack; priority:1; sid:1000019; rev:1;)
+
+# 20. Encoded CRLF followed by a header name/colon in raw URI.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: CRLF HTTP Header Injection Attempt"; flow:established,to_server; http.uri.raw; pcre:"/%0d%0a(?:[A-Za-z0-9-]{1,64}%3a|[A-Za-z0-9-]{1,64}:)/i"; classtype:web-application-attack; priority:1; sid:1000020; rev:1;)
+
+# 21. Broad template syntax heuristic; legitimate template text may match.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible Server Side Template Injection"; flow:established,to_server; http.uri; url_decode; pcre:"/(?:\{\{[^{}]{0,128}\}\}|\$\{[^{}]{1,128}\}|<%=[^%]{1,128}%>)/"; classtype:web-application-attack; priority:2; sid:1000021; rev:1;)
+
+# 22. JSON operator key, not proof of a vulnerable Mongo backend. No body logging.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible NoSQL Operator Injection"; flow:established,to_server; http.content_type; pcre:"/^application\/json(?:[\x3b\s]|$)/i"; http.request_body; pcre:"/\x22\$(?:ne|gt|gte|lt|lte|regex|where|exists|nin|in)\x22\s*:/i"; classtype:web-application-attack; priority:2; sid:1000022; rev:1;)
+
+# 23. Duplicate CL (including identical values) is an ambiguity observation.
+# Includes adjacent headers; bounded scan never crosses the blank header terminator.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible HTTP Request Smuggling Duplicate Content Length"; flow:established,to_server; http.header.raw; pcre:"/(?:^|\r\n)Content-Length[\x20\t]*:[^\r\n]{0,128}\r\n(?:[^\r\n]{1,256}\r\n){0,8}Content-Length[\x20\t]*:/i"; classtype:web-application-attack; priority:1; sid:1000023; rev:1;)
+
+# 24. Shellshock-style function prefix in headers; does not prove CGI/Bash exists.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Shellshock Style HTTP Header Injection"; flow:established,to_server; http.request_header; pcre:"/\(\)\s*\{\s*:[^}]{0,128}\}\s*\x3b/"; classtype:web-application-attack; priority:1; sid:1000024; rev:1;)

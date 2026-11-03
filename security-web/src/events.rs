@@ -513,6 +513,24 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                         "Dangerous HTTP Method or WebDAV Observation",
                         "HTTP Method Policy",
                     ),
+                    Some(1000019) => ("JNDI Injection Attempt", "JNDI Injection"),
+                    Some(1000020) => (
+                        "CRLF HTTP Header Injection Attempt",
+                        "HTTP Header Injection",
+                    ),
+                    Some(1000021) => (
+                        "Possible Server Side Template Injection",
+                        "Template Injection",
+                    ),
+                    Some(1000022) => ("Possible NoSQL Operator Injection", "NoSQL Injection"),
+                    Some(1000023) => (
+                        "Possible HTTP Request Smuggling Duplicate Content Length",
+                        "HTTP Request Smuggling",
+                    ),
+                    Some(1000024) => (
+                        "Shellshock Style HTTP Header Injection",
+                        "Web Application Attack",
+                    ),
                     _ => ("Suricata Alert", "Sensor Alert"),
                 };
                 native_alert = Some(NativeAlert {

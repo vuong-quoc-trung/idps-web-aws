@@ -91,6 +91,38 @@ class ExtendedRuleTests(unittest.TestCase):
             self.assertNotIn("WEB_SHELL_FIXTURE_CANARY", raw, "request body must not be logged to EVE")
             return [event for line in raw.splitlines() if (event := json.loads(line)).get("event_type") == "alert"]
 
+    def test_new_header_signatures(self):
+        headers = [b"X-Test: ${jndi:ldap://example.invalid/probe}",
+                   b"X-Test: ${JNDI:rmi://example.invalid/probe}",
+                   b"X-Test: () { :; }; echo fixture", b"X-Test: normal",
+                   b"X-Test: jndi:ldap://example.invalid", b"X-Test: () ordinary"]
+        events = self.inspect([request(raw=b"GET / HTTP/1.1\r\nHost: lab\r\n" + h + b"\r\n\r\n") for h in headers])
+        hits = {(e["src_port"] - 40000, e["alert"]["signature_id"]) for e in events if e["alert"]["signature_id"] in {1000019, 1000024}}
+        self.assertEqual(hits, {(0, 1000019), (1, 1000019), (2, 1000024)})
+
+    def test_crlf_and_template_uri(self):
+        targets = ["/?q=%0d%0aX-Test%3ahello", "/?q=%0D%0AX-Test:hello",
+                   "/?q=%7B%7B7*7%7D%7D", "/?q=%24%7B7*7%7D", "/?q=%3C%25%3D7*7%25%3E",
+                   "/?q=hello", "/?q=%0d%0aordinary", "/?q=%7Bsingle%7D"]
+        hits = {(e["src_port"] - 40000, e["alert"]["signature_id"]) for e in self.inspect([request(t) for t in targets]) if e["alert"]["signature_id"] in {1000020,1000021}}
+        self.assertEqual(hits, {(0,1000020),(1,1000020),(2,1000021),(3,1000021),(4,1000021)})
+
+    def test_nosql_json_keys(self):
+        bodies = [b'{"username":{"$ne":null}}', b'{"$regex":"fixture"}',
+                  b'{"message":"$ne"}', b'{"ne":null}', b'{"$near":1}']
+        requests = [request(method="POST", content_type="application/json", body=b) for b in bodies]
+        requests.append(request(method="POST", content_type="text/plain", body=bodies[0]))
+        hits = {e["src_port"] - 40000 for e in self.inspect(requests) if e["alert"]["signature_id"] == 1000022}
+        self.assertEqual(hits, {0,1})
+
+    def test_duplicate_content_length_adjacent_and_separated(self):
+        headers = [b"Content-Length: 0\r\nContent-Length: 1\r\n",
+                   b"content-length: 0\r\nX-Test: fixture\r\nCONTENT-LENGTH: 0\r\n",
+                   b"Content-Length: 0\r\n", b"X-Test: Content-Length: 0\r\nContent-Length: 0\r\n"]
+        requests = [request(raw=b"POST / HTTP/1.1\r\nHost: lab\r\n" + h + b"\r\n") for h in headers]
+        hits = {e["src_port"] - 40000 for e in self.inspect(requests) if e["alert"]["signature_id"] == 1000023}
+        self.assertEqual(hits, {0,1})
+
     def test_http_framing_ambiguity(self):
         headers = [b"Content-Length: 5\r\nTransfer-Encoding: chunked\r\n",
                    b"transfer-encoding: chunked\r\ncontent-length: 5\r\n",
