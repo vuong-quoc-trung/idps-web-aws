@@ -1,5 +1,208 @@
 # 06 — AI handoff, decision log và sổ training
 
+## 57. Autonomous public-data intake và research gate — 2026-11-03T21:07+07:00
+
+Lượt này chỉ chạm AI/data/docs, giữ nguyên diff chưa commit, Student/Security, formal `scale_policy.yaml`, GLU 9.675.784/207, MLP, checkpoint/ONNX, threshold và sealed holdout. Không commit/push/reset, không phát traffic, không optimizer update, không tự tạo nhãn hoặc reviewer. Biblio-US17 chuyển thành ứng viên tùy chọn, không gọi lại archive 401.
+
+WAMM `DS_Augmented_v2` tải từ GitHub revision `2783eab560c4355f5976a57fc2e97a2e6c5c79a1` và giữ riêng trong `ai-training/.artifacts/autonomous_research_20261103/wamm/`. Repo LICENSE CC BY4.0, raw archive SHA256 `2631c31b8f4bdc389365274e6f22d9753534ef1e2eab52f3d1fd20c4f6bc65c9`, SQLite SHA `c692dcdebaf9984dff49ad01f1c21964c8a83ebe1c426bd12e26f9bff9ce335d`, SQLite `quick_check=ok`. `audit-v4.json` SHA `3fd155f90e475e844ea03b7e8330a1e77a22c85f2b99ee8b699c13706f5056df`; `overlap-v2.json` SHA `adf6b46d7eea7730bf019a1cd7f1968c26b741be0512e8ffa09eec38d45d77c8`. Báo cáo self-hash PASS; staging v2 SHA `230028c554475034325a053cb36774059d823bfdb5501c7ea29201b590a6813d`, nonoverlap v2 SHA `92b9fe8a49126fba52f132a7829393c6528afc3e3ce8951860e46ff6dae55445`. Các lần audit trước và source snapshot vẫn giữ private làm bằng chứng, không dùng làm active report.
+
+SQLite thực có 704.665 publisher rows, 704.649 parseable request lines; 493.513 normal và 211.136 attack theo publisher. 312.241 exact HTTP text representations, 67.620 exact float32/76 views. 757 views chứa hai nhãn (448.231 rows thuộc các keys đó; minority 15.872 rows). Export chỉ 66.863 nonconflicting views numeric; 23.576 trùng exact views của exposed development 118.760 rows, 4 label disagreements; còn 43.287 numeric-only views (14.242 publisher benign/29.045 publisher attack). Không ghi raw HTTP vào Parquet/report. Đây là **staging views, không phải physical requests hoặc training corpus đã partition**. WAMM dẫn xuất SR-BH, thiếu per-row campaign/time/lineage; exact dedup không giải quyết near-duplicate. `AUTONOMOUS_RESEARCH_READY=false` theo policy v1, `FORMAL_READY=false`, formal admission **0**; supervised pilot/metrics **NOT_RUN** vì chưa có hai source/campaign hai lớp và acceptance hợp lệ. GLU207 không nhận 76 cột bằng padding.
+
+WAF Data v2 chỉ kiểm metadata/card, không tải vì `anomalous` thiếu chứng cứ attack intent/campaign. Kyoushi LDS scenario1 Zenodo có CC BY-NC-SA4.0 và công bố Apache access labels/attacker logs; archive 783.022.916 bytes, lượt tải thử dừng ở 6.799.360 bytes do ~0,26MB/s, giữ `.partial` private, **không parse hoặc tính mẫu**. Quan hệ với AIT-LDSv2 và nghĩa vụ share-alike cần kiểm trước research/evaluation. Không cộng claim publisher hoặc observations vào 2M.
+
+| Kiểm tra/lệnh | Trạng thái |
+| --- | --- |
+| WAMM pinned SHA + `PRAGMA quick_check`, `audit-wamm-research.py` trong systemd scope CPUQuota400%/MemoryMax16G | **PASS**, 704.665 rows; output `audit-v4.json`/staging v2 |
+| `filter-request-view-overlap.py` trên train/calibration/val exposed, không đọc sealed/test | **PASS**, 23.576 overlap loại, 43.287 views còn lại |
+| Báo cáo self-hash và output Parquet SHA readback | **PASS**, hash nêu trên |
+| `pytest -q ai-training/tests/test_wamm_research_audit.py` | **PASS 2** |
+| Full `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7 -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ... bash ai-training/scripts/check.sh` (Ruff/format/pytest/compile/contract/Web diff) | **PASS**, 230 pytest/0 skip trong 63,24s; 139 files formatted; contract v1.0 và Web diff PASS |
+| New research training / independent acceptance / formal admission | **NOT_RUN / NOT_READY / 0** |
+
+File đổi lượt này: `ai-training/scripts/audit-wamm-research.py`, `ai-training/scripts/filter-request-view-overlap.py`, `ai-training/tests/test_wamm_research_audit.py`, `ai-training/configs/autonomous_research_policy_v1.yaml`, `ai-training/configs/public_http_sources.yaml`, `ai-training/PRETRAINING.md`, `ai-training/FINAL_TRAINING_HANDOFF.json`, `docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md`, `docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md`, `docs/06_AI_HANDOFF_AND_RUN_LEDGER.md`. Các file AI khác trong worktree đã dirty từ trước, không nhận là thay đổi lượt này. Điểm tiếp tục: tìm/tải nguồn HTTP hai lớp request-bound có metadata campaign/time và nguồn độc lập thật, kiểm license/lineage, khóa partition và acceptance trước fit. Ưu tiên nguồn có thể hoàn tất intake trong ngân sách; không lặp lại WAMM hoặc train trên chính validation cũ.
+
+## 56. Data unblock và gói reviewer — 2026-11-03
+
+Chỉ làm AI/data docs và một gói private; giữ diff chưa commit, raw/PCAP/checkpoint/holdout, model GLU9.675.784/207, MLP, ONNX, ngưỡng và policy. **Không train, không phát HTTP, không retry Biblio archive 401, không tự ký/review/commit/push**. Research 100 updates mục 55 đủ kiểm optimizer train-only; không làm bằng chứng Recall/FPR. Formal admission vẫn **0**; không có corpus mới hai lớp đủ điều kiện study độc lập. `scale_policy.yaml` giữ 2M/3 environment/7 ngày/120 campaign/95% ba nguồn/confidence0,9/family+partition/embargo300s/evidence-v2.
+
+`ai-training/PRETRAINING.md` hiện có **email tiếng Anh gửi trực tiếp** cho idUS Biblio-US17 xin RAW+LABEL+README, RID/label docs/checksum, quyền nghiên cứu, feature extraction, private training, lưu trữ, chia sẻ kết quả/feature/weights và điều khoản. Biblio vẫn `BLOCKED_EXTERNAL`: chỉ có metadata local, không có granted RAW/LABEL, không đếm publisher claims thành request dự án. Intake sau grant đã chốt `SHA/rights → RAW↔LABEL RID join → S2/S3/benign scope → duplicate/conflict/unique views → feature availability → source/day split → research/formal decision`; CLEAN không tự coi là benign đã review. Mốc G0/G1/G2/G3 trong PRETRAINING là quản lý research, **không thay** scale gate. Protocol study mới khóa trước dữ liệu/scores, so MLP/GLU trên cùng visible input/FPR 1%; request-only 76 không đại diện GLU207; study **NOT_RUN**.
+
+Private [APPROVAL_PACKAGE](../ai-training/.artifacts/ground_truth_pilot_20261102/APPROVAL_PACKAGE.md) mode0600 đã bổ sung request IDs và hash của 8 Oracle development, criteria benign/attack/UNKNOWN và lệnh terminal review 162 hồ sơ hiện có. Tái kiểm nguồn registry bằng `load_source`: `two_source` **54 PASS**, `eve_first` **54 PASS**, `eve_novel` **54 PASS**, vẫn 0 human decisions mới. Plan-v3 prospective `_pilot_plan(require_current_collector=True)` **PASS**, chưa có reviewer key/signature. Oracle devgt1 report/queue/PCAP SHA readback **PASS**; `prepare-evidence-review.py --verify-existing` **FAIL** trên devgt1 vì plan pin collector SHA `38bad2…` còn code hiện tại `30c5ee…`. Đây là mismatch provenance thực, không được bypass; 8 nhãn giữ UNKNOWN và không làm formal. Prospective signed capture sau reviewer phê duyệt là đường ngắn nhất. Oracle cũ đã quan sát 8/8 ba nguồn **offline EVE**, 2/2 POST bytes và một DB mutation hợp lệ; không chứng minh attack intent hoặc exploit success.
+
+| Việc kiểm | Trạng thái |
+| --- | --- |
+| Biblio authorized RAW+LABEL+README/terms | **BLOCKED_EXTERNAL** — chủ dữ liệu/idUS cấp quyền và xác nhận điều khoản |
+| Reviewer thật độc lập ký plan-v3, xác nhận semantic intent theo bằng chứng | **BLOCKED_EXTERNAL** — chữ ký/định danh và quyết định của người có chuyên môn |
+| `plan-v3` current-code readback; 3 source registry load/reverify; packet mode0600/SHA, 8 IDs/null labels, Oracle self-hash và report references | **PASS** ở phạm vi trên |
+| devgt1 reverify bằng code hiện tại | **FAIL provenance SHA mismatch**, không sửa dữ liệu/gate để ép PASS |
+| Study mới, formal training, independent evaluation, source download | **NOT_RUN**; thiếu corpus mới/rights/review |
+| `git diff --check`; `git diff --exit-code HEAD -- student-web security-web ai-training/configs/scale_policy.yaml` | **PASS**; 0 Web code/config hoặc formal gate thay đổi |
+
+Điểm tiếp tục: (1) owner gửi email trong PRETRAINING qua idUS request-a-copy, chuyển grant/terms và RAW+LABEL+README **private** khi nhận; (2) reviewer độc lập đọc plan-v3, chỉ ký từ khóa của họ nếu phê duyệt đúng phạm vi, và cung cấp public key/approval qua kênh tin cậy; (3) Codex khi có đầu vào thật sẽ chạy intake và blind review/admission hiện có, khóa partition study trước mọi score. Không dùng cùng lab để tăng số lượng vô nghĩa.
+
+## 55. Một research train-only GLU 207 có kiểm soát — 2026-11-03
+
+Nhánh `feat/ai-model-training`; giữ raw/PCAP/holdout/checkpoint cũ và diff chưa commit. Không sửa Student/Security, gate, model architecture, sampler production, threshold hoặc validation. Private [plan](../ai-training/.artifacts/research_glu207_stability_20261103/plan.json) SHA `75df365788d1dca5bddf4b62ee8d5290b3e4d306f2312b0fd7dccff280447dcc` khóa trước train: một giả thuyết optimization stability của GLU9.675.784/207 trên prepared-v5 dev train, 100 updates, seed17/batch128, tối đa300s, chỉ train row groups 0–80. Old GLU checkpoint 652 steps dùng implementation SHA cũ, không force-resume hoặc ghi đè. Không chạy ONNX mới, test/holdout, long/formal train hoặc chọn champion.
+
+Full train có **41.607 rows**, 41.585 exact views, 29.511 benign/12.096 attack theo nhãn runner trong 27 groups/một lab. Preflight kiểm count toàn train đã decode mixed group chứa 377 validation rows chỉ để xác định split, không score/tune. Run optimizer chọn 81 row groups train-only cho 41.472 rows/41.450 views; mixed group cuối có 135 train rows được bỏ để run không decode validation. Permutation seed17 lấy 12.800 rows không lặp, **12.798 views**, 9.042 benign/3.758 attack. Family counts và checksum input trong report private. Trong run **0 val/test row decoded/scored**; test groups không được mở.
+
+Systemd user scope `CPUQuota=400%`, `AllowedCPUs=0-7`, `MemoryMax=16G`, `MemoryHigh=15G`, swap0; Python envelope 4 threads/16GiB đọc lại giới hạn. **100/100 optimizer updates**, 23,14s wall, peak process RSS 872,7MB, nhiệt sample max69°C. Fixed train probe loss **1,499128→0,185689**, gradient L2 **22,099→0,850**; sampled gradient norm min/median/max **0,359/1,046/8,380**, 7/10 >clip1, không NaN/Inf. Checkpoint riêng [latest](../ai-training/.artifacts/research_glu207_stability_20261103/run/latest.json) đọc lại mọi parameter và Adam tensor exact; [report](../ai-training/.artifacts/research_glu207_stability_20261103/report.json) SHA `e8d811cc4450b909771335f247e9cf1bb3fe84c098f328afea9330d13ab22639`. **Resume mới NOT_RUN**, historical exact resume vẫn giữ; subset research checkpoint không phải launcher full-dataset continuation. Loss chỉ chứng minh optimization sanity trên development, không Recall/FPR.
+
+Data track: Biblio-US17 authorized copy vẫn pending, không retry 401. [WebSpotter paper](https://www.ndss-symposium.org/ndss-paper/achieving-interpretable-dl-based-web-attack-detection-through-malicious-payload-localization/) và [repo](https://github.com/Sec-AI-research/WebSpotter) được sàng lọc metadata, không tải rows: FPAD source/class confounding do benign kế thừa CSIC/attack tạo từ payload; CVE attack manually localized nhưng thiếu matched benign. Decision research stress candidate, 0 physical request/label mới verified, 0 research training rows mới, 0 admitted. Không gọi publisher claim là Ground Truth của dự án. Chỉ chủ dữ liệu có thể cấp Biblio RAW+LABEL+README/terms; reviewer độc lập phải ký/xem plan Oracle và intent trong môi trường mới có quyền. 2M/3 env/7d/120 campaign/95% ba nguồn, confidence≥0,9, family/partition/embargo/evidence-v2 vẫn thiếu. Bước tiếp theo ưu tiên Ground Truth và campaign/môi trường độc lập, không tune validation lộ.
+
+| Lệnh/kiểm | Kết quả |
+| --- | --- |
+| Train-only preflight Parquet row-group/family/exact-float32 view, source/spec/checkpoint hash | **PASS**; old resume SHA không khớp code hiện hành nên không force |
+| `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7 -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ... run.py` | **PASS** 100 updates, hard limit readback, checkpoint+Adam readback exact |
+| YAML parse, private plan/script/report SHA, Web diff, `git diff --check` | **PASS** |
+| `python -m py_compile run.py`; Ruff private script | **PASS** compile và `ruff check --ignore E402`; Ruff mặc định **FAIL E402** ở 6 dòng do import `idps_ai` sau khi thêm private `sys.path` (style, không ảnh hưởng run); script đã khóa SHA nên giữ nguyên |
+| Validation/test scoring, formal training, ONNX export, new resume, source download | **NOT_RUN** theo scope |
+
+File tracked lượt này: `ai-training/PRETRAINING.md`, `ai-training/configs/public_http_sources.yaml`, `ai-training/reports/ATTACK_EVIDENCE_20261101.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Script/plan/report/checkpoint nằm private ignored; không commit/reset/push.
+
+## 54. Chốt Python inference backend và ranh giới Rust canonical — 2026-11-03
+
+Phạm vi chỉ đọc Security Web `events.rs`, `ingest.rs`, migration 0003 và Rust Cargo; không sửa Student/Security. Python `readers.py` đã có `canonical`/`postgres-export`, `collect` và `InferencePipeline` v5; **không viết lại encoder Rust/Python**. DB `normalized_events` chỉ được điền khi `collect_all`; `observed_at` là cột riêng. Không có DB/export Rust đang chạy để kiểm end-to-end. Trên artifact live cũ: 5/5 Student canonical records bọc `{id,canonical}` cho normalized output exact với nguồn trực tiếp; Nginx 5/5 có request ID, latency_seconds, request/response bytes và `status` (Rust ánh xạ); EVE HTTP 4/4 ID trong response header, 0/4 ở `http.request_id`, 4/4 numeric v2; EVE flow 36/36 có start/end. Report private `ai-training/.artifacts/edge_bridge_audit_20261103/report.json` SHA256 `49e07a6593e97ec60ab38c7376f98546951c232fbd09e0b568bf8803e6d9f620`, pin SHA input và không chứa raw values.
+
+Kết luận: Rust canonical EVE mất ID live, numeric v2 và flow end nên **không** tạo được full207 chỉ từ DB. Python dùng canonical Student/Nginx export read-only + EVE AI projected numeric v2 trước mask; không cần Rust feature generator. `collect`/inference fail-closed hiện có áp dụng cho missing/duplicate/out-of-order, nhưng adapter chưa dùng `observed_at` và live durable timeout chưa được nghiệm thu. 12/12 probe live cũ dùng native logs, không phải DB-export integration. Không chạy thêm HTTP, không train, không mở holdout/đổi gate/model/ngưỡng hoặc bật chặn.
+
+| Kiểm | Kết quả |
+| --- | --- |
+| Read-only source/schema đối chiếu + wrapper 5 Student records thật | **PASS**; Nginx/SURICATA Rust canonical dynamic parity **NOT_VERIFIED** |
+| `taskset -c 0-7 ... pytest -q tests/test_contracts.py tests/test_query_numeric.py tests/test_shadow_replay.py` | **PASS 22** |
+| JSON self-hash/report link, `git diff --check`, `git diff --exit-code HEAD -- student-web security-web` | **PASS** |
+| Đường live DB→AI, receipt-time, TLS, restart timeout | **NOT_RUN**; chưa có export/sidecar đồng thời hoặc quyền đọc DB hiện hành |
+| Formal admission, new research study, new campaign | **NOT_RUN/0**; không có nhãn hoặc nguồn mới qua gate |
+
+File cập nhật lượt này: `ai-training/README.md`, `ai-training/PRETRAINING.md`, `ai-training/reports/ATTACK_EVIDENCE_20261101.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Giữ diff cũ, raw/PCAP/checkpoint/holdout; không commit/reset/push. Formal admitted 0/2M, benign/attack độc lập mới 0/0, campaign/môi trường độc lập mới 0. Biblio-US17 chờ authorized RAW+LABEL+README và terms; Oracle intent cần reviewer độc lập thực sự ký/phê duyệt, không suy từ 8 response/DB checks. Research 76 chỉ khi có nguồn/campaign hai lớp và đủ unique views/split; formal207 cần thêm nhiều môi trường ba nguồn, nhãn/vị trí thời gian đáng tin và independent acceptance.
+
+## 53. Edge parity blocker và fault replay live capture — 2026-11-03T17:51+07:00
+
+Nhánh `feat/ai-model-training`, giữ diff chưa commit và toàn bộ raw/PCAP/checkpoint/holdout/model/ngưỡng/gate. Không sửa Student Web/Security Web, không train/traffic mới, không commit/reset/push. Đọc Rust `security-web/src/events.rs`, `src/ingest.rs`, `Cargo.toml`: canonical ingestion và 5 thống kê query có, encoder 207/ONNX inference không có. **Rust/edge vector parity NOT_VERIFIED** vì chưa có đường thứ hai; Python train↔inference 512/512 và live 4/4 trước đó vẫn chỉ cùng implementation.
+
+Replay AI-only trên 4 target GET của `live_shadow_20261103_v2`, ba log immutable được pin SHA trong `.artifacts/live_fault_replay_20261103_v2/fault-report.json`: missing EVE tại deadline → reject; snapshot cuối có EVE nhưng replay không score lại; Nginx exact duplicate → dedup/vector exact; logical duplicate cùng ID khác latency → ambiguous/reject; reverse line order → vector exact; fused request cũ đến sau → reject; cùng fused request phát lần hai → trước sửa score trùng, sau sửa reject trước extractor/ONNX; prior flow 0/2 đầu, 2/2 sau. Không action chặn. Replay dùng staged snapshot, **không** kiểm sensor thật trễ >timeout hoặc durable timeout/restart; process-local dedup chưa benchmark endurance. Live shadow lab 12/12 ba probe tốt không là chứng nhận edge production.
+
+Code thay đổi trong lượt này: `ai-training/src/idps_ai/inference.py`, `ai-training/tests/test_shadow_replay.py`; cập nhật `ai-training/PRETRAINING.md`, `ai-training/reports/ATTACK_EVIDENCE_20261101.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Private fault replay script/report giữ trong `.artifacts` để bảo vệ log, không thêm campaign.
+
+| Kiểm tra | Kết quả |
+| --- | --- |
+| Fault replay ba nguồn từ artifact live cũ; không gửi HTTP mới | **PASS** các guard nêu trên; late EVE chỉ staged snapshot |
+| `taskset -c 0-7 ... pytest -q tests/test_shadow_replay.py tests/test_export.py tests/test_query_numeric.py tests/test_structure_features.py tests/test_sensor_lab.py` | **PASS 41 / SKIPPED 1** |
+| Ruff lint/format, JSON self-hash và report↔handoff link, `git diff --check`, `git diff --exit-code HEAD -- student-web security-web` | **PASS** |
+| Rust↔Python 207 parity, TLS/production, naturally delayed EVE, durable timeout/restart, independent-label study | **NOT_RUN/NOT_VERIFIED** do thiếu đường Rust, nguồn hoặc nhãn |
+
+Formal admitted **0/2M**, nhãn benign/attack độc lập mới **0/0**, môi trường/campaign đánh giá độc lập mới **0**. Biblio-US17 vẫn chưa có RAW+LABEL+README được cấp quyền; không retry 401. Hành động ngoài phần mềm ngắn nhất: chủ dữ liệu gửi [mẫu xin quyền trong PRETRAINING](../ai-training/PRETRAINING.md) và cung cấp bộ tệp/quyền sử dụng; reviewer độc lập xác nhận intent theo protocol hiện có. Biblio chỉ mở khả năng research 76 feature sau audit; formal 207 cần nguồn ba log/môi trường độc lập và nhãn/split qua gate cũ.
+
+## 52. Suricata live và GLU 207 post-response shadow — 2026-11-03T16:22+07:00
+
+Nhánh `feat/ai-model-training`; giữ diff cũ, bốn checkpoint research, GLU 9.675.784/207, MLP, sampler, threshold, formal gate và holdout. Chỉ thêm script AI `ai-training/scripts/live-shadow-lab.py`, cập nhật `ai-training/PRETRAINING.md`, `ai-training/reports/ATTACK_EVIDENCE_20261101.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Student/Security source không đổi, không commit/reset/push, không train hoặc bật chặn. Bốn lab Docker/Postgres+JVM+Nginx tạm đã cleanup và verify; chỉ GET `/api/auth/csrf`/`/api/faculties` trong loopback namespace riêng. 16 target requests +4 setup readiness, 0 nhãn mới, 0 admitted.
+
+| Phép thử | Ba nguồn / inference / bỏ qua | Sensor | Timing/tài nguyên |
+| --- | --- | --- | --- |
+| Live mặc định, `live_shadow_20261103` | 2/4 / 2/4 / 2 thiếu EVE | **100/240 packet drop**; lỗi coverage thực tế | Không dùng hai request thiếu EVE |
+| Ring `lo` 4096, chờ 67s, `live_shadow_20261103_v2` | 4/4 / 4/4 / 0 | **0/208 drop**; 2 request sau có prior completed flow | End-to-end p50/p95/p99 192,09/221,44/224,10ms (n=4) |
+| Ring `lo` 4096, không chờ, `live_shadow_20261103_resource` | 4/4 / 4/4 / 0 | **0/80 drop**; không có prior flow | End-to-end 193,18/218,06/221,13ms (n=4), feature+ONNX 6,69–7,97ms; peak RSS 1,318GB (AI worker, Nginx, sensor, JVM) + PostgreSQL cap 512MiB; 8-core affinity, 0,327 core CPU trung bình, 5,03 inferred/s trong 0,795s |
+| Ring lo 4096, query vô hại | 4/4 / 4/4 / 0 | 0/80 drop; numeric v2 khớp target 4/4 trước score | End-to-end p50/p95/p99 185,11/312,64/329,81ms (n=4) |
+
+EVE HTTP trong các lượt tốt đến sau client send 16,7–35,0ms; mỗi request có đúng 1 Student, 1 Nginx, 1 EVE HTTP cùng ID. Probe đầu chứng minh fail-closed/skip telemetry khi sensor drop; probe tốt chưa có timeout do EVE đến trễ, nên chưa chứng nhận nhánh đó. 207/207 model values hữu hạn, 197/207 source-supported khi chưa có prior flow, 202/207 khi có; 5 original-query values luôn thiếu. Lượt 67s vector **4/4 exact** giữa Python collector/reference và Python inference; không phải parity độc lập Rust/edge. Flow chỉ dùng sau `available_at`; status/latency/bytes hiện tại chỉ sau response. Không tìm thấy future backfill ở bốn request đã kiểm, nhưng race/clock drift ở sản xuất chưa kiểm. Throughput/latency từ mẫu 4 request tuần tự không là SLA; thiếu nhãn để đo Recall/FPR.
+
+Private artifact SHA: probe lỗi report `24f24e022d7010698e088218a9aff076baaf6aaf8e6f035636f803440d81bbc7`; probe chờ report `16711ba965d6bfc9b2b4b4ad1bf5cd888aa2626819648d3ddbf62bc804b1e143`, feature aggregate `ada369e9b1fa315dbe2f343cd10b7296cb75e78b3238035eff933e3f4dc5c149`; probe resource report `12db7446e1a892569718b8b5b5c3a7d1dd6fc72b68ce742e283ca02cf79f713b`. Probe query report SHA 6297e030a851f21b51efa8ea5b36722c92bd2e4dcb59c66b45dbae535439055c. Bằng chứng không chứa score từng request/nhãn trong tracked report. Suricata single runmode tự giảm tpacket v3 xuống v2; ring riêng mới là thay đổi gắn với 0 drop trong lab, chưa ngoại suy cho VM/production.
+
+| Lệnh/kiểm | Trạng thái |
+| --- | --- |
+| `taskset -c 0-7 ... live-shadow-lab.py run ...` bốn lượt, sensor `-i lo` live; check report và sensor packet counters | **PASS với caveat**: probe đầu FAIL coverage, ba probe sau 12/12 và 0 drop; cleanup PASS |
+| `taskset -c 0-7 ai-training/.venv/bin/pytest -q` sáu module sensor/dataset/query/shadow/behavior/structure | **PASS 38, SKIPPED 1** |
+| `ruff check`, `ruff format --check`, `py_compile` script AI; `git diff --check`, Web diff | **PASS** |
+| Full pytest lại, Rust/edge parity, TLS, late-EVE arrival, high-load benchmark, independent label evaluation, formal train | **NOT_RUN**; không suy từ mẫu lab ngắn |
+
+Formal admitted **0/2.000.000**; Biblio-US17 RAW+LABEL chưa có quyền. Ưu tiên dữ liệu có nhãn đáng tin và kiểm parity/receipt-time trên đường inference edge thật ở môi trường được cấp phép, không tối ưu model trên validation development đã lộ.
+
+## 51. GLU 207 input timing, shadow offline và fail-closed gate — 2026-11-03T09:31+07:00
+
+Nhánh `feat/ai-model-training`, giữ toàn bộ diff cũ chưa commit; bốn checkpoint và study sampler 76 cột ở mục 50 được **khóa**, không fit/score lại. Chỉ sửa luồng AI: `ai-training/src/idps_ai/inference.py`, `ai-training/tests/test_shadow_replay.py`, `ai-training/PRETRAINING.md`, `ai-training/reports/ATTACK_EVIDENCE_20261101.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Không sửa Student/Security, bundle/threshold/weights, formal gate, raw/holdout; không commit/reset/push, phát traffic hoặc train mới.
+
+Capture development AI-owned `eve3-1102c` có PCAP packet thật và EVE decode **offline**. Ba input immutable SHA được pin trong private `ai-training/.artifacts/glu207_shadow_20261103/shadow-plan-v3.json` SHA `b6448bb58f8a657610bfefa1e60816826b51a9028dfe1207200ad5810a12e5a8`; report aggregate SHA `3d230a8cdd9ab5d37bb57d2ab1a3d63c2fb745d840dfe5bf51cf65560a6d93be`. `collect` nhận 237 observations, ghép 55 requests: 54 request mục tiêu Student+Nginx+EVE/`request_id`, một setup Student+Nginx. Report cũ `correlated-v3` cũng xác nhận 54/54, max client→EVE HTTP 0,618s, max EVE HTTP→flow emission 11,34s. Không cộng EVE flow/alert thành request mới.
+
+Spec v5/207 dùng post-response, query structure+dynamics bật đúng từ `state_limits`. Trên 54 request: 207/207 feature hữu hạn, **197 source-supported values**, 5 giá trị prior flow và 5 original-query metrics không có (các missing/availability flags vẫn có); 122 cột biến thiên. Numeric query/structure/status/latency/bytes 54/54, user key 51/54. Prior completed flow tại decision time **0/54**, trong prepared-v5 train **36.443/41.607**; cả sáu `ip/user × 10/60/300s_context_incomplete` đều bật 54/54 vì capture chỉ 11,34s. UA mới toàn Firefox/Mozilla còn train đa dạng. Đây là khoảng trống coverage/domain shift và nguy cơ shortcut nguồn, chưa là bằng chứng model dùng shortcut hay nhãn rò rỉ.
+
+**Vấn đề đã sửa có bằng chứng:** trước thay đổi, `InferencePipeline.observe` score cả request setup thiếu EVE (1/1). Cổng v5 giờ từ chối trước model khi thiếu một trong ba nguồn, correlation không phải request ID, thiếu status/latency/request/response bytes sau response hoặc cờ URI/query/structure numeric không khả dụng. Test trực tiếp setup sau sửa: 0 prediction, `PipelineError`; 54 request đủ nguồn: 54/54 output hữu hạn. Flow/user vẫn có missingness theo hợp đồng. Không có hành động firewall. Persisted prepared-v5 train **512/512 × 207** vector exact với inference; capture mới **54/54** vector bằng nhau trên hai đường dùng cùng Python implementation, không chứng nhận Rust/live edge. ONNX parity bundle cũ giữ nguyên. Tất cả chỉ là **offline post-response shadow**, không score attack-quality hoặc chọn champion.
+
+| Lệnh/kiểm | Trạng thái |
+| --- | --- |
+| `collect` ba log AI-owned cũ với `safe_query_numeric_v2`; verify SHA input/collected/bundle | **PASS** 237 observations, 55 fused, 54 three-source |
+| `taskset -c 0-7 ... shadow-audit.py` với `resource_envelope(4,16)` | **PASS** affinity thực `[0,1,2,3]`, 54 finite outputs; p50/p95/p99 **6,76/7,11/7,48ms**, model load **208,47ms**, peak process RSS **322,72MB**; không tính sensor/correlation/wait |
+| Prepared-v5 train 512-vector exact compare + partial-source direct probe | **PASS** 512/512×207; partial row **rejected** |
+| `ruff check` + `ruff format --check` trên hai file AI đổi | **PASS** |
+| `taskset -c 0-7 ... python -m pytest -q ai-training/tests` | **PASS 227 / SKIPPED 1** (114,42s) |
+| `git diff --check`, `git diff --exit-code HEAD -- student-web security-web`, report/handoff/plan SHA | **PASS** |
+| Live Rust/edge receipt-time parity, formal training, holdout, long train, model promotion | **NOT_RUN**; không có source/live evidence hoặc nhãn độc lập |
+
+Resource benchmark chỉ phản ánh 54 request cùng lab, không gồm thời gian sensor/queue/network và không là SLA production. Biblio-US17 quyền RAW+LABEL vẫn PENDING; 0 request mới phát, 0 benign/attack intent độc lập, formal admitted **0/2.000.000**. Bước tiếp theo ưu tiên (1) nguồn/campaign mới có nhãn đáng tin và (2) live three-source shadow post-response đo thời gian nhận và parity numeric/207 trên hệ thống được cấp phép. Research training chỉ cho câu hỏi mới trên dữ liệu phù hợp; formal chỉ khi corpus/admission/partition/independent evaluation đạt gate. Không tối ưu lại sampler hoặc threshold trên validation đã lộ.
+
+## 50. Study một giả thuyết sampler trên development — 2026-11-03T08:44+07:00
+
+Nhánh `feat/ai-model-training`; giữ nguyên mọi diff cũ chưa commit. Không sửa Student/Security, model chính 9.675.784/207, formal gate, holdout, raw data hoặc checkpoint cũ; không commit/reset/push. Giả thuyết khóa trước: lấy mẫu cân source/family **có hoàn lại** lặp quá nhiều Student benign views và góp vào FPR. Private `execution-plan.json` SHA `74d51551878fa3ce5e9959f7fccbdd534f5fe5b300c1d996cdee5945b8ec0e47` được khóa trước train/score mới. Bản plan đầu có amendment trước train do implementation SHA của checkpoint baseline cũ khác mã hiện tại; cả baseline và treatment được train lại cùng mã, seed17, 300 updates, 76 input, cùng 27.142 selected exact views. Chỉ `sampling` đổi từ `domain_family_balanced` sang `None`; không thay loss, model, threshold policy, split hoặc nhãn. Dữ liệu development 118.760 rows đã lộ, 0 independent semantic labels, 0 independent evaluation mới.
+
+Sampler cân có hoàn lại: 38.278 draws/14.060 views, tối đa69/view; Student benign 9.684 draws/206 views. Không hoàn lại: 38.278 draws/27.142 views, tối đa2/view; Student benign 310 draws/206 views. GLU1024: Student-lab exact-view recall/FPR **15,03%/10,22% → 54,25%/0%**, nhưng SR-BH **21,82%/0,348% → 3,18%/2,50%**. MLP256: Student recall **17,65%→0%** ở FPR0%; SR-BH recall **31,89%→30,10%**. PR-AUC, request-row metrics và family counts ở [PRETRAINING](../ai-training/PRETRAINING.md) và [report](../ai-training/reports/PARTITION_RECOVERY_20261031.json). Đây là tradeoff nguồn; sampler đổi cả source/class/family exposure, không xác định một cơ chế shortcut duy nhất. **Không promote** sampler, không chọn champion/threshold, không coi kết quả 76 cột là GLU 207.
+
+| Lệnh/kiểm | Kết quả |
+| --- | --- |
+| `selected_training` + exact float32 view/conflict/source-class preflight | **PASS** 27.142 selected rows/views; 0 mixed-label, 0 cross-role view/group theo admission cũ |
+| `idps_ai request-train --diagnostic-updates 300 --cpus 4` ×4 arm | **PASS** 300 updates mỗi arm; resource guard hiệu lực 4 CPU/16 GiB, peak process RSS <0,55 GiB |
+| `idps_ai request-export --cpus 4` ×4 arm | **PASS** ONNX parity 118.760/118.760 rows mỗi arm, `rtol=1e-5`, `atol=1e-6` |
+| Private aggregate report, frozen plan/checkpoint/permutation readback | **PASS** report SHA `c044f63b0235a5d17f786828d49e2bc1e6932bbbb89dae9248ce91587e1cae60` |
+| Full pytest, long/formal training, test/holdout, external traffic | **NOT_RUN**; không đổi tracked executable code và không có independent dataset |
+
+File tracked cập nhật lượt này: `ai-training/PRETRAINING.md`, `ai-training/reports/PARTITION_RECOVERY_20261031.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Artifact mới nằm private/ignored tại `ai-training/.artifacts/sampling_diagnostic_20261103/`; giữ cả bốn checkpoint/bundle, plan và aggregate report. Không có request mới hay nhãn intent độc lập: formal admitted **0/2.000.000**. Bước kế tiếp là nguồn request-level hai lớp đáng tin ở campaign/môi trường mới, split khóa trước chấm; Biblio-US17 vẫn chờ quyền. GLU 207 còn cần live inference feature availability/timing/parity và independent acceptance, không phải thêm epoch trên development cũ.
+
+## 49. Intake nguồn HTTP mới và Biblio access — 2026-11-03T08:01+07:00
+
+Trên `feat/ai-model-training`, giữ nguyên toàn bộ diff cũ chưa commit. Lượt này sửa chỉ `ai-training/configs/public_http_sources.yaml`, `ai-training/PRETRAINING.md`, `ai-training/reports/ATTACK_EVIDENCE_20261101.json`, `ai-training/FINAL_TRAINING_HANDOFF.json`, docs 00/02/06. Không sửa code/model/threshold, Student/Security, raw/checkpoint/holdout, formal gate; không commit/reset/push, phát request hay train. Biblio official item/bundle metadata 200 nhưng không có grant/RAW+LABEL local; không thử lại archive content 401. Mẫu thư xin quyền được rút gọn trong PRETRAINING.
+
+Clone public CIKM2026 IoT CVE vào `.artifacts/source_screen_20261103/iot_cve/` private/ignored tại SHA `bf43a370084d6b59a6e0c29319a51da251a6d6b3` (repo MIT code). [Bài báo](https://arxiv.org/html/2608.22889) xác nhận 245/281 CVE attack requests tái dựng từ exploit/advisory, 36 từ nguồn khác; 281 benign IoT do tác giả chọn từ [Dryad](https://doi.org/10.5061/dryad.w0vt4b94b), license CC0 theo official API. Intake read-only 562 attack+real-benign examples dùng **path-only** 70+6: 214/281 attack views, 140/281 benign views, 4 view trái nhãn; 167 attack có body, 48 có `params` object, chỉ 9 path có query. 281 CVE-paired benign khác là authored controls/114 views. Không khôi phục wire query, không tính examples thành physical requests, không dùng source label làm truth. Private aggregate `iot_cve_intake.json` SHA `4538b1c3207593a750c320a469b7f93ffcfcab6772b2204901612b935d98c62b`; raw không vào Git. Source-class confounding và feature missingness chặn study; 0 research-training eligible, 0 independently reviewed benign/attack, 0 formal admitted, 0 independent dual-class campaign. ForenWebLog chỉ paper không thấy release/terms; DEDALE labels flow theo time/IP/port, không tải archive.
+
+| Lệnh/kiểm | Trạng thái |
+| --- | --- |
+| Official idUS item/bundle metadata API và tìm local grant/copy | **PASS** metadata 200; quyền RAW+LABEL **PENDING**; content **NOT_RETRIED** |
+| GitHub repo commit/license, [paper](https://arxiv.org/html/2608.22889), official Dryad API license/provenance | **PASS** metadata; physical-request/semantic-label independence **UNVERIFIED** |
+| Bounded read-only 562 method/path projections + view/conflict/visibility counts; private aggregate SHA | **PASS**; study admission **FAIL** vì source-label confounding và thiếu quan sát |
+| YAML/JSON/report self-SHA, `git diff --check`, Web diff | **PASS** sau cập nhật |
+| Pytest/model scoring, new study, formal train, holdout, long training | **NOT_RUN**; không đổi executable code và corpus chưa đủ gate |
+
+Điểm tiếp theo: bạn gửi request-a-copy Biblio, nhận RAW+LABEL+README cùng quyền dùng rõ ràng; sau đó audit RID/nhãn và tìm nguồn thứ hai hai lớp đáng tin. Chỉ khi khóa được split theo source/campaign/time và đủ view mỗi role/class mới chạy short MLP/GLU study. Tổng lab theo reports 75.360 chưa global dedup, formal 0/2M, GLU 9.675.784/207 giữ nguyên.
+
+## 48. View-level export guard và kiểm overlap tensor — 2026-11-03T07:45+07:00
+
+Phạm vi: `ai-training/src/idps_ai/training/request_training.py`, `ai-training/tests/test_request_training.py`, `ai-training/PRETRAINING.md`, hai JSON handoff/report AI và docs 00/02/06. Giữ nguyên Student/Security, raw/checkpoint/holdout, trainer, threshold, formal gate; không phát request, train, commit/push/reset. `forward-development-v2` có 118.760 ID nội bộ khác nhau; encoded views theo source/split SR-BH train/cal/val 25.909/7.998/6.839 và Student 1.233/318/290. Exact tensor overlap giữa các role = 0; group overlap = 0; mixed-label view trong corpus này = 0. Không quy đồng ID nội bộ với request vật lý độc lập. AIT bốn view mâu thuẫn giữ nguyên.
+
+Exporter giờ báo row và exact-float32-view metrics cùng số view lặp/mâu thuẫn; nếu view trái nhãn thì metric view = null, không impute. Đây là guard diễn giải chống học vẹt; chưa có cải thiện model được chứng minh. Train hiện đã khử lặp feature views, curated split đã chặn overlap; không thêm sampler/loss mới trên validation development lộ. GLU 207 / 9.675.784 tham số, MLP và checkpoint giữ nguyên; live 207 parity/nhãn độc lập vẫn thiếu, formal admitted 0/2M.
+
+| Lệnh/kiểm | Kết quả |
+| --- | --- |
+| `python` stream `forward-development-v2/features.parquet` train/calibration/val, đếm event key/feature key/float32 bytes và cross-role overlap | **PASS**; 0 exact-view/group overlap, 0 mixed-label view; không đọc test/holdout |
+| `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7 -p MemoryMax=4G -p MemorySwapMax=0 ... pytest -q tests/test_request_training.py` | **PASS 5**; cả ba model export/ONNX và nhãn mâu thuẫn |
+| Ruff lint/format, `git diff --check`, Web diff | **PASS** |
+| Full suite, export lại checkpoint development, training dài, independent evaluation/holdout | **NOT_RUN**; không cần để xác nhận thay đổi metric và thiếu nhãn độc lập |
+
+Bước tiếp: nguồn hai lớp request-bound đáng tin và môi trường/campaign độc lập; Biblio-US17 cần quyền thật, sau đó khóa protocol trước study mới. Không chọn champion từ những metric development này.
+
+## 47. Paired checkpoint diagnostic và AIT no-fit stress — 2026-11-03T07:04+07:00
+
+Nhánh `feat/ai-model-training`, worktree đầu lượt sạch. Chỉ chạy **hai study đọc dữ liệu** trong `ai-training/.artifacts/development_diagnostic_20261103/`; cả hai plan khóa code/bundle/dataset hash trước scoring. Mỗi job ở `systemd-run --user --scope` CPUQuota400%, affinity0–7, MemoryMax6G/High5G/swap0. **0 optimizer step, 0 ngưỡng mới, 0 long train, 0 holdout mở, 0 request phát, 0 formal admission, 0 champion/enforcement.** Không sửa Student/Security, source model, checkpoint hay nhãn.
+
+Study 1 chấm lại toàn bộ 118.760 vectors `forward-development-v2` bằng MLP 219.144/76 và GLU 9.541.640/76 cùng ngưỡng calibration đã khóa; báo cáo tách rows và distinct `feature_key`. Validation SR-BH attack recall theo rows MLP **1.177/5.155 = 22,83%**, GLU **1.617/5.155 = 31,37%**; theo distinct views MLP **1.172/3.675 = 31,89%**, GLU **802/3.675 = 21,82%**. GLU-only 1.492 positive rows nhưng chỉ 677 keys, MLP-only 1.052 rows/1.047 keys: lợi thế row-weighted của GLU phụ thuộc lặp view. Student lab: GLU 79/736 benign FPs (10,73%) tương ứng 14/137 views (10,22%); MLP 0 ở cả hai. Attack recall theo distinct views Student MLP 27/153 (17,65%), GLU 23/153 (15,03%). Train→val PR-AUC Student MLP 0,998→0,577, GLU 1,000→0,515; đây là development shift/overfitting signal, không ước lượng production. Ngưỡng rất gần 1; không chỉnh theo validation. Hai model mắc lỗi khác nhau, không có winner tin cậy.
+
+Study 2 chỉ stress AIT testbed ở cùng **76 input**: 2.831 benign candidate/7.695 publisher attack observations → 25/3.146 distinct vectors; 4 vectors trái nhãn có `(68,2),(125,1),(252,9),(373,1)`, buộc ít nhất 13 bất đồng theo nhãn publisher cho classifier tất định 76 cột. Không sửa/xóa nhãn. 0/25 benign vectors và 4/3.146 attack vectors khớp train development. Ngưỡng cũ: MLP flag **0/7.695**, GLU **5/7.695** attack publisher; cả hai 0/2.831 benign. Đây chủ yếu là dirb/WPScan khác task payload-family đã fit, nhãn dựa kịch bản/rule và chỉ 25 benign views; **không** coi 0 FP là FPR thực hoặc 5/7.695 là recall độc lập của model 207. GLU chính **9.675.784/207** và MLP 252.680/207 giữ nguyên, không thể score AIT mà không bịa 137 full-only features.
+
+| Lệnh/bằng chứng | Trạng thái |
+| --- | --- |
+| `paired_checkpoint.py` trong scope 4CPU/6G, plan SHA `966b575cc4a6085b7087bb4ee9d475f161daace11266cd74838a57cfce3be284` | **PASS**, 118.760 vectors; report SHA `645c0077ef054eb514cad7f6fa45be42962734d7be5e2225021070cc2c9c04df` |
+| `ait_stress.py` trong scope 4CPU/6G, plan SHA `614414f114bece729d53cbc66c080b97f3f4322743827fbcffa2c4ff0be2919e` | **PASS** no-fit 10.526 observations; report SHA `6d7bb460978e832e280235295e0a3ba4c72c0fcf81ce94a914ec2427a9ba6898` |
+| Corpus/bundle fingerprint, model ONNX SHA, AIT archive SHA, kế hoạch và score readback | **PASS**; thresholds và datasets không đổi |
+| Full pytest/long train/final holdout/live integration | **NOT_RUN**; không sửa executable tracked code, thiếu formal/independent labels |
+
+Đã cập nhật [PRETRAINING](../ai-training/PRETRAINING.md), report `ai-training/reports/PARTITION_RECOVERY_20261031.json`, handoff và docs 00/02. `forward-development-v2` chỉ research technical fitting nhãn publisher/runner; formal catalog `NOT_READY/0 eligible`. Biblio-US17 còn chờ quyền, không lặp archive 401. Nguồn cũ bị chặn không audit lại. Bước tới ưu tiên **nguồn hai lớp có nhãn request-bound/đa dạng view + review độc lập**, rồi khóa split/assessment trước score; không tối ưu thêm trên validation đã exposed. Tách physical requests, distinct representations, trustworthy labels và formal admitted khi theo dõi mục tiêu 2M.
+
 ## 46. AIT HTTP source và 70+6 parity; research study vẫn chờ — 2026-11-02T19:10+07:00
 
 Chỉ cập nhật AI catalog/report/handoff/docs; không sửa Student/Security, raw cũ, checkpoint, holdout, formal gate; không commit/push/reset. Biblio-US17 còn chờ quyền và **không gọi lại archive 401**. Tải archive AIT V2.1 `russellmitchell_no-pcaps.zip` từ [Zenodo chính thức](https://zenodo.org/records/19483937): 522.084.364 byte, MD5 `abb43a46c70939ad9f98669e3510d2b7` khớp metadata, SHA256 `51a03f51daea0fbbdcfe9b8abe0dbbe10633716f4f98074f861204a162ee1978`; license API CC BY-NC-SA 4.0. Raw chỉ ở `.artifacts/source_screen_20261102/ait/`, private. Đây là HTTP access log của testbed mô phỏng độc lập với Student lab, **không phải traffic Internet sản xuất**.

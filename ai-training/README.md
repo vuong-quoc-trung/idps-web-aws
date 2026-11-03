@@ -306,6 +306,19 @@ openssl rand 32 > .artifacts/private/training-redaction.key
 
 Nếu chỉ có một/hai nguồn thì bỏ input còn lại. Adapter `canonical=/path/events.jsonl` hoặc `postgres-export=/path/events.jsonl` đọc mỗi dòng là canonical JSON hoặc `{ "canonical": {...} }`. Có thể xuất bằng query `SELECT canonical FROM normalized_events ORDER BY occurred_at,id` trong transaction **REPEATABLE READ, READ ONLY** bằng tài khoản read-only hiện có; package không tạo DB role, không sửa DB/config và không tự mở kết nối PostgreSQL. Không dùng riêng `security_alerts` làm dataset benign.
 
+**GLU 207 post-response với Security Web:** export canonical chỉ cho `source IN ('STUDENT_AUDIT','NGINX')`, giữ `id`, `observed_at` và `canonical` trong JSONL riêng tư, theo thứ tự `id`. Ghép với **AI-projected Suricata EVE numeric v2** (sinh từ EVE trước khi mask, giữ chỉ số số học và `X-Request-Id` do edge sinh), dùng cùng key AI và `--input-profile safe_query_numeric_v2`. Ví dụ lệnh thu snapshot offline, không gọi firewall:
+
+```bash
+.venv/bin/idps-ai collect \
+  --input postgres-export=/private/edge-student-nginx.jsonl \
+  --input suricata=/private/eve-numeric-v2.jsonl \
+  --input-profile safe_query_numeric_v2 \
+  --hmac-key-file .artifacts/private/training-redaction.key \
+  --output .artifacts/edge-ai-offline-snapshot
+```
+
+`postgres-export` là adapter đã có; không cần Rust tạo vector 207. **Không đưa canonical SURICATA vào cùng batch với EVE sidecar**: parser Rust hiện chỉ đọc `http.request_id` trực tiếp, trong khi EVE lab mang ID ở response header; canonical còn thiếu numeric v2 và `flow.start/end`. Nếu chỉ có export `normalized_events` ba nguồn, Python vẫn đọc được sự kiện nhưng không thể tái tạo đầy đủ input GLU v5; `InferencePipeline` phải abstain khi thiếu ba nguồn/bridge numeric. `observed_at` hiện chưa được collector dùng làm receipt-time, nên lệnh trên chỉ là **offline shadow**. Live shadow cần AI sidecar đọc EVE trước redaction và quyết định timeout theo thời điểm nhận thật; chưa có durable scheduler/restart contract. `COLLECT_ALL_EVENTS` mặc định **false**, retention mặc định 7 ngày/tối đa 1.000.000 events, vì thế DB export là tùy chọn và không thể coi là kho corpus 2 triệu request. Chỉ export khi DB đã lưu các observation phù hợp và đã được cấp quyền đọc; nếu không, dùng ba native logs như live shadow hiện có. Không suy từ alert hoặc status thành nhãn.
+
 Output `observations.parquet` giữ quan sát đã lọc; `requests.parquet` gộp HTTP theo requestID + IP tương thích + cửa sổ2s. Student ưu tiên actor/role, Nginx/EVE bổ sung bytes/metadata. Cùng IP/thời gian chỉ là context, không merge các request NAT. Profile `native` giữ same-flow context đã quan sát. Profile `edge_masked_v1` dùng flow client đã hoàn tất ít nhất65giây trước request; không giả thành packet counters của request hiện tại. Xem PRETRAINING cho receipt-time limitation.
 
 ## Gán nhãn, chuẩn bị split/feature
