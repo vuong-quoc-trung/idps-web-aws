@@ -249,6 +249,55 @@ new_source_screening_20261101:
   decision: metadata_only_not_admitted
   reason: No capture provenance, relabeling methodology or campaign/time lineage in card; displayed records
     resemble SR-BH. Independence unverified, not proven; do not assume 2.55M new real requests.
+
+autonomous_source_screening_20261103:
+- name: WAMM_DS_Augmented_v2
+  revision: 2783eab560c4355f5976a57fc2e97a2e6c5c79a1
+  license_claim: CC BY 4.0 from repository LICENSE
+  archive_sha256: 2631c31b8f4bdc389365274e6f22d9753534ef1e2eab52f3d1fd20c4f6bc65c9
+  sqlite_sha256: c692dcdebaf9984dff49ad01f1c21964c8a83ebe1c426bd12e26f9bff9ce335d
+  role: publisher_label_research_staging_only
+  audit_report: ai-training/.artifacts/autonomous_research_20261103/wamm/audit-v4.json
+  audit_report_sha256: 3fd155f90e475e844ea03b7e8330a1e77a22c85f2b99ee8b699c13706f5056df
+  overlap_report: ai-training/.artifacts/autonomous_research_20261103/wamm/overlap-v2.json
+  overlap_report_sha256: adf6b46d7eea7730bf019a1cd7f1968c26b741be0512e8ffa09eec38d45d77c8
+  parsed_representations: 704649
+  exact_unique_http_text_representations: 312241
+  unique_float32_request_views: 67620
+  conflict_free_views: 66863
+  exposed_development_overlap_views: 23576
+  nonoverlap_numeric_staging_views: 43287
+  research_policy_status: STAGING_ONLY_AUTONOMOUS_RESEARCH_NOT_READY
+  physical_request_count_verified: 0
+  formal_admitted: 0
+  reason: SR-BH derivative with LLM/regex/expert-sample label process; no per-row
+    lineage or independent acceptance. Actual SQLite counts differ from README
+    per-family counts. Exact float32 view conflicts are quarantined and exposed
+    development views excluded from numeric staging.
+- name: puyang2025/waf_data_v2
+  revision: b035dc17f875f1f732c10654709abed66a4e9742
+  license_claim: MIT in Hugging Face card
+  role: metadata_only_no_attack_ground_truth
+  downloaded: false
+  reason: Card describes anomalous as suspicious/attack-like but gives no capture,
+    per-request intent methodology, campaign or time lineage. First-rows API
+    confirms six string fields and these label names only; not a verified attack
+    source or independent evaluation cohort. Do not count 2.4M publisher rows.
+- name: Kyoushi_LDS_scenario1
+  url: https://zenodo.org/records/5779411
+  license_claim: CC BY-NC-SA 4.0 in official Zenodo API
+  publisher_archive_bytes: 783022916
+  publisher_md5: 6706a0bf3f570ef5e7c56bd14e3c08d1
+  role: metadata_candidate_only
+  downloaded_complete: false
+  verified_requests: 0
+  formal_admitted: 0
+  reason: Official record describes labeled Apache access lines, raw logs,
+    attacker scenario logs and rule lineage. Potential independent testbed
+    evidence, but AIT-LDSv2 extends Kyoushi and relationship to existing AIT
+    development must be checked. Archive download was stopped after a bounded
+    partial transfer; no contents or labels have been examined. Noncommercial
+    share-alike terms require rights review before derived model distribution.
 - name: Biblio_US17
   doi: 10.12795/11441/148254
   metadata_api: https://idus.us.es/server/api/core/items/53034f60-d215-44b0-a198-eb8a5229218e
@@ -264,6 +313,12 @@ new_source_screening_20261101:
     needed_files: [RAW, LABEL, README]
     permission_owner_action: Request legitimate copy and clarify private feature extraction,
       model training, derived artifact sharing and non-commercial terms; no request sent by collector.
+  access_checked_20261103:
+    official_item_and_bundle_metadata_http: 200
+    original_archive_metadata_bytes: 1223176305
+    authorized_RAW_LABEL_copy_present_locally: false
+    archive_content_retried: false
+    access_state: PENDING_OWNER_GRANT
   reason: Publisher describes 47,402,907 real web requests and 327,906 LVL1 attack records
     manually confirmed in S2/S3; RID joins RAW and LABEL by day/order. CLEAN also includes
     S2=-1/S3=-1 records not manually reviewed, so CLEAN as a whole is not independently
@@ -387,6 +442,62 @@ label_source_screening_20261102:
     reason: Paper describes generated requests and labels mapped from generator technique,
       not independent request-level semantic review. No downloadable dataset or usage grant
       was identified from the paper; claims are not locally verified HTTP rows.
+source_screening_20261103:
+  - name: CIKM2026_IoT_CVE_HTTP
+    repository: https://github.com/mm-doshisha/CIKM2026-iot-vuln-pipeline
+    revision: bf43a370084d6b59a6e0c29319a51da251a6d6b3
+    paper: https://arxiv.org/html/2608.22889
+    private_intake_report: ai-training/.artifacts/source_screen_20261103/iot_cve_intake.json
+    private_intake_sha256: 4538b1c3207593a750c320a469b7f93ffcfcab6772b2204901612b935d98c62b
+    repository_license: MIT for code; bundled traces have mixed upstream provenance
+    upstream_benign_dataset: https://doi.org/10.5061/dryad.w0vt4b94b
+    upstream_benign_license: CC0-1.0, official Dryad API
+    publisher_examples: {attack_CVE: 281, benign_real_IoT: 281, benign_CVE_paired: 281}
+    request_only_path_projection_views: {attack_CVE: 214, benign_real_IoT: 140, benign_CVE_paired: 114}
+    attack_vs_real_benign_view_conflicts: 4
+    attack_examples_with_separate_body: 167
+    attack_examples_with_structured_params: 48
+    attack_examples_with_query_in_path: 9
+    new_verified_physical_HTTP_requests: 0
+    research_training_eligible: 0
+    formal_admitted: 0
+    decision: EXTERNAL_CVE_STRESS_CANDIDATE_ONLY
+    reason: Paper states 245 attack requests were manually reconstructed from public exploit
+      code/advisories; 36 originate in another open research set. CVE ground truth describes
+      vulnerable parameters, not observed exploit outcomes. The 281 real benign examples
+      come from a separate IoT dataset, so class and source generation are perfectly
+      confounded. Body, headers and structured params are often outside the method/path
+      70+6 profile; original wire query bytes cannot be reconstructed. The CVE-paired
+      benign examples are authored controls, not new physical captures. There is no
+      two-source dual-class train/calibration/val split or verified campaign chronology.
+      Do not use for new MLP/GLU training, formal admission or 207-feature parity.
+  - name: ForenWebLog_2026
+    paper: https://arxiv.org/html/2606.08649
+    decision: PAPER_ONLY_PENDING_DATA_AND_LABEL_METHOD
+    reason: Paper describes WordPress logs mixed with synthetic attack sequences, but
+      no official downloadable request corpus, source-specific license or request-level
+      label-review trail was found in this bounded screening. Do not count claims as rows.
+  - name: DEDALE_2026
+    source: https://dedale.inria.fr/download.html
+    decision: FLOW_LABELS_NOT_REQUEST_INTENT
+    reason: Publisher labels Zeek connection flows by time/IP/port and has benign and
+      attack-related classes. It does not provide reviewed HTTP-request intent; large
+      packet archives are not justified for this request-only study.
+  - name: WebSpotter_FPAD_CVE_2026
+    paper: https://www.ndss-symposium.org/ndss-paper/achieving-interpretable-dl-based-web-attack-detection-through-malicious-payload-localization/
+    repository: https://github.com/Sec-AI-research/WebSpotter
+    dataset_tree: https://github.com/Sec-AI-research/WebSpotter/tree/main/datasets
+    screened_from: publisher paper and repository metadata only; no archive downloaded or rows projected
+    repository_license: MIT for repository; upstream CSIC/PKDD and generated-data rights require dataset-level review
+    publisher_reported_FPAD: {train: 38179, test: 16363, test_attacks: 10771}
+    publisher_reported_CVE_attacks: over 750 manually localized exploit examples from 2021-2024 CVEs
+    decision: RESEARCH_ATTACK_STRESS_CANDIDATE_NOT_TRAINING_OR_FORMAL
+    reason: FPAD benign requests are inherited from CSIC, while attack requests are
+      generated by applying collected payloads with Burp Bounty; source and class are
+      confounded. CVE examples have manually annotated malicious locations but no
+      matched independently reviewed benign physical HTTP traffic. Counts are publisher
+      claims, not locally verified requests or unique feature views. No admission,
+      independent evaluation or new 207-feature training from this screening.
 independent_label_evidence_contract:
   version: 2
   implementation: src/idps_ai/data/label_evidence.py

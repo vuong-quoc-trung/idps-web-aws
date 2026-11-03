@@ -1,0 +1,25 @@
+format_version: 1
+purpose: bounded_internal_http_research_not_formal_admission
+status_name: AUTONOMOUS_RESEARCH_READY
+formal_status_name: FORMAL_READY
+formal_policy: scale_policy.yaml
+allowed_label_tiers: [machine_verified, external_publisher]
+unknown_or_conflicting_labels: quarantine
+publisher_labels_are_independent_ground_truth: false
+minimum_independent_dual_class_sources: 2
+minimum_unique_views_per_source_role_class: 32
+required_roles: [train, calibration, validation]
+partition_unit: source_or_registered_campaign_and_related_template_group
+random_row_split_without_group_provenance: forbidden
+cross_role_exact_view_overlap: 0
+cross_role_related_template_overlap: 0
+unobserved_features: missing_not_imputed
+request_only_vectors_may_fill_207_feature_input: false
+sealed_holdout_for_tuning: forbidden
+resource_limit:
+  logical_cpus: 8
+  memory_gib: 16
+promotion:
+  independent_quality_claim_requires_new_acceptance_cohort: true
+  formal_admission_requires_formal_policy: true
+  automatic_blocking: forbidden
