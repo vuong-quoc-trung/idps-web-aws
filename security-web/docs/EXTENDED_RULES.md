@@ -1,7 +1,7 @@
 # Các nhóm phát hiện HTTP bổ sung
 
 Các chữ ký nằm trong `suricata/pbl4.rules`, dành cho Suricata 8.0.3 và HTTP nhìn thấy
-trên interface capture. Có 18 chữ ký trong danh mục, gồm các biến thể URI/body.
+trên interface capture. Có 24 chữ ký trong danh mục, gồm các biến thể URI/body.
 Backend normalize SID thành tên/category cố định, lưu cảnh báo và dùng hàng đợi
 firewall/audit hiện có khi operator bật chính sách. Không đổi canonical event hoặc
 feature schema AI, không thu thêm request body vào DB/log.
@@ -19,7 +19,7 @@ feature schema AI, không thu thêm request body vào DB/log.
 
 Bốn SID 1000015–1000018 ban đầu chỉ cảnh báo, không thêm vào AUTO_BLOCK_SIDS.
 Smuggling chỉ phát hiện tổ hợp CL+TE, không chứng minh proxy/backend parse khác nhau;
-chưa bao phủ duplicate Content-Length, TE obfuscation, HTTP/2 downgrade hoặc mọi biến thể.
+SID 1000023 bổ sung duplicate Content-Length; chưa bao phủ TE obfuscation, HTTP/2 downgrade hoặc mọi biến thể.
 XXE phát hiện khai báo ngoài, không chứng minh parser mở entity. DTD hợp lệ hoặc XML
 trong comment có thể khớp; chưa bao phủ UTF-16, body nén hay mọi cách làm rối.
 Chỉ cân nhắc auto-block XXE khi xác nhận app không dùng XML/DTD hợp lệ.
@@ -118,7 +118,7 @@ Upload probe chỉ chứa marker PHP trong comment không thực thi. Không t�
 upload/fetch trên Student; đường dẫn probe có thể trả 404 nhưng sensor vẫn quan sát.
 Script không sinh flood live; kiểm ngưỡng bằng PCAP để tránh tải bất ngờ lên lab.
 Đối chiếu SID/IP/thời gian trong EVE, DB và tab Cảnh báo; danh mục Luật phát hiện
-hiển thị đủ 18 SID. Nhiều chữ ký/nguồn có thể quan sát cùng request.
+hiển thị đủ 24 SID. Nhiều chữ ký/nguồn có thể quan sát cùng request.
 
 ## Chính sách chặn: cấu hình sẵn khả năng, chưa bật trên host
 
@@ -156,3 +156,47 @@ ghi đè report, dataset, checkpoint hoặc sửa label cũ để ép readiness 
 Tham chiếu chính thức: [HTTP buffers](https://docs.suricata.io/en/suricata-8.0.3/rules/http-keywords.html),
 [thresholding](https://docs.suricata.io/en/suricata-8.0.3/rules/thresholding.html),
 [transforms](https://docs.suricata.io/en/suricata-8.0.3/rules/transforms.html).
+
+## SID 1000019–1000024
+
+| SID | Nhóm | Severity | Phạm vi |
+|---|---|---|---|
+| 1000019 | JNDI / Log4Shell-style | 1 | Literal `${jndi:ldap/ldaps/rmi/dns/iiop:...}` trong request headers |
+| 1000020 | CRLF header injection | 1 | URI raw có `%0d%0a` rồi tên header và dấu colon (literal hoặc `%3a`) |
+| 1000021 | Possible SSTI | 2 | URI decode có `{{...}}`, `${...}`, `<%=...%>`; có thể là template hợp lệ |
+| 1000022 | Possible NoSQL operator injection | 2 | JSON body có key `$ne`, `$gt`, `$gte`, `$lt`, `$lte`, `$regex`, `$where`, `$exists`, `$nin`, `$in` |
+| 1000023 | Duplicate Content-Length | 1 | Hai CL đứng liền hoặc cách tối đa 8 header, mỗi dòng xen giữa tối đa 256 ký tự |
+| 1000024 | Shellshock-style | 1 | Header có function prefix `() { :...};` |
+
+Cả sáu mặc định ALERT_ONLY; không thêm vào AUTO_BLOCK_SIDS, không đổi AUTO_BLOCK=false
+hoặc ENFORCEMENT_MODE=OFF. Severity 1 là mức cảnh báo, không tự tạo yêu cầu block.
+JNDI/Shellshock có thể được admin xem xét chặn thủ công sau khi xác minh; SSTI và
+NoSQL cần đánh giá false positive. Student dùng PostgreSQL nên NoSQL chủ yếu là
+quan sát attempt, không chứng minh ứng dụng có Mongo hay lỗ hổng thực thi.
+
+SID 1000019 chỉ kiểm tra header: chưa thêm biến thể body/URI hoặc lookup bị làm rối.
+Không gán cùng SID cho nhiều rule khác buffer. Duplicate CL bắt cả giá trị giống nhau,
+không khẳng định request smuggling thành công. HTTP mã hóa cần sensor thấy plaintext;
+body bị giới hạn bởi libhtp inspection. Không bật ghi body/payload hay outbound callback.
+
+Các buffer được đối chiếu với tài liệu chính thức:
+https://docs.suricata.io/en/suricata-8.0.8/rules/http-keywords.html
+Cú pháp và PCAP regression được chạy với Suricata 8.0.3 của lab.
+
+Kiểm tra bản trong repository (không thay service):
+```bash
+mkdir -p /tmp/pbl4-rule-check
+suricata -T -c config/suricata/suricata.yaml \
+  -S "$PWD/suricata/pbl4.rules" -l /tmp/pbl4-rule-check
+python3 scripts/test-extended-rules.py
+```
+
+Cài lên host chỉ khi operator sẵn sàng, từ thư mục security-web:
+```bash
+sudo cp -a /var/lib/suricata/rules/pbl4.rules "/var/lib/suricata/rules/pbl4.rules.bak.$(date +%Y%m%d-%H%M%S)"
+sudo install -o root -g root -m 0644 suricata/pbl4.rules /var/lib/suricata/rules/pbl4.rules
+sudo suricata -T -c /etc/suricata/suricata.yaml
+```
+Lệnh cuối kiểm tra cấu hình thực; xác nhận rule-files của cấu hình đó có pbl4.rules.
+Chỉ sau khi kiểm tra thành công mới chủ động reload/restart sensor theo quy trình lab.
+Code thay đổi không tự cài rule hoặc restart dịch vụ.
