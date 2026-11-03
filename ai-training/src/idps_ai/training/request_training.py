@@ -337,6 +337,38 @@ def benign_threshold(scores, alpha=0.01):
     }
 
 
+def encoded_view_metrics(validation, threshold):
+    """Diagnostic with one vote per observed float32 input, not per log row.
+
+    Conflicting labels on an identical model input make a single-view binary
+    metric undefined. Keep those labels intact and expose the conflict.
+    """
+    views = {}
+    for row, score in validation:
+        key = np.asarray(row["x"], np.float32).tobytes()
+        view = views.setdefault(key, {"labels": set(), "rows": 0, "score": score})
+        view["labels"].add(int(row["label"]))
+        view["rows"] += 1
+    conflicts = [v for v in views.values() if len(v["labels"]) > 1]
+    conflicting_rows = sum(v["rows"] for v in conflicts)
+    return {
+        "view_definition": "exact float32 model input bytes",
+        "rows": len(validation),
+        "unique_views": len(views),
+        "repeated_view_rows": len(validation) - len(views),
+        "conflicting_label_views": len(conflicts),
+        "conflicting_label_rows": conflicting_rows,
+        "metrics": None
+        if conflicts
+        else binary_metrics(
+            [next(iter(v["labels"])) for v in views.values()],
+            [v["score"] for v in views.values()],
+            threshold,
+        ),
+        "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+    }
+
+
 def export_request(dataset, checkpoint, output, cpus=4):
     dataset = Path(dataset)
     manifest = verify_requests(dataset)
@@ -391,6 +423,13 @@ def export_request(dataset, checkpoint, output, cpus=4):
             )
             for s in sorted({r["source_id"] for r, x in validation})
         }
+        views_by_source = {
+            source: encoded_view_metrics(
+                [(r, score) for r, score in validation if r["source_id"] == source],
+                threshold,
+            )
+            for source in by_source
+        }
         card = {
             "format_version": 1,
             "profile": manifest["profile"],
@@ -405,6 +444,8 @@ def export_request(dataset, checkpoint, output, cpus=4):
             "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
             "validation": metrics,
             "validation_by_source": by_source,
+            "validation_encoded_views": encoded_view_metrics(validation, threshold),
+            "validation_encoded_views_by_source": views_by_source,
             "parity": {
                 "rows": parity_rows,
                 "all_rows_match": True,

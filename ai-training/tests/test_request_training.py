@@ -41,6 +41,7 @@ def test_request_pilot_resumes_mid_epoch_with_onnx_and_separate_benign_calibrati
     card = export_request(dataset, run, tmp_path / "bundle", cpus=1)
     assert card["parity"]["all_rows_match"] and card["parity"]["rows"] == 320
     assert card["calibration"]["student-lab"]["benign_count"] == 10
+    assert card["validation_encoded_views_by_source"]["student-lab"]["metrics"]["rows"] <= 20
     assert not card["champion_selected"]
     from idps_ai.request_inference import RequestInferencePipeline
 
@@ -61,3 +62,20 @@ def test_flow_presence_requires_observed_numeric_counters_not_dictionary_shape()
     assert not has_flow_observation({"packets_to_server": float("nan")})
     assert has_flow_observation({"duration_seconds": 0, "bytes_to_server": 0})
     assert has_flow_observation({"packets_to_client": 3})
+
+
+def test_encoded_view_metrics_exposes_repetition_and_refuses_conflicting_labels():
+    from idps_ai.training.request_training import encoded_view_metrics
+
+    benign = {"x": [0.0, 1.0], "label": 0}
+    attack = {"x": [1.0, 0.0], "label": 1}
+    observations = [(benign, 0.1)] * 20 + [(attack, 0.9)]
+    result = encoded_view_metrics(observations, 0.5)
+    assert (result["rows"], result["unique_views"], result["repeated_view_rows"]) == (21, 2, 19)
+    assert result["metrics"]["rows"] == 2
+    assert result["metrics"]["recall"] == 1.0
+
+    conflict = encoded_view_metrics(observations + [({"x": [1.0, 0.0], "label": 0}, 0.9)], 0.5)
+    assert conflict["conflicting_label_views"] == 1
+    assert conflict["conflicting_label_rows"] == 2
+    assert conflict["metrics"] is None
