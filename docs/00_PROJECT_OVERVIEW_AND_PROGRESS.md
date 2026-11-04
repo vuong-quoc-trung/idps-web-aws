@@ -1,5 +1,70 @@
 # 00 — Tổng quan dự án và tiến độ
 
+## Mốc post-training GLU207 shadow — 2026-11-04
+
+Checkpoint nghiên cứu step652/9.675.784 tham số đã qua SHA, 207 feature order, preprocessing và ONNX parity. Plan khóa trước inference dùng 54 request Student/Nginx/Suricata trong capture lab cũ; **54 finite scores**, 0 request mới, 0 nhãn intent. Overlap request ID xuyên capture **chưa thể xác minh** vì hai khóa HMAC khác nhau; 3/54 exact feature views trùng train. Prior completed flow có ở train36.443/41.607 so shadow0/54, cho thấy availability shift. ONNX forward p50 7,38ms/p95 15,10ms trên54, RSS peak~600MiB. Không có Recall/FPR/PR-AUC hay bằng chứng tổng quát hóa mới, không train thêm/chọn champion. `TECHNICAL_INTEGRITY=PASS`, `INDEPENDENT_GENERALIZATION=NOT_ESTABLISHED`, formal admission0, `RELEASE_READY=false`. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục65.
+
+## Mốc bounded research training GLU207 — 2026-11-04
+
+Track A đã được khóa trước fit và hoàn thành **2 epoch/652 update** trên 41.607 dòng `prepared-v5` train development (**41.585 unique float32 views**), với GLU **9.675.784 tham số/207 feature**. Run hai tiến trình chứng minh resume từ checkpoint epoch1, đọc lại tham số+Adam exact, ONNX parity trên 16 train rows PASS; 4CPU quota/16GiB, wall141,02s, RSS peak~728MiB. Mean train loss epoch1 0,20418 → epoch2 0,12902. Full AI check **242 pytest PASS**, Ruff/format/compile/contract/Web diff PASS. Đây là **research fitting hoàn thành**, chưa là bằng chứng chất lượng phát hiện. `RESEARCH_EVAL_READY=false`, formal admission **0** và final holdout nguyên vẹn. Bước tiếp theo: corpus có nhãn và cohort đánh giá độc lập mới, không tuning trên validation cũ. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục64.
+
+## Mốc Juice Shop Ground Truth factory — 2026-11-04
+
+Đã chạy 33 request thật trên một Juice Shop lab cô lập; 33/33 có proxy receipt khớp request ID và response SHA. Plan khóa trước run, Oracle ứng dụng chứng minh `Login Admin` chuyển `false→true` và response trả danh tính admin: **28 benign workflow, 4 attack attempts, 1 exploit success (subset), 1 UNKNOWN** theo quy tắc lab. Không có Student/Nginx/EVE cho ứng dụng này và không có đánh giá môi trường độc lập. Sau curation, 32 labeled rows chỉ còn **21 unique 76+512 feature views** (17 benign/4 attack) với encoder JSON body v2; encoder cũ có một mixed-label login view. 17 benign views không thể chứng minh FPR1%, nên **chưa train/chấm model mới**, `RESEARCH_FIT_READY=false`, `RESEARCH_EVAL_READY=false`, formal admission **0/2 triệu**. GLU207, WAF/WAMM artifacts, holdout và model chính giữ nguyên. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục63.
+
+## Mốc isolated Ground Truth pilot — 2026-11-04
+
+Đã chạy OWASP Juice Shop trong Podman rootless `internal` network, bind loopback, image pin digest, tối đa2 CPU/3GiB. Manifest 8 case khóa SHA trước khi phát request; 8/8 request và response thực có SHA/readback, 8 unique complete-request representations. Oracle JSON sản phẩm xác nhận **3 benign lab**, 3 attack attempts lab có request/response đúng manifest, 2 `UNKNOWN` do SQL error; **0 exploit success** vì thiếu Oracle trạng thái ứng dụng. 5 campaign IDs trong **một** ứng dụng, 0 campaign/môi trường đánh giá độc lập, 0 ba nguồn Student/Nginx/EVE; pilot chưa đủ để chấm model. Container/network tạm đã dọn, cổng đóng. Formal admission **0/2 triệu**, GLU/MLP/threshold/holdout giữ nguyên. Chi tiết [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục62.
+
+## Mốc Content Intelligence mới — 2026-11-04
+
+Đã đo nguyên nhân collision của WAF v2: 192 raw exact representations trái nhãn trên toàn `train`; trong mẫu cũ 101.098 request representations, 243 mixed views/43.167 rows xuất hiện **trước hashing** và 245/43.171 sau hashing. Encoder cấu trúc mới tăng số unique final views trên cùng mẫu từ 28.581 lên **34.169**, giảm rows trên mixed views xuống **28.174** mà không giữ plaintext secret/PII. Cohort WAF `train` mới không trùng raw hoặc safe-template với cohort development cũ: **84.193 unique feature views** sau quarantine, đủ hai lớp publisher ở train/calibration/validation. Đây không phải số physical requests có Ground Truth.
+
+Study khóa trước 300 update/arm trên cohort mới: rich content MLP đạt publisher `ANOMALOUS` recall **75,04%** so numeric MLP **69,24%**, PR-AUC **0,9893** so **0,9675**; `NORMAL` FPR **1,086%** so **1,188%**. Cả hai **vượt ngân sách FPR1%**, chỉ một source và nhãn publisher yếu; chưa có independent attack evaluation/champion. GLU 9.675.784/207, formal admission **0/2 triệu**, holdout và auto-blocking không đổi. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục61.
+
+Near-template diagnostic cố định tìm **580/2.000** validation views có hashed-content cosine≥0,995 với train view khác coarse group; cần đánh giá trên campaign và môi trường độc lập trước mọi kết luận tổng quát hóa.
+
+## Mốc HTTP Request Intelligence — 2026-11-04
+
+Đã tạo corpus research **numeric-only, không plaintext** từ WAF Data v2
+`train` đã pin: 1.611.825 exact request representations không xung đột là
+ứng viên cấu trúc, chọn mẫu cố định 101.098 và giữ **28.336 unique
+numeric+content views** sau cách ly 245 feature-view conflicts/43.171 rows
+cùng view trái nhãn. Encoder v2 dùng allowlist HTTP method; bản v1 được giữ
+để truy vết lỗi plaintext method lạ. Split nội bộ theo 25.803 symbolic template groups,
+không trùng group giữa train/calibration/validation; **không có** campaign/time
+hoặc nhãn intent độc lập. Model content 50.696 tham số/588 feature chạy 300
+updates, so numeric MLP 17.928/76 và method-only control theo plan khóa trước.
+Publisher-label validation active v2: PR-AUC **0,9912 so 0,9615**,
+`ANOMALOUS` recall **78,57% so 71,60%**, nhưng `NORMAL` FPR
+**1,44% so 0,68%** ở ngưỡng calibration 1%. Đây là internal weak-label result,
+có selection bias và vượt ngân sách FPR; **không chọn champion**. GLU207 chính, formal admission **0**,
+holdout và auto-blocking không đổi. Full `check.sh` **237 PASS/0 skip** sau
+sửa allowlist; kiểm lại cuối lượt ghi tại ledger;
+chi tiết [PRETRAINING](../ai-training/PRETRAINING.md) và ledger 06 mục 60.
+
+## Mốc QA → research fitting — 2026-11-04
+
+QA hiện đếm đúng **17 check IDs** và tách ba cổng: WAMM
+`RESEARCH_FIT_READY=true` cho **train-only publisher labels**;
+`RESEARCH_EVAL_READY=false` do lineage SR-BH/campaign-time và thiếu cohort
+hai lớp độc lập; `FORMAL_READY=false`, admitted **0/2.000.000**. Report
+`report-v7.json` private SHA `253cbad3207ca0789f2376cf15c3461f1f550edf4f8e1c700a792673287468a9`.
+Đã chạy 200 update ×2 arm MLP 17.928 tham số/76 feature trên 25.600 unique
+WAMM fit views, so nhãn publisher với đối chứng xáo nhãn. Loss train-only
+probe 0,8156→0,0671 so với 0,8156→0,6384 trên nhãn publisher; **không có
+Recall/FPR/PR-AUC hay bằng chứng tổng quát hóa mới**. Checkpoint GLU207 chính,
+threshold, holdout và formal gate không đổi. WAF Data v2 `train` 1.924.461 rows
+đã audit thực tế nhưng nhãn `anomalous` yếu, 192 exact request trái nhãn;
+Kyoushi slice có 406.402 positive publisher labels, **0 benign explicit**.
+Chi tiết [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục 59.
+Full `check.sh`: **233 pytest PASS/0 skip** trong 70,82s, Ruff/format/schema
+PASS; `git diff --check` và Web/formal-policy diff PASS.
+
+## Mốc automated quality assurance — 2026-11-04
+
+Đã thêm policy nghiên cứu v2 và cổng QA tự động, kiểm lại WAMM/overlap/Oracle/GLU207 bundle/checkpoint/ONNX/live shadow theo SHA, từ chối tham chiếu partition sealed. Báo cáo active private `ai-training/.artifacts/automated_quality_20261104/report-v5.json` SHA `b249f80f6cf8387375758651f4f15c5265cf62434bacc5793ead5e653e1233f4`: 6 gate PASS, 4 FAIL, 7 INCONCLUSIVE. Research WAMM **FAIL** do lineage SR-BH và thiếu partition độc lập; model technical **PASS**, model quality **INCONCLUSIVE**, formal **FAIL/0 admitted**. Oracle có 8 request ba nguồn nhưng 8 intent UNKNOWN, 0 nhãn machine-verified. Không có Precision/Recall/FPR/PR-AUC mới hợp lệ hoặc cải thiện model so baseline; 0 update/checkpoint/ONNX mới. `check.sh` **233 pytest PASS**, Ruff/format/contract/Web diff PASS. Xem [PRETRAINING](../ai-training/PRETRAINING.md), [policy](../ai-training/configs/autonomous_research_policy_v2.yaml), ledger 06 mục 58.
+
 ## Mốc autonomous public-data intake — 2026-11-03T21:07+07:00
 
 Đã tải và pin WAMM v2 hợp pháp (CC BY 4.0), audit SQLite **704.665 dòng**, trong đó **704.649** parseable; chỉ **312.241** biểu diễn HTTP text khác nhau và **67.620** vector float32/76 cột khác nhau. Có **757** vector mang hai nhãn. Sau cách ly vector xung đột và loại **23.576** vector trùng development đã lộ, còn **43.287 numeric views** (14.242 publisher benign/29.045 publisher attack) để nghiên cứu *staging*. Đây không phải số request vật lý mới. WAMM có nguồn gốc SR-BH và thiếu campaign/time lineage, nên `AUTONOMOUS_RESEARCH_READY=false`; formal admission **0/2.000.000**, không train/đánh giá độc lập. [Policy v1](../ai-training/configs/autonomous_research_policy_v1.yaml) tách research và formal; [PRETRAINING](../ai-training/PRETRAINING.md) ghi manifest/checksum/giới hạn. Kyoushi chỉ được sàng lọc metadata, WAF Data v2 chưa đủ nhãn attack. GLU 9.675.784/207, checkpoints/ONNX và sealed holdout giữ nguyên. Ledger 06 mục 57.

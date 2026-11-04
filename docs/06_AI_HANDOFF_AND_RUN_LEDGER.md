@@ -1,5 +1,294 @@
 # 06 — AI handoff, decision log và sổ training
 
+## 65. GLU207 post-training checkpoint và 54-request shadow — 2026-11-04
+
+Chỉ AI/read-only corpus. Checkpoint nghiên cứu cuối step652, model 9.675.784 tham số và spec `ai-features-5`/207 SHA `3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580` được đối chiếu với freeze/report/manifest/ONNX. Không ghi đè checkpoint, dùng request-only encoder, mở sealed holdout, sửa admission gate, Web hay tự động chặn. Không training mới. Candidate inventory trong [PRETRAINING](../ai-training/PRETRAINING.md): prepared-v5 train/validation development đã lộ; Nov-02 three-source 54 unlabeled; live shadow lab unlabeled; Juice request-only lab labels; WAF/WAMM/AIT request-only publisher labels. **0** cohort mới đạt đồng thời nhãn hai lớp đáng tin, 207 input thực và partition độc lập.
+
+Trước inference khóa [plan private](../ai-training/.artifacts/posttrain_shadow_glu207_20261104/plan.json) SHA `90da2c8b4eb2120f6b2b240b1830de363dab402ab7f5d61bc17d8b37afe824b6` (capture, source/script SHA, checkpoint/ONNX/spec/training data, technical-only, không threshold). [Report private](../ai-training/.artifacts/posttrain_shadow_glu207_20261104/report.json) SHA `21a6a62a9cffa462288e9682d2a68faaf5602c2a6905c8bcc92901486ef5b6fb7`. Lệnh `systemd-run --user --scope -p CPUQuota=400% -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 -- env OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 ai-training/.venv/bin/python ai-training/scripts/posttrain-shadow-glu207.py`: **PASS**, 54/54 finite ONNX inference và native parity max1,19e-7; 0 request mới phát, 1 two-source setup row không score. `ruff check`, `ruff format --check`, `py_compile`, `git diff --check`, Web diff **PASS**. Full `bash ai-training/scripts/check.sh` trong systemd cgroup4CPU/16GiB sau sửa identity: **PASS** 242 pytest/0 skip, Ruff161 files, format, compile, canonical schema, Web diff (84,80s pytest).
+
+**Đo thực:** request ID overlap train **UNVERIFIED** vì redaction-key HMAC train/shadow khác nhau (`fc0103…`/`516b9a…`); 0 event-key string overlap không chứng minh physical dedup. Có 3/54 exact float32 view overlap và 3 nearest cosine≥0,995. Report/plan v1 sai ý nghĩa identity đã giữ riêng `report-v1.json`/`plan-v1.json`, v2 sửa và đo lại trước kết luận. 143/207 cột nonzero ít nhất một lần, 122 biến thiên; train prior flow36.443/41.607, shadow0/54. Score unlabeled min0,0061/median0,1916/p95 0,9951/max0,9987. ONNX forward-only p50 7,38ms/p95 15,10ms; process RSS peak628.719.616B, max sensor66°C. Không có threshold hợp lệ cho checkpoint research; 1% FPR là budget **chưa đánh giá**, không biến score thành labels. Precision/Recall/FPR/PR-AUC và family metrics `NOT_MEASURABLE`; không có independent generalization hay cải thiện model được chứng minh. Same lab/one environment, prior-flow shift và 3 view repeats là hạn chế thật; chưa thể kết luận shortcut cụ thể. `TRAINING_COMPLETE=true`, `TECHNICAL_INTEGRITY=PASS`, `INTERNAL_EVALUATION=INCONCLUSIVE`, `INDEPENDENT_GENERALIZATION=NOT_ESTABLISHED`, `RELEASE_READY=false`, formal admission0. Bước tiếp theo: thu nhãn request-level và dữ liệu 207 feature ở campaign/môi trường độc lập, calibration riêng, khóa protocol trước score. File mới `ai-training/scripts/posttrain-shadow-glu207.py`; cập nhật `ai-training/PRETRAINING.md`, handoff, `docs/00`, `docs/02`, ledger này. Không commit/push/reset.
+
+## 64. Bounded GLU207 research training — 2026-11-04
+
+**Phạm vi:** chỉ AI. Không sửa Student Web, Security Web, formal gate, holdout, checkpoint gốc hoặc model/threshold đang phục vụ; không commit/push/reset. Track A `prepared-v5` SHA `45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08`, feature spec 207 SHA `3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580`. Freeze private `ai-training/.artifacts/research_glu207_bounded_final_20261104/freeze.json` SHA `8286b2e384e40dacc4407d89a5cd94c8a94f0d17ddfc7d87f9851018212d2ec6`; runner source SHA `a8019a4d21589fdd89e1c6ad94c9f17bea034c56ffa4722d8f0e4399f67e629a`. 41.607 train rows/41.585 unique float32 views/0 conflicting train views; nhãn lab development, không độc lập. Chỉ train split tham gia optimizer/diagnostics; boundary row group được lọc per-row. Seed17, batch128, 2 epoch/652 update, 4CPU quota/16GiB cgroup; cấu hình và giới hạn đánh giá trong freeze.
+
+| Lệnh/check | Kết quả |
+| --- | --- |
+| Preflight checksum/feature contract/row and conflict counts, tạo freeze trước fit | **PASS**; `RESEARCH_FIT_READY=true` |
+| `systemd-run --user --scope -p CPUQuota=400% -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 -- ai-training/.venv/bin/python ai-training/scripts/research-glu207-bounded.py --through-epoch 1` | **PASS**, 326 update/41.607 rows; mean train loss0,20418; checkpoint readback exact |
+| Lệnh trên với `--through-epoch 2` trong tiến trình thứ hai | **PASS resume**, tổng652 update/2 full epochs/83.214 sample exposures; epoch2 mean loss0,12902; checkpoint cuối đọc lại exact |
+| Cùng cgroup chạy `ai-training/.artifacts/research_glu207_bounded_final_20261104/verify.py` | **PASS** ONNX parity 16 train rows, max probability absolute error4,66e-10, `rtol1e-5/atol1e-6` |
+| `python -m py_compile` runner + verifier; `pytest -q tests/test_training.py tests/test_export.py tests/test_scale_model.py` | **PASS**, 18 tests |
+| `ruff check` / `ruff format --check` trên runner đầu | **FAIL**: 6 E402 và 2 formatting locations; source/checkpoint gốc lưu tại `research_glu207_bounded_20261104/`, không xóa bằng chứng |
+| Sau sửa style, freeze/run riêng cùng cấu hình: `bash ai-training/scripts/check.sh` trong cgroup4CPU/16GiB | **PASS** 242 pytest, Ruff 160 files, format, compile, schema contract và Web diff |
+| `git diff --check`; `git diff --name-only -- student-web security-web` | **PASS**, 0 Web diff |
+| Validation/test/holdout scoring, independent evaluation, formal training, automatic blocking | **NOT_RUN** |
+
+Tổng thời gian **run cuối** **141,02s**, process RSS peak **763.199.488B**, peak sensor76°C, cgroup CPU quota4/memory16GiB/swap0. [Report private](../ai-training/.artifacts/research_glu207_bounded_final_20261104/report.json) SHA `e805bc04bd956d642624b4cb2b1269ab98af415eee83a185d1e95da880ef3525`; final checkpoint `run/checkpoints/step-000000000652-90272717f88f` nằm dưới artifact root. Run đầu giữ riêng, không tính là thêm dữ liệu hoặc epoch của run cuối. `RESEARCH_TRAINING_COMPLETE=true`; `RESEARCH_EVAL_READY=false`, formal admitted0. Loss giảm là optimization diagnostic, không phải model quality. File mới: `ai-training/scripts/research-glu207-bounded.py`; cập nhật `ai-training/PRETRAINING.md`, `ai-training/FINAL_TRAINING_HANDOFF.json`, `docs/00`, `docs/02`, ledger này. Artifact freeze/epoch/checkpoint/ONNX/report được giữ private. Bước kế tiếp: nguồn nhãn và cohort độc lập mới, không tiếp tục tuning trên development validation đã lộ.
+
+## 63. Juice Shop evidence-grounded dataset factory — 2026-11-04T15:20+07:00
+
+Nhánh `feat/ai-model-training`; bảo toàn mọi diff/artifact chưa commit, **không add/commit/push/reset**. Chỉ AI/data/docs; Student Web, Security Web, `scale_policy.yaml`, GLU 9.675.784/207, WAF/WAMM checkpoints/ONNX, thresholds, formal gate, sealed holdout không đổi. Không mở WAF validation đã lộ, không bật IPS. Lab dùng lại pinned Juice Shop image digest `sha256:318714401c46c3c0a2458b5dccfc84af8e4839181d1a723701f8a6822b19294f` trong Podman rootless `internal=true` network, publish app chỉ `127.0.0.1:13081`, AI reverse proxy chỉ `127.0.0.1:13082`, container2CPU/3GiB và scope script4CPU/8GiB.
+
+**Plan và run:** [plan private](../ai-training/.artifacts/juice_gt_factory_20261104/plan.json) file SHA `36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d`, self-hash `d2f2d12db52f53d79e452205ad1939d14cde43541515328cd3ed5a468d4eb443`, script SHA `4385db187493da4516e0480dc382d9494afffd2c00c463bb44ac2ac357ef3740`, khóa **trước campaign** 33 cases/max40, 8 scenario groups, request IDs, body SHA, expected app semantics, oracle và `development_only_no_model_evaluation`. [Run report](../ai-training/.artifacts/juice_gt_factory_20261104/run/report.json) SHA `e7fd267a9a4a3d1650ab4bdb052314756304c764435ee035301ec3a9f613efc0`: **33 campaign requests phát, 33 proxy receipts khớp ID/method/path/body/response hash/status, 33 unique complete-request representations**. Setup/discovery/Oracle probes ngoài plan không cộng vào corpus; không có tổng tất cả HTTP probes được chứng nhận. Proxy là AI-owned gateway, **không** là Juice Shop app request-ID log; Student/Nginx/EVE0.
+
+**Oracle:** plan trước case SQLi ghi `Login Admin` challenge ID45 `solved=false`, sau case cuối `solved=true` và login response trả danh tính admin; JWT/password không lưu. [Raw before/after challenge và catalog snapshots](../ai-training/.artifacts/juice_gt_factory_20261104/oracle-readback.json) SHA report `b0c49503738d424f20dcd0e9f30a244a5025472c6a8decaaedd0e14b75adb7af` khớp response SHA đã pin. 28 `BENIGN_WORKFLOW_VERIFIED` qua product identity/search schema/explicit invalid-login denial; 4 `ATTACK_ATTEMPT_VERIFIED` theo plan và proxy/target response; **1 `EXPLOIT_SUCCESS_VERIFIED`** là login SQLi subset, không là dòng/request mới; **1 UNKNOWN** là hard-negative dấu nháy gây HTTP500. Challenge state chỉ xác minh tác động trong một ứng dụng lab, không chứng minh các attempt khác thành công hoặc intent được review độc lập.
+
+**Curation và điểm nghẽn feature:** [curation v1](../ai-training/.artifacts/juice_gt_factory_20261104/curated/report.json) SHA `04aaca4b47c88d2856e8969f0c689d554f56b52f53b13bc20fe8514245472fa3`: 32 labeled rows→20 unique 76+512 views; một mixed view chứa benign invalid-login và attack SQLi login vì rich v1 bỏ cả body có `password`; cách ly2 rows,11 same-label duplicate rows,19 candidate views (16 benign/3 attack). V1 curator code snapshot SHA `73d4a7aaa327e7f1b2fd0ef1cfa9fcfc21a82e10417f13ea7e7d7b2d6085eb9d` lưu private để tái lập sau khi thêm encoder selection. [Encoder v2](../ai-training/src/idps_ai/features/rich_content_v2.py) SHA `4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd` chỉ thêm cú pháp JSON field và redacts secret/PII, không đổi encoder/checkpoint WAF. [Curation v2](../ai-training/.artifacts/juice_gt_factory_20261104/curated-v2/report.json) SHA `eed5d24e572e2a632e3b1bef51abc00f07dcf754a29a5822cf0cfa72d34600a4`: 21 unique views, **0 mixed**, 17 benign/4 attack. `encoder-v2-diagnostic.json` SHA `aec9f12a424f1539a1f861886eafcdab804bb4a2bfa0528b069942b81f28d6a7` xác nhận cùng 32 rows và không có plaintext output.
+
+**Quality/admission:** [quality-gates reproducible](../ai-training/.artifacts/juice_gt_factory_20261104/quality-gates-v2.json) SHA `29bbbec40f1ab4f8a7b96e7cfb2d09ba0398bccb09dc3a822578051be9746938` (one-off report ban đầu giữ lại): 15 content cosine≥0,995 pairs trong 21 unique views,0 cross-label; 4 attack family singleton; 17 benign views chỉ cho cận trên95% FPR **16,16% ngay khi quan sát0 FP**. Campaign ID tương quan trực tiếp với scenario class, phải loại khỏi input; cùng một app/run không có leave-environment-out split. Headers chưa được proxy lưu để chứng nhận parity; 207 fused features không có. `RESEARCH_FIT_READY=false`, `RESEARCH_EVAL_READY=false`, formal admitted **0/2M**. Không tạo split hai lớp giả, **0 model score/train/Recall/FPR/PR-AUC**, không chọn champion hoặc chỉnh threshold. Mục tiêu500–1.500 request không đạt vì 33 case đã chỉ cho21 distinct feature views; lặp thêm cùng template không tạo giá trị.
+
+**Lệnh, test và cleanup:** `podman network create --internal`, `podman run` pinned image/loopback/limits **PASS**; discovery `GET /api/Challenges/`, `GET /api/Products/`, `GET /api/Products/1`, invalid-login probe **PASS** (ngoài corpus). `systemd-run --user --scope CPUQuota=400% MemoryMax=8G ... juice-gt-factory.py prepare/run` **PASS**; `curate-juice-gt-factory.py` v1/v2 và Oracle raw snapshot/readback **PASS**. Quality report lần đầu **FAIL** khi NumPy `int64` không JSON serializable, sửa ép kiểu số liệu và chạy lại **PASS**; không ảnh hưởng campaign/nhãn. `pytest tests/test_rich_content_v2.py` **2 PASS**, Ruff/format **PASS**; full `bash ai-training/scripts/check.sh` sau toàn bộ code mới dưới 4CPU/16GiB **PASS 242 pytest/0 skip/84,57s**, Ruff/format/schema/Web contract PASS. `git diff --check`, `git diff --exit-code HEAD -- student-web security-web ai-training/configs/scale_policy.yaml`, private file mode/readback và cleanup state **PASS**. [Runtime readback](../ai-training/.artifacts/juice_gt_factory_20261104/runtime-readback.json) SHA `36ac5839b9e5ab5df5912527d916625fdf7b3624eefaa3e2079fc1d68873e61c` PASS; private dir0700/files0600, no plaintext auth token/password trong plan/report/log/tensor. `podman rm -f` báo rootless netns `permission denied` khi kill network process, nhưng cuối cùng container/network/process và ports13081/13082 **absent** qua `podman ps/network ls`, `pgrep`, `ss`. Không sửa quyền host hoặc xóa raw/checkpoint/evidence.
+
+Đã thêm `ai-training/scripts/assess-juice-gt-factory.py` và [wrapper](../ai-training/scripts/run-juice-gt-factory.sh) SHA `b1d8f5ec88ad3266789634bc3da67cc983339f9222411964745944fb07afa847` để tự khởi động/capture/curate/assess/cleanup ở lượt mới. Assessor chạy trên artifact đã thu **PASS** và tái tạo 21 views/15 near-view pairs/NOT_READY; wrapper `bash -n` và existing-output guard **PASS**, **full wrapper end-to-end NOT_RUN** vì lặp đúng 33 case trong cùng app không thêm độc lập. Script không tự thay đổi admission hoặc model.
+
+File mới lượt này: `ai-training/scripts/juice-gt-factory.py`, `ai-training/scripts/curate-juice-gt-factory.py`, `ai-training/scripts/assess-juice-gt-factory.py`, `ai-training/scripts/run-juice-gt-factory.sh`, `ai-training/src/idps_ai/features/rich_content_v2.py`, `ai-training/tests/test_rich_content_v2.py`; cập nhật `ai-training/PRETRAINING.md`, `ai-training/FINAL_TRAINING_HANDOFF.json`, `docs/00`, `docs/02`, ledger này. Bước tiếp theo: thêm ứng dụng/môi trường lab độc lập và workflow/attack family có Oracle trạng thái, evidence target-side/headers đầy đủ, khóa source/campaign/time partitions rồi mới study model. Không lấy một exploit success của Juice Shop làm production quality.
+
+## 62. Isolated OWASP Juice Shop development Ground Truth pilot — 2026-11-04T14:58+07:00
+
+Tiếp tục trên `feat/ai-model-training`, bảo toàn toàn bộ diff và artifact chưa commit; **không add/commit/push/reset**. Chỉ thêm `ai-training/scripts/juice-gt-pilot.py` và cập nhật AI/docs/handoff. Student Web, Security Web, GLU 9.675.784/207, MLP/checkpoint/ONNX chính, threshold, formal gate và sealed holdout không đổi. Không chấm WAF validation cũ, không phát traffic ngoài lab.
+
+**Lab:** [OWASP Juice Shop upstream](https://github.com/juice-shop/juice-shop) có MIT license và hướng dẫn Docker bind loopback. Podman rootless image digest `sha256:318714401c46c3c0a2458b5dccfc84af8e4839181d1a723701f8a6822b19294f`; network `ai-idps-gt-lab-20261104` với `internal=true`, chỉ publish `127.0.0.1:13080:3000`, container `--cpus=2 --memory=3g --pids-limit=256 --security-opt no-new-privileges`. Runtime check trước run xác nhận target container ID/image/network/port. Không tải hoặc thực thi payload từ dataset công khai. **Sau pilot:** `podman rm -f` báo rootless netns kill `permission denied` khi cleanup, nhưng `podman ps -a`, `podman network ls`, `pgrep` và `ss` cuối xác nhận target container/network/process/port không còn. Không yêu cầu sudo hoặc sửa quyền.
+
+**Plan prospective:** `juice-gt-pilot.py prepare` kiểm target rồi ghi [plan private](../ai-training/.artifacts/juice_ground_truth_20261104/plan.json) file SHA `766dfdf06bc486b40d446516099c3f633025392f2b1543e9d5870a4abfde9e4e`, self-hash `f6e97b4d057ba50635deea733ffb80857b3241f4e4cfcfa57e804491b4648463`, script SHA `a3339fda0ada0dfc4021a646c454be426bdbe9ec88e4d3a90c8f75ed216c38d5` **trước khi phát request**. Tám case, ID, URL, campaign, target, intent semantics và UNKNOWN conditions precommit; method/path đều GET `/rest/products/search` để không lấy route/method làm class shortcut trong pilot. `run` kiểm lại plan hash, code SHA, container identity và case IDs/intents/queries rồi phát 8 request. File response riêng tư0600, report SHA và request IDs. Không có chữ ký reviewer/independent semantic review; SHA không tự chứng minh nhãn hoặc tính bất biến khi chưa được anchor bên ngoài.
+
+**Kết quả:** [report](../ai-training/.artifacts/juice_ground_truth_20261104/run/report.json) file SHA `1edc78f1afcf944662ec6ec94ef16b863a71d6497d0a67f61f332f1470e56e98`, [readback](../ai-training/.artifacts/juice_ground_truth_20261104/runtime-readback.json) SHA `a658e4177d0b8aff12b7d31986aa279bdeef7c26a8802274293e5101d887ecfa`; 8/8 client requests phát tới container, 8/8 response snapshots, 8 unique complete-request representations. 3 benign lab verified: apple/orange/banana search trả JSON `status=success`, `data` là list và chứa tên sản phẩm kỳ vọng. 3 attack attempts lab verified: XSS, traversal, command payload theo plan với response JSON hợp lệ. 2 UNKNOWN: benign apostrophe hard-negative và SQLi attempt đều HTTP500 có SQLITE_ERROR, không đạt Oracle response precommit; không đổi nhãn sau khi thấy lỗi. **0 exploit success verified** vì thiếu app-state/challenge Oracle. Đây là collector-controlled lab intent, không phải external independent labels. 5 campaign IDs trong **một** ứng dụng/môi trường; 0 independent evaluation campaigns. Student/Nginx/EVE không tham gia, 0 request tương quan ba nguồn; target-side request-ID log chưa có. Không cộng response observations thành physical request mới ngoài 8 client sends.
+
+**Nhãn và model:** research pilot có 3 `BENIGN_VERIFIED_LAB`, 3 `ATTACK_ATTEMPT_VERIFIED_LAB`, 2 `UNKNOWN`; không tự chuyển thành formal evidence-v2, formal admitted **0/2 triệu**. 8 request và một endpoint không đủ để train hoặc đo Recall/FPR/PR-AUC có ý nghĩa; model evaluation/training/checkpoint/ONNX mới **NOT_RUN**, không chọn champion. [Path invariant readback](../ai-training/.artifacts/juice_ground_truth_20261104/path-invariant-readback.json) SHA `7807c63c72a3fd0ede7bd96f696794cbc8278a8ea97e0ea9288242ef2379c987` hậu kiểm 8/8 path, request ID, campaign trong plan/report đúng giá trị suy ra từ query/case; đây không thay thế chữ ký độc lập. Kyoushi [publisher documentation](https://zenodo.org/records/5779411) nói labeling đánh dấu attack-related events theo rules, **không** nói mọi unlabeled event là benign; slice hiện có 406.402 publisher attacker_http/2.075 unlabeled UNKNOWN/0 explicit benign, không đổi nhãn hoặc tải lại full archive. Lối tiếp theo: app-state/challenge Oracle prospective, target-side/proxy evidence và EVE nếu có, nhiều workflow/ứng dụng/campaign thực sự độc lập, split khóa trước scores; không lặp cùng endpoint để phóng to corpus.
+
+**Lệnh/trạng thái:** `podman network create --internal ...` **PASS**; `podman pull` pinned digest **PASS**; `podman run` loopback/limits **PASS**; discovery GET sản phẩm **PASS** (không tính vào corpus); `systemd-run --user --scope CPUQuota=200% MemoryMax=4G ... juice-gt-pilot.py prepare` **FAIL lần đầu** do Podman báo `HostConfig.NetworkMode=bridge` dù `NetworkSettings.Networks` đúng custom internal; sửa preflight đọc network membership, prepare lại **PASS**, plan khóa trước run. `juice-gt-pilot.py run` dưới cùng scope **PASS** 8 sends; private response/report/readback SHA **PASS**; Ruff/format **PASS**. Full `bash ai-training/scripts/check.sh` dưới `CPUQuota=400%`, `MemoryMax=16G`, `AllowedCPUs=0-7` **PASS 240 pytest/0 skip/92,89s**, Ruff/format/schema/Web contract PASS. `git diff --check` và Web/formal-policy diff **PASS**. Artifact dir0700/files0600. Không dọn file AI cũ vì cần reproducibility; chỉ dọn container/mạng pilot tạm.
+
+## 61. Autonomous Content Intelligence và fresh WAF study — 2026-11-04T11:40+07:00
+
+Trên `feat/ai-model-training`; giữ toàn bộ diff chưa commit, **không commit/push/reset**. Chỉ thêm/sửa AI và docs; Student Web, Security Web, `scale_policy.yaml`, GLU 9.675.784/207, formal admission, checkpoint/threshold chính, holdout và auto-blocking giữ nguyên. Chỉ đọc WAF v2 **train.parquet** SHA `3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6`; publisher test/heldout, sealed holdout và traffic ngoài lab **NOT_OPENED/NOT_RUN**. Không tuyên bố `ANOMALOUS` là confirmed attack.
+
+**Collision attribution:** [report](../ai-training/.artifacts/autonomous_content_intelligence_20261104/collision-attribution-rich-v1.json) file SHA `2009ca469d50827063127088bf99c7cad657d28e6004fed7137c2ba4c0d3a4cd`. Full WAF train có 1.612.017 raw exact representations, 192 raw exact keys hai nhãn. Trên cohort cũ 101.098 exact nonconflicting, numeric76 tạo 18.237 unique/269 mixed/77.978 rows mixed; safe symbolic+numeric **trước hash** 28.736/243/43.167; final hashed512 28.581/245/43.171. Rich symbolic+numeric trước hash 34.271/241/28.173; rich final 34.169/241/28.174. Do đó mất thông tin chủ yếu ở biểu diễn symbolic, hash thêm collision nhỏ, và rich encoder giảm rows mixed **không** sửa nhãn. 245 mixed final cũ có method/protocol variation0, URL91, headers180, body26 (có giao nhau). Không có raw payload/secret/PII trong report.
+
+**Corpus mới:** [report](../ai-training/.artifacts/autonomous_content_intelligence_20261104/waf-rich-v1/report.json) file SHA `0b86a38cb92a064d21a9131dd16fc55cfb2c0e18f6bd3441f6afea3147cd83f8`, tensor SHA `be908d65743dcbbf8a996edf1e92be2048656e53df365f42828499f30f52ac61`. Chọn SHA raw modulo4 residue1, raw không trùng cohort cũ modulo16 residue0; tính toàn bộ safe-template group của old selected raw để loại **311.821** selected overlap. 402.108 selected exact trước loại template →90.287 projectable →73 mixed rich views/637 rows cách ly →**84.193 unique float32 views** sau same-label dedup. Role theo 69.607 coarse safe-template groups, không overlap cũ hay giữa train/calibration/validation. Publisher NORMAL/ANOMALOUS: train18.079/45.011, calibration2.989/7.706, validation2.947/7.461. Không có physical request IDs/time/campaign; near-template khác group và label-dependent quarantine là giới hạn. Raw exact SHA chỉ dùng ephemeral trong xử lý, **không persist** trong tensor; template hash không tự bảo đảm privacy, artifact mode0700/0600.
+
+**Plan khóa trước fit** [file](../ai-training/.artifacts/autonomous_content_intelligence_20261104/study-plan-v1.json) SHA `3ea696c6892becd1de80c994d6c7643fd77488777f27c1790fdd05a3c482946a`, self-hash `9b23b3c788c7e783cf2bb96e141b77ed6c1d4cd6ab5533434c61577e6a7f4650`: seed29, mỗi MLP300 update/batch128/LR0,001, numeric76/17.928 params, rich content588/50.696 params, method-only logistic11 params; ngưỡng p99 publisher-normal từ calibration, strict `>`, FPR budget1%, validation score một lần. [Study](../ai-training/.artifacts/autonomous_content_intelligence_20261104/study-v1/report.json) SHA `18ef4823b8918ada4502767be229ff005398ada9befcb84aa3f09896fd6a4c81`, checkpoint hai MLP readback exact. [Analysis](../ai-training/.artifacts/autonomous_content_intelligence_20261104/study-analysis-v1.json) SHA `98c28f47402c0a2d0125753cc2a0227ace97e968a5ad76c177e68570bd5c8241`, 300 safe-template bootstrap resamples:
+
+| Internal publisher-label validation, 10.408 unique views | Numeric MLP | Rich content MLP | Method only |
+| --- | ---: | ---: | ---: |
+| `ANOMALOUS` recall | 0,6924 | 0,7504 | 0,0071 |
+| `NORMAL` FPR | **0,01188** | **0,01086** | 0 |
+| Publisher-label PR-AUC | 0,9675 | 0,9893 | 0,7249 |
+
+Paired bootstrap content−numeric recall +0,0580, 95%[+0,0485,+0,0661], AP +0,0217/[+0,0196,+0,0240], FPR −0,00102/[−0,00474,+0,00350]. FPR difference chưa chắc; **cả hai MLP vượt 1% budget**. POST content recall0,4554/FPR0,0394 trên 426 anomalous/127 normal; family breakdown không có. Mỗi arm 300×128 update thực sự thấy **38.400 distinct train views** trong pool63.090 (10.958 normal/27.442 anomalous theo permutation seed29); chưa fit toàn pool. Một WAF source không chứng minh domain generalization hay attack Ground Truth. Model content khác số tham số với numeric, nên cải thiện không chỉ quy cho encoder. Không chọn champion, không tune sau khi xem validation mới, không đưa WAF request-only vào GLU207. Research content ONNX **NOT_RUN**.
+
+**Lệnh/check đã chạy:** `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7 -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ... scripts/analyze-waf-collisions.py --train <pinned> --output <private>` **PASS**; cùng scope `scripts/curate-waf-rich.py --train <pinned> --previous <v2 tensor> --output <private>` **PASS**; `scripts/study-waf-rich.py --plan <frozen> --output <private>` **PASS**; `scripts/analyze-waf-content-study.py ...` **PASS**. Targeted `pytest tests/test_rich_content.py` **3 PASS**; một lượt đầu **FAIL 1** do fixture user-agent chứa từ `UserName` đúng quy tắc redaction, đã sửa fixture và chạy lại PASS. Full `bash ai-training/scripts/check.sh` dưới scope4CPU/16GiB **PASS 240 pytest/0 skip/63,92s**, Ruff/format/schema/Web contract PASS. `git diff --check`, Ruff riêng 5 file và `git diff --exit-code HEAD -- student-web security-web ai-training/configs/scale_policy.yaml` **PASS**. Study report process peak RSS586.816KiB; thời gian model-only đo batch1024 không gồm parsing/network. Không xóa raw, checkpoint, evidence hay artifact cũ.
+
+File mới lượt này: `ai-training/src/idps_ai/features/rich_content.py`, `ai-training/scripts/analyze-waf-collisions.py`, `ai-training/scripts/curate-waf-rich.py`, `ai-training/scripts/study-waf-rich.py`, `ai-training/tests/test_rich_content.py`. File cập nhật: `ai-training/PRETRAINING.md`, `ai-training/FINAL_TRAINING_HANDOFF.json`, `docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md`, `docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md`, ledger này. **0 physical request mới xác minh, 0 machine-verified intent, 0 formal admitted/2 triệu, 0 independent campaign**. Điểm chặn tiếp theo là nguồn request-bound benign+attack intent độc lập, provenance/time/campaign và quyền dùng; Biblio-US17 vẫn chờ quyền. Cohort WAF fresh đã lộ sau lượt score này và không được tái dùng để tune. GLU207/ONNX chính không đổi.
+
+**Near-template diagnostic sau study:** deterministic sample seed113, hashed-content512 cosine giữa 2.000 validation và 10.000 train views; [report](../ai-training/.artifacts/autonomous_content_intelligence_20261104/near-template-sample-v1.json) SHA `890ce9fcb045831d7caddd138316a570bb531eaf81112d26b6eb2c44527822a1`. Exact coarse group overlap0 nhưng **580/2.000** validation views có nearest train cosine≥0,995; **42** nearest pairs khác nhãn publisher; median nearest0,9919. Đây là approximate similarity, không chứng minh trùng physical request, nhưng cho thấy nghiên cứu này **không** thể gọi là independent generalization. Không dùng diagnostic để sửa split/threshold/model sau scoring. Lệnh scoped4CPU/16GiB `NearestNeighbors(metric=cosine,n_jobs=4)` **PASS**; raw HTTP/secret không xuất ra report.
+
+## 60. Autonomous HTTP Request Intelligence research — 2026-11-04T10:51+07:00
+
+Tiếp tục trên `feat/ai-model-training`, giữ mọi diff chưa commit từ mục59;
+không commit/push/reset. Chỉ sửa AI/data/docs, không Student Web, Security Web,
+`scale_policy.yaml`, GLU 9.675.784/207, checkpoint/ONNX/threshold chính hoặc
+sealed holdout. Không phát traffic, không execute public payload, không bật
+enforcement. WAF publisher test/heldout/eval **không mở**; chỉ dùng pinned
+`train.parquet` SHA `3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6`.
+Nhãn WAF `NORMAL`/`ANOMALOUS` là **WEAK_LABEL publisher**, không xác nhận
+malicious intent; không có machine-verified intent mới hoặc formal admission.
+
+**Data curation:** bản v1 đã hoàn tất nhưng kiểm cuối phát hiện method lạ có
+thể giữ plaintext. Đã thêm allowlist method, test hồi quy và tạo lại bản active
+[report v2](../ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-content-v2/report.json)
+file SHA `82ac932add8984adecd116839f99c1735408cde8dd5c23ebc8076efa743c5b03`;
+input 1.924.461 rows/1.612.017 exact complete-request representations,
+192 conflicting exact keys. Sau quarantine còn **1.611.825 exact nonconflicting
+candidates** cho *weak-label research*, không phải physical request chứng minh.
+SHA modulo16 chọn 101.098 exact keys, tất cả projectable; encoder AI riêng
+chỉ lưu 76 numeric +512 safe symbolic char-ngram values, không plaintext URI,
+query, header value, body, secret hay PII trong corpus. 245 combined feature
+views có hai nhãn làm cách ly 43.171 selected rows; dedup same-label view còn
+**28.336 unique views** (8.841 publisher normal/19.495 anomalous), data file
+SHA `57884ac25780c95d71c24d9cd8b1c5fc3572b4eabb3b5234da3b81d075d56f97`.
+Trong mẫu, 1.500 query fields bị bỏ, 1.622 body có secret-key family bị ẩn,
+4.772 body không rỗng. 25.803 symbolic template groups; train21.247,
+calibration3.528, validation3.561 views, mỗi role đủ hai nhãn và group
+không qua role. Near-template khác group và label-based quarantine vẫn là
+selection/leakage risk, không chứng nhận generalization.
+
+**Cross-source check:** [report v2](../ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-wamm-numeric-overlap-v2.json)
+SHA `eef49e6528bc91c0a4e1b25a54c251d3f14c033b437981993a5b7d06b7624215`:
+WAF selected28.336 content views có18.176 unique numeric76 keys;4.156 keys
+và5.628 WAF rows trùng WAMM staging numeric76. Đây chỉ là view collision,
+không xác nhận cùng HTTP request, source lineage hay nhãn tương đương. WAMM
+vẫn là study train-only publisher attack riêng; **không gộp** thành confirmed
+malicious với WAF anomalous.
+
+**Frozen study active:** [plan v2](../ai-training/.artifacts/autonomous_http_intelligence_20261104/plan-v2.json)
+file SHA `2ddf608c5a0abab34388cd1c24e89f5ff51516b3c4651bec2ef8042def4d846d`,
+self-hash `f15d827e09f0d293676a77c82ccdf5b82173d91e9bdb563d9049016d91c9c316`;
+pin data/code SHA, seed17, batch128, LR0,001, **300 updates mỗi arm**.
+Numeric deep MLP76→64→8 có17.928 params, content deep MLP588→64→8 có50.696,
+method-only logistic11 params làm shortcut control. Ngưỡng chọn từ
+publisher-normal calibration p99, dùng strict `score>threshold`; validation
+không dùng để tune trong mỗi run. Do bản v2 là chạy lại sau sửa privacy,
+validation có overlap với bản v1 và đã được quan sát hai lần; không dùng nó
+để chọn cấu hình tiếp theo. Checkpoint riêng [numeric](../ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v2/numeric_mlp/latest.json)
+và [content](../ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v2/content_mlp/latest.json),
+readback exact parameters+Adam/300 steps. [Study report v2](../ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v2/report.json)
+SHA `4c169f1115f6263c618e5883021585736945315cbe41cdaea1e6fe0412f2fedc`.
+
+| Internal validation theo **publisher NORMAL/ANOMALOUS**, 3.561 unique views | Numeric MLP | Content MLP | Method only |
+| --- | ---: | ---: | ---: |
+| `ANOMALOUS` recall | 0,7160 | 0,7857 | 0,0084 |
+| `NORMAL` FPR | 0,00680 | **0,01444** | 0 |
+| Publisher-label Precision | 0,9953 | 0,9910 | 1,0000 |
+| Publisher-label PR-AUC | 0,9615 | 0,9912 | 0,6860 |
+
+Frozen-score [analysis v2](../ai-training/.artifacts/autonomous_http_intelligence_20261104/analysis-v2.json)
+SHA `7df18a83b67a67c804c4656c44dde6286f313da4dc2c757cf99bdb2ce658c289`:
+3.261 validation template groups; 300 paired group bootstrap resamples cho
+content−numeric AP point+0,0296/95%[+0,0253,+0,0339], recall
+point+0,0696/[+0,0561,+0,0864], FPR point+0,00765/[+0,00088,+0,01479].
+Đây là **internal sampling uncertainty**, không bao gồm sai nhãn/source shift.
+GET-only AP content0,9913/numeric0,9610, nên method-only không giải thích
+toàn bộ khoảng cách; nhưng header/body/source artifact và content model có
+nhiều params hơn vẫn là confounds. FPR content **1,44% vượt ngân sách1%** trên
+validation đã khóa. **Không chọn/chuyển model, không gọi đây là attack
+quality improvement production**, không train GLU207 trên WAF thiếu feature.
+Model/content ONNX **NOT_RUN**; checkpoint technical only.
+
+**Lệnh và gate:** `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7
+-p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ...
+curate-waf-content.py --train <pinned> --output <waf-content-v1/v2>` **PASS**;
+`study-waf-content.py --plan <frozen> --output <study-v1/v2>` **PASS**;
+`analyze-waf-content-study.py ...` **PASS**; curation/study/analysis/overlap
+self-hash, SHA/code bindings, checkpoint readback **PASS**. Full `bash
+ai-training/scripts/check.sh` trong cùng scope sau sửa allowlist **PASS 237
+pytest/0 skip/68,76s**; targeted privacy **4 PASS**. Ruff/format/compile/
+canonical v1.0/Web diff PASS. Đã bổ sung 4 test privacy/content encoding.
+`git diff --check` và `git diff --exit-code HEAD -- student-web security-web
+ai-training/configs/scale_policy.yaml` **PASS**. Artifact v2 report self-hashes,
+plan/data/code SHA và hai checkpoint readback **PASS**.
+Corpus/checkpoint/artifact mới private
+dir0700/files0600; không xóa raw/PCAP/holdout/evidence/checkpoint cũ.
+
+File code mới lượt này: `ai-training/src/idps_ai/features/safe_content.py`,
+`ai-training/scripts/curate-waf-content.py`,
+`ai-training/scripts/study-waf-content.py`,
+`ai-training/scripts/analyze-waf-content-study.py`,
+`ai-training/tests/test_safe_content.py`. Cập nhật
+`ai-training/configs/public_http_sources.yaml`, `ai-training/PRETRAINING.md`,
+`ai-training/FINAL_TRAINING_HANDOFF.json`, `docs/00`, `docs/02`, ledger này.
+Artifact study chỉ phục vụ nghiên cứu nội bộ; **independent evaluation
+INCONCLUSIVE**, machine-verified labels0, formal admitted0/2M. Bước tự động
+tiếp theo: intake cohort mới có request-bound benign+attack intent trong cùng
+ứng dụng/campaign với provenance/time và rights, khóa split trước scoring;
+không tune tiếp trên validation WAF đã lộ.
+
+## 59. QA-to-training research fitting và source triage — 2026-11-04T10:24+07:00
+
+Giữ nhánh `feat/ai-model-training` và toàn bộ diff chưa commit; không reset,
+commit, push, sửa Student/Security, `scale_policy.yaml`, GLU207 checkpoint,
+threshold, ONNX hoặc holdout. Không traffic ngoài lab, không mở split test/heldout
+của nguồn công khai, không bật chặn. Các job QA/audit/fit chạy trong scope
+4 CPU quota/16GiB RAM; tải và giải nén ZIP slice là I/O chọn lọc, không fit.
+
+**QA:** `assess-autonomous-quality.py` nay có ba trạng thái riêng:
+`RESEARCH_FIT_READY=true` cho fit publisher labels trên numeric views đã cách ly;
+`RESEARCH_EVAL_READY=false` do source lineage/campaign-time/dual-class independent
+cohort; `FORMAL_READY=false`, admitted0. Active `report-v7.json` private SHA
+`253cbad3207ca0789f2376cf15c3461f1f550edf4f8e1c700a792673287468a9`
+(sau catalog update); pre-fit plan pin `report-v6.json` SHA
+`9ee4f1f41c3144693fa5ebbc94cc020c32e466cfe42e6136387a9fa1704ba7f6`,
+self-hash PASS. Đếm check IDs tự động là **17 = 6 PASS + 4 FAIL + 7
+INCONCLUSIVE**; "16" ở request là lỗi cộng/ghi. 757 raw-view conflicts vẫn FAIL;
+43.287 curated views sau cách ly có integrity PASS. Source overlap với SR-BH
+ngăn **evaluation độc lập**, không ngăn fit train-only. No semantic intent
+promotion: WAMM labels chỉ publisher.
+
+**Train-only study đã khóa trước update:** private
+`ai-training/.artifacts/autonomous_research_20261104/wamm_fit/plan.json` file SHA
+`b8492c5c6d8504983abbf36561bd9f38a1afbd09b05763af1d4dd5acb1495978`,
+plan self-hash `ca0f5d36a6c33b7f78f0477870604618a19fa21082bcd7639afba40c6d201767`.
+Pin input/QA/script/model/checkpoint code hashes; `fit-wamm-train-only.py`
+kiểm lại trước fit. 76→64→8 `deep_mlp` binary-partial, 17.928 trainable
+params/arm, 200 update/arm, batch128/seed17/LR0,001, cùng permutation 25.600
+unique views, đối chứng nhãn xáo trộn. [Report private](../ai-training/.artifacts/autonomous_research_20261104/wamm_fit/run-v1/report.json)
+SHA `01c00566f40eda7c1ef1945e261bebd8c287b2e01ef6bb8ca0b965c5dffc9e50`:
+train probe *nằm trong fit*, publisher loss 0,8156→0,0671; shuffled control
+đánh trên publisher labels 0,8156→0,6384. Hai checkpoint riêng readback đủ
+200 update và manifest SHA; không đè GLU chính. Kết luận duy nhất: có tín hiệu
+fit trên nguồn publisher này. **Không có** independent Precision/Recall/FPR/AP,
+không thể gọi model tốt hơn hoặc chọn champion.
+
+**WAF Data v2:** đã pin revision `b035dc17f875f1f732c10654709abed66a4e9742`
+và chỉ tải `train.parquet` + README theo MIT claim; train file SHA
+`3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6`.
+[Audit private](../ai-training/.artifacts/autonomous_research_20261104/waf_v2/audit-train-v2.json)
+SHA `5da2e3a273702c77e367eed3f0cfa005a4477836231a180dc68d3656d605164a`:
+1.924.461 publisher rows (1.539.108 normal/385.353 anomalous), 1.612.017
+exact complete-request representations, 312.443 duplicates, 192 exact
+conflicting representations, 1 invalid/oversized. Hash-mod-32 sample 59.046
+rows→9.826 unique 76 views/180 mixed-label views; sample không là toàn bộ.
+77.823 body và gần toàn bộ headers có nội dung nhưng encoder76 không dùng;
+13 methods có 5.228 anomalous/0 normal là shortcut khả nghi. Card thiếu
+capture/label-review/campaign/time; `anomalous` là WEAK_LABEL, **không** xác
+nhận attack intent hoặc admission.
+
+**Kyoushi scenario1:** nguồn [Zenodo](https://zenodo.org/records/5779411)
+mô tả testbed tổng hợp, Apache/attacker PCAP/rule labels, CC BY-NC-SA4.0.
+Chỉ lấy ba ZIP members bằng HTTPS Range, CRC member PASS; full archive SHA
+**NOT_RUN** (file .partial cũ giữ nguyên). Private [slice audit](../ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/slice-audit.json)
+SHA `97ce99c060c1f06a79bd4c5bcf9096f56ad6d0b000b5c543585dd679606a381d`:
+408.477 Apache lines, 406.402 publisher `attacker_http` labels theo số dòng,
+2.075 unlabeled UNKNOWN, 0 explicit benign, 406.692 unique method+URI lines;
+4 request lines parse invalid. Rule nối nguồn PCAP/path/time; chưa là intent
+semantic review độc lập. Slice attack-only không thể đo FPR hoặc làm cohort
+hai lớp. Không cộng các observations này thành unique physical requests.
+
+**Kiểm tra:** `bash ai-training/scripts/run-autonomous-quality.sh <report-v6/v7>`
+**PASS**; `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7
+-p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ...
+audit-waf-v2-train.py --train <pinned train> --output <audit-v2>` **PASS**;
+`fit-wamm-train-only.py --plan <frozen plan> --output <run-v1>` trong cùng
+scope **PASS**, 200×2 update; `load_checkpoint` readback và report self-hashes
+**PASS**. Full `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7
+-p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ... bash
+ai-training/scripts/check.sh` **PASS 233 pytest/0 skip/70,82s**, Ruff/format,
+compile/canonical schema v1.0/Web diff PASS. `git diff --check` và
+`git diff --exit-code HEAD -- student-web security-web
+ai-training/configs/scale_policy.yaml` **PASS**.
+
+**Cleanup:** giữ raw train, Kyoushi slice, .partial cũ, checkpoint, hai audit
+report phiên bản, plan, QA v5/v6/v7 và mọi evidence; không có file nào đủ chứng cứ
+để xóa an toàn. Root artifact mới mode0700, raw/report/checkpoint inputs mode0600
+theo phạm vi chứa HTTP content. Next: nguồn hai lớp **cùng môi trường** với request-bound nhãn
+có kiểm toán, campaign/time và rights; khóa split/source holdout trước score.
+WAF weak anomalies và Kyoushi positive-only không lấp chỗ benign/attack
+independent. Formal scale-admitted0/2M.
+
+## 58. Automated Quality Assurance — 2026-11-04T10:01+07:00
+
+Chỉ AI/data/docs: thêm `ai-training/configs/autonomous_research_policy_v2.yaml`, `ai-training/scripts/assess-autonomous-quality.py`, `ai-training/scripts/run-autonomous-quality.sh`, `ai-training/tests/test_autonomous_quality.py`; cập nhật `ai-training/configs/public_http_sources.yaml`, `ai-training/PRETRAINING.md`, `ai-training/FINAL_TRAINING_HANDOFF.json`, `docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md`, `docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md`, file ledger này. Git đầu lượt sạch tại `7dac68f`; không commit/push/reset. Student/Security và `scale_policy.yaml` không đổi; sealed holdout không mở. Không train, không chọn champion, không bật chặn.
+
+Policy v2 pin v1 SHA `ee6549d5fd0bbc2c47b35c04cdf8b88389cee8f2b005727d872ced37e877ba6c` và đặt ngưỡng nội bộ research, không sửa formal gate. QA chạy từ report/Parquet numeric-only, tính lại hash vector, nhãn và class balance, so exact overlap với exposed train/cal/val (role test bị từ chối), đối chiếu WAMM catalog lineage/feature spec, Oracle facts, mọi SHA file GLU bundle/checkpoint, ONNX CPU smoke, live shadow cũ và formal count. Báo cáo active `ai-training/.artifacts/automated_quality_20261104/report-v5.json` SHA file `b249f80f6cf8387375758651f4f15c5265cf62434bacc5793ead5e653e1233f4`, self-hash **PASS**, mode0600. Input handoff SHA `d049747292a596a76b8edb7c1783d1bc9120013d706adfd384dead95789923e5`, catalog `e9a39a3d9c9bca4eaeee19e5d9f8826c9f6a4f48ed5590061b1bb88e60074096`, policy v2 `4c1210e9b23e6ffff28c77ab87f4d4aa69068b1f209fb4cea44c6b995c8c9e80` và script QA `cae568e2c2feed25965a719f19352cc2b0b743f5580ad0eb811bf73ea14b2e0d` được snapshot private trước handoff update. V1–v4 là lịch sử phát triển và giữ private, không là active result.
+
+| Gate | Trạng thái và bằng chứng |
+| --- | --- |
+| 6 PASS | HTTP parse 16/704.665 lỗi dưới 0,1%; majority fraction unique view dưới 90%; 43.287 numeric views sạch hash/nhãn; 0 exact overlap còn lại với exposed development; Oracle facts 8/8 ba nguồn; GLU207 bundle/checkpoint/ONNX integrity |
+| 4 FAIL | 757 raw 76-view keys có nhãn trái nhau; WAMM dẫn xuất SR-BH; WAMM request-only76 không cung cấp GLU207 input; formal admitted0 < 2.000.000 |
+| 7 INCONCLUSIVE | Campaign partition, related-template/time leakage, source shortcut, hai nguồn hai lớp độc lập, Oracle intent, Rust/production edge parity, GLU207 independent quality |
+
+Research gate WAMM **FAIL**, model technical **PASS**, model quality **INCONCLUSIVE**, formal **FAIL**. Nhãn publisher raw704.665/parseable704.649, machine-verified intent0, independent intent0, weak promoted0, Oracle intent UNKNOWN8. Không có balanced independent GLU207 cohort, nên Precision/Recall/FPR/PR-AUC và family/source metrics mới để null. ONNX smoke p95 **6,09ms** trên 8 lần một zero vector sau warmup, riêng model, không là latency HTTP; prior lab shadow p95 end-to-end **218,06ms** n=4, 4/4 ba nguồn/0 packet drop, không là SLA production. Process QA peak RSS **471,6MiB**; chạy trong systemd scope CPUQuota400%, MemoryMax16G/high15G/swap0. 0 optimizer update/checkpoint/ONNX mới, 0 evidence cải thiện so baseline.
+
+| Lệnh/kiểm tra | Trạng thái |
+| --- | --- |
+| Lượt CLI đầu sau code mới | **FAIL** `Path(policy)` nhận dict; sửa biến path, không tạo report |
+| Lượt launcher đầu | **FAIL** pin live-report SHA gõ thiếu `b5`; checksum guard từ chối, sửa pin, không tạo report |
+| `bash ai-training/scripts/run-autonomous-quality.sh <private-report-v5>` | **PASS**, report self-hash và mọi SHA input/output readback; trạng thái QA ở trên |
+| `pytest -q ai-training/tests/test_autonomous_quality.py` | **PASS 3**, bảo vệ tamper self-hash, vector hash, sealed role và tri-state không promote inconclusive |
+| Full `systemd-run --user --scope -p CPUQuota=400% -p AllowedCPUs=0-7 -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 ... bash ai-training/scripts/check.sh` | **PASS 233 pytest/0 skip/70,35s**, Ruff/format/compile/canonical v1.0/Web diff; sau một check bổ sung checkpoint readback chạy targeted 3 PASS và Ruff/format PASS |
+| Independent model metrics, new training, formal admission | **NOT_RUN / 0** theo gate; không mở holdout |
+
+Điểm tiếp tục: cổng tự động sẽ giữ `INCONCLUSIVE` cho chất lượng GLU cho đến khi có cohort HTTP hai lớp độc lập với nhãn request-bound, provenance campaign/time, visible feature contract và quyền dùng. Sau đó khóa trước split, ngưỡng và ngân sách; dùng evaluator hiện có để đo source/family/unique-view metrics, không tự nâng nhãn publisher thành formal. Không lặp lại WAMM hoặc tối ưu validation đã lộ. Biblio tùy chọn; Kyoushi chưa có archive đầy đủ và chưa kiểm nhãn.
+
 ## 57. Autonomous public-data intake và research gate — 2026-11-03T21:07+07:00
 
 Lượt này chỉ chạm AI/data/docs, giữ nguyên diff chưa commit, Student/Security, formal `scale_policy.yaml`, GLU 9.675.784/207, MLP, checkpoint/ONNX, threshold và sealed holdout. Không commit/push/reset, không phát traffic, không optimizer update, không tự tạo nhãn hoặc reviewer. Biblio-US17 chuyển thành ứng viên tùy chọn, không gọi lại archive 401.

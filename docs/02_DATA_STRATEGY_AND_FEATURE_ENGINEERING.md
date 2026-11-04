@@ -1,5 +1,88 @@
 # 02 — Chiến lược dữ liệu và Feature Engineering
 
+## Sau training: khả năng đánh giá GLU207 — 2026-11-04
+
+Checkpoint mới chỉ được shadow trên **54 request ba nguồn** của capture Nov-02 có 207-vector causal/post-response; request thứ55 thiếu nguồn bị bỏ qua. Capture này **không có nhãn intent** và cùng lab với train, nên chỉ là technical diagnostic. So với 41.607 train rows: overlap request ID xuyên hai khóa HMAC **chưa kiểm được**, **3 exact float32 views lặp**; prior completed flow train36.443/41.607 nhưng shadow0/54. 143/207 cột có ít nhất một giá trị khác0 và 122 cột biến thiên; toàn0 không đồng nghĩa missing. Request-only Juice/WAF/WAMM/AIT không được padding response/flow/history để đánh giá GLU207. Nguồn có nhãn hai lớp và đủ 207 features độc lập hiện **0**; final holdout không mở, formal admission0. [Plan và report](../ai-training/PRETRAINING.md) cùng ledger 06 mục65 ghi hash và giới hạn.
+
+## Partition và nhãn dùng cho bounded research GLU207 — 2026-11-04
+
+Run mới dùng **đúng `prepared-v5` train**: 41.607 rows, 41.585 unique float32 views, không có train view hai nhãn; 29.511 benign/12.096 attack theo lab runner. Hai epoch tạo 83.214 sample exposures, **không** tạo thêm request hay unique views. Dataset SHA `45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08`, feature spec `ai-features-5`/207 SHA `3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580`, order và preprocessing được khóa trong [freeze private](../ai-training/.artifacts/research_glu207_bounded_final_20261104/freeze.json). Validation/test không dùng để fit, tune hoặc score; final holdout không mở. Nhãn development không được nâng thành intent đã review; formal admission0, independent evaluation chưa sẵn sàng. Xem ledger 06 mục64.
+
+## Factory lab evidence, nhãn và feature views — 2026-11-04
+
+Juice Shop factory có 33 client sends qua AI proxy, 33 response/proxy receipts cùng request ID/method/path/body/response SHA, 33 complete-request representations khác nhau; **không** đếm proxy/app observations thành request mới. Application challenge ID45 `Login Admin` đổi `false→true` sau case SQLi login precommit, response xác nhận danh tính admin. Nguồn evidence này cho 28 benign workflow, 4 attack attempts và **1 exploit success** (subset), 1 UNKNOWN. 8 scenario campaign IDs trong **một** app/instance không có tính độc lập của nhiều môi trường. Nhãn được collector định nghĩa và Oracle ứng dụng kiểm; chưa phải review intent độc lập hay formal evidence-v2.
+
+32 labeled rows sau loại UNKNOWN: encoder rich v1 có 20 unique views, một view trái nhãn gồm benign invalid-login và SQLi login do body chứa `password` bị bỏ hoàn toàn; 2 rows cách ly. Encoder JSON body v2 giữ cú pháp identity field khi không chứa PII, che password/token/email thật, tạo **21 unique views/0 mixed views** (17 benign/4 attack). V2 là contract mới cho nghiên cứu lab, **không** đưa vào checkpoint WAF v1 hoặc GLU207. 11 same-label duplicate view rows không là thêm unique views. Có 15 near-view pairs cosine≥0,995; thiếu campaign độc lập, header observation và 207 fused features. Với chỉ 17 benign unique views, cận trên95% FPR khi 0 FP vẫn16,16%; không đánh giá hoặc chọn model. Formal admission0. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục63.
+
+## Lab intent và exploit outcome là hai tầng evidence — 2026-11-04
+
+Juice Shop pilot mới có plan khóa trước, 8 request/response và SHA/readback trong một mạng lab cô lập: 3 `BENIGN_VERIFIED_LAB` từ workflow tìm sản phẩm và JSON name Oracle, 3 `ATTACK_ATTEMPT_VERIFIED_LAB` theo case/payload precommit và response app, 2 `UNKNOWN` vì response không đạt quy tắc; **0 exploit success** vì không có application-state/challenge Oracle. Nhãn lab do cùng collector định nghĩa intent, không thay thế reviewer độc lập hoặc formal evidence-v2; 0 Student/Nginx/EVE correlation cho app này. Không biến HTTP500/200, SQL error hay test-plan thành exploit outcome. 8 unique request representations, 0 training/evaluation mới, 0 admitted. Kyoushi scenario1 slice vẫn 406.402 attacker_http publisher rows/2.075 unlabeled `UNKNOWN`/0 explicit benign; [publisher documentation](https://zenodo.org/records/5779411) chỉ xác nhận gán nhãn event liên quan attack, không cho phép `unlabeled→benign`. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục62.
+
+## WAF rich-content research cohort và collision attribution — 2026-11-04
+
+Audit theo tầng trên WAF `train` đã pin: **192** raw exact representations trái nhãn trên 1.612.017 exact representations; với mẫu cũ 101.098 exact nonconflicting, numeric76 có 269 mixed feature keys/77.978 rows; safe symbolic+numeric trước hashing 243/43.167; float32 hashed512 cuối 245/43.171. Mất thông tin chủ yếu nằm ở canonicalization/symbolic extraction, không chỉ ở hashing. Encoder AI mới thêm buckets độ dài chữ/số, cấu trúc query/header/body, entropy thô, từ bảo mật allowlist; cùng mẫu cũ sau hashing tạo 34.169 views, 241 mixed/28.174 rows. Không khẳng định view trái nhãn là publisher label error. URL khác ở 91, header khác 180 và body khác 26 trong 245 mixed views cũ; các nhóm có thể giao nhau. Secret/PII bị che, raw HTTP không lưu vào corpus; hash của template vẫn có rủi ro suy đoán và chỉ giữ trong artifact riêng tư.
+
+Fresh curation lấy SHA raw modulo4 residue1 (old modulo16 residue0), loại mọi safe symbolic template từng có trong old cohort. Trong 402.108 raw selected, 311.821 bị loại vì template overlap; 90.287 projectable, 73 mixed views/637 rows cách ly, còn **84.193 unique float32 views**. Train/calibration/validation chia theo 69.607 coarse safe-template groups không overlap và có cả hai publisher classes. Near-template khác group và thiếu source/campaign/time metadata vẫn là leakage/domain limit. Không đưa các views này vào GLU 207; WAF không có Student/Nginx/EVE tương quan, status/latency/flow/behavior lịch sử. Nguồn nhãn vẫn `WEAK_LABEL`; 0 machine-verified attack intent, 0 formal admitted. Study một nguồn tại budget1% đạt publisher-label recall75,04%/FPR1,086% cho content, không qua budget; xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục61.
+
+Near-template diagnostic seed113, 2.000 validation so 10.000 train views: **580** có nearest hashed-content cosine≥0,995, **42** nearest pairs trái nhãn publisher dù coarse group khác. Đây là tương tự biểu diễn, không là bằng chứng duplicate physical request; split chưa đủ để chứng nhận độc lập.
+
+## WAF request-content corpus và giới hạn nhãn — 2026-11-04
+
+WAF Data v2 `train` MIT publisher claim đã được curate trong phạm vi AI:
+1.611.825 exact complete-request representations không trái nhãn là ứng viên
+research **NORMAL/ANOMALOUS**, không là physical request count hay confirmed
+attack. SHA modulo16 lấy 101.098 exact representations; 245 combined feature
+views có hai nhãn khiến 43.171 rows bị cách ly. Dedup cùng nhãn để lại
+**28.336 unique float32 views** (76 request numeric +512 hashed char-ngrams
+từ symbolic safe content). URI/query secret fields bị bỏ, header values không
+đi vào encoder, body có private-key family bị ẩn toàn phần; HTTP method lạ
+được map `OTHER` theo allowlist sau khi sửa privacy ở bản v2. Bản v1 còn giữ
+làm bằng chứng. Artifact active chỉ có số, hashes, role và label publisher.
+Split 25.803 symbolic template groups
+train/calibration/validation không có exact group overlap; các near-template
+khác nhóm, label-selection bias và thiếu campaign/time vẫn là giới hạn. 4.156
+unique numeric76 keys của corpus trùng WAMM staging; đó là overlap feature,
+không là bằng chứng cùng request vật lý. Nhãn WAMM attack và WAF anomalous
+**không gộp**.
+
+Ở ngưỡng calibration `NORMAL` 99th percentile, content model tăng publisher
+PR-AUC/`ANOMALOUS` recall trên internal validation nhưng `NORMAL` FPR đạt
+**1,44%**, cao hơn ngân sách1%; 43.171 rows xung đột đã loại nên chất lượng
+trên full source chưa biết. Label tier vẫn `WEAK_LABEL`, independent Ground
+Truth và formal admission **0**. Xem [PRETRAINING](../ai-training/PRETRAINING.md)
+và ledger 06 mục 60.
+
+## Research fit, evaluation và formal là ba phạm vi khác nhau — 2026-11-04
+
+Policy v2 giữ nguyên các ngưỡng chất lượng đánh giá, nhưng assessor nay xuất
+riêng `RESEARCH_FIT_READY`, `RESEARCH_EVAL_READY`, `FORMAL_READY`. WAMM đạt
+**fit train-only** trên 43.287 unique float32/76 views không mâu thuẫn và
+không trùng exact train/cal/val development đã lộ (14.242 publisher benign,
+29.045 publisher attack). Đây là biểu diễn, **0 physical requests mới được xác
+minh**; nguồn SR-BH derivative và không có campaign/time nên evaluation FAIL.
+Raw conflict 757 views/15.872 minority-label rows vẫn là FAIL nguồn gốc; curated
+fit subset không âm thầm giải quyết nhãn raw. Formal admitted vẫn **0**.
+
+Train split WAF Data v2 đã được đọc thật: 1.924.461 publisher rows, gồm
+1.539.108 `normal` và 385.353 `anomalous`, 1.612.017 exact complete-request
+representations, 312.443 duplicate rows và 192 request views trái nhãn.
+Mẫu deterministic 1/32 có 9.826 unique 76-feature views/59.046 rows và
+180 view trái nhãn; không suy rộng thành full count. 77.823 body không rỗng,
+nhưng request-only encoder 76 không quan sát body/header. 13 methods có
+5.228 anomalous/0 normal: shortcut đáng nghi. `anomalous` chỉ là nhãn
+publisher yếu, không là verified attack intent; không đưa vào formal hoặc
+independent quality. Kyoushi scenario1 slice xác minh 408.477 Apache lines,
+406.402 publisher `attacker_http`, 2.075 unlabeled UNKNOWN, **0 benign**;
+không thể dùng lát cắt này đo FPR. Không cộng các dòng/log observations vào
+mục tiêu unique physical requests. Handoff và báo cáo chi tiết ở
+[PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục 59.
+
+## Quality gate v2 cho research và nhãn — 2026-11-04
+
+[Policy v2](../ai-training/configs/autonomous_research_policy_v2.yaml) khóa tiêu chí nội bộ: HTTP parse lỗi ≤0,1%, majority class ≤90% theo unique view, hai nguồn độc lập có cả hai lớp, ≥32 unique views/source/role/class, group/time/related-template split có bằng chứng, train/calibration/validation không overlap. Cổng QA kiểm SHA của source report, Parquet 76 cột, exposed development roles và bundle 207; `test` hoặc role lạ ở reference bị từ chối. `PASS` chỉ là tiêu chí cụ thể đạt, `FAIL` là bằng chứng không đạt, `INCONCLUSIVE` là thiếu bằng chứng; raw conflict vẫn FAIL dù các vector đó đã được cách ly thành công. Policy này phục vụ research và không thay scale/admission formal.
+
+WAMM: 704.665 publisher labels trên raw rows, 704.649 dòng parseable; 0 publisher label bị bỏ trống, nhưng **0 intent được xác minh độc lập**. Oracle lab cũ có 8 physical requests/8 ba nguồn/1 DB transition hợp lệ; cả 8 intent UNKNOWN, 0 machine-verified benign/attack. 43.287 numeric views đã cách ly xung đột và trùng exact với exposed development, song chưa có campaign/time/related-template metadata hoặc nguồn hai lớp độc lập. Nguồn request-only 76 cũng không cung cấp input 207 của GLU. Vì vậy research gate FAIL, model generalization INCONCLUSIVE; Precision/Recall/FPR/PR-AUC phải null, không chấm bằng nhãn publisher như thể là Ground Truth độc lập. Báo cáo/ledger ở [PRETRAINING](../ai-training/PRETRAINING.md) và mục 58 của [sổ chạy](06_AI_HANDOFF_AND_RUN_LEDGER.md).
+
 ## Research policy v1 và WAMM intake — 2026-11-03T21:07+07:00
 
 [Policy autonomous v1](../ai-training/configs/autonomous_research_policy_v1.yaml) cho phép nghiên cứu với machine-verified hoặc nhãn publisher khi có quyền dùng, parse/dedup, hai nguồn hai lớp, group/related-template partition, ít nhất 32 unique views/source/role/class và train/calibration/validation không overlap. Publisher label chỉ chứng minh điều publisher công bố; UNKNOWN và vector trái nhãn cách ly. Policy này **không thay** `scale_policy.yaml` và không cấp formal admission. Final holdout không được dùng tuning; request-only 76 không padding thành GLU 207.
