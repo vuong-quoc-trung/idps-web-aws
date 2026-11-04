@@ -254,6 +254,10 @@ autonomous_source_screening_20261103:
 - name: WAMM_DS_Augmented_v2
   revision: 2783eab560c4355f5976a57fc2e97a2e6c5c79a1
   license_claim: CC BY 4.0 from repository LICENSE
+  lineage_parent: SR-BH2020
+  independent_from_exposed_development: false
+  per_row_campaign_available: false
+  per_row_timestamp_available: false
   archive_sha256: 2631c31b8f4bdc389365274e6f22d9753534ef1e2eab52f3d1fd20c4f6bc65c9
   sqlite_sha256: c692dcdebaf9984dff49ad01f1c21964c8a83ebe1c426bd12e26f9bff9ce335d
   role: publisher_label_research_staging_only
@@ -267,7 +271,7 @@ autonomous_source_screening_20261103:
   conflict_free_views: 66863
   exposed_development_overlap_views: 23576
   nonoverlap_numeric_staging_views: 43287
-  research_policy_status: STAGING_ONLY_AUTONOMOUS_RESEARCH_NOT_READY
+  research_policy_status: RESEARCH_FIT_ONLY_PUBLISHER_LABELS_NO_INDEPENDENT_EVALUATION
   physical_request_count_verified: 0
   formal_admitted: 0
   reason: SR-BH derivative with LLM/regex/expert-sample label process; no per-row
@@ -277,27 +281,54 @@ autonomous_source_screening_20261103:
 - name: puyang2025/waf_data_v2
   revision: b035dc17f875f1f732c10654709abed66a4e9742
   license_claim: MIT in Hugging Face card
-  role: metadata_only_no_attack_ground_truth
-  downloaded: false
-  reason: Card describes anomalous as suspicious/attack-like but gives no capture,
-    per-request intent methodology, campaign or time lineage. First-rows API
-    confirms six string fields and these label names only; not a verified attack
-    source or independent evaluation cohort. Do not count 2.4M publisher rows.
+  role: weak_label_internal_research_corpus_not_independent_evaluation
+  downloaded_train_only: true
+  train_parquet_sha256: 3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6
+  train_audit_report: ai-training/.artifacts/autonomous_research_20261104/waf_v2/audit-train-v2.json
+  publisher_train_rows: 1924461
+  exact_request_representations: 1612017
+  exact_request_label_conflicts: 192
+  sampled_unique_76_views: 9826
+  sampled_view_scope: deterministic 1/32 of complete request hashes, not full train
+  later_research_corpus: ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-content-v2/report.json
+  superseded_research_corpus: ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-content-v1/report.json
+  superseded_reason: Symbolic method allowlist privacy fix; v1 evidence retained.
+  later_research_scope: deterministic 1/16 exact-request hash sample from train only
+  exact_nonconflicting_representations_full_train: 1611825
+  selected_exact_representations: 101098
+  selected_unique_numeric_content_views_after_quarantine: 28336
+  selected_feature_view_conflicts: 245
+  selected_rows_on_conflicting_feature_views: 43171
+  internal_grouped_validation_only: true
+  independent_attack_evaluation_ready: false
+  reason: Card says anomalous means suspicious or attack-like, not confirmed intent.
+    No capture/campaign/time or label-review method. Thirteen HTTP methods have
+    5228 anomalous and zero normal rows; this can be a method-label shortcut.
+    The 76-feature request encoder omits nonempty bodies and headers. Keep train
+    split as weak-label research candidate, not independent quality or formal.
 - name: Kyoushi_LDS_scenario1
   url: https://zenodo.org/records/5779411
   license_claim: CC BY-NC-SA 4.0 in official Zenodo API
   publisher_archive_bytes: 783022916
   publisher_md5: 6706a0bf3f570ef5e7c56bd14e3c08d1
-  role: metadata_candidate_only
+  role: publisher_attack_only_slice_no_benign_evaluation
   downloaded_complete: false
+  range_extracted_members: 3
+  slice_audit_report: ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/slice-audit.json
+  apache_access_lines: 408477
+  publisher_attack_label_lines: 406402
+  benign_label_lines: 0
+  unlabeled_lines_unknown: 2075
+  unique_method_uri_request_lines: 406692
   verified_requests: 0
   formal_admitted: 0
-  reason: Official record describes labeled Apache access lines, raw logs,
-    attacker scenario logs and rule lineage. Potential independent testbed
-    evidence, but AIT-LDSv2 extends Kyoushi and relationship to existing AIT
-    development must be checked. Archive download was stopped after a bounded
-    partial transfer; no contents or labels have been examined. Noncommercial
-    share-alike terms require rights review before derived model distribution.
+  reason: Official record describes synthetic testbed logs, Apache labels,
+    attacker PCAP and rule lineage. HTTPS Range extraction checked ZIP member
+    CRC for one intranet access/label/rule trio; full ZIP SHA remains unverified.
+    All 406402 labels in this slice mark attacker_http; 2075 unlabeled lines
+    remain UNKNOWN, not benign. Thus this slice is positive-only and cannot
+    support FPR or two-class independent evaluation. AIT-LDSv2 extends Kyoushi;
+    lineage and noncommercial share-alike model terms need review before reuse.
 - name: Biblio_US17
   doi: 10.12795/11441/148254
   metadata_api: https://idus.us.es/server/api/core/items/53034f60-d215-44b0-a198-eb8a5229218e
