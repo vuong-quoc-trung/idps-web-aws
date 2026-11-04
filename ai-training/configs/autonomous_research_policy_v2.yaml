@@ -1,0 +1,33 @@
+format_version: 2
+purpose: automated_internal_quality_gates_not_formal_admission
+supersedes_research_policy_sha256: ee6549d5fd0bbc2c47b35c04cdf8b88389cee8f2b005727d872ced37e877ba6c
+formal_policy: scale_policy.yaml
+gate_scopes:
+  research_fit: publisher-labeled train-only unique numeric views; no validation or quality claim
+  research_eval: independent source/campaign/time partition with two classes and no related-template leakage
+  formal: scale_policy.yaml and evidence-v2 admission remain unchanged
+data:
+  maximum_invalid_http_fraction: 0.001
+  maximum_majority_class_fraction: 0.9
+  minimum_independent_dual_class_sources: 2
+  minimum_unique_views_per_source_role_class: 32
+  required_roles: [train, calibration, validation]
+  maximum_cross_role_exact_view_overlap: 0
+  maximum_cross_role_related_template_overlap: 0
+  require_source_and_campaign_provenance: true
+  unknown_and_conflicting_labels: quarantine
+quality:
+  minimum_independent_evaluation_cohorts: 1
+  minimum_benign_requests_per_cohort: 1000
+  minimum_attack_requests_per_cohort: 100
+  maximum_false_positive_rate: 0.01
+  minimum_recall: 0.8
+  minimum_precision: 0.8
+  minimum_pr_auc: 0.8
+  maximum_model_p95_latency_ms: 50
+  threshold_selection_partition: calibration
+  final_holdout_for_tuning: forbidden
+resources:
+  maximum_logical_cpus: 8
+  maximum_memory_gib: 16
+automatic_blocking: forbidden
