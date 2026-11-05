@@ -1,5 +1,29 @@
 # 00 — Tổng quan dự án và tiến độ
 
+## AI-IDPS Research MVP v1.0 frozen baseline — 2026-11-05
+
+`RESEARCH_MVP_V1_0_FROZEN=true` cho **offline research**. Hai model/checkpoint/ngưỡng/spec đã khóa và suy luận qua `idps-ai infer-mvp` PASS; 3/3 sample records, 16 partial/invalid/security cases, GLU ONNX/native parity, byte-identical replay, offline network trace0 calls, full249 pytest PASS. [Manifest](../ai-training/RESEARCH_MVP_V1_0_FROZEN.json), [runbook](../ai-training/README.md), [ledger06 mục74](06_AI_HANDOFF_AND_RUN_LEDGER.md). Git tree còn thay đổi chưa commit; Student/Security Web không đổi. Formal admission0, generalization độc lập chưa chứng minh, production blocking OFF. Dừng phát triển ở baseline này.
+
+## Research MVP offline inference — 2026-11-05
+
+`RESEARCH_MVP_COMPLETE=true` cho **offline shadow**, không phải production. Một lệnh `idps-ai infer-mvp` nạp checkpoint đã khóa, nhận HTTP JSONL request-only cho Request Intelligence v2 hoặc fused JSONL ba nguồn/post-response cho GLU207, trả điểm/ngưỡng/version/availability riêng từng model, không trộn score và không chặn. Smoke cả hai đường, GLU ONNX/native parity, input lỗi, reproducibility và resource cap PASS; Student/Security Web không đổi. Chất lượng: Juice historical3/4 attack attempts flagged/0/28 benign; ModSec-WP publisher-NORMAL flag34,45%; independent generalization chưa chứng minh, formal admission0. [Lệnh và schema](../ai-training/README.md), [ledger06 mục73](06_AI_HANDOFF_AND_RUN_LEDGER.md).
+
+## Mốc attack threshold viability train-only — 2026-11-04
+
+GLU207 step652 tại threshold tạm0,5396780372 được score trên **41.585 unique train views đã fit**: 29.489 benign development, 12.096 attack development. **12.069 attack flagged = TRAIN_POSITIVE_FLAG_RATE99,7768%**, 32 benign flagged; 27 attack dưới ngưỡng gồm26 brute_force/1 behavioral anomaly, đều có prior flow. Score=`1−P(benign)` và binary label/family mapping đã đối chiếu; threshold **không vô hiệu trên train**, chưa chứng minh Recall/FPR thật. Existing Juice Shop attack evidence thiếu 207/ba nguồn, devgt1 ba nguồn intent UNKNOWN, shadow207 không nhãn; **0 attack ngoài train được score**, formal admission0. Cần cohort attack+benign request-bound/Oracle/207 causal ở campaign hoặc môi trường mới. [PRETRAINING](../ai-training/PRETRAINING.md), ledger06 mục69.
+
+## Mốc threshold tạm thời và FPR prospective — 2026-11-04
+
+Calibration mới **27 benign lab/27 unique views**, một campaign/session riêng, đã khóa trước thuật toán empirical-max float32+1 ULP; threshold GLU207 nghiên cứu **0,5396780372** và manifest SHA được đóng **trước** evaluation plan/request. Evaluation mới **27 benign lab/27 unique views**, 27/27 ba nguồn+Oracle+ONNX, 20 prior flow, 0 exact view/physical request ID trùng calibration. **0/27 false positives, observed FPR0%**, nhưng khoảng binomial95% hai phía minh họa **[0%,12,77%]** còn lạc quan vì cùng session; **chưa chứng minh FPR≤1%**. EARLY/WARMING/WARM đều0 FP trên7/11/9; Recall không đo được. Threshold chỉ `PROVISIONAL_BENIGN_ONLY`, không áp vào serving/chặn; formal admission0 và generalization độc lập chưa đạt. [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục68.
+
+## Mốc prospective benign GLU207 — 2026-11-04
+
+Plan khóa trước capture; một lab riêng đã chạy **460,11s** với **27 request benign workflow**, 27/27 đối chiếu Student/Nginx/Suricata, Oracle lab xác minh27, 27 vector207 hữu hạn và score được. Prior EVE flow0/7 EARLY, 11/11 WARMING, 9/9 WARM; 8/27 request có flow và đủ sáu cửa sổ lịch sử. Sensor776 packets/0 drops, ONNX/native parity27/27 PASS, forward p95 5,42ms. Đây là một ứng dụng/lab, nhãn runner+Oracle nội bộ; GLU step652 **không có threshold calibration hợp lệ**, nên FPR/false positives/CI và Recall **chưa đo được**. Formal admission0, không retrain/chọn champion. Có 12 request ở lượt lỗi biểu mẫu và 4 setup readiness khác, được giữ riêng không nhập cohort27. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục67.
+
+## Mốc chẩn đoán GLU207 prior flow — 2026-11-04
+
+Đã replay chính xác 41.607/41.607 train vectors và kiểm tra 54 shadow requests ba nguồn. Shadow chỉ kéo 11,34 giây; cả 54 EVE flow đến sau request cuối, flow sớm nhất chỉ đủ điều kiện causal sau đó 53,66 giây. Vì vậy prior flow 0/54 là do thời gian capture/warm-up, chưa có bằng chứng bug correlation. Train kéo 481,59 giây, prior flow xuất hiện từ giây 65,09 và có ở 36.443/41.607 rows. Counterfactual train-only 1.024 unique views bỏ toàn bộ flow khiến 2 argmax đổi, p95 |Δscore|=0,05233, max=0,49465; đây không phải Recall/FPR. Không sửa model, threshold hay gate; formal admission0 và chưa có nhãn độc lập. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục66.
+
 ## Mốc post-training GLU207 shadow — 2026-11-04
 
 Checkpoint nghiên cứu step652/9.675.784 tham số đã qua SHA, 207 feature order, preprocessing và ONNX parity. Plan khóa trước inference dùng 54 request Student/Nginx/Suricata trong capture lab cũ; **54 finite scores**, 0 request mới, 0 nhãn intent. Overlap request ID xuyên capture **chưa thể xác minh** vì hai khóa HMAC khác nhau; 3/54 exact feature views trùng train. Prior completed flow có ở train36.443/41.607 so shadow0/54, cho thấy availability shift. ONNX forward p50 7,38ms/p95 15,10ms trên54, RSS peak~600MiB. Không có Recall/FPR/PR-AUC hay bằng chứng tổng quát hóa mới, không train thêm/chọn champion. `TECHNICAL_INTEGRITY=PASS`, `INDEPENDENT_GENERALIZATION=NOT_ESTABLISHED`, formal admission0, `RELEASE_READY=false`. Xem [PRETRAINING](../ai-training/PRETRAINING.md), ledger 06 mục65.

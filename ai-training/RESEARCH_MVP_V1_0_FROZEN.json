@@ -1,0 +1,208 @@
+{
+  "automatic_enforcement_actions": 0,
+  "formal_admission": 0,
+  "format_version": 1,
+  "freeze_scope": "Pinned local checksum baseline only; dirty working tree, no signed or cryptographically immutable release",
+  "interface": {
+    "command": "ai-training/.venv/bin/idps-ai infer-mvp --input PRIVATE_INPUT.jsonl --output NEW_PRIVATE_OUTPUT.jsonl --model both --cpus 4",
+    "input": "JSONL; record_id plus http_request {method,url,headers,body} and/or complete chronological three-source post-response fused_request",
+    "input_schema_version": "research-mvp-1",
+    "output": "JSONL per-model status/score/threshold/version/feature availability, combined_score=null, enforcement_actions=0",
+    "output_schema_version": "research-mvp-1",
+    "runbook": "ai-training/README.md",
+    "source_code_sha256": {
+      "ai-training/src/idps_ai/cli.py": "142ab6187f9612b3ae076a3f33b10b7e212c714ff56df37fd796817cd9d9a056",
+      "ai-training/src/idps_ai/features/pipeline.py": "fbf28d65a55fac9755d8da9c58e5c0ad02d1e999b4bb130bf7813f3b66db2794",
+      "ai-training/src/idps_ai/features/request_preprocessing.py": "740813e7ab15a2cd27cd13e6471331970a6c1ff2bf0f8799853d432abc991312",
+      "ai-training/src/idps_ai/features/request_view.py": "00cde620943f7f353f13c26b1978ec06f64bbe5a6c189afe8d21ec03e6b2451b",
+      "ai-training/src/idps_ai/features/rich_content.py": "4031f4898c8510221630eed00ccec95cb4706186aed2f99e184fd97ee3f63d27",
+      "ai-training/src/idps_ai/features/rich_content_v2.py": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+      "ai-training/src/idps_ai/mvp_inference.py": "b97dd0140117cfe03d459f614d0187514d3c8e2459711e9b76fa7867ce12287c",
+      "ai-training/tests/test_mvp_inference.py": "86f7597bb0274b989f3a3f83509648fcb95c57f6640cf8572ab3b2ef3f0590ff"
+    }
+  },
+  "known_limitations": [
+    "Independent generalization and production FPR/Recall are unproven",
+    "GLU threshold is provisional from 27 correlated benign lab requests",
+    "Request v2 publisher-NORMAL flag rate is 34.45% on ModSec-WP and publisher-RCE misses are high",
+    "GLU needs complete three-source post-response fused rows; CLI cannot independently certify raw producer causal timing or live edge parity",
+    "Missing request body/header can be reported but not invented",
+    "Local ignored checkpoint/spec artifacts are required; Git HEAD alone cannot reconstruct dirty workspace",
+    "Manifest is a checksum inventory, not a signed immutable artifact"
+  ],
+  "models": {
+    "glu207": {
+      "architecture": "residual_glu",
+      "checkpoint_files_sha256": {
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/arrays.npz": "649d7f8c6e798894ee4efb51819bd93a73f819f0bce668324b7c9107c10317d6",
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/manifest.json": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/state.json": "979707c3ed463f0fb512053d94cae6a5462c1f0a6f3d6f49b24896c892e60af1"
+      },
+      "checkpoint_path": "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f",
+      "checkpoint_step": 652,
+      "feature_contract": "ai-features-5/safe_query_numeric_v2 chronological post-response",
+      "feature_count": 207,
+      "feature_spec_path": "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5/feature_spec.json",
+      "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+      "onnx_path": "ai-training/.artifacts/research_glu207_bounded_final_20261104/research-final.onnx",
+      "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+      "parameters_trainable": 9675784,
+      "threshold": 0.5396780371665955,
+      "threshold_manifest_path": "ai-training/.artifacts/bc27_1104/threshold-manifest.json",
+      "threshold_manifest_sha256": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2",
+      "threshold_rule": "score >= threshold",
+      "threshold_scope": "PROVISIONAL_BENIGN_ONLY",
+      "training_epochs": 2
+    },
+    "request_intelligence_v2": {
+      "architecture": "deep_mlp",
+      "checkpoint_files_sha256": {
+        "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/arrays.npz": "d2d6130d7e7e8a5b3d411bab1ac1739257c933adfbaa956184719937c34e8820",
+        "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/manifest.json": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+        "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/state.json": "6f628a4541b0980e46d4eb47f89d72bb92cc9f7e8d0e655de8bd428cf1c961e7"
+      },
+      "checkpoint_path": "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4",
+      "checkpoint_step": 3072,
+      "encoder_version": "rich_content_v2",
+      "feature_contract": "bounded-request-v1 numeric76 + rich_content_v2 hashed char 3–5 512 nonnegative L2 float32",
+      "feature_count": 588,
+      "parameters_trainable": 50696,
+      "threshold": 0.8826237916946411,
+      "threshold_manifest_path": "ai-training/.artifacts/request_intelligence_v2_20261104/run/threshold-manifest.json",
+      "threshold_manifest_sha256": "6d0fd376d0777f97fb61688b898556a4a9b9b94656738723e7b74e1d33061f6a",
+      "threshold_rule": "score > threshold",
+      "threshold_scope": "WAF publisher-NORMAL calibration"
+    }
+  },
+  "production_blocking_enabled": false,
+  "quality_evidence_existing_only": {
+    "glu_independent_attack_recall": "NOT_ESTABLISHED",
+    "glu_prospective_benign_false_positives": "0/27 same lab; upper CI remains large",
+    "glu_train_only_attack_positive_flag_rate": "12069/12096 = 99.7768%; not independent recall",
+    "ground_truth_note": "Publisher hybrid labels are not independently verified request-level attack intent",
+    "modsec_publisher_NORMAL_flagged": "1548/4494 = 34.45%",
+    "modsec_publisher_PR_AUC": 0.9855957946680054,
+    "modsec_publisher_RCE_missed": "771/1045",
+    "modsec_publisher_attack_family_flagged": "16680/18025 = 92.54%",
+    "request_v2_juice_command_attempt": "MISSED",
+    "request_v2_juice_historical_attack_flagged": "3/4",
+    "request_v2_juice_historical_benign_flagged": "0/28",
+    "request_v2_juice_sqli_exploit_success": "FLAGGED"
+  },
+  "release_date": "2026-11-05T08:47:48+07:00",
+  "release_id": "AI-IDPS Research MVP v1.0 — Frozen Baseline",
+  "repository": {
+    "branch": "feat/ai-model-training",
+    "git_status_before_manifest_creation": [
+      " M ai-training/FINAL_TRAINING_HANDOFF.json",
+      " M ai-training/PRETRAINING.md",
+      " M ai-training/README.md",
+      " M ai-training/src/idps_ai/cli.py",
+      " M docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md",
+      " M docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md",
+      " M docs/06_AI_HANDOFF_AND_RUN_LEDGER.md",
+      "?? ai-training/scripts/attack-threshold-train-diagnostic.py",
+      "?? ai-training/scripts/calibrate-evaluate-glu207.py",
+      "?? ai-training/scripts/curate-waf-rich-v2.py",
+      "?? ai-training/scripts/diagnose-glu207-flow.py",
+      "?? ai-training/scripts/evaluate-juice-request-smoke.py",
+      "?? ai-training/scripts/evaluate-request-v2-cross-source.py",
+      "?? ai-training/scripts/prospective-benign-glu207.py",
+      "?? ai-training/scripts/study-request-intelligence-v2.py",
+      "?? ai-training/src/idps_ai/mvp_inference.py",
+      "?? ai-training/tests/test_mvp_inference.py"
+    ],
+    "manifest_itself_becomes_untracked": true,
+    "revision": "cf92ca94e37f5c0da26950b51e4bd70997ae0ac3",
+    "tracked_diff_sha256": "b5e9a707b7ae38f03d1d09d7b6549bf39b48cea67d3dbc205fb49ec7bb97482a",
+    "untracked_file_sha256_before_manifest_creation": {
+      "ai-training/scripts/attack-threshold-train-diagnostic.py": "d14ccffdc4ad46be17bee28328666fc1c6b8c44918b70f667b3e140adf0bd2d1",
+      "ai-training/scripts/calibrate-evaluate-glu207.py": "ea854845217865bfa51a534bdab632001afbf328c5b7c6a3a69170f3c97f98ba",
+      "ai-training/scripts/curate-waf-rich-v2.py": "607de6f99250b0f456dd0d220ca1a2a38650604bc57dfa2d3081250f281025b4",
+      "ai-training/scripts/diagnose-glu207-flow.py": "7bf7d410718beab86478ec858fa46b1bf0939117e1d3107d3d9f43972371955e",
+      "ai-training/scripts/evaluate-juice-request-smoke.py": "7fc9bd01dbb4f86855c00b7c915063b4bfbad372a3ccd4a4c769fbdefbc18580",
+      "ai-training/scripts/evaluate-request-v2-cross-source.py": "472f048286f3425be79fddf57ad17b31d4d6e7b530f194fe41e3ebe9b3faf43f",
+      "ai-training/scripts/prospective-benign-glu207.py": "4290ea2e9ffedbdef26e2ad8cdc2059b9b7497924955c998c87d0f6d2b58a08e",
+      "ai-training/scripts/study-request-intelligence-v2.py": "5ccc3aaeab22cc2860299ef42b20bb41bb1204b56c746e951de29d66ba9a8a05",
+      "ai-training/src/idps_ai/mvp_inference.py": "b97dd0140117cfe03d459f614d0187514d3c8e2459711e9b76fa7867ce12287c",
+      "ai-training/tests/test_mvp_inference.py": "86f7597bb0274b989f3a3f83509648fcb95c57f6640cf8572ab3b2ef3f0590ff"
+    },
+    "working_tree_clean": false
+  },
+  "resource_measurement": {
+    "average_cpu_cores_approx": 1.414,
+    "cold_records_per_second_approx": 1.478,
+    "peak_rss_kib": 514932,
+    "scope": "Cold end-to-end CLI (load, parse, feature extraction, model, output/fsync), 3 private rows; not live serving",
+    "system_cpu_seconds": 0.43,
+    "user_cpu_seconds": 2.44,
+    "wall_seconds": 2.03,
+    "warm_per_record_ms_including_validation_feature_and_model": [
+      4.229942,
+      10.115696,
+      10.309042
+    ]
+  },
+  "runtime": {
+    "limits": {
+      "maximum_logical_cpus": 8,
+      "maximum_ram_gib": 16,
+      "verified_cgroup_cpu_quota_percent": 400,
+      "verified_cgroup_memory_high_gib": 15,
+      "verified_cgroup_memory_max_gib": 16,
+      "verified_cgroup_swap_max_bytes": 0
+    },
+    "packages": {
+      "PyYAML": "6.0.3",
+      "jsonschema": "4.26.0",
+      "numpy": "2.5.4",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.31.1",
+      "psutil": "7.2.2",
+      "pyarrow": "26.0.0",
+      "pytest": "9.1.1",
+      "ruff": "0.17.3",
+      "scikit-learn": "1.9.1",
+      "threadpoolctl": "3.7.0"
+    },
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "python_executable": "/home/trung/projects/idps-web-aws/ai-training/.venv/bin/python",
+    "python_version": "3.12.14"
+  },
+  "safety": {
+    "automatic_ips_blocking": false,
+    "checkpoint_and_threshold_unchanged": true,
+    "commit_or_push": false,
+    "formal_admission_unchanged": true,
+    "production_config_unchanged": true,
+    "sealed_holdout_not_opened": true,
+    "security_web_unchanged": true,
+    "student_web_unchanged": true,
+    "training_or_attack_traffic_this_release": false
+  },
+  "score_semantics": "score = 1 - P(benign), higher is more attack-like; models reported separately; no fusion",
+  "status": "RESEARCH_MVP_V1_0_FROZEN_LOCAL_OFFLINE_RESEARCH",
+  "stop_rule": "No v1.1, training, tuning, dataset discovery, live integration or deployment in this finalization session",
+  "verification": {
+    "byte_identical_replays": 3,
+    "case_report_path": "ai-training/.artifacts/research_mvp_v1_0_20261105/verification-cases.json",
+    "case_report_sha256": "c8aa780ada7ae67e2790ff3991f2eb981d805d8722397658f8339966eb154db7",
+    "full_check": "PASS 249 pytest; Ruff/format171, compile, canonical schema, protected Web diff",
+    "git_diff_check": "PASS",
+    "glu_onnx_native_parity": {
+      "atol": 1e-06,
+      "fused_rows": 2,
+      "max_abs_probability_error": 9.313225746154785e-10,
+      "rtol": 1e-05
+    },
+    "offline_strace_network_syscalls": 0,
+    "partial_invalid_security_cases": 16,
+    "sample_input_path": "ai-training/.artifacts/research_mvp_v1_0_20261105/input.jsonl",
+    "sample_input_sha256": "033373d3683d59abbc93d9a6b0aa85b86bebe3271c193d536910b490eb3c8e85",
+    "sample_output_path": "ai-training/.artifacts/research_mvp_v1_0_20261105/output-final.jsonl",
+    "sample_output_sha256": "c7333e697eafc3b54bc4b18b0dcc8bf6aec38a5a72009c65f0d16b011b248db1",
+    "secret_marker_in_prediction": false,
+    "student_security_web_contracts_docker_diff": "EMPTY",
+    "targeted_regression": "PASS 7 pytest"
+  }
+}

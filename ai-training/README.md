@@ -1,5 +1,34 @@
 # AI-IDPS Data & Training Pipeline
 
+## Research MVP v1.0: frozen offline baseline — 2026-11-05
+
+**Trạng thái:** `RESEARCH_MVP_V1_0_FROZEN=true` cho suy luận offline, chỉ để nghiên cứu; không gọi Student/Security Web hoặc firewall và không tự chặn. Model/encoder/checkpoint/ngưỡng đã khóa. [Release manifest](RESEARCH_MVP_V1_0_FROZEN.json) ghi Git tree còn thay đổi chưa commit, hashes và bằng chứng; đây là bản baseline cục bộ, chưa được Git commit/push hay bảo vệ bằng chữ ký. Formal admission vẫn 0; chưa chứng minh tổng quát hóa hoặc FPR production. [Kiểm chứng và giới hạn](PRETRAINING.md).
+
+Từ thư mục gốc repo, tạo một file JSONL riêng tư, mỗi dòng là một object. Ví dụ request-only (chỉ minh họa định dạng, không phải dữ liệu train/evaluation):
+
+```json
+{"schema_version":"research-mvp-1","record_id":"example-001","http_request":{"method":"GET","url":"/api/health","headers":null,"body":""}}
+```
+
+Mỗi dòng phải có `schema_version=research-mvp-1` và `record_id` opaque ASCII tối đa128 ký tự, không trùng trong một batch. `headers` là chuỗi HTTP headers quan sát được hoặc `null` khi không có; `body` là chuỗi thực quan sát được hoặc `null` khi không có. Chuỗi rỗng nghĩa đã quan sát và rỗng. Giữ file input ở nơi riêng tư nếu có secrets; output không lặp URL, body hoặc headers. Dữ liệu thô chỉ đi qua bộ encoder hiện có trong RAM.
+
+Chạy **một lệnh** với file input đã chuẩn bị; chọn `--model request-v2`, `glu207` hoặc `both`:
+
+```bash
+systemd-run --user --scope -p CPUQuota=400% -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 -- \
+  env PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  "$PWD/ai-training/.venv/bin/idps-ai" infer-mvp \
+  --input "$PWD/ai-training/.artifacts/research_mvp_v1_0_20261105/input.jsonl" \
+  --output "$PWD/ai-training/.artifacts/research_mvp_v1_0_20261105/predictions-new.jsonl" \
+  --model both --cpus 4
+```
+
+Đổi `--input`/`--output` theo file của bạn; output phải là đường dẫn **chưa tồn tại**. CLI ghi JSONL mode `offline_shadow`, một dòng cho mỗi input, gồm `schema_version=research-mvp-1`, `record_id`, `models`, `combined_score=null`, `enforcement_actions=0`. Mỗi model có `status=scored` với `score`, `above_research_threshold`, `research_threshold`, `model_version`, `encoder_version`, `feature_count`, `feature_availability`; nếu thiếu representation thì `status=unavailable` và lý do. Nếu chỉ chọn một model, thiếu representation tương ứng là lỗi. Không trộn hai điểm số. Ví dụ rút gọn từ sample request-only đã đo: `{"record_id":"mvp-request-only","models":{"request_intelligence_v2":{"status":"scored","score":0.0023317933082580566},"glu207":{"status":"unavailable"}},"combined_score":null,"enforcement_actions":0}`; file thật còn chứa schema/version/threshold/availability.
+
+Để chạy GLU207, mỗi dòng thêm `fused_request` là **một row đã correlation theo request ID** từ AI collector, đúng thứ tự thời gian và **sau response**, không phải một dòng Student/Nginx/EVE riêng. Cần các field `timestamp`, `available_at`, `request_key`, `client_key`, `user_key`, `sources` (đúng ba giá trị `STUDENT_AUDIT`, `NGINX`, `SURICATA`), `correlation=request_id`, `http_method`, `uri_path`, `role`, `user_agent`, `status_code`, `latency_ms`, `request_bytes`, `response_bytes`, `numeric_json`, `flow_json`, `suricata_alert_counts`. `numeric_json` phải có đủ các số học/cấu trúc đã quan sát, ba availability flags bật; `flow_json` phải khai báo đủ năm trường flow với số đo hoặc `null`. CLI từ chối record thiếu contract, source, correlation, response hoặc numeric bridge; không padding 207 feature. History 10/60/300s chỉ tính từ các fused rows đã đưa vào cùng lần chạy theo thứ tự. `request-v2` dùng riêng được khi không có fused record. Đầu vào sai trả exit code2, không ghi output dở dang hoặc in lại HTTP content.
+
+Lệnh trên dùng cgroup4CPU/16GiB/swap0. Nếu môi trường không có `systemd-run --user`, CLI vẫn giới hạn1–8 CPU threads và16GiB address space trong process; hãy cung cấp cgroup tương đương để có hard CPU quota. Output private mode0600, ghi atomic và không ghi đè file đã tồn tại; input sai thoát mã2, không để lại output dở dang. Không dùng file dự đoán làm bằng chứng nhãn. GLU threshold `0,5396780371665955` chỉ là ngưỡng nghiên cứu từ27 benign lab; v2 threshold `0,8826237916946411` dựa trên WAF publisher-NORMAL. Không bật production IPS bằng các ngưỡng này. CLI không phụ thuộc sample input riêng tư: thay `--input` bằng JSONL của bạn; các checkpoint/spec đã khóa vẫn cần nằm tại vị trí artifact ghi trong manifest.
+
 ## Review nhãn và nguồn attack — 2026-11-01T07:36:28.147641+07:00
 
 **Formal vẫn NOT_READY; không chạy trainer dài.** SOC-MLD mới đã audit198.082 HTTP observations, nhưng không có nhãn request-bound mới đủ tin cậy; 38 attack-instance IDs chung train/test và rule/time fallback phải được review. Không dùng precomputed future-window/SID features. Raw/provenance giữ private, không tạo traffic mới hoặc cộng observations thành request mới.
