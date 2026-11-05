@@ -40,5 +40,5 @@ test("new application rules render aggregates and reject unknown codes", () => {
       code,
     );
   }
-  assert.equal(applicationEvidence('{"rule_code":"APP-1011"}'), null);
+  assert.equal(applicationEvidence('{"rule_code":"APP-1017"}'), null);
 });
