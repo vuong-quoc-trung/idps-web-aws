@@ -19,7 +19,7 @@ Từ gốc repo chạy `scripts/dev-up-and-verify.sh --bootstrap-nginx` để d�
 
 ## Các thay đổi chính
 
-- Layer 2 phát hiện hành vi từ Student Audit với APP-1001–APP-1005: tổng hợp theo
+- Layer 2 phát hiện hành vi từ Student Audit với APP-1001–APP-1010: tổng hợp theo
   cửa sổ thời gian, chống trùng và hiển thị khuyến nghị chặn. Mặc định chỉ cảnh báo;
   xem [kiến trúc, giới hạn và cách kiểm thử](docs/APPLICATION_DETECTION.md).
 

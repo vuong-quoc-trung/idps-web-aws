@@ -26,7 +26,7 @@ Các field tối thiểu: event_key, producer, IP, thời gian, path đã chuẩ
 outcome; không raw payload/user credentials.
 
 - Cửa sổ (T-window,T], T là timestamp lớn nhất đã thấy cho producer/IP còn trong state.
-- Event tới trễ vẫn được đếm nếu còn trong cửa sổ; quá60s so với watermark không tạo alert.
+- Event tới trễ vẫn được đếm nếu còn trong cửa sổ; quá120s so với watermark không tạo alert.
 - Timestamp quá5s trong tương lai bỏ qua ở detector để không đẩy watermark sai;
   vẫn lưu canonical event theo ingest hiện có. Đồng bộ đồng hồ các máy.
 - Có thể detect lịch sử được replay nhanh theo event time; đây không phải chứng cứ
@@ -104,3 +104,39 @@ APP1004/300 nên nghiệm thu bằng fixture/testDB riêng để không tạo t�
 Application Audit là quan sát thô; Alerts là tổng hợp. Bảng Application Audit hiện
 vẫn cần nút Tải lại; migration này không thêm polling/SSE. Không tự đổi .env hoặc
 restart dịch vụ host trong phiên triển khai code.
+
+## APP-1006–APP-1010
+
+| Rule | Điều kiện cùng IP/producer | Severity |
+|---|---|---|
+| APP-1006 | 5 POST `/api/auth/login` có 401/403, sau đó 2xx + outcome=success trong 120s | 2 |
+| APP-1007 | 5 HTTP 500–599 cùng đường dẫn đã chuẩn hóa trong 60s | 2 |
+| APP-1008 | 40 GET 2xx + success tới `/api/users`, `/api/access-logs` hoặc route con, cộng chung trong 60s | 2 |
+| APP-1009 | 20 POST/PUT/PATCH/DELETE 2xx + success cùng nhóm API trong 30s | 2 |
+| APP-1010 | 5 HTTP 405 với ít nhất 2 method đã chuẩn hóa khác nhau trong 60s | 3 |
+
+Tất cả chỉ ALERT_ONLY, không đề xuất BLOCK, không tự tạo firewall action.
+Ngưỡng là khởi đầu cho lab, chưa hiệu chỉnh theo lưu lượng thật. Cùng IP không chứng
+minh cùng tài khoản; các rule không khẳng định chiếm tài khoản, rò rỉ hay khai thác.
+
+APP-1006 dùng thứ tự timestamp: lỗi phải trước thành công (timestamp bằng nhau không
+được suy đoán thứ tự). Thành công trước đó ngắt chuỗi lỗi. Không dùng GET /auth/me,
+redirect hoặc thành công của route khác. Dữ liệu tới trễ trong cửa sổ được đánh giá lại;
+không xây tương quan tài khoản vì không thu thêm danh tính.
+
+APP-1009 gom riêng từng prefix có biên `/`: students, users, faculties, majors,
+classes, training-programs, me/profile, me/family-members, me/emergency-contacts,
+me/post-graduation-contacts (đều dưới /api). Route auth và route không xác định bị loại.
+Không cộng thao tác ở users với students. Path bị che [id]/[redacted] vẫn có giới hạn
+phân biệt endpoint như trước. APP-1008 có thể đếm chính thao tác xem access logs thường
+xuyên của admin; cần hiệu chỉnh khi demo, không tự chặn.
+
+Migration 0006 thêm http_method nullable vào application_observations; không sửa
+canonical/AI schema hoặc Spring Boot. State cũ thiếu method không đủ điều kiện cho
+rule theo method; không backfill event đã ingest. Detector đọc tối đa 120s event time,
+state vẫn TTL5phút/cap100000. Cooldown từng rule bằng cửa sổ tương ứng; rule1007 gom
+cùng endpoint,1009 gom cùng prefix. Metadata và giao diện nhận đủ APP-1001–APP-1010.
+
+Kiểm thử bằng canonical fixture/DB test riêng; không cần tạo lỗi500 hoặc ghi/xóa dữ
+liệu hàng loạt trên Student Web thật. Migration được áp khi backend khởi động bản mới;
+phiên lập trình không áp migration hoặc restart dịch vụ trên host.
