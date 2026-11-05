@@ -27,8 +27,11 @@ UV_SHA = "2c9bdc4a872b60a93c5f26c0791089ea11585a4f9d3b3c017d78eb8487505e25"
 
 
 def sha(p):
+    digest = hashlib.sha256()
     with Path(p).open("rb") as f:
-        return hashlib.file_digest(f, "sha256").hexdigest()
+        for chunk in iter(lambda: f.read(1024**2), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def download(url, path, checksum, expected_bytes=None):
@@ -231,6 +234,8 @@ def setup_python(tools, state):
 
 
 def main():
+    if sys.version_info < (3, 9):
+        raise RuntimeError("Bootstrap requires system Python3.9+; models use managed Python3.12.14")
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
         "--asset-dir",
