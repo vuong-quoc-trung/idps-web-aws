@@ -45,6 +45,11 @@ def parser():
     root = argparse.ArgumentParser(prog="idps-ai")
     commands = root.add_subparsers(dest="command", required=True)
     commands.add_parser("check-contract")
+    infer = commands.add_parser("infer-mvp", help="Frozen offline research inference; no blocking")
+    infer.add_argument("--input", required=True, help="Private research-mvp-1 JSONL input")
+    infer.add_argument("--output", required=True, help="New private JSONL predictions file")
+    infer.add_argument("--model", choices=("request-v2", "glu207", "both"), default="both")
+    infer.add_argument("--cpus", type=int, choices=range(1, 9), default=4)
     rp = commands.add_parser(
         "request-prepare", help="Verified source registry -> separate request-only corpus"
     )
@@ -282,6 +287,10 @@ def main(argv=None):
         check_contract()
         if args.command == "check-contract":
             result = check_contract()
+        elif args.command == "infer-mvp":
+            from idps_ai.mvp_inference import infer_jsonl
+
+            result = infer_jsonl(args.input, args.output, args.model, args.cpus)
         elif args.command == "request-prepare":
             from idps_ai.data.request_corpus import prepare_request_registry
             from idps_ai.training.resources import resource_envelope
