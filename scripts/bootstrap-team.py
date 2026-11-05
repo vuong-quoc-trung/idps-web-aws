@@ -234,8 +234,11 @@ def setup_python(tools, state):
 
 
 def main():
-    if sys.version_info < (3, 9):
-        raise RuntimeError("Bootstrap requires system Python3.9+; models use managed Python3.12.14")
+    # This launcher precedes the project's managed Python installation.
+    if sys.version_info < (3, 9):  # noqa: UP036
+        raise RuntimeError(
+            "Bootstrap requires system Python3.9+; models use managed Python3.12.14"
+        )
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
         "--asset-dir",
