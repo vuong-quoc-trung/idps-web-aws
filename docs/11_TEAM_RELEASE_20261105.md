@@ -19,7 +19,7 @@ cd idps-web-aws
 ./scripts/bootstrap-team.sh --tests
 ```
 
-Hỗ trợ tự động hiện tại: Linux x86_64, Python 3 hệ thống, Git, HTTPS Internet,
+Hỗ trợ tự động hiện tại: Linux x86_64, Python 3.9+ hệ thống, Git, HTTPS Internet,
 khoảng 2 GB đĩa trống cho inference và môi trường. Python hệ thống chỉ khởi động
 script; uv 0.13.7 tải từ PyPI với SHA256 pin, sau đó cài riêng CPython 3.12.14 từ
 Astral python-build-standalone và exact runtime requirements. Không cần sudo,
