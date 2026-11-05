@@ -1,0 +1,7 @@
+{
+  "transformation": "Identity aliases remapped one-to-one in existing frozen numeric fused fixture; request-only example replaced with innocuous public test request",
+  "source_sha256": "033373d3683d59abbc93d9a6b0aa85b86bebe3271c193d536910b490eb3c8e85",
+  "raw_source_distributed": false,
+  "purpose": "technical model/feature restoration smoke, not detection quality or real-traffic coverage",
+  "fused_features_not_invented": true
+}

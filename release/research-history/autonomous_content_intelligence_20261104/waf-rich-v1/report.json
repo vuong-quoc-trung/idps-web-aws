@@ -1,0 +1,64 @@
+{
+  "content": {
+    "code_sha256": "80db7bbb065489168afb790608983d15eb793aa03b9bff5627e51479a5bb8188",
+    "counts": {
+      "body_nonempty_rows": 4944,
+      "body_redacted_rows": 1253,
+      "exact_conflicting_representations": 192,
+      "exact_unique_representations": 1612017,
+      "raw_rows": 1924461,
+      "redacted_query_fields": 5219,
+      "selected_old_template_overlap_excluded": 311821,
+      "unknown_or_invalid_label_rows": 1
+    },
+    "data_file_sha256": "be908d65743dcbbf8a996edf1e92be2048656e53df365f42828499f30f52ac61",
+    "evaluation_scope": "internal publisher-label study only; no source/campaign/time independence or label verification",
+    "formal_admitted": 0,
+    "format_version": 1,
+    "input_sha256": {
+      "readme": "86278f3ec7f420fb40a9318e3dec59ec58e0af1dfb3f52133e1cada5112691bb",
+      "train": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6"
+    },
+    "label_task": "publisher NORMAL versus ANOMALOUS, not confirmed attack intent",
+    "machine_verified_intent": 0,
+    "near_duplicate_limit": "previous safe-template groups excluded and rich-template role split; residual cross-template similarity unmeasured",
+    "numeric_spec_sha256": "16066e231ff269508efefffcc0c3e28ea831c1e351cb7d9c10abb6c5fce8bb53",
+    "physical_requests_verified": 0,
+    "previous_corpus_sha256": "57884ac25780c95d71c24d9cd8b1c5fc3572b4eabb3b5234da3b81d075d56f97",
+    "prior_all_selected_safe_template_groups": 26070,
+    "prior_safe_symbolic_template_overlap": 0,
+    "quarantined_mixed_feature_views": 73,
+    "quarantined_rows_on_mixed_views": 637,
+    "raw_request_hashes_persisted": false,
+    "report_sha256": "2a691872759597955c93a713f2c4cec776d05e6a386aeb156ee5085a2a1b0fb1",
+    "rich_content_code_sha256": "4031f4898c8510221630eed00ccec95cb4706186aed2f99e184fd97ee3f63d27",
+    "rich_symbolic_template_groups": 78923,
+    "role_class_coverage": {
+      "calibration": {
+        "anomalous": 7706,
+        "normal": 2989
+      },
+      "train": {
+        "anomalous": 45011,
+        "normal": 18079
+      },
+      "validation": {
+        "anomalous": 7461,
+        "normal": 2947
+      }
+    },
+    "safe_content_code_sha256": "8a9c58c97aa627608eb4a8bb4209cbe3d72ca7928c345fbbe06471ae1b89a00a",
+    "safe_symbolic_template_groups": 69607,
+    "selected_exact_representations_before_prior_template_exclusion": 402108,
+    "selected_projectable_representations": 90287,
+    "selected_unique_numeric_content_views": 84193,
+    "selection": "SHA256 complete-request modulo 4 residue 1; disjoint from prior modulo 16 residue 0; prior safe symbolic groups excluded; exact conflicting requests excluded",
+    "source": "puyang2025/waf_data_v2 pinned train split; MIT publisher claim",
+    "symbolic_template_cross_role_overlap": 0,
+    "test_or_heldout_opened": false
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_content_intelligence_20261104/waf-rich-v1/report.json",
+  "original_sha256": "0b86a38cb92a064d21a9131dd16fc55cfb2c0e18f6bd3441f6afea3147cd83f8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

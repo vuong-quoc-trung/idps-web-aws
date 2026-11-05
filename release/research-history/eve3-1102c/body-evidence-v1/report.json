@@ -1,0 +1,19 @@
+{
+  "content": {
+    "body_evidence_sha256": "6734134a1f2a5b424be647464c285ed58b03e0ca4e462238fc28353ef6bb67b8",
+    "capture_report_sha256": "1d197358afe8123bf1887f923474447bdf4fc978b228b9fef3be4ffcff3ef1ea",
+    "format_version": 1,
+    "hmac_key_sha256": "4cda510a856ac114f60e4cbcd102e9903d8d1c45eb13b18ea2866973332d0bb0",
+    "limits": "Body HMAC and form field names prove captured bytes only. Password/token values are never exported. The private HMAC key and PCAP must not be published; exploit outcome still requires an application oracle.",
+    "pcap_sha256": "80efea9c0803722a28df75705b18b76feffb63002c75888aefea80641f27309e",
+    "post_bodies_observed": 6,
+    "requests": 54,
+    "review_queue_sha256": "5702c1ac8890f9cea57120293eacf2c51c97e197f24a9d919b88849e9952f205",
+    "status": "PCAP_BODY_BYTES_OBSERVED_NO_SEMANTIC_LABEL",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/eve3-1102c/body-evidence-v1/report.json",
+  "original_sha256": "fb4063448842b21d9f7e9eedf39f222426ded26be2ada54975c044bc1781f358",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

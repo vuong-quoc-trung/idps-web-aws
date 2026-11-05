@@ -1,0 +1,1356 @@
+{
+  "content": {
+    "champion_selected": false,
+    "formal_training": false,
+    "models": {
+      "affine70-deep_mlp-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/affine70-deep_mlp-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "affine70",
+        "first_session_steps": 100,
+        "manifest_sha256": "530dd62f28efadf2b0cdabfd0618e995bcf69595382871f499f770698430cedc",
+        "optimizer_seconds": 0.8908565839994935,
+        "parameters": 217608,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 1.0012686969969309,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 8852310\nuser_usec 8252712\nsystem_usec 599598\nnice_usec 8272000\ncore_sched.force_idle_usec 0\nnr_periods 50\nnr_throttled 4\nthrottled_usec 1095066\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "394551296",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "573935616",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 60.0,
+          "peak_rss_bytes": 374747136,
+          "peak_tree_rss_bytes": 374747136,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.917740523815155,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14632,
+              82
+            ],
+            [
+              432,
+              1104
+            ]
+          ],
+          "f1": 0.8111682586333577,
+          "fpr": 0.005572923746092157,
+          "pr_auc_average_precision": 0.8545714917542033,
+          "precision": 0.9308600337268128,
+          "recall": 0.71875,
+          "rows": 16250,
+          "threshold": 0.917740523815155
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.917740523815155
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3644,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.917740523815155
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6476,
+                82
+              ],
+              [
+                432,
+                1104
+              ]
+            ],
+            "f1": 0.8111682586333577,
+            "fpr": 0.012503812137846905,
+            "pr_auc_average_precision": 0.86920000703402,
+            "precision": 0.9308600337268128,
+            "recall": 0.71875,
+            "rows": 8094,
+            "threshold": 0.917740523815155
+          }
+        }
+      },
+      "affine70-residual_glu-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "affine70",
+        "first_session_steps": 100,
+        "manifest_sha256": "ded8c571ab66ea2117d2e79880820b010cbd8d9060101cf162090dbcad25e939",
+        "optimizer_seconds": 53.040207078999856,
+        "parameters": 9535496,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 68.1218074090009,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 114655087\nuser_usec 101253000\nsystem_usec 13402086\nnice_usec 101479000\ncore_sched.force_idle_usec 0\nnr_periods 415\nnr_throttled 66\nthrottled_usec 4182011\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "520593408",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "818155520",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 68.0,
+          "peak_rss_bytes": 604798976,
+          "peak_tree_rss_bytes": 604798976,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.9828891754150391,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14651,
+              63
+            ],
+            [
+              477,
+              1059
+            ]
+          ],
+          "f1": 0.7968397291196389,
+          "fpr": 0.004281636536631779,
+          "pr_auc_average_precision": 0.9598014093703109,
+          "precision": 0.9438502673796791,
+          "recall": 0.689453125,
+          "rows": 16250,
+          "threshold": 0.9828891754150391
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.9828891754150391
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3644,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.9828891754150391
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6495,
+                63
+              ],
+              [
+                477,
+                1059
+              ]
+            ],
+            "f1": 0.7968397291196389,
+            "fpr": 0.00960658737419945,
+            "pr_auc_average_precision": 0.9648994282950432,
+            "precision": 0.9438502673796791,
+            "recall": 0.689453125,
+            "rows": 8094,
+            "threshold": 0.9828891754150391
+          }
+        }
+      },
+      "security45-deep_mlp-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "security45",
+        "first_session_steps": 100,
+        "manifest_sha256": "a2907c017f8bb40afbf5fb18fe7abdf64c2f22d67d0b9679d75949a45dc0e81d",
+        "optimizer_seconds": 0.8125174060014615,
+        "parameters": 211208,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 0.9677613809994909,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 618879608\nuser_usec 575267745\nsystem_usec 43611862\nnice_usec 576892000\ncore_sched.force_idle_usec 0\nnr_periods 1988\nnr_throttled 384\nthrottled_usec 21386370\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "1605328896",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "2055880704",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 72.0,
+          "peak_rss_bytes": 356777984,
+          "peak_tree_rss_bytes": 356777984,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.9873055219650269,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14714,
+              0
+            ],
+            [
+              768,
+              768
+            ]
+          ],
+          "f1": 0.6666666666666666,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.8548304066925799,
+          "precision": 1.0,
+          "recall": 0.5,
+          "rows": 16250,
+          "threshold": 0.9873055219650269
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.9873055219650269
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3644,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.9873055219650269
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                768,
+                768
+              ]
+            ],
+            "f1": 0.6666666666666666,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.8851673791837169,
+            "precision": 1.0,
+            "recall": 0.5,
+            "rows": 8094,
+            "threshold": 0.9873055219650269
+          }
+        }
+      },
+      "security45-deep_mlp-seed29": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed29-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 29,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "security45",
+        "first_session_steps": 100,
+        "manifest_sha256": "f6d59868538558f6d777aaa221d83daad25f4f241c16c0fbd560a5d94188be2c",
+        "optimizer_seconds": 0.827280283001528,
+        "parameters": 211208,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 0.9605239019986129,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 663266895\nuser_usec 615951518\nsystem_usec 47315377\nnice_usec 617678000\ncore_sched.force_idle_usec 0\nnr_periods 2139\nnr_throttled 420\nthrottled_usec 23628305\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "1160253440",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "2055880704",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 69.0,
+          "peak_rss_bytes": 356896768,
+          "peak_tree_rss_bytes": 356896768,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.9886661767959595,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14712,
+              2
+            ],
+            [
+              792,
+              744
+            ]
+          ],
+          "f1": 0.6520595968448729,
+          "fpr": 0.0001359249694168819,
+          "pr_auc_average_precision": 0.8841988903452038,
+          "precision": 0.9973190348525469,
+          "recall": 0.484375,
+          "rows": 16250,
+          "threshold": 0.9886661767959595
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.9886661767959595
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3642,
+                2
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0005488474204171241,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.9886661767959595
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                792,
+                744
+              ]
+            ],
+            "f1": 0.6526315789473685,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.9158784567847825,
+            "precision": 1.0,
+            "recall": 0.484375,
+            "rows": 8094,
+            "threshold": 0.9886661767959595
+          }
+        }
+      },
+      "security45-residual_glu-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "security45",
+        "first_session_steps": 100,
+        "manifest_sha256": "1270a6d5863282e7a0cab309195921571b3143c093665f62de7832e1a356ddf8",
+        "optimizer_seconds": 53.76324384499935,
+        "parameters": 9509896,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 69.48987697000007,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 769137727\nuser_usec 709079729\nsystem_usec 60057998\nnice_usec 710957000\ncore_sched.force_idle_usec 0\nnr_periods 2516\nnr_throttled 475\nthrottled_usec 26851681\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "1284812800",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "2055880704",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 72.0,
+          "peak_rss_bytes": 585949184,
+          "peak_tree_rss_bytes": 585949184,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.99970543384552,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14714,
+              0
+            ],
+            [
+              1512,
+              24
+            ]
+          ],
+          "f1": 0.03076923076923077,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.7179408867589359,
+          "precision": 1.0,
+          "recall": 0.015625,
+          "rows": 16250,
+          "threshold": 0.99970543384552
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.99970543384552
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3644,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.99970543384552
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                1512,
+                24
+              ]
+            ],
+            "f1": 0.03076923076923077,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.7414583588557875,
+            "precision": 1.0,
+            "recall": 0.015625,
+            "rows": 8094,
+            "threshold": 0.99970543384552
+          }
+        }
+      },
+      "security45-residual_glu-seed29": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 29,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "security45",
+        "first_session_steps": 100,
+        "manifest_sha256": "59d0a773269af065df7e5ddec4762f822dccd992db281e611fac90631bf04c3f",
+        "optimizer_seconds": 52.0524613769976,
+        "parameters": 9509896,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 68.56989008699838,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 1339414539\nuser_usec 1240785491\nsystem_usec 98629048\nnice_usec 1243779000\ncore_sched.force_idle_usec 0\nnr_periods 4318\nnr_throttled 792\nthrottled_usec 50573561\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "2481397760",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "2799665152",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 71.0,
+          "peak_rss_bytes": 584626176,
+          "peak_tree_rss_bytes": 584626176,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.998722493648529,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14714,
+              0
+            ],
+            [
+              1344,
+              192
+            ]
+          ],
+          "f1": 0.2222222222222222,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.7131565129027565,
+          "precision": 1.0,
+          "recall": 0.125,
+          "rows": 16250,
+          "threshold": 0.998722493648529
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.998722493648529
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3644,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.998722493648529
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                1344,
+                192
+              ]
+            ],
+            "f1": 0.2222222222222222,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.7448987966407699,
+            "precision": 1.0,
+            "recall": 0.125,
+            "rows": 8094,
+            "threshold": 0.998722493648529
+          }
+        }
+      },
+      "security45-residual_glu256-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "security45",
+        "first_session_steps": 100,
+        "manifest_sha256": "0cf43a8fd793211d0a2b7f9af3ae5369210eb83dbc02e24392fa795a8b6590e6",
+        "optimizer_seconds": 3.3791096139993897,
+        "parameters": 608008,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 3.4739719490003154,
+        "resources": {
+          "address_space_limit_effective": 17179869184,
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "cgroup_v2": {
+            "cpu.max": "400000 100000",
+            "cpu.stat": "usage_usec 1849440263\nuser_usec 1720731157\nsystem_usec 128709106\nnice_usec 1724687000\ncore_sched.force_idle_usec 0\nnr_periods 5902\nnr_throttled 1095\nthrottled_usec 71952784\nnr_bursts 0\nburst_usec 0",
+            "memory.current": "3343200256",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+            "memory.high": "16106127360",
+            "memory.max": "17179869184",
+            "memory.peak": "3773792256",
+            "memory.swap.max": "0",
+            "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-gen-study-20261031.service"
+          },
+          "effective_cpus_before_cap": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+          "max_threads": 4,
+          "memory_guard": "process-tree RSS at optimizer boundaries",
+          "memory_limit_bytes": 17179869184,
+          "peak_cpu_temperature_celsius": 74.0,
+          "peak_rss_bytes": 356937728,
+          "peak_tree_rss_bytes": 356937728,
+          "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+          "python": "3.12.14",
+          "temperature_monitoring": "hardware_critical_limit_available",
+          "thermal_limit_reached": false,
+          "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+          "thermal_stop_threshold_celsius": 100.0,
+          "total_host_memory_bytes": 32440905728
+        },
+        "resume_exact": true,
+        "source_counts": {
+          "csic-published-normal-training": 1915,
+          "pkdd-mirror-training": 16594,
+          "student-lab": 1233
+        },
+        "steps": 300,
+        "threshold": 0.99901282787323,
+        "training_input_views": 19742,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14714,
+              0
+            ],
+            [
+              840,
+              696
+            ]
+          ],
+          "f1": 0.6236559139784946,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.8678771910521427,
+          "precision": 1.0,
+          "recall": 0.453125,
+          "rows": 16250,
+          "threshold": 0.99901282787323
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.99901282787323
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3644,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.99901282787323
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                840,
+                696
+              ]
+            ],
+            "f1": 0.6236559139784946,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.9031739701853183,
+            "precision": 1.0,
+            "recall": 0.453125,
+            "rows": 8094,
+            "threshold": 0.99901282787323
+          }
+        }
+      }
+    },
+    "plan": {
+      "batch_size": 128,
+      "champion_selection": false,
+      "datasets": {
+        "affine70": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+        "security45": "32bcd01d379743c438f85790670d46fcabb7317b8260669d0f86d30c3056f7c8"
+      },
+      "plans": [
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "deep_mlp",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 17,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 256
+          },
+          "encoding": "affine70",
+          "name": "affine70-deep_mlp-seed17"
+        },
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "residual_glu",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 17,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 1024
+          },
+          "encoding": "affine70",
+          "name": "affine70-residual_glu-seed17"
+        },
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "deep_mlp",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 17,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 256
+          },
+          "encoding": "security45",
+          "name": "security45-deep_mlp-seed17"
+        },
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "deep_mlp",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 29,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 256
+          },
+          "encoding": "security45",
+          "name": "security45-deep_mlp-seed29"
+        },
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "residual_glu",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 17,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 1024
+          },
+          "encoding": "security45",
+          "name": "security45-residual_glu-seed17"
+        },
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "residual_glu",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 29,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 1024
+          },
+          "encoding": "security45",
+          "name": "security45-residual_glu-seed29"
+        },
+        {
+          "config": {
+            "family_weight": 0.2,
+            "kind": "residual_glu",
+            "learning_rate": 0.0003,
+            "sampling": "source_family_balanced",
+            "seed": 17,
+            "total_steps": 300,
+            "training_pool": "multisource_benign",
+            "warmup_steps": 15,
+            "width": 256
+          },
+          "encoding": "security45",
+          "name": "security45-residual_glu256-seed17"
+        }
+      ],
+      "sampling_counts_are_not_new_HTTP_requests": true,
+      "selection": "validation only; source-wise FPR<=1% empirical, maximize lab macrofamily recall then AP; if none eligible keep none",
+      "source_sha256": "e400ad15f0b5246efa7ac4120a562f591c2c459a6fb1f6a1117af5444a55ac3e",
+      "steps": 300,
+      "test_partitions_opened": false,
+      "thresholds": "source-wise benign-only calibration target1%; no test tuning"
+    },
+    "status": "PASS_TECHNICAL_ONLY",
+    "test_quality_opened": false,
+    "wall_seconds": 608.6328444209998
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/study/report.json",
+  "original_sha256": "93bf5e1ab05ff83559316a2421fc298dc058a2a402a83d444cbd8247e33fda38",
+  "redactions": {
+    "strings_changed": 14
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

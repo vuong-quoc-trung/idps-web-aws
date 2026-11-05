@@ -1,0 +1,24 @@
+{
+  "content": {
+    "captured_nginx_and_student": 8,
+    "executed_development_campaigns": 1,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "independent_review": false,
+    "new_independently_reviewed_attack": 0,
+    "new_independently_reviewed_benign": 0,
+    "new_training_admission": 0,
+    "observed_distinct_request_ids": 8,
+    "owned_lab_marker_sha256": "d1342c28a99a7c39873028f16b91d52698fb81b0dae7f14f05f55e64da717e86",
+    "pending_evidence_sha256": "fc00605900b103fbc8f39a03d87213388ddc49daf88893d174db611045d814c4",
+    "plan_file_sha256": "f73e25029a921834ef9d1f70ec1e21744f9a0f834039b2b16a2991e7d9b163c6",
+    "plan_sha256": "08361b0f05836e4e774b2050f96e3575a09d8803ecc942d9b10fb5a5e3e61936",
+    "preflight_sha256": "75d01092a06f9b42b46ad11697efec68db9f67b80fa3f4b7efcc598f8fc0b6e9",
+    "response_evidence_sha256": "23d17c2467d06ad0c1ff987f177494babc3f8aa4aabb08e1749a6b6c546ae246",
+    "status": "DEVELOPMENT_OBSERVATION_CAPTURED_NO_GROUND_TRUTH_LABELS"
+  },
+  "original_relative_path": "ai-training/.artifacts/devgt1/run/capture/report.json",
+  "original_sha256": "9d9a94360676ab3851d0bbc28fc89c3d0c4bdbe9db4dc20d12fc99bd42ae7c30",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

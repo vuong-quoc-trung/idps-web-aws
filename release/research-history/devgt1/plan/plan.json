@@ -1,0 +1,150 @@
+{
+  "content": {
+    "campaigns": [
+      {
+        "campaign_id": "dev-oracle-00-00000385",
+        "cases": [
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_target": "/api/auth/csrf",
+            "scenario": "csrf_setup",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": "private_fixture_password",
+            "body_sha256": null,
+            "case_id": "fixture_login",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_target": "/api/auth/login",
+            "scenario": "authorized_fixture_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf_refresh",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_target": "/api/auth/csrf",
+            "scenario": "csrf_after_login",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_read",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_target": "/api/faculties",
+            "scenario": "benign_catalog",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_target": "/api/faculties?q=course+notes+about+UNION+SELECT",
+            "scenario": "hard_negative_search",
+            "target_sha256": "561622ab1fcfa2c2357d58916dfd793bf3a7b0bc25da86bcf430202afc6cf917"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_probe",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "review_body": null,
+            "review_target": "/api/faculties?q=7%27+OR+%27x%27%3D%27x%27+--",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "bf1f78edc4c9b823f80ba883be189dac3e3373480524b1af4f5e5ac5d886e89a"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_probe",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "review_body": null,
+            "review_target": "/api/faculties?q=%3Csvg+onload%3Dconfirm%2871%29%3E",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "2318880346425c8a258c35a9128ba9c9ae88743682cf68a7712bd98879efd328"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "2490cd5029456e073102282663cfbde0adbfde1000f7ae145b41ac5f6e890e17",
+            "case_id": "faculty_create",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "review_body": {
+              "active": true,
+              "description": "AI-owned lab oracle marker",
+              "name": "Ground Truth Pilot",
+              "shortCode": "GTPILOT01"
+            },
+            "review_target": "/api/faculties",
+            "scenario": "benign_mutation_with_db_oracle",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          }
+        ],
+        "partition": "development_review_only",
+        "seed": 901,
+        "source_ip": "127.0.0.41"
+      }
+    ],
+    "case_profile": "dev-oracle-observation-v1",
+    "collector_source_sha256": "38bad2afe8892d9d99df11dd24d3d34034e2c55430f8de222269a5a73895feb8",
+    "created_at_utc": "2026-11-02T04:05:13.538034+00:00",
+    "execution_code_sha256": {
+      "ai-training/scripts/evidence-lab-campaign.py": "459ad645d440566f32414891e264f3a829a5c698b953be4f7010bfd8609292cf",
+      "ai-training/src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+      "ai-training/src/idps_ai/data/dev_oracle_pilot.py": "38bad2afe8892d9d99df11dd24d3d34034e2c55430f8de222269a5a73895feb8",
+      "ai-training/src/idps_ai/data/evidence_campaign.py": "30c5eee796b6a6544eebabb7268f24a135614efa5d5d9b6905cad9e8c367174e",
+      "ai-training/src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+      "ai-training/src/idps_ai/data/lab_runtime.py": "7c437a1e30a3f38be66355591e23a2b02c3a650f51d9fa6f19791dd2df39090b",
+      "ai-training/src/idps_ai/data/protocol_ground_truth.py": "c4d1a9b03098ae1012d8a72f85254d25870f12b26c0ff0cadb00079bb7651c11",
+      "ai-training/src/idps_ai/data/sensor_decode.py": "eff69eb7a0062316351d4790707ddbc090f4b05bcc551a21fa0413e8d604bc2b",
+      "ai-training/src/idps_ai/data/sensor_lab.py": "af9b38148b5d0cc4c38f7485ac847131d5a7cc42b6506b3763dcc7767f77074b",
+      "ai-training/src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+      "ai-training/src/idps_ai/training/resources.py": "c8c718162cd07b22b2fdbff1c6bbaf8da841cb95da2eee34a7f21c58fa55bcf4"
+    },
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "future_holdout": {
+      "allow_for_tuning": false,
+      "status": "RESERVED_NOT_GENERATED_OR_CAPTURED"
+    },
+    "independent_review": false,
+    "label_policy": "No independent reviewer or signature. All intent labels UNKNOWN; factual request, response, three-source, and DB observations only. Formal admission 0.",
+    "plan_sha256": "08361b0f05836e4e774b2050f96e3575a09d8803ecc942d9b10fb5a5e3e61936",
+    "purpose": "authorized_ai_owned_loopback_development_observation",
+    "target": "127.0.0.1:18881",
+    "target_code_identity": {
+      "nginx_template_sha256": "3b704126461de711f33e4e10803bcebfc6fdc2697fd4cf111492820ac239986b",
+      "student_backend_git_tree": "e0336653642d0e5d63a3945ad45c63fc00668749"
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/devgt1/plan/plan.json",
+  "original_sha256": "f73e25029a921834ef9d1f70ec1e21744f9a0f834039b2b16a2991e7d9b163c6",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

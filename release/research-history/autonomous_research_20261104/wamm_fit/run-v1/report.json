@@ -1,0 +1,51 @@
+{
+  "content": {
+    "conclusion_scope": "Optimization and label-signal diagnostic only; no detection or generalization claim",
+    "elapsed_seconds": 0.31902414499995757,
+    "fit_unique_views_per_run": 25600,
+    "formal_admission": 0,
+    "format_version": 1,
+    "fpr": null,
+    "plan_sha256": "ca0f5d36a6c33b7f78f0477870604618a19fa21082bcd7639afba40c6d201767",
+    "pr_auc": null,
+    "probe_rows_are_inside_fit": true,
+    "publisher_anomalous_views": 29045,
+    "publisher_benign_views": 14242,
+    "recall": null,
+    "report_sha256": "f14978a8a6ef24d8c54f3d556caecc496332c2a30fe7acc0c053433a0a29ae51",
+    "results": {
+      "publisher": {
+        "checkpoint": "ai-training/.artifacts/autonomous_research_20261104/wamm_fit/run-v1/publisher",
+        "checkpoint_manifest_sha256": "2368505ef57b4bbf37fb86fd3dd67fc04bc41b35875beb24d5fa3f5a14fbe081",
+        "first_20_batch_loss_mean": 0.5784113522452733,
+        "fit_target_probe_loss_end": 0.06710235484852965,
+        "fit_target_probe_loss_start": 0.8155974172702481,
+        "last_20_batch_loss_mean": 0.10577859596924943,
+        "parameters": 17928,
+        "publisher_probe_loss_end": 0.06710235484852965,
+        "publisher_probe_loss_start": 0.8155974172702481,
+        "updates": 200
+      },
+      "shuffled_control": {
+        "checkpoint": "ai-training/.artifacts/autonomous_research_20261104/wamm_fit/run-v1/shuffled_control",
+        "checkpoint_manifest_sha256": "4a58b48164518a3f7330a9d718511917370385c383f14a323ff7f5573533a243",
+        "first_20_batch_loss_mean": 0.673103828447548,
+        "fit_target_probe_loss_end": 0.6336510272631902,
+        "fit_target_probe_loss_start": 0.7787217936902691,
+        "last_20_batch_loss_mean": 0.6449833709766102,
+        "parameters": 17928,
+        "publisher_probe_loss_end": 0.6384238732438055,
+        "publisher_probe_loss_start": 0.8155974172702481,
+        "updates": 200
+      }
+    },
+    "scope": "publisher_label_train_only_no_evaluation",
+    "source": "WAMM publisher labels; SR-BH derivative",
+    "unique_numeric_views": 43287,
+    "validation_or_test_rows_decoded": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_research_20261104/wamm_fit/run-v1/report.json",
+  "original_sha256": "01c00566f40eda7c1ef1945e261bebd8c287b2e01ef6bb8ca0b965c5dffc9e50",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

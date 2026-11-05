@@ -1,0 +1,37 @@
+{
+  "content": {
+    "captured_nginx_and_student": 48,
+    "executed_development_campaigns": 3,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "future_holdout": {
+      "allow_for_tuning": false,
+      "environment": "new_independent_authorized_environment_required",
+      "status": "RESERVED_NOT_GENERATED_OR_CAPTURED"
+    },
+    "independent_environments": 1,
+    "missing_evidence": [
+      "Independent semantic review of the sealed protocol and actual request-bound captures",
+      "Application oracle for any claim of exploit success; responses alone are insufficient",
+      "Cross-source/role/template deduplication and a valid future independent evaluation environment",
+      "Suricata flow parity if the deployed feature profile requires that source"
+    ],
+    "new_independently_reviewed_attack": 0,
+    "new_independently_reviewed_benign": 0,
+    "new_training_admission": 0,
+    "observed_distinct_request_ids": 48,
+    "owned_lab_marker_sha256": "999c267e55d6786af7525b7de9b7ed75fb15f62c95ba1dab31f0a0521836f4c3",
+    "pending_evidence_sha256": "c51addad62ab83c6f6e35e775794b65718b36443a406e4e2d173181c507a4b6b",
+    "plan_file_sha256": "e85ee785635e6c7d920de0c9fe2d5139c82fc40e66af9b0bce7df612bc52c5de",
+    "plan_sha256": "75722140444800078e5378c5c673d8e4064dee028d1f421ad5252166173088bb",
+    "planned_intent_counts": {
+      "attack": 18,
+      "benign": 30
+    },
+    "status": "CAPTURE_VERIFIED_SEMANTIC_REVIEW_PENDING"
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261101/capture-v1/report.json",
+  "original_sha256": "0f007b12d627cf465933d69efd485be07fd0a53e83c9351c6d9321c5fa8236b0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,3078 @@
+{
+  "content": {
+    "actual_unique_lab_HTTP_requests": 75150,
+    "actual_unique_requests": 75150,
+    "artifact_availability": "Local ignored artifacts only; no shared store provisioned",
+    "assembled_research": "ai-training/.artifacts/generalization_20261030/assembled-research",
+    "assembled_research_dataset_sha256": "d04e14874b8968ee7ef37e04c673218043abbd8c6d267bdae0ca003a479de19a",
+    "assembly_roles": {
+      "calibration": 4623,
+      "test": 13869,
+      "train": 41607,
+      "val": 9246
+    },
+    "best_validation_ap": "gated_residual",
+    "branch": "feat/ai-model-training",
+    "calibration_temporally_independent": false,
+    "candidate_parameters": {
+      "deep_mlp": 252680,
+      "gated_residual": 450056,
+      "hist_gradient_boosting": null,
+      "residual": 17992,
+      "residual_glu": 9675784
+    },
+    "canonical_schema": "1.0",
+    "champion_selected": false,
+    "continuation_20261101": {
+      "base_HEAD": "ee024347858af6a7bddc222ea0605d47278f4300",
+      "code_sha256": {
+        "ai-training/scripts/audit-modsec-wp.py": "ddad4c34d8ff56d88ff306140e3b644b6725f26279fe82e6467cb7939f683fe3",
+        "ai-training/scripts/review-soc-pending.py": "e3375fa4c2c8dd958df21537db19f30940d61be31deceddc855425cd0f826626"
+      },
+      "formal_training_permitted": false,
+      "modsec_wp": {
+        "conflicting_request_views": 25,
+        "conflicting_transaction_ids": 20,
+        "distinct_request_representations": 18474,
+        "distinct_transaction_ids": 27686,
+        "limitation": "Publisher labels not independently request-bound; repeated rule rows do not establish distinct physical requests.",
+        "new_trusted_benign": 0,
+        "new_trusted_positive": 0,
+        "official_license": "CC BY 4.0",
+        "publisher_attack_rows": 96286,
+        "publisher_benign_rows": 12597,
+        "publisher_rows": 108883,
+        "repeated_transaction_rows": 81197,
+        "report": "ai-training/.artifacts/attack_evidence_20261101/modsec-wp-audit-final/report.json",
+        "report_file_sha256": "70d21f365247ac818d706605e53f46620c45fe4d441f55af78bda7f801abd87e",
+        "source_url": "https://zenodo.org/records/21872151",
+        "workbook_sha256": "f959c79e185502b03206f6fdeb29306a65571394c2f009dda503d43ba306d16d"
+      },
+      "new_training_admission": 0,
+      "new_trusted_benign": 0,
+      "new_trusted_positive": 0,
+      "other_source_screening": {
+        "organization_x": "unknown labels",
+        "polish_ecommerce": "https://zenodo.org/records/18895701; 178939 publisher log rows; no per-request intent labels; metadata only",
+        "srbh": "retrospective development, not final independent holdout",
+        "wamm": "SR-BH derivative, not an independent source",
+        "wcp": "benign-only publisher labels; reserved holdout sealed"
+      },
+      "soc_pending": {
+        "approved": 0,
+        "campaign_binding": "unverified_operator_request_id_missing_and_timezone_naive",
+        "dossiers": "ai-training/.artifacts/attack_evidence_20261101/soc-pending-review-final-v2/pending-dossiers.jsonl",
+        "dossiers_sha256": "3583b476d66859184f7e66c780d92fd6a7da1b1602c3c85c98596e0f1764bcac",
+        "exploit_outcome": "unknown_no_application_oracle",
+        "http_profile": {
+          "eve_ambiguous_rows": 0,
+          "eve_candidate_rows": 0,
+          "method_GET": 64,
+          "query_present": 3,
+          "status_2xx": 1,
+          "status_4xx": 63
+        },
+        "original_split_leakage": {
+          "original_split_admissible": false,
+          "request_or_flow_ids_shared_train_test": 0,
+          "rows_with_shared_attack_instance_ids": 3066,
+          "rows_with_shared_attack_instance_ids_by_role": {
+            "test": 1214,
+            "train": 1852
+          },
+          "shared_attack_instance_ids": 38
+        },
+        "pending": 64,
+        "raw_sha_verified": 64,
+        "report": "ai-training/.artifacts/attack_evidence_20261101/soc-pending-review-final-v2/report.json",
+        "report_file_sha256": "4d35539fcdb095a566364fb800958c8250a9573ce3a00c347b0c6142bddecd0b",
+        "trusted_benign": 0,
+        "trusted_positive": 0
+      },
+      "status": "REVIEW_PREPARED_NO_NEW_ADMISSION",
+      "study": "NOT_RUN_no_new_eligible_dual_class_source",
+      "updated_at": "2026-11-01T10:55:03.754126+07:00",
+      "verification": {
+        "python_compile": "PASS",
+        "ruff_lint_format": "PASS",
+        "soc_64_raw_sha_readback": "PASS",
+        "targeted_pytest": "PASS_13",
+        "wp_108883_row_stream_audit": "PASS",
+        "yaml_parse": "PASS"
+      },
+      "verified_independent_campaigns": 0
+    },
+    "continuation_20261102": {
+      "aggregate_lab_requests_by_report_not_globally_deduped": 75306,
+      "aggregate_report_progress_percent": 3.765,
+      "artifact_sha256": {
+        "capture_report": {
+          "path": "ai-training/.artifacts/eve3-1102b/capture/report.json",
+          "sha256": "603f3074e0bb64ae0135134a00c7a46201bc75cff03d22a2635ed43cb788b669"
+        },
+        "cleanup": {
+          "path": "ai-training/.artifacts/eve3-1102b/lab/cleanup.json",
+          "sha256": "7891e0cb2a7bef372f7a21266c72b59dc24407e5e9928ad9a907d193044a31de"
+        },
+        "correlation_ledger": {
+          "path": "ai-training/.artifacts/eve3-1102b/correlated-v2/three-source-evidence.jsonl",
+          "sha256": "6521b8728410ca095d0088ff2e7bfed0a04d7bc3b7a36d03e88b906031dfc76d"
+        },
+        "correlation_report": {
+          "path": "ai-training/.artifacts/eve3-1102b/correlated-v2/report.json",
+          "sha256": "e1ffcc707a16c9a919d70161da91d04fb2e11bf3a3d8bd1515622f05b2b52028"
+        },
+        "eve": {
+          "path": "ai-training/.artifacts/eve3-1102b/eve/eve.json",
+          "sha256": "c36937f2fe3b1957d2a22614cc36dd38732b0ea57aecf949a8f1cac109da5e1a"
+        },
+        "eve_manifest": {
+          "path": "ai-training/.artifacts/eve3-1102b/eve/decode-manifest.json",
+          "sha256": "97271a9040b863005203fa4731d55cf06911da20d56fc96bfc7380c94c8656e3"
+        },
+        "frozen_collector": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/collector-source-v3.py",
+          "sha256": "4b42a9c117d1745755d22a27013ce8625038909323425255a1923291747a03bb"
+        },
+        "lineage_report": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/lineage-audit-v3/report.json",
+          "sha256": "de0250144dc4544dc6267b8c4a2c4eb75e35fd8df8b9b8935eae5f66ac75d1b2"
+        },
+        "pcap": {
+          "path": "ai-training/.artifacts/eve3-1102b/lab/traffic.pcap",
+          "sha256": "b9c4d623fb12c8c513cdaaa729c03466d9c135187caf737e8d41acd6c535a384"
+        },
+        "pcap_manifest": {
+          "path": "ai-training/.artifacts/eve3-1102b/lab/pcap-manifest.json",
+          "sha256": "7c7ded1cedd493ddaa988a3c2f10ecda981c2b7b12de5cefcd72b38c198c9e92"
+        },
+        "plan": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/plan-v1/plan.json",
+          "sha256": "200ef9dc52ba77922128274f42e02daf246ac78edd662b467f3b26daf6a20c38"
+        },
+        "review_queue": {
+          "path": "ai-training/.artifacts/eve3-1102b/review-three-source-v2/blind-review.jsonl",
+          "sha256": "4e2f10f627bd9799284c3b975ad3a11e5659ecf701c41da06885f6e5594ddf36"
+        },
+        "review_report": {
+          "path": "ai-training/.artifacts/eve3-1102b/review-three-source-v2/report.json",
+          "sha256": "ca63b6eb3cdf8f7449effe276d659355862dbdeb7c89dfe9979782e1a90d2271"
+        }
+      },
+      "authorization": "[WITHHELD_PRIVATE_CONTENT]",
+      "cause": "Prior evidence collector used host Nginx; rootless packet sensor captures only its private network namespace.",
+      "champion_selected": false,
+      "code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "d4ddad818156c3b1b72275875cf884c70e28cb000f6077113d2236c1d38dd5c7",
+        "ai-training/scripts/prepare-evidence-review.py": "a34b5c765154b615d863b7d5eb97bb984a7b1b3b21dcf548cb4ed9e248a2d6f0",
+        "ai-training/src/idps_ai/data/evidence_campaign.py": "8b89cf27e44f040372fbce35eb25dd1e7759cc354d4db675c2770508ca4fa653",
+        "ai-training/src/idps_ai/data/lab_runtime.py": "c73c07351a6e2cf38b0fc771bc176aebd3aa634e63321b00dcec86852b2953e1",
+        "ai-training/src/idps_ai/data/sensor_lab.py": "9f996661f51438ec6fe5c2204d63036d0cfd19f07baa7ce537ba30d92dd1b90f",
+        "ai-training/tests/test_evidence_campaign.py": "be8ad59f5b14c06b4e7e8e1c1fd890aa40f662c7dc6e312710e6b3318b2cac9e"
+      },
+      "cross_capture_distinct_target_hashes": 36,
+      "cross_capture_id_collisions_in_scanned_scope": 0,
+      "cross_capture_repeated_target_observations": 120,
+      "cross_capture_request_ids": 156,
+      "eve_alert_observations_not_labels": 18,
+      "eve_flow_events": 54,
+      "eve_http_events": 54,
+      "eve_stats_events": 1,
+      "feature_count_existing": 207,
+      "feature_parity": "BLOCKED: private lab Nginx query and EVE numeric projection agree, but production edge masked view differs; no formal 207-feature parity claim.",
+      "flow_causality": "Closed flow record may arrive 10.811s after HTTP; it is evidence only until its actual emission time.",
+      "formal_training_started": false,
+      "historical_unsealed_student_ids_scanned": 73218,
+      "holdout_opened": false,
+      "independent_evaluation_campaigns": 0,
+      "independent_external_environments": 0,
+      "independently_reviewed_attack": 0,
+      "independently_reviewed_benign": 0,
+      "limitations": [
+        "New 54 reuse target variants in same lab; not a new independent cohort or source environment.",
+        "The 54 older two-source requests cannot receive EVE retrospectively.",
+        "Historical sealed cohort remains unopened; global 75,150-request dedup not certified.",
+        "No independent semantic label or application exploit oracle; no training admission."
+      ],
+      "live_inference_certified": false,
+      "max_client_to_eve_http_delta_seconds": 0.707825,
+      "max_http_to_flow_emission_seconds": 10.810551,
+      "model_parameters_existing": {
+        "deep_mlp": 252680,
+        "residual_glu": 9675784
+      },
+      "new_capture_three_source_correlated": 54,
+      "new_development_campaign_ids": 3,
+      "new_model_study": "NOT_RUN",
+      "new_physical_requests": 54,
+      "new_three_source_pending_unknown": 54,
+      "previous_two_source_pending_unchanged": 54,
+      "quarantined_auth_boundary_requests": 48,
+      "query_numeric_lab_nginx_eve_mismatch": 0,
+      "repair": "Run AI evidence collector with private namespace Nginx and tcpdump; Suricata reads actual PCAP offline.",
+      "scale_admitted_requests": 0,
+      "status": "THREE_SOURCE_REAL_LAB_CAPTURE_REVIEW_PENDING_FORMAL_NOT_READY",
+      "target_requests": 2000000,
+      "updated_at": "2026-11-02T08:36:11.586325+07:00",
+      "verification": {
+        "blind_review_reverify": "PASS_54_UNKNOWN_0_ADMITTED",
+        "eve_decode": "PASS_54_HTTP_54_FLOW_18_ALERT",
+        "formal_catalog": "NOT_READY_0_ELIGIBLE",
+        "full_ai_check": "PASS_218_PYTEST_0_SKIP_116_SECONDS_RUFF_FORMAT_CANONICAL",
+        "independent_semantic_review": "NOT_RUN",
+        "lineage_limited_scope": "PASS_156_IDS_0_COLLISIONS_36_TARGET_HASHES",
+        "long_training": "NOT_RUN",
+        "private_namespace_packet_socket_probe": "PASS",
+        "production_feature_parity": "NOT_RUN",
+        "real_three_source_capture": "PASS_54_REQUESTS",
+        "review_raw_pcap_eve_hash_tamper_guard": "PASS_TARGETED_TEST"
+      }
+    },
+    "continuation_20261102_report_sha256": "e1d26bd62d8635aae8996ecfb69f68caecb7e41206ddc5b9ed016a566ed01885",
+    "continuation_20261103_autonomous_research": {
+      "as_of": "2026-11-03T21:10:26+07:00",
+      "counts": {
+        "conflict_free_numeric_views": 66863,
+        "formal_admitted_new_requests": 0,
+        "independently_verified_new_intent_labels": 0,
+        "machine_verified_new_intent_labels": 0,
+        "minority_label_rows_on_mixed_views": 15872,
+        "mixed_binary_label_views": 757,
+        "nonoverlap_numeric_research_staging_views": 43287,
+        "overlap_exposed_development_views_removed": 23576,
+        "parsed_http_representations": 704649,
+        "publisher_attack_parsed_rows": 211136,
+        "publisher_benign_parsed_rows": 493513,
+        "publisher_rows": 704665,
+        "staging_publisher_attack_views": 29045,
+        "staging_publisher_benign_views": 14242,
+        "unique_exact_http_text_representations": 312241,
+        "unique_float32_request_views": 67620,
+        "verified_new_physical_requests": 0
+      },
+      "next_action": "Acquire and audit an independent dual-class HTTP source with request-bound labels and campaign/time/group provenance, then preregister split and acceptance before any new fit.",
+      "other_sources": {
+        "biblio_us17": "optional; no protected endpoint retried",
+        "kyoushi_scenario1": "official Zenodo CC BY-NC-SA 4.0; 783022916-byte archive not fully downloaded; no records audited; investigate overlap with AIT-LDSv2",
+        "waf_data_v2": "metadata only; anomalous not verified attack intent"
+      },
+      "research_policy": {
+        "AUTONOMOUS_RESEARCH_READY": false,
+        "FORMAL_READY": false,
+        "numeric_staging_ready": true,
+        "path": "ai-training/configs/autonomous_research_policy_v1.yaml",
+        "reason": "One SR-BH-derived dual-class source with no per-row campaign/time/lineage; exact overlap exclusion does not prove independent label or related-template separation",
+        "sha256": "ee6549d5fd0bbc2c47b35c04cdf8b88389cee8f2b005727d872ced37e877ba6c"
+      },
+      "scope": "AI-only public source intake, 76-view dedup and research policy; no Web edits, holdout, model, threshold, checkpoint or formal gate changes",
+      "source": {
+        "archive_sha256": "2631c31b8f4bdc389365274e6f22d9753534ef1e2eab52f3d1fd20c4f6bc65c9",
+        "audit_report": "ai-training/.artifacts/autonomous_research_20261103/wamm/audit-v4.json",
+        "audit_report_file_sha256": "3fd155f90e475e844ea03b7e8330a1e77a22c85f2b99ee8b699c13706f5056df",
+        "license_claim": "CC BY 4.0",
+        "name": "WAMM DS-Augmented-v2",
+        "numeric_nonoverlap_sha256": "92b9fe8a49126fba52f132a7829393c6528afc3e3ce8951860e46ff6dae55445",
+        "numeric_nonoverlap_staging": "ai-training/.artifacts/autonomous_research_20261103/wamm/research-nonoverlap-v2.parquet",
+        "overlap_report": "ai-training/.artifacts/autonomous_research_20261103/wamm/overlap-v2.json",
+        "overlap_report_file_sha256": "adf6b46d7eea7730bf019a1cd7f1968c26b741be0512e8ffa09eec38d45d77c8",
+        "revision": "2783eab560c4355f5976a57fc2e97a2e6c5c79a1",
+        "sqlite_sha256": "c692dcdebaf9984dff49ad01f1c21964c8a83ebe1c426bd12e26f9bff9ce335d"
+      },
+      "training": {
+        "main_glu_features_unchanged": 207,
+        "main_glu_parameters_unchanged": 9675784,
+        "new_checkpoint": false,
+        "new_onnx": false,
+        "new_optimizer_updates": 0,
+        "quality_metrics": "NOT_RUN_no_valid_independent_dual_class_partition"
+      },
+      "verification": {
+        "Student_Security": "UNCHANGED",
+        "WAMM_report_self_hash": "PASS",
+        "formal_gate": "UNCHANGED",
+        "full_ai_check": "PASS_230_pytest_0_skip_63.24s_Ruff_format_compile_contract_Web_diff",
+        "numeric_output_sha_readback": "PASS",
+        "overlap_report_self_hash": "PASS",
+        "sealed_holdout": "NOT_OPENED",
+        "wamm_sqlite_quick_check": "PASS"
+      }
+    },
+    "continuation_20261103_data_unblocking": {
+      "as_of": "2026-11-03T20:10:24+07:00",
+      "biblio": {
+        "authorized_raw_label_readme_local": false,
+        "new_rows_admitted": 0,
+        "protected_archive_retried": false,
+        "request_copy_url": "https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e/request-a-copy?bitstream=17b2ff3b-90ea-48a4-8ecd-a12edc394361",
+        "request_email": "ai-training/PRETRAINING.md",
+        "request_email_section": "Ph\u01b0\u01a1ng \u00e1n truy c\u1eadp Biblio-US17 v\u00e0 n\u1ed9i dung xin quy\u1ec1n s\u1eb5n d\u00f9ng",
+        "rights_needed": [
+          "research access",
+          "private raw storage",
+          "numeric feature extraction",
+          "research model training",
+          "aggregate publication",
+          "derived feature and weights sharing terms",
+          "retention/deletion and redistribution limits"
+        ],
+        "status": "BLOCKED_EXTERNAL_OWNER_GRANT"
+      },
+      "next_study": {
+        "fpr_budget": 0.01,
+        "main_glu_feature_count": 207,
+        "protocol": "ai-training/PRETRAINING.md",
+        "protocol_section": "Data unblock: g\u00f3i g\u1eedi quy\u1ec1n, review v\u00e0 study m\u1edbi \u2014 2026-11-03",
+        "request_only_feature_count": 76,
+        "sealed_holdout_used": false,
+        "state": "PREPARED_NOT_RUN_WAITING_NEW_DUAL_CLASS_REQUEST_BOUND_DATA"
+      },
+      "research_training_technical_status": "GLU207_100_UPDATE_TRAIN_ONLY_PASS; historical checkpoint/resume/ONNX pilot evidence preserved; no new quality claim",
+      "review": {
+        "devgt1_blind_queue_sha256": "8192dcada06d0ec8b759ad1d62c06d0bd4c2e3de7ecfb6194eb7229ed98b5e9d",
+        "devgt1_current_code_reverification": "FAIL_PINNED_COLLECTOR_SOURCE_SHA_MISMATCH",
+        "devgt1_formal_promotion": false,
+        "devgt1_independent_intent_labels": 0,
+        "devgt1_old_oracle_report_sha256": "c8e45c1530229eb5f7e4365e8f0e1f4df8498c5714fb255084f47bb9b1b48793",
+        "devgt1_request_count": 8,
+        "existing_registry_sources_reverified": {
+          "eve_first": 54,
+          "eve_novel": 54,
+          "two_source": 54
+        },
+        "human_reviewer_required": true,
+        "packet": "ai-training/.artifacts/ground_truth_pilot_20261102/APPROVAL_PACKAGE.md",
+        "packet_mode": "0600",
+        "packet_sha256": "56297c35eb0c92c6262da26638fb74c8f3646ec37b7f063ba5141337f735a932",
+        "prospective_plan_v3_current_code_readback": "PASS_UNAPPROVED_NO_SIGNATURE"
+      },
+      "scale": {
+        "blocked_external": [
+          "Biblio owner access and use terms",
+          "genuine independent reviewer approval/semantic decisions",
+          "new independent dual-class source/campaign and acceptance cohort"
+        ],
+        "formal_admitted_requests": 0,
+        "milestones": "ai-training/PRETRAINING.md",
+        "new_eligible_research_external_requests": 0,
+        "new_verified_independent_attack": 0,
+        "new_verified_independent_benign": 0,
+        "policy": "ai-training/configs/scale_policy.yaml"
+      },
+      "scope": "AI data acquisition, independent review packet and preregistered next-study protocol only; no training, HTTP dispatch, holdout, model/threshold/gate/Web changes",
+      "verification": {
+        "devgt1_current_code_reverify": "FAIL_PINNED_SHA_MISMATCH",
+        "devgt1_hashes": "PASS",
+        "new_http": "NOT_RUN",
+        "new_training": "NOT_RUN",
+        "old_registry_54_each": "PASS",
+        "plan_v3_current_code": "PASS",
+        "student_security_diff": "PASS"
+      }
+    },
+    "continuation_20261103_edge_fault_replay": {
+      "ai_code_sha256": "f2b47ae2e172bf6ab5064c02155f08399ffe8b13d78e8cee3f282b78bdd0d5fd",
+      "as_of": "2026-11-03T17:53:29+07:00",
+      "biblio_us17": "PENDING_AUTHORIZED_RAW_LABEL_README_AND_TERMS; no content retry",
+      "fault_replay": {
+        "artifact_path": "ai-training/.artifacts/live_fault_replay_20261103_v2/fault-report.json",
+        "artifact_sha256": "0bc4a6ce4dc66107c2014a3df68efe31857383be354c8fea0b9611003935fddf",
+        "baseline_target_requests": 4,
+        "checks": {
+          "enforcement_actions": 0,
+          "exact_duplicate_source_deduplicated": true,
+          "exact_duplicate_vector_parity": true,
+          "late_eve_in_final_snapshot": true,
+          "logical_duplicate_ambiguous": true,
+          "logical_duplicate_rejected": true,
+          "missing_eve_at_deadline_rejected": true,
+          "no_retroactive_score_in_replay": true,
+          "out_of_order_event_rejected": true,
+          "prior_flow_missing_before_wait": 2,
+          "prior_flow_present_after_wait": 2,
+          "reordered_lines_vector_parity": true,
+          "same_fused_request_second_delivery_rejected": true
+        },
+        "limitations": [
+          "Late EVE receipt is injected by snapshot staging, not observed as a naturally delayed sensor event",
+          "The replay driver performs no second score after timeout; a general live scheduler is not deployed",
+          "Same Python feature path; no Rust 207-vector implementation",
+          "Request-key dedup is in-process and not durable across restart"
+        ]
+      },
+      "live_capture_207_value_columns": {
+        "after_prior_flow": 202,
+        "before_prior_flow": 197,
+        "finite_input_columns": 207,
+        "original_query_value_columns_missing": 5
+      },
+      "new_formal_admission": 0,
+      "new_independent_campaigns_or_environments": 0,
+      "new_independently_verified_attack_labels": 0,
+      "new_independently_verified_benign_labels": 0,
+      "new_physical_requests_sent": 0,
+      "new_research_training_eligible_requests": 0,
+      "next_minimum_action": "Owner requests authorized Biblio RAW+LABEL+README and use rights; independent reviewer confirms intent semantics for future prospective three-source campaign; no 207 study until separate source/environment, parity and gate",
+      "python_parity_prior_evidence": {
+        "independent_implementation": false,
+        "live_fused_rows_exact": 4,
+        "prepared_train_rows_exact": 512
+      },
+      "rust_edge_207_vector_parity": "NOT_VERIFIED_NO_RUST_ENCODER_OR_ONNX_PATH",
+      "rust_static_contract": "Canonical observations and five basic query counts only; no 207-vector encoder or inference in security-web/src or Cargo.toml",
+      "scope": "AI-only replay of existing live capture; no new HTTP, training, model, threshold, Web, gate or holdout changes",
+      "verification": {
+        "git_diff_check": "PASS",
+        "json_self_hash_and_report_link": "PASS",
+        "ruff": "PASS",
+        "targeted_pytest": "41 PASS, 1 SKIPPED",
+        "web_diff": "PASS"
+      }
+    },
+    "continuation_20261103_edge_fault_replay_report_sha256": "dce3b6a20709fc271d5a52d076cc73014e1a2ccf4723c108270d68950346b69f",
+    "continuation_20261103_edge_to_python": {
+      "as_of": "2026-11-03T18:09:09+07:00",
+      "biblio_us17": "PENDING_AUTHORIZED_RAW_LABEL_README_TERMS",
+      "candidate_path": "Read-only canonical Student+Nginx export plus separate pre-mask EVE numeric-v2 AI sidecar; existing collect/inference; post-response only; offline snapshot supported, live receipt-time not verified",
+      "canonical_only_full_207_ready": false,
+      "db_collection_default": "COLLECT_ALL_EVENTS=false; retention 7 days and 1000000 events by default; native logs remain available alternative",
+      "formal_admission_total": 0,
+      "live_shadow_previous_native_log_evidence": "12/12 across three successful lab probes, not Security DB export route",
+      "new_formal_admission": 0,
+      "new_independent_campaigns_or_environments": 0,
+      "new_physical_requests": 0,
+      "new_research_eligible_requests": 0,
+      "new_verified_attack_labels": 0,
+      "new_verified_benign_labels": 0,
+      "next_external_action": "Dataset owner requests Biblio RAW+LABEL+README and rights; independent reviewer signs/reviews prospective Oracle intent before formal admission",
+      "observed_fields": {
+        "eve_flow_start_end": 36,
+        "eve_http_direct_request_id": 0,
+        "eve_http_response_header_request_id": 4,
+        "eve_numeric_v2": 4,
+        "nginx_request_id_latency_request_bytes_response_bytes": 5,
+        "student_canonical_wrapper_exact": 5
+      },
+      "oracle_pilot": "8 development requests with app observations, intent still independently unreviewed",
+      "private_report_path": "ai-training/.artifacts/edge_bridge_audit_20261103/report.json",
+      "private_report_sha256": "49e07a6593e97ec60ab38c7376f98546951c232fbd09e0b568bf8803e6d9f620",
+      "python_backend": "existing canonical/postgres-export reader + ai-features-5 encoder + ONNX inference",
+      "request_view_accounting": {
+        "development_76_feature_vectors": 118760,
+        "formal_admitted_total": 0,
+        "global_unique_207_views": null,
+        "global_unique_physical_requests": null,
+        "independently_verified_new_labels": 0,
+        "latest_live_readiness_requests": 4,
+        "latest_live_target_requests": 16,
+        "reported_lab_requests_before_latest_live_probes_not_global_dedup": 75360,
+        "selected_train_76_exact_float32_views": 27142
+      },
+      "research_corpus": "118760 development vectors/76 feature, weak publisher/runner labels; internal diagnostics only, not independently labeled physical requests",
+      "rust_feature_encoder_required": false,
+      "scope": "AI architecture decision and existing-adapter proof using previous live artifact; no new traffic/training/holdout/Web changes",
+      "verification": {
+        "git_diff_check": "PASS",
+        "json_self_hash_and_report_link": "PASS",
+        "private_artifact_hash": "PASS",
+        "ruff": "NOT_REQUIRED_NO_EXECUTABLE_CODE_CHANGE",
+        "targeted_pytest": "22 PASS",
+        "web_diff": "PASS"
+      },
+      "why_not": [
+        "Rust canonical EVE parser reads http.request_id only; 0/4 live EVE HTTP had it, 4/4 carried response-header X-Request-Id",
+        "Rust canonical retains five basic query counters but not AI numeric v2/41 structure values",
+        "Rust canonical flow omits start/end; observed_at is DB metadata not consumed by AI collector",
+        "No actual Security DB export available for end-to-end comparison"
+      ]
+    },
+    "continuation_20261103_edge_to_python_report_sha256": "24ea68bfa01d1dee36d36ca8821dbc8ec5f07eefb0c59bc7c14adb9d22023118",
+    "continuation_20261103_glu207_shadow": {
+      "ai_code_sha256": {
+        "ai-training/src/idps_ai/inference.py": "dc5637c22fd8be3a331847c81bc3d79dcd850fca24b8ac0116c07d12c6edf28b",
+        "ai-training/tests/test_shadow_replay.py": "899553a9b6549d4c716107a60f8d813f624ba30e65349aaa6c5e2feaf06e2fb7"
+      },
+      "as_of": "2026-11-03T09:31:00+07:00",
+      "capture": "ai-training/.artifacts/eve3-1102c",
+      "capture_correlation_report_sha256": "c020be0e927003b54a303a82c93fea8ab350c1c5787eafe79da287b43f6d06dc",
+      "champion_selected": false,
+      "collected_observations": 237,
+      "collected_requests": 55,
+      "context_incomplete_all_54": {
+        "ip_10s": true,
+        "ip_300s": true,
+        "ip_60s": true,
+        "user_10s": true,
+        "user_300s": true,
+        "user_60s": true
+      },
+      "effective_cpu_affinity": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "features_computed_finite": 207,
+      "incomplete_source_setup_requests": 1,
+      "independent_evaluation": false,
+      "latency_ms": {
+        "max": 7.548423,
+        "p50": 6.763532,
+        "p95": 7.11318085,
+        "p99": 7.47627039
+      },
+      "limits": [
+        "No live receipt-time/EVE bridge parity",
+        "Same Python feature implementation on both replay paths",
+        "New capture has 0 prior flow values and all temporal context incomplete",
+        "No independent benign/attack labels or generalization evidence"
+      ],
+      "model_input_features": 207,
+      "model_load_ms": 208.46837,
+      "model_parameters": 9675784,
+      "model_unchanged": true,
+      "new_capture_duration_seconds": 11.339910984039307,
+      "new_capture_finite_model_outputs": 54,
+      "new_capture_same_python_vector_parity_rows": 54,
+      "new_formal_admission": 0,
+      "new_physical_requests_sent": 0,
+      "new_prior_completed_flow_available": 0,
+      "new_research_training": false,
+      "new_three_source_requests": 54,
+      "next_priority": "Independent trusted request-bound labels and new campaign/environment plus live three-source receipt-time/feature parity; no model tuning on exposed development",
+      "original_query_metrics_observed": 0,
+      "partial_source_prediction_after_fix": 0,
+      "partial_source_prediction_before_fix": 1,
+      "peak_process_rss_bytes": 322715648,
+      "private_shadow_plan": "ai-training/.artifacts/glu207_shadow_20261103/shadow-plan-v3.json",
+      "private_shadow_plan_sha256": "b6448bb58f8a657610bfefa1e60816826b51a9028dfe1207200ad5810a12e5a8",
+      "private_shadow_report": "ai-training/.artifacts/glu207_shadow_20261103/shadow-report.json",
+      "private_shadow_report_sha256": "3d230a8cdd9ab5d37bb57d2ab1a3d63c2fb745d840dfe5bf51cf65560a6d93be",
+      "private_train_parity_report": "ai-training/.artifacts/glu207_shadow_20261103/train-vector-parity.json",
+      "private_train_parity_sha256": "b370d2041f66025d6fda06cce9c30c3ef13a3c041df44af581b1d5db066ceae6",
+      "query_numeric_v2_observed": 54,
+      "scope": "AI-only post-response offline shadow on existing 54-request three-source PCAP lab capture; no independent quality evaluation",
+      "source_supported_value_columns": 197,
+      "tests": {
+        "full_pytest": "PASS_227_SKIPPED_1",
+        "offline_shadow": "PASS_54",
+        "partial_source_fail_closed": "PASS",
+        "ruff_lint_format": "PASS",
+        "targeted": "PASS_3",
+        "web_diff": "PASS"
+      },
+      "three_source_correlated_requests": 54,
+      "threshold_or_sampler_changed": false,
+      "tracked_report": "ai-training/reports/ATTACK_EVIDENCE_20261101.json",
+      "tracked_report_file_sha256": "7d760ce81fb441f511139355054c6bf152b136ed4ae5f8193aaf41255d56a259",
+      "training_inference_exact_vector_parity_rows": 512,
+      "training_prior_completed_flow_available": 36443,
+      "training_rows": 41607,
+      "unavailable_value_columns": [
+        "flow_bytes_to_client_log1p",
+        "flow_bytes_to_server_log1p",
+        "flow_duration_seconds_log1p",
+        "flow_packets_to_client_log1p",
+        "flow_packets_to_server_log1p",
+        "query_original_length",
+        "query_original_operator_count",
+        "query_original_parameter_count",
+        "query_original_percent_count",
+        "query_original_quote_count"
+      ],
+      "varying_feature_columns_on_54": 122
+    },
+    "continuation_20261103_live_shadow": {
+      "as_of": "2026-11-03T16:22:00+07:00",
+      "end_to_end_ms_short_probe": {
+        "n": 4,
+        "p50": 193.18032264709473,
+        "p95": 218.06234121322632,
+        "p99": 221.13150358200073
+      },
+      "enforcement_actions": 0,
+      "eve_http_delay_ms_range_successful_probes": [
+        16.689538955688477,
+        35.041093826293945
+      ],
+      "formal_admitted_new": 0,
+      "independent_new_campaigns_or_environments": 0,
+      "limits": [
+        "Only localhost namespace and four GETs per run",
+        "Rust/production edge and TLS parity not verified",
+        "Late EVE beyond 12s not observed; missing EVE skip path was observed",
+        "Latency includes Python file snapshot/collector; small sequential sample not production SLA",
+        "CPU/RSS excludes PostgreSQL RSS, but database container hard cap is 512MiB",
+        "Biblio-US17 access and independent labels absent"
+      ],
+      "live_inferred_total": 14,
+      "live_skipped_total": 2,
+      "live_three_source_total": 14,
+      "live_traffic_label_basis": "unknown; no recall/FPR or independent generalization claim",
+      "model_input_features": 207,
+      "model_or_threshold_changed": false,
+      "new_target_physical_requests_sent": 16,
+      "numeric_v2_live_query_parity": 4,
+      "probe_runs": [
+        {
+          "artifact_root": "ai-training/.artifacts/live_shadow_20261103",
+          "inferred": 2,
+          "report_sha256": "24f24e022d7010698e088218a9aff076baaf6aaf8e6f035636f803440d81bbc7",
+          "sensor_drops": 100,
+          "sensor_packets": 240,
+          "skipped": 2,
+          "target_requests": 4,
+          "three_source": 2
+        },
+        {
+          "artifact_root": "ai-training/.artifacts/live_shadow_20261103_v2",
+          "feature_aggregate_sha256": "ada369e9b1fa315dbe2f343cd10b7296cb75e78b3238035eff933e3f4dc5c149",
+          "inferred": 4,
+          "prior_flow_available_after_67s": 2,
+          "report_sha256": "16711ba965d6bfc9b2b4b4ad1bf5cd888aa2626819648d3ddbf62bc804b1e143",
+          "sensor_drops": 0,
+          "sensor_packets": 208,
+          "skipped": 0,
+          "target_requests": 4,
+          "three_source": 4
+        },
+        {
+          "artifact_root": "ai-training/.artifacts/live_shadow_20261103_resource",
+          "inferred": 4,
+          "report_sha256": "12db7446e1a892569718b8b5b5c3a7d1dd6fc72b68ce742e283ca02cf79f713b",
+          "sensor_drops": 0,
+          "sensor_packets": 80,
+          "skipped": 0,
+          "target_requests": 4,
+          "three_source": 4
+        },
+        {
+          "artifact_root": "ai-training/.artifacts/live_shadow_20261103_query",
+          "inferred": 4,
+          "numeric_v2_live_parity": 4,
+          "report_sha256": "6297e030a851f21b51efa8ea5b36722c92bd2e4dcb59c66b45dbae535439055c",
+          "sensor_drops": 0,
+          "sensor_packets": 80,
+          "skipped": 0,
+          "target_requests": 4,
+          "three_source": 4
+        }
+      ],
+      "readiness_setup_requests_sent": 4,
+      "resource_short_probe": {
+        "affinity_cpus": 8,
+        "average_cpu_cores_over_0_795s": 0.3268960140434669,
+        "observed_serial_inferred_rps": 5.029169446822572,
+        "peak_sampled_rss_bytes_four_processes": 1317871616,
+        "postgres_container_memory_cap_bytes": 536870912
+      },
+      "same_python_live_vector_exact": 4,
+      "scope": "AI-owned isolated live Suricata -i lo, Student/Nginx three-source post-response shadow; no labels or model tuning",
+      "script_path": "ai-training/scripts/live-shadow-lab.py",
+      "script_sha256": "8f200716d2e8fe0d8993ea74048af91eff8396590931083b9c02d22278975b90",
+      "source_supported_value_columns_after_prior_flow": 202,
+      "source_supported_value_columns_early": 197,
+      "tracked_report_file_sha256": "67913db9a0a019d6ee72c7ee9cde2a498a53bd494c9de8a62b3d5fde4437d1e7"
+    },
+    "continuation_20261103_new_corpus_intake": {
+      "as_of": "2026-11-03T08:01:36+07:00",
+      "biblio_us17": {
+        "authorized_RAW_LABEL_copy_present": false,
+        "official_item_bundle_metadata_http": 200,
+        "protected_archive_content_retried": false,
+        "request_copy_url": "https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e/request-a-copy?bitstream=17b2ff3b-90ea-48a4-8ecd-a12edc394361",
+        "status": "PENDING_OWNER_GRANT"
+      },
+      "cikm_iot_cve": {
+        "attack_body_nonempty": 167,
+        "attack_path_embedded_query": 9,
+        "attack_path_only_encoded_views": 214,
+        "attack_structured_params_nonempty": 48,
+        "authored_cve_paired_benign_controls": 281,
+        "cross_label_path_only_view_conflicts": 4,
+        "formal_admitted": 0,
+        "manually_reconstructed_from_exploit_or_advisory": 245,
+        "other_research_attack_traces": 36,
+        "private_intake_report": "ai-training/.artifacts/source_screen_20261103/iot_cve_intake.json",
+        "private_intake_sha256": "4538b1c3207593a750c320a469b7f93ffcfcab6772b2204901612b935d98c62b",
+        "publisher_attack_examples": 281,
+        "publisher_real_iot_benign_examples": 281,
+        "real_benign_path_only_encoded_views": 140,
+        "reason": "attack examples reconstructed and source-class confounded; body/params/header visibility incomplete; no dual-class per-source independent split",
+        "research_training_eligible": 0,
+        "revision": "bf43a370084d6b59a6e0c29319a51da251a6d6b3"
+      },
+      "formal_gate_changed": false,
+      "model_207_changed": false,
+      "new_formal_admission": 0,
+      "new_independent_dual_class_campaigns": 0,
+      "new_independently_verified_attack_labels": 0,
+      "new_independently_verified_benign_labels": 0,
+      "new_research_training_eligible_requests": 0,
+      "new_verified_physical_requests": 0,
+      "next_study_status": "NOT_RUN_DATA_GATE_NOT_MET",
+      "other_sources": {
+        "DEDALE": "flow-level time/IP/port labels, not semantic HTTP request labels",
+        "ForenWebLog": "paper only; no verified released corpus/terms/request-label trail"
+      },
+      "reported_lab_requests_preexisting_not_global_dedup": 75360,
+      "scope": "bounded metadata and method/path-only screen of new open HTTP candidate; no traffic, no model scoring/fitting, no sealed holdout",
+      "target_requests": 2000000,
+      "verification": {
+        "bounded_562_path_projection": "PASS",
+        "dryad_license_API": "PASS",
+        "holdout": "NOT_OPENED",
+        "large_archives_downloaded": false,
+        "local_repo_revision_and_license": "PASS",
+        "new_training": "NOT_RUN",
+        "official_repository_metadata": "PASS"
+      }
+    },
+    "continuation_20261103_new_corpus_intake_report_sha256": "393c0b74a92568104f132ddc039ddcec0a6935ceb683e78b8b31a3f8251a0e15",
+    "continuation_20261103_research_training": {
+      "as_of": "2026-11-03T19:45:00+07:00",
+      "checkpoint_manifest_sha256": "1ef01ca94d6263dd5584c7482fea90e6587b90ebc537fda4c178146310cb4634",
+      "checkpoint_pointer_path": "ai-training/.artifacts/research_glu207_stability_20261103/run/latest.json",
+      "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+      "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+      "interpretation": "Finite gradients and lower fixed-train probe loss demonstrate internal optimization only. Weak one-lab development labels, no generalization/Recall/FPR claim.",
+      "model": {
+        "existing_older_checkpoint_untouched": true,
+        "features": 207,
+        "kind": "residual_glu",
+        "seed": 17,
+        "trainable_parameters": 9675784
+      },
+      "new_source_screen": {
+        "decision": "METADATA_ONLY_RESEARCH_ATTACK_STRESS_CANDIDATE_NOT_TRAINING_OR_FORMAL",
+        "name": "WebSpotter FPAD/CVE",
+        "new_local_rows": 0,
+        "new_verified_labels": 0,
+        "new_verified_physical_requests": 0,
+        "paper": "https://www.ndss-symposium.org/ndss-paper/achieving-interpretable-dl-based-web-attack-detection-through-malicious-payload-localization/",
+        "reason": "FPAD benign inherits CSIC, attack generation differs; CVE examples manually localized but lack matched benign captured requests. Dataset-level rights/unique views not audited.",
+        "repository": "https://github.com/Sec-AI-research/WebSpotter"
+      },
+      "next_priority": "Acquire request-bound dual-class labels and independent environment/campaign; authorized Biblio copy and independent Oracle reviewer; no further tuning on exposed validation",
+      "plan_path": "ai-training/.artifacts/research_glu207_stability_20261103/plan.json",
+      "plan_sha256": "75df365788d1dca5bddf4b62ee8d5290b3e4d306f2312b0fd7dccff280447dcc",
+      "question": "Does the current GLU207 optimize stably on frozen development train rows with finite gradients and a decreasing fixed train-only probe loss, without inspecting validation/test?",
+      "report_path": "ai-training/.artifacts/research_glu207_stability_20261103/report.json",
+      "report_sha256": "e8d811cc4450b909771335f247e9cf1bb3fe84c098f328afea9330d13ab22639",
+      "research_vs_formal": {
+        "champion_selected": false,
+        "formal_admitted_requests": 0,
+        "independent_evaluation_done": false,
+        "new_research_eligible_external_requests": 0,
+        "research_training_done": true,
+        "threshold_changed": false
+      },
+      "resource": {
+        "cpu_quota_cores": 4,
+        "memory_high_bytes": 16106127360,
+        "memory_max_bytes": 17179869184,
+        "peak_process_rss_bytes": 872734720,
+        "swap_max_bytes": 0,
+        "thermal_limit_reached": false
+      },
+      "run": {
+        "batch_size": 128,
+        "checkpoint_parameter_and_adam_readback": "PASS",
+        "fixed_train_probe_gradient_l2_after": 0.8504474522589557,
+        "fixed_train_probe_gradient_l2_before": 22.098809544854998,
+        "fixed_train_probe_loss_after": 0.18568882264121722,
+        "fixed_train_probe_loss_before": 1.4991284524136035,
+        "new_resume": "NOT_RUN_PREVIOUS_MAIN_PILOT_EXACT_RESUME_PRESERVED",
+        "onnx_export": "NOT_RUN_NOT_NEEDED_FOR_OPTIMIZATION_QUESTION",
+        "sampled_gradient_clip_fraction": 0.7,
+        "sampled_gradient_l2_max": 8.379799604154734,
+        "sampled_gradient_l2_median": 1.0462483475494242,
+        "updates": 100,
+        "wall_seconds": 23.142585132000022
+      },
+      "run_script_path": "ai-training/.artifacts/research_glu207_stability_20261103/run.py",
+      "run_script_sha256": "f7f151efe29af5fda9042cf3aa415e14441cd0350391a0896c7ec6e349829400",
+      "scope": "one preregistered GLU207 development train-only optimization sanity run; no validation tuning, sealed test, formal training, HTTP traffic, model promotion or web modifications",
+      "training_data": {
+        "full_train_exact_float32_views": 41585,
+        "full_train_rows": 41607,
+        "independent_labels": 0,
+        "optimizer_run_validation_or_test_rows_decoded": 0,
+        "preflight_mixed_rowgroup_validation_rows_inspected_for_split_only": 377,
+        "sampled_exact_views": 12798,
+        "sampled_publisher_or_runner_attack": 3758,
+        "sampled_publisher_or_runner_benign": 9042,
+        "sampled_rows": 12800,
+        "source_environments": 1,
+        "train_only_rowgroups_available_rows": 41472,
+        "train_only_rowgroups_exact_views": 41450
+      },
+      "verification": {
+        "checkpoint_readback": "PASS",
+        "git_diff_check": "PASS",
+        "json_self_hash": "PASS",
+        "plan_script_report_sha": "PASS",
+        "python_compile": "PASS",
+        "ruff_private_full": "FAIL_E402_DYNAMIC_SYSPATH_IMPORT_ORDER",
+        "ruff_private_ignore_e402": "PASS",
+        "train_run": "PASS",
+        "web_diff": "PASS",
+        "yaml": "PASS"
+      }
+    },
+    "continuation_20261103_research_training_report_sha256": "81d29b0d8325f77366978e002bbfcb088331d46fb6430e42fd1bd9d82a2772f3",
+    "continuation_20261103_sampler_study": {
+      "as_of": "2026-11-03T08:44:09+07:00",
+      "formal_admitted_added": 0,
+      "independent_evaluation": false,
+      "interpretation": "GLU uniform improves student-lab validation but sharply damages SR-BH; MLP uniform loses student-lab recall. This is a source-dependent tradeoff, not a consistent gain or evidence of causal shortcut mechanism. Do not promote sampler or tune threshold on exposed validation.",
+      "main_207_model_changed": false,
+      "models": {
+        "glu1024-baseline": {
+          "by_source": {
+            "srbh2020": {
+              "rows": {
+                "attack": 5155,
+                "benign": 4845,
+                "fpr": 0.002889576883384933,
+                "pr_auc_average_precision": 0.8370173520874067,
+                "recall": 0.3136760426770126,
+                "rows": 10000
+              },
+              "views": {
+                "attack": 3675,
+                "benign": 3164,
+                "count": 6839,
+                "fpr": 0.00347661188369153,
+                "pr_auc_average_precision": 0.8253382529312157,
+                "recall": 0.2182312925170068
+              }
+            },
+            "student-lab": {
+              "rows": {
+                "attack": 288,
+                "benign": 736,
+                "fpr": 0.10733695652173914,
+                "pr_auc_average_precision": 0.5145685771742765,
+                "recall": 0.18055555555555555,
+                "rows": 1024
+              },
+              "views": {
+                "attack": 153,
+                "benign": 137,
+                "count": 290,
+                "fpr": 0.10218978102189781,
+                "pr_auc_average_precision": 0.7257080678286998,
+                "recall": 0.1503267973856209
+              }
+            }
+          },
+          "onnx_parity": true,
+          "parameters": 9541640,
+          "steps": 300,
+          "threshold": 0.9984238147735596
+        },
+        "glu1024-treatment": {
+          "by_source": {
+            "srbh2020": {
+              "rows": {
+                "attack": 5155,
+                "benign": 4845,
+                "fpr": 0.02848297213622291,
+                "pr_auc_average_precision": 0.6901889022543402,
+                "recall": 0.055674102812803106,
+                "rows": 10000
+              },
+              "views": {
+                "attack": 3675,
+                "benign": 3164,
+                "count": 6839,
+                "fpr": 0.024968394437420986,
+                "pr_auc_average_precision": 0.6754431097758349,
+                "recall": 0.03183673469387755
+              }
+            },
+            "student-lab": {
+              "rows": {
+                "attack": 288,
+                "benign": 736,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.7665826691684451,
+                "recall": 0.4791666666666667,
+                "rows": 1024
+              },
+              "views": {
+                "attack": 153,
+                "benign": 137,
+                "count": 290,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.8869661308997289,
+                "recall": 0.5424836601307189
+              }
+            }
+          },
+          "onnx_parity": true,
+          "parameters": 9541640,
+          "steps": 300,
+          "threshold": 0.9981819987297058
+        },
+        "mlp256-baseline": {
+          "by_source": {
+            "srbh2020": {
+              "rows": {
+                "attack": 5155,
+                "benign": 4845,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.8536516326780083,
+                "recall": 0.2283220174587779,
+                "rows": 10000
+              },
+              "views": {
+                "attack": 3675,
+                "benign": 3164,
+                "count": 6839,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.8563813214250773,
+                "recall": 0.31891156462585035
+              }
+            },
+            "student-lab": {
+              "rows": {
+                "attack": 288,
+                "benign": 736,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.5773743074074799,
+                "recall": 0.125,
+                "rows": 1024
+              },
+              "views": {
+                "attack": 153,
+                "benign": 137,
+                "count": 290,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.7966562187751777,
+                "recall": 0.17647058823529413
+              }
+            }
+          },
+          "onnx_parity": true,
+          "parameters": 219144,
+          "steps": 300,
+          "threshold": 0.9999801516532898
+        },
+        "mlp256-treatment": {
+          "by_source": {
+            "srbh2020": {
+              "rows": {
+                "attack": 5155,
+                "benign": 4845,
+                "fpr": 0.000825593395252838,
+                "pr_auc_average_precision": 0.8327189936480883,
+                "recall": 0.21590688651794374,
+                "rows": 10000
+              },
+              "views": {
+                "attack": 3675,
+                "benign": 3164,
+                "count": 6839,
+                "fpr": 0.0006321112515802782,
+                "pr_auc_average_precision": 0.8385278020185252,
+                "recall": 0.30095238095238097
+              }
+            },
+            "student-lab": {
+              "rows": {
+                "attack": 288,
+                "benign": 736,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.5388935868313154,
+                "recall": 0.0,
+                "rows": 1024
+              },
+              "views": {
+                "attack": 153,
+                "benign": 137,
+                "count": 290,
+                "fpr": 0.0,
+                "pr_auc_average_precision": 0.7658041110905676,
+                "recall": 0.0
+              }
+            }
+          },
+          "onnx_parity": true,
+          "parameters": 219144,
+          "steps": 300,
+          "threshold": 0.9999911785125732
+        }
+      },
+      "plan_sha256": "74d51551878fa3ce5e9959f7fccbdd534f5fe5b300c1d996cdee5945b8ec0e47",
+      "private_report": "ai-training/.artifacts/sampling_diagnostic_20261103/report.json",
+      "private_report_sha256": "c044f63b0235a5d17f786828d49e2bc1e6932bbbb89dae9248ce91587e1cae60",
+      "scope": "One preregistered 76-feature exposed-development sampler comparison; not independent evaluation or model promotion",
+      "tracked_report": "ai-training/reports/PARTITION_RECOVERY_20261031.json",
+      "tracked_report_sha256": "5cdc9f7bca94d47667847a28eb27672c7001a7a5e827837fb8cf513c9ba28a89",
+      "train_views": 27142,
+      "validation_views": 7129
+    },
+    "continuation_20261103_view_guard": {
+      "ait_mixed_label_encoded_views_unchanged": 4,
+      "as_of": "2026-11-03T07:45:08+07:00",
+      "code_sha256": {
+        "ai-training/src/idps_ai/training/request_training.py": "90c13fb84e574c911dc71d05654f431e3a9f57e364d39b87709d3eeb3858ed7a",
+        "ai-training/tests/test_request_training.py": "013d8e8f2814e231dc3edaf33bc6287e02d03b291333755c110bd4388402143d"
+      },
+      "cross_role_exact_view_overlaps": 0,
+      "cross_role_group_overlaps": 0,
+      "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+      "development_rows": 118760,
+      "distinct_event_keys_in_snapshot": 118760,
+      "exact_float32_views_by_source_role": {
+        "srbh2020": {
+          "calibration": {
+            "rows": 10000,
+            "views": 7998
+          },
+          "train": {
+            "rows": 60000,
+            "views": 25909
+          },
+          "val": {
+            "feature_keys": 6840,
+            "rows": 10000,
+            "views": 6839
+          }
+        },
+        "student-lab": {
+          "calibration": {
+            "rows": 1313,
+            "views": 318
+          },
+          "train": {
+            "rows": 36423,
+            "views": 1233
+          },
+          "val": {
+            "feature_keys": 290,
+            "rows": 1024,
+            "views": 290
+          }
+        }
+      },
+      "export_change": "Add validation_encoded_views and validation_encoded_views_by_source; fail closed on mixed-label views; retain row metrics and benign-calibration threshold",
+      "mixed_label_encoded_views_in_development": 0,
+      "model_or_checkpoint_changed": false,
+      "new_formal_admission": 0,
+      "new_predictions_or_quality_improvement_validated": false,
+      "next_study_protocol": {
+        "comparison": "existing sampling=None versus domain_family_balanced; same architecture, splits and short budget",
+        "formal_gate_unchanged": true,
+        "holdout": "new independent test remains sealed until selection complete",
+        "input": "same request-only 76-feature representation for both MLP and GLU; main 207-feature GLU is separate",
+        "locked_before_fit": [
+          "source_campaign_actor_time_roles",
+          "seed",
+          "exact_view_conflict_policy",
+          "FPR_budget",
+          "CPU_and_RAM_budget"
+        ],
+        "question": "Does train-only domain/family-balanced sampling reduce false positives on new campaigns at the same recall versus existing unweighted sampler?",
+        "report": [
+          "row_and_exact_view_metrics",
+          "source_and_attack_family_breakdown",
+          "campaign_group_counts",
+          "latency"
+        ],
+        "status": "NOT_RUN_UNTIL_INDEPENDENT_REQUEST_BOUND_DUAL_CLASS_SOURCE_CAMPAIGNS"
+      },
+      "physical_request_count_certified": false,
+      "scope": "read-only train/calibration/val tensor audit plus request-only export metric guard; no refit or threshold change",
+      "study_gate": "BLOCKED_independent_request_bound_dual_class_labels_and_campaigns",
+      "training_sampling_changed": false,
+      "verification": {
+        "cross_role_tensor_audit": "PASS",
+        "full_pytest": "NOT_RUN",
+        "holdout": "NOT_OPENED",
+        "long_training": "NOT_RUN",
+        "ruff_lint_format": "PASS",
+        "targeted_pytest": "PASS_5"
+      }
+    },
+    "continuation_admission_20261102": {
+      "admission_blockers": [
+        "No independent request-bound semantic review; runner claims and syntax cues are not labels.",
+        "POST body provenance and application oracle absent for exploit outcome assertions.",
+        "All new development captures are one lab environment; no balanced independent source/campaign/calibration.",
+        "Live production Suricata-to-AI bridge and full 207-feature visibility remain unverified."
+      ],
+      "aggregate_lab_requests_by_capture_reports_not_global_unique": 75360,
+      "aggregate_report_progress_percent": 3.768,
+      "artifact_sha256": {
+        "capture_report": {
+          "path": "ai-training/.artifacts/eve3-1102c/capture/report.json",
+          "sha256": "1d197358afe8123bf1887f923474447bdf4fc978b228b9fef3be4ffcff3ef1ea"
+        },
+        "cleanup": {
+          "path": "ai-training/.artifacts/eve3-1102c/lab/cleanup.json",
+          "sha256": "7891e0cb2a7bef372f7a21266c72b59dc24407e5e9928ad9a907d193044a31de"
+        },
+        "correlation_ledger": {
+          "path": "ai-training/.artifacts/eve3-1102c/correlated-v3/three-source-evidence.jsonl",
+          "sha256": "9b3be4417ab75f03660674044baa7f3ba3ccaa7e2fbc70d9ba47d414b690ccb0"
+        },
+        "correlation_report": {
+          "path": "ai-training/.artifacts/eve3-1102c/correlated-v3/report.json",
+          "sha256": "c020be0e927003b54a303a82c93fea8ab350c1c5787eafe79da287b43f6d06dc"
+        },
+        "eve": {
+          "path": "ai-training/.artifacts/eve3-1102c/eve/eve.json",
+          "sha256": "0cb5fd45b0fa1b3e846a3d40b51815690db9aa4a37cde173a1f8aa015aa6784a"
+        },
+        "eve_manifest": {
+          "path": "ai-training/.artifacts/eve3-1102c/eve/decode-manifest.json",
+          "sha256": "fa755115e645b2e4b2932a3e955024e2897ca44fdfad9d6460b189457eb2f929"
+        },
+        "frozen_collector": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/collector-source-v4.py",
+          "sha256": "b8d1919931891c2f4651b2f7a1dc297470ba15792583c33f51098f0b3cb806dc"
+        },
+        "lineage_unsealed": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/lineage-unsealed-v5/report.json",
+          "sha256": "5e05024130c1fd3f3706dab87b7474ffc6a7ea458765b1a0fde9b506be1a08a8"
+        },
+        "novel54_assist_report": {
+          "path": "ai-training/.artifacts/eve3-1102c/assist-v2/report.json",
+          "sha256": "079405296b6d32ce3827639cc0a0b2c46bfa0af46a9281caab7660c1dd405e91"
+        },
+        "novel54_blind_facts": {
+          "path": "ai-training/.artifacts/eve3-1102c/assist-v2/review-assist.jsonl",
+          "sha256": "97453597d770763631d91bf81b7158ee8b560c0cb2e5c4e7f7496284a013de59"
+        },
+        "novel54_unblind_proposals": {
+          "path": "ai-training/.artifacts/eve3-1102c/assist-v2/review-proposals.jsonl",
+          "sha256": "ed3ea6dd21bf6332ac998103ba75afc5ee3e66b0527c9bc3dc916c8fd1dc683f"
+        },
+        "novel_plan": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/plan-novel-v2/plan.json",
+          "sha256": "4f3b0299531f9351e4c76c027e43134f10d6e1da3d72e16f4fbbc89373a0e20e"
+        },
+        "old54_assist_report": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/assist-old54-v2/report.json",
+          "sha256": "dbbc3d2fc6d896238f7539e88f8de49fff6af2fbb58ebc87830637774f406332"
+        },
+        "pcap": {
+          "path": "ai-training/.artifacts/eve3-1102c/lab/traffic.pcap",
+          "sha256": "80efea9c0803722a28df75705b18b76feffb63002c75888aefea80641f27309e"
+        },
+        "prior54_assist_report": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/assist-new54-v2/report.json",
+          "sha256": "62800eef973b412d836f49bd441478b9ed91d2997b41e1d330bcb959ece4392d"
+        },
+        "review_queue": {
+          "path": "ai-training/.artifacts/eve3-1102c/review/blind-review.jsonl",
+          "sha256": "5702c1ac8890f9cea57120293eacf2c51c97e197f24a9d919b88849e9952f205"
+        },
+        "review_report": {
+          "path": "ai-training/.artifacts/eve3-1102c/review/report.json",
+          "sha256": "8eaf3241666def18a2b42b088f1160ca6c81effbb6be5051c0979500cd6088c0"
+        }
+      },
+      "authorized_scope": "AI-owned disposable loopback lab only; no Student/Security changes or external targets",
+      "campaigns": {
+        "independent_environments": 0,
+        "independent_evaluation": 0,
+        "new_development": 3,
+        "owned_lab_environments": 1,
+        "quarantined": 3,
+        "valid_development_across_four_captures": 9
+      },
+      "champion_selected": false,
+      "code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "e90b462750e1c111fb1ed46620f6a438ce29dd8f75e3e8a6bf55e454d46b4f45",
+        "ai-training/scripts/prepare-evidence-review.py": "2418fda126cbeb8e88c36cf1db5f5379a2476de72baba62acf85d5cf23ba454f",
+        "ai-training/src/idps_ai/data/evidence_campaign.py": "16369b7c22b2c417f45bb05bb17ab3764832f16972c41a736142f1550c2a4228",
+        "ai-training/src/idps_ai/data/lab_runtime.py": "4c160d1236cbf987f5ccc3a922402d05501bec6d94b008912a1066eb29f40ce2",
+        "ai-training/src/idps_ai/data/sensor_lab.py": "9f996661f51438ec6fe5c2204d63036d0cfd19f07baa7ce537ba30d92dd1b90f",
+        "ai-training/tests/test_evidence_campaign.py": "342b5ca231dfec0cde5b471f029b0cfc848eecc1f6591a2bd8c65e2def67f5c1"
+      },
+      "enforcement_enabled": false,
+      "eve_event_counts": {
+        "alert": 18,
+        "flow": 54,
+        "http": 54,
+        "stats": 1
+      },
+      "existing_models": {
+        "deep_mlp_parameters": 252680,
+        "feature_count": 207,
+        "residual_glu_parameters": 9675784,
+        "weights_changed": false
+      },
+      "formal_training_permitted": false,
+      "independently_verified_attack": 0,
+      "independently_verified_benign": 0,
+      "lab_eve_query_numeric_mismatches": 0,
+      "lab_masked_nginx_queries_null": 54,
+      "lab_profile_status": "LAB_MASKED_EDGE_AND_EVE_V2_BOUND",
+      "lineage": {
+        "capture_request_ids": 210,
+        "cross_run_id_collisions_scanned_scope": 0,
+        "distinct_target_hashes": 78,
+        "global_historical_dedup_certified": false,
+        "repeated_target_observations": 132,
+        "sealed_cohort_opened": false,
+        "unsealed_historical_student_ids_scanned": 227619
+      },
+      "max_client_to_eve_http_delta_seconds": 0.617652,
+      "max_http_to_flow_emission_seconds": 11.340471,
+      "new_critical_targets_excluded_from_two_prior_plans": 30,
+      "new_physical_http_requests": 54,
+      "new_target_hashes_across_all_captures": 42,
+      "offline_capture": "real TCP/PCAP in private namespace; offline Suricata decode",
+      "pending_queue_accounting": {
+        "new_three_source": 54,
+        "old_two_source": 54,
+        "prior_three_source": 54,
+        "quarantined_auth_boundary": 48,
+        "total": 162
+      },
+      "production_207_feature_parity_certified": false,
+      "realtime_capture_certified": false,
+      "review_assist": {
+        "application_oracle_available": false,
+        "automatic_verified_labels": 0,
+        "automatically_verified_facts": 162,
+        "collector_attack_with_syntax_cue_new": 15,
+        "collector_benign_with_syntax_cue_new": 9,
+        "independent_human_reviews": 0,
+        "separate_unblind_proposals": 162,
+        "training_admission": 0
+      },
+      "scale_admitted_requests": 0,
+      "status": "NOVEL_THREE_SOURCE_CAPTURE_AND_BLIND_ASSIST_READY_FORMAL_NOT_READY",
+      "target_requests": 2000000,
+      "three_source_correlated_across_two_runs": 108,
+      "three_source_correlated_new_requests": 54,
+      "updated_at": "2026-11-02T08:56:40.066412+07:00",
+      "verification": {
+        "blind_facts_and_proposals": "PASS_162_UNKNOWN",
+        "capture_and_offline_eve": "PASS_54_OF_54",
+        "formal_catalog": "NOT_READY_0_ELIGIBLE",
+        "full_ai_check": "PASS_219_PYTEST_0_SKIP_117_36_SECONDS",
+        "holdout_score": "NOT_RUN",
+        "independent_review": "NOT_RUN",
+        "limited_lineage": "PASS_210_IDS_ZERO_COLLISIONS_WITH_227619_HISTORICAL",
+        "long_training": "NOT_RUN",
+        "masked_nginx_eve_v2_lab_profile": "PASS_54_OF_54",
+        "production_realtime_bridge": "NOT_RUN",
+        "two_consecutive_three_source_captures": "PASS_54_AND_54"
+      }
+    },
+    "continuation_admission_report_sha256": "259f6dbd0ce5d6880f082f872f726f288019c469fb0bbd7c5f33fa96c6c58eaf",
+    "continuation_ait_request_corpus_20261102": {
+      "apache_attack_labels_member_sha256": "ab6a834e2f9b8321cb7045cd78e0d88eea851a0f4b5231827f16e87ca7286154",
+      "apache_attack_log_member_sha256": "4d3d700f50c6dde5295ebc57a00701b7c3049812c6f6709b3f809e36be362153",
+      "apache_rules_member_sha256": "b48be2f52951c47d2f14c518faae4a5a2dfa83c252c59017d6d11b15acce4868",
+      "archive_bytes": 522084364,
+      "archive_md5": "abb43a46c70939ad9f98669e3510d2b7",
+      "archive_sha256": "51a03f51daea0fbbdcfe9b8abe0dbbe10633716f4f98074f861204a162ee1978",
+      "attack_labeled_apache_line_refs_unique": 7695,
+      "attacker_log_sha256": "eb7e96b8ad1270ab96c43de8575631aafb48a0a865e97c1c5c9f8cc117289f06",
+      "cross_label_shared_view_rows": {
+        "benign_candidate": 818,
+        "publisher_attack": 13
+      },
+      "distinct_76_feature_views": {
+        "benign_candidate": 25,
+        "cross_label_overlap": 4,
+        "publisher_attack": 3146
+      },
+      "distinct_method_target_hashes": {
+        "benign_candidate": 71,
+        "cross_label_overlap": 4,
+        "publisher_attack": 7682
+      },
+      "environment": "one independent simulated enterprise testbed, not live production Internet",
+      "formal_new_admission": 0,
+      "full_207_missing_in_ait": 137,
+      "independent_eligible_dual_class_sources": 0,
+      "independently_verified_attack": 0,
+      "independently_verified_benign": 0,
+      "label_basis": "publisher scenario/rule + attacker activity log, not independent semantic review per request",
+      "license": "CC BY-NC-SA 4.0, noncommercial research; redistribution/weights requires separate terms review",
+      "new_http_requests_emitted": 0,
+      "next_external_action": "Authorized researcher submits Biblio request-a-copy form using PRETRAINING.md; grant and terms for RAW/LABEL/README needed.",
+      "oracle_dev_numeric_v2_exact": {
+        "matched_request_ids": 8,
+        "numeric_exact": 8
+      },
+      "preattack_parseable_benign_candidates": 2831,
+      "reason_study_blocked": "One scenario only; 25 benign 76-feature views below existing >=32/source/role/class before split; 4 cross-label views; no independent per-request semantic review or second eligible dual-class source.",
+      "request_only_70_projected_and_76_encoded_observations": 10526,
+      "request_only_oracle_dev": {
+        "distinct_views": 7,
+        "projected_70_encoded_76": 8,
+        "rows_with_shared_value_mismatch": 6,
+        "shared_with_eve_numeric_names": 60
+      },
+      "research_study_eligible_requests": 0,
+      "source": "AIT Log Data Set V2.1 russellmitchell no-pcaps, DOI 10.5281/zenodo.19483937",
+      "source_access": "official open Zenodo archive downloaded; Biblio-US17 remains permission pending, no repeated 401",
+      "targeted_pytest": "6 PASS in 2.17s under 4 CPU quota / 4 GiB MemoryMax",
+      "training_or_holdout_used": false,
+      "unlabeled_during_or_after_attack": 604,
+      "unparseable_method_uri": 54
+    },
+    "continuation_ait_request_corpus_report_sha256": "27fc1286b29bf5fb5bb9ebd04548af0fca10a585ea4608a6b45e1194fcc2b933",
+    "continuation_auto_review_20261102": {
+      "aggregate_lab_requests_by_capture_reports_not_global_unique": 75360,
+      "aggregate_progress_percent_of_2m": 3.768,
+      "ai_model_proposed_labels": 0,
+      "artifacts": {
+        "blind_meta": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3/meta.json",
+          "sha256": "8c5f79b7cbd265898612d3af4720b3897adfdd469a9d5941fe5bc2fb939569b2"
+        },
+        "blind_report": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3/report.json",
+          "sha256": "1985ffeeaeb511bc29cd785a6316e3710f695fdc6ec6bd21936db55bec6cffc2"
+        },
+        "blind_sqlite": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3/auto-review.sqlite",
+          "sha256": "2baaec01a44a2e72e4bfc7d3f99255abc8fc0b13a0fc5ec2ec5636904681cf81"
+        },
+        "unblind_comparison": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3-unblind/unblind-comparison.jsonl",
+          "sha256": "18c96f3523ca8d169a80a0202792ed1e44b445113d678f8b476b0cd4f03e12bb"
+        },
+        "unblind_report": {
+          "path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3-unblind/report.json",
+          "sha256": "24e3d62eab1b9975d5725b3d2dfe153145ccc6192ec6ffeee6f66f42e3824ea8"
+        }
+      },
+      "automatic_evidence_reviews": 162,
+      "catalog": {
+        "eligible_requests": 0,
+        "path": "ai-training/.artifacts/attack_evidence_20261101/scale-catalog-current/report.json",
+        "sha256": "fe3c7ff4374debae4f080a6a18db0ff8b257f891cc0d2e518a6dbba1ca3c2a1d",
+        "status": "NOT_READY"
+      },
+      "champion_selected": false,
+      "code_sha256": {
+        "ai-training/scripts/review-evidence.py": "75f76ed03cb45b945d4df911aa2a52778d45af2159bcf70dead861c52009b734",
+        "ai-training/tests/test_evidence_campaign.py": "51e72bf592f3c9f756451abde22f2d949782165007b433877206464bd65efc79"
+      },
+      "cross_campaign_reused_target_views": 36,
+      "distinct_target_views": 78,
+      "formal_training_permitted": false,
+      "independent_evaluation_campaigns": 0,
+      "independent_human_reviewed_attack": 0,
+      "independent_human_reviewed_benign": 0,
+      "limits": [
+        "No independent application oracle for intent or exploit outcome; response status, runner claim, rule and cue are not ground truth.",
+        "Current evidence-v2 formal gate still requires independent human semantic review and real prepared dataset/provenance.",
+        "Automatic review was exercised on 162 requests, not benchmarked at 2 million; global dedup and live edge/207-feature parity remain unverified."
+      ],
+      "new_requests": 0,
+      "new_training_admission": 0,
+      "objective_oracle_verified_attack": 0,
+      "objective_oracle_verified_benign": 0,
+      "post_blind_collector_disagreements_not_label_conflicts": {
+        "attack_claim_without_cue": 22,
+        "benign_claim_with_cue": 7
+      },
+      "post_bodies_pcap_observed": 12,
+      "post_bodies_unobserved_old": 6,
+      "private_lab_query_observed": 102,
+      "repeated_target_view_requests": 84,
+      "source_request_counts": {
+        "eve_first": 54,
+        "eve_novel": 54,
+        "two_source": 54
+      },
+      "status": "OBJECTIVE_REVIEW_162_COMPLETE_LABELS_UNKNOWN",
+      "syntax_triage_only": {
+        "no_cue": 123,
+        "single_cue": 39
+      },
+      "three_source_offline_requests": 108,
+      "unknown_intent_labels": 162,
+      "updated_at": "2026-11-02T09:40:49.198646+07:00",
+      "verification": {
+        "batch_resume": "PASS_65_to_162_to_162",
+        "blind_then_unblind": "PASS_162",
+        "crash_recovery": "PASS_simulated_missing_report_after_batch_commit_full_readback",
+        "final_full_ai_check": "PASS_222_pytest_0_skip_117.46s_ruff_format_canonical",
+        "formal_training": "NOT_RUN",
+        "full_ai_check": "PASS_222_pytest_0_skip_117.46s_ruff_format_canonical",
+        "holdout": "NOT_READ",
+        "raw_query_privacy_scan": "PASS_0_of_88_long_private_query_values_in_sqlite",
+        "targeted_pytest": "PASS_11"
+      },
+      "verified_physical_ids_within_registry": 162
+    },
+    "continuation_auto_review_report_sha256": "dc9a7d2923dcef1dad9b4899210da0c13b9828e42c7344af15466d0e4378dc41",
+    "continuation_development_oracle_20261102": {
+      "blind_queue": {
+        "approved_attack": 0,
+        "approved_benign": 0,
+        "file_sha256": "c72d62b725d0f43fae9d6e1afe11aa3773c5969fb8d11174435745c72899f393",
+        "intent_unknown": 8,
+        "path": "ai-training/.artifacts/devgt1/run/review/report.json",
+        "requests": 8
+      },
+      "code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "459ad645d440566f32414891e264f3a829a5c698b953be4f7010bfd8609292cf",
+        "ai-training/scripts/prepare-evidence-review.py": "217b1b7ac02f50fc6973f30f7ac5a0b26edcda2b6d4523335a57e3e8dd24950d",
+        "ai-training/src/idps_ai/data/dev_oracle_pilot.py": "38bad2afe8892d9d99df11dd24d3d34034e2c55430f8de222269a5a73895feb8",
+        "ai-training/src/idps_ai/data/sensor_lab.py": "af9b38148b5d0cc4c38f7485ac847131d5a7cc42b6506b3763dcc7767f77074b",
+        "ai-training/tests/test_evidence_campaign.py": "0fa21e6d3128f63a34fdd5c7c077a61441133d27a1e86429df5017bcfb00e68b"
+      },
+      "files_changed_this_turn": [
+        "ai-training/src/idps_ai/data/dev_oracle_pilot.py",
+        "ai-training/src/idps_ai/data/sensor_lab.py",
+        "ai-training/scripts/evidence-lab-campaign.py",
+        "ai-training/scripts/prepare-evidence-review.py",
+        "ai-training/tests/test_evidence_campaign.py",
+        "ai-training/PRETRAINING.md",
+        "ai-training/reports/ATTACK_EVIDENCE_20261101.json",
+        "ai-training/FINAL_TRAINING_HANDOFF.json",
+        "docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md",
+        "docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md",
+        "docs/05_DISCOVERY_EVIDENCE_AND_INVENTORY.md",
+        "docs/06_AI_HANDOFF_AND_RUN_LEDGER.md"
+      ],
+      "labels": {
+        "attack_exploit_outcome_verified": 0,
+        "formal_training_admission": 0,
+        "formal_training_permitted": false,
+        "independently_reviewed_attack": 0,
+        "independently_reviewed_benign": 0,
+        "intent_unknown": 8,
+        "machine_verified_attack_intent": 0,
+        "machine_verified_benign_intent": 0
+      },
+      "limits": [
+        "Objective facts are collector/lab observations; not independent semantic review.",
+        "No attack intent or exploit success is inferred from status, rule alerts, or runner plan.",
+        "Four-capture ID audit does not cover sealed historical cohort; do not add 8 to a global unique total.",
+        "One loopback environment and eight unknown labels do not support dual-class formal training or independent acceptance."
+      ],
+      "lineage": {
+        "all_unsealed_capture_audit": {
+          "captures_audited": 5,
+          "distinct_campaign_ids": 13,
+          "distinct_physical_request_ids": 218,
+          "distinct_target_hashes": 79,
+          "file_sha256": "d066b76cbb038c2191957f74ff6bbdffb105f0f2a80e148648c3ba71b25ad211",
+          "path": "ai-training/.artifacts/devgt1/lineage-audit-all-unsealed/report.json",
+          "quarantined_auth_boundary_requests_included": 48,
+          "repeated_target_observations": 139,
+          "request_id_collisions": 0
+        },
+        "captures_audited": 4,
+        "distinct_campaign_ids": 10,
+        "distinct_physical_request_ids_in_audited_captures": 170,
+        "distinct_target_hashes": 79,
+        "file_sha256": "b35e199897451b7e6fbb16f5e10fe43edc0fe459d65e0b572788671891b0d3d9",
+        "global_historical_dedup_certified": false,
+        "independent_evaluation_environments": 0,
+        "path": "ai-training/.artifacts/devgt1/lineage-audit/report.json",
+        "repeated_target_observations": 91,
+        "request_id_collisions": 0
+      },
+      "oracle": {
+        "cleanup_verified": true,
+        "file_sha256": "c8e45c1530229eb5f7e4365e8f0e1f4df8498c5714fb255084f47bb9b1b48793",
+        "path": "ai-training/.artifacts/devgt1/run/oracle-verification/report.json",
+        "physical_requests_verified": 8,
+        "post_bodies_verified_in_private_pcap": 2,
+        "protected_staff_mutation_db_transition_verified": 1,
+        "report_sha256": "973faa9afc23e2333d1f8444e5b56e6a0813d83c55084f11aa7b71be0c46db28",
+        "response_status_correlated_requests": 8,
+        "suricata_mode": "offline_decode_of_real_lab_pcap",
+        "three_source_correlated_requests": 8
+      },
+      "plan": {
+        "file_sha256": "f73e25029a921834ef9d1f70ec1e21744f9a0f834039b2b16a2991e7d9b163c6",
+        "independent_signature": false,
+        "path": "ai-training/.artifacts/devgt1/plan/plan.json",
+        "plan_sha256": "08361b0f05836e4e774b2050f96e3575a09d8803ecc942d9b10fb5a5e3e61936",
+        "profile": "dev-oracle-observation-v1",
+        "signed_pilot_plan_v3_unchanged": true
+      },
+      "status": "DEVELOPMENT_ORACLE_PILOT_PASS_FORMAL_ADMISSION_NOT_READY",
+      "training_readiness": {
+        "champion_selected": false,
+        "feature_count": 207,
+        "formal_dataset": "NOT_READY_0_ADMITTED",
+        "live_edge_207_feature_parity": "NOT_VERIFIED",
+        "main_glu_trainable_parameters": 9675784,
+        "model_technical_regression": "PASS",
+        "new_model_study": "NOT_RUN_8_UNKNOWN_ONLY",
+        "post_response_feature_contract": true
+      },
+      "updated_at": "2026-11-02T11:12:40.935936+07:00",
+      "verification": {
+        "cgroup": "CPUQuota400_percent_AllowedCPUs0-7_MemoryMax12G_MemoryHigh11G_Swap0",
+        "first_check": "PASS_225_PYTEST_1_SKIPPED_SENSOR_RUNTIME_ENV_UNSET",
+        "full_check": "PASS_226_PYTEST_0_SKIPPED_RUFF_FORMAT_COMPILE_SCHEMA_WEB_DIFF_FINAL_AFTER_ORACLE_SHA_GUARD",
+        "oracle_queue_readback": "PASS_8_UNKNOWN_0_ADMISSION_PLAN_CAPTURE_EVE_RESPONSE_DB_CLEANUP_SHA_BOUND",
+        "signed_gt_pilot": "UNCHANGED_UNAPPROVED_NOT_RUN"
+      }
+    },
+    "continuation_development_oracle_report_sha256": "4b68eb8830b6c9173cfd07ebda310f5511e04198981faadbef9dcf9684ede91a",
+    "continuation_ground_truth_20261102": {
+      "admission_scope": {
+        "automatic_protocol_staging_is_formal_admission": false,
+        "existing_evidence_v2_gate_changed": false,
+        "independent_semantic_review_still_required": true,
+        "prepared_dataset_and_provenance_still_required": true
+      },
+      "automation_scope": {
+        "formal_gate_changed": false,
+        "mechanical_review_completed": "162/162 (previous iteration)",
+        "pilot_post_intent": "UNKNOWN until body bytes are bound",
+        "pilot_protocol_binding_possible_if_signed_and_captured": "6 GET cases; this is staging only and has not run",
+        "semantic_decisions_automated_and_accepted": "0/162"
+      },
+      "cleanup_verification": {
+        "checks_docker_container_absent_and_ports_closed": true,
+        "post_capture_verifier_implemented": true,
+        "prior_owned_labs_readback_pass": [
+          "ai-training/.artifacts/eve3-1102b/lab",
+          "ai-training/.artifacts/eve3-1102c/lab"
+        ],
+        "real_new_pilot_cleanup": "NOT_RUN",
+        "requires_owned_student_and_sensor_processes": true
+      },
+      "code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "18acd9b0f1ed08dba9c8dec2fdc985ba25f2bc1743f3376de75ca68e123b8a11",
+        "ai-training/src/idps_ai/data/evidence_campaign.py": "30c5eee796b6a6544eebabb7268f24a135614efa5d5d9b6905cad9e8c367174e",
+        "ai-training/src/idps_ai/data/protocol_ground_truth.py": "c4d1a9b03098ae1012d8a72f85254d25870f12b26c0ff0cadb00079bb7651c11",
+        "ai-training/src/idps_ai/data/sensor_lab.py": "e5bdad432c5496406e00ae368c8cc20f8e238ddb64d61baf46e971ef012488df",
+        "ai-training/tests/test_evidence_campaign.py": "e7f67d63e561174b242d4cf5c39767a8bd6bc85bae49b5e29532bd0d4156e88b"
+      },
+      "execution_code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "18acd9b0f1ed08dba9c8dec2fdc985ba25f2bc1743f3376de75ca68e123b8a11",
+        "ai-training/src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+        "ai-training/src/idps_ai/data/evidence_campaign.py": "30c5eee796b6a6544eebabb7268f24a135614efa5d5d9b6905cad9e8c367174e",
+        "ai-training/src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+        "ai-training/src/idps_ai/data/lab_runtime.py": "7c437a1e30a3f38be66355591e23a2b02c3a650f51d9fa6f19791dd2df39090b",
+        "ai-training/src/idps_ai/data/protocol_ground_truth.py": "c4d1a9b03098ae1012d8a72f85254d25870f12b26c0ff0cadb00079bb7651c11",
+        "ai-training/src/idps_ai/data/sensor_decode.py": "eff69eb7a0062316351d4790707ddbc090f4b05bcc551a21fa0413e8d604bc2b",
+        "ai-training/src/idps_ai/data/sensor_lab.py": "e5bdad432c5496406e00ae368c8cc20f8e238ddb64d61baf46e971ef012488df",
+        "ai-training/src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+        "ai-training/src/idps_ai/training/resources.py": "c8c718162cd07b22b2fdbff1c6bbaf8da841cb95da2eee34a7f21c58fa55bcf4"
+      },
+      "existing_pending": {
+        "attack_independently_confirmed": 0,
+        "benign_independently_confirmed": 0,
+        "collector_attack_without_syntax_cue": {
+          "cmd_injection_0": 7,
+          "sqli_0": 6,
+          "sqli_1": 3,
+          "xss_0": 3,
+          "xss_1": 3
+        },
+        "collector_benign_with_syntax_cue": {
+          "hard_negative_1": 5,
+          "hard_negative_2": 2
+        },
+        "disagreement_interpretation": "Runner claim and narrow syntax cue are neither independent ground truth nor proven label errors.",
+        "disagreement_total": 29,
+        "formal_admitted": 0,
+        "intent_unknown": 162,
+        "new_independent_evidence_found": 0,
+        "new_machine_verified_intents": 0,
+        "objective_evidence_checked_prior": 162,
+        "requests": 162
+      },
+      "files_changed_this_turn": [
+        "ai-training/src/idps_ai/data/protocol_ground_truth.py",
+        "ai-training/src/idps_ai/data/lab_runtime.py",
+        "ai-training/scripts/evidence-lab-campaign.py",
+        "ai-training/tests/test_evidence_campaign.py",
+        "ai-training/PRETRAINING.md",
+        "ai-training/reports/ATTACK_EVIDENCE_20261101.json",
+        "ai-training/FINAL_TRAINING_HANDOFF.json",
+        "docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md",
+        "docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md",
+        "docs/05_DISCOVERY_EVIDENCE_AND_INVENTORY.md",
+        "docs/06_AI_HANDOFF_AND_RUN_LEDGER.md",
+        "ai-training/.artifacts/ground_truth_pilot_20261102/APPROVAL_PACKAGE.md"
+      ],
+      "model_unchanged": {
+        "feature_count": 207,
+        "glu_trainable_parameters": 9675784,
+        "long_training_run": false,
+        "mlp_baseline_trainable_parameters": 252680
+      },
+      "pilot_plan": {
+        "collector_sha256": "30c5eee796b6a6544eebabb7268f24a135614efa5d5d9b6905cad9e8c367174e",
+        "file_sha256": "4a61049c9a8a6bf05345f203ef95d392c8f2ffd54b23366ba37b12b078d7f9e4",
+        "path": "ai-training/.artifacts/ground_truth_pilot_20261102/plan-v3/plan.json",
+        "plan_sha256": "a38ecc02822e9a2618dcfaa442d00492ae4ce438efc5f6bdd73c3866a5129eb2",
+        "planned_campaigns": 1,
+        "planned_request_cases": 8,
+        "real_oracle_observations": 0,
+        "real_requests_captured": 0,
+        "scope": "development_only_one_ai_owned_loopback_lab",
+        "signed_by_independent_reviewer": false,
+        "superseded_unsigned_plans": [
+          "plan-v1",
+          "plan-v2"
+        ]
+      },
+      "real_pilot": {
+        "approval_present": false,
+        "new_formal_admission": 0,
+        "new_http_requests_sent": 0,
+        "new_independent_human_attack": 0,
+        "new_independent_human_benign": 0,
+        "new_machine_verified_intents": 0,
+        "new_student_nginx_suricata_correlated": 0,
+        "real_application_oracle": "NOT_RUN"
+      },
+      "remaining": [
+        "An independent reviewer must inspect the exact eight-case approval package and plan, sign using their own Ed25519 private key, and provide the public key fingerprint through a trusted channel.",
+        "Collector can then verify signature, plan SHA, ten AI code SHA, Student backend Git tree and Nginx template SHA before sending exactly eight lab requests.",
+        "After capture, verify all three logs and collector DB transition, then assess independent semantic evidence and prepared dataset/provenance under the unchanged evidence-v2 gate.",
+        "One development lab campaign and eight requests cannot establish independent evaluation or two-million-request scale readiness."
+      ],
+      "reviewer_package": {
+        "independent_reviewer_signed": false,
+        "mode": "0o600",
+        "path": "ai-training/.artifacts/ground_truth_pilot_20261102/APPROVAL_PACKAGE.md",
+        "private_key_created_by_collector": false,
+        "sha256": "9a9eebf4592882fe212c297d2f76d5908dc7b045b4886042adf8c2116da7c236"
+      },
+      "scale_assessment": {
+        "current_pilot_shard_requests": 8,
+        "existing_blind_mechanical_review_requests": 162,
+        "scale_design_needs": [
+          "signed campaign template and deterministic request binding",
+          "streaming shard verification and global physical request dedup",
+          "precommitted source/campaign/time partitions",
+          "independent semantic/oracle policy and stratified audit"
+        ],
+        "two_million_throughput_benchmarked": false
+      },
+      "status": "PILOT_TECHNICALLY_READY_INDEPENDENT_SIGNATURE_REQUIRED",
+      "target_code_identity": {
+        "nginx_template_sha256": "3b704126461de711f33e4e10803bcebfc6fdc2697fd4cf111492820ac239986b",
+        "student_backend_git_tree": "e0336653642d0e5d63a3945ad45c63fc00668749"
+      },
+      "updated_at": "2026-11-02T10:31:33.495067+07:00",
+      "validation": {
+        "cleanup_readback": "PASS on two prior owned EVE labs; no new capture",
+        "formal_training": "NOT_RUN",
+        "full_check": "PASS 225 pytest, 0 skip, Ruff 134 files, format, compile, canonical schema v1",
+        "full_check_resource_scope": "CPUQuota=800%, AllowedCPUs=0-7, MemoryMax=16G, MemoryHigh=15G, MemorySwapMax=0",
+        "real_application_oracle": "NOT_RUN",
+        "real_signature": "NOT_RUN: no independent reviewer key/approval",
+        "real_three_source_pilot": "NOT_RUN",
+        "targeted_pytest": "PASS 14 test_evidence_campaign.py after final source pinning",
+        "unsigned_collector_preflight": "PASS exit 2 before output/traffic"
+      }
+    },
+    "continuation_ground_truth_report_sha256": "bfe82fb08be3022932964ff5906ecbfe3162a75a2d2d814dc51ff6c63370f38b",
+    "continuation_label_sources_20261102": {
+      "admission_gate_changed": false,
+      "formal_training": "NOT_READY_0_admitted_scale_gate_unchanged",
+      "machine_ground_truth_criteria_proposed_not_approved": [
+        "independent reviewer approves exact case/body and expected oracle before execution",
+        "signed versioned producer and plan binding to each observed request",
+        "independent application oracle and tamper/disagreement audit",
+        "evidence-v2 review and corpus policy remain unchanged until explicit approval"
+      ],
+      "new_formal_admission": 0,
+      "new_independent_campaigns": 0,
+      "new_independently_verified_attack": 0,
+      "new_independently_verified_benign": 0,
+      "new_requests": 0,
+      "next_dependency": "authorized Biblio RAW+LABEL+README access/usage decision, row-level label-scope audit; second independent dual-class HTTP source with request-bound expert labels or independent review of a new authorized environment",
+      "oracle_currently_verifies": [
+        "request presence and X-Request-Id across Student/Nginx/Suricata offline EVE",
+        "method/target/timestamp/response correlation",
+        "POST body byte readback in private PCAP",
+        "authorized STAFF faculty-create DB count 0-to-1 and cleanup"
+      ],
+      "oracle_does_not_verify": [
+        "independent benign or attack intent",
+        "SQLi/XSS exploit success or failure",
+        "real-time Suricata or live Rust/edge 207-feature parity"
+      ],
+      "research_study_minimum": "two eligible dual-class sources; >=32 request records and >=32 distinct model views per source/role/class for train/calibration/validation; group/view nonoverlap and genuine 300s temporal embargo; same visible features for MLP/GLU and no frozen holdout tuning",
+      "scope": "targeted independent-label source screening; no traffic, no training, no holdout access",
+      "sources": {
+        "Biblio_US17": {
+          "archive_content_http": "401 on 2026-11-02",
+          "benign_scope_caution": "CLEAN mixes S2=0 manually inspected false positives and S2=-1 unreviewed records; no blanket independently verified benign claim",
+          "decision": "highest_priority_external_expert_label_candidate_pending_authorized_access_and_row_audit",
+          "feature_limit": "method/URI/status/size and day/order only; no full clock, body, client, flow or 207 parity",
+          "formal_admitted": 0,
+          "label_basis": "expert reviewed S2/S3; RID binds RAW to LABEL by day/order",
+          "license": "CC BY-NC-ND 4.0 per official idUS metadata",
+          "locally_verified_request_rows": 0,
+          "official_item": "https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e",
+          "paper": "https://link.springer.com/article/10.1186/s42400-024-00336-3",
+          "publisher_claimed_LVL1_attacks": 327906,
+          "publisher_claimed_raw_requests": 47402907
+        },
+        "CICIDS2017": {
+          "decision": "flow_campaign_research_only",
+          "reason": "attack schedule and network-tuple labels do not bind independent semantic intent to each HTTP request",
+          "source": "https://www.unb.ca/cic/datasets/ids-2017.html"
+        },
+        "CSIC2010": {
+          "decision": "prior_binary_benchmark_is_anomaly_research_only",
+          "reason": "publisher anomalous class explicitly includes unintentional invalid requests with no malicious intent",
+          "source": "https://www.impactcybertrust.org/dataset_view?idDataset=940"
+        },
+        "MWAD_2026": {
+          "decision": "quarantined_research_only",
+          "flow_csv": {
+            "distinct_vector_hashes": 989,
+            "path": "ai-training/.artifacts/source_screen_20261102/mwad/Statistical_packet_flow_features.csv",
+            "publisher_label_0": 500,
+            "publisher_label_1": 500,
+            "rows": 1000,
+            "sha256": "a7dcd061119ce61a07a43e2f3651230429aa8c00f29b47d012a02f1edd53e476"
+          },
+          "label_transitions_in_file_order": 1,
+          "license": "CC BY 4.0 in author repository",
+          "physical_request_pairing_verified": 0,
+          "reason": "no request ID, timestamp, campaign, row-level independent semantic review or cryptographic URI-flow join; author-generated SQLi lab and one family; not 207 or three-source",
+          "revision": "a7a19c525bfa94095120c7fa5731ccf33bf2022e",
+          "row_order_label_agreement": 1000,
+          "source": "https://github.com/paul12345-cyber/Multimodal-web-attack-Dataset",
+          "uri_csv": {
+            "distinct_uri_hashes": 975,
+            "path": "ai-training/.artifacts/source_screen_20261102/mwad/HTTP_URI_requests.csv",
+            "publisher_label_0": 500,
+            "publisher_label_1": 500,
+            "rows": 1000,
+            "sha256": "cdcaa60587a707b16023471d500c99dd2efb82e4ccfa69ad7ae36e844809a743"
+          }
+        },
+        "OWASP_CRS": {
+          "decision": "rule_fixture_only",
+          "reason": "rule-match expectations are not request-level attack intent or benign ground truth",
+          "source": "https://coreruleset.org/docs/index.print"
+        },
+        "WAF_Bench_77": {
+          "decision": "external_hand_curated_synthetic_fixture_only_not_admitted",
+          "license": "CC BY 4.0 per dataset card",
+          "physical_captured_requests_verified": 0,
+          "publisher_declared_benign": 20,
+          "publisher_declared_cases": 77,
+          "publisher_declared_malicious": 57,
+          "reason": "manually authored external request-level labels, but synthetic public test fixture; only 20 benign before split, no campaign/time, physical capture or application oracle; not independent final assessment or eligible research fitting source",
+          "source": "https://huggingface.co/datasets/netgoat-ai/WAF-Bench"
+        }
+      },
+      "study_new": "NOT_RUN_no_two_eligible_independently_labeled_sources",
+      "updated_at": "2026-11-02T18:14:43.361760+07:00",
+      "verification": {
+        "full_tests": "NOT_RUN_docs_catalog_only_prior_226_PASS",
+        "local_mwad_csv_hash_and_structure": "PASS",
+        "new_study": "NOT_RUN",
+        "public_source_admission": "FAIL_CLOSED",
+        "source_publisher_and_license_screen": "PASS"
+      }
+    },
+    "continuation_label_sources_report_sha256": "32484ed01dc3354aea556818e39731d8714048e17e0b0c53abc6d8a6555ed8a1",
+    "continuation_review_20261101": {
+      "blind_queue_sha256": "85c433dc4bcdf90bcbd9a0d01091a41fa3a50804d9d5eb1d880fde652e4dbf3d",
+      "code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "1463fe5eee0072e6fc5ecc29399805f24b0a17c59ed66deba66b18c06b077323",
+        "ai-training/scripts/prepare-evidence-review.py": "97d24599698a527f5d203522acdbf50770477db620c67287da0a51769e6b383e",
+        "ai-training/src/idps_ai/data/evidence_campaign.py": "96e11a7e7000e2d00463f731de0819c7a46fd050536fb4bf3a3f11e3125cb9d4",
+        "ai-training/tests/test_evidence_campaign.py": "d30c282784203ac6b31aacf7a6457576cfb8d14c4bdfcfc5e3ec6902d2bbbd6b"
+      },
+      "cross_run_request_id_collisions_in_scanned_scope": 0,
+      "formal_training_permitted": false,
+      "frozen_collector_source_sha256": "3c6aad3e98d4d58eec84cc94f98ac413cd3446816c4f6649d411e9c5d5bcc00c",
+      "global_75150_dedup_certified": false,
+      "historical_sealed_cohort_opened": false,
+      "historical_unsealed_student_log_ids_scanned": 73218,
+      "independent_evaluation_campaigns": 0,
+      "independently_reviewed_attack": 0,
+      "independently_reviewed_benign": 0,
+      "limits": "Historical Student logs include setup and exclude sealed cohort; hashes and source correlation do not certify human semantic labels or production generalization.",
+      "lineage_report": "ai-training/.artifacts/evidence_campaign_20261101/lineage-audit-v2/report.json",
+      "lineage_report_sha256": "7989f0ceda4cc5344bedf76734c372ab91b063e28adbaded6e7268130d522eaa",
+      "model_bundle_readback": {
+        "development_76_glu_9541640_onnx": "PASS_MANIFEST_HASH_AND_BATCH1_FINITE",
+        "development_76_mlp_219144_onnx": "PASS_MANIFEST_HASH_AND_BATCH1_FINITE",
+        "formal_scale_trained": false,
+        "live_serving_certified": false,
+        "pilot_207_deep_mlp_252680_onnx": "PASS_HASH_AND_BATCH1_FINITE",
+        "pilot_207_glu_9675784_onnx": "PASS_HASH_AND_BATCH1_FINITE",
+        "pilot_207_glu_reported_exact_resume": true,
+        "pilot_207_glu_reported_parity_rows": 69345,
+        "scope": "Read-only bundle SHA/readback and batch1 synthetic zero input; no new weights, corpus scoring, holdout opening or parity sweep."
+      },
+      "new_auth_boundary_quarantined": 48,
+      "new_capture_repeated_target_observations": 66,
+      "new_capture_request_ids": 102,
+      "new_capture_unique_target_hashes": 36,
+      "new_suricata_eve_collected": false,
+      "new_two_source_pending_review": 54,
+      "review_protocol": "ai-training/PRETRAINING.md",
+      "scale_admitted_requests": 0,
+      "status": "CAPTURE_AND_BLIND_QUEUE_REVERIFIED_REVIEW_PENDING",
+      "updated_at": "2026-11-01T11:48:55.394983+07:00",
+      "verification": {
+        "blind_queue_readback": "PASS_54_UNKNOWN",
+        "capture_lineage": "PASS_102_IDS_ZERO_SCANNED_COLLISIONS",
+        "formal_gate": "EXPECTED_REJECTION_0_ADMITTED",
+        "full_ai_check": "PASS_217_PYTEST_0_SKIP_RUFF_FORMAT_COMPILE_CONTRACT_WEB_DIFF",
+        "new_onnx_export": "NOT_RUN",
+        "new_training": "NOT_RUN"
+      }
+    },
+    "continuation_review_report_sha256": "06d655c113f7b5d62e4a75bfb04103251dd14761987bd2a81e0449210824aabc",
+    "continuation_review_tool_20261102": {
+      "aggregate_lab_requests_by_capture_reports_not_globally_unique": 75360,
+      "aggregate_progress_percent_of_2m": 3.768,
+      "blockers": [
+        "Independent human semantic review of 162 dossiers not performed; tool cannot verify identity or label truth.",
+        "Six old two-source POST bodies were never captured; leave unknown absent another pre-existing source.",
+        "Human attestation still needs actual prepared dataset, provenance, evidence-v2 binding and catalog gate.",
+        "One owned lab with 0 independent evaluation environments/campaigns; live query/receipt-time parity unverified."
+      ],
+      "body_evidence_artifacts": {
+        "eve3-1102b": {
+          "post-body-evidence.jsonl": {
+            "path": "ai-training/.artifacts/eve3-1102b/body-evidence-v1/post-body-evidence.jsonl",
+            "sha256": "af9e81bd36a7d569a47149e3a8296dd98c2e4c4b6b4eb38e5c52afaa1cdc5dcc"
+          },
+          "report.json": {
+            "path": "ai-training/.artifacts/eve3-1102b/body-evidence-v1/report.json",
+            "sha256": "fc456b868192c211c2281659a0e8d4df74b37977f116386395dc86cc533cd20d"
+          }
+        },
+        "eve3-1102c": {
+          "post-body-evidence.jsonl": {
+            "path": "ai-training/.artifacts/eve3-1102c/body-evidence-v1/post-body-evidence.jsonl",
+            "sha256": "6734134a1f2a5b424be647464c285ed58b03e0ca4e462238fc28353ef6bb67b8"
+          },
+          "report.json": {
+            "path": "ai-training/.artifacts/eve3-1102c/body-evidence-v1/report.json",
+            "sha256": "fb4063448842b21d9f7e9eedf39f222426ded26be2ada54975c044bc1781f358"
+          }
+        }
+      },
+      "champion_selected": false,
+      "code_sha256": {
+        "ai-training/scripts/review-evidence.py": "7dd6cbf8781d9aee33194f9efe186cbdbf3338cc9484b0d572f8644c43b6b571",
+        "ai-training/src/idps_ai/data/pcap_http_evidence.py": "d1993ef51d462277b288adb10b977ceb5463465fe1897c5870ea4c305b11c775",
+        "ai-training/tests/test_evidence_campaign.py": "d812a1e66d3c1602969365e0cddacf5c33c62ce01ea2c8624bae6a42234ba5fc"
+      },
+      "development_campaigns_one_lab": 9,
+      "feature_contract": {
+        "causal_flow_rule": "prior EVE flow with available_at <= request timestamp; no current-flow closure backfill",
+        "feature_count": 207,
+        "inference_stage": "post_response",
+        "offline_to_live_parity": "NOT_VERIFIED",
+        "pre_response_enforcement": "NOT_SUPPORTED_BY_CURRENT_FEATURES",
+        "production_query_numeric_bridge": "NOT_VERIFIED"
+      },
+      "formal_training_permitted": false,
+      "independent_evaluation_campaigns": 0,
+      "new_independently_verified_attack": 0,
+      "new_independently_verified_benign": 0,
+      "new_requests_this_iteration": 0,
+      "new_training_admission": 0,
+      "observed_three_source_requests_offline": 108,
+      "old_two_source_post_bodies_unobserved": 6,
+      "pcap_observed_post_bodies": 12,
+      "pending_review_requests": 162,
+      "quarantined_campaigns": 3,
+      "review_queue_sources": {
+        "eve_first": 54,
+        "eve_novel": 54,
+        "two_source": 54
+      },
+      "review_registry": {
+        "file_sha256": "b5c94a25fccd80d78b17a08c940bc580c0591bead1877deaa75edf9445a72951",
+        "path": "ai-training/.artifacts/evidence_campaign_20261102/review-registry.json",
+        "registry_sha256": "28b6d001387679aece34f9be856d8fd343a8bd37f298815e0fcf2728672bdac0"
+      },
+      "status": "REVIEW_TOOL_READY_INDEPENDENT_REVIEW_PENDING",
+      "updated_at": "2026-11-02T09:19:23.805752+07:00",
+      "verification": {
+        "final_full_ai_check": "PASS_221_pytest_0_skip_116.36s_ruff_format_canonical",
+        "full_ai_check": "PASS_221_pytest_0_skip_ruff_format_canonical",
+        "holdout": "NOT_READ",
+        "initial_full_after_post_attestation": "FAIL_RUFF_FORMAT_FIXED",
+        "long_training": "NOT_RUN",
+        "pcap_body_readback": "PASS_108_requests_12_POST",
+        "private_artifact_readback": "PASS_two_PCAP_body_ledgers_recomputed",
+        "review_sources_show_status": "PASS_162_unreviewed",
+        "targeted_pytest": "PASS_10",
+        "targeted_pytest_after_fix": "PASS_10",
+        "web_diff": "PASS_no_changes"
+      }
+    },
+    "continuation_review_tool_report_sha256": "5ffcbd0488c14025e0c153b7b3671c51c7eaa68056aaf68ad323048c64527842",
+    "continuation_study_path_20261102": {
+      "accounting": {
+        "new_formal_admitted": 0,
+        "new_independent_campaigns": 0,
+        "new_independently_verified_real_attack": 0,
+        "new_independently_verified_real_benign": 0,
+        "new_real_http_requests": 0
+      },
+      "biblio_access": {
+        "access_request_ready_in": "ai-training/PRETRAINING.md",
+        "access_request_sent": false,
+        "archive_content_http": 401,
+        "license": "CC BY-NC-ND 4.0 per idUS metadata",
+        "needed_files": [
+          "RAW",
+          "LABEL",
+          "README"
+        ],
+        "raw_downloaded": false,
+        "raw_label_rid_audit": "NOT_RUN_ACCESS_CONTROL",
+        "request_copy_page_http": 200,
+        "source_owner_decision_pending": true
+      },
+      "decision": "NO_NEW_MEANINGFUL_TWO_SOURCE_STUDY_YET; prioritize authorized Biblio and second dual-class independently labeled source or independent review in another authorized environment",
+      "existing_development_corpus": {
+        "formal_admitted": 0,
+        "independent_semantic_review_verified": false,
+        "new_training_study": "NOT_RUN",
+        "path": "ai-training/.artifacts/partition_recovery_20261031/forward-development-v2",
+        "publisher_or_runner_label_0": 55559,
+        "publisher_or_runner_label_1": 63201,
+        "research_training_permitted_technical": true,
+        "rows_or_vectors": 118760,
+        "source_report": "ai-training/reports/PARTITION_RECOVERY_20261031.json",
+        "sources": {
+          "srbh2020": {
+            "label_0": 24287,
+            "label_1": 55713
+          },
+          "student-lab": {
+            "label_0": 31272,
+            "label_1": 7488
+          }
+        }
+      },
+      "feature_feasibility": {
+        "biblio_method_uri_for_request_only": "POTENTIAL_AFTER_ACCESS_AND_ROW_AUDIT",
+        "full_post_response_columns": 207,
+        "full_specific_columns": 137,
+        "live_full_207_parity": "UNVERIFIED",
+        "mwad_method": "MISSING",
+        "mwad_uri_flow_join": "MISSING",
+        "no_fabricated_zero_fill_or_model_compatibility_claim": true,
+        "request_base_projector_columns": 70,
+        "request_encoder_interactions": 6,
+        "request_only_columns": 76,
+        "request_only_specific_columns": 6,
+        "shared_column_names": 70,
+        "waf_bench_body_only_attacks_invisible_request_only": 8,
+        "waf_bench_raw_wire_query_order": "MISSING_JSON_OBJECT_ONLY"
+      },
+      "other_new_screen": {
+        "publisher_claimed_request_response_pairs": 140973,
+        "reason": "Labels mapped from generator technique; no independent semantic adjudication or verified downloadable archive/rights. No local rows counted.",
+        "source": "https://arxiv.org/html/2603.02963v1"
+      },
+      "updated_at": "2026-11-02T18:25:03.930468+07:00",
+      "verification": {
+        "biblio_access_endpoint_and_request_form": "PASS_401_ARCHIVE_200_FORM",
+        "current_projector_bounded_spec_full_spec_readback": "PASS_70_plus_6_equals_76_full_207",
+        "existing_development_counts_readback": "PASS",
+        "feature_spec_set_comparison": "PASS",
+        "formal_gate": "UNCHANGED",
+        "new_model_fit": "NOT_RUN",
+        "request_profile_targeted_pytest": "PASS_2",
+        "waf_bench_file_hash_schema_and_counts": "PASS"
+      },
+      "waf_bench_readback": {
+        "actual_captured_physical_requests_verified": 0,
+        "body_only_malicious": 8,
+        "body_only_rows": 13,
+        "bytes": 27347,
+        "formal_admitted": 0,
+        "path": "ai-training/.artifacts/source_screen_20261102/waf_bench/test.jsonl",
+        "publisher_benign": 20,
+        "publisher_malicious": 57,
+        "query_object_rows": 56,
+        "revision": "674f8bdcfc2d177beaf323cb80d3d889baaff063",
+        "role": "synthetic_externally_authored_diagnostic_only",
+        "rows": 77,
+        "sha256": "0065adf48f29f82c50652e788a8f89b418dd66888d32853dd3a79aa57c7b27f0",
+        "unique_authored_ids": 77
+      }
+    },
+    "continuation_study_path_report_sha256": "46707fd1c0424550edcece101b7bd077521799f8fb89f59a6283a8977efd0af3",
+    "controlled_lab_collection_20261101": {
+      "accounting": {
+        "auth_boundary_only_quarantined": 48,
+        "captured_for_independent_review": 54,
+        "executed_development_campaigns": 3,
+        "independent_deployment_environments": 0,
+        "independent_evaluation_campaigns": 0,
+        "new_admitted_requests": 0,
+        "new_independently_verified_attack": 0,
+        "new_independently_verified_benign": 0,
+        "new_real_lab_requests_total": 102
+      },
+      "authorization": "[WITHHELD_PRIVATE_CONTENT]",
+      "blind_review": {
+        "approved": 0,
+        "cross_campaign_critical_target_overlap": 0,
+        "distinct_attack_and_hard_negative_targets": 30,
+        "file_sha256": "85c433dc4bcdf90bcbd9a0d01091a41fa3a50804d9d5eb1d880fde652e4dbf3d",
+        "max_clock_delta_seconds": 0.923683,
+        "null_labels": 54,
+        "path": "ai-training/.artifacts/evidence_campaign_20261101/review-v3/blind-review.jsonl",
+        "requests": 54,
+        "unknown_intent": 54
+      },
+      "capture_v1_quarantined": {
+        "file_sha256": "0f007b12d627cf465933d69efd485be07fd0a53e83c9351c6d9321c5fa8236b0",
+        "path": "ai-training/.artifacts/evidence_campaign_20261101/capture-v1/report.json",
+        "reason": "45/48 requests returned 401; application workload did not reach authenticated behavior. Historical collector source frozen and kept private.",
+        "requests": 48,
+        "training_admission": 0
+      },
+      "capture_v2": {
+        "application_workload_401": 0,
+        "exploit_outcome": "unknown_for_all_54",
+        "file_sha256": "3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b",
+        "independent_environments": 1,
+        "independent_semantic_review": "pending",
+        "nginx_and_student_correlated": 54,
+        "path": "ai-training/.artifacts/evidence_campaign_20261101/capture-v2/report.json",
+        "request_ids": 54,
+        "runner_planned_attack_intent": 18,
+        "runner_planned_benign_intent": 36,
+        "source_log_count_per_request": 2,
+        "suricata_eve": "not_collected",
+        "training_admission": 0
+      },
+      "champion_selected": false,
+      "code_sha256": {
+        "ai-training/scripts/evidence-lab-campaign.py": "a8d6e986cdd1134cc8a45582e1472b3fa075f70c9977d435384d67ad81173b20",
+        "ai-training/scripts/prepare-evidence-review.py": "4e592e32555dcb452da1b355d16f74abe6d1c36ca7f1041d58d50afc13d6a62a",
+        "ai-training/src/idps_ai/data/evidence_campaign.py": "3c6aad3e98d4d58eec84cc94f98ac413cd3446816c4f6649d411e9c5d5bcc00c",
+        "ai-training/tests/test_evidence_campaign.py": "8ed4db14c5a52a9bd3833ea0eda920893c356100252f08970ddc85eb8482e360"
+      },
+      "formal_training_permitted": false,
+      "plan_v2": {
+        "campaigns": 3,
+        "file_sha256": "82d37a82e5fc3296d304d792ca8aef454e980893fa70bb118464bbedba3660bb",
+        "future_holdout": "reserved_not_generated_or_opened",
+        "partition": "development_review_only",
+        "path": "ai-training/.artifacts/evidence_campaign_20261101/plan-v2/plan.json",
+        "plan_sha256": "595c404e02ff2d72357491aa12443d9fa4f0df8bc4fb3eabb39bdea60bfc6d6d"
+      },
+      "remaining_gates": [
+        "Independent human/source-owner semantic evidence per request and campaign protocol; no auto-approval from status or runner labels.",
+        "Immutable prepared dataset/provenance and existing evidence-v2 admission audit.",
+        "Campaign/time/environment-disjoint validation plus reserved independent acceptance; current 3 campaigns are same-minute single-environment development only.",
+        "Suricata flow parity if training profile requires EVE; application oracle for any exploit outcome claim."
+      ],
+      "status": "OWNED_LAB_EVIDENCE_CAPTURED_INDEPENDENT_REVIEW_PENDING",
+      "updated_at": "2026-11-01T11:21:49.657345+07:00",
+      "verification": {
+        "blind_null_label_queue": "PASS_54",
+        "capture_v2_source_readback": "PASS_54_NGINX_AND_STUDENT",
+        "cross_source_clock_and_target_overlap": "PASS",
+        "model_study": "NOT_RUN_no_admitted_data",
+        "ruff_and_compile": "PASS",
+        "targeted_pytest": "PASS_22",
+        "temporary_lab_cleanup": "PASS_nginx_student_database_stopped",
+        "v1_failure_preserved": "PASS"
+      }
+    },
+    "corpus_accounting": {
+      "new_live_requests": 0,
+      "new_model_projections": 0,
+      "new_owned_lab_auth_boundary_only_quarantined": 48,
+      "new_owned_lab_distinct_target_hashes": 78,
+      "new_owned_lab_pending_review": 162,
+      "new_owned_lab_requests_total": 210,
+      "new_owned_lab_three_source_pending_review": 108,
+      "new_public_access_observations": 198082,
+      "new_public_distinct_complete_log_observations": 193220,
+      "new_public_distinct_partial_method_URI_UA_representations": 6856,
+      "new_public_modsec_distinct_transaction_ids": 27686,
+      "new_public_modsec_workbook_rows_audited": 108883,
+      "new_public_verified_physical_request_count": null,
+      "new_supervised_eligible_requests": 0,
+      "new_trusted_benign_labels": 0,
+      "new_trusted_positive_labels": 0,
+      "new_verified_attack_labels": 0,
+      "scale_admitted_requests": 0,
+      "target_requests": 2000000,
+      "units_not_additive": "Physical requests, log observations, EVE HTTP/flow/alert records, partial representations and model vectors are separate. No public counts or repeats are summed to claim2M.",
+      "verified_existing_real_lab_requests": 75150,
+      "verified_independent_campaigns_this_continuation": 0
+    },
+    "current_new_public_data": {
+      "OrganizationX": "old211178distinctlogobservations stillunknown;0newlabels",
+      "audited_nonreserved_records": 811129,
+      "dataset": "ai-training/.artifacts/generalization_quality_20261101/wcp-corpus-v2",
+      "distinct_recorded_HTTP_signatures": 756548,
+      "duplicates": 54391,
+      "labels": "publisher_legitimate_capture;notindependentlyhumanreviewed",
+      "manifest_sha256": "409abcb4a979bba15e1a1a681e1236a0e871c4db02395aee67dcdbce05328cf9",
+      "name": "openappsec_WCP_legitimate",
+      "new_verified_positive_training_records": 0,
+      "projected_sample_records": 44437,
+      "quarantine": 190,
+      "raw_original_sha256": "58faee18c54229759287a574f6f8cb1e3b951fa135e403ea9a679d2b18efd778",
+      "supervised_training_admitted": false,
+      "timestamp_flow_available": false,
+      "unique_projected_model_views": 26318
+    },
+    "current_source_audit": {
+      "archive_bytes": 10430367,
+      "archive_sha256": "66aafa96a69ab54ee061abbb69284444476919295f1b16985122283dae2b3054",
+      "attribution": "Mai Hoang Dinh, Nguyen Phuc Thinh, Phan Ngoc Vuong, Le Dang Giap (2026)",
+      "doi": "10.5281/zenodo.23116148",
+      "independent_semantic_review_verified": false,
+      "license": "CC BY 4.0",
+      "name": "SOC-MLD v2",
+      "new_training_admission": false,
+      "publisher_independent_from_student_lab": true,
+      "structural_audit": {
+        "archive_sha256": "66aafa96a69ab54ee061abbb69284444476919295f1b16985122283dae2b3054",
+        "clocks": {
+          "http_max_utc": 1790480422.0,
+          "http_min_utc": 1790470124.0
+        },
+        "counts": {
+          "distinct_complete_log_observations": 193220,
+          "distinct_method_target_user_agent_representations": 6856,
+          "eve_rows": 178941,
+          "operator_label_rows": 6600,
+          "operator_naive_clock_rows": 6600,
+          "operator_rows_with_request_id": 0,
+          "operator_scenario_ids": 45,
+          "parseable_http_observations": 198082,
+          "raw_access_lines": 198122,
+          "repeated_complete_log_observations": 4862,
+          "unparsed_access_lines": 40
+        },
+        "curated": {
+          "dataset": {
+            "labels": {
+              "CMD_INJECTION": 300,
+              "CREDENTIAL_STUFFING": 40,
+              "DIR_ENUM": 40,
+              "DIR_FUZZ": 40,
+              "HEADER_INJECTION": 200,
+              "HPP_ATTACK": 120,
+              "HTTP_SMUGGLING": 40,
+              "ICMP_FLOOD": 160,
+              "ICMP_PING": 300,
+              "LFI_ATTEMPT": 300,
+              "LFI_EVASION": 300,
+              "NORMAL": 300,
+              "PATH_TRAVERSAL": 300,
+              "REFLECTED_XSS": 200,
+              "SLOWLORIS": 40,
+              "SLOW_BRUTEFORCE": 40,
+              "SQLI_ATTEMPT": 300,
+              "SQLI_EVASION": 300,
+              "SQLMAP": 40,
+              "SQLMAP_EVASION": 40,
+              "SSRF_ATTEMPT": 300,
+              "SYN_SCAN": 300,
+              "TCP_SCAN": 225,
+              "UA_ROTATION": 300,
+              "UA_SPOOF": 200,
+              "UDP_SCAN": 1,
+              "WEB_BRUTEFORCE": 300,
+              "WEB_CRAWL": 40,
+              "WEB_FINGERPRINT": 40,
+              "WEB_SCAN": 300,
+              "XSS_ATTEMPT": 300,
+              "XSS_EVASION": 300
+            },
+            "rows": 6006,
+            "source_types": {
+              "nginx": 4617,
+              "suricata": 1389
+            }
+          },
+          "test": {
+            "labels": {
+              "CMD_INJECTION": 67,
+              "CREDENTIAL_STUFFING": 9,
+              "DIR_ENUM": 8,
+              "DIR_FUZZ": 9,
+              "HEADER_INJECTION": 46,
+              "HPP_ATTACK": 27,
+              "HTTP_SMUGGLING": 9,
+              "ICMP_FLOOD": 29,
+              "LFI_ATTEMPT": 68,
+              "LFI_EVASION": 64,
+              "NORMAL": 86,
+              "PATH_TRAVERSAL": 69,
+              "REFLECTED_XSS": 45,
+              "SLOWLORIS": 9,
+              "SLOW_BRUTEFORCE": 9,
+              "SQLI_ATTEMPT": 65,
+              "SQLI_EVASION": 72,
+              "SQLMAP": 9,
+              "SQLMAP_EVASION": 9,
+              "SSRF_ATTEMPT": 72,
+              "SYN_SCAN": 69,
+              "TCP_SCAN": 50,
+              "UA_ROTATION": 59,
+              "UA_SPOOF": 25,
+              "WEB_BRUTEFORCE": 9,
+              "WEB_CRAWL": 10,
+              "WEB_FINGERPRINT": 10,
+              "WEB_SCAN": 70,
+              "XSS_ATTEMPT": 67,
+              "XSS_EVASION": 70
+            },
+            "rows": 1220,
+            "source_types": {
+              "nginx": 1037,
+              "suricata": 183
+            }
+          },
+          "train": {
+            "labels": {
+              "CMD_INJECTION": 233,
+              "CREDENTIAL_STUFFING": 31,
+              "DIR_ENUM": 32,
+              "DIR_FUZZ": 31,
+              "HEADER_INJECTION": 154,
+              "HPP_ATTACK": 93,
+              "HTTP_SMUGGLING": 31,
+              "ICMP_FLOOD": 131,
+              "ICMP_PING": 300,
+              "LFI_ATTEMPT": 232,
+              "LFI_EVASION": 236,
+              "NORMAL": 214,
+              "PATH_TRAVERSAL": 231,
+              "REFLECTED_XSS": 155,
+              "SLOWLORIS": 31,
+              "SLOW_BRUTEFORCE": 31,
+              "SQLI_ATTEMPT": 235,
+              "SQLI_EVASION": 228,
+              "SQLMAP": 31,
+              "SQLMAP_EVASION": 31,
+              "SSRF_ATTEMPT": 228,
+              "SYN_SCAN": 231,
+              "TCP_SCAN": 175,
+              "UA_ROTATION": 241,
+              "UA_SPOOF": 175,
+              "UDP_SCAN": 1,
+              "WEB_BRUTEFORCE": 291,
+              "WEB_CRAWL": 30,
+              "WEB_FINGERPRINT": 30,
+              "WEB_SCAN": 230,
+              "XSS_ATTEMPT": 233,
+              "XSS_EVASION": 230
+            },
+            "rows": 4786,
+            "source_types": {
+              "nginx": 3580,
+              "suricata": 1206
+            }
+          }
+        },
+        "eve_types": {
+          "alert": 28013,
+          "dhcp": 7,
+          "dns": 1184,
+          "fileinfo": 10162,
+          "flow": 119330,
+          "http": 11679,
+          "sip": 142,
+          "ssh": 162,
+          "stats": 1391,
+          "tftp": 236,
+          "tls": 6635
+        },
+        "formal_training_permitted": false,
+        "format_version": 1,
+        "http_methods": {
+          "GET": 197402,
+          "HEAD": 40,
+          "POST": 640
+        },
+        "index_sha256": "6f4b68d0b732e18f58d33ca89469d19c45cbde3a3bc5321571b13c0119bb1617",
+        "label_state_for_new_raw_observations": "unknown",
+        "limits": [
+          "Exact log lines and partial method/URI/UA representations are not independently verified physical request identities.",
+          "Publisher curated labels mix temporal attribution and payload-rule fallback; no per-row label-basis trail is supplied. Nonmatches cannot be benign truth.",
+          "Operator timestamps without timezone and missing request IDs cannot be reliably linked by a guessed offset or nearest timestamp.",
+          "Precomputed alert/signature features, future +/-60s context, and complete-session aggregates are not accepted causal model inputs.",
+          "A single scripted external cyber range is a different publisher environment, not broad production diversity. No model training/evaluation, feature projection, replays or final holdout designation here."
+        ],
+        "member_hashes_sha256": "2e052c35b78b0a317907bebab384aa72f865ca6ce5bf95c2af50a0f24befb202",
+        "operator_labels": {
+          "ACK_FLOOD": 40,
+          "BANNER_GRAB": 40,
+          "CMD_INJECTION": 440,
+          "CREDENTIAL_STUFFING": 40,
+          "DECOY_SCAN": 40,
+          "DIR_ENUM": 40,
+          "DIR_FUZZ": 40,
+          "HEADER_INJECTION": 200,
+          "HPP_ATTACK": 120,
+          "HTTP_SMUGGLING": 40,
+          "ICMP_FLOOD": 80,
+          "ICMP_FRAG": 40,
+          "ICMP_PING": 120,
+          "LFI_ATTEMPT": 400,
+          "LFI_EVASION": 240,
+          "MASSCAN": 40,
+          "NORMAL": 480,
+          "OS_DETECTION": 40,
+          "PATH_TRAVERSAL": 320,
+          "REFLECTED_XSS": 200,
+          "SERVICE_ENUM": 40,
+          "SLOWLORIS": 40,
+          "SLOW_BRUTEFORCE": 40,
+          "SLOW_SYN": 40,
+          "SQLI_ATTEMPT": 600,
+          "SQLI_EVASION": 320,
+          "SQLMAP": 40,
+          "SQLMAP_EVASION": 40,
+          "SSH_BRUTEFORCE": 40,
+          "SSRF_ATTEMPT": 360,
+          "SYN_FLOOD": 40,
+          "SYN_SCAN": 40,
+          "TCP_SCAN": 40,
+          "TLS_FINGERPRINT": 40,
+          "UA_ROTATION": 800,
+          "UA_SPOOF": 200,
+          "UDP_SCAN": 40,
+          "WAF_DETECT": 40,
+          "WEB_BRUTEFORCE": 40,
+          "WEB_CRAWL": 40,
+          "WEB_FINGERPRINT": 40,
+          "WEB_SCAN": 40,
+          "XSS_ATTEMPT": 320,
+          "XSS_EVASION": 320
+        },
+        "operator_statuses_not_exploit_success": {
+          "OK": 6403,
+          "TIMEOUT": 197
+        },
+        "original_split": {
+          "shared_attack_instance_ids": 38,
+          "time_ranges": {
+            "test": [
+              1790470213.0,
+              1790480365.0
+            ],
+            "train": [
+              1790470036.132905,
+              1790480409.0
+            ]
+          }
+        },
+        "publisher_code_evidence_line_numbers": {
+          "future_suricata_window": [
+            266
+          ],
+          "payload_rule_fallback": [
+            711
+          ],
+          "signature_based_network_labels": [
+            749
+          ],
+          "time_proximity_label_assignment": [
+            708
+          ],
+          "unmatched_payload_normal_fallback": [
+            442
+          ]
+        },
+        "request_level_verified_labels": 0,
+        "status": "QUARANTINED_PENDING_REQUEST_BOUND_INTENT_REVIEW",
+        "supervised_training_eligible": 0,
+        "verified_physical_requests": null
+      }
+    },
+    "current_study": {
+      "kind": "source_label_evidence_audit_only",
+      "model_weights_changed": false,
+      "new_training": "NOT_RUN",
+      "optimizer_updates": 0,
+      "selected_model": null,
+      "thresholds_changed": false
+    },
+    "data_preparation": {
+      "accepted_research_candidates_unchanged": 310314,
+      "active_dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+      "active_multisource_dataset": "ai-training/.artifacts/partition_recovery_20261031/forward-development-v2",
+      "admission": "ai-training/.artifacts/partition_recovery_20261031/forward-development-v2/admission.json",
+      "bounded_pilot_vectors": 118760,
+      "distribution": "ai-training/.artifacts/partition_recovery_20261031/partition-distribution.json",
+      "formal_training_permitted": false,
+      "full_staging_records": 328117,
+      "independent_evaluation_accepted": false,
+      "independent_human_review": false,
+      "minimum_unique_views_per_class": 32,
+      "model_optimizer_updates_each": 300,
+      "models_in_short_study": 3,
+      "new_study": "NOT_RUN_SOURCE_QUALITY_BLOCKER",
+      "new_trusted_public_labels": 0,
+      "new_unknown_log_observations": 193220,
+      "original_labels_unchanged": true,
+      "original_rows_verified_previous_iteration": 907815,
+      "production_admitted": false,
+      "research_scope": "exposed retrospective curated development only",
+      "research_training_permitted": true,
+      "scope_limits": "ai-training/.artifacts/partition_recovery_20261031/EVALUATION_SCOPE.json",
+      "source_role_class_floor": 32,
+      "strict_prospective_temporal_acceptance": false
+    },
+    "dataset": "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5",
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "development_checkpoint_diagnostic_20261103": {
+      "ait_plan_sha256": "614414f114bece729d53cbc66c080b97f3f4322743827fbcffa2c4ff0be2919e",
+      "ait_report_sha256": "6d7bb460978e832e280235295e0a3ba4c72c0fcf81ce94a914ec2427a9ba6898",
+      "ait_scenario_stress": {
+        "benign_candidate_views": 25,
+        "candidate_observations": 10526,
+        "deterministic_76_view_minimum_publisher_label_disagreements": 13,
+        "frozen_model_results": {
+          "glu1024": {
+            "distinct_view_weighted": {
+              "0": {
+                "flagged": 0,
+                "n": 25,
+                "rate": 0.0,
+                "score_median": 0.06396991014480591
+              },
+              "1": {
+                "flagged": 5,
+                "n": 3146,
+                "rate": 0.001589319771137953,
+                "score_median": 0.043558984994888306
+              }
+            },
+            "frozen_threshold": 0.9984238147735596,
+            "row_weighted": {
+              "0": {
+                "flagged": 0,
+                "n": 2831,
+                "rate": 0.0,
+                "score_median": 0.06396991014480591
+              },
+              "1": {
+                "flagged": 5,
+                "n": 7695,
+                "rate": 0.000649772579597141,
+                "score_median": 0.039592742919921875
+              }
+            },
+            "shared_view_attacks_flagged": 0
+          },
+          "mlp256": {
+            "distinct_view_weighted": {
+              "0": {
+                "flagged": 0,
+                "n": 25,
+                "rate": 0.0,
+                "score_median": 0.018002212047576904
+              },
+              "1": {
+                "flagged": 0,
+                "n": 3146,
+                "rate": 0.0,
+                "score_median": 0.00048339366912841797
+              }
+            },
+            "frozen_threshold": 0.9999801516532898,
+            "row_weighted": {
+              "0": {
+                "flagged": 0,
+                "n": 2831,
+                "rate": 0.0,
+                "score_median": 0.01682758331298828
+              },
+              "1": {
+                "flagged": 0,
+                "n": 7695,
+                "rate": 0.0,
+                "score_median": 0.09533864259719849
+              }
+            },
+            "shared_view_attacks_flagged": 0
+          }
+        },
+        "overlap_with_development_train_views": {
+          "attack": 4,
+          "benign": 0
+        },
+        "publisher_attack_views": 3146,
+        "shared_opposite_label_views": 4,
+        "shared_view_class_counts": [
+          [
+            68,
+            2
+          ],
+          [
+            125,
+            1
+          ],
+          [
+            252,
+            9
+          ],
+          [
+            373,
+            1
+          ]
+        ]
+      },
+      "as_of": "2026-11-03T07:04:01+07:00",
+      "champion_selected": false,
+      "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+      "full_207_models_unchanged": {
+        "glu": 9675784,
+        "mlp": 252680
+      },
+      "holdout_opened": false,
+      "interpretation": "76-feature GLU has different development errors from MLP but Student-lab validation FPR 10.73%, weak attack recall and poor AIT scanner coverage; row duplication changes source metrics. This does not evaluate the separate 207-feature main model on AIT.",
+      "models_compared": {
+        "request_only_glu_76": 9541640,
+        "request_only_mlp_76": 219144
+      },
+      "new_formal_admission": 0,
+      "new_research_training_eligible_requests": 0,
+      "paired_plan_sha256": "966b575cc4a6085b7087bb4ee9d475f161daace11266cd74838a57cfce3be284",
+      "paired_report_sha256": "645c0077ef054eb514cad7f6fa45be42962734d7be5e2225021070cc2c9c04df",
+      "paired_validation_distinct_views": {
+        "srbh2020": {
+          "0": {
+            "both_flagged": 0,
+            "glu_only": 11,
+            "mlp_only": 0,
+            "neither_flagged": 3154,
+            "views": 3165
+          },
+          "1": {
+            "both_flagged": 125,
+            "glu_only": 677,
+            "mlp_only": 1047,
+            "neither_flagged": 1826,
+            "views": 3675
+          }
+        },
+        "student-lab": {
+          "0": {
+            "both_flagged": 0,
+            "glu_only": 14,
+            "mlp_only": 0,
+            "neither_flagged": 123,
+            "views": 137
+          },
+          "1": {
+            "both_flagged": 0,
+            "glu_only": 23,
+            "mlp_only": 27,
+            "neither_flagged": 103,
+            "views": 153
+          }
+        }
+      },
+      "paired_validation_flags": {
+        "srbh2020": {
+          "0": {
+            "both_flagged": 0,
+            "glu_only": 14,
+            "mlp_only": 0,
+            "neither_flagged": 4831,
+            "rows": 4845
+          },
+          "1": {
+            "both_flagged": 125,
+            "glu_only": 1492,
+            "mlp_only": 1052,
+            "neither_flagged": 2486,
+            "rows": 5155
+          }
+        },
+        "student-lab": {
+          "0": {
+            "both_flagged": 0,
+            "glu_only": 79,
+            "mlp_only": 0,
+            "neither_flagged": 657,
+            "rows": 736
+          },
+          "1": {
+            "both_flagged": 0,
+            "glu_only": 52,
+            "mlp_only": 36,
+            "neither_flagged": 200,
+            "rows": 288
+          }
+        }
+      },
+      "scope": "read-only checkpoint diagnostics on exposed development; no independent quality claim",
+      "thresholds_changed": false,
+      "training_executed": false,
+      "validation_at_frozen_threshold": {
+        "glu1024": {
+          "srbh2020": {
+            "attack": 5155,
+            "benign": 4845,
+            "false_positives": 14,
+            "fpr": 0.002889576883384933,
+            "pr_auc": 0.8370173520874067,
+            "recall": 0.3136760426770126,
+            "rows": 10000,
+            "score_median_attack": 0.997978687286377,
+            "score_median_benign": 0.3056459426879883,
+            "true_positives": 1617
+          },
+          "student-lab": {
+            "attack": 288,
+            "benign": 736,
+            "false_positives": 79,
+            "fpr": 0.10733695652173914,
+            "pr_auc": 0.5145685771742765,
+            "recall": 0.18055555555555555,
+            "rows": 1024,
+            "score_median_attack": 0.9970105886459351,
+            "score_median_benign": 0.03228220343589783,
+            "true_positives": 52
+          }
+        },
+        "mlp256": {
+          "srbh2020": {
+            "attack": 5155,
+            "benign": 4845,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.8536516326780083,
+            "recall": 0.2283220174587779,
+            "rows": 10000,
+            "score_median_attack": 0.9995566010475159,
+            "score_median_benign": 0.36521804332733154,
+            "true_positives": 1177
+          },
+          "student-lab": {
+            "attack": 288,
+            "benign": 736,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.5773743074074799,
+            "recall": 0.125,
+            "rows": 1024,
+            "score_median_attack": 0.9949564933776855,
+            "score_median_benign": 0.8507447242736816,
+            "true_positives": 36
+          }
+        }
+      },
+      "validation_distinct_view_at_frozen_threshold": {
+        "glu1024": {
+          "srbh2020": {
+            "attack": 3675,
+            "benign": 3165,
+            "false_positives": 11,
+            "fpr": 0.0034755134281200632,
+            "pr_auc": 0.8253174575468196,
+            "recall": 0.2182312925170068,
+            "rows": 6840,
+            "score_median_attack": 0.997824490070343,
+            "score_median_benign": 0.3388122320175171,
+            "true_positives": 802
+          },
+          "student-lab": {
+            "attack": 153,
+            "benign": 137,
+            "false_positives": 14,
+            "fpr": 0.10218978102189781,
+            "pr_auc": 0.7257080678286998,
+            "recall": 0.1503267973856209,
+            "rows": 290,
+            "score_median_attack": 0.9976129531860352,
+            "score_median_benign": 0.05604243278503418,
+            "true_positives": 23
+          }
+        },
+        "mlp256": {
+          "srbh2020": {
+            "attack": 3675,
+            "benign": 3165,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.8563807620764281,
+            "recall": 0.31891156462585035,
+            "rows": 6840,
+            "score_median_attack": 0.999718964099884,
+            "score_median_benign": 0.41286736726760864,
+            "true_positives": 1172
+          },
+          "student-lab": {
+            "attack": 153,
+            "benign": 137,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.7966562187751777,
+            "recall": 0.17647058823529413,
+            "rows": 290,
+            "score_median_attack": 0.9975771903991699,
+            "score_median_benign": 0.8539333343505859,
+            "true_positives": 27
+          }
+        }
+      }
+    },
+    "development_checkpoint_diagnostic_report_sha256": "d2dab5160d9e50c02094deebb8db7247a0b6b6d588867f538b347330e2a37c7d",
+    "engineering_iteration_complete": true,
+    "exposed_development_note": "SRBH and previously scored gen1/gen2 lab cohorts are exposed development; gen1/gen2 now explicit cal/val, not supervised train. Original old final-test quality and replacement holdouts remain sealed.",
+    "external_challenge": "ai-training/.artifacts/generalization_20261030/external-challenge.json",
+    "external_glu_fpr": 1.0,
+    "external_mlp_recall": 0.013245561539996011,
+    "external_scope": "Frozen lab thresholds on independent public HTTP, missing actor/flow/time/body; NOT full3source architectural comparison",
+    "feature_count": 207,
+    "feature_version": "ai-features-5",
+    "formal_block_reason": "No independently reviewed request-bound semantic labels or application oracle; all new captures are development-only in one lab, catalog has0 eligible, live 207-feature parity and independent balanced evaluation are unverified.",
+    "formal_command": null,
+    "formal_training_next": "NOT_READY",
+    "formal_training_started": false,
+    "format_version": 10,
+    "fresh_three_source_cohort": {
+      "metadata_manifest": "ai-training/.artifacts/data_quality_20261031/sealed-metadata-audit.json",
+      "model_scores_opened": false,
+      "requests": 1935,
+      "role": "sealed_final",
+      "three_source_correlated": 1935
+    },
+    "handoff_sha256": "b163154b067686d58658f95c1974370648f3be5955bcbb22df277d3f98d61e38",
+    "historical_data_preparation_before_partition_recovery": {
+      "accepted_research_candidates": 310314,
+      "active_dataset_sha256": "07d67edfa2f05b1ace98e299a2dbdec4866188d4aa1116068b5e577b0dc3610d",
+      "active_multisource_dataset": "ai-training/.artifacts/data_quality_20261031/mixed-curated-v2",
+      "admission": "ai-training/.artifacts/data_quality_20261031/mixed-curated-v2/admission.json",
+      "bounded_pilot_vectors": 98766,
+      "duplicate_decisions": 234,
+      "failed_gates": [
+        "source_role_class_coverage",
+        "source_role_minimum_support"
+      ],
+      "family_inference_enabled": false,
+      "full_srbh_curation": "ai-training/.artifacts/data_quality_20261031/srbh-curated/manifest.json",
+      "full_srbh_curation_sha256": "33a48f33e6f5d7bfe26ea429554ea6438186cd1cfc8fd2e55ba2fa982c79e862",
+      "full_staging_records": 347323,
+      "independent_human_review": false,
+      "new_real_optimizer_updates": 0,
+      "new_real_study": "SKIPPED_DATA_ADMISSION_FAILED",
+      "original_labels_unchanged": true,
+      "original_rows_verified": 907815,
+      "quarantine": 597267,
+      "research_training_permitted": false,
+      "source_role_class_floor": 32
+    },
+    "historical_exposed_gen2_cohort": {
+      "approved_automated_intent_contracts": 1875,
+      "embargo_seconds": 34167.44039392471,
+      "manifest": "ai-training/.artifacts/generalization_20261031/fresh-cohort/manifest.json",
+      "missing_past_flow": 364,
+      "observed_span300s_rows": 331,
+      "pending": 60,
+      "primary_request_task": 1659,
+      "requests": 1935,
+      "three_source_correlated": 1935,
+      "usable_past_flow": 1571
+    },
+    "historical_handoffs": [
+      "ai-training/.artifacts/attack_evidence_20261101/source-start/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/generalization_quality_20261101/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/partition_recovery_20261031/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/data_quality_20261031/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/generalization_20261031/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/request_view_20261030/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/generalization_20261030/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/scale_upgrade_20261030/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/upgrade_20261028/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/upgrade_20261029_query/TRAINING_HANDOFF.json"
+    ],
+    "historical_selected_research_candidate": "bounded76-glu17",
+    "historical_selection": "ai-training/.artifacts/generalization_20261031/JOINT_VALIDATION_SELECTION.json",
+    "historical_study_before_this_iteration": {
+      "GLU_false_positives": 5,
+      "MLP_false_positives": 174,
+      "Recall_Precision_F1_PR_AUC": null,
+      "case_groups": 160,
+      "formal_training": false,
+      "kind": "frozen_external_benign_stress",
+      "model_weights_changed": false,
+      "optimizer_updates": 0,
+      "report": "ai-training/.artifacts/generalization_quality_20261101/public-evaluation/report.json",
+      "selected_model": null,
+      "thresholds_changed": false,
+      "validation_rows": 13290
+    },
+    "historical_verification_before_this_iteration": {
+      "ONNX_scope": "Existing118760vectorneuralparityevidencepreserved;current198regressionsinclude exactresume/exportandfrozeninference. NewpublicsourceusesunchangedONNX;no newall-row nativeparityclaim.",
+      "atol": 1e-06,
+      "frozen_models": 2,
+      "legacy_readiness_passed": 53,
+      "new_public_validation_rows": 13290,
+      "new_real_optimizer_updates": 0,
+      "old_and_new_reserved_holdout_quality_opened": false,
+      "protected_files_unchanged": 2682,
+      "pytest_passed": 198,
+      "pytest_skipped": 0,
+      "rtol": 1e-05
+    },
+    "independent_human_review": false,
+    "inference_recommendations_on_measured_cpu_only": {
+      "Web_runtime_changed": false,
+      "deep_mlp_threads": 1,
+      "existing_api_accepts_explicit_max_threads": true,
+      "residual_glu_threads": 8
+    },
+    "input_contract_note": "Legacytop-leveldataset/207fields remainbackward-compatible historicalfusedprofile. Activerequestresearch usesraw70numbers->fixed76encoding below.",
+    "input_profile": "safe_query_numeric_v2",
+    "label_evidence_contract": {
+      "attack_intent_not_exploit_success": true,
+      "boolean_only_legacy_review_cannot_unlock_formal": true,
+      "contract_version": 2,
+      "dataset_label_and_event_binding_checked": true,
+      "implementation": "ai-training/src/idps_ai/data/label_evidence.py",
+      "known_outcome_requires_application_oracle": true,
+      "limits": "Integrity of human attestations, not authentication of people or independent proof of semantic truth. Labels are not fabricated; actual external/source-owner review still missing.",
+      "per_row_manual_annotation_required": false,
+      "required": [
+        "request-bound capture SHA",
+        "intent provenance SHA",
+        "independent semantic review SHA distinct from capture"
+      ],
+      "reviewed_campaign_protocol_and_shared_artifacts_allowed": true,
+      "stale_legacy_catalog_cannot_unlock_formal": true,
+      "unknown_never_default_benign": true
+    },
+    "limits": [
+      "Integrity of human attestations, not authentication of people or independent proof of semantic truth. Labels are not fabricated; actual external/source-owner review still missing.",
+      "Exact log lines and partial method/URI/UA representations are not independently verified physical request identities.",
+      "Publisher curated labels mix temporal attribution and payload-rule fallback; no per-row label-basis trail is supplied. Nonmatches cannot be benign truth.",
+      "Operator timestamps without timezone and missing request IDs cannot be reliably linked by a guessed offset or nearest timestamp.",
+      "Precomputed alert/signature features, future +/-60s context, and complete-session aggregates are not accepted causal model inputs.",
+      "A single scripted external cyber range is a different publisher environment, not broad production diversity. No model training/evaluation, feature projection, replays or final holdout designation here.",
+      "ExistingSRBH curation/partition studies are retrospective exposed development with future-label-dependent population selection; not unbiased prospective tests.",
+      "WCP publisher-benign-only stress cannot establish attack recall; currentMLP/GLU ranking depends on source. Prior scores not reused as fresh independent acceptance.",
+      "All original holds, including148WCP files, remain closed; no newbalanced source is falsely called final.",
+      "Regression/syntheticpilot/legacy53technicalPASS is not current data/formal/production admission.",
+      "Source fingerprint changed for evidence gates; resume oldcheckpoints only with exact previous frozen source/config/data/environment, never force."
+    ],
+    "main_candidate": "residual_glu",
+    "main_parameters": 9675784,
+    "new_glu_candidates": {
+      "glu_faster_start": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/development-pilot/glu_faster_start-bundle",
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 69345,
+          "rtol": 1e-05
+        },
+        "parameters": 9675784
+      },
+      "glu_low_smoothing": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-bundle",
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 69345,
+          "rtol": 1e-05
+        },
+        "parameters": 9675784
+      }
+    },
+    "new_public_real_deduplicated_observations": 90334,
+    "new_public_real_deduplicated_observations_scope": "Historical90334SRBH sampled observations only, retained for compatibility; authoritative current per-source accounting in corpus_accounting/report. Never sum observations into physical requests.",
+    "new_real_HTTP_source": {
+      "audited_rows": 907815,
+      "benchmark_sample": 90531,
+      "doi": "10.7910/DVN/OGOIXX",
+      "label_caution": "Publisher signature-assisted review;907814descriptionmismatch/2missing/26crosslabel/4666Novanomalies, not independentlyadjudicated",
+      "license": "CC0 1.0",
+      "manifest": "ai-training/.artifacts/generalization_20261031/srbh-audit-v2/manifest.json",
+      "name": "SR-BH2020",
+      "natural_observation_identities": 905043,
+      "raw_sha256": "9c73c90ce6564ae48b14f7179cd864d037a6a130ef69c68c1626ec5d7ce4a910",
+      "source_role": "development_exposed",
+      "structurally_curated_research_candidates": 310314,
+      "training_admitted": false
+    },
+    "new_requests_scope": "No newliveHTTP. PublicSOC198082 observations/193220distinctloglines/6856partialviews not verifiedphysicalrequests;0trustedlabels/eligible.",
+    "new_requests_this_upgrade": 0,
+    "operating_points_and_latency": "ai-training/.artifacts/generalization_20261030/operating-points-isolated.json",
+    "partial_view_note": "External stress test uses shared URI/method/agent projection; unavailable or unused body/response/actor/flow fields must not be confused with a complete HTTP benchmark.",
+    "pilot": "ai-training/.artifacts/generalization_20261030/development-pilot/report.json",
+    "pilot_sha256": "a27a0a4c7a2369fa77724075cafae2dd5f990e384573c1bfdd69f7ea00537e3a",
+    "preservation": "ai-training/.artifacts/attack_evidence_20261101/preservation.json",
+    "pretrain_report": "reports/ATTACK_EVIDENCE_20261101.json",
+    "pretrain_report_file_sha256": "f28f8eaf2ec58e46b1e2e577e900f31abdcd759b5585e5f45a8455936e910912",
+    "prior_iteration_handoff": {
+      "path": "ai-training/.artifacts/attack_evidence_20261101/source-start/FINAL_TRAINING_HANDOFF.json",
+      "sha256": "96b4639d1b8b9589a29db73136f18e565721499b879fafdc017376dd39311be6"
+    },
+    "production_objective_complete": false,
+    "public_supplements": {
+      "csic_full_test_records": 61065,
+      "csic_observable_unique_request_identities": 34561,
+      "csic_profile": "http-request-numeric-v1",
+      "csic_records": 97065,
+      "public_real_deduplicated_observations": 90334,
+      "public_real_label_status": "unknown",
+      "public_real_profile": "public-accesslog-partial-v1",
+      "public_real_rows": 100000,
+      "supervised_admitted": 0
+    },
+    "readiness": "ai-training/.artifacts/attack_evidence_20261101/readiness-current/readiness.json",
+    "readiness_scope": "53technical checks on original69345 fused corpus only; active multisource admission NOT_READY",
+    "readiness_sha256": "690f9bcf786be83a308fc02e8fa83894855d2532bf630eddc22924b840daaaf9",
+    "remaining": [
+      "Trusted request-bound independent positive intent labels and matched benign/hard negatives from several applications/campaigns/times.",
+      "Resolve source-specific label basis, lineage, feature visibility and missingness without assuming unknown/nonmatch benign.",
+      "Eligible dual-class fitting sources and preregistered balanced prospective/leave-environment-out acceptance with cluster-aware uncertainty.",
+      "Validation-only controlled MLP/GLU/baseline ablations after data qualification; no locked test tuning.",
+      "Shared reproducible artifact storage, endurance/live serving/operational acceptance; no champion or automatic blocking yet."
+    ],
+    "replacement_sealed_holdouts": {
+      "additional_public_benign_supplement": {
+        "marker": "ai-training/.artifacts/generalization_quality_20261101/wcp-corpus-v2/reserved/AI_HOLDOUT.json",
+        "members_unopened": 148,
+        "request_count": null,
+        "scope": "Publisherbenign-onlywebsitecasesupplement,notfullindependentrecallacceptance",
+        "used_for_training_calibration_selection_or_scores": false
+      },
+      "external_archive_extracted": false,
+      "external_archive_seal": "ai-training/.artifacts/data_quality_20261031/new-sealed-holdout/seal.json",
+      "external_positive_only_not_benignFPR": true,
+      "external_verified_request_count": null,
+      "lab_duration_seconds": 720.5281953811646,
+      "lab_metadata_proof": "ai-training/.artifacts/data_quality_20261031/sealed-metadata-audit.json",
+      "lab_requests": 1935,
+      "lab_three_source_coverage": 1935,
+      "model_scores_opened": false,
+      "observed_client_span300s_rows": 1129,
+      "protocol": "ai-training/.artifacts/data_quality_20261031/NEW_HOLDOUT_PROTOCOL.json",
+      "used_for_training_selection_or_calibration": false
+    },
+    "request_profile": {
+      "active_multisource_data_preparation": {
+        "accepted_research_candidates_unchanged": 310314,
+        "active_dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+        "active_multisource_dataset": "ai-training/.artifacts/partition_recovery_20261031/forward-development-v2",
+        "admission": "ai-training/.artifacts/partition_recovery_20261031/forward-development-v2/admission.json",
+        "bounded_pilot_vectors": 118760,
+        "distribution": "ai-training/.artifacts/partition_recovery_20261031/partition-distribution.json",
+        "formal_training_permitted": false,
+        "full_staging_records": 328117,
+        "independent_evaluation_accepted": false,
+        "independent_human_review": false,
+        "minimum_unique_views_per_class": 32,
+        "model_optimizer_updates_each": 300,
+        "models_in_short_study": 3,
+        "new_study": "ai-training/.artifacts/partition_recovery_20261031/study/report.json",
+        "new_trusted_public_labels": 0,
+        "new_unknown_log_observations": 211178,
+        "original_labels_unchanged": true,
+        "original_rows_verified_previous_iteration": 907815,
+        "production_admitted": false,
+        "research_scope": "exposed retrospective curated development only",
+        "research_training_permitted": true,
+        "scope_limits": "ai-training/.artifacts/partition_recovery_20261031/EVALUATION_SCOPE.json",
+        "source_role_class_floor": 32,
+        "strict_prospective_temporal_acceptance": false
+      },
+      "baseline_parameters": 219144,
+      "current_model_quality": "FrozenpublicbenignstressFPR GLU0.0376%/MLP1.3093%;oldhardnegativelabGLU10.73%/MLP0%;noindependentbalancedacceptance,nochampion",
+      "dataset": "ai-training/.artifacts/generalization_20261031/bounded-corpus",
+      "dataset_sha256": "df04a81e767d2ee8f0222c73c7fdf01b2cd018bfc753d5ab78156e600ec74d65",
+      "encoder": "bounded-request-v1",
+      "enforcement_actions": 0,
+      "evaluation": "ai-training/.artifacts/generalization_20261031/evaluation/report.json",
+      "family_inference_enabled": false,
+      "feature_count": 76,
+      "formal_admission": false,
+      "historical_selected_bundle_note": "Existing selected_research_bundle below is historical, not a current promotion",
+      "input_feature_count": 70,
+      "legacy_request70_dataset": "ai-training/.artifacts/request_view_20261030/corpus-final",
+      "main_parameters": 9541640,
+      "name": "request-structure-v1",
+      "previous_bundles_preserved": true,
+      "selected_research_bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-bundle",
+      "smaller_glu_parameters": 615944,
+      "study1": "ai-training/.artifacts/generalization_20261031/study/report.json",
+      "study2": "ai-training/.artifacts/generalization_20261031/study-phase2/report.json"
+    },
+    "resource_policy": {
+      "actual_pilot_cpus": 4,
+      "cpus": 8,
+      "diagnostic_seconds_per_session": 180,
+      "diagnostic_updates_per_session": 300,
+      "memory_high_gib": 15,
+      "memory_limit_gib": 16,
+      "swap": 0,
+      "technical_epochs_per_session": 2,
+      "technical_minutes_per_session": 8,
+      "thermal_guard": "CPU sensorcriticalminus5C; guardedcheckpoint stop"
+    },
+    "resume_notes": "Activepackageaddsdata/evaluationcode. Oldcheckpointsrequiretheirexactfrozencode/config/data/environment;neverforcehashes. No newrealtrainingcheckpoint exists. Weights/thresholds unchanged in externalstress.",
+    "scale_admitted_requests": 0,
+    "scope": "AI-only; request-only profile added separately from legacy207featurev5; no champion/deployment",
+    "sealed_quality_partition": "Originaloldlabfinaltest, generation3lab, production30day archive and148newpublicbenigncasefiles remainsealed. Nonreservednewpublicvalidation nowexposeddevelopment,notfreshfinaltestagain.",
+    "selected_research_candidate": null,
+    "selection": null,
+    "selection_basis": "No model selected from retrospective short comparison; current independent acceptance missing",
+    "source_environments": 1,
+    "source_registry_scale_gate": "ai-training/.artifacts/attack_evidence_20261101/scale-catalog-current/report.json",
+    "status": "GLU207_OFFLINE_SHADOW_PASS_FORMAL_AND_LIVE_NOT_READY",
+    "target_requests": 2000000,
+    "technical_command": null,
+    "technical_command_note": "Real multisource admission fails. Do not force training or rerun completed historical studies. New sealed quality remains unopened.",
+    "test_quality_metrics_sealed": true,
+    "updated_at": "2026-11-03T21:10:26+07:00",
+    "verification": {
+      "ONNX_and_resume": "Existing regression fixtures PASS. Old real118760-vector parity evidence untouched; no new external all-row parity or real-data pilot claimed.",
+      "Ruff_format_compile_canonical": "PASS",
+      "all_previous_protected_files_unchanged": 2941,
+      "earlier_check_failures": [
+        "Service context:209PASS/2sensor FAIL because AppArmor user namespace UID mapping unavailable; same authorized terminal context via systemd scope passes without host changes.",
+        "First scope:210PASS/1exact-resume guard failure after corpus guard source changed while check active. Failure preserved; final code/config freeze then211PASS, no bypass.",
+        "Initial source audit combined-only parser undercounted common-log rows. Superseded artifact retained; fixed optional headers with regression, activev2 accounts198082valid+40unparsed."
+      ],
+      "formal_catalog": "EXPECTED_NOT_READY_EXIT_3",
+      "formal_catalog_eligible": 0,
+      "frozen_code_config_files_unchanged_during_final_test": 159,
+      "legacy_technical_gate_scope": "Original69345 fused dataset only, not current public/formal acceptance",
+      "legacy_technical_gates_passed": 53,
+      "math_contract": {
+        "atol": 1e-06,
+        "reduction": "Existing FP32/FP64 contract unchanged",
+        "rtol": 1e-05
+      },
+      "new_tests": 13,
+      "pytest_passed": 211,
+      "pytest_skipped": 0
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/automated_quality_20261104/handoff-input-v4.json",
+  "original_sha256": "dfc27d96a8565becaf809de771709f809d0f1b75ff4ea45cceef8876500a63eb",
+  "redactions": {
+    "fields_withheld": 2,
+    "strings_changed": 3
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

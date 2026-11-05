@@ -1,0 +1,1991 @@
+{
+  "content": {
+    "finished_at": "2026-11-05T08:33:03.612312+00:00",
+    "formal_admitted": 0,
+    "independent_review": "PENDING",
+    "independently_verified_labels": 0,
+    "lab_intent_counts": {
+      "attack": 48,
+      "benign": 59,
+      "unknown": 4
+    },
+    "models_loaded_or_fitted_during_capture": false,
+    "observations": [
+      {
+        "case_id": "dvwa-101",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "7ca50f2c59ace7f9f15c3949945b1871",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-050",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "1f66c7cadc8f48c12e820d2aa0d28d41",
+        "response_sha256": "7aad188dbe178e0353e563dfc3d01a6b12c20f72a9a8229ea6e60c05ff4031a7",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-011",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 11,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "09c9e51ea019afd0153d6cb18e20ab8c",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-010",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 10,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "2525d3ba2f1cb05a18c00c570b1911fd",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-086",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "9088c83f1f36d6a512696f3f79c7cb22",
+        "response_sha256": "cbf420258a7a346471a9dfb8ac8d8619383c2a9dd5bc1f226775fbfab78267a7",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-047",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "2fe993ae6ccdcc9b3b99c811257ecb89",
+        "response_sha256": "b13f85e5eb7cb7b4bf3a08da3cda8db24de292840ae860965562dd7d7ad76323",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-059",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "e2c502456a7fbfddaa4260007efc8bb1",
+        "response_sha256": "5ab79bfbdc86951290936222165d427efb9e0ee4aa9d83b4e51151761960b730",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-000",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 0,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "169664f3e5a11c9da66079f35af80acb",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-024",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": "AIP0_SQL_04",
+          "returned_names": [
+            [
+              "AIP0_SQL_04",
+              "canary"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "8791862286092a69f69f9088a736f80e",
+        "response_sha256": "9d7ba5766d3812788ba15ce639f0a7dfe20c85b6ba7deaea47376a5e51818f3b",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-029",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 0' OR TRUE#"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 0' OR TRUE#"
+            ],
+            [
+              "Hack",
+              "Me\nID: 0' OR TRUE#"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 0' OR TRUE#"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "07f23993a898684c43c5a0707c49af5f",
+        "response_sha256": "ddfb2c8122e1f2e653a90b8ed5e45b314cf7a7e41156956c14c38f35b71bb4c6",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-056",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "bcb682ffb61871d21e2462f0d01f3b13",
+        "response_sha256": "42db353a47ac551f1a26febd8db7ad2917298576e5f2eab5a8958997087da3f4",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-070",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "afe532251fe05445566fe21d8b0fa782",
+        "response_sha256": "5309ae3d74e705d6b387c5181ba9124b5ba03bcf33041c3fec82d10fafeff56d",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-031",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 0' OR 'x' LIKE 'x'#"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 0' OR 'x' LIKE 'x'#"
+            ],
+            [
+              "Hack",
+              "Me\nID: 0' OR 'x' LIKE 'x'#"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 0' OR 'x' LIKE 'x'#"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "3aa4a17bf9a0cdfe6db5090f6fd0b72f",
+        "response_sha256": "47bde966ec9f6aa7160ba0507dcccd749c511954fce71e85aa40112e571bef03",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-036",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "a41b907467e1fc2a7db0e90f517880c1",
+        "response_sha256": "0ba29e51bbe47c8ff0e29d458ab6be4044e4ec776baa1e8dca8ecdb7a067f656",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-092",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "7afae67b2cd8525db036487ead3482d1",
+        "response_sha256": "96fca040e52f292d07404c4349d76539701642d41b92ce4904c3bb4c21e13f79",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-027",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": "AIP0_SQL_07",
+          "returned_names": [
+            [
+              "AIP0_SQL_07",
+              "canary"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "07a5a7831d2eab338d19910fa9ccd5b6",
+        "response_sha256": "21b9725fb567ecab321105a3a3076f673863e8d3907c4183e3b667d1ccd70d9b",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-065",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "12b5bbe51bd66bd67f60af8d9298cf18",
+        "response_sha256": "d2ebe13000c09018cd259bf7d5305d06af9b7bd8c116b14e310b5c80580c9583",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-007",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 7,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "c421fc434428f2627b63ea9301dc3ce1",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-064",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "e4d0e88cb06e3687a0bacceda048fa26",
+        "response_sha256": "3f6390fbddac9a2bf2c70c0144b5a50a7f161775d7ea255684b74c13de5a6c21",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-013",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 13,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "e5a467df7d8426252a9122167c20cbca",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-090",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "3131217b05631633e108a84bc09719ae",
+        "response_sha256": "2b5c7268f5aeee75d10f23588344628c80fcaef90515d8c91b86ae288753fefe",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-096",
+        "exploit_outcome": "unknown",
+        "family": "path_traversal",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "public_file_heading_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "1b94fad603fed02b11e8a58774e854f8",
+        "response_sha256": "c5d89efd3e93877c55b97638bd09b7de1b83c59a638f127ecea7a1a4582012c9",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-094",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "8876f8f45735e06bfc4f7682aa6360ec",
+        "response_sha256": "0055fea3ca25ad647ee4e32ac024b4e05689fd422bef263cbb233f99554a1994",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-022",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 1' OR 1=1-- -"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 1' OR 1=1-- -"
+            ],
+            [
+              "Hack",
+              "Me\nID: 1' OR 1=1-- -"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 1' OR 1=1-- -"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "3dfaea310f7b76d7e890ae624634a9b3",
+        "response_sha256": "58ac032da0b8d5a7983eee2eea89c2d1d4807a487abc07795b698487dc236b33",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-076",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "fe8d7a9581c971db0e2869b2946e6abf",
+        "response_sha256": "bfe9bafb0641715cf5e4571a3511b275038a33548a61d009394cf65e4a8a20ca",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-106",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "533d3e0e227dec1c8d11ece8d2362c37",
+        "response_sha256": "7eb2be743ddf46fd202f4c13964ff40f88b050a9d58fb1c5c49d41e2b433a924",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-026",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": "AIP0_SQL_06",
+          "returned_names": [
+            [
+              "AIP0_SQL_06",
+              "canary"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "0dd9ae6313daef47b600f625c0e05bb3",
+        "response_sha256": "d02208d5fe4267f669ba2c59d1b18d79dd1755b40b5991593e0704061c6947ae",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-030",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 0' OR 2>1#"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 0' OR 2>1#"
+            ],
+            [
+              "Hack",
+              "Me\nID: 0' OR 2>1#"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 0' OR 2>1#"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "731b14a1ec1b7395b9e615d4544dfbc0",
+        "response_sha256": "1aeb4de29dfaaa2a96d75eff3454bea37e9de71311af0ee5fcabcb1536f67537",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-041",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "e397c0acd9f2506cf922d1cb65c0fb57",
+        "response_sha256": "1dfd73d9e0b4f04cacfdba3301d83ce6ee6615a004e98e164856cfc1cc26a2aa",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-080",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "unknown",
+        "oracle_detail": {
+          "ping_output_observed": false
+        },
+        "receipt_matches": true,
+        "request_id": "936698037cb75368483a8d5d5a2d4b71",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-079",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "db0b6ad3ceffd8d66b45b9b7ec35e5cb",
+        "response_sha256": "2eac9cb63bfd9b46bdfc74529d6d6a6bb48e40dabea31523f5c606931b3016df",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-035",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "2f18e3d2160c34b627716d9fd2019caa",
+        "response_sha256": "4550510702e554880de804603c583efd0b9c110a7d3e8d1382c48afa6f711f4c",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-042",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "50d326dbe7caf06db3bd2ac1f373a502",
+        "response_sha256": "16d083954ae068565da7865640d88afa7727c40c711cd3c4db249f9c23f62059",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-037",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "d2152d63ee8d960172b7980f53100a61",
+        "response_sha256": "3bd1cf4a7ed44688a22dd6985808d41151a35a5a7d40f4c9ea56ce23139762eb",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-109",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "2ced0fbc4bc95085487a49cc3932377e",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-017",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 101,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "ced3cd956acde5c8edbf6f507fc07dc0",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-033",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "8189507d27ca914312e4a770ddb4ebed",
+        "response_sha256": "bcbf302b49afade7d5831d51f9360ced7b652f6747a6741402e6d5cbaf277de0",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-110",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "7553f507699a1efcfe2065ff4494f5e6",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-073",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "cdfd3876446325fdbb94db30f386d835",
+        "response_sha256": "0213e7da737274d4f9e07a11e23663f127d7bfe21900a5880171da42ba30f307",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-028",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 0' OR user_id>0#"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 0' OR user_id>0#"
+            ],
+            [
+              "Hack",
+              "Me\nID: 0' OR user_id>0#"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 0' OR user_id>0#"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "726dfedfacd33da82ee70f94e2fd1cf5",
+        "response_sha256": "e2269cdf845057033d798f5ae769157c9b4d944cf0cfd72c36c61386337eb266",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-009",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 9,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "5b1e0860926f93649e3d1673d29c9bd3",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-002",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 2,
+          "returned_names": [
+            [
+              "Gordon",
+              "Brown"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "9c9d256daeab7473b56e1a56ef7e055b",
+        "response_sha256": "c7008ae8553b92b778cd2ac834eb57968b4e7c678370f787de0b914935572ad7",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-074",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "1ce5770a23559c2447b8382f2bd79de5",
+        "response_sha256": "ce138409fb53ef94a4b7c2cede460ef29bd23ee576acd432a3ca59c520c43d37",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-018",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 999,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "71cb7804fbe6e9a1867f84d43b8c3135",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-025",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": "AIP0_SQL_05",
+          "returned_names": [
+            [
+              "AIP0_SQL_05",
+              "canary"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "398068031a5b697e019938ab7cdc1d0b",
+        "response_sha256": "cdc8a671caeb887a9e80457b94badb930b7f308ab2209d9fdf0a28ce426ab8b2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-004",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 4,
+          "returned_names": [
+            [
+              "Pablo",
+              "Picasso"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "44089af4a1b22a0f1b2a0999912a9bf2",
+        "response_sha256": "dbdae27a81e3493cc952c8ca583779b9e470a202d0d9a74b544efaceefac7d1c",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-103",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "c55586e08a9b2086ec8489b2e4cfa8b3",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-104",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "b6457423c8bdeab90aac395df162f823",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-049",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "5f99670d705f5c11fb118aad188167cd",
+        "response_sha256": "a1d384019e387f49f6725a4eca7dda172555d10c4d4cafb0bd96548ab9d1361a",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-046",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "ae630b2d48bf6037861e8e0ee1b4f975",
+        "response_sha256": "5a10bc34c6447eca4ff2e57110aef5fe142a9ac7d4529f35ccc3e49ee8774503",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-089",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": false
+        },
+        "receipt_matches": true,
+        "request_id": "dd692512a4a95fcc20b0688d8f0df5fd",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-051",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "a48a811898430c1c813b96c77c54ffd1",
+        "response_sha256": "acc6edbe1a4bc99798efcf74b3c486a3a650ca880cc75f59153b63ff53465512",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-032",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "c9112ba193744d59d667cd485924405d",
+        "response_sha256": "7fa1e28b3624d3785f6b2d42ebdc376646fc89382e7c27b2a0065202e124d76e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-088",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "94c138f0a527736b97d8621b5ad6fd5b",
+        "response_sha256": "bf6ce38d774989f2cc01dc60398bf15f5a819716fd36a8fdec45ca8bf4852867",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-045",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "1462f5153808eae70c556725a0525fe2",
+        "response_sha256": "32ca5d09aaa2d22a6caa84db81f16c11f96672fcde37e0fb8a4900a965577586",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-001",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 1,
+          "returned_names": [
+            [
+              "admin",
+              "admin"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "651f83885069890e4a7e1917b3075150",
+        "response_sha256": "c4fcc0e790aacec616808305afc444f1bbb94c358b3293c5fdaaa325f8b828c4",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-015",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 99,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "ef10f9be2a8d5f71e2d0140dfad51b44",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-099",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "e452e7c0686b8f403142d4d5a8606844",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-067",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "120a56c0c4b7a6920f3409b05803eaca",
+        "response_sha256": "3bccf25c431a85067201c47afb0b61ae0f10ee0769ebcca4f5a08d08f43a4209",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-075",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "767a18ee3d691da7743ba9787683b2fc",
+        "response_sha256": "30827ea6a4fa8b84bd80ddffbe2c6510dca3f0cecdf7bc77b8cddb59edd6f425",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-083",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "unknown",
+        "oracle_detail": {
+          "ping_output_observed": false
+        },
+        "receipt_matches": true,
+        "request_id": "fc581c21f73c72b7b73a5b07e59f986c",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-098",
+        "exploit_outcome": "unknown",
+        "family": "path_traversal",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "public_file_heading_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "efb340e5c140823d60b44ceec6d99d7b",
+        "response_sha256": "cf45466ad55fd505f4f9a4f1ff0ebb43f37826a5729cf63fe9f0f3a5f614f00a",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-053",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "037ec15175e21ef83202a43b2d54b3cc",
+        "response_sha256": "c1d9d78beb86dbdc886a57202a363c0c98502cece72f57b5459f768b8467c02e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-044",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "034ff5a033cf092782ae35af5c0aad21",
+        "response_sha256": "3d15ba18a0366ea5dbf35c646824abeacba90e344a7502bb21a74433751521e5",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-093",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": false
+        },
+        "receipt_matches": true,
+        "request_id": "4d0708b6418d94bb100ea4ce436cf0d3",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-057",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "371e4728916deda4674b3992e56e6dc1",
+        "response_sha256": "caec6603b9e736008e2a71c00ec282555fc3e1eb62f7045ccf41e952f977a177",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-068",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "0bebf281bca7ab2b8d18f43fddddae13",
+        "response_sha256": "fc29c4e6c4795173be80edf8a28840d2593f63e27580838768b9f93d80b455d1",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-085",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": false
+        },
+        "receipt_matches": true,
+        "request_id": "6e7ac151552eae389719ba2cab73e3c1",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-060",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "628ebd3c350dfb7cbb786492dcc0141f",
+        "response_sha256": "5792329fd752bb797b164689937d72d6c5c39381d2d356372e2d60b37d8045d3",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-066",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "e626c01ed8b63cf91d958ddac7a23b29",
+        "response_sha256": "1272a9ec8136dcc96c80dac163e74ee90104a384ff54f575a6d578f265ffe9c4",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-005",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 5,
+          "returned_names": [
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "3b29931a984e0ccc12c864f392c17173",
+        "response_sha256": "64c1fea7b4b9c6b5079e65d12a38d213625c1a34b36f6afa1f8d34c1bcd3b02e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-055",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "b06e005efca2748a86b1982e58cbe4d8",
+        "response_sha256": "d37d3dd7aed69311c55cef203486312093c52b5a700c374ce720fb019b529977",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-069",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "83eb11d0a351ca1c7a90bfbfccefd153",
+        "response_sha256": "38431a0e9964560fd5ae687dd8e8e17b851dc6bef5e0da203228fe8a914991c6",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-108",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "4ccf6faf15e30a18ad4f5fd8fce0a3b1",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-063",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "cf398fd0dba4979870fe4e7dab4ac432",
+        "response_sha256": "e02961263503f72065d1ddc37c75287ced2ad4b46ad16ee039b274d2daf66c79",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-014",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 14,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "c863cf4497d6e4eeb9e0fca21e64210d",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-048",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "3d520a72722e61cc68d4187bef48f67b",
+        "response_sha256": "8775fb07b27415173c7e4b13c144ebb3986a8d244b6cf3135a898af6fd076e45",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-071",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "772fc2bd80d56c9a40c4a7383cbdd70c",
+        "response_sha256": "55d2540f595fd3b19ac7476ddbdc70cf8ce4b08fe19d0c7162d147eed79ba2ad",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-020",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 1' OR '1'='1"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 1' OR '1'='1"
+            ],
+            [
+              "Hack",
+              "Me\nID: 1' OR '1'='1"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 1' OR '1'='1"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "2520b939b596049a9f764f64f15116fb",
+        "response_sha256": "154476b3bd8cc942fd089c3b8dcaf96c8235697b6200e37fe4e04dd4d6ef35ed",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-082",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "unknown",
+        "oracle_detail": {
+          "ping_output_observed": false
+        },
+        "receipt_matches": true,
+        "request_id": "52e85a9b472851d5a9ecfc5922786c37",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-091",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "e7cace5948ec90ed112b1037472201b2",
+        "response_sha256": "df667f97dc7a47cfe6f29fb233ef06c9cfea5aba36d8cbbeb4f7f23417cd0717",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-072",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "d75bb012b168d8f44a0d0b57c39ddad9",
+        "response_sha256": "94786f98e1a21ce144f5ced28d70b693857112309066b647900d0a7d2b8f8646",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-061",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "4ee505d030b646dfb6e7b7b925bed553",
+        "response_sha256": "0269f728910a64c7a79b4784ca67b4f5a5aa20df198a7dd7e6d8bd59f2d17420",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-008",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 8,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "8f26b9954e878e8d27006f9cb0ed403d",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-062",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "0fcaafa7739611855a9dcbe2639ffd6d",
+        "response_sha256": "05795e3749b6430b61ef8ff78b1e0a3994267f49b5d087e4d0683d96c6c98622",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-006",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 6,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "bfd7967af417eac0a1b26500d36c68bb",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-043",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "eca85192b66f9ab599fddcccfa928c75",
+        "response_sha256": "fa502e7deb481c24d5be02f52bc278693d12eee936c3dc4c7c31318a357b565a",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-034",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "017efc105dbee146bac1e436da6cc1e5",
+        "response_sha256": "3bd21e5dd805483ca8d0fad35cb597391395e38e04f198fbf199716f78ea6a1a",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-039",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "b750a3a354eba0f200d1e27e6a1c1b5f",
+        "response_sha256": "e68d3d3d14cb72fc6edcd7b3e2b58808e8f75d4acddfcf2614025fe87bda778e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-003",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 3,
+          "returned_names": [
+            [
+              "Hack",
+              "Me"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "3693e13bcff77aa521d03e489f876971",
+        "response_sha256": "ccda9eabe7bbdb636d98c2b80f70040c09e253da48e9f9c260da8aab149fd154",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-097",
+        "exploit_outcome": "unknown",
+        "family": "path_traversal",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "public_file_heading_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "7bb907f63422af0fad7b78d1e824fff4",
+        "response_sha256": "31900001b4d4eceee5bfe1d102ca637a58d79cf6391f4abb2a9df81e3ba7203b",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-023",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 0' OR 'a'='a' #"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 0' OR 'a'='a' #"
+            ],
+            [
+              "Hack",
+              "Me\nID: 0' OR 'a'='a' #"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 0' OR 'a'='a' #"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "b9b50dd9cb1753a12a6881ecfcc4fdc8",
+        "response_sha256": "1250266720e1be6d51cf0f283cad5a8922e32c1a94900c7f5827ef0a8b30c7bb",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-040",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "e0750912b5622e00d4c3033ba2a85b56",
+        "response_sha256": "cbfc1ab49a6f3931004ddb688c392f4b5a0ac839db6d45f6048c9642f68bd3fa",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-105",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "fe4fcd0afca2a5c58b50fe2c796c91a2",
+        "response_sha256": "7eb2be743ddf46fd202f4c13964ff40f88b050a9d58fb1c5c49d41e2b433a924",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-058",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "316fdd3a4ac6772d3282590bb8a99329",
+        "response_sha256": "2c8a31a4ae09cdccf568a1d3661d7751fb3a96bbf38b0701d18c3a568679b045",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-095",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "d3525d958714df4594694c6c8db546b8",
+        "response_sha256": "802937d8ed738ab776a99b7a562765d5e0d9a81d25d7d660a4b1eb27e608319e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-084",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "4dfe1d766f2c2e1d54d708c27439ab69",
+        "response_sha256": "e06f1b49a848e9794597a78702233a86b2429eba8f9eb33e57740592f6a99160",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-107",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "918e0265903820de45184e373b71330a",
+        "response_sha256": "1ca9a4f5df10255ad841cb88ab856fee97a963e814c9195c5066f5101210ea06",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-038",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "cb49ebefe12181a5586770f204c12ce0",
+        "response_sha256": "d44b252339b2006028ca81830492f203aa22d343f380101e764e498a4a677155",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-054",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "6db87402b3cf2ae61be833906b450e1b",
+        "response_sha256": "1fc72eacfa5ca52bb4404e576db7b96edf008138d8ff37da3e798a71a39b4728",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-021",
+        "exploit_outcome": "succeeded",
+        "family": "sqli",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "expected_injected_marker": null,
+          "returned_names": [
+            [
+              "admin",
+              "admin\nID: 0' OR 1=1#"
+            ],
+            [
+              "Gordon",
+              "Brown\nID: 0' OR 1=1#"
+            ],
+            [
+              "Hack",
+              "Me\nID: 0' OR 1=1#"
+            ],
+            [
+              "Pablo",
+              "Picasso\nID: 0' OR 1=1#"
+            ],
+            [
+              "Bob",
+              "Smith"
+            ]
+          ]
+        },
+        "receipt_matches": true,
+        "request_id": "4d188e66bfbf554dee401f9ceff9f916",
+        "response_sha256": "633ad284f8ed520119c79fe7984f1fbaae47302ddf9e408a0de319c6e798136e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-081",
+        "exploit_outcome": "unknown",
+        "family": "cmd_injection",
+        "lab_intent": "unknown",
+        "oracle_detail": {
+          "ping_output_observed": false
+        },
+        "receipt_matches": true,
+        "request_id": "12d7b4d24a787bc67ebdcabdc93bfd3f",
+        "response_sha256": "594cefd9763e53188eebe35353bf08316c479517dc2276b726d1381818a14710",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": false,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-078",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "727157cb05c4d286c95f43dcd26d0fd0",
+        "response_sha256": "f14fbe64316ac1bce5a3b8a8ea81476b42faa4ed48d4a8a1508105a3e372d49e",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-052",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "2850f7f28b2b75eb419ad32ba6940e7a",
+        "response_sha256": "e361fd0809527d69743f34c162d2eae2169e5851e0ae9c7f32919f614054c903",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-012",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 12,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "737e600a3aa2735b5c2606a7e9e636f8",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-077",
+        "exploit_outcome": "unknown",
+        "family": "xss",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "browser_execution_tested": false,
+          "literal_response_reflection": true
+        },
+        "receipt_matches": true,
+        "request_id": "f70259b3f47d88b3ba083130fca94d09",
+        "response_sha256": "c7dc5ecddce506e37d33d9f0f194701bc807ad5a49a307857a661ed655460d40",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-019",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 9999,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "aa25d5d94b14f03e7d384fd2bfa90b82",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-100",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "4f4f278a9afaebdaec3058bbbcaf0f80",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-087",
+        "exploit_outcome": "succeeded",
+        "family": "cmd_injection",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "stdout_marker_present": true
+        },
+        "receipt_matches": true,
+        "request_id": "35dbe0a3f48c084bbd59a6c60bad38f0",
+        "response_sha256": "f31a5e926f47c4c19dd8fb5c778b6051b7232071a5ea1e49b886fa0522bfb6e8",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-102",
+        "exploit_outcome": "succeeded",
+        "family": "path_traversal",
+        "lab_intent": "attack",
+        "oracle_detail": {
+          "private_canary_observed": true
+        },
+        "receipt_matches": true,
+        "request_id": "f0ecb47fccb4e5b08b15a466a8248839",
+        "response_sha256": "25ef34a1644c0b56c7340bed7c661543e80b7b27bc564fe49740ca5a8df4c3c2",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      },
+      {
+        "case_id": "dvwa-016",
+        "exploit_outcome": "unknown",
+        "family": "sqli",
+        "lab_intent": "benign",
+        "oracle_detail": {
+          "expected_user_id": 100,
+          "returned_names": []
+        },
+        "receipt_matches": true,
+        "request_id": "afc33eadcb4511af29f8e6eba825be01",
+        "response_sha256": "3ae00a71344160467f378b213c10e950559795c5f632a7c6bde4815418a1bd17",
+        "review_status": "pending_independent_review",
+        "semantic_oracle_matched": true,
+        "status": 200
+      }
+    ],
+    "oracle_successes": {
+      "cmd_injection": 9,
+      "path_traversal": 12,
+      "sqli": 12
+    },
+    "packet_capture_started": true,
+    "physical_unique_request_ids": 111,
+    "plan_file_sha256": "86ce7df008cd7a64a09b59aaf045dd65a160baad335d9b0907d27737e93f654d",
+    "plan_sha256": "f52e43de1684e9f8a7a3d365456950c12a42120c01fba02600f185ea2454e556",
+    "requests_sent": 111,
+    "run_id": "p0-dvwa-20261105-final",
+    "setup_requests_excluded": 6,
+    "started_at": "2026-11-05T08:32:51.333520+00:00"
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/capture-final/capture-report.json",
+  "original_sha256": "7244f8713b7ddcae689afcb4492a6e58bf0d616fe48c40146dd1047615a7fbab",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,24 @@
+{
+  "content": {
+    "assist_sha256": "00967e41dcb2aa6f3d17cce4d37eeafc540742270a09ab30f0acb4a6f559dc09",
+    "automatic_verified_labels": 0,
+    "blind_queue_sha256": "4e2f10f627bd9799284c3b975ad3a11e5659ecf701c41da06885f6e5594ddf36",
+    "capture_report_sha256": "603f3074e0bb64ae0135134a00c7a46201bc75cff03d22a2635ed43cb788b669",
+    "counts": {
+      "query_visible_private": 30,
+      "requests": 54,
+      "syntax_cue_overlap": 0,
+      "three_source": 54
+    },
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "limits": "Syntax cues and collector claims are review aids only. This file contains no independent semantic decision and must never be imported as training ground truth.",
+    "status": "AUTOMATED_EVIDENCE_CHECKED_SEMANTIC_REVIEW_PENDING",
+    "three_source_report_sha256": "e1ffcc707a16c9a919d70161da91d04fb2e11bf3a3d8bd1515622f05b2b52028",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/assist-new54/report.json",
+  "original_sha256": "47905094b7d8bd4f2ade6d87ed9eb66fb5c6908b6af3d983613b4df662d6514b",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

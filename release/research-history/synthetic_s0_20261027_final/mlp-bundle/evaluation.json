@@ -1,0 +1,237 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        24,
+        0
+      ],
+      [
+        147,
+        21
+      ]
+    ],
+    "f1": 0.2222222222222222,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            22,
+            2
+          ]
+        ],
+        "count": 24,
+        "detected": 2
+      },
+      "benign": {
+        "count": 24,
+        "false_positives": 0
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            12,
+            12
+          ]
+        ],
+        "count": 24,
+        "detected": 12
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            22,
+            2
+          ]
+        ],
+        "count": 24,
+        "detected": 2
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            22,
+            2
+          ]
+        ],
+        "count": 24,
+        "detected": 2
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            23,
+            1
+          ]
+        ],
+        "count": 24,
+        "detected": 1
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            22,
+            2
+          ]
+        ],
+        "count": 24,
+        "detected": 2
+      }
+    },
+    "latency_ms": {
+      "native": {
+        "p50": 0.006224,
+        "p95": 0.0065406,
+        "p99": 0.007343180000000003
+      },
+      "onnxruntime": {
+        "p50": 0.0039285,
+        "p95": 0.00440375,
+        "p99": 0.004819160000000022
+      },
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "multiclass_confusion_matrix": [
+      [
+        24,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        24,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        22,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        22,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        22,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0
+      ],
+      [
+        23,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        12,
+        0,
+        0,
+        0,
+        0,
+        0,
+        12,
+        0
+      ],
+      [
+        22,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1
+      ]
+    ],
+    "multiclass_labels": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "pr_auc_average_precision": 0.9367289667418448,
+    "pr_auc_trapezoidal": 0.9363994619284596,
+    "precision": 1.0,
+    "recall": 0.125,
+    "recall_at_fpr_le_1pct": 0.14285714285714285,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.6773313492063493,
+    "rows": 192,
+    "threshold": 0.9363242387771606
+  },
+  "original_relative_path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-bundle/evaluation.json",
+  "original_sha256": "5ad262666e722e7be1d4627868b380f626d8c094e1c2ac242889789806fabc63",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

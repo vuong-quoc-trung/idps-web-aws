@@ -1,0 +1,262 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        6497,
+        61
+      ],
+      [
+        6,
+        2682
+      ]
+    ],
+    "f1": 0.9876634137359602,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9264173703256936,
+        "precision_vs_benign": 0.8629213483146068,
+        "recall": 1.0
+      },
+      "benign": {
+        "count": 6558,
+        "false_positives": 61
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            6,
+            378
+          ]
+        ],
+        "count": 384,
+        "detected": 378,
+        "f1_vs_benign": 0.9185905224787364,
+        "precision_vs_benign": 0.8610478359908884,
+        "recall": 0.984375
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9264173703256936,
+        "precision_vs_benign": 0.8629213483146068,
+        "recall": 1.0
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9264173703256936,
+        "precision_vs_benign": 0.8629213483146068,
+        "recall": 1.0
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9264173703256936,
+        "precision_vs_benign": 0.8629213483146068,
+        "recall": 1.0
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9264173703256936,
+        "precision_vs_benign": 0.8629213483146068,
+        "recall": 1.0
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            6497,
+            61
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9264173703256936,
+        "precision_vs_benign": 0.8629213483146068,
+        "recall": 1.0
+      }
+    },
+    "final_test_metrics_computed": false,
+    "fpr": 0.009301616346447087,
+    "latency_ms": {
+      "native": {
+        "p50": 0.1568955,
+        "p95": 0.16195305000000002,
+        "p99": 0.16308492
+      },
+      "onnxruntime": {
+        "p50": 0.12363299999999999,
+        "p95": 0.14575209999999997,
+        "p99": 0.28177505000004105
+      },
+      "sample_partition": "val",
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "multiclass_confusion_matrix": [
+      [
+        6497,
+        19,
+        2,
+        0,
+        1,
+        0,
+        5,
+        34
+      ],
+      [
+        0,
+        245,
+        0,
+        2,
+        137,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        384,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        384,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        384,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        384,
+        0,
+        0
+      ],
+      [
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        378,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        384
+      ]
+    ],
+    "multiclass_labels": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "partition": "val_selection_groups",
+    "pr_auc_average_precision": 0.9995256236100026,
+    "pr_auc_trapezoidal": 0.9995255327450316,
+    "precision": 0.977761574917973,
+    "recall": 0.9977678571428571,
+    "recall_at_fpr_le_1pct": 0.9977678571428571,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.9998100738465561,
+    "rows": 9246,
+    "threshold": 0.04697030782699585
+  },
+  "original_relative_path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/gated_residual-bundle/evaluation.json",
+  "original_sha256": "11962763cf368e71a8e4fcffab58e211044cf91cc78ba76555f7e97f85954777",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

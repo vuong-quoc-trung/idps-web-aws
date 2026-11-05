@@ -1,0 +1,28 @@
+{
+  "content": {
+    "assist_sha256": "97453597d770763631d91bf81b7158ee8b560c0cb2e5c4e7f7496284a013de59",
+    "automatic_verified_labels": 0,
+    "blind_queue_sha256": "5702c1ac8890f9cea57120293eacf2c51c97e197f24a9d919b88849e9952f205",
+    "capture_report_sha256": "1d197358afe8123bf1887f923474447bdf4fc978b228b9fef3be4ffcff3ef1ea",
+    "counts": {
+      "cue_on_collector_attack": 15,
+      "cue_on_collector_benign": 9,
+      "post_body_unobserved": 6,
+      "query_visible_private": 42,
+      "requests": 54,
+      "syntax_cue_overlap": 0,
+      "three_source": 54
+    },
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "limits": "Blind facts and separate unblind proposals contain no independent semantic decision. Reviewers inspect private request context first; neither file may become training ground truth.",
+    "proposal_sha256": "ed3ea6dd21bf6332ac998103ba75afc5ee3e66b0527c9bc3dc916c8fd1dc683f",
+    "status": "AUTOMATED_EVIDENCE_CHECKED_SEMANTIC_REVIEW_PENDING",
+    "three_source_report_sha256": "c020be0e927003b54a303a82c93fea8ab350c1c5787eafe79da287b43f6d06dc",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/eve3-1102c/assist-v2/report.json",
+  "original_sha256": "079405296b6d32ce3827639cc0a0b2c46bfa0af46a9281caab7660c1dd405e91",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

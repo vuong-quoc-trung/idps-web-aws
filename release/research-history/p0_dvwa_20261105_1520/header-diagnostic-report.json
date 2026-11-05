@@ -1,0 +1,549 @@
+{
+  "content": {
+    "interpretation": "Header sensitivity; cannot alone prove source shortcut, causal mechanism or benefit of removing headers in deployment",
+    "model_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "scope": "POST_HOC_DIAGNOSTIC_ON_EXPOSED_P0; not independent evaluation",
+    "script_sha256": "623f5da10f7f00996847099114464f29f11f25df4a6e6f97056e3ef4a8cbe8e6",
+    "threshold": 0.8826237916946411,
+    "training_updates": 0,
+    "variants": {
+      "full": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 6,
+            "FP": 0,
+            "TN": 3,
+            "TP": 6,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.21094463823929666,
+              0.7890553617607033
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.5,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "confusion": {
+          "FN": 30,
+          "FP": 0,
+          "TN": 59,
+          "TP": 18,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.2395224034565858,
+            0.5264942393532239
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.375,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "headers_missing": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 2,
+            "FP": 0,
+            "TN": 0,
+            "TP": 10,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.5158622513140328,
+              0.9791374745399076
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.8333333333333334,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 7,
+            "FP": 0,
+            "TN": 3,
+            "TP": 5,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.15165222980843013,
+              0.7233303143178942
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.4166666666666667,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "confusion": {
+          "FN": 21,
+          "FP": 0,
+          "TN": 59,
+          "TP": 27,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.4118083588406453,
+            0.7051987586661679
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.5625,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "remove_content_type": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 6,
+            "FP": 0,
+            "TN": 3,
+            "TP": 6,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.21094463823929666,
+              0.7890553617607033
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.5,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 1,
+            "FP": 0,
+            "TN": 20,
+            "TP": 11,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.6152038348490559,
+              0.9978924067681397
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.9166666666666666,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "confusion": {
+          "FN": 31,
+          "FP": 0,
+          "TN": 59,
+          "TP": 17,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.22160593291183364,
+            0.5054317445633696
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.3541666666666667,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "remove_cookie": "[WITHHELD_PRIVATE_CONTENT]",
+      "remove_host": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 6,
+            "FP": 0,
+            "TN": 3,
+            "TP": 6,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.21094463823929666,
+              0.7890553617607033
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.5,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "confusion": {
+          "FN": 30,
+          "FP": 0,
+          "TN": 59,
+          "TP": 18,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.2395224034565858,
+            0.5264942393532239
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.375,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "remove_user_agent": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 9,
+            "FP": 0,
+            "TN": 3,
+            "TP": 3,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.05486064452799272,
+              0.5718584618781891
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.25,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 1,
+            "FP": 0,
+            "TN": 20,
+            "TP": 11,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.6152038348490559,
+              0.9978924067681397
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.9166666666666666,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "confusion": {
+          "FN": 34,
+          "FP": 0,
+          "TN": 59,
+          "TP": 14,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.16953079862802867,
+            0.4406347799136908
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.2916666666666667,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/header-diagnostic-report.json",
+  "original_sha256": "fadd7cedb0b80b9776e09d59efa5d7d7c017742d856d15a8abd4633bdec0dc97",
+  "redactions": {
+    "fields_withheld": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

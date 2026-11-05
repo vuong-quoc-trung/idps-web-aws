@@ -1,0 +1,160 @@
+{
+  "content": {
+    "calibration": {
+      "csic-published-normal-training": {
+        "benign_count": 3804,
+        "calibration_fpr": 0.003943217665615142,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.0033764841500669718
+      },
+      "pkdd-mirror-training": {
+        "benign_count": 3876,
+        "calibration_fpr": 0.0020639834881320948,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.2660749852657318
+      },
+      "student-lab": {
+        "benign_count": 3279,
+        "calibration_fpr": 0.008539188777066178,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.9962769150733948
+      }
+    },
+    "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+    "champion_selected": false,
+    "checkpoint_manifest_sha256": "823510b36a28bdfffb28299f47e28e3e6f586df5004eb00f5055e41c74c43a1f",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_sha256": "df04a81e767d2ee8f0222c73c7fdf01b2cd018bfc753d5ab78156e600ec74d65",
+    "deployment_status": "offline research candidate only",
+    "family_output": "disabled; conditional family heads lack independent validation",
+    "feature_version": "bounded-request-v1",
+    "files": {
+      "feature_spec.json": "30e15bfaf8c6dc4ddecdb199d44d12d68b8ba79f28d1f5b10110ca2120c018e4",
+      "model.onnx": "edf82d4a05ebfc3748c80aa77fc6e0443bc6269f51aa08a88c51b8eb8a7c9819"
+    },
+    "format_version": 1,
+    "input_dtype": "float32",
+    "input_shape": [
+      null,
+      76
+    ],
+    "model_kind": "residual_glu",
+    "objective": {
+      "family_weight": 0.2,
+      "kind": "partial_binary_v1",
+      "smoothing": 0.005
+    },
+    "parity": {
+      "all_rows_match": true,
+      "atol": 1e-06,
+      "max_absolute_error": 1.1920928955078125e-07,
+      "rows": 115980,
+      "rtol": 1e-05
+    },
+    "profile": "request-structure-v1",
+    "score_semantics": "1-P(benign); public unknown family never imputed",
+    "threshold": 0.9962769150733948,
+    "validation": {
+      "attack": 1536,
+      "benign": 14714,
+      "confusion_matrix": [
+        [
+          14643,
+          71
+        ],
+        [
+          385,
+          1151
+        ]
+      ],
+      "f1": 0.8346627991298042,
+      "fpr": 0.004825336414299307,
+      "pr_auc_average_precision": 0.9199391546244893,
+      "precision": 0.94189852700491,
+      "recall": 0.7493489583333334,
+      "rows": 16250,
+      "threshold": 0.9962769150733948
+    },
+    "validation_by_source": {
+      "csic-published-normal-training": {
+        "attack": 0,
+        "benign": 4512,
+        "confusion_matrix": [
+          [
+            4512,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.0,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 4512,
+        "threshold": 0.9962769150733948
+      },
+      "pkdd-mirror-training": {
+        "attack": 0,
+        "benign": 3644,
+        "confusion_matrix": [
+          [
+            3643,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.00027442371020856203,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 3644,
+        "threshold": 0.9962769150733948
+      },
+      "student-lab": {
+        "attack": 1536,
+        "benign": 6558,
+        "confusion_matrix": [
+          [
+            6488,
+            70
+          ],
+          [
+            385,
+            1151
+          ]
+        ],
+        "f1": 0.8349655422560756,
+        "fpr": 0.010673985971332723,
+        "pr_auc_average_precision": 0.9272053293072526,
+        "precision": 0.9426699426699426,
+        "recall": 0.7493489583333334,
+        "rows": 8094,
+        "threshold": 0.9962769150733948
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu256-17-bundle/model_manifest.json",
+  "original_sha256": "984fe8ff83251018e4e80ffdbabec6e8ce74f204ca37a253d826a6339f8f447c",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

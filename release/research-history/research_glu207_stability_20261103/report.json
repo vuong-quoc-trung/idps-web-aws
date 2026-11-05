@@ -1,0 +1,131 @@
+{
+  "content": {
+    "batch_size": 128,
+    "cgroup_limits_readback": {
+      "cpu.max": "400000 100000",
+      "memory.high": "16106127360",
+      "memory.max": "17179869184",
+      "memory.swap.max": "0"
+    },
+    "checkpoint": "<PROJECT_ROOT>/ai-training/.artifacts/research_glu207_stability_20261103/run/checkpoints/step-000000000100-583dca5fde26",
+    "checkpoint_manifest_sha256": "1ef01ca94d6263dd5584c7482fea90e6587b90ebc537fda4c178146310cb4634",
+    "checkpoint_readback": "PASS_PARAMETERS_AND_ADAM_STATE_EXACT",
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "features": 207,
+    "fixed_train_probe_gradient_l2_after": 0.8504474522589557,
+    "fixed_train_probe_gradient_l2_before": 22.098809544854998,
+    "fixed_train_probe_loss_after": 0.18568882264121722,
+    "fixed_train_probe_loss_before": 1.4991284524136035,
+    "loss_first_10_mean": 1.724769674726268,
+    "loss_last_10_mean": 0.14983785764973817,
+    "model_kind": "residual_glu",
+    "old_assets_preserved_readback": {
+      "old_glu207_bundle_manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+      "old_glu207_continuous_checkpoint_pointer_sha256": "ead46cbd3b66075bd068ded9ef780bcf41b1c9ce36880adf4eeb2547e6cca12c",
+      "old_glu207_resumed_checkpoint_pointer_sha256": "516f82b296b72aeecec792012dc39ce6490c58041fad57d00dad04859f3a6a16"
+    },
+    "parameters": 9675784,
+    "plan_sha256": "75df365788d1dca5bddf4b62ee8d5290b3e4d306f2312b0fd7dccff280447dcc",
+    "research_scope": "development train-only numerical stability; no validation/test/independent quality claim",
+    "resource_envelope": {
+      "address_space_limit_effective": 17179869184,
+      "affinity_effective": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cgroup_v2": {
+        "cpu.max": "400000 100000",
+        "cpu.stat": "usage_usec 1053545\nuser_usec 949787\nsystem_usec 103758\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 9\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "206028800",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "206028800",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/run-p31410-i1857.scope"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 4,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 17179869184,
+      "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+      "total_host_memory_bytes": 32440909824
+    },
+    "resource_guard": {
+      "peak_cpu_temperature_celsius": 69.0,
+      "peak_rss_bytes": 872734720,
+      "peak_tree_rss_bytes": 872734720,
+      "temperature_monitoring": "hardware_critical_limit_available",
+      "thermal_limit_reached": false,
+      "thermal_stop_threshold_celsius": 100.0
+    },
+    "resume_scope": "New research checkpoint readback exact; no resume execution in this diagnostic. Historical GLU207 pilot exact resume remains separate; this train-only subset checkpoint is not a standard full-dataset runner continuation.",
+    "sampled_family_counts": {
+      "behavioral_anomaly": 552,
+      "benign": 9042,
+      "brute_force": 524,
+      "cmd_injection": 552,
+      "path_traversal": 530,
+      "scanner_recon": 551,
+      "sqli": 508,
+      "xss": 541
+    },
+    "sampled_gradient_clip_fraction": 0.7,
+    "sampled_gradient_l2_max": 8.379799604154734,
+    "sampled_gradient_l2_median": 1.0462483475494242,
+    "sampled_gradient_l2_min": 0.35945878795759634,
+    "sampled_label_counts": {
+      "attack_publisher_or_runner": 3758,
+      "benign": 9042
+    },
+    "seed": 17,
+    "train_family_counts_accessible": {
+      "behavioral_anomaly": 1728,
+      "benign": 29409,
+      "brute_force": 1728,
+      "cmd_injection": 1718,
+      "path_traversal": 1717,
+      "scanner_recon": 1723,
+      "sqli": 1723,
+      "xss": 1726
+    },
+    "train_rows_accessible_without_mixed_rowgroup": 41472,
+    "train_rows_available_total": 41607,
+    "train_rows_sampled_for_updates": 12800,
+    "train_unique_feature_views_accessible": 41450,
+    "train_unique_feature_views_sampled_for_updates": 12798,
+    "train_unique_rows_sampled_for_updates": 12800,
+    "updates": 100,
+    "validation_or_test_rows_decoded": 0,
+    "wall_seconds": 23.142585132000022
+  },
+  "original_relative_path": "ai-training/.artifacts/research_glu207_stability_20261103/report.json",
+  "original_sha256": "e8d811cc4450b909771335f247e9cf1bb3fe84c098f328afea9330d13ab22639",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

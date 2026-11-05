@@ -1,0 +1,86 @@
+{
+  "content": {
+    "as_of": "2026-11-04T16:00:35.311458+07:00",
+    "checkpoint_readback": "PASS_PARAMETERS_AND_ADAM_STATE_EXACT_BOTH_EPOCHS",
+    "completed_epochs": 2,
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "dataset_train_rows": 41607,
+    "epoch_mean_losses": [
+      0.20417752913575277,
+      0.12902026837759895
+    ],
+    "evaluation": "INCONCLUSIVE_NOT_RUN; validation repeatedly exposed, final holdout sealed",
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "final_20_batch_loss": 0.1283044336474716,
+    "final_checkpoint": "<PROJECT_ROOT>/ai-training/.artifacts/research_glu207_bounded_20261104/run/checkpoints/step-000000000652-7609ffb359e8",
+    "final_checkpoint_manifest_sha256": "4bb5d0ebfba0d403c16d366ea823b2867d2bd05769425c7ef1f021555e8dcd7f",
+    "first_20_batch_loss": 1.0438015094354025,
+    "formal_admitted_requests": 0,
+    "formal_ready": false,
+    "freeze_sha256": "82ba7aca8260c9a4d453506f56d26b020d390bb72e85eb529bec346f3e1f1d53",
+    "label_semantics": "development lab runner/publisher labels; benign and seven scenario families; intent/outcome not independently verified; supervised research fitting only",
+    "model": {
+      "hidden_dim": 1024,
+      "kind": "residual_glu",
+      "parameters": 9675784,
+      "regularization": "existing defaults: dropout 0.1, label smoothing 0.02, weight decay 1e-4"
+    },
+    "onnx_parity": {
+      "atol": 1e-06,
+      "max_abs_probability_error": 4.656612873077393e-10,
+      "max_abs_score_error": 0.0,
+      "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+      "parity_rows_train_only": 16,
+      "rtol": 1e-05,
+      "status": "PASS"
+    },
+    "quality_claim": "NONE; training loss and ONNX parity are technical diagnostics only",
+    "research_eval_ready": false,
+    "research_fit_ready": true,
+    "resource": {
+      "cpu_quota_cores": 4,
+      "memory_high_bytes": 16106127360,
+      "memory_max_bytes": 17179869184,
+      "memory_swap_max_bytes": 0,
+      "peak_cpu_temperature_celsius": 64.0,
+      "peak_process_rss_bytes": 762953728,
+      "thermal_guard_triggered": false
+    },
+    "resume": "PASS_SECOND_PROCESS_FROM_EPOCH_1_CHECKPOINT",
+    "sample_exposures": 83214,
+    "source_sha256": "7c956a57d291aaef3bc0964512f076f58f01824e653ea93cc34f632b7e350344",
+    "status": "RESEARCH_TRAINING_COMPLETE",
+    "tests": {
+      "formal_gate": "UNCHANGED",
+      "py_compile": "PASS",
+      "ruff_check_new_frozen_script": "FAIL_E402_ONLY",
+      "ruff_format_new_frozen_script": "FAIL_TWO_FORMATTING_LOCATIONS",
+      "targeted_training_export_scale_pytest": "PASS_18",
+      "web_diff": "PASS_UNCHANGED"
+    },
+    "track": "A_PRIMARY_GLU207",
+    "training": {
+      "batch_size": 128,
+      "checkpoint_every_epochs": 1,
+      "class_weighting": "none",
+      "epochs": 2,
+      "learning_rate": 0.0003,
+      "max_seconds_per_invocation": 600,
+      "min_lr_ratio": 0.05,
+      "scheduler": "warmup_cosine",
+      "seed": 17,
+      "total_steps": 652,
+      "warmup_steps": 30
+    },
+    "training_wall_seconds": 146.98897129500074,
+    "unique_float32_train_views": 41585,
+    "unique_views_seen": 41585,
+    "updates": 652
+  },
+  "original_relative_path": "ai-training/.artifacts/research_glu207_bounded_20261104/report.json",
+  "original_sha256": "9fbafd525631c948487f85adf2bfc1b46b3acabae748eec41097ff5d35442552",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,29 @@
+{
+  "content": {
+    "attack_payloads_not_imported": true,
+    "capture_time": "Per-requesttimestamps absent; archiveLastModified2024-12-01 is not eachHTTPtimestamp",
+    "commit": "8ec8263eebba76816601f7c7052f8ffb83e31312",
+    "commit_date": "2026-02-11T09:30:13Z",
+    "count_discrepancy": "Documentation webpage reports692websites/14categories, repositoryREADME185/12; archive has692JSONcasefiles. Count actual records and treat casefiles as groupingproxies, not guaranteed independently reviewed sites/campaigns.",
+    "files": {
+      "LICENSE": {
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "url": "https://raw.githubusercontent.com/openappsec/waf-comparison-project/8ec8263eebba76816601f7c7052f8ffb83e31312/LICENSE"
+      },
+      "README.md": {
+        "sha256": "0ac1c7314387911400868b333623b6fabb0e0c0f4e85b0e641f18530dc7c72ee",
+        "url": "https://raw.githubusercontent.com/openappsec/waf-comparison-project/8ec8263eebba76816601f7c7052f8ffb83e31312/README.md"
+      },
+      "config.py": {
+        "sha256": "98840b2e0cf3199451e90b0f9e4a41bf422efb17edef9bdfdb4563b13ef94098",
+        "url": "https://raw.githubusercontent.com/openappsec/waf-comparison-project/8ec8263eebba76816601f7c7052f8ffb83e31312/config.py"
+      }
+    },
+    "license": "Apache-2.0 explicitly includes legitimate capture dataset; not a blanket license for MGM attack collection",
+    "repository": "https://github.com/openappsec/waf-comparison-project"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/publisher-provenance.json",
+  "original_sha256": "f16c379d61c8397c74d87864a77e90f660f2be3675c7beab808a6978b9488818",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

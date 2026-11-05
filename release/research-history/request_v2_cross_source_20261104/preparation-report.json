@@ -1,0 +1,65 @@
+{
+  "content": {
+    "code_sha256": "472f048286f3425be79fddf57ad17b31d4d6e7b530f194fe41e3ebe9b3faf43f",
+    "cohort_sha256": "30393076f6358ac2105a7df9ff7e2f64926b6ce427f4ca93e72070dd237e2709",
+    "counts": {
+      "augmented_2026_excluded": 60,
+      "conflicting_raw_representations": 5,
+      "conflicting_transaction_ids": 20,
+      "conflicting_v2_feature_views": 3,
+      "distinct_2024_transaction_ids": 27626,
+      "exact_method_url_body_overlap_waf_train": 4,
+      "raw_overlap_rows": 289,
+      "repeated_tx_rows": 81197,
+      "template_overlap_rows": 305,
+      "tx_rows_after_quarantine": 22828,
+      "unique_complete_request_representations_after_quarantine": 18294,
+      "unique_v2_views_after_quarantine": 15194,
+      "view_overlap_rows": 0,
+      "workbook_rows": 108883
+    },
+    "encoder_sha256": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+    "feature_availability": {
+      "all_other_header_values": "unavailable; never fabricated",
+      "host_observed_rows": 22828,
+      "request_method_url_body": true,
+      "response_waf_rule_status_as_model_input": false,
+      "user_agent_observed_rows": 22828
+    },
+    "formal_admitted": 0,
+    "format_version": 1,
+    "independent_attack_intent_verified": 0,
+    "label_semantics": "publisher normal vs publisher sqli/xss/fileinclusion/rce/bruteforce; hybrid scenario/regex/manual, per-row basis unavailable",
+    "method_counts_after_quarantine": {
+      "GET": 20270,
+      "POST": 2558
+    },
+    "near_duplicate_probe": {
+      "content_cosine_ge_0_995_pairs": 0,
+      "max_content_cosine": 0.9949963092803955,
+      "modsec_sample": 512,
+      "waf_train_sample": 512
+    },
+    "numeric_spec_sha256": "16066e231ff269508efefffcc0c3e28ea831c1e351cb7d9c10abb6c5fce8bb53",
+    "physical_request_count_verified": false,
+    "publisher_family_counts_after_quarantine": {
+      "bruteforce": 1770,
+      "fileinclusion-ldf": 946,
+      "normal": 4790,
+      "rce": 1045,
+      "sqli": 12695,
+      "xss": 1582
+    },
+    "report_sha256": "2fe1ee2fe5da2414534d2a13c506529cf3578f2cda6635b5c63766b436548189",
+    "scope": "2024 WordPress testbed, retrospective publisher labels; not blind or verified attack intent",
+    "source": "ModSec-WP v2 Zenodo 10.5281/zenodo.21872151; CC BY 4.0 publisher metadata",
+    "source_audit_file_sha256": "70d21f365247ac818d706605e53f46620c45fe4d441f55af78bda7f801abd87e",
+    "source_workbook_sha256": "f959c79e185502b03206f6fdeb29306a65571394c2f009dda503d43ba306d16d",
+    "waf_train_sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+    "waf_v2_train_tensor_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049"
+  },
+  "original_relative_path": "ai-training/.artifacts/request_v2_cross_source_20261104/preparation-report.json",
+  "original_sha256": "f3c4292148538aedae039a7b54a369453fcc7d1cf3b4ca46dd69ea022b495909",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

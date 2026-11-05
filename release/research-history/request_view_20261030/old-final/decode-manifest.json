@@ -1,0 +1,43 @@
+{
+  "content": {
+    "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "checksum_validation": "disabled only for loopback capture/offload checksums",
+    "config_sha256": "90236ad2ce88bf8b629756c8eaee15cde9132680d08c3cf094532a5b6fb49232",
+    "eve_sha256": "9b5351104ea9344ede5e29d1b41a145b2c3820f8b6044b64930f37e87c9b6299",
+    "event_counts": {
+      "alert": 20303,
+      "flow": 69345,
+      "http": 69345,
+      "stats": 2
+    },
+    "format_version": 1,
+    "http_headers": "response headers transiently through private Unix socket; only X-Request-Id persisted; query/UA redacted before disk; no body dump",
+    "input_profile": "request-structure-v1",
+    "limits": [
+      "Real TCP over loopback, not a production network benchmark",
+      "Closed flow totals are available only after flow close; pipeline uses past completed client flow context"
+    ],
+    "pcap_sha256": "a224671b8759c8f3e2bc1fd5057f585e3a8b94ee195be1bc5cc0723f21dbfc26",
+    "repository_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+    "request_ids": 69345,
+    "request_structure_implementation_sha256": "e1c3df19f511be2773e56af61828ebe201bdbe8eae7cd8475de3b290fab4522b",
+    "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "signature_counts": {
+      "1000001": 3995,
+      "1000002": 2004,
+      "1000003": 3597,
+      "1000004": 2322,
+      "1000005": 3634,
+      "1000006": 983,
+      "1000007": 2880,
+      "1000008": 864,
+      "1000009": 24
+    },
+    "source": "offline real packet capture",
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/old-final/decode-manifest.json",
+  "original_sha256": "74801b28e01c11d48881b73a0cccc2367c7726284c3de4e4bf9dc192811b6a31",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

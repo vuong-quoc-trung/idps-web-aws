@@ -1,0 +1,160 @@
+{
+  "content": {
+    "calibration": {
+      "csic-published-normal-training": {
+        "benign_count": 3804,
+        "calibration_fpr": 0.0057833859095688745,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.25673553347587585
+      },
+      "pkdd-mirror-training": {
+        "benign_count": 3876,
+        "calibration_fpr": 0.009545923632610939,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.48213991522789
+      },
+      "student-lab": {
+        "benign_count": 3279,
+        "calibration_fpr": 0.0,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.99901282787323
+      }
+    },
+    "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+    "champion_selected": false,
+    "checkpoint_manifest_sha256": "fb84c4518cd70dac421f10fb6064f561efabc0b65f9bd16002dd4c3d71cff376",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_sha256": "32bcd01d379743c438f85790670d46fcabb7317b8260669d0f86d30c3056f7c8",
+    "deployment_status": "offline research candidate only",
+    "family_output": "disabled; conditional family heads lack independent validation",
+    "feature_version": "bounded-security-v1",
+    "files": {
+      "feature_spec.json": "16e5f16afafd5bb21859af63c1f79d85212d7f334edbb77aeeacb9c87db720c2",
+      "model.onnx": "03f6425d58d63e06090b9cd3e0eb74d7119235478067f9b58616b4cb39a57e80"
+    },
+    "format_version": 1,
+    "input_dtype": "float32",
+    "input_shape": [
+      null,
+      45
+    ],
+    "model_kind": "residual_glu",
+    "objective": {
+      "family_weight": 0.2,
+      "kind": "partial_binary_v1",
+      "smoothing": 0.005
+    },
+    "parity": {
+      "all_rows_match": true,
+      "atol": 1e-06,
+      "max_absolute_error": 1.1920928955078125e-07,
+      "rows": 115980,
+      "rtol": 1e-05
+    },
+    "profile": "request-structure-v1",
+    "score_semantics": "1-P(benign); public unknown family never imputed",
+    "threshold": 0.99901282787323,
+    "validation": {
+      "attack": 1536,
+      "benign": 14714,
+      "confusion_matrix": [
+        [
+          14714,
+          0
+        ],
+        [
+          840,
+          696
+        ]
+      ],
+      "f1": 0.6236559139784946,
+      "fpr": 0.0,
+      "pr_auc_average_precision": 0.8678771910521427,
+      "precision": 1.0,
+      "recall": 0.453125,
+      "rows": 16250,
+      "threshold": 0.99901282787323
+    },
+    "validation_by_source": {
+      "csic-published-normal-training": {
+        "attack": 0,
+        "benign": 4512,
+        "confusion_matrix": [
+          [
+            4512,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.0,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 4512,
+        "threshold": 0.99901282787323
+      },
+      "pkdd-mirror-training": {
+        "attack": 0,
+        "benign": 3644,
+        "confusion_matrix": [
+          [
+            3644,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.0,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 3644,
+        "threshold": 0.99901282787323
+      },
+      "student-lab": {
+        "attack": 1536,
+        "benign": 6558,
+        "confusion_matrix": [
+          [
+            6558,
+            0
+          ],
+          [
+            840,
+            696
+          ]
+        ],
+        "f1": 0.6236559139784946,
+        "fpr": 0.0,
+        "pr_auc_average_precision": 0.9031739701853183,
+        "precision": 1.0,
+        "recall": 0.453125,
+        "rows": 8094,
+        "threshold": 0.99901282787323
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-bundle/model_manifest.json",
+  "original_sha256": "0cf43a8fd793211d0a2b7f9af3ae5369210eb83dbc02e24392fa795a8b6590e6",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

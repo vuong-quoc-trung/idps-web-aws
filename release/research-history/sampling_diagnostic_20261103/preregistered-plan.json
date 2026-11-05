@@ -1,0 +1,121 @@
+{
+  "content": {
+    "baseline": {
+      "glu1024": {
+        "bundle_manifest_sha256": "7d20a60b61dfa9a18323e6fc71f7de8b1d0a1d2893b20901dfcc462d40ce544b",
+        "checkpoint_manifest_sha256": "857d9ec1d01467e0b50392db587ad57ba79ef2bd4756bfab6766862e64571b98",
+        "config_sha256": "227cbe2b56c30e264a7b26619cea470957ee33f0f4ad378aca39dcd6a7326c5c",
+        "kind": "residual_glu",
+        "optimizer_updates": 300,
+        "width": 1024
+      },
+      "mlp256": {
+        "bundle_manifest_sha256": "3b0dbe2bc222534550bf639f124563b1b385a8e8ca6848bee632958a74f2f2da",
+        "checkpoint_manifest_sha256": "1d815f98ec29159580eb6151b93368a4daa7782c604ff708c7803480f5d3bb22",
+        "config_sha256": "0aca692dea55b1b8f86c684b1cb6e54cc667fbbf6dfd9b19e5e15e85c58574da",
+        "kind": "deep_mlp",
+        "optimizer_updates": 300,
+        "width": 256
+      }
+    },
+    "budget": {
+      "batch_size": 128,
+      "max_cpus": 4,
+      "max_memory_gib": 16,
+      "max_sessions": 2,
+      "seed": 17,
+      "updates_per_model": 300
+    },
+    "created_at": "2026-11-03T08:34:21+07:00",
+    "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/partition_recovery_20261031/forward-development-v2",
+    "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+    "decision": "No champion, no threshold/model promotion; one exploratory intervention only, even if result is adverse.",
+    "evaluation": {
+      "no_significance_or_production_claim": true,
+      "primary": "student-lab validation unique-view FPR and attack recall, with SRBH as paired source diagnostic",
+      "roles": [
+        "calibration",
+        "val"
+      ],
+      "row_and_exact_float32_view_metrics": true,
+      "secondary": [
+        "request-row FPR/recall/PR-AUC",
+        "unique-view PR-AUC",
+        "source/family counts"
+      ],
+      "sources": [
+        "srbh2020",
+        "student-lab"
+      ],
+      "threshold": "same max per-source benign calibration quantile at target FPR 1%; no validation or holdout threshold fitting"
+    },
+    "hypothesis": "Uniform without-replacement ordering will lower student-lab unique-view FPR; any recall loss and source/family distribution change must be reported, so mechanism is not uniquely identified.",
+    "intervention": "Remove sampling=domain_family_balanced; existing default draws a no-replacement permutation. No other config/model/data change.",
+    "known_limits": [
+      "Student lab and SRBH labels are not independently reviewed",
+      "Development validation has been repeatedly exposed",
+      "Uniform sampler changes source/class/family exposure together; no single-cause attribution",
+      "No new independent environment"
+    ],
+    "question": "Does replacement-based domain/family balancing magnify false positives by repeatedly exposing the small student-lab benign-view pool?",
+    "scope": "EXPOSED_RETROSPECTIVE_DEVELOPMENT_ONLY",
+    "sealed": [
+      "test",
+      "old final lab",
+      "generation3",
+      "30-day archive",
+      "148 WCP files"
+    ],
+    "selected_train_exact_float32_views": 27142,
+    "selected_train_views_by_source_class": {
+      "srbh2020": {
+        "attack": 15850,
+        "benign": 10059
+      },
+      "student-lab": {
+        "attack": 1027,
+        "benign": 206
+      }
+    },
+    "source_sha256": "dfc33ae62645263a4d7180271c369b25e9fc3f9828540b33cffcc84d965b9ea6",
+    "train_rows": 96423,
+    "treatment_config": {
+      "glu1024": {
+        "family_weight": 0.0,
+        "kind": "residual_glu",
+        "learning_rate": 0.0003,
+        "seed": 17,
+        "smoothing": 0.005,
+        "total_steps": 300,
+        "training_pool": "curated_multisource",
+        "training_sources": [
+          "srbh2020",
+          "student-lab"
+        ],
+        "warmup_steps": 15,
+        "width": 1024
+      },
+      "mlp256": {
+        "family_weight": 0.0,
+        "kind": "deep_mlp",
+        "learning_rate": 0.0003,
+        "seed": 17,
+        "smoothing": 0.005,
+        "total_steps": 300,
+        "training_pool": "curated_multisource",
+        "training_sources": [
+          "srbh2020",
+          "student-lab"
+        ],
+        "warmup_steps": 15,
+        "width": 256
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/sampling_diagnostic_20261103/preregistered-plan.json",
+  "original_sha256": "95936714569d12b936c0af40c19dd6067bae4018d303b015bc6a13bdc0e348d8",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

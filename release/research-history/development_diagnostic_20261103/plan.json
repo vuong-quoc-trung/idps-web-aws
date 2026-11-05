@@ -1,0 +1,27 @@
+{
+  "content": {
+    "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+    "diagnostic_code_sha256": "e1ca7e03cbf7b986884c881cef4be7164c7d41666173a0cff6518489b5c2e8cb",
+    "hypothesis": "At frozen thresholds, do MLP76 and GLU76 have different source-specific error sets and train/val gaps?",
+    "models": {
+      "glu1024": {
+        "manifest_sha256": "7d20a60b61dfa9a18323e6fc71f7de8b1d0a1d2893b20901dfcc462d40ce544b",
+        "threshold": 0.9984238147735596
+      },
+      "mlp256": {
+        "manifest_sha256": "3b0dbe2bc222534550bf639f124563b1b385a8e8ca6848bee632958a74f2f2da",
+        "threshold": 0.9999801516532898
+      }
+    },
+    "no_holdout_or_formal_labels": true,
+    "no_threshold_fit_or_optimizer_updates": true,
+    "partitions": [
+      "train",
+      "val"
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/development_diagnostic_20261103/plan.json",
+  "original_sha256": "966b575cc4a6085b7087bb4ee9d475f161daace11266cd74838a57cfce3be284",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

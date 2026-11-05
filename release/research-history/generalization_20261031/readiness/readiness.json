@@ -1,0 +1,702 @@
+{
+  "content": {
+    "checks": [
+      {
+        "detail": "Real lab pilot requires a bound capture/observer provenance file; synthetic/demo cannot certify readiness",
+        "id": "provenance",
+        "pass": true
+      },
+      {
+        "detail": "Provenance references this immutable dataset",
+        "id": "provenance_binding",
+        "pass": true
+      },
+      {
+        "detail": {
+          "actual": 69345,
+          "minimum": 60000
+        },
+        "id": "volume",
+        "pass": true
+      },
+      {
+        "detail": {
+          "coverage": 1.0,
+          "known": 69345,
+          "unknown": 0
+        },
+        "id": "reviewed_labels",
+        "pass": true
+      },
+      {
+        "detail": "No ambiguous or ungrouped observation can be approved",
+        "id": "approved_identity",
+        "pass": true
+      },
+      {
+        "detail": "Trusted source/request identity coverage; this does not prove topology attribution acceptance",
+        "id": "identity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "ADMIN": 20949,
+          "STAFF": 20980,
+          "STUDENT": 20938,
+          "UNKNOWN": 6478
+        },
+        "id": "roles",
+        "pass": true
+      },
+      {
+        "detail": {
+          "NGINX": 69345,
+          "STUDENT_AUDIT": 69345,
+          "SURICATA": 158995
+        },
+        "id": "sources",
+        "pass": true
+      },
+      {
+        "detail": "Reviewed benign reads, mutations and hard-negative HTTP errors must all exist",
+        "id": "http_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "accepted": 297685,
+          "duplicates": 0
+        },
+        "id": "parser_quality",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cutoffs": [
+            1793323469.81467,
+            1793324571.6338196
+          ],
+          "embargo_seconds": 300,
+          "group_columns": [
+            "campaign_key",
+            "client_key",
+            "user_key",
+            "session_key"
+          ],
+          "groups": 45,
+          "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+          "reviewed_rows": {
+            "test": 13869,
+            "train": 41607,
+            "val": 13869
+          }
+        },
+        "id": "temporal_split",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 1728,
+          "benign": 29511,
+          "brute_force": 1728,
+          "cmd_injection": 1728,
+          "path_traversal": 1728,
+          "scanner_recon": 1728,
+          "sqli": 1728,
+          "xss": 1728
+        },
+        "id": "train_classes",
+        "pass": true
+      },
+      {
+        "detail": 27,
+        "id": "train_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 576,
+          "benign": 9837,
+          "brute_force": 576,
+          "cmd_injection": 576,
+          "path_traversal": 576,
+          "scanner_recon": 576,
+          "sqli": 576,
+          "xss": 576
+        },
+        "id": "val_classes",
+        "pass": true
+      },
+      {
+        "detail": 9,
+        "id": "val_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 576,
+          "benign": 9837,
+          "brute_force": 576,
+          "cmd_injection": 576,
+          "path_traversal": 576,
+          "scanner_recon": 576,
+          "sqli": 576,
+          "xss": 576
+        },
+        "id": "test_classes",
+        "pass": true
+      },
+      {
+        "detail": 9,
+        "id": "test_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_identities": 0
+        },
+        "id": "identity_disjoint",
+        "pass": true
+      },
+      {
+        "detail": {
+          "declared_campaigns": 45,
+          "distinct_plans": 45
+        },
+        "id": "independent_campaign_plans",
+        "pass": true
+      },
+      {
+        "detail": {
+          "DELETE": 229,
+          "GET": 16108,
+          "HEAD": 5367,
+          "OPTIONS": 5446,
+          "PATCH": 244,
+          "POST": 1897,
+          "PUT": 220
+        },
+        "id": "train_benign_methods",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variants": 0,
+          "distinct_variants": 12
+        },
+        "id": "train_hard_negative_holdout",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cmd_injection": 16,
+          "path_traversal": 16,
+          "sqli": 16,
+          "xss": 16
+        },
+        "id": "train_payload_diversity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cmd_injection": 1.0,
+          "path_traversal": 1.0,
+          "sqli": 1.0,
+          "xss": 1.0
+        },
+        "id": "train_payload_visibility",
+        "pass": true
+      },
+      {
+        "detail": {
+          "DELETE": 73,
+          "GET": 5335,
+          "HEAD": 1829,
+          "OPTIONS": 1805,
+          "PATCH": 75,
+          "POST": 638,
+          "PUT": 82
+        },
+        "id": "val_benign_methods",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variants": 0,
+          "distinct_variants": 12
+        },
+        "id": "val_hard_negative_holdout",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cmd_injection": 16,
+          "path_traversal": 16,
+          "sqli": 16,
+          "xss": 16
+        },
+        "id": "val_payload_diversity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cmd_injection": 1.0,
+          "path_traversal": 1.0,
+          "sqli": 1.0,
+          "xss": 1.0
+        },
+        "id": "val_payload_visibility",
+        "pass": true
+      },
+      {
+        "detail": {
+          "DELETE": 77,
+          "GET": 5364,
+          "HEAD": 1811,
+          "OPTIONS": 1808,
+          "PATCH": 71,
+          "POST": 618,
+          "PUT": 88
+        },
+        "id": "test_benign_methods",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variants": 0,
+          "distinct_variants": 12
+        },
+        "id": "test_hard_negative_holdout",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cmd_injection": 16,
+          "path_traversal": 16,
+          "sqli": 16,
+          "xss": 16
+        },
+        "id": "test_payload_diversity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cmd_injection": 1.0,
+          "path_traversal": 1.0,
+          "sqli": 1.0,
+          "xss": 1.0
+        },
+        "id": "test_payload_visibility",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variant_rows": 0,
+          "distinct_scripted_views": 336,
+          "missing_variant_rows": 0
+        },
+        "id": "heldout_variants",
+        "pass": true
+      },
+      {
+        "detail": "safe_query_numeric_v2",
+        "id": "input_availability_profile",
+        "pass": true
+      },
+      {
+        "detail": {
+          "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+          "checksum_validation": "disabled only for loopback capture/offload checksums",
+          "config_sha256": "13d48351c3e1eaf9a03b13a0a6ef1765496603019125f31f82674202e061fe08",
+          "eve_sha256": "7875e21bed6e18798d742734b2f7db49c53d6a216541bc0d474373a2a808ffee",
+          "event_counts": {
+            "alert": 20303,
+            "flow": 69345,
+            "http": 69345,
+            "stats": 2
+          },
+          "format_version": 1,
+          "http_headers": "response headers transiently through private Unix socket; only X-Request-Id persisted; query/UA redacted before disk; no body dump",
+          "input_profile": "safe_query_numeric_v2",
+          "limits": [
+            "Real TCP over loopback, not a production network benchmark",
+            "Closed flow totals are available only after flow close; pipeline uses past completed client flow context"
+          ],
+          "pcap_sha256": "a224671b8759c8f3e2bc1fd5057f585e3a8b94ee195be1bc5cc0723f21dbfc26",
+          "repository_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+          "request_ids": 69345,
+          "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+          "signature_counts": {
+            "1000001": 3995,
+            "1000002": 2004,
+            "1000003": 3597,
+            "1000004": 2322,
+            "1000005": 3634,
+            "1000006": 983,
+            "1000007": 2880,
+            "1000008": 864,
+            "1000009": 24
+          },
+          "source": "offline real packet capture",
+          "status": "PASS"
+        },
+        "id": "real_eve_evidence",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 41607,
+          "total": 41607
+        },
+        "id": "train_query_projection",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 41607,
+          "total": 41607
+        },
+        "id": "train_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 36443,
+          "reserved_delay_seconds": 65,
+          "total": 41607
+        },
+        "id": "train_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 27,
+          "minimum_seconds": 479.90416193008423
+        },
+        "id": "train_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 13869,
+          "total": 13869
+        },
+        "id": "val_query_projection",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 13869,
+          "total": 13869
+        },
+        "id": "val_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 12127,
+          "reserved_delay_seconds": 65,
+          "total": 13869
+        },
+        "id": "val_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 9,
+          "minimum_seconds": 480.1149859428406
+        },
+        "id": "val_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 13869,
+          "total": 13869
+        },
+        "id": "test_query_projection",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 13869,
+          "total": 13869
+        },
+        "id": "test_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 12122,
+          "reserved_delay_seconds": 65,
+          "total": 13869
+        },
+        "id": "test_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 9,
+          "minimum_seconds": 480.1779570579529
+        },
+        "id": "test_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": "Rule facts and identities are not model inputs",
+        "id": "rule_free_features",
+        "pass": true
+      },
+      {
+        "detail": "Feature order and implementation fingerprint match the current source",
+        "id": "feature_contract",
+        "pass": true
+      },
+      {
+        "detail": {
+          "nonfinite": 0,
+          "vectors": 69345
+        },
+        "id": "finite_vectors",
+        "pass": true
+      },
+      {
+        "detail": {
+          "mismatched_vectors": 0
+        },
+        "id": "offline_replay_parity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "complete_rows": 29741,
+          "total": 69345
+        },
+        "id": "window_300s_depth",
+        "pass": true
+      },
+      {
+        "detail": {
+          "total": 41,
+          "varying": 33
+        },
+        "id": "structural_signal_variation",
+        "pass": true
+      },
+      {
+        "detail": "Requires projection2 and versioned structural features",
+        "id": "numeric_projection_version",
+        "pass": true
+      }
+    ],
+    "constant_feature_columns": [
+      "object_identity_available",
+      "query_lexical_available",
+      "query_original_available",
+      "query_original_length",
+      "query_original_operator_count",
+      "query_original_parameter_count",
+      "query_original_percent_count",
+      "query_original_quote_count",
+      "quote_double",
+      "uri_lexical_available",
+      "backslash_count",
+      "duplicate_parameter_count",
+      "empty_parameter_count",
+      "html_entity_count",
+      "invalid_escape_count",
+      "newline_count",
+      "null_byte_count",
+      "structure_available",
+      "method_CONNECT",
+      "method_TRACE",
+      "method_OTHER",
+      "role_ANONYMOUS",
+      "ua_Chromium",
+      "ua_Safari",
+      "ua_Edge",
+      "ua_wget",
+      "user_agent_missing",
+      "user_agent_unknown",
+      "status_3xx",
+      "status_5xx",
+      "status_missing",
+      "latency_ms_missing",
+      "request_bytes_missing",
+      "response_bytes_missing",
+      "ip_10s_error5_ratio",
+      "ip_10s_api_ratio",
+      "ip_60s_error5_ratio",
+      "ip_60s_api_ratio",
+      "ip_300s_error5_ratio",
+      "ip_300s_api_ratio",
+      "user_auth_failure_acceleration",
+      "user_10s_error5_ratio",
+      "user_10s_auth_failure_streak",
+      "user_60s_error5_ratio",
+      "user_60s_auth_failure_streak",
+      "user_300s_error5_ratio",
+      "user_300s_auth_failure_streak"
+    ],
+    "data_kind": "lab_capture",
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "feature_count": 207,
+    "format_version": 1,
+    "groups_per_partition": {
+      "test": 9,
+      "train": 27,
+      "val": 9
+    },
+    "implementation_sha256": "5e23ddf1d6190cfd38f9b7cdb279886e58c0d9332936b3e6111c24e45c296311",
+    "label_distributions": {
+      "test": {
+        "behavioral_anomaly": 576,
+        "benign": 9837,
+        "brute_force": 576,
+        "cmd_injection": 576,
+        "path_traversal": 576,
+        "scanner_recon": 576,
+        "sqli": 576,
+        "xss": 576
+      },
+      "train": {
+        "behavioral_anomaly": 1728,
+        "benign": 29511,
+        "brute_force": 1728,
+        "cmd_injection": 1728,
+        "path_traversal": 1728,
+        "scanner_recon": 1728,
+        "sqli": 1728,
+        "xss": 1728
+      },
+      "val": {
+        "behavioral_anomaly": 576,
+        "benign": 9837,
+        "brute_force": 576,
+        "cmd_injection": 576,
+        "path_traversal": 576,
+        "scanner_recon": 576,
+        "sqli": 576,
+        "xss": 576
+      }
+    },
+    "limits": [
+      "This gate checks offline pilot data readiness, not detection quality or production acceptance",
+      "No training is executed; rule comparison, quality metrics and held-out performance follow training",
+      "Rust preprocessing/inference parity and target-machine endurance remain separate acceptance tasks",
+      "Actual HTTP and PCAP/EVE on isolated loopback fixture; not representative production traffic",
+      "safe_query_numeric_v2 requires the identical pre-redaction AI EVE bridge at inference; current Rust serving path has not accepted this new profile. No raw query is persisted",
+      "Completed-client-flow context reserves 65s after packet end; event-time replay is not acceptance of live sensor receipt delays",
+      "Independent campaign plans, real 620s gaps and disjoint identities across three temporal bands; one host/topology and scripted workload still limit generalization",
+      "Scenario labels describe intent/expected outcomes; no exploit success or independent human realism review",
+      "No Rust inference, production champion, shadow or firewall enforcement accepted",
+      "Decoded payloads repeated in earlier temporal bands remain context only in later bands; label evidence records each holdout exclusion"
+    ],
+    "offline_pilot_training_permitted": true,
+    "partition_time_ranges": {
+      "test": [
+        1793324882.398553,
+        1793325362.903692
+      ],
+      "train": [
+        1793322677.636501,
+        1793323159.230271
+      ],
+      "val": [
+        1793323780.399069,
+        1793324260.869086
+      ]
+    },
+    "policy_sha256": "7831240f9b5bd8427f186ad88cd76b1eb8dc6e4dbcec9981044d6b33d299606b",
+    "provenance_sha256": "c0d8e577d487168c4f1d4eaee6ba72bfc2468916a5b33a17163c89e745ba1dc6",
+    "purpose": "expanded_3_source_offline_pilot",
+    "quality_feature_counts": {
+      "flow_bytes_to_client_missing": 8653,
+      "flow_bytes_to_server_missing": 8653,
+      "flow_duration_seconds_missing": 8653,
+      "flow_packets_to_client_missing": 8653,
+      "flow_packets_to_server_missing": 8653,
+      "ip_10s_context_incomplete": 1410,
+      "ip_300s_context_incomplete": 39604,
+      "ip_60s_context_incomplete": 7940,
+      "ip_interarrival_missing": 45,
+      "latency_ms_missing": 0,
+      "request_bytes_missing": 0,
+      "response_bytes_missing": 0,
+      "status_missing": 0,
+      "user_10s_context_incomplete": 7809,
+      "user_300s_context_incomplete": 43890,
+      "user_60s_context_incomplete": 13982,
+      "user_agent_missing": 0,
+      "user_interarrival_missing": 6523
+    },
+    "report_sha256": "3752ef5d9bc0bbfee13246eadb0367e143edb51d6f05d4c46f7cc48f12419e12",
+    "rows": 69345,
+    "source_files_sha256": {
+      "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+      "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+      "src/idps_ai/cli.py": "033ec496f5e63d7f67f101618f970e190e33d8e2026f97f083799094bba6890f",
+      "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+      "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+      "src/idps_ai/data/assembly.py": "a4f036e616644937e3442c76a16d6dda9dfea65905d879ccefaa6914bf1210bc",
+      "src/idps_ai/data/baseline.py": "da29d8572a798def34d5285b76ad63780c94e6efe7cf15e73de4acae295d00e9",
+      "src/idps_ai/data/campaigns.py": "e7e6227f1a3ed8a11e4031b99779522ff9ad983291ebedc65eadf1da3de5e8cc",
+      "src/idps_ai/data/capacity.py": "c8bc3a37374fcac56dfcca05d562403f8d820380d0d71df5f434b6030f7cc524",
+      "src/idps_ai/data/corpus.py": "45ad1c5ad9b757868f87ca91a451e4aa32042372ca6e536b22a58c17cee9bfa1",
+      "src/idps_ai/data/dataset.py": "52f3cde6edd7faac1d801e9608514fefcfc6dbf9b081e4dc4d241540cf14bea1",
+      "src/idps_ai/data/http_benchmark.py": "bbd3d576093faa78d64d6c9c8485eb9614283702c08de1e4e53610def1e06e3a",
+      "src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+      "src/idps_ai/data/lab_runtime.py": "d08a72eedbc89fe1af9fc0417f8d48bb1d4fc9186c6c6e8e9c7b9fd79021ce5d",
+      "src/idps_ai/data/pretrain.py": "1b2d90d932d412717771f4a0df751ca548a428395a9f5af3c8ba8f5064ee03c3",
+      "src/idps_ai/data/privacy.py": "dfcccab19a0a335872aa1bedbb5bb5b53877cc513578e98f5d09a6f9bd80c1c8",
+      "src/idps_ai/data/provenance.py": "172a79515a6727df6765e443afaa38fa5422e86552072ea4eefebb05a555ce8a",
+      "src/idps_ai/data/query_numeric.py": "bdd48b26990620fe290df1a9da97a9c2d508448bb0d78a26471653d88e8b0638",
+      "src/idps_ai/data/readers.py": "d6a86936211dcfc74cce1cb2771bcbc6bba164395ec8dd64400f7b6f4c5a0cef",
+      "src/idps_ai/data/readiness.py": "fc9cc725b802a1cfa7c48508281b95ea5275d3dfc13845592a6cd834c3dd963d",
+      "src/idps_ai/data/real_http.py": "2e0794f7e4527a86c75c18b3b058cfdd74e8a9ce6586ec78962ed7c60007eb98",
+      "src/idps_ai/data/request_campaigns.py": "95a7909e23e24e9e702a03b638d06f29a322f9b5832266b5c5190c31685ff56f",
+      "src/idps_ai/data/request_corpus.py": "48fd58e2cec3dcc56958e857d5b75e7c228f148bb2594c28f930cb94f8ab5f17",
+      "src/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+      "src/idps_ai/data/scenario_data.py": "29bf5cc67f8a6cc55051f866a6ce84c7ea5ebb8fd203a8c4c497949d72c51c7c",
+      "src/idps_ai/data/sensor_decode.py": "eff69eb7a0062316351d4790707ddbc090f4b05bcc551a21fa0413e8d604bc2b",
+      "src/idps_ai/data/sensor_lab.py": "f4293318bd12c59dd386032d933f598b39ffc6e2b69c2c189955bed61526185d",
+      "src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+      "src/idps_ai/data/split.py": "86befe2d28c565cf3f55d7fbe3d667ee6d87d2e786eea3fc8b6a70b249fb0461",
+      "src/idps_ai/data/structure.py": "22cba6fd484091ba731eb342ebfe9c6dc9c1aa0f76d0fffcd32bb650a2aa58ad",
+      "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+      "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+      "src/idps_ai/export/onnx.py": "9ef2b46f2d8ccfca5077d904b09056e6311c0d6c8db025c4b9c8abdd738a8ad4",
+      "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+      "src/idps_ai/features/behavior.py": "5bcdc5df6a3a37956b3a6154cbbaf5e992d50e75131dce9ec93c19dfd5cef270",
+      "src/idps_ai/features/pipeline.py": "fbf28d65a55fac9755d8da9c58e5c0ad02d1e999b4bb130bf7813f3b66db2794",
+      "src/idps_ai/features/request_encoding.py": "97eabb716b947d59d0fec359513f55677f9bd4a9d63e23aafffd150a2e87abfc",
+      "src/idps_ai/features/request_preprocessing.py": "740813e7ab15a2cd27cd13e6471331970a6c1ff2bf0f8799853d432abc991312",
+      "src/idps_ai/features/request_view.py": "00cde620943f7f353f13c26b1978ec06f64bbe5a6c189afe8d21ec03e6b2451b",
+      "src/idps_ai/inference.py": "ee45fca70e27159ae5d9636c77fd1bf974fd117ec3c7a2c589e83f40075a393b",
+      "src/idps_ai/pilot.py": "5e7f15f7d7427c3c2d296ed00ce8eb7e7019cd0fcebb35328696c8f0d49d720d",
+      "src/idps_ai/request_inference.py": "fd716b29b86972d6a8197b8164cb505055a2336eb649b8b547b86fbcf580cf75",
+      "src/idps_ai/smoke.py": "3884b68240fb17a65a40727da5f7280c789efce45fbf24726edd9b62de1a17bf",
+      "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+      "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+      "src/idps_ai/training/generalization.py": "93d4fdcba5c75db3533c2bdb6f374e9bb637640abd66ce57a3834d4149ecc465",
+      "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+      "src/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3",
+      "src/idps_ai/training/protocol.py": "e2130e244d468be8272798c1222705762a646e5f7baac211559db3f5633f801b",
+      "src/idps_ai/training/request_training.py": "d79fd05ecae7d5e15f5265644be6d294c311d88b47d4c15e06903a75d183ee17",
+      "src/idps_ai/training/resources.py": "c8c718162cd07b22b2fdbff1c6bbaf8da841cb95da2eee34a7f21c58fa55bcf4",
+      "src/idps_ai/training/runner.py": "bd36c0db6f37b00bebec7cae1e04f6b15a0b236fd1e3bc497730b3f998943305",
+      "src/idps_ai/training/schedule.py": "023f0f7eaeda189c66898c6628dd94be137933a915114e01d0ce185e66fc0e37",
+      "src/idps_ai/training/session.py": "61e0f351f006bd67cee44e00ffee7f4897cb014811fa659a92203a7b76dbe1dd",
+      "src/idps_ai/training/tabular.py": "e98f17e4743b93d2442e2c413d01c371f7dffd1737ba97cbc176ea22140d1adb",
+      "src/idps_ai/training/tree_baseline.py": "3b4345ac014069a4cc924c71fea4c68da369dba4c58ac785a936e8b6d2837cbb"
+    },
+    "status": "READY_FOR_OFFLINE_PILOT",
+    "training_executed": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/readiness/readiness.json",
+  "original_sha256": "61dc116637f578339e150a0581638e60deb87e8a7f1bc2827fd38edf2ac9bc74",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

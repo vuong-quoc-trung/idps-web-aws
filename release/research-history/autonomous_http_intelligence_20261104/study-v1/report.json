@@ -1,0 +1,128 @@
+{
+  "content": {
+    "arms": {
+      "content_mlp": {
+        "calibration": {
+          "publisher_anomalous_pr_auc": 0.9926273345453052,
+          "publisher_anomalous_recall": 0.7580579355365157,
+          "publisher_anomalous_rows": 2451,
+          "publisher_label_precision": 0.9946466809421841,
+          "publisher_normal_false_positives_per_10000": 92.5925925925926,
+          "publisher_normal_fpr": 0.009259259259259259,
+          "publisher_normal_rows": 1080,
+          "rows": 3531
+        },
+        "checkpoint": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v1/content_mlp",
+        "checkpoint_manifest_sha256": "1c7bc27c9f47ab1aabb37fa65868a0308312c00ad1a9ae75bba7083156fd9b64",
+        "first_20_train_batch_loss_mean": 0.6333712445038877,
+        "fit_seconds": 0.30099999899994145,
+        "input_features": 588,
+        "internal_validation": {
+          "publisher_anomalous_pr_auc": 0.9913952085721369,
+          "publisher_anomalous_recall": 0.7866943866943867,
+          "publisher_anomalous_rows": 2405,
+          "publisher_label_precision": 0.9936974789915967,
+          "publisher_normal_false_positives_per_10000": 101.95412064570944,
+          "publisher_normal_fpr": 0.010195412064570943,
+          "publisher_normal_rows": 1177,
+          "rows": 3582
+        },
+        "last_20_train_batch_loss_mean": 0.1922317242390641,
+        "model_only_ms_per_row_p95_batch1024": 0.0015137298826850554,
+        "name": "content_mlp",
+        "parameters": 50696,
+        "threshold": 0.9489591717720032,
+        "threshold_source": "calibration publisher-normal 99th percentile, strict greater than",
+        "updates": 300
+      },
+      "method_only_logistic": {
+        "calibration": {
+          "publisher_anomalous_pr_auc": 0.7096354405299748,
+          "publisher_anomalous_recall": 0.015503875968992248,
+          "publisher_anomalous_rows": 2451,
+          "publisher_label_precision": 1.0,
+          "publisher_normal_false_positives_per_10000": 0.0,
+          "publisher_normal_fpr": 0.0,
+          "publisher_normal_rows": 1080,
+          "rows": 3531
+        },
+        "input_features": 10,
+        "internal_validation": {
+          "publisher_anomalous_pr_auc": 0.6915709634155778,
+          "publisher_anomalous_recall": 0.01704781704781705,
+          "publisher_anomalous_rows": 2405,
+          "publisher_label_precision": 1.0,
+          "publisher_normal_false_positives_per_10000": 0.0,
+          "publisher_normal_fpr": 0.0,
+          "publisher_normal_rows": 1177,
+          "rows": 3582
+        },
+        "parameters": 11,
+        "threshold": 0.731256365776062
+      },
+      "numeric_mlp": {
+        "calibration": {
+          "publisher_anomalous_pr_auc": 0.9682820512148422,
+          "publisher_anomalous_recall": 0.7274581803345573,
+          "publisher_anomalous_rows": 2451,
+          "publisher_label_precision": 0.9944227551589515,
+          "publisher_normal_false_positives_per_10000": 92.5925925925926,
+          "publisher_normal_fpr": 0.009259259259259259,
+          "publisher_normal_rows": 1080,
+          "rows": 3531
+        },
+        "checkpoint": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v1/numeric_mlp",
+        "checkpoint_manifest_sha256": "f7f5c1e57328c84373d19642c38f3e399d9d435070cf19c3613befde5b8e2d8d",
+        "first_20_train_batch_loss_mean": 0.6411559491249247,
+        "fit_seconds": 0.14639498999986245,
+        "input_features": 76,
+        "internal_validation": {
+          "publisher_anomalous_pr_auc": 0.9642132526394394,
+          "publisher_anomalous_recall": 0.7463617463617463,
+          "publisher_anomalous_rows": 2405,
+          "publisher_label_precision": 0.9950110864745011,
+          "publisher_normal_false_positives_per_10000": 76.46559048428207,
+          "publisher_normal_fpr": 0.0076465590484282074,
+          "publisher_normal_rows": 1177,
+          "rows": 3582
+        },
+        "last_20_train_batch_loss_mean": 0.3276045723049415,
+        "model_only_ms_per_row_p95_batch1024": 0.0009636326175233023,
+        "name": "numeric_mlp",
+        "parameters": 17928,
+        "threshold": 0.8255677223205566,
+        "threshold_source": "calibration publisher-normal 99th percentile, strict greater than",
+        "updates": 300
+      }
+    },
+    "formal_admitted": 0,
+    "format_version": 1,
+    "interpretation": "Internal grouped-template publisher-label comparison only; no independent application/campaign/time evaluation, no formal admission or champion",
+    "labels": "publisher normal/anomalous; anomalous not independently confirmed malicious",
+    "plan_sha256": "42b4bdf1008619c4eb70ffd0c163e06fde06616681e26a0c54c6ba98d54c5b3e",
+    "process_peak_rss_kib": 482936,
+    "report_sha256": "92effec4e186c9f393771b279d8914fce8fa83b566ae391120a74cad859d9ff4",
+    "role_class_coverage": {
+      "calibration": {
+        "anomalous": 2451,
+        "normal": 1080
+      },
+      "train": {
+        "anomalous": 14671,
+        "normal": 6584
+      },
+      "validation": {
+        "anomalous": 2405,
+        "normal": 1177
+      }
+    },
+    "rows": 28368,
+    "scope": "internal_publisher_normal_vs_anomalous",
+    "test_or_heldout_opened": false,
+    "validation_reused_for_tuning": false
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v1/report.json",
+  "original_sha256": "e598c8a412dad049bbad34b842c43c601523b40c3e96c52ee567982a885bd6d8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

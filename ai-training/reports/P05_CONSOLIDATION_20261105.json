@@ -1,0 +1,231 @@
+{
+  "format_version": 1,
+  "phase": "P0.5 research consolidation",
+  "technical_consolidation_status": "COMPLETE",
+  "independent_validation_status": "PENDING_HUMAN_REVIEW",
+  "p0_overall_status": "PARTIALLY_COMPLETE",
+  "new_physical_requests": 0,
+  "labels_changed": 0,
+  "training_updates": 0,
+  "ground_truth": {
+    "requests_rechecked": 111,
+    "priority_unique_cases": 49,
+    "priority_groups": {
+      "benign_controls": 12,
+      "missed_oracle_success": 15,
+      "true_positive_controls": 6,
+      "unknown": 4,
+      "xss_attempts": 12
+    },
+    "technical_assessment_counts": {
+      "ATTEMPT_RECEIPT_BOUND_OUTCOME_UNKNOWN": 3,
+      "BENIGN_WORKFLOW_ORACLE_INTERNAL_LAB": 59,
+      "ORACLE_SUCCESS_INTERNAL_LAB": 33,
+      "UNKNOWN_BENIGN_ORACLE_ABSENT": 4,
+      "UNSAFE_REFLECTION_ATTEMPT_OUTCOME_UNKNOWN": 12
+    },
+    "independent_reviewer": null,
+    "independent_review_pending": 111
+  },
+  "command_analysis": {
+    "full_flags": 0,
+    "remove_headers_keep_original_denominator_flags": 5,
+    "remove_headers_and_renormalize_flags": 10,
+    "no_body_scores": [
+      0.3172890543937683,
+      0.3172890543937683
+    ],
+    "new_to_original_count_norm_ratio": [
+      0.4266254630660232,
+      0.4357081144132943
+    ],
+    "interpretation": "Body signal present but insufficient at frozen threshold; shared header hashing and joint normalization both materially affect decisions. Path-dependent mechanism probes, not new detection metrics."
+  },
+  "xss_analysis": {
+    "numeric_unique_views_for_all48_XSS_route_requests": 1,
+    "numeric_dropped_name_fields_per_attack": 1,
+    "full_flags": 0,
+    "numeric_q_only_hybrid_flags": 12,
+    "content_q_only_hybrid_flags": 0,
+    "void_to_alert_flags": 0,
+    "full_score_range": [
+      0.09737187623977661,
+      0.31198036670684814
+    ],
+    "numeric_q_only_hybrid_score_range": [
+      0.9859095215797424,
+      0.9999057650566101
+    ],
+    "interpretation": "Privacy rule removes name value from numeric projection. Rich markup remains, but that channel alone is insufficient. Do not remove privacy filters or rename production parameters as a workaround."
+  },
+  "header_order": {
+    "header_sorted": {
+      "decision_flips": 0,
+      "max_score_delta": 0.0
+    },
+    "header_reverse": {
+      "decision_flips": 0,
+      "max_score_delta": 0.07777988910675049
+    }
+  },
+  "source_shortcut_status": "NOT_PROVEN; nuisance sensitivity and feature information loss demonstrated",
+  "fine_tuning_confound": {
+    "GET_benign": 59,
+    "GET_attack": 36,
+    "POST_attack": 12,
+    "POST_UNKNOWN": 4,
+    "warning": "No labeled benign POST; do not fine-tune/evaluate on this cohort as if balanced by method/body/source."
+  },
+  "suricata": {
+    "AI_only_attacks": 4,
+    "rules_only_attacks": 13,
+    "both_attacks": 14,
+    "neither_attacks": 17,
+    "command_gap": "SID1000005 matches http.uri, while DVWA command input is POST body",
+    "xss_rule_misses": "ontoggle/details and onfocus/input outside configured patterns",
+    "scope": "unchanged HTTP signatures, not full Rust/app rules or matched alert-budget acceptance"
+  },
+  "thermal": {
+    "functional_status": "FUNCTIONAL_CONTROL_VERIFIED_FOR_LIGHT_PROCESS_GROUP_ONLY",
+    "heavy_workload_status": "THERMAL_CONTROL_NOT_VERIFIED",
+    "verified": [
+      "real child pause freezes heartbeat",
+      "continuous cool hysteresis then real resume",
+      "injected80C kills child without resume",
+      "sensor loss kills child",
+      "SIGTERM supervisor kills child",
+      "leader affinity does not constrain existing threads",
+      "kernel cpu.max2500/10000 and1GiB RAM readback"
+    ],
+    "P0_causes_supported": [
+      "1s polling",
+      "immediate resume on first cool sample",
+      "leader-only affinity",
+      "no initial Python kernel quota",
+      "no temperature-rise guard"
+    ],
+    "P0_exact_heat_source": "UNRESOLVED; no per-stage/per-thread thermal history or exclusive host attribution",
+    "repairs": [
+      "pause at74C or rise>=5C/s when>=68C",
+      "all-thread affinity",
+      "below70C continuously3s before resume",
+      "abort first80C event",
+      "handle SIGTERM",
+      "do not unpause containers on supervisor error"
+    ],
+    "no_heavy_or_physical_stress_workload": true,
+    "functional_test_real_temperature_range": [
+      46.0,
+      48.0
+    ],
+    "P05_monitored_light_temperature_range": [
+      44.0,
+      52.0
+    ],
+    "containers_and_escaped_process_groups": "NOT_CERTIFIED",
+    "physical_80C_containment": "NOT_CERTIFIED",
+    "analysis_quota": {
+      "cpu.max": "2500 10000",
+      "memory.max": "1073741824",
+      "memory.swap.max": "0"
+    },
+    "analysis_thread_affinities": {
+      "43399": [
+        0
+      ],
+      "43407": [
+        0
+      ],
+      "43408": [
+        0
+      ]
+    }
+  },
+  "challenger_proposal": {
+    "name": "Payload observability and independent channel normalization ablation",
+    "hypothesis": "Coarse privacy-preserving security syntax and separate URI/body/header normalization recover usable payload evidence without increasing model capacity.",
+    "frozen_reference": "Request v2 step3072 at original threshold; no updates",
+    "arms": [
+      "C0 legacy encoding refit control",
+      "C1 safe syntax/explicit per-channel missingness only",
+      "C2 separate channel normalization only",
+      "C3 both"
+    ],
+    "model": "existing small MLP, roughly50k parameters; control capacity/updates/seeds; no GLU scaling",
+    "proposed_max_updates_per_arm_seed": 3072,
+    "proposed_seeds": [
+      17,
+      29,
+      43
+    ],
+    "data_roles": "P0 DVWA is exposed diagnostic only, never blind acceptance or threshold selection; preserve same group membership across arms",
+    "required_training_evidence": [
+      "matched benign/attack POST forms with valid semantic Oracles",
+      "safe syntax extraction must not persist credentials or PII",
+      "request-bound source/group provenance and unknown quarantine"
+    ],
+    "required_quality_evidence": [
+      "fresh application/campaign/time held-out cohort",
+      "benign hard negatives plus target attack coverage in each environment",
+      "actual human adjudication or explicitly qualified label tier",
+      "separate calibration; no tuning on P0 or evaluation"
+    ],
+    "calibration": "arm thresholds fixed from separate calibration at predeclared1% research flag budget; no DVWA threshold search",
+    "primary_endpoint": "paired target-family macro sensitivity on fresh cohorts at the calibration-fixed budget, with benign counts and cluster uncertainty",
+    "advance_only_if": "at least10pp target macro gain, no>5pp regression on other covered families, observed benign flag fraction<=1% in each evaluation environment; consistent across3seeds; uncertainty reported, never production certification",
+    "stop_rules": [
+      "fixed four-arm/three-seed budget, no repeated hyperparameter search",
+      "stop or mark inconclusive if gains are source-specific, unstable or violate benign budget",
+      "stop immediately on thermal hard limit, lost sensor, nonfinite state or memory pressure"
+    ],
+    "start_now": false,
+    "design_ready": true,
+    "independent_quality_acceptance_ready": false,
+    "thermal_execution_prerequisite": "conservative bounded workload pilot only after functional controls; no heavy run while THERMAL_CONTROL_NOT_VERIFIED"
+  },
+  "tests": "17 P0/MVP tests PASS; real light-process functional faults PASS; Ruff/format PASS",
+  "preservation": {
+    "baseline_protected_checksums_unchanged": 19,
+    "p0_report_and_docs_unchanged": true,
+    "protected_git_diff": "EMPTY",
+    "new_physical_requests": 0,
+    "training_updates": 0,
+    "threshold_or_frozen_encoder_changes": 0,
+    "sealed_holdout": "NOT_OPENED"
+  },
+  "artifacts": {
+    "technical_review": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-v3/technical-review.json",
+      "sha256": "a4f6d82e3e8b82ae49240e86302a0138b4a9da5d886b25074c48254adaa4970a"
+    },
+    "human_review_instructions": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-v3/human-review-instructions.json",
+      "sha256": "f88c050d7784d424609c7242ee8a0c3d1f6bca85d5db9777c5181c14945d3c50"
+    },
+    "priority_blind_queue": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-v3/priority-blind-review.jsonl",
+      "sha256": "87475c9981e73b614f2bacd3161ffd2abb4a6b509c182f96819a19f272fbb320"
+    },
+    "failure_analysis": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-v3/failure-analysis.json",
+      "sha256": "97e5bfa282a0b78a401802ecf70ef4f1e3554cfc85b51e05e2f81b3b71255731"
+    },
+    "analysis_plan": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-v3/analysis-plan.json",
+      "sha256": "1fb8ebaf33f191743c9969ce0451ef0aa802f65eac3e4d979f1f7febbfb7b9d2"
+    },
+    "thermal_proof": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/thermal-functional-report.json",
+      "sha256": "fe544fec2e9a23fb11ce80fe50e4b62f3e080bcdff0004968d8404e1414fbe03"
+    },
+    "analysis_resources": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-v3-resources/resource-report.json",
+      "sha256": "0be5745ed099d3eccdc3038604765e3c9b98f614c635b28d424427e7f01855cb"
+    },
+    "verification": {
+      "path": "ai-training/.artifacts/p05_consolidation_20261105/verification.json",
+      "sha256": "09898a21d8f3d37828d6e67d31ab3273c816686c77b0f30c443ba6f12b3a7b1a"
+    }
+  },
+  "report_sha256": "a23d4ad3a3ff6b5342343f66f30875bc3393671eaa1448f2e0abbd823fb6a252"
+}

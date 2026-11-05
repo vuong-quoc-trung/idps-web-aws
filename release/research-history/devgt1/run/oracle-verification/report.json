@@ -1,0 +1,32 @@
+{
+  "content": {
+    "after_oracle_sha256": "7d443c7bc3b2c76bf0e9eb432abe4249b6e9f9038110b41a5bcd9d5f6349d4df",
+    "attack_exploit_outcome_verified": 0,
+    "before_oracle_sha256": "e5a6d4967ec38ed1acdd7f3c65f4691aba83ff75fda53259712012262dd20848",
+    "capture_report_sha256": "9d9a94360676ab3851d0bbc28fc89c3d0c4bdbe9db4dc20d12fc99bd42ae7c30",
+    "cleanup_verification_sha256": "e78f8f34795c9926c44350a206f2e6b6f471eea9195037171259ce457744f775",
+    "formal_training_admission": 0,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "independent_review": false,
+    "intent_unknown": 8,
+    "limits": "Three-source and DB facts are collector/lab observations. No independent semantic reviewer, signed protocol, attack outcome oracle, or independent evaluation environment. Runner intent remains untrusted.",
+    "machine_verified_attack_intent": 0,
+    "machine_verified_benign_intent": 0,
+    "physical_requests_verified": 8,
+    "plan_file_sha256": "f73e25029a921834ef9d1f70ec1e21744f9a0f834039b2b16a2991e7d9b163c6",
+    "plan_sha256": "08361b0f05836e4e774b2050f96e3575a09d8803ecc942d9b10fb5a5e3e61936",
+    "post_bodies_verified_in_private_pcap": 2,
+    "protected_staff_mutation_db_transition_verified": 1,
+    "report_sha256": "973faa9afc23e2333d1f8444e5b56e6a0813d83c55084f11aa7b71be0c46db28",
+    "response_evidence_sha256": "23d17c2467d06ad0c1ff987f177494babc3f8aa4aabb08e1749a6b6c546ae246",
+    "response_status_correlated_requests": 8,
+    "status": "EIGHT_REAL_REQUESTS_OBSERVED_DEVELOPMENT_ONLY_NO_INTENT_GROUND_TRUTH",
+    "three_source_correlated_requests": 8,
+    "three_source_report_sha256": "f33c7f2a24f61d5cf6b824487294818fe45023fc46b82590641b0dae02648a9e"
+  },
+  "original_relative_path": "ai-training/.artifacts/devgt1/run/oracle-verification/report.json",
+  "original_sha256": "c8e45c1530229eb5f7e4365e8f0e1f4df8498c5714fb255084f47bb9b1b48793",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

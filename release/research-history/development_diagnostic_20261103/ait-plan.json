@@ -1,0 +1,16 @@
+{
+  "content": {
+    "bundles": {
+      "glu1024": "7d20a60b61dfa9a18323e6fc71f7de8b1d0a1d2893b20901dfcc462d40ce544b",
+      "mlp256": "3b0dbe2bc222534550bf639f124563b1b385a8e8ca6848bee632958a74f2f2da"
+    },
+    "hypothesis": "Does 25-view benign scarcity and four opposite-label views distort row-weighted AIT stress results?",
+    "no_fit_no_threshold_change_no_holdout": true,
+    "script_sha256": "c6c11d7e2a30ea1f95eec8e0be52fd9494589baaf82d5a922c67eb1b0b338c8f",
+    "source_archive_sha256": "51a03f51daea0fbbdcfe9b8abe0dbbe10633716f4f98074f861204a162ee1978"
+  },
+  "original_relative_path": "ai-training/.artifacts/development_diagnostic_20261103/ait-plan.json",
+  "original_sha256": "614414f114bece729d53cbc66c080b97f3f4322743827fbcffa2c4ff0be2919e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

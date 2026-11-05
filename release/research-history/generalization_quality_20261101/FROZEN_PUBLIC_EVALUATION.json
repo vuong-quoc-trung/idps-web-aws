@@ -1,0 +1,35 @@
+{
+  "content": {
+    "evaluate_role": "validation",
+    "evaluate_rows": "all private-signature-selected projections; no filter by modelscore or labeldifficulty",
+    "group_bootstrap": "200replicates bywebsitecase;CIconditional on publisherlabels and groupindependence assumption",
+    "key_fingerprint": "99df24deae4da96b7b923a243b87e31ce29a8f8017d0316021fbe1dab780061a",
+    "models": {
+      "glu1024": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/partition_recovery_20261031/study/glu1024-bundle",
+        "manifest_sha256": "7d20a60b61dfa9a18323e6fc71f7de8b1d0a1d2893b20901dfcc462d40ce544b",
+        "onnx_sha256": "fc6c65eeabccf1092bcec4df84cc43021936ebef7fa107aa3b46ecb92c87b69b",
+        "threshold": 0.9984238147735596
+      },
+      "mlp256": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/partition_recovery_20261031/study/mlp256-bundle",
+        "manifest_sha256": "3b0dbe2bc222534550bf639f124563b1b385a8e8ca6848bee632958a74f2f2da",
+        "onnx_sha256": "a60e976d1f2b6924a40fb1e9f63b584ef4bba407a633ca4c95cdbe086a0b2dd3",
+        "threshold": 0.9999801516532898
+      }
+    },
+    "no_HPO_or_new_training": true,
+    "no_champion": true,
+    "original_holdouts_unchanged": true,
+    "primary_full_sample": "Include exact feature-view matches to earlier roles; mark novel-view sensitivity separately, not replace primary",
+    "protocol_sha256": "c3da7d80bcb1732134c408b02e6a448644b2e1d2bc02388eb59a5f1ac228ee04",
+    "reserved_websites_unopened": true,
+    "source_profile": "benign-only external development stress test; no recall/F1/AP claims on this source"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/FROZEN_PUBLIC_EVALUATION.json",
+  "original_sha256": "a0ac0da9a243e5b6288e713d2e99f8f651072452f8c59e1f9d6ecfbea7e26da6",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

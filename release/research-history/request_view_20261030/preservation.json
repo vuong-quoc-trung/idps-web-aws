@@ -1,0 +1,17 @@
+{
+  "content": {
+    "HEAD": "fd0fea47dbc30a56dc8a9bed819b15cf3dc66d11",
+    "Web_contract_docker_git_diff_HEAD_exit": 0,
+    "checked_at": "2026-10-30T21:29:31.602424+07:00",
+    "mismatches": [],
+    "prior4233artifact_guard_transitively_preserved": true,
+    "prior_generalization_report_sha256": "ca7a3f7084584bf86512f69e0b83d009146c51c18d413b9683ac7753aae103cf",
+    "protected_index_sha256": "abc024824c075931344cfece620b5789ca7f324150ec1e590f8507452d7b9b8b",
+    "protected_paths": 689,
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/preservation.json",
+  "original_sha256": "a8f1e23a97a9ad28103b083c8fc3fd916b830a5364bdb028f314163a978f5b84",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

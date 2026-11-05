@@ -1,0 +1,328 @@
+{
+  "status": "LOCAL_PREPUBLICATION_VERIFIED_REMOTE_PENDING",
+  "source_base_revision": "09a12e46329fbb98ccba1fd1c884a79bf49ab2b4",
+  "release_tag": "ai-research-team-20261105",
+  "release_published": false,
+  "source_push_verified": false,
+  "TEAM_REPOSITORY_READY": false,
+  "REMOTE_CLONE_VERIFIED": false,
+  "MODEL_RESTORE_VERIFIED": false,
+  "TRAINING_HANDOFF": "PARTIAL",
+  "INTEGRATION_BRANCH_READY": false,
+  "local_prepublication": {
+    "method": "Local clone of original Git HEAD plus explicit reviewed uncommitted source overlay; fresh managed Python/venv/cache; local checksum-pinned assets. Not remote clean-clone acceptance.",
+    "bootstrap": {
+      "status": "TEAM_INFERENCE_SETUP_VERIFIED",
+      "release_tag": "ai-research-team-20261105",
+      "models": [
+        "GLU207 frozen",
+        "Request Intelligence v2 frozen"
+      ],
+      "smoke_records": 3,
+      "restored_groups": {
+        "inference": 102,
+        "request_training": 138,
+        "historical_models": 54
+      },
+      "new_training_started": false,
+      "services_started": false,
+      "private_raw_or_sealed_data_downloaded": false,
+      "inference_models_ready": true,
+      "request_training_material_ready": true,
+      "GLU_full_training_dataset": "RESTRICTED_LOCAL_NOT_DISTRIBUTED",
+      "independent_GT_evidence": "PRIVATE_LOCAL_PENDING_REVIEW",
+      "tests_requested": true,
+      "restore_source": "LOCAL_PREPUBLICATION_ASSETS",
+      "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43"
+    },
+    "model_smoke_and_material": {
+      "status": "PASS_OFFLINE_TWO_MODEL_RESTORE",
+      "observed": [
+        {
+          "record_id": "team-http-smoke",
+          "model": "request_intelligence_v2",
+          "score": 0.0036836862564086914
+        },
+        {
+          "record_id": "team-glu-smoke-1",
+          "model": "glu207",
+          "score": 0.022656023502349854
+        },
+        {
+          "record_id": "team-glu-smoke-2",
+          "model": "glu207",
+          "score": 0.057529568672180176
+        }
+      ],
+      "training_updates": 0,
+      "network_calls": 0,
+      "GLU_runtime": "frozen ONNX graph plus exact frozen preprocessor; optimizer state verified but not instantiated",
+      "source_fixture": "pseudonymized derivative, technical smoke only; no quality claim",
+      "request_training_material": {
+        "status": "RESTORED_HASHES_SOURCE_ENV_AND_GENERATIONS_VERIFIED",
+        "plan_sha256": "811fbcb7712cffcb69aaa2792a5ec602b601ad2ec4a5af18731e945ece43a351",
+        "checkpoint_generations_checked": 6,
+        "training_updates": 0,
+        "new_exact_resume_test": false
+      }
+    },
+    "tests_passed": 19
+  },
+  "thermal": {
+    "build-v3-resources": {
+      "resource-report.json": {
+        "status": "PASS",
+        "failure": null,
+        "unit": "idps-integration-25173-93869268.service",
+        "wall_seconds": 80.82090864799966,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_min": 48.0,
+        "cpu_temperature_mean": 48.39393939393939,
+        "cpu_temperature_max": 51.0,
+        "peak_cgroup_memory_bytes": 1054953472,
+        "peak_system_used_bytes": 10179522560,
+        "events": [],
+        "systemd_result": {
+          "ActiveState": "active",
+          "SubState": "exited",
+          "Result": "success",
+          "ExecMainStatus": "0",
+          "MemoryPeak": "1054953472",
+          "CPUUsageNSec": "8068391000"
+        },
+        "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+        "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+      },
+      "watchdog-report.json": {
+        "reason": "monitor_completed",
+        "samples": 393,
+        "temperature_min": 48.0,
+        "temperature_max": 51.0
+      }
+    },
+    "golden-onnx-resources": {
+      "resource-report.json": {
+        "status": "PASS",
+        "failure": null,
+        "unit": "idps-integration-26311-91652858.service",
+        "wall_seconds": 25.40692373299953,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_min": 48.0,
+        "cpu_temperature_mean": 48.46017699115044,
+        "cpu_temperature_max": 56.0,
+        "peak_cgroup_memory_bytes": 221474816,
+        "peak_system_used_bytes": 9943134208,
+        "events": [],
+        "systemd_result": {
+          "ActiveState": "active",
+          "SubState": "exited",
+          "Result": "success",
+          "ExecMainStatus": "0",
+          "MemoryPeak": "221474816",
+          "CPUUsageNSec": "2518397000"
+        },
+        "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+        "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+      },
+      "watchdog-report.json": {
+        "reason": "monitor_completed",
+        "samples": 123,
+        "temperature_min": 48.0,
+        "temperature_max": 56.0
+      }
+    },
+    "golden-resources": {
+      "resource-report.json": {
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "unit": "idps-integration-26071-29101517.service",
+        "wall_seconds": 1.2645426659996701,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_min": 48.0,
+        "cpu_temperature_mean": 48.0,
+        "cpu_temperature_max": 48.0,
+        "peak_cgroup_memory_bytes": 8605696,
+        "peak_system_used_bytes": 9716903936,
+        "events": [],
+        "systemd_result": "ActiveState=failed\nResult=signal\nExecMainStatus=9\nMemoryPeak=9523200\nCPUUsageNSec=120626000\n",
+        "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+        "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+      },
+      "watchdog-report.json": {
+        "reason": "temperature_79",
+        "samples": 6,
+        "temperature_min": 48.0,
+        "temperature_max": 94.0
+      }
+    },
+    "build-v2-resources": {
+      "resource-report.json": {
+        "status": "STOPPED",
+        "failure": "temperature_79",
+        "unit": "idps-integration-22557-65257976.service",
+        "wall_seconds": 181.45758399299984,
+        "kernel_cpu_quota_percent": 50,
+        "cpu_temperature_min": 48.0,
+        "cpu_temperature_mean": 50.26951219512195,
+        "cpu_temperature_max": 66.0,
+        "peak_cgroup_memory_bytes": 778321920,
+        "peak_system_used_bytes": 9766428672,
+        "events": [
+          {
+            "elapsed": 13.487471493999692,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 66.0
+          },
+          {
+            "elapsed": 18.826000553000085,
+            "action": "THAW",
+            "temperature": 50.0
+          }
+        ],
+        "systemd_result": "ActiveState=failed\nResult=signal\nExecMainStatus=9\nMemoryPeak=778584064\nCPUUsageNSec=22889539000\n",
+        "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+        "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+      },
+      "watchdog-report.json": {
+        "reason": "temperature_79",
+        "samples": 886,
+        "temperature_min": 48.0,
+        "temperature_max": 81.0
+      }
+    },
+    "prepublication-resources": {
+      "resource-report.json": {
+        "status": "PASS",
+        "failure": null,
+        "unit": "idps-integration-26899-06457884.service",
+        "wall_seconds": 365.8263688199995,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_min": 48.0,
+        "cpu_temperature_mean": 50.269417475728154,
+        "cpu_temperature_max": 75.0,
+        "peak_cgroup_memory_bytes": 1718333440,
+        "peak_system_used_bytes": 10663878656,
+        "events": [
+          {
+            "elapsed": 138.531893847,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 75.0
+          },
+          {
+            "elapsed": 144.53680167999937,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 191.71194797999942,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 66.0
+          },
+          {
+            "elapsed": 197.06981400899986,
+            "action": "THAW",
+            "temperature": 48.0
+          },
+          {
+            "elapsed": 263.38134722199993,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0
+          },
+          {
+            "elapsed": 270.51269892099936,
+            "action": "THAW",
+            "temperature": 52.0
+          },
+          {
+            "elapsed": 273.6263531529994,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0
+          },
+          {
+            "elapsed": 285.8617135179993,
+            "action": "THAW",
+            "temperature": 50.0
+          }
+        ],
+        "systemd_result": {
+          "ActiveState": "active",
+          "SubState": "exited",
+          "Result": "success",
+          "ExecMainStatus": "0",
+          "MemoryPeak": "1719029760",
+          "CPUUsageNSec": "29284634000"
+        },
+        "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+        "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+      },
+      "watchdog-report.json": {
+        "reason": "monitor_completed",
+        "samples": 1786,
+        "temperature_min": 48.0,
+        "temperature_max": 75.0
+      }
+    },
+    "recovery-material-resources": {
+      "resource-report.json": {
+        "status": "PASS",
+        "failure": null,
+        "unit": "idps-integration-29385-62035445.service",
+        "wall_seconds": 79.49233972499951,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_min": 50.0,
+        "cpu_temperature_mean": 51.46778711484594,
+        "cpu_temperature_max": 74.0,
+        "peak_cgroup_memory_bytes": 602677248,
+        "peak_system_used_bytes": 10841010176,
+        "events": [
+          {
+            "elapsed": 7.2188561259999915,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0
+          },
+          {
+            "elapsed": 13.413396301999455,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 68.78648525599965,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 66.0
+          },
+          {
+            "elapsed": 74.13469566799995,
+            "action": "THAW",
+            "temperature": 51.0
+          }
+        ],
+        "systemd_result": {
+          "ActiveState": "active",
+          "SubState": "exited",
+          "Result": "success",
+          "ExecMainStatus": "0",
+          "MemoryPeak": "602677248",
+          "CPUUsageNSec": "6751777000"
+        },
+        "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+        "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+      },
+      "watchdog-report.json": {
+        "reason": "monitor_completed",
+        "samples": 387,
+        "temperature_min": 50.0,
+        "temperature_max": 74.0
+      }
+    }
+  },
+  "limitations": [
+    "No private shared store; raw HTTP/PCAP/GT sessions and full GLU dataset remain local.",
+    "No new exact-resume training executed during release preparation.",
+    "All DVWA independent human review remains PENDING.",
+    "Clean-clone test is on same host, not teammate hardware."
+  ],
+  "thermal_notes": [
+    "A metadata archive scan ran outside the workload cgroup; it completed before interruption was attempted. Host sensors were still sampled by the prepublication watcher, but that session is not a pure bootstrap thermal measurement.",
+    "Primary monitor may omit spike sample when workload disappears; inspect watchdog report as well. Prior stops recorded up to81C; response safety does not guarantee no overshoot."
+  ]
+}

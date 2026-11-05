@@ -1,0 +1,38 @@
+{
+  "content": {
+    "batch_size": 128,
+    "curation_report": "<PROJECT_ROOT>/ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-content-v2/report.json",
+    "curation_report_sha256": "82ac932add8984adecd116839f99c1735408cde8dd5c23ebc8076efa743c5b03",
+    "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-content-v2/numeric-only.npz",
+    "dataset_sha256": "57884ac25780c95d71c24d9cd8b1c5fc3572b4eabb3b5234da3b81d075d56f97",
+    "format_version": 1,
+    "hypothesis": "Sanitized request-content char ngrams add publisher-label discrimination beyond 76 numeric features, under a grouped-template split; method-only baseline detects shortcuts.",
+    "interpretation": "weak publisher normal/anomalous only; no attack Ground Truth, source/campaign independence, champion or formal admission",
+    "learning_rate": 0.001,
+    "models": [
+      "numeric_mlp_76",
+      "content_mlp_588",
+      "method_only_logistic"
+    ],
+    "plan_sha256": "f15d827e09f0d293676a77c82ccdf5b82173d91e9bdb563d9049016d91c9c316",
+    "rerun_reason": "Safe symbolic method allowlist fix; preserve v1 evidence but active corpus and study use v2",
+    "scope": "internal_publisher_normal_vs_anomalous",
+    "script_sha256": "69265f727ce92352b146247af1cd6ffbee40115f015ca3d41a0157db4a81fc5c",
+    "seed": 17,
+    "test_or_heldout_opened": false,
+    "threshold": "calibration publisher-normal 99th percentile, strict >; no validation tuning",
+    "training_code_sha256": {
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+      "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+      "src/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3"
+    },
+    "updates": 300
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/plan-v2.json",
+  "original_sha256": "2ddf608c5a0abab34388cd1c24e89f5ff51516b3c4651bec2ef8042def4d846d",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

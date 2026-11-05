@@ -1,0 +1,28 @@
+{
+  "content": {
+    "baseline_manifest_sha256": "7b528557888c29dd03b524a296516481128ebdbbfc14236fbaa1bcf1ac725ba4",
+    "capture_report_sha256": "7244f8713b7ddcae689afcb4492a6e58bf0d616fe48c40146dd1047615a7fbab",
+    "contamination_sensitivity": "exclude exact raw, feature, safe-template overlaps only in separately labeled subset",
+    "counterfactuals": [
+      "full",
+      "headers_missing",
+      "body_missing",
+      "both_missing"
+    ],
+    "counterfactuals_are_not_new_requests": true,
+    "created_at_unix": 1793867636.2793117,
+    "glu207": "NOT_RUN_missing_actual_three_source_contract",
+    "independent_review": "pending; no independent-population Recall/FPR claim",
+    "model": "request_intelligence_v2_frozen_step3072",
+    "plan_sha256": "be2ce4355df05b0bbf323b6c832fb447b0c0c43d7110b5028d8d3516ec126e01",
+    "primary_denominator": "all captured requests with receipt-bound lab intent; UNKNOWN separately reported; no collision quarantine",
+    "script_sha256": "2242296dbf0615d89d4fe52c31d26e63f4a9b6da92a0b8ead7867898bf2375e0",
+    "source_plan_file_sha256": "86ce7df008cd7a64a09b59aaf045dd65a160baad335d9b0907d27737e93f654d",
+    "threshold_rule": "strict greater than frozen threshold",
+    "tuning_or_training": false
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/evaluation/evaluation-plan.json",
+  "original_sha256": "be623c09c20d6b6fe0dad847c55e00f482c395d2d7de43b903a48f7ed13b074f",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

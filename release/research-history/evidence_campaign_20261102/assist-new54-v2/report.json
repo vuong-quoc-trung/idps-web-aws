@@ -1,0 +1,28 @@
+{
+  "content": {
+    "assist_sha256": "c5d0149eb88ec8f37cc1a226bed27845c11d0cf2b16639b70428fab3c3e2c741",
+    "automatic_verified_labels": 0,
+    "blind_queue_sha256": "4e2f10f627bd9799284c3b975ad3a11e5659ecf701c41da06885f6e5594ddf36",
+    "capture_report_sha256": "603f3074e0bb64ae0135134a00c7a46201bc75cff03d22a2635ed43cb788b669",
+    "counts": {
+      "cue_on_collector_attack": 18,
+      "cue_on_collector_benign": 6,
+      "post_body_unobserved": 6,
+      "query_visible_private": 30,
+      "requests": 54,
+      "syntax_cue_overlap": 0,
+      "three_source": 54
+    },
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "limits": "Blind facts and separate unblind proposals contain no independent semantic decision. Reviewers inspect private request context first; neither file may become training ground truth.",
+    "proposal_sha256": "d1eee29967417a48fd242f9c0c220242484af5d89cccff46ccf6ef714e47fb91",
+    "status": "AUTOMATED_EVIDENCE_CHECKED_SEMANTIC_REVIEW_PENDING",
+    "three_source_report_sha256": "e1ffcc707a16c9a919d70161da91d04fb2e11bf3a3d8bd1515622f05b2b52028",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/assist-new54-v2/report.json",
+  "original_sha256": "62800eef973b412d836f49bd441478b9ed91d2997b41e1d330bcb959ece4392d",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,130 @@
+{
+  "content": {
+    "assembly_scope": "compatible-shard research; separate reviewed scale admission required",
+    "calibration_disjoint_groups": true,
+    "calibration_temporally_independent": false,
+    "dataset_sha256": "d04e14874b8968ee7ef37e04c673218043abbd8c6d267bdae0ca003a479de19a",
+    "feature_count": 207,
+    "feature_rows": 69345,
+    "files": {
+      "feature_spec.json": {
+        "bytes": 12219,
+        "sha256": "b7e71ea01351b4bfbb3c946e39b00e81729206258f6fa0ca311a9cebb809e13c"
+      },
+      "features.parquet": {
+        "bytes": 15845045,
+        "sha256": "15aee99f361281065fbce2ba28da172b7730ede3b569af1b7a16850c16058e0a"
+      },
+      "observations.parquet": {
+        "bytes": 34092622,
+        "sha256": "8f3405dad8d0817cd5a97b2c922c35af88f64e78183c010e984db7f58979f10a"
+      },
+      "requests.parquet": {
+        "bytes": 13706197,
+        "sha256": "9c59133758643644c9d41331ee63b87e2dec5b624d3c8acc399a68f5cdccdf31"
+      }
+    },
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "identity_scope": "stable redaction-key namespace; no semantic cross-key dedup guarantee",
+    "input_profile": "safe_query_numeric_v2",
+    "label_distribution": {
+      "calibration": {
+        "behavioral_anomaly": 192,
+        "benign": 3279,
+        "brute_force": 192,
+        "cmd_injection": 192,
+        "path_traversal": 192,
+        "scanner_recon": 192,
+        "sqli": 192,
+        "xss": 192
+      },
+      "test": {
+        "behavioral_anomaly": 576,
+        "benign": 9837,
+        "brute_force": 576,
+        "cmd_injection": 576,
+        "path_traversal": 576,
+        "scanner_recon": 576,
+        "sqli": 576,
+        "xss": 576
+      },
+      "train": {
+        "behavioral_anomaly": 1728,
+        "benign": 29511,
+        "brute_force": 1728,
+        "cmd_injection": 1728,
+        "path_traversal": 1728,
+        "scanner_recon": 1728,
+        "sqli": 1728,
+        "xss": 1728
+      },
+      "val": {
+        "behavioral_anomaly": 384,
+        "benign": 6558,
+        "brute_force": 384,
+        "cmd_injection": 384,
+        "path_traversal": 384,
+        "scanner_recon": 384,
+        "sqli": 384,
+        "xss": 384
+      }
+    },
+    "limitations": [
+      "No independent source/label review is created by assembly",
+      "No source can be promoted from test to train",
+      "Different input profiles are rejected, not filled with invented flow/time",
+      "Formal scale readiness and endurance not accepted by this assembly"
+    ],
+    "normalizer_version": "ai-normalizer-5",
+    "partition_time_bounds": {
+      "calibration": [
+        1793323780.399069,
+        1793324260.654837
+      ],
+      "test": [
+        1793324882.398553,
+        1793325362.903692
+      ],
+      "train": [
+        1793322677.636501,
+        1793323159.230271
+      ],
+      "val": [
+        1793323780.488218,
+        1793324260.869086
+      ]
+    },
+    "redaction_key_fingerprint": "bf8ebd67c33ea6ddabdab6810418625d8a1d557e81ea7427b755f148f480af91",
+    "rows": {
+      "calibration": 4623,
+      "test": 13869,
+      "train": 41607,
+      "val": 9246
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "source_bindings": [
+      {
+        "calibration_groups": [
+          "1c33b58dddfa8a4069b219e8bc35c1e87d91d379a5efd520bfea52645c6950d7",
+          "597a35ed94117ae615a08fc1b052b84263296bc4f64b50166b7420fab64a0cae",
+          "b37697a959c047e5f184b1b1dcc8eeafdd1f90d8e8835b8e1aa4b05b9610d9ef"
+        ],
+        "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+        "environment_id": "localhost-student-lab",
+        "manifest_sha256": "0c1a5ca3523c8ff769148766cee152d0a47c62c012a08200f0586f2349ee221e"
+      }
+    ],
+    "stage": "prepared",
+    "temporal_embargo_checks": {
+      "calibration_before_val": false,
+      "train_before_calibration": true,
+      "val_before_test": true
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/assembled-research/dataset_manifest.json",
+  "original_sha256": "f4b89c2ffb6559f089f59a0c8f90459582b5191799a49f9535531934f0a0ff80",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

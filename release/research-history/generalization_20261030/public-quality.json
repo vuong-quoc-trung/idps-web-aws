@@ -1,0 +1,33 @@
+{
+  "content": {
+    "body_present_requests": {
+      "test_anomalous": 9977,
+      "test_normal": 8000,
+      "train_normal": 8000
+    },
+    "conflicting_binary_label_request_identities": 0,
+    "formal_training_permitted": false,
+    "interpretation": "An optimistic empirical information-loss bound from exact static vector collisions, not model accuracy, label-error proof or a tuned decision rule. Different bodies/headers and URI masking can legitimately share one vector.",
+    "nonempty_query_after_existing_v2_privacy_projection": {
+      "test_anomalous": 1713,
+      "test_normal": 2000,
+      "train_normal": 2000
+    },
+    "original_lab_test_opened": false,
+    "request_identities_crossing_original_train_test": 626,
+    "source_manifest_sha256": "dbf751d47b8cac670bda9598befc5e0062e6f7cf8c86ee708b89a8fcf4275dd5",
+    "source_records": {
+      "test_anomalous": 25065,
+      "test_normal": 36000,
+      "train_normal": 36000
+    },
+    "test_empirical_view_error_lower_bound": 0.24509948415622698,
+    "test_minimum_errors_any_deterministic_classifier_using_this_view": 14967,
+    "test_mixed_label_feature_vectors": 32,
+    "unique_observable_request_identities": 34561
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/public-quality.json",
+  "original_sha256": "2b7f2e500f2dd5883bd0190a9b60debcd08ebb16e80a4074f51e2b588a609cdb",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

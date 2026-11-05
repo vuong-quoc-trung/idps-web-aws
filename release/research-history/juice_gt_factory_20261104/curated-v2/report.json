@@ -1,0 +1,46 @@
+{
+  "content": {
+    "campaign_ids": 8,
+    "candidate_attack_attempt_views": 4,
+    "candidate_benign_views": 17,
+    "curator_script_sha256": "b1e7d456e6f9e6f21f6f792fb4e4e0f0b72a96227084e1dfc872884f39fb0992",
+    "encoder_code_sha256": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+    "encoder_version": "rich_v2",
+    "eval_ready": false,
+    "factory_script_sha256": "4385db187493da4516e0480dc382d9494afffd2c00c463bb44ac2ac357ef3740",
+    "fit_ready": false,
+    "formal_admitted": 0,
+    "format_version": 1,
+    "independent_applications": 1,
+    "independent_environments": 0,
+    "labels_before_feature_quarantine": {
+      "attack_attempt": 4,
+      "benign": 28
+    },
+    "mixed_label_feature_views": 0,
+    "no_raw_http_or_secret_in_tensor": true,
+    "physical_client_requests_sent": 33,
+    "plan_file_sha256": "36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d",
+    "proxy_correlated": 33,
+    "quality_counts": {
+      "body_redacted": 2,
+      "redacted_query_fields": 1,
+      "same_label_view_duplicate_rows": 11,
+      "unknown_quarantined": 1
+    },
+    "report_sha256": "76165b9e9e946676d4af6322235e9106f45421fbb9519eb67176849674f34c47",
+    "request_header_values_observed_for_projection": false,
+    "research_candidate_views_after_quarantine": 21,
+    "run_report_file_sha256": "e7fd267a9a4a3d1650ab4bdb052314756304c764435ee035301ec3a9f613efc0",
+    "scope": "single Juice Shop instance, collector-controlled lab intent; development only",
+    "tensor_sha256": "32c9afb63188a9e77428512426d3e1cf0d6364a8ab96364d9dee5383e9b39d23",
+    "unique_complete_request_representations": 33,
+    "unique_numeric76_content512_views_before_quarantine": 21,
+    "unique_numeric76_views": 20,
+    "why_not_fit_or_evaluate": "Single short lab session with one application, no independent campaign/time or enough benign views to support FPR 1%; possible view-label collision and header missingness. Do not score model or select threshold on this cohort."
+  },
+  "original_relative_path": "ai-training/.artifacts/juice_gt_factory_20261104/curated-v2/report.json",
+  "original_sha256": "eed5d24e572e2a632e3b1bef51abc00f07dcf754a29a5822cf0cfa72d34600a4",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

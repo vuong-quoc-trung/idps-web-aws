@@ -1,0 +1,46 @@
+{
+  "content": {
+    "dossiers_sha256": "3583b476d66859184f7e66c780d92fd6a7da1b1602c3c85c98596e0f1764bcac",
+    "eve_parse_errors": 0,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "http_profile": {
+      "eve_ambiguous_rows": 0,
+      "eve_candidate_rows": 0,
+      "method_GET": 64,
+      "query_present": 3,
+      "status_2xx": 1,
+      "status_4xx": 63
+    },
+    "labels_approved": 0,
+    "limits": [
+      "Publisher operator labels have no request ID or timezone; scenario/intent cannot be joined by time alone.",
+      "EVE HTTP joins are heuristic diagnostics, not independent ground truth or immutable request binding.",
+      "No raw target, query, user agent, IP or payload is exported; reviewer reads the pinned private archive by locator.",
+      "Response status and IDS signatures cannot establish intent or exploit success."
+    ],
+    "new_training_admission": 0,
+    "original_split_leakage": {
+      "original_split_admissible": false,
+      "request_or_flow_ids_shared_train_test": 0,
+      "rows_with_shared_attack_instance_ids": 3066,
+      "rows_with_shared_attack_instance_ids_by_role": {
+        "test": 1214,
+        "train": 1852
+      },
+      "shared_attack_instance_ids": 38
+    },
+    "pending_records": 64,
+    "queue_sha256": "8bbc3bae54ba9caa37a40439d697220891ebc6b13fe2b4f06d3d722be4b69cd3",
+    "raw_http_sha256_verified": 64,
+    "source_sha256": "66aafa96a69ab54ee061abbb69284444476919295f1b16985122283dae2b3054",
+    "status": "PENDING_HUMAN_REVIEW_NO_ADMISSION",
+    "trusted_benign": 0,
+    "trusted_positive": 0,
+    "verified_independent_campaigns": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_evidence_20261101/soc-pending-review-final-v2/report.json",
+  "original_sha256": "4d35539fcdb095a566364fb800958c8250a9573ce3a00c347b0c6142bddecd0b",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

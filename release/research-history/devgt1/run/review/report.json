@@ -1,0 +1,28 @@
+{
+  "content": {
+    "approved_attack": 0,
+    "approved_benign": 0,
+    "capture_report_sha256": "9d9a94360676ab3851d0bbc28fc89c3d0c4bdbe9db4dc20d12fc99bd42ae7c30",
+    "cross_campaign_critical_target_overlap": 0,
+    "distinct_attack_and_hard_negative_targets": 3,
+    "format_version": 1,
+    "instructions": [
+      "A reviewer independent of the collector inspects the pinned private Nginx, Student and EVE/flow captures and the precommitted scenario plan; the blind queue contains no proposed label.",
+      "Record request-bound semantic intent evidence and reviewer identity; unknown stays unknown. Do not infer intent from response status, rule alerts or model scores.",
+      "Exploit success/failure needs an application oracle. Traffic and audit logs alone support neither outcome.",
+      "After review, create immutable dataset/provenance and evidence-v2 ledger, then run the existing corpus admission gate. Do not edit this queue in place.",
+      "All current campaigns are development-only in one environment; a future independently authorized environment and sealed holdout remain required for generalization claims."
+    ],
+    "max_cross_source_clock_delta_seconds": 0.930611,
+    "new_training_admission": 0,
+    "plan_sha256": "08361b0f05836e4e774b2050f96e3575a09d8803ecc942d9b10fb5a5e3e61936",
+    "queue_sha256": "8192dcada06d0ec8b759ad1d62c06d0bd4c2e3de7ecfb6194eb7229ed98b5e9d",
+    "requests": 8,
+    "status": "BLIND_REVIEW_READY_NO_LABELS_APPROVED",
+    "three_source_report_sha256": "f33c7f2a24f61d5cf6b824487294818fe45023fc46b82590641b0dae02648a9e"
+  },
+  "original_relative_path": "ai-training/.artifacts/devgt1/run/review/report.json",
+  "original_sha256": "c72d62b725d0f43fae9d6e1afe11aa3773c5969fb8d11174435745c72899f393",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

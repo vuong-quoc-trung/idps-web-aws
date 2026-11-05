@@ -1,0 +1,68 @@
+{
+  "content": [
+    {
+      "config": {
+        "family_weight": 0.2,
+        "kind": "deep_mlp",
+        "learning_rate": 0.0003,
+        "sampling": "source_family_balanced",
+        "seed": 17,
+        "total_steps": 300,
+        "training_pool": "multisource_benign",
+        "warmup_steps": 15,
+        "width": 256
+      },
+      "encoding": "bounded76",
+      "name": "bounded76-mlp17"
+    },
+    {
+      "config": {
+        "family_weight": 0.2,
+        "kind": "residual_glu",
+        "learning_rate": 0.0003,
+        "sampling": "source_family_balanced",
+        "seed": 17,
+        "total_steps": 300,
+        "training_pool": "multisource_benign",
+        "warmup_steps": 15,
+        "width": 1024
+      },
+      "encoding": "bounded76",
+      "name": "bounded76-glu17"
+    },
+    {
+      "config": {
+        "family_weight": 0.2,
+        "kind": "residual_glu",
+        "learning_rate": 0.0003,
+        "sampling": "source_family_balanced",
+        "seed": 17,
+        "total_steps": 300,
+        "training_pool": "multisource_benign",
+        "warmup_steps": 15,
+        "width": 256
+      },
+      "encoding": "bounded76",
+      "name": "bounded76-glu256-17"
+    },
+    {
+      "config": {
+        "family_weight": 0.0,
+        "kind": "residual_glu",
+        "learning_rate": 0.0003,
+        "sampling": "source_family_balanced",
+        "seed": 17,
+        "total_steps": 300,
+        "training_pool": "multisource_benign",
+        "warmup_steps": 15,
+        "width": 1024
+      },
+      "encoding": "affine70",
+      "name": "affine70-glu-binary-only"
+    }
+  ],
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/phase2-plan.json",
+  "original_sha256": "ac32e92171c57e3d33b6a556dd51386b3242f1f782f807d73f629b5a8c03b8dd",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

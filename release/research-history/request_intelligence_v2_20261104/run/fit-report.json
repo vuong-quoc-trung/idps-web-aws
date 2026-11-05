@@ -1,0 +1,32 @@
+{
+  "content": {
+    "calibration_or_evaluation_rows_used_for_fitting": 0,
+    "dataset_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049",
+    "effective_epochs": 6.529929007348362,
+    "final_checkpoint_manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "final_checkpoint_path": "<PROJECT_ROOT>/ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4",
+    "first_100_loss_mean": 0.39074275008521775,
+    "fit_seconds": 7.911973930000386,
+    "formal_admitted": 0,
+    "format_version": 1,
+    "last_100_loss_mean": 0.09470100989862078,
+    "loss_max": 0.7670655012215908,
+    "loss_min": 0.03705170113302805,
+    "midpoint_checkpoint_exact_roundtrip": true,
+    "parameters": 50696,
+    "peak_rss_kib": 894572,
+    "plan_sha256": "35fd38748b3bc18d567c08157d0f432f527ad02bea3899bc8ac5299fa2979b9b",
+    "report_sha256": "80ae73c736dbec1e404dbe303bf774ef762d4389b3b6b30aefcf862a04c8cc4c",
+    "resumed_from_midpoint": true,
+    "scope": "one WAF train-split publisher-label v2 research fit; Juice historical regression only",
+    "train_rows": 120435,
+    "unique_views": 160796,
+    "updates": 3072
+  },
+  "original_relative_path": "ai-training/.artifacts/request_intelligence_v2_20261104/run/fit-report.json",
+  "original_sha256": "43b5428c3aa91bcc4eb436d679d49eed23a37df0943a05a2543e165f4a1dfa1e",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

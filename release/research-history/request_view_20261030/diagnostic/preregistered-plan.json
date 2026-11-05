@@ -1,0 +1,35 @@
+{
+  "content": {
+    "deep_mlp": {
+      "binary_weighting": "balanced",
+      "kind": "deep_mlp",
+      "learning_rate": 0.0003,
+      "total_steps": 300,
+      "unique_training_views": 1233,
+      "warmup_steps": 15,
+      "width": 256
+    },
+    "denoising_autoencoder": {
+      "binary_weighting": "none",
+      "kind": "denoising_autoencoder",
+      "learning_rate": 0.0003,
+      "total_steps": 300,
+      "unique_training_views": 18713,
+      "warmup_steps": 15,
+      "width": 256
+    },
+    "residual_glu": {
+      "binary_weighting": "balanced",
+      "kind": "residual_glu",
+      "learning_rate": 0.0003,
+      "total_steps": 300,
+      "unique_training_views": 1233,
+      "warmup_steps": 15,
+      "width": 1024
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/diagnostic/preregistered-plan.json",
+  "original_sha256": "f30381453314c00040ee5c9e5e8bcdcc38ee8138856cb1aa72fe50393b807932",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

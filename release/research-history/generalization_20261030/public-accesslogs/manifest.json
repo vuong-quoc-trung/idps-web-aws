@@ -1,0 +1,54 @@
+{
+  "content": {
+    "benign_only_training_eligible_requests": 0,
+    "compressed_prefix_bytes": 1443840,
+    "compressed_prefix_sha256": "0dd3f85730d6e9cfecbe9e963652e8d47e71be7bde1bf88ead39aaed01d34720",
+    "data_kind": "public_unlabeled_real_accesslog",
+    "doi": "10.5281/zenodo.20289873",
+    "duplicate_rows": 9666,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "full_archive_checksum_verified": false,
+    "invalid_rows": 0,
+    "license": "CC0-1.0",
+    "limits": [
+      "No normal/attack labels; do not infer benign from status200 or missing alerts",
+      "A chronological prefix of one service/month is not representative of four months",
+      "Archive prefix was streamed over HTTPS; full3.6GB publisher checksum NOT verified",
+      "No body, role, latency or flow is available; never synthesize them",
+      "Tokens/referers/raw URI/query/IP hashes are discarded before writing",
+      "Actual recorded timestamps are retained; source client hashes are HMAC pseudonymized again"
+    ],
+    "members": [
+      {
+        "declared_bytes": 16829838491,
+        "name": "oc-2026-01.csv"
+      }
+    ],
+    "metadata_sha256": "6f68e25ce4b9c79f332cbfbf7b9d684d12fe51cbb2caac40ea4160b29ea175df",
+    "methods": {
+      "GET": 88362,
+      "HEAD": 3,
+      "OPTIONS": 740,
+      "POST": 1229
+    },
+    "profile": "public-accesslog-partial-v1",
+    "requests_sha256": "b12e8564691954b69a345242f35fda6064a4e36858f6e2f3bf45fbb766e97d36",
+    "source_rows": 100000,
+    "statuses": {
+      "2xx": 34237,
+      "3xx": 40073,
+      "4xx": 16023,
+      "5xx": 1
+    },
+    "supervised_eligible_requests": 0,
+    "timestamp_max": 1767231139.0,
+    "timestamp_min": 1767225675.0,
+    "unique_clients": 3754,
+    "unique_observations": 90334
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/public-accesslogs/manifest.json",
+  "original_sha256": "eedc13495bdd3fb1e54046ed935401c9c8f5a124bc558a40549f440bf976fb67",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

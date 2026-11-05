@@ -1,0 +1,87 @@
+{
+  "content": {
+    "counts": {
+      "conflicting_captured_events_labels": 60,
+      "conflicting_tx_labels": 60,
+      "conflicting_views_labels": 508,
+      "distinct_captured_event_keys": 27686,
+      "distinct_conflicting_captured_events_keys": 20,
+      "distinct_conflicting_tx_keys": 20,
+      "distinct_conflicting_views_keys": 25,
+      "distinct_request_representations": 18474,
+      "distinct_transaction_ids": 27686,
+      "duplicate_captured_events": 81197,
+      "duplicate_tx": 81197,
+      "duplicate_views": 90409,
+      "event_year_2024": 108823,
+      "event_year_2026": 60,
+      "missing_event_time": 0,
+      "missing_request_url": 0,
+      "missing_transaction_id": 0,
+      "request_body_present": 9034,
+      "response_body_present": 27065,
+      "rows_seen": 108884,
+      "waf_rule_id_attack": 96286,
+      "waf_rule_id_normal": 12597,
+      "waf_rule_id_present": 108883
+    },
+    "distinct_transaction_ids_without_label_conflict_by_publisher_label": {
+      "bruteforce": 1892,
+      "fileinclusion-ldf": 1006,
+      "normal": 9105,
+      "rce": 1257,
+      "sqli": 12820,
+      "xss": 1586
+    },
+    "doi": "10.5281/zenodo.21872151",
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "license": "CC BY 4.0 (official Zenodo API metadata)",
+    "methods": {
+      "GET": 99796,
+      "POST": 9087
+    },
+    "new_training_admission": 0,
+    "publisher_labels": {
+      "bruteforce": 7568,
+      "fileinclusion-ldf": 6290,
+      "normal": 12597,
+      "rce": 4172,
+      "sqli": 69631,
+      "xss": 8625
+    },
+    "rows": 108883,
+    "status": "SOURCE_AUDITED_LABEL_EVIDENCE_PENDING",
+    "status_codes": {
+      "-": 198,
+      "200": 94288,
+      "301": 168,
+      "302": 599,
+      "304": 34,
+      "400": 1,
+      "403": 5,
+      "404": 5227,
+      "405": 3,
+      "500": 8360
+    },
+    "timestamp_range_utc": {
+      "first": "2024-06-20T10:16:38+00:00",
+      "last": "2026-08-10T11:02:58.320758+00:00"
+    },
+    "training_blockers": [
+      "Only one WordPress testbed; no verified independent campaign keys in workbook.",
+      "Publisher describes mixed time/scenario/regex/manual labeling, without per-row label-basis evidence.",
+      "ModSecurity rule/action and response fields are annotations, not causal request features or ground truth.",
+      "Repeated transaction IDs, event keys and request views need source-owner explanation and group-aware partitioning.",
+      "Raw bodies may contain sensitive data; no raw values were exported in this audit."
+    ],
+    "trusted_benign": 0,
+    "trusted_positive": 0,
+    "verified_independent_campaigns": 0,
+    "workbook_sha256": "f959c79e185502b03206f6fdeb29306a65571394c2f009dda503d43ba306d16d"
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_evidence_20261101/modsec-wp-audit-final/report.json",
+  "original_sha256": "70d21f365247ac818d706605e53f46620c45fe4d441f55af78bda7f801abd87e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,60 @@
+{
+  "content": {
+    "checkpoint_manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "code_sha256": {
+      "scripts/audit-modsec-wp.py": "ddad4c34d8ff56d88ff306140e3b644b6725f26279fe82e6467cb7939f683fe3",
+      "src/idps_ai/features/request_encoding.py": "97eabb716b947d59d0fec359513f55677f9bd4a9d63e23aafffd150a2e87abfc",
+      "src/idps_ai/features/request_preprocessing.py": "740813e7ab15a2cd27cd13e6471331970a6c1ff2bf0f8799853d432abc991312",
+      "src/idps_ai/features/request_view.py": "00cde620943f7f353f13c26b1978ec06f64bbe5a6c189afe8d21ec03e6b2451b",
+      "src/idps_ai/features/rich_content.py": "4031f4898c8510221630eed00ccec95cb4706186aed2f99e184fd97ee3f63d27",
+      "src/idps_ai/features/rich_content_v2.py": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+      "src/idps_ai/features/safe_content.py": "8a9c58c97aa627608eb4a8bb4209cbe3d72ca7928c345fbbe06471ae1b89a00a",
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76"
+    },
+    "cohort_sha256": "30393076f6358ac2105a7df9ff7e2f64926b6ce427f4ca93e72070dd237e2709",
+    "dedup": "one observation per transaction ID; request-level uses ID proxies, unique-view metrics dedup float32 feature bytes",
+    "development_shortcut_controls": "method posterior from v2 train with Laplace1; frozen v1 numeric MLP; unweighted five request-structure features; same v2 development, never external tuning",
+    "evaluator_sha256": "472f048286f3425be79fddf57ad17b31d4d6e7b530f194fe41e3ebe9b3faf43f",
+    "exclusion": "2026 gap-remediation rows; invalid/unprojectable; conflicting transaction IDs, complete method/URL/body identities, or v2 feature views",
+    "external_scores_seen_before_freeze": false,
+    "formal_admitted": 0,
+    "format_version": 1,
+    "inclusion": "2024 workbook rows only; valid transaction ID/method/URL and six publisher classes",
+    "label_semantics": "publisher normal vs publisher sqli/xss/fileinclusion/rce/bruteforce; hybrid scenario/regex/manual, per-row basis unavailable",
+    "metrics": [
+      "publisher-label precision/sensitivity/normal flagged fraction/AP",
+      "unique-view and transaction-proxy counts",
+      "Clopper-Pearson95 descriptive intervals",
+      "per-method/family false negatives",
+      "latency/model-only CPU-RSS"
+    ],
+    "near_duplicate": "fixed-seed 512x512 cosine>=0.995 probe; not exhaustive; no blind claim",
+    "no_training_or_threshold_change": true,
+    "plan_sha256": "d2c825dac090127a28d5d8e4c71a278cde374b20889627f58f2807fc390a7ffa",
+    "preparation_report_sha256": "f3c4292148538aedae039a7b54a369453fcc7d1cf3b4ca46dd69ea022b495909",
+    "primary": "publisher-label rows with zero exact method/URL/body, exact feature-view, or exact safe-template overlap with WAF train",
+    "primary_two_class_counts": {
+      "publisher_attack_family": 18025,
+      "publisher_normal": 4494
+    },
+    "purpose": "one frozen cross-source publisher-label retrospective evaluation",
+    "source": "ModSec-WP v2 Zenodo 10.5281/zenodo.21872151; CC BY 4.0 publisher metadata",
+    "source_audit_sha256": "70d21f365247ac818d706605e53f46620c45fe4d441f55af78bda7f801abd87e",
+    "source_license": "CC BY 4.0 publisher metadata; research scoring only",
+    "source_revision": "Zenodo ModSec-WP v2, DOI 10.5281/zenodo.21872151",
+    "source_workbook_sha256": "f959c79e185502b03206f6fdeb29306a65571394c2f009dda503d43ba306d16d",
+    "threshold": 0.8826237916946411,
+    "threshold_file_sha256": "6d0fd376d0777f97fb61688b898556a4a9b9b94656738723e7b74e1d33061f6a",
+    "threshold_rule": "frozen v2 score > publisher-NORMAL calibration p99, no external recalibration",
+    "v1_numeric_checkpoint_manifest_sha256": "e787fd766f4f53c1cd430d577bfc6b1905b096b9554103d23a7eab5fdbf36e6f",
+    "v1_numeric_report_sha256": "18ef4823b8918ada4502767be229ff005398ada9befcb84aa3f09896fd6a4c81",
+    "waf_plan_sha256": "68e6d63311500064f1fd4cf3e5a09cda8b38bbf43d9a04542c898613dc246ad5",
+    "waf_train_sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+    "waf_train_tensor_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049"
+  },
+  "original_relative_path": "ai-training/.artifacts/request_v2_cross_source_20261104/frozen-plan.json",
+  "original_sha256": "798bb90391b53a2e3a8f968e91bfb8f0aa747b4802766658648e469e6af0f670",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

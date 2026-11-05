@@ -1,0 +1,27 @@
+{
+  "content": {
+    "bundle_manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "enforcement_actions": 0,
+    "format_version": 1,
+    "latency_ms": {
+      "p50": 4.089293,
+      "p95": 4.7744306,
+      "p99": 4.98092603
+    },
+    "latency_scope": "Python feature extraction plus ONNX, one ordered request at a time; includes cold first observation",
+    "limits": [
+      "This is offline integration, not a live sensor/Web/IPS rollout.",
+      "Input must be chronological fused requests using the matching numeric bridge and feature contract."
+    ],
+    "mode": "offline_shadow_only",
+    "partition": "val",
+    "predictions_sha256": "f8a963c732752133a52bad39aa606aa4a9018b779ed0b2b00f7d5bbb43df57d2",
+    "requests": 512,
+    "test_labels_used": false
+  },
+  "original_relative_path": "ai-training/.artifacts/scale_upgrade_20261030/shadow/report.json",
+  "original_sha256": "6a4b3b7df1ee443b7cda222b3b63e32f2a72b3634dbc2ce11f938fe766deb2b1",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,22 @@
+{
+  "content": {
+    "FP_without_any_of_six_basic_syntax_counters": 0,
+    "MLP": "Highconservativethresholdandmissing/insufficientpositivecoverage yieldweak recall; no evidence moreparameters orepochs fixesit.",
+    "all_FP_in_publisher_or_runner_labeled_hard_negative_scenarios": true,
+    "all_three_exposed_campaigns_affected": true,
+    "calibration": "GLU threshold0.9984238147735596 wasfitbeforevalidation frombenigncalibrationquantiles.10.73%validationFPR showscalibrationdistribution mismatch; monotone probabilityrescaling doesnotfix ranking atsameFPR.",
+    "counter_note": "Zero counters are not proof of benign intent or an acceptable inference gate; richer semantic/causal evidence is missing. Do not relabel or hard-gate by these counters.",
+    "domain_shift": "Different grammar/application mix; sourceprobe86.74%balancedaccuracy from prior validdevelopment audit. Current URI-only representation lacks semantic intent and body/header/context.",
+    "frozen_GLUs_lab_false_positives": 79,
+    "nearest_model_input_check": "FPmedianL1distance1.027to labattack vs1.351tolabbenign; numeric input proximity only, not evidence of malicious meaning or causal attribution.",
+    "new_training": "NOT_RUN; no independentlylabelednewpositivetrainingcohort, repeatedHPOonsamevalidationnotjustified",
+    "next_experiment": "Frozen unchanged MLP/GLU benign-onlyexternaldevelopmentstress with groupuncertainty, notthresholdoptimization/champion orrecallacceptance",
+    "sampling": "Class/source/family balanced SGD cannotcreatebenigndiversity or resolveambiguousviews. Preserveexisting dualclass source guard rather thanmix newbenign domain assupervised source shortcut.",
+    "training_unique_benign_lab_views": 206,
+    "unknown_OrganizationX": "Preserveunknown labels andoriginalpublishedheuristicrules. No machinegenerated pseudo-groundtruth."
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/DIAGNOSTIC_CONCLUSIONS.json",
+  "original_sha256": "55639128baca16f842ad15e5895adc1fade5f8f6380d465385ce429681e60193",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

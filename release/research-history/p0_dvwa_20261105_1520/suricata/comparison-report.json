@@ -1,0 +1,191 @@
+{
+  "content": {
+    "by_family": {
+      "cmd_injection": {
+        "FN": 12,
+        "FP": 0,
+        "TN": 0,
+        "TP": 0,
+        "descriptive_iid_95_ci_normal_flag_fraction": null,
+        "descriptive_iid_95_ci_sensitivity": [
+          0.0,
+          0.2646484693970512
+        ],
+        "descriptive_lab_normal_flag_fraction": null,
+        "descriptive_lab_sensitivity": 0.0,
+        "independent_population_fpr": null,
+        "independent_population_recall": null,
+        "labeled_requests": 12,
+        "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+        "unknown_excluded": 4
+      },
+      "path_traversal": {
+        "FN": 3,
+        "FP": 0,
+        "TN": 3,
+        "TP": 9,
+        "descriptive_iid_95_ci_normal_flag_fraction": [
+          0.0,
+          0.7075982261787133
+        ],
+        "descriptive_iid_95_ci_sensitivity": [
+          0.4281415381218108,
+          0.9451393554720072
+        ],
+        "descriptive_lab_normal_flag_fraction": 0.0,
+        "descriptive_lab_sensitivity": 0.75,
+        "independent_population_fpr": null,
+        "independent_population_recall": null,
+        "labeled_requests": 15,
+        "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+        "unknown_excluded": 0
+      },
+      "sqli": {
+        "FN": 4,
+        "FP": 0,
+        "TN": 20,
+        "TP": 8,
+        "descriptive_iid_95_ci_normal_flag_fraction": [
+          0.0,
+          0.1684334709830853
+        ],
+        "descriptive_iid_95_ci_sensitivity": [
+          0.34887550641881554,
+          0.9007539088504167
+        ],
+        "descriptive_lab_normal_flag_fraction": 0.0,
+        "descriptive_lab_sensitivity": 0.6666666666666666,
+        "independent_population_fpr": null,
+        "independent_population_recall": null,
+        "labeled_requests": 32,
+        "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+        "unknown_excluded": 0
+      },
+      "xss": {
+        "FN": 2,
+        "FP": 2,
+        "TN": 34,
+        "TP": 10,
+        "descriptive_iid_95_ci_normal_flag_fraction": [
+          0.006800300654022815,
+          0.186636706457554
+        ],
+        "descriptive_iid_95_ci_sensitivity": [
+          0.5158622513140328,
+          0.9791374745399076
+        ],
+        "descriptive_lab_normal_flag_fraction": 0.05555555555555555,
+        "descriptive_lab_sensitivity": 0.8333333333333334,
+        "independent_population_fpr": null,
+        "independent_population_recall": null,
+        "labeled_requests": 48,
+        "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+        "unknown_excluded": 0
+      }
+    },
+    "comparison_plan_sha256": "355c99b41a75fb0b2dba64ae03af4045c36da9713ed759257f28effd32bf6b2e",
+    "equal_alert_budget": "NOT_ESTABLISHED; fixed existing rule set and frozen model threshold; no tuning on111 requests",
+    "eve_sha256": "b00b8757c02bb54372b17751b09170e1c85d05aa3db641de5756287ec84aa5d9",
+    "events": {
+      "alert": 30,
+      "flow": 111,
+      "http": 111,
+      "stats": 1
+    },
+    "incremental_detection": {
+      "AI_only_attack_case_ids": [
+        "dvwa-029",
+        "dvwa-031",
+        "dvwa-030",
+        "dvwa-028"
+      ],
+      "both_attack_case_ids": [
+        "dvwa-101",
+        "dvwa-024",
+        "dvwa-027",
+        "dvwa-022",
+        "dvwa-026",
+        "dvwa-109",
+        "dvwa-110",
+        "dvwa-025",
+        "dvwa-104",
+        "dvwa-108",
+        "dvwa-020",
+        "dvwa-023",
+        "dvwa-021",
+        "dvwa-100"
+      ],
+      "neither_attack_case_ids": [
+        "dvwa-086",
+        "dvwa-092",
+        "dvwa-090",
+        "dvwa-094",
+        "dvwa-073",
+        "dvwa-074",
+        "dvwa-103",
+        "dvwa-089",
+        "dvwa-088",
+        "dvwa-099",
+        "dvwa-093",
+        "dvwa-085",
+        "dvwa-091",
+        "dvwa-095",
+        "dvwa-084",
+        "dvwa-087",
+        "dvwa-102"
+      ],
+      "rules_only_attack_case_ids": [
+        "dvwa-070",
+        "dvwa-076",
+        "dvwa-106",
+        "dvwa-079",
+        "dvwa-075",
+        "dvwa-068",
+        "dvwa-069",
+        "dvwa-071",
+        "dvwa-072",
+        "dvwa-105",
+        "dvwa-107",
+        "dvwa-078",
+        "dvwa-077"
+      ]
+    },
+    "independent_review": "PENDING",
+    "report_sha256": "99a34c33ad8791f3147f32890cbc55e65fd662e9111c4c00ad04464d41c27332",
+    "request_baseline": {
+      "FN": 21,
+      "FP": 2,
+      "TN": 57,
+      "TP": 27,
+      "descriptive_iid_95_ci_normal_flag_fraction": [
+        0.004131932972365215,
+        0.11714846388839315
+      ],
+      "descriptive_iid_95_ci_sensitivity": [
+        0.4118083588406453,
+        0.7051987586661679
+      ],
+      "descriptive_lab_normal_flag_fraction": 0.03389830508474576,
+      "descriptive_lab_sensitivity": 0.5625,
+      "independent_population_fpr": null,
+      "independent_population_recall": null,
+      "labeled_requests": 107,
+      "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+      "unknown_excluded": 4
+    },
+    "requests_bound": 111,
+    "rules_sha256_after": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "signature_alert_counts": {
+      "1000001": 1,
+      "1000002": 9,
+      "1000003": 10,
+      "1000004": 10
+    },
+    "status": "COMPLETE_REQUEST_BOUND_HTTP_SIGNATURE_COMPARISON",
+    "threshold_tuning": false
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/suricata/comparison-report.json",
+  "original_sha256": "11c4d80fa91c1ad27bbf5783d40a1b6e8693aea310b41606e35998d82c22aed2",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

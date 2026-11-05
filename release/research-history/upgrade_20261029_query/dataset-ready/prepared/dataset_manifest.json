@@ -1,0 +1,97 @@
+{
+  "content": {
+    "dataset_sha256": "b6608d0204781c5c71a9892913ba9ad521be74ff355f737c10a5cc8c4c6465ad",
+    "feature_count": 148,
+    "feature_rows": 46134,
+    "files": {
+      "feature_spec.json": {
+        "bytes": 9174,
+        "sha256": "a47c8bf3a4819cf6301091f1b75985671ef8ae1f812033a3ccaabac7f64c49e3"
+      },
+      "features.parquet": {
+        "bytes": 5595453,
+        "sha256": "52e3127788348df2b6ea436e2201eef1121946e87e6ee0d3b6a275a25583908a"
+      },
+      "observations.parquet": {
+        "bytes": 20371583,
+        "sha256": "13f1bd396e782e92d6998d3dd13b3b2f427457eada3fea39c40f5ff3365807ab"
+      },
+      "requests.parquet": {
+        "bytes": 7743319,
+        "sha256": "b48b8996badd32a158e2e6b8b7bdf24c80bc14fd4281ae6e70f2a5003e3596fa"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "safe_query_numeric_v1",
+    "label_distribution": {
+      "test": {
+        "behavioral_anomaly": 384,
+        "benign": 6558,
+        "brute_force": 384,
+        "cmd_injection": 384,
+        "path_traversal": 384,
+        "scanner_recon": 384,
+        "sqli": 384,
+        "xss": 384
+      },
+      "train": {
+        "behavioral_anomaly": 1152,
+        "benign": 19674,
+        "brute_force": 1152,
+        "cmd_injection": 1152,
+        "path_traversal": 1152,
+        "scanner_recon": 1152,
+        "sqli": 1152,
+        "xss": 1152
+      },
+      "val": {
+        "behavioral_anomaly": 384,
+        "benign": 6558,
+        "brute_force": 384,
+        "cmd_injection": 384,
+        "path_traversal": 288,
+        "scanner_recon": 384,
+        "sqli": 384,
+        "xss": 384
+      }
+    },
+    "label_manifest_sha256": "341a625bfc3a059f9ec76756daaf3482d12cc7f7830c501295a21c4ebbccf87f",
+    "normalizer_version": "ai-normalizer-4",
+    "note": "Synthetic metrics verify plumbing only when the capture is synthetic; unknown/weak labels never trained",
+    "parent_dataset_sha256": "bb016d148936068bd9b5473e976759bcf92e31f0d0724d22272bec1c2c0e1556",
+    "redaction_key_fingerprint": "89ccf693f92e3828dacda9ba9bf7c4869fe29f8b9062079813fbe5bbcfd8ce18",
+    "rows": {
+      "test": 9246,
+      "train": 27738,
+      "val": 9150
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "split": {
+      "cutoffs": [
+        1793272574.7285876,
+        1793273675.9961543
+      ],
+      "embargo_seconds": 300,
+      "group_columns": [
+        "campaign_key",
+        "client_key",
+        "user_key",
+        "session_key"
+      ],
+      "groups": 30,
+      "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+      "reviewed_rows": {
+        "test": 9246,
+        "train": 27738,
+        "val": 9150
+      }
+    },
+    "stage": "prepared"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261029_query/dataset-ready/prepared/dataset_manifest.json",
+  "original_sha256": "46c1a4ead45d32cee80a2bae3f63a09e9254e2d4fee9b63f422469b7507a6361",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

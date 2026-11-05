@@ -1,0 +1,626 @@
+{
+  "content": {
+    "artifacts_sha256": {
+      "blind-review.jsonl": "2201905de911c33f2eac079f32daeedfbbfe8c4f39b062d610d2eefd64b0707c",
+      "counterfactuals.jsonl": "9803069132c2b9f20c3766d46d60c170d5a5d041d2e5de2357c7492db34075b3",
+      "evaluation-plan.json": "be623c09c20d6b6fe0dad847c55e00f482c395d2d7de43b903a48f7ed13b074f",
+      "predictions.jsonl": "f3f54ff48f7f85a52f5c9be5e69d2c07eb30eef02f4d50b42a4cae8b4addeaf2",
+      "review-unblind-key.jsonl": "013027d87dc7de885cd92f05c9d1abcd11a2b423f32ce5df61a99039e98fb017"
+    },
+    "enforcement_actions": 0,
+    "evaluation_plan_sha256": "be2ce4355df05b0bbf323b6c832fb447b0c0c43d7110b5028d8d3516ec126e01",
+    "evaluation_wall_seconds": 11.04735514099957,
+    "family_failures": {
+      "cmd_injection": {
+        "false_negative_case_ids": [
+          "dvwa-086",
+          "dvwa-092",
+          "dvwa-090",
+          "dvwa-094",
+          "dvwa-089",
+          "dvwa-088",
+          "dvwa-093",
+          "dvwa-085",
+          "dvwa-091",
+          "dvwa-095",
+          "dvwa-084",
+          "dvwa-087"
+        ],
+        "false_positive_case_ids": [],
+        "oracle_success_missed": [
+          "dvwa-086",
+          "dvwa-092",
+          "dvwa-090",
+          "dvwa-094",
+          "dvwa-088",
+          "dvwa-091",
+          "dvwa-095",
+          "dvwa-084",
+          "dvwa-087"
+        ]
+      },
+      "path_traversal": {
+        "false_negative_case_ids": [
+          "dvwa-106",
+          "dvwa-103",
+          "dvwa-099",
+          "dvwa-105",
+          "dvwa-107",
+          "dvwa-102"
+        ],
+        "false_positive_case_ids": [],
+        "oracle_success_missed": [
+          "dvwa-106",
+          "dvwa-103",
+          "dvwa-099",
+          "dvwa-105",
+          "dvwa-107",
+          "dvwa-102"
+        ]
+      },
+      "sqli": {
+        "false_negative_case_ids": [],
+        "false_positive_case_ids": [],
+        "oracle_success_missed": []
+      },
+      "xss": {
+        "false_negative_case_ids": [
+          "dvwa-070",
+          "dvwa-076",
+          "dvwa-079",
+          "dvwa-073",
+          "dvwa-074",
+          "dvwa-075",
+          "dvwa-068",
+          "dvwa-069",
+          "dvwa-071",
+          "dvwa-072",
+          "dvwa-078",
+          "dvwa-077"
+        ],
+        "false_positive_case_ids": [],
+        "oracle_success_missed": []
+      }
+    },
+    "formal_admitted": 0,
+    "glu207": {
+      "reason": "No Student/Nginx/Suricata fused207 causal contract; no padded features",
+      "status": "NOT_RUN"
+    },
+    "hard_rules_suricata_comparison": "PENDING_REAL_PCAP_DECODE_OR_UNAVAILABLE; no simulated rule benchmark",
+    "independent_review": "PENDING",
+    "independently_verified_labels": 0,
+    "lab_intent_counts": {
+      "attack": 48,
+      "benign": 59,
+      "unknown": 4
+    },
+    "latency_with_feature_extraction_ms": {
+      "p50": 0.5055969995737541,
+      "p95": 0.5908429993723985
+    },
+    "limits": [
+      "New prospective capture from a different application than prior repo evaluation; upstream training application novelty not certified",
+      "Single application/version/security-low instance, four family campaign groups, collector-controlled intent and internal Oracles",
+      "No independent reviewer; do not call these independent Recall/FPR or production quality",
+      "XSS success means unsafe reflection only; no browser execution verified",
+      "IID intervals do not account for correlated requests/templates",
+      "Missingness variants are inference counterfactuals on the same requests, never added to physical request count"
+    ],
+    "model_checkpoint_manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "no_exact_overlap_subset": {
+      "FN": 30,
+      "FP": 0,
+      "TN": 59,
+      "TP": 18,
+      "descriptive_iid_95_ci_normal_flag_fraction": [
+        0.0,
+        0.060608900950339835
+      ],
+      "descriptive_iid_95_ci_sensitivity": [
+        0.2395224034565858,
+        0.5264942393532239
+      ],
+      "descriptive_lab_normal_flag_fraction": 0.0,
+      "descriptive_lab_sensitivity": 0.375,
+      "independent_population_fpr": null,
+      "independent_population_recall": null,
+      "labeled_requests": 107,
+      "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+      "unknown_excluded": 4
+    },
+    "oracle_successes": {
+      "cmd_injection": 9,
+      "path_traversal": 12,
+      "sqli": 12
+    },
+    "overlap": {
+      "exact_feature_overlap_model_train_rows": 0,
+      "exact_raw_overlap_request_rows": 0,
+      "near_content_sample_pairs_cosine_ge_0995": 0,
+      "safe_template_overlap_model_train_rows": 0,
+      "scope": "full pinned publisher train raw scan plus exact v2 train feature/group lookup; near-content only512 sampled; no sealed data read; upstream source lineage not certified",
+      "waf_model_tensor_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049",
+      "waf_publisher_train_route_occurrences": {},
+      "waf_raw_sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+      "waf_rows_scanned": 1924461
+    },
+    "physical_new_requests": 111,
+    "report_sha256": "c7cd4cecd9292bec0a7f6dfcb3a1219318783795095030dacba940b901e174c8",
+    "run_id": "p0-dvwa-20261105-final",
+    "status": "COMPLETED_DESCRIPTIVE_P0_EVALUATION_REVIEW_PENDING",
+    "threshold": 0.8826237916946411,
+    "training_updates": 0,
+    "unique_method_url_body_representations": 111,
+    "variants": {
+      "body_missing": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 6,
+            "FP": 0,
+            "TN": 3,
+            "TP": 6,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.21094463823929666,
+              0.7890553617607033
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.5,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "collisions": {
+          "all_rows_retained_in_metrics": true,
+          "attack_rows_on_mixed_views": 0,
+          "benign_rows_on_mixed_views": 0,
+          "mixed_lab_intent_feature_views": 0,
+          "mixed_view_case_ids": [],
+          "rows_on_mixed_views": 0,
+          "unique_feature_views": 78
+        },
+        "flags_changed_from_full": 0,
+        "lab_confusion": {
+          "FN": 30,
+          "FP": 0,
+          "TN": 59,
+          "TP": 18,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.2395224034565858,
+            0.5264942393532239
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.375,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "both_missing": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 7,
+            "FP": 0,
+            "TN": 3,
+            "TP": 5,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.15165222980843013,
+              0.7233303143178942
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.4166666666666667,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "collisions": {
+          "all_rows_retained_in_metrics": true,
+          "attack_rows_on_mixed_views": 0,
+          "benign_rows_on_mixed_views": 0,
+          "mixed_lab_intent_feature_views": 0,
+          "mixed_view_case_ids": [],
+          "rows_on_mixed_views": 0,
+          "unique_feature_views": 78
+        },
+        "flags_changed_from_full": 1,
+        "lab_confusion": {
+          "FN": 31,
+          "FP": 0,
+          "TN": 59,
+          "TP": 17,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.22160593291183364,
+            0.5054317445633696
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.3541666666666667,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "full": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 6,
+            "FP": 0,
+            "TN": 3,
+            "TP": 6,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.21094463823929666,
+              0.7890553617607033
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.5,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "collisions": {
+          "all_rows_retained_in_metrics": true,
+          "attack_rows_on_mixed_views": 0,
+          "benign_rows_on_mixed_views": 0,
+          "mixed_lab_intent_feature_views": 0,
+          "mixed_view_case_ids": [],
+          "rows_on_mixed_views": 0,
+          "unique_feature_views": 86
+        },
+        "flags_changed_from_full": 0,
+        "lab_confusion": {
+          "FN": 30,
+          "FP": 0,
+          "TN": 59,
+          "TP": 18,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.2395224034565858,
+            0.5264942393532239
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.375,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      },
+      "headers_missing": {
+        "by_family": {
+          "cmd_injection": {
+            "FN": 2,
+            "FP": 0,
+            "TN": 0,
+            "TP": 10,
+            "descriptive_iid_95_ci_normal_flag_fraction": null,
+            "descriptive_iid_95_ci_sensitivity": [
+              0.5158622513140328,
+              0.9791374745399076
+            ],
+            "descriptive_lab_normal_flag_fraction": null,
+            "descriptive_lab_sensitivity": 0.8333333333333334,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 12,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 4
+          },
+          "path_traversal": {
+            "FN": 7,
+            "FP": 0,
+            "TN": 3,
+            "TP": 5,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.7075982261787133
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.15165222980843013,
+              0.7233303143178942
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.4166666666666667,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 15,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "sqli": {
+            "FN": 0,
+            "FP": 0,
+            "TN": 20,
+            "TP": 12,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.1684334709830853
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.7353515306029488,
+              1.0
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 1.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 32,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          },
+          "xss": {
+            "FN": 12,
+            "FP": 0,
+            "TN": 36,
+            "TP": 0,
+            "descriptive_iid_95_ci_normal_flag_fraction": [
+              0.0,
+              0.09739375591449193
+            ],
+            "descriptive_iid_95_ci_sensitivity": [
+              0.0,
+              0.2646484693970512
+            ],
+            "descriptive_lab_normal_flag_fraction": 0.0,
+            "descriptive_lab_sensitivity": 0.0,
+            "independent_population_fpr": null,
+            "independent_population_recall": null,
+            "labeled_requests": 48,
+            "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+            "unknown_excluded": 0
+          }
+        },
+        "collisions": {
+          "all_rows_retained_in_metrics": true,
+          "attack_rows_on_mixed_views": 0,
+          "benign_rows_on_mixed_views": 0,
+          "mixed_lab_intent_feature_views": 0,
+          "mixed_view_case_ids": [],
+          "rows_on_mixed_views": 0,
+          "unique_feature_views": 86
+        },
+        "flags_changed_from_full": 11,
+        "lab_confusion": {
+          "FN": 21,
+          "FP": 0,
+          "TN": 59,
+          "TP": 27,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.060608900950339835
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.4118083588406453,
+            0.7051987586661679
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.5625,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 107,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        }
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/evaluation/evaluation-report.json",
+  "original_sha256": "f49741c5ec726e5afe0b4bda164d5c5d8330e54421942cd9e31817fba6a4e2d6",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

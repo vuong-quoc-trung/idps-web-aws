@@ -1,0 +1,209 @@
+{
+  "content": {
+    "models": {
+      "affine70-deep_mlp-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/affine70-deep_mlp-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/corpus-final",
+        "manifest_sha256": "530dd62f28efadf2b0cdabfd0618e995bcf69595382871f499f770698430cedc"
+      },
+      "affine70-glu-binary-only": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-bundle",
+        "config": {
+          "family_weight": 0.0,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/corpus-final",
+        "manifest_sha256": "49460bb4fa6c463694a96e866270c55c227320df103ab4dbb231358136459c84"
+      },
+      "affine70-residual_glu-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/corpus-final",
+        "manifest_sha256": "ded8c571ab66ea2117d2e79880820b010cbd8d9060101cf162090dbcad25e939"
+      },
+      "bounded76-glu17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/bounded-corpus",
+        "manifest_sha256": "b1915f001c3bfbb43587778aa8cee6fc4fb41f2888da9c9ed8397105a2576508"
+      },
+      "bounded76-glu256-17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu256-17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/bounded-corpus",
+        "manifest_sha256": "984fe8ff83251018e4e80ffdbabec6e8ce74f204ca37a253d826a6339f8f447c"
+      },
+      "bounded76-mlp17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-mlp17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/bounded-corpus",
+        "manifest_sha256": "6559913df689f86c78befbfe9d44aa4cc75bb39356a4cf8f74fa347bf9dc6b3c"
+      },
+      "previous-deep_mlp": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-bundle",
+        "config": {},
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/corpus-final",
+        "manifest_sha256": "bb2bb251e1f8f64da33485e4c2dfedc99101993d77e19d9535fe9c371cc3cfd8"
+      },
+      "previous-denoising_autoencoder": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/diagnostic/denoising_autoencoder-bundle",
+        "config": {},
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/corpus-final",
+        "manifest_sha256": "6f92ddb2d0684901e6681edae22d8b271081757e476e51b112f6e2c8e0e1a087"
+      },
+      "previous-residual_glu": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-bundle",
+        "config": {},
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/corpus-final",
+        "manifest_sha256": "79af7198db40e792a54ebad49f02b1fa8ac65bac340e0da018d59fd6f8ffcf53"
+      },
+      "security45-deep_mlp-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/security-corpus",
+        "manifest_sha256": "a2907c017f8bb40afbf5fb18fe7abdf64c2f22d67d0b9679d75949a45dc0e81d"
+      },
+      "security45-deep_mlp-seed29": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed29-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 29,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/security-corpus",
+        "manifest_sha256": "f6d59868538558f6d777aaa221d83daad25f4f241c16c0fbd560a5d94188be2c"
+      },
+      "security45-residual_glu-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/security-corpus",
+        "manifest_sha256": "1270a6d5863282e7a0cab309195921571b3143c093665f62de7832e1a356ddf8"
+      },
+      "security45-residual_glu-seed29": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 29,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/security-corpus",
+        "manifest_sha256": "59d0a773269af065df7e5ddec4762f822dccd992db281e611fac90631bf04c3f"
+      },
+      "security45-residual_glu256-seed17": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-bundle",
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/security-corpus",
+        "manifest_sha256": "0cf43a8fd793211d0a2b7f9af3ae5369210eb83dbc02e24392fa795a8b6590e6"
+      }
+    },
+    "selected_research_candidate": "bounded76-glu17",
+    "selection": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/JOINT_VALIDATION_SELECTION.json",
+    "selection_sha256": "146804a789c2cb0ccd0f9c0472bd00336f8eb26f32f31481e21b148e2eb381a9"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/frozen-evaluation-registry.json",
+  "original_sha256": "7e8390b9fa6686ced14612fcb467cabf4a7d751299e2ee431da9f9656893fdce",
+  "redactions": {
+    "strings_changed": 29
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

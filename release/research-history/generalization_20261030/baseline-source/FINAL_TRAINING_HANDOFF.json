@@ -1,0 +1,81 @@
+{
+  "content": {
+    "actual_unique_requests": 69345,
+    "artifact_availability": "Local ignored artifacts only; no shared store provisioned",
+    "best_validation_ap": "gated_residual",
+    "branch": "feat/ai-model-training",
+    "candidate_parameters": {
+      "deep_mlp": 252680,
+      "gated_residual": 450056,
+      "hist_gradient_boosting": null,
+      "residual": 17992,
+      "residual_glu": 9675784
+    },
+    "canonical_schema": "1.0",
+    "champion_selected": false,
+    "dataset": "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5",
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "feature_count": 207,
+    "feature_version": "ai-features-5",
+    "formal_block_reason": "No admitted2M/multi-environment/human-reviewed assembled corpus; no permission for long formal run",
+    "formal_command": null,
+    "formal_training_started": false,
+    "format_version": 3,
+    "handoff_sha256": "12df9fe4a3f179a9869b1313db02e1ff4a8be8c25c9823fa0ef3af8af0a6dcb0",
+    "historical_handoffs": [
+      "ai-training/.artifacts/scale_upgrade_20261030/baseline-source/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/upgrade_20261028/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/upgrade_20261029_query/TRAINING_HANDOFF.json"
+    ],
+    "independent_human_review": false,
+    "input_profile": "safe_query_numeric_v2",
+    "limits": [
+      "2M diversity/reliable independent labels are not available; this upgrade did not manufacture traffic or count re-extraction as new data.",
+      "Multi-source shared-scaler assembly and its2M endurance/acceptance remain pending; catalog audit alone cannot unlock formal training.",
+      "One loopback topology and scripted grammars do not prove unseen-environment or real-world attack generalization.",
+      "Calibration/selection use distinct campaign groups inside one lab; only six selection groups, not independent deployment populations.",
+      "Neural algorithms/regularizers and tree32iterations differ; this is not an isolated architecture effect or equal-compute HPO comparison.",
+      "Test feature vectors are used for technical ONNX parity only; quality/threshold/candidate/latency measurements use validation.",
+      "Tree benchmark has no deployment bundle; ONNX vs sklearn latency are different backends, warm batch1 model-only measurements.",
+      "No champion, production FPR, zero-day, live receipt-time/TLS, response or full-session thermal/endurance acceptance claimed.",
+      "Reference corpora/models and checkpoints are private local artifacts; Git does not contain raw inputs, keys or model binaries."
+    ],
+    "main_candidate": "residual_glu",
+    "main_parameters": 9675784,
+    "new_requests_this_upgrade": 0,
+    "pilot": "ai-training/.artifacts/scale_upgrade_20261030/pilot/pilot-report.json",
+    "pilot_sha256": "ba4cc9a96fca3caf1b304519e50145a57bd6fc0c5dbaa401f2ec3fc6807d1ca3",
+    "pretrain_report": "ai-training/reports/SCALE_UPGRADE_20261030.json",
+    "pretrain_report_file_sha256": "a386d11de947af0afad1def6f965d75a356bfb5cf19ce63a162974ea35da9a58",
+    "readiness": "ai-training/.artifacts/scale_upgrade_20261030/readiness/readiness.json",
+    "readiness_scope": "Technical pilot on69k only, NOT2M admission",
+    "readiness_sha256": "6eadf0b97a574d69ebabf30b20e28623f931e8d7ec0c2f563e90b08896879f53",
+    "remaining": [
+      "Collect genuinely diverse authorized traffic/campaigns and independently review labels/environment boundaries.",
+      "Build and validate shared train-only scaler plus immutable four-part multi-source corpus; do not concatenate separately normalized features.",
+      "Run formal sessions only after data gate and explicit user permission; final test only after frozen selection.",
+      "Live inference/TLS/receipt-time/outages/shadow/Web integration require separate acceptance; no Web code modified."
+    ],
+    "resource_policy": {
+      "cpus": 8,
+      "memory_high_gib": 15,
+      "memory_limit_gib": 16,
+      "swap": 0,
+      "technical_epochs_per_session": 2,
+      "technical_minutes_per_session": 8,
+      "thermal_guard": "CPU sensor critical minus5C when available"
+    },
+    "scale_admitted_requests": 0,
+    "scope": "AI research/engineering validated; scale data and live acceptance pending",
+    "source_environments": 1,
+    "status": "ENGINEERING_VALIDATED_SCALE_DATA_NOT_READY",
+    "target_requests": 2000000,
+    "technical_command": "idps-ai pilot --candidate-set scale --dataset <prepared-v5> --readiness-report <current-source-gate> --output <new-directory> --cpus 8 (run inside8CPU/16GiB cgroup)",
+    "test_quality_metrics_sealed": true,
+    "updated_at": "2026-10-30T15:52:59+07:00"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/baseline-source/FINAL_TRAINING_HANDOFF.json",
+  "original_sha256": "e48c10a92dac34aa73c52f017b31af910bde3ae59f68e1b398dd7ccada9d016d",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

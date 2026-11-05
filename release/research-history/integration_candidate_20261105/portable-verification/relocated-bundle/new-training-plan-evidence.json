@@ -1,0 +1,64 @@
+{
+  "content": {
+    "architecture": "deep_mlp588x64x64x64x64x8 partial_binary_v1",
+    "augmentation": "zero first76 features for Bernoulli-selected rows; stateless PCG64 SeedSequence(seed, committed_step,5341); no inverted scaling; training only",
+    "batch_size": 256,
+    "calibration": "role1 publisher NORMAL p99 higher; score strictly greater than threshold",
+    "candidate": "request-v2-numeric-mask-p025",
+    "checkpoint_every_updates": 256,
+    "dataset_original_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049",
+    "evaluation": "role2 development and exposed DVWA/Juice regression; optional existing ModSec retrospective tensor; never independent",
+    "fit_role": "role0_only",
+    "formal_admitted": 0,
+    "format_version": 1,
+    "frozen_untouched": true,
+    "hypothesis": "Train-time numeric channel masking makes content useful when privacy projection removes numeric evidence; no inference encoder change",
+    "identity": {
+      "dependencies": {
+        "numpy": "2.5.4",
+        "scikit-learn": "1.9.1",
+        "threadpoolctl": "3.7.0"
+      },
+      "python": "3.12.14",
+      "study_script_sha256": "5c2d6fa22cfbc758d5de2f71f7ab6604190f0982c5f7ddb39cb8766228a4b5a3",
+      "training_modules": {
+        "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+        "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+        "src/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+        "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+        "src/idps_ai/training/generalization.py": "4a394753bf32581776e38362c8e8d45013ffd6f9d92a8c62b5579b9ca7e7c989",
+        "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+        "src/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3",
+        "src/idps_ai/training/protocol.py": "e2130e244d468be8272798c1222705762a646e5f7baac211559db3f5633f801b",
+        "src/idps_ai/training/request_training.py": "90c13fb84e574c911dc71d05654f431e3a9f57e364d39b87709d3eeb3858ed7a",
+        "src/idps_ai/training/resources.py": "c8c718162cd07b22b2fdbff1c6bbaf8da841cb95da2eee34a7f21c58fa55bcf4",
+        "src/idps_ai/training/runner.py": "bd36c0db6f37b00bebec7cae1e04f6b15a0b236fd1e3bc497730b3f998943305",
+        "src/idps_ai/training/schedule.py": "023f0f7eaeda189c66898c6628dd94be137933a915114e01d0ce185e66fc0e37",
+        "src/idps_ai/training/session.py": "61e0f351f006bd67cee44e00ffee7f4897cb014811fa659a92203a7b76dbe1dd",
+        "src/idps_ai/training/tabular.py": "e98f17e4743b93d2442e2c413d01c371f7dffd1737ba97cbc176ea22140d1adb",
+        "src/idps_ai/training/tree_baseline.py": "3b4345ac014069a4cc924c71fea4c68da369dba4c58ac785a936e8b6d2837cbb"
+      }
+    },
+    "learning_rate": 0.001,
+    "material_sha256": {
+      "labels.npy": "34605e72f212421c285e5f676ec4189a09c4ca67e018880bc70860f818d0ee93",
+      "train.npy": "01a123040cd5bb0abc7cdb476d59ab2f236444aab42c951c9e5077a0caa58cc0",
+      "views.npy": "3ff37bdef2072a5bc06c2ba04fa29f5f3beaa383450e59bcf39b1c11cf75f17f"
+    },
+    "numeric_mask_probability": 0.25,
+    "parameters": 50696,
+    "plan_sha256": "811fbcb7712cffcb69aaa2792a5ec602b601ad2ec4a5af18731e945ece43a351",
+    "seed": 31,
+    "selection": "promote for demo only if WAF development normal flags<=baseline+0.002 absolute and anomaly flagged fraction>=baseline-0.01; require DVWA improvement>=4 additional attempts with no additional benign flags; otherwise package frozen reference. No threshold search or hyperparameter retries.",
+    "train_class_counts": {
+      "publisher_ANOMALOUS": 86153,
+      "publisher_NORMAL": 34282
+    },
+    "train_unique_views": 120435,
+    "updates": 3072
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/portable-verification/relocated-bundle/new-training-plan-evidence.json",
+  "original_sha256": "f5d43a7234ec8c35602d9a8241dff487df0fb1bef3fc68829f9f00ef43cd1e36",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

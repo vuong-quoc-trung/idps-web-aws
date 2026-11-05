@@ -1,0 +1,40 @@
+{
+  "content": [
+    "systemd-run",
+    "--user",
+    "--collect",
+    "--unit=idps-gen-evaluate-20261031",
+    "--property=CPUQuota=400%",
+    "--property=AllowedCPUs=0-7",
+    "--property=MemoryMax=12G",
+    "--property=MemoryHigh=11G",
+    "--property=MemorySwapMax=0",
+    "--property=Nice=10",
+    "--property=RuntimeMaxSec=1200",
+    "--property=StandardOutput=append:<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/evaluation.stdout.log",
+    "--property=StandardError=append:<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/evaluation.stderr.log",
+    "--working-directory=<PROJECT_ROOT>",
+    "--setenv=PYTHONDONTWRITEBYTECODE=1",
+    "--setenv=OPENBLAS_NUM_THREADS=4",
+    "--setenv=OMP_NUM_THREADS=4",
+    "--setenv=MKL_NUM_THREADS=4",
+    "<PROJECT_ROOT>/ai-training/.venv/bin/python",
+    "<PROJECT_ROOT>/ai-training/scripts/evaluate-request-generalization.py",
+    "--registry",
+    "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/frozen-evaluation-registry.json",
+    "--real-data",
+    "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/srbh-audit-v2",
+    "--lab",
+    "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/lab",
+    "--eve",
+    "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/fresh-eve/eve.json",
+    "--output",
+    "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261031/evaluation"
+  ],
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/evaluation-command.json",
+  "original_sha256": "eb5439a7efcf4e4842cf40927d716d421bd2721fe7ecde01e7d0b437e5cf4138",
+  "redactions": {
+    "strings_changed": 10
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

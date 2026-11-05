@@ -1,0 +1,1801 @@
+{
+  "content": {
+    "champion_selected": false,
+    "format_version": 1,
+    "models": {
+      "affine70-glu-binary-only": {
+        "bundle_manifest_sha256": "49460bb4fa6c463694a96e866270c55c227320df103ab4dbb231358136459c84",
+        "by_source": {
+          "csic-published-normal-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.0027813943010484075,
+                  "n": 4512
+                }
+              ],
+              "brier": 8.474295040529282e-06,
+              "ece_equal_width": 0.0027813943010484075,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.002785640728761788,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 4512,
+              "confusion_matrix": [
+                [
+                  4512,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4512,
+              "threshold": 0.9833986163139343
+            }
+          },
+          "pkdd-mirror-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.002205371643698694,
+                  "n": 3638
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 1,
+                  "mean_probability": 0.14230942726135254,
+                  "n": 3
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 2,
+                  "mean_probability": 0.20174545049667358,
+                  "n": 1
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 5,
+                  "mean_probability": 0.5171637535095215,
+                  "n": 1
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 9,
+                  "mean_probability": 0.9388396143913269,
+                  "n": 1
+                }
+              ],
+              "brier": 0.0003583441827874691,
+              "ece_equal_width": 0.002773825230504234,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.003364598364646019,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 3644,
+              "confusion_matrix": [
+                [
+                  3644,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 3644,
+              "threshold": 0.9833986163139343
+            }
+          },
+          "student-lab": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.014099616858237548,
+                  "bin": 0,
+                  "mean_probability": 0.0030933345140625236,
+                  "n": 6525
+                },
+                {
+                  "attack_frequency": 0.7142857142857143,
+                  "bin": 1,
+                  "mean_probability": 0.14685578573317754,
+                  "n": 42
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 2,
+                  "mean_probability": 0.25058437523088956,
+                  "n": 95
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 3,
+                  "mean_probability": 0.3410310718146237,
+                  "n": 44
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 4,
+                  "mean_probability": 0.4262054777145386,
+                  "n": 25
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 5,
+                  "mean_probability": 0.55226811170578,
+                  "n": 5
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 6,
+                  "mean_probability": 0.6571662894317082,
+                  "n": 28
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 7,
+                  "mean_probability": 0.7360010474335914,
+                  "n": 51
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 8,
+                  "mean_probability": 0.8594951430956522,
+                  "n": 12
+                },
+                {
+                  "attack_frequency": 0.9108129439621152,
+                  "bin": 9,
+                  "mean_probability": 0.9925009810087149,
+                  "n": 1267
+                }
+              ],
+              "brier": 0.0379015127225058,
+              "ece_equal_width": 0.04208905123356452,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.13626541102951165,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 1536,
+              "benign": 6558,
+              "confusion_matrix": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  473,
+                  1063
+                ]
+              ],
+              "f1": 0.8004518072289156,
+              "fpr": 0.00869167429094236,
+              "pr_auc_average_precision": 0.9735611864060694,
+              "precision": 0.9491071428571428,
+              "recall": 0.6920572916666666,
+              "rows": 8094,
+              "threshold": 0.9833986163139343
+            }
+          }
+        },
+        "eligible_empirical_1pct_budget": true,
+        "lab_campaigns": {
+          "4f169519d84ea2eb0cf854dc0782c819659c2894b06879fdc860c5f5de9d3e3b": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1086,
+                7
+              ],
+              [
+                78,
+                178
+              ]
+            ],
+            "f1": 0.8072562358276645,
+            "fpr": 0.006404391582799634,
+            "pr_auc_average_precision": 0.9762589269556696,
+            "precision": 0.9621621621621622,
+            "recall": 0.6953125,
+            "rows": 1349,
+            "threshold": 0.9833986163139343
+          },
+          "5197caa3d5deb094d56d29ddfaa9670c52d282770f0e420369a511a5c80793f2": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1080,
+                13
+              ],
+              [
+                77,
+                179
+              ]
+            ],
+            "f1": 0.7991071428571428,
+            "fpr": 0.011893870082342177,
+            "pr_auc_average_precision": 0.9682545294731257,
+            "precision": 0.9322916666666666,
+            "recall": 0.69921875,
+            "rows": 1349,
+            "threshold": 0.9833986163139343
+          },
+          "5be3bbd6b85d2dea42055309d80f57cc53ccbaabcbf8db4204b4cebc4f197d8a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1082,
+                11
+              ],
+              [
+                80,
+                176
+              ]
+            ],
+            "f1": 0.7945823927765238,
+            "fpr": 0.010064043915827997,
+            "pr_auc_average_precision": 0.974126749135644,
+            "precision": 0.9411764705882353,
+            "recall": 0.6875,
+            "rows": 1349,
+            "threshold": 0.9833986163139343
+          },
+          "d69579dfb807772b309e99ff753221955230ee1a03e3c4246f4b4d5e60bc9c64": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1084,
+                9
+              ],
+              [
+                79,
+                177
+              ]
+            ],
+            "f1": 0.8009049773755657,
+            "fpr": 0.008234217749313814,
+            "pr_auc_average_precision": 0.9703956380369874,
+            "precision": 0.9516129032258065,
+            "recall": 0.69140625,
+            "rows": 1349,
+            "threshold": 0.9833986163139343
+          },
+          "e053818664c77f3e3062d088f1f998b37e0b8aaedd8bf76727891012b93a8179": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1081,
+                12
+              ],
+              [
+                79,
+                177
+              ]
+            ],
+            "f1": 0.7955056179775281,
+            "fpr": 0.010978956999085087,
+            "pr_auc_average_precision": 0.9693549123081577,
+            "precision": 0.9365079365079365,
+            "recall": 0.69140625,
+            "rows": 1349,
+            "threshold": 0.9833986163139343
+          },
+          "eeacfc8174ff81e1a5d48164f0e4a2956d293b628834d75cc61603fdf1d4f90a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1088,
+                5
+              ],
+              [
+                80,
+                176
+              ]
+            ],
+            "f1": 0.8054919908466819,
+            "fpr": 0.004574565416285453,
+            "pr_auc_average_precision": 0.984074051428011,
+            "precision": 0.9723756906077348,
+            "recall": 0.6875,
+            "rows": 1349,
+            "threshold": 0.9833986163139343
+          }
+        },
+        "macrofamily_recall": 0.6920572916666666,
+        "payload_family_recall": {
+          "cmd_injection": {
+            "recall": 0.75,
+            "requests": 384
+          },
+          "path_traversal": {
+            "recall": 0.9557291666666666,
+            "requests": 384
+          },
+          "sqli": {
+            "recall": 0.0625,
+            "requests": 384
+          },
+          "xss": {
+            "recall": 1.0,
+            "requests": 384
+          }
+        },
+        "probability_calibration": {
+          "bins": [
+            {
+              "attack_frequency": 0.006269165247018739,
+              "bin": 0,
+              "mean_probability": 0.0027772947754933033,
+              "n": 14675
+            },
+            {
+              "attack_frequency": 0.6666666666666666,
+              "bin": 1,
+              "mean_probability": 0.1465526951683892,
+              "n": 45
+            },
+            {
+              "attack_frequency": 0.9895833333333334,
+              "bin": 2,
+              "mean_probability": 0.2500756364315748,
+              "n": 96
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 3,
+              "mean_probability": 0.3410310718146237,
+              "n": 44
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 4,
+              "mean_probability": 0.4262054777145386,
+              "n": 25
+            },
+            {
+              "attack_frequency": 0.8333333333333334,
+              "bin": 5,
+              "mean_probability": 0.5464173853397369,
+              "n": 6
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 6,
+              "mean_probability": 0.6571662894317082,
+              "n": 28
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 7,
+              "mean_probability": 0.7360010474335914,
+              "n": 51
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 8,
+              "mean_probability": 0.8594951430956522,
+              "n": 12
+            },
+            {
+              "attack_frequency": 0.9100946372239748,
+              "bin": 9,
+              "mean_probability": 0.9924586613189534,
+              "n": 1268
+            }
+          ],
+          "brier": 0.018961162227523833,
+          "ece_equal_width": 0.01968547628842867,
+          "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+          "negative_log_likelihood": 0.06940071657118835,
+          "threshold_selected": false
+        },
+        "threshold_changed": false,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14657,
+              57
+            ],
+            [
+              473,
+              1063
+            ]
+          ],
+          "f1": 0.8004518072289156,
+          "fpr": 0.0038738616283811337,
+          "pr_auc_average_precision": 0.9728145997197726,
+          "precision": 0.9491071428571428,
+          "recall": 0.6920572916666666,
+          "rows": 16250,
+          "threshold": 0.9833986163139343
+        },
+        "worst_source_fpr": 0.00869167429094236
+      },
+      "bounded76-glu17": {
+        "bundle_manifest_sha256": "b1915f001c3bfbb43587778aa8cee6fc4fb41f2888da9c9ed8397105a2576508",
+        "by_source": {
+          "csic-published-normal-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.0017474703358631607,
+                  "n": 4512
+                }
+              ],
+              "brier": 3.083486087977849e-06,
+              "ece_equal_width": 0.0017474703358631607,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.001749013916272205,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 4512,
+              "confusion_matrix": [
+                [
+                  4512,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4512,
+              "threshold": 0.9459904432296753
+            }
+          },
+          "pkdd-mirror-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.0019120965830677795,
+                  "n": 3628
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 1,
+                  "mean_probability": 0.1537489891052246,
+                  "n": 4
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 2,
+                  "mean_probability": 0.23381268978118896,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 3,
+                  "mean_probability": 0.39547550678253174,
+                  "n": 1
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 5,
+                  "mean_probability": 0.5651227831840515,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 6,
+                  "mean_probability": 0.6160104274749756,
+                  "n": 1
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 7,
+                  "mean_probability": 0.7522567510604858,
+                  "n": 1
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 8,
+                  "mean_probability": 0.8664344549179077,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 9,
+                  "mean_probability": 0.9622398813565572,
+                  "n": 3
+                }
+              ],
+              "brier": 0.0017278703496952726,
+              "ece_equal_width": 0.004262701576549057,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.0073907653237780336,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 3644,
+              "confusion_matrix": [
+                [
+                  3642,
+                  2
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0005488474204171241,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 3644,
+              "threshold": 0.9459904432296753
+            }
+          },
+          "student-lab": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.018357044515832952,
+                  "bin": 0,
+                  "mean_probability": 0.001969189550491107,
+                  "n": 6537
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 2,
+                  "mean_probability": 0.28423720598220825,
+                  "n": 9
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 3,
+                  "mean_probability": 0.3231642484664917,
+                  "n": 5
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 4,
+                  "mean_probability": 0.49364328384399414,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 5,
+                  "mean_probability": 0.5572322979569435,
+                  "n": 8
+                },
+                {
+                  "attack_frequency": 0.06666666666666667,
+                  "bin": 6,
+                  "mean_probability": 0.6663840691248576,
+                  "n": 30
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 7,
+                  "mean_probability": 0.766085860133171,
+                  "n": 20
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 8,
+                  "mean_probability": 0.8451578684828498,
+                  "n": 44
+                },
+                {
+                  "attack_frequency": 0.9214732453092426,
+                  "bin": 9,
+                  "mean_probability": 0.9891433112732315,
+                  "n": 1439
+                }
+              ],
+              "brier": 0.030489445079449336,
+              "ece_equal_width": 0.030685494247707036,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.15743377535517203,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 1536,
+              "benign": 6558,
+              "confusion_matrix": [
+                [
+                  6494,
+                  64
+                ],
+                [
+                  265,
+                  1271
+                ]
+              ],
+              "f1": 0.8854057819575062,
+              "fpr": 0.009759072888075633,
+              "pr_auc_average_precision": 0.9376921022532471,
+              "precision": 0.9520599250936329,
+              "recall": 0.8274739583333334,
+              "rows": 8094,
+              "threshold": 0.9459904432296753
+            }
+          }
+        },
+        "eligible_empirical_1pct_budget": true,
+        "lab_campaigns": {
+          "4f169519d84ea2eb0cf854dc0782c819659c2894b06879fdc860c5f5de9d3e3b": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1081,
+                12
+              ],
+              [
+                44,
+                212
+              ]
+            ],
+            "f1": 0.8833333333333333,
+            "fpr": 0.010978956999085087,
+            "pr_auc_average_precision": 0.9358419705435742,
+            "precision": 0.9464285714285714,
+            "recall": 0.828125,
+            "rows": 1349,
+            "threshold": 0.9459904432296753
+          },
+          "5197caa3d5deb094d56d29ddfaa9670c52d282770f0e420369a511a5c80793f2": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1077,
+                16
+              ],
+              [
+                47,
+                209
+              ]
+            ],
+            "f1": 0.8690228690228691,
+            "fpr": 0.01463860933211345,
+            "pr_auc_average_precision": 0.9317254753857036,
+            "precision": 0.9288888888888889,
+            "recall": 0.81640625,
+            "rows": 1349,
+            "threshold": 0.9459904432296753
+          },
+          "5be3bbd6b85d2dea42055309d80f57cc53ccbaabcbf8db4204b4cebc4f197d8a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1085,
+                8
+              ],
+              [
+                44,
+                212
+              ]
+            ],
+            "f1": 0.8907563025210083,
+            "fpr": 0.007319304666056725,
+            "pr_auc_average_precision": 0.9434834953132314,
+            "precision": 0.9636363636363636,
+            "recall": 0.828125,
+            "rows": 1349,
+            "threshold": 0.9459904432296753
+          },
+          "d69579dfb807772b309e99ff753221955230ee1a03e3c4246f4b4d5e60bc9c64": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1080,
+                13
+              ],
+              [
+                44,
+                212
+              ]
+            ],
+            "f1": 0.8814968814968815,
+            "fpr": 0.011893870082342177,
+            "pr_auc_average_precision": 0.9386620382694956,
+            "precision": 0.9422222222222222,
+            "recall": 0.828125,
+            "rows": 1349,
+            "threshold": 0.9459904432296753
+          },
+          "e053818664c77f3e3062d088f1f998b37e0b8aaedd8bf76727891012b93a8179": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1082,
+                11
+              ],
+              [
+                43,
+                213
+              ]
+            ],
+            "f1": 0.8874999999999998,
+            "fpr": 0.010064043915827997,
+            "pr_auc_average_precision": 0.9365335318322408,
+            "precision": 0.9508928571428571,
+            "recall": 0.83203125,
+            "rows": 1349,
+            "threshold": 0.9459904432296753
+          },
+          "eeacfc8174ff81e1a5d48164f0e4a2956d293b628834d75cc61603fdf1d4f90a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1089,
+                4
+              ],
+              [
+                43,
+                213
+              ]
+            ],
+            "f1": 0.9006342494714588,
+            "fpr": 0.0036596523330283625,
+            "pr_auc_average_precision": 0.9399535447199886,
+            "precision": 0.9815668202764977,
+            "recall": 0.83203125,
+            "rows": 1349,
+            "threshold": 0.9459904432296753
+          }
+        },
+        "macrofamily_recall": 0.8274739583333334,
+        "payload_family_recall": {
+          "cmd_injection": {
+            "recall": 0.75,
+            "requests": 384
+          },
+          "path_traversal": {
+            "recall": 1.0,
+            "requests": 384
+          },
+          "sqli": {
+            "recall": 0.5598958333333334,
+            "requests": 384
+          },
+          "xss": {
+            "recall": 1.0,
+            "requests": 384
+          }
+        },
+        "probability_calibration": {
+          "bins": [
+            {
+              "attack_frequency": 0.008176057777474962,
+              "bin": 0,
+              "mean_probability": 0.0018869158990491824,
+              "n": 14677
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 1,
+              "mean_probability": 0.1537489891052246,
+              "n": 4
+            },
+            {
+              "attack_frequency": 0.8181818181818182,
+              "bin": 2,
+              "mean_probability": 0.2750691121274775,
+              "n": 11
+            },
+            {
+              "attack_frequency": 0.8333333333333334,
+              "bin": 3,
+              "mean_probability": 0.33521612485249835,
+              "n": 6
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 4,
+              "mean_probability": 0.49364328384399414,
+              "n": 2
+            },
+            {
+              "attack_frequency": 0.8,
+              "bin": 5,
+              "mean_probability": 0.5588103950023651,
+              "n": 10
+            },
+            {
+              "attack_frequency": 0.06451612903225806,
+              "bin": 6,
+              "mean_probability": 0.6647591129426034,
+              "n": 31
+            },
+            {
+              "attack_frequency": 0.9523809523809523,
+              "bin": 7,
+              "mean_probability": 0.7654273311297098,
+              "n": 21
+            },
+            {
+              "attack_frequency": 0.9565217391304348,
+              "bin": 8,
+              "mean_probability": 0.8460829374582871,
+              "n": 46
+            },
+            {
+              "attack_frequency": 0.9195561719833565,
+              "bin": 9,
+              "mean_probability": 0.9890873401985089,
+              "n": 1442
+            }
+          ],
+          "brier": 0.015574882505635781,
+          "ece_equal_width": 0.014349905956708462,
+          "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+          "negative_log_likelihood": 0.08055953706798952,
+          "threshold_selected": false
+        },
+        "threshold_changed": false,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14648,
+              66
+            ],
+            [
+              265,
+              1271
+            ]
+          ],
+          "f1": 0.8847894187260702,
+          "fpr": 0.004485523990757102,
+          "pr_auc_average_precision": 0.9303326309976694,
+          "precision": 0.9506357516828721,
+          "recall": 0.8274739583333334,
+          "rows": 16250,
+          "threshold": 0.9459904432296753
+        },
+        "worst_source_fpr": 0.009759072888075633
+      },
+      "bounded76-glu256-17": {
+        "bundle_manifest_sha256": "984fe8ff83251018e4e80ffdbabec6e8ce74f204ca37a253d826a6339f8f447c",
+        "by_source": {
+          "csic-published-normal-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.0010007173747669722,
+                  "n": 4512
+                }
+              ],
+              "brier": 1.1189086393624427e-06,
+              "ece_equal_width": 0.0010007173747669722,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.0010012773709769558,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 4512,
+              "confusion_matrix": [
+                [
+                  4512,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4512,
+              "threshold": 0.9962769150733948
+            }
+          },
+          "pkdd-mirror-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.0015795112642748603,
+                  "n": 3625
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 1,
+                  "mean_probability": 0.15066009759902954,
+                  "n": 6
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 2,
+                  "mean_probability": 0.2645739018917084,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 3,
+                  "mean_probability": 0.35562856992085773,
+                  "n": 3
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 5,
+                  "mean_probability": 0.5232036709785461,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 8,
+                  "mean_probability": 0.878978431224823,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 9,
+                  "mean_probability": 0.9795576184988022,
+                  "n": 4
+                }
+              ],
+              "brier": 0.0018256724978317723,
+              "ece_equal_width": 0.004102172642848101,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.00851415457727993,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 3644,
+              "confusion_matrix": [
+                [
+                  3643,
+                  1
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.00027442371020856203,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 3644,
+              "threshold": 0.9962769150733948
+            }
+          },
+          "student-lab": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.01858736059479554,
+                  "bin": 0,
+                  "mean_probability": 0.0014471718960682846,
+                  "n": 6456
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 1,
+                  "mean_probability": 0.11845709383487701,
+                  "n": 8
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 2,
+                  "mean_probability": 0.221464733282725,
+                  "n": 9
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 3,
+                  "mean_probability": 0.3235537797212601,
+                  "n": 20
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 4,
+                  "mean_probability": 0.44615510154942994,
+                  "n": 61
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 7,
+                  "mean_probability": 0.7456435483434926,
+                  "n": 23
+                },
+                {
+                  "attack_frequency": 0.5,
+                  "bin": 8,
+                  "mean_probability": 0.8709435292652675,
+                  "n": 28
+                },
+                {
+                  "attack_frequency": 0.9147078576225655,
+                  "bin": 9,
+                  "mean_probability": 0.9952679141165027,
+                  "n": 1489
+                }
+              ],
+              "brier": 0.03509809901985338,
+              "ece_equal_width": 0.03639650321283665,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.20737942006138868,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 1536,
+              "benign": 6558,
+              "confusion_matrix": [
+                [
+                  6488,
+                  70
+                ],
+                [
+                  385,
+                  1151
+                ]
+              ],
+              "f1": 0.8349655422560756,
+              "fpr": 0.010673985971332723,
+              "pr_auc_average_precision": 0.9272053293072526,
+              "precision": 0.9426699426699426,
+              "recall": 0.7493489583333334,
+              "rows": 8094,
+              "threshold": 0.9962769150733948
+            }
+          }
+        },
+        "eligible_empirical_1pct_budget": false,
+        "lab_campaigns": {
+          "4f169519d84ea2eb0cf854dc0782c819659c2894b06879fdc860c5f5de9d3e3b": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1081,
+                12
+              ],
+              [
+                66,
+                190
+              ]
+            ],
+            "f1": 0.8296943231441049,
+            "fpr": 0.010978956999085087,
+            "pr_auc_average_precision": 0.9288138041507672,
+            "precision": 0.9405940594059405,
+            "recall": 0.7421875,
+            "rows": 1349,
+            "threshold": 0.9962769150733948
+          },
+          "5197caa3d5deb094d56d29ddfaa9670c52d282770f0e420369a511a5c80793f2": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1081,
+                12
+              ],
+              [
+                66,
+                190
+              ]
+            ],
+            "f1": 0.8296943231441049,
+            "fpr": 0.010978956999085087,
+            "pr_auc_average_precision": 0.9201896508206834,
+            "precision": 0.9405940594059405,
+            "recall": 0.7421875,
+            "rows": 1349,
+            "threshold": 0.9962769150733948
+          },
+          "5be3bbd6b85d2dea42055309d80f57cc53ccbaabcbf8db4204b4cebc4f197d8a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1083,
+                10
+              ],
+              [
+                61,
+                195
+              ]
+            ],
+            "f1": 0.8459869848156182,
+            "fpr": 0.009149130832570906,
+            "pr_auc_average_precision": 0.9300426011560297,
+            "precision": 0.9512195121951219,
+            "recall": 0.76171875,
+            "rows": 1349,
+            "threshold": 0.9962769150733948
+          },
+          "d69579dfb807772b309e99ff753221955230ee1a03e3c4246f4b4d5e60bc9c64": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1079,
+                14
+              ],
+              [
+                64,
+                192
+              ]
+            ],
+            "f1": 0.8311688311688312,
+            "fpr": 0.012808783165599268,
+            "pr_auc_average_precision": 0.9268231552002429,
+            "precision": 0.9320388349514563,
+            "recall": 0.75,
+            "rows": 1349,
+            "threshold": 0.9962769150733948
+          },
+          "e053818664c77f3e3062d088f1f998b37e0b8aaedd8bf76727891012b93a8179": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1078,
+                15
+              ],
+              [
+                66,
+                190
+              ]
+            ],
+            "f1": 0.824295010845987,
+            "fpr": 0.013723696248856358,
+            "pr_auc_average_precision": 0.9234964813695058,
+            "precision": 0.926829268292683,
+            "recall": 0.7421875,
+            "rows": 1349,
+            "threshold": 0.9962769150733948
+          },
+          "eeacfc8174ff81e1a5d48164f0e4a2956d293b628834d75cc61603fdf1d4f90a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1086,
+                7
+              ],
+              [
+                62,
+                194
+              ]
+            ],
+            "f1": 0.8490153172866521,
+            "fpr": 0.006404391582799634,
+            "pr_auc_average_precision": 0.9345769128518386,
+            "precision": 0.9651741293532339,
+            "recall": 0.7578125,
+            "rows": 1349,
+            "threshold": 0.9962769150733948
+          }
+        },
+        "macrofamily_recall": 0.7493489583333333,
+        "payload_family_recall": {
+          "cmd_injection": {
+            "recall": 0.75,
+            "requests": 384
+          },
+          "path_traversal": {
+            "recall": 0.9088541666666666,
+            "requests": 384
+          },
+          "sqli": {
+            "recall": 0.3385416666666667,
+            "requests": 384
+          },
+          "xss": {
+            "recall": 1.0,
+            "requests": 384
+          }
+        },
+        "probability_calibration": {
+          "bins": [
+            {
+              "attack_frequency": 0.008223120674295896,
+              "bin": 0,
+              "mean_probability": 0.0013420069135175626,
+              "n": 14593
+            },
+            {
+              "attack_frequency": 0.5714285714285714,
+              "bin": 1,
+              "mean_probability": 0.13225838116237096,
+              "n": 14
+            },
+            {
+              "attack_frequency": 0.8181818181818182,
+              "bin": 2,
+              "mean_probability": 0.2293027639389038,
+              "n": 11
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 3,
+              "mean_probability": 0.3277374480081641,
+              "n": 23
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 4,
+              "mean_probability": 0.44615510154942994,
+              "n": 61
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 5,
+              "mean_probability": 0.5232036709785461,
+              "n": 2
+            },
+            {
+              "attack_frequency": 1.0,
+              "bin": 7,
+              "mean_probability": 0.7456435483434926,
+              "n": 23
+            },
+            {
+              "attack_frequency": 0.4666666666666667,
+              "bin": 8,
+              "mean_probability": 0.8714791893959045,
+              "n": 30
+            },
+            {
+              "attack_frequency": 0.9122572002679169,
+              "bin": 9,
+              "mean_probability": 0.9952258235723159,
+              "n": 1493
+            }
+          ],
+          "brier": 0.017891803850127567,
+          "ece_equal_width": 0.01788976639234103,
+          "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+          "negative_log_likelihood": 0.10548137653872838,
+          "threshold_selected": false
+        },
+        "threshold_changed": false,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14643,
+              71
+            ],
+            [
+              385,
+              1151
+            ]
+          ],
+          "f1": 0.8346627991298042,
+          "fpr": 0.004825336414299307,
+          "pr_auc_average_precision": 0.9199391546244893,
+          "precision": 0.94189852700491,
+          "recall": 0.7493489583333334,
+          "rows": 16250,
+          "threshold": 0.9962769150733948
+        },
+        "worst_source_fpr": 0.010673985971332723
+      },
+      "bounded76-mlp17": {
+        "bundle_manifest_sha256": "6559913df689f86c78befbfe9d44aa4cc75bb39356a4cf8f74fa347bf9dc6b3c",
+        "by_source": {
+          "csic-published-normal-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.0016574618979270414,
+                  "n": 4508
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 1,
+                  "mean_probability": 0.12456923723220825,
+                  "n": 4
+                }
+              ],
+              "brier": 3.475823166419884e-05,
+              "ece_equal_width": 0.001766426237762397,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.0017847054242935974,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 4512,
+              "confusion_matrix": [
+                [
+                  4512,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4512,
+              "threshold": 0.9503437876701355
+            }
+          },
+          "pkdd-mirror-training": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 0,
+                  "mean_probability": 0.004779769676072257,
+                  "n": 3500
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 1,
+                  "mean_probability": 0.1445223225487603,
+                  "n": 63
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 2,
+                  "mean_probability": 0.24891317071336688,
+                  "n": 33
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 3,
+                  "mean_probability": 0.3445635586977005,
+                  "n": 12
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 4,
+                  "mean_probability": 0.44820840869631084,
+                  "n": 7
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 5,
+                  "mean_probability": 0.5540528231196933,
+                  "n": 9
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 6,
+                  "mean_probability": 0.6666211187839508,
+                  "n": 2
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 7,
+                  "mean_probability": 0.7502311739054593,
+                  "n": 11
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 8,
+                  "mean_probability": 0.8388318320115408,
+                  "n": 6
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 9,
+                  "mean_probability": 0.9656819701194763,
+                  "n": 1
+                }
+              ],
+              "brier": 0.006018953917577057,
+              "ece_equal_width": 0.01698446484808079,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.02327040283651432,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 0,
+              "benign": 3644,
+              "confusion_matrix": [
+                [
+                  3643,
+                  1
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.00027442371020856203,
+              "pr_auc_average_precision": null,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 3644,
+              "threshold": 0.9503437876701355
+            }
+          },
+          "student-lab": {
+            "calibration": {
+              "bins": [
+                {
+                  "attack_frequency": 0.019286403085824494,
+                  "bin": 0,
+                  "mean_probability": 0.004330531821224859,
+                  "n": 6222
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 1,
+                  "mean_probability": 0.13343194254443178,
+                  "n": 234
+                },
+                {
+                  "attack_frequency": 0.0,
+                  "bin": 3,
+                  "mean_probability": 0.31669512133539457,
+                  "n": 81
+                },
+                {
+                  "attack_frequency": 0.37777777777777777,
+                  "bin": 5,
+                  "mean_probability": 0.5314609090487162,
+                  "n": 45
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 6,
+                  "mean_probability": 0.6492757967540196,
+                  "n": 7
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 7,
+                  "mean_probability": 0.7728140657598322,
+                  "n": 55
+                },
+                {
+                  "attack_frequency": 1.0,
+                  "bin": 8,
+                  "mean_probability": 0.8539689595049078,
+                  "n": 110
+                },
+                {
+                  "attack_frequency": 0.9156716417910448,
+                  "bin": 9,
+                  "mean_probability": 0.9837512256049398,
+                  "n": 1340
+                }
+              ],
+              "brier": 0.03088197438448505,
+              "ece_equal_width": 0.03448071458736171,
+              "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+              "negative_log_likelihood": 0.12585096921345826,
+              "threshold_selected": false
+            },
+            "metrics": {
+              "attack": 1536,
+              "benign": 6558,
+              "confusion_matrix": [
+                [
+                  6493,
+                  65
+                ],
+                [
+                  363,
+                  1173
+                ]
+              ],
+              "f1": 0.8457101658255228,
+              "fpr": 0.009911558401951815,
+              "pr_auc_average_precision": 0.9537458804367447,
+              "precision": 0.9474959612277868,
+              "recall": 0.763671875,
+              "rows": 8094,
+              "threshold": 0.9503437876701355
+            }
+          }
+        },
+        "eligible_empirical_1pct_budget": true,
+        "lab_campaigns": {
+          "4f169519d84ea2eb0cf854dc0782c819659c2894b06879fdc860c5f5de9d3e3b": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1080,
+                13
+              ],
+              [
+                60,
+                196
+              ]
+            ],
+            "f1": 0.843010752688172,
+            "fpr": 0.011893870082342177,
+            "pr_auc_average_precision": 0.9524908696234263,
+            "precision": 0.937799043062201,
+            "recall": 0.765625,
+            "rows": 1349,
+            "threshold": 0.9503437876701355
+          },
+          "5197caa3d5deb094d56d29ddfaa9670c52d282770f0e420369a511a5c80793f2": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1082,
+                11
+              ],
+              [
+                63,
+                193
+              ]
+            ],
+            "f1": 0.8391304347826087,
+            "fpr": 0.010064043915827997,
+            "pr_auc_average_precision": 0.9455252649787369,
+            "precision": 0.946078431372549,
+            "recall": 0.75390625,
+            "rows": 1349,
+            "threshold": 0.9503437876701355
+          },
+          "5be3bbd6b85d2dea42055309d80f57cc53ccbaabcbf8db4204b4cebc4f197d8a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1085,
+                8
+              ],
+              [
+                59,
+                197
+              ]
+            ],
+            "f1": 0.8546637744034707,
+            "fpr": 0.007319304666056725,
+            "pr_auc_average_precision": 0.960619500619549,
+            "precision": 0.9609756097560975,
+            "recall": 0.76953125,
+            "rows": 1349,
+            "threshold": 0.9503437876701355
+          },
+          "d69579dfb807772b309e99ff753221955230ee1a03e3c4246f4b4d5e60bc9c64": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1081,
+                12
+              ],
+              [
+                59,
+                197
+              ]
+            ],
+            "f1": 0.8473118279569892,
+            "fpr": 0.010978956999085087,
+            "pr_auc_average_precision": 0.9524630372382633,
+            "precision": 0.9425837320574163,
+            "recall": 0.76953125,
+            "rows": 1349,
+            "threshold": 0.9503437876701355
+          },
+          "e053818664c77f3e3062d088f1f998b37e0b8aaedd8bf76727891012b93a8179": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1078,
+                15
+              ],
+              [
+                62,
+                194
+              ]
+            ],
+            "f1": 0.8344086021505377,
+            "fpr": 0.013723696248856358,
+            "pr_auc_average_precision": 0.9498653855839916,
+            "precision": 0.9282296650717703,
+            "recall": 0.7578125,
+            "rows": 1349,
+            "threshold": 0.9503437876701355
+          },
+          "eeacfc8174ff81e1a5d48164f0e4a2956d293b628834d75cc61603fdf1d4f90a": {
+            "attack": 256,
+            "benign": 1093,
+            "confusion_matrix": [
+              [
+                1087,
+                6
+              ],
+              [
+                60,
+                196
+              ]
+            ],
+            "f1": 0.8558951965065502,
+            "fpr": 0.0054894784995425435,
+            "pr_auc_average_precision": 0.9631506074954482,
+            "precision": 0.9702970297029703,
+            "recall": 0.765625,
+            "rows": 1349,
+            "threshold": 0.9503437876701355
+          }
+        },
+        "macrofamily_recall": 0.763671875,
+        "payload_family_recall": {
+          "cmd_injection": {
+            "recall": 0.546875,
+            "requests": 384
+          },
+          "path_traversal": {
+            "recall": 0.875,
+            "requests": 384
+          },
+          "sqli": {
+            "recall": 0.6744791666666666,
+            "requests": 384
+          },
+          "xss": {
+            "recall": 0.9583333333333334,
+            "requests": 384
+          }
+        },
+        "probability_calibration": {
+          "bins": [
+            {
+              "attack_frequency": 0.008432888264230498,
+              "bin": 0,
+              "mean_probability": 0.0035942094935888314,
+              "n": 14230
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 1,
+              "mean_probability": 0.13563540805613875,
+              "n": 301
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 2,
+              "mean_probability": 0.24891317071336688,
+              "n": 33
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 3,
+              "mean_probability": 0.32029104873698244,
+              "n": 93
+            },
+            {
+              "attack_frequency": 0.0,
+              "bin": 4,
+              "mean_probability": 0.44820840869631084,
+              "n": 7
+            },
+            {
+              "attack_frequency": 0.3148148148148148,
+              "bin": 5,
+              "mean_probability": 0.5352262280605458,
+              "n": 54
+            },
+            {
+              "attack_frequency": 0.7777777777777778,
+              "bin": 6,
+              "mean_probability": 0.653130312760671,
+              "n": 9
+            },
+            {
+              "attack_frequency": 0.8333333333333334,
+              "bin": 7,
+              "mean_probability": 0.76905025045077,
+              "n": 66
+            },
+            {
+              "attack_frequency": 0.9482758620689655,
+              "bin": 8,
+              "mean_probability": 0.8531860046345612,
+              "n": 116
+            },
+            {
+              "attack_frequency": 0.9149888143176734,
+              "bin": 9,
+              "mean_probability": 0.9837377511414905,
+              "n": 1341
+            }
+          ],
+          "brier": 0.016741452177534873,
+          "ece_equal_width": 0.016695925690577575,
+          "limitation": "Dataset prevalence and correlated requests affect this diagnostic; not an OOD calibration guarantee",
+          "negative_log_likelihood": 0.06839924206919396,
+          "threshold_selected": false
+        },
+        "threshold_changed": false,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14648,
+              66
+            ],
+            [
+              363,
+              1173
+            ]
+          ],
+          "f1": 0.8454054054054054,
+          "fpr": 0.004485523990757102,
+          "pr_auc_average_precision": 0.9448802558168712,
+          "precision": 0.9467312348668281,
+          "recall": 0.763671875,
+          "rows": 16250,
+          "threshold": 0.9503437876701355
+        },
+        "worst_source_fpr": 0.009911558401951815
+      }
+    },
+    "scope": "Validationonly, no quality test data read",
+    "selected_research_candidate": "bounded76-glu17",
+    "selection_rule": "worstsourceFPR<=1%; maximize macrofamilyrecall then AP",
+    "temperature_note": "A strictly monotonic binarytemperature transform preserves score ranking and cannot improve recall at a recalibrated identical FPR operatingpoint. Not applied as a detection fix.",
+    "test_quality_opened": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/validation-selection-phase2.json",
+  "original_sha256": "916ca7198a5047dd4194a435d2aa8c0a49b787bb31dc4e64022885a6cc0c77de",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

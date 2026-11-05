@@ -1,0 +1,147 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        3153,
+        30
+      ],
+      [
+        604,
+        68
+      ]
+    ],
+    "f1": 0.17662337662337663,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            96,
+            0
+          ]
+        ],
+        "count": 96,
+        "detected": 0
+      },
+      "benign": {
+        "count": 3183,
+        "false_positives": 30
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            28,
+            68
+          ]
+        ],
+        "count": 96,
+        "detected": 68
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            96,
+            0
+          ]
+        ],
+        "count": 96,
+        "detected": 0
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            96,
+            0
+          ]
+        ],
+        "count": 96,
+        "detected": 0
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            96,
+            0
+          ]
+        ],
+        "count": 96,
+        "detected": 0
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            96,
+            0
+          ]
+        ],
+        "count": 96,
+        "detected": 0
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            3153,
+            30
+          ],
+          [
+            96,
+            0
+          ]
+        ],
+        "count": 96,
+        "detected": 0
+      }
+    },
+    "final_test_metrics_computed": false,
+    "latency_ms": {
+      "native": {
+        "p50": 0.0117745,
+        "p95": 0.0127414,
+        "p99": 0.013412880000000014
+      },
+      "onnxruntime": {
+        "p50": 0.008646500000000001,
+        "p95": 0.0093197,
+        "p99": 0.009876760000000014
+      },
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "partition": "val",
+    "pr_auc_average_precision": 0.3089705787533144,
+    "pr_auc_trapezoidal": 0.3078004373940302,
+    "precision": 0.6938775510204082,
+    "recall": 0.10119047619047619,
+    "recall_at_fpr_le_1pct": 0.10119047619047619,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.6212199201861077,
+    "rows": 3855,
+    "threshold": 0.20619527995586395
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/autoencoder-bundle/evaluation.json",
+  "original_sha256": "5173e5d5307c5340afafcd03abcc8bd3d4bc4503b3ab1ddc424ef232fbf65463",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

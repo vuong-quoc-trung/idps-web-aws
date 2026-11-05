@@ -1,0 +1,16 @@
+{
+  "content": {
+    "address_class_rows": {
+      "private": 907813
+    },
+    "all_observed_src_ip_is_single_private_address": true,
+    "interpretation": "Recorded network source is a proxy/collector vantage candidate, not evidence of distinct attackers. Source-client-day groups collapse to one group/day. No new campaign identifiers inferred.",
+    "missing": 2,
+    "observed_distinct_src_ip": 1,
+    "physical_rows": 907815
+  },
+  "original_relative_path": "ai-training/.artifacts/partition_recovery_20261031/source-identity-quality.json",
+  "original_sha256": "256da82ff7948c3fc8bf035b7822fcc973720d1c8f4f4bb24f1f987add7d7d45",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,9 @@
+{
+  "request_intelligence_v2": {
+    "team-http-smoke": 0.0036836862564086914
+  },
+  "glu207": {
+    "team-glu-smoke-1": 0.022656023502349854,
+    "team-glu-smoke-2": 0.057529568672180176
+  }
+}

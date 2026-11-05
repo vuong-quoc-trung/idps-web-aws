@@ -1,0 +1,127 @@
+{
+  "content": {
+    "batch_size": 128,
+    "champion_selection": false,
+    "datasets": {
+      "affine70": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+      "security45": "32bcd01d379743c438f85790670d46fcabb7317b8260669d0f86d30c3056f7c8"
+    },
+    "plans": [
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "affine70",
+        "name": "affine70-deep_mlp-seed17"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "affine70",
+        "name": "affine70-residual_glu-seed17"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "security45",
+        "name": "security45-deep_mlp-seed17"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 29,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "security45",
+        "name": "security45-deep_mlp-seed29"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "security45",
+        "name": "security45-residual_glu-seed17"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 29,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "security45",
+        "name": "security45-residual_glu-seed29"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "security45",
+        "name": "security45-residual_glu256-seed17"
+      }
+    ],
+    "sampling_counts_are_not_new_HTTP_requests": true,
+    "selection": "validation only; source-wise FPR<=1% empirical, maximize lab macrofamily recall then AP; if none eligible keep none",
+    "source_sha256": "e400ad15f0b5246efa7ac4120a562f591c2c459a6fb1f6a1117af5444a55ac3e",
+    "steps": 300,
+    "test_partitions_opened": false,
+    "thresholds": "source-wise benign-only calibration target1%; no test tuning"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/study/preregistered-plan.json",
+  "original_sha256": "5f2069be35f460936c12303faa3aca71c6b6d8f33f854a899a70e62c31ff2da5",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

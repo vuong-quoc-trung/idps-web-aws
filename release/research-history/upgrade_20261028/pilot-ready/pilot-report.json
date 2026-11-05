@@ -1,0 +1,4514 @@
+{
+  "content": {
+    "champion_selected": false,
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "ended_at_unix": 1793160633.8418987,
+    "format_version": 1,
+    "limits": [
+      "Validation metrics share calibration data; test labels remain sealed",
+      "Loopback fixture workload, no production quality or zero-day acceptance",
+      "No time-filling epochs; short pilot is not a 2\u20133h thermal/endurance test"
+    ],
+    "metric_partition": "val",
+    "models": {
+      "autoencoder": {
+        "benign_only_training": true,
+        "calibration": {
+          "benign_count": 3183,
+          "finite_sample_warning": "Empirical FPR only; small synthetic samples do not certify production FPR",
+          "fit_partition": "val",
+          "target_fpr": 0.01,
+          "threshold": 0.20619527995586395,
+          "validation_fpr": 0.00942507068803016,
+          "validation_recall": 0.10119047619047619
+        },
+        "checkpoint_manifest_sha256": "56f5e3b5c95ac8835093e6fa3359083c47a3adeb9153059575013f58d3a71513",
+        "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+        "continuous_reference_session": {
+          "best_metric": 0.3089705787533144,
+          "checkpoint": "checkpoints/step-000000000750-fd5dd2acd5f8",
+          "checkpoint_manifest_sha256": "a27452bb57887466e40e2e77cbf2352252f09d760766d3fa712f2f217144fdc1",
+          "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+          "cumulative_optimizer_seconds": 0.14315398799772083,
+          "cumulative_wall_seconds": 2.6306496569995943,
+          "cursor": 0,
+          "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+          "ended_at_unix": 1793160609.337788,
+          "epoch": 5,
+          "global_step": 750,
+          "process_id": 53195,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "cgroup_v2": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 21577212\nuser_usec 17396690\nsystem_usec 4180522\nnice_usec 17406000\ncore_sched.force_idle_usec 0\nnr_periods 208\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "247230464",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "270831616",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "cgroup_v2_final": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 24198703\nuser_usec 18959365\nsystem_usec 5239337\nnice_usec 18968000\ncore_sched.force_idle_usec 0\nnr_periods 235\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "280764416",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "281567232",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 188719104,
+            "peak_tree_rss_bytes": 188719104,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440909824
+          },
+          "run_id": "63f6adc7bcf8498991966ad274f4f7c9",
+          "session_id": "bd77ca89ac914ee2af392866c7f53d4e",
+          "session_optimizer_seconds": 0.14315398799772083,
+          "session_wall_seconds": 2.688775149999856,
+          "started_at_unix": 1793160606.6490283,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false
+        },
+        "epoch": 5,
+        "exact_resume": true,
+        "global_step": 750,
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 19275,
+          "rtol": 1e-05
+        },
+        "onnx_sha256": "7d0dfe9434e7511c3fd6bce9ca181786ff611017d91ca2ba4216cce306100e99",
+        "parameter_count": 9652,
+        "sessions": [
+          {
+            "best_metric": 0.27678322734948013,
+            "checkpoint": "checkpoints/step-000000000300-dc4ee8b84891",
+            "checkpoint_manifest_sha256": "b9442b1a581d8c18636a987777407ac134ad58d65d0617d49a0bbc6d413ff522",
+            "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+            "cumulative_optimizer_seconds": 0.05859523899471242,
+            "cumulative_wall_seconds": 1.2304503550003574,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160603.6263483,
+            "epoch": 2,
+            "global_step": 300,
+            "process_id": 53181,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 17297104\nuser_usec 14340940\nsystem_usec 2956163\nnice_usec 14344000\ncore_sched.force_idle_usec 0\nnr_periods 165\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "235634688",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "248188928",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 18458799\nuser_usec 15053312\nsystem_usec 3405487\nnice_usec 15059000\ncore_sched.force_idle_usec 0\nnr_periods 178\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "270319616",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "270340096",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188522496,
+              "peak_tree_rss_bytes": 188522496,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "6f78bc95053c47de82d78231c42251f3",
+            "session_id": "c295cd6a8862431ebb613b2afb0fc204",
+            "session_optimizer_seconds": 0.05859523899471242,
+            "session_wall_seconds": 1.2821490110000013,
+            "started_at_unix": 1793160602.3442147,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          },
+          {
+            "best_metric": 0.3089705787533144,
+            "checkpoint": "checkpoints/step-000000000750-df104dd5de88",
+            "checkpoint_manifest_sha256": "56f5e3b5c95ac8835093e6fa3359083c47a3adeb9153059575013f58d3a71513",
+            "config_sha256": "48a6c03e9517e15c677baddc53da89531446f03feb191bb261bf799e0666f25b",
+            "cumulative_optimizer_seconds": 0.14362299299409642,
+            "cumulative_wall_seconds": 2.92251614900033,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160605.9943295,
+            "epoch": 5,
+            "global_step": 750,
+            "process_id": 53189,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 19170640\nuser_usec 15699153\nsystem_usec 3471486\nnice_usec 15705000\ncore_sched.force_idle_usec 0\nnr_periods 184\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "247083008",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "270340096",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 20843976\nuser_usec 16728153\nsystem_usec 4115823\nnice_usec 16736000\ncore_sched.force_idle_usec 0\nnr_periods 201\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "269819904",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "270831616",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188911616,
+              "peak_tree_rss_bytes": 188911616,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "6f78bc95053c47de82d78231c42251f3",
+            "session_id": "30c87146496845fd964dab27afe55e56",
+            "session_optimizer_seconds": 0.085027753999384,
+            "session_wall_seconds": 1.7413909970000532,
+            "started_at_unix": 1793160604.2529523,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          }
+        ],
+        "threshold": 0.20619527995586395,
+        "training_rows": 9549,
+        "validation_diagnostics": {
+          "available_inputs": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 15
+            },
+            "confusion_matrix": [
+              [
+                3153,
+                30
+              ],
+              [
+                604,
+                68
+              ]
+            ],
+            "f1": 0.17662337662337663,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 30
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    28,
+                    68
+                  ]
+                ],
+                "count": 96,
+                "detected": 68
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              }
+            },
+            "pr_auc_average_precision": 0.3089705787533144,
+            "pr_auc_trapezoidal": 0.3078004373940302,
+            "precision": 0.6938775510204082,
+            "recall": 0.10119047619047619,
+            "recall_at_fpr_le_1pct": 0.10119047619047619,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.6212199201861077,
+            "rows": 3855,
+            "threshold": 0.20619527995586395
+          },
+          "fixed_threshold": 0.20619527995586395,
+          "partition": "val",
+          "rule_or_ai": {
+            "all_rules": {
+              "confusion_matrix": [
+                [
+                  2953,
+                  230
+                ],
+                [
+                  122,
+                  550
+                ]
+              ],
+              "empirical_fpr": 0.0722588752748979,
+              "f1": 0.7575757575757576,
+              "families": {
+                "behavioral_anomaly": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      96,
+                      0
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 0
+                },
+                "benign": {
+                  "count": 3183,
+                  "false_positives": 230
+                },
+                "brute_force": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      26,
+                      70
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 70
+                },
+                "cmd_injection": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "path_traversal": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "scanner_recon": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "sqli": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "xss": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2953,
+                      230
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                }
+              },
+              "meets_1pct_false_alert_budget": false,
+              "pr_auc_average_precision": 0.6087610697776068,
+              "pr_auc_trapezoidal": 0.7776138987471672,
+              "precision": 0.7051282051282052,
+              "recall": 0.8184523809523809,
+              "recall_at_fpr_le_1pct": 0.0,
+              "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+              "roc_auc": 0.8730967528387414,
+              "rows": 3855,
+              "threshold": 0.5
+            },
+            "web_rules": {
+              "confusion_matrix": [
+                [
+                  3148,
+                  35
+                ],
+                [
+                  123,
+                  549
+                ]
+              ],
+              "empirical_fpr": 0.010995915802701853,
+              "f1": 0.8742038216560509,
+              "families": {
+                "behavioral_anomaly": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      96,
+                      0
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 0
+                },
+                "benign": {
+                  "count": 3183,
+                  "false_positives": 35
+                },
+                "brute_force": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      27,
+                      69
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 69
+                },
+                "cmd_injection": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "path_traversal": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "scanner_recon": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "sqli": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "xss": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3148,
+                      35
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                }
+              },
+              "meets_1pct_false_alert_budget": false,
+              "pr_auc_average_precision": 0.7999089998153465,
+              "pr_auc_trapezoidal": 0.8944696968254814,
+              "precision": 0.940068493150685,
+              "recall": 0.8169642857142857,
+              "recall_at_fpr_le_1pct": 0.0,
+              "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+              "roc_auc": 0.9029841849557918,
+              "rows": 3855,
+              "threshold": 0.5
+            }
+          },
+          "scope": "inference-only missing-input sensitivity; not ablation retraining",
+          "without_actor": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 873
+            },
+            "confusion_matrix": [
+              [
+                106,
+                3077
+              ],
+              [
+                30,
+                642
+              ]
+            ],
+            "f1": 0.29241630608061947,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 3077
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    28,
+                    68
+                  ]
+                ],
+                "count": 96,
+                "detected": 68
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    2,
+                    94
+                  ]
+                ],
+                "count": 96,
+                "detected": 94
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    106,
+                    3077
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              }
+            },
+            "pr_auc_average_precision": 0.19503122732449824,
+            "pr_auc_trapezoidal": 0.19435605850946555,
+            "precision": 0.17262705028233397,
+            "recall": 0.9553571428571429,
+            "recall_at_fpr_le_1pct": 0.0,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.5060694930658408,
+            "rows": 3855,
+            "threshold": 0.20619527995586395
+          },
+          "without_flow": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 355
+            },
+            "confusion_matrix": [
+              [
+                2100,
+                1083
+              ],
+              [
+                312,
+                360
+              ]
+            ],
+            "f1": 0.3404255319148936,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 1083
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    65,
+                    31
+                  ]
+                ],
+                "count": 96,
+                "detected": 31
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    56,
+                    40
+                  ]
+                ],
+                "count": 96,
+                "detected": 40
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    72,
+                    24
+                  ]
+                ],
+                "count": 96,
+                "detected": 24
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    59,
+                    37
+                  ]
+                ],
+                "count": 96,
+                "detected": 37
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2100,
+                    1083
+                  ],
+                  [
+                    60,
+                    36
+                  ]
+                ],
+                "count": 96,
+                "detected": 36
+              }
+            },
+            "pr_auc_average_precision": 0.39300286796534123,
+            "pr_auc_trapezoidal": 0.3924468059445122,
+            "precision": 0.2494802494802495,
+            "recall": 0.5357142857142857,
+            "recall_at_fpr_le_1pct": 0.13541666666666666,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.6379540957916311,
+            "rows": 3855,
+            "threshold": 0.20619527995586395
+          },
+          "without_response": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 392
+            },
+            "confusion_matrix": [
+              [
+                2194,
+                989
+              ],
+              [
+                321,
+                351
+              ]
+            ],
+            "f1": 0.3489065606361829,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    56,
+                    40
+                  ]
+                ],
+                "count": 96,
+                "detected": 40
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 989
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    56,
+                    40
+                  ]
+                ],
+                "count": 96,
+                "detected": 40
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    59,
+                    37
+                  ]
+                ],
+                "count": 96,
+                "detected": 37
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    37,
+                    59
+                  ]
+                ],
+                "count": 96,
+                "detected": 59
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    59,
+                    37
+                  ]
+                ],
+                "count": 96,
+                "detected": 37
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2194,
+                    989
+                  ],
+                  [
+                    54,
+                    42
+                  ]
+                ],
+                "count": 96,
+                "detected": 42
+              }
+            },
+            "pr_auc_average_precision": 0.3440438136766598,
+            "pr_auc_trapezoidal": 0.3428141677087416,
+            "precision": 0.2619402985074627,
+            "recall": 0.5223214285714286,
+            "recall_at_fpr_le_1pct": 0.11458333333333333,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.6614552944960579,
+            "rows": 3855,
+            "threshold": 0.20619527995586395
+          }
+        },
+        "validation_evaluation": {
+          "confusion_matrix": [
+            [
+              3153,
+              30
+            ],
+            [
+              604,
+              68
+            ]
+          ],
+          "f1": 0.17662337662337663,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "benign": {
+              "count": 3183,
+              "false_positives": 30
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  28,
+                  68
+                ]
+              ],
+              "count": 96,
+              "detected": 68
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  96,
+                  0
+                ]
+              ],
+              "count": 96,
+              "detected": 0
+            }
+          },
+          "final_test_metrics_computed": false,
+          "latency_ms": {
+            "native": {
+              "p50": 0.0117745,
+              "p95": 0.0127414,
+              "p99": 0.013412880000000014
+            },
+            "onnxruntime": {
+              "p50": 0.008646500000000001,
+              "p95": 0.0093197,
+              "p99": 0.009876760000000014
+            },
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "partition": "val",
+          "pr_auc_average_precision": 0.3089705787533144,
+          "pr_auc_trapezoidal": 0.3078004373940302,
+          "precision": 0.6938775510204082,
+          "recall": 0.10119047619047619,
+          "recall_at_fpr_le_1pct": 0.10119047619047619,
+          "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+          "roc_auc": 0.6212199201861077,
+          "rows": 3855,
+          "threshold": 0.20619527995586395
+        }
+      },
+      "mlp": {
+        "benign_only_training": false,
+        "calibration": {
+          "benign_count": 3183,
+          "finite_sample_warning": "Empirical FPR only; small synthetic samples do not certify production FPR",
+          "fit_partition": "val",
+          "target_fpr": 0.01,
+          "threshold": 0.6317335963249207,
+          "validation_fpr": 0.00942507068803016,
+          "validation_recall": 0.43452380952380953
+        },
+        "checkpoint_manifest_sha256": "f8d8b55b8500782c9401d195262e717c58523543f9204cd10edea455f67036b0",
+        "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+        "continuous_reference_session": {
+          "best_metric": 0.7613331102785559,
+          "checkpoint": "checkpoints/step-000000000905-02e293aab8d5",
+          "checkpoint_manifest_sha256": "998d7dfe24e230c1e0d222be40f589b1ebf8c52cfc6832fc266c244aba7ce95f",
+          "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+          "cumulative_optimizer_seconds": 0.1508280489970275,
+          "cumulative_wall_seconds": 2.9712721490004697,
+          "cursor": 0,
+          "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+          "ended_at_unix": 1793160594.359098,
+          "epoch": 5,
+          "global_step": 905,
+          "process_id": 53164,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "cgroup_v2": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 5830873\nuser_usec 4305598\nsystem_usec 1525274\nnice_usec 4301000\ncore_sched.force_idle_usec 0\nnr_periods 55\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "180330496",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "203001856",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "cgroup_v2_final": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 8819257\nuser_usec 6052490\nsystem_usec 2766766\nnice_usec 6052000\ncore_sched.force_idle_usec 0\nnr_periods 85\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "214695936",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "214958080",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 188653568,
+            "peak_tree_rss_bytes": 188653568,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440909824
+          },
+          "run_id": "85d50e8e004040878dfa1c2722c241cb",
+          "session_id": "ee0d6301d05c44809f77b82fae98414a",
+          "session_optimizer_seconds": 0.1508280489970275,
+          "session_wall_seconds": 3.0192735250002443,
+          "started_at_unix": 1793160591.3398383,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false
+        },
+        "epoch": 5,
+        "exact_resume": true,
+        "global_step": 905,
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.7881393432617188e-07,
+          "rows": 19275,
+          "rtol": 1e-05
+        },
+        "onnx_sha256": "4908b61a0895b53445976ba377a00c70100abd872172018b9730eb9409c18159",
+        "parameter_count": 5032,
+        "sessions": [
+          {
+            "best_metric": 0.7493134528939981,
+            "checkpoint": "checkpoints/step-000000000362-4ceecd0d09a9",
+            "checkpoint_manifest_sha256": "9d8c23685b59682fd6f4a0008d212b356c5be61d9f6a4d1e65910d63536f0ad6",
+            "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+            "cumulative_optimizer_seconds": 0.05937267100398458,
+            "cumulative_wall_seconds": 1.3351390740008355,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160588.2470436,
+            "epoch": 2,
+            "global_step": 362,
+            "process_id": 53146,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 1227786\nuser_usec 1113898\nsystem_usec 113887\nnice_usec 1114000\ncore_sched.force_idle_usec 0\nnr_periods 10\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "166723584",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "168685568",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 2527623\nuser_usec 1908470\nsystem_usec 619152\nnice_usec 1907000\ncore_sched.force_idle_usec 0\nnr_periods 24\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "201928704",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "202113024",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188534784,
+              "peak_tree_rss_bytes": 188534784,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "f20236b9ecf645429b12d6c89f6e43bd",
+            "session_id": "3cea9d58f07a4b65a34ec76e02a049ef",
+            "session_optimizer_seconds": 0.05937267100398458,
+            "session_wall_seconds": 1.383831595000629,
+            "started_at_unix": 1793160586.8632283,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          },
+          {
+            "best_metric": 0.7613331102785559,
+            "checkpoint": "checkpoints/step-000000000905-4edd315e956b",
+            "checkpoint_manifest_sha256": "f8d8b55b8500782c9401d195262e717c58523543f9204cd10edea455f67036b0",
+            "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+            "cumulative_optimizer_seconds": 0.1510860950083952,
+            "cumulative_wall_seconds": 3.217623454000204,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160590.7547996,
+            "epoch": 5,
+            "global_step": 905,
+            "process_id": 53157,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 3222042\nuser_usec 2532033\nsystem_usec 690009\nnice_usec 2531000\ncore_sched.force_idle_usec 0\nnr_periods 30\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "180097024",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "202113024",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 5130116\nuser_usec 3682954\nsystem_usec 1447161\nnice_usec 3679000\ncore_sched.force_idle_usec 0\nnr_periods 49\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "202543104",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "203001856",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 188833792,
+              "peak_tree_rss_bytes": 188833792,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "f20236b9ecf645429b12d6c89f6e43bd",
+            "session_id": "73fff0a4940745d2aa73549609ee72a3",
+            "session_optimizer_seconds": 0.09171342400441063,
+            "session_wall_seconds": 1.932111958999485,
+            "started_at_unix": 1793160588.8227012,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          }
+        ],
+        "threshold": 0.6317335963249207,
+        "training_rows": 11565,
+        "validation_diagnostics": {
+          "available_inputs": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "confusion_matrix": [
+              [
+                3153,
+                30
+              ],
+              [
+                380,
+                292
+              ]
+            ],
+            "f1": 0.5875251509054326,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 30
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    6,
+                    90
+                  ]
+                ],
+                "count": 96,
+                "detected": 90
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    91,
+                    5
+                  ]
+                ],
+                "count": 96,
+                "detected": 5
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    93,
+                    3
+                  ]
+                ],
+                "count": 96,
+                "detected": 3
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    1,
+                    95
+                  ]
+                ],
+                "count": 96,
+                "detected": 95
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    95,
+                    1
+                  ]
+                ],
+                "count": 96,
+                "detected": 1
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    94,
+                    2
+                  ]
+                ],
+                "count": 96,
+                "detected": 2
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                3153,
+                13,
+                11,
+                0,
+                0,
+                0,
+                3,
+                3
+              ],
+              [
+                95,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                94,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              [
+                93,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                91,
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                95,
+                0,
+                0
+              ],
+              [
+                6,
+                0,
+                0,
+                0,
+                0,
+                0,
+                90,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                96
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.7569710125463878,
+            "pr_auc_trapezoidal": 0.7568206420596081,
+            "precision": 0.906832298136646,
+            "recall": 0.43452380952380953,
+            "recall_at_fpr_le_1pct": 0.43452380952380953,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9253958436186287,
+            "rows": 3855,
+            "threshold": 0.6317335963249207
+          },
+          "fixed_threshold": 0.6317335963249207,
+          "partition": "val",
+          "rule_or_ai": {
+            "all_rules": {
+              "confusion_matrix": [
+                [
+                  2959,
+                  224
+                ],
+                [
+                  5,
+                  667
+                ]
+              ],
+              "empirical_fpr": 0.07037386113729187,
+              "f1": 0.853486884197057,
+              "families": {
+                "behavioral_anomaly": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "benign": {
+                  "count": 3183,
+                  "false_positives": 224
+                },
+                "brute_force": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      5,
+                      91
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 91
+                },
+                "cmd_injection": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "path_traversal": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "scanner_recon": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "sqli": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "xss": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2959,
+                      224
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                }
+              },
+              "meets_1pct_false_alert_budget": false,
+              "pr_auc_average_precision": 0.7443241800272713,
+              "pr_auc_trapezoidal": 0.8712268113005792,
+              "precision": 0.7485970819304153,
+              "recall": 0.9925595238095238,
+              "recall_at_fpr_le_1pct": 0.0,
+              "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+              "roc_auc": 0.961092831336116,
+              "rows": 3855,
+              "threshold": 0.5
+            },
+            "web_rules": {
+              "confusion_matrix": [
+                [
+                  3147,
+                  36
+                ],
+                [
+                  5,
+                  667
+                ]
+              ],
+              "empirical_fpr": 0.011310084825636193,
+              "f1": 0.9701818181818181,
+              "families": {
+                "behavioral_anomaly": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "benign": {
+                  "count": 3183,
+                  "false_positives": 36
+                },
+                "brute_force": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      5,
+                      91
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 91
+                },
+                "cmd_injection": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "path_traversal": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "scanner_recon": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "sqli": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "xss": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                }
+              },
+              "meets_1pct_false_alert_budget": false,
+              "pr_auc_average_precision": 0.9430284569479225,
+              "pr_auc_trapezoidal": 0.9713237184150302,
+              "precision": 0.9487908961593172,
+              "recall": 0.9925595238095238,
+              "recall_at_fpr_le_1pct": 0.0,
+              "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+              "roc_auc": 0.9906247194919436,
+              "rows": 3855,
+              "threshold": 0.5
+            }
+          },
+          "scope": "inference-only missing-input sensitivity; not ablation retraining",
+          "without_actor": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 97
+            },
+            "confusion_matrix": [
+              [
+                2015,
+                1168
+              ],
+              [
+                58,
+                614
+              ]
+            ],
+            "f1": 0.5004074979625102,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 1168
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    6,
+                    90
+                  ]
+                ],
+                "count": 96,
+                "detected": 90
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    13,
+                    83
+                  ]
+                ],
+                "count": 96,
+                "detected": 83
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    13,
+                    83
+                  ]
+                ],
+                "count": 96,
+                "detected": 83
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    12,
+                    84
+                  ]
+                ],
+                "count": 96,
+                "detected": 84
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2015,
+                    1168
+                  ],
+                  [
+                    14,
+                    82
+                  ]
+                ],
+                "count": 96,
+                "detected": 82
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                2015,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1168,
+                0
+              ],
+              [
+                12,
+                0,
+                0,
+                0,
+                0,
+                0,
+                84,
+                0
+              ],
+              [
+                14,
+                0,
+                0,
+                0,
+                0,
+                0,
+                82,
+                0
+              ],
+              [
+                13,
+                0,
+                0,
+                0,
+                0,
+                0,
+                83,
+                0
+              ],
+              [
+                13,
+                0,
+                0,
+                0,
+                0,
+                0,
+                83,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                95,
+                0
+              ],
+              [
+                6,
+                0,
+                0,
+                0,
+                0,
+                0,
+                90,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                96,
+                0
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.4686998044435308,
+            "pr_auc_trapezoidal": 0.46777092847139734,
+            "precision": 0.3445566778900112,
+            "recall": 0.9136904761904762,
+            "recall_at_fpr_le_1pct": 0.01636904761904762,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.856482961940667,
+            "rows": 3855,
+            "threshold": 0.6317335963249207
+          },
+          "without_flow": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "confusion_matrix": [
+              [
+                2788,
+                395
+              ],
+              [
+                277,
+                395
+              ]
+            ],
+            "f1": 0.5403556771545828,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    84,
+                    12
+                  ]
+                ],
+                "count": 96,
+                "detected": 12
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 395
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    8,
+                    88
+                  ]
+                ],
+                "count": 96,
+                "detected": 88
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    52,
+                    44
+                  ]
+                ],
+                "count": 96,
+                "detected": 44
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    39,
+                    57
+                  ]
+                ],
+                "count": 96,
+                "detected": 57
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    35,
+                    61
+                  ]
+                ],
+                "count": 96,
+                "detected": 61
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    36,
+                    60
+                  ]
+                ],
+                "count": 96,
+                "detected": 60
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    2788,
+                    395
+                  ],
+                  [
+                    23,
+                    73
+                  ]
+                ],
+                "count": 96,
+                "detected": 73
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                2788,
+                14,
+                371,
+                7,
+                0,
+                0,
+                3,
+                0
+              ],
+              [
+                36,
+                0,
+                60,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                23,
+                3,
+                66,
+                4,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                39,
+                1,
+                55,
+                1,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                52,
+                5,
+                39,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                35,
+                0,
+                0,
+                0,
+                0,
+                61,
+                0,
+                0
+              ],
+              [
+                8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                88,
+                0
+              ],
+              [
+                84,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                12
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.5828430600541212,
+            "pr_auc_trapezoidal": 0.5824094905313071,
+            "precision": 0.5,
+            "recall": 0.5877976190476191,
+            "recall_at_fpr_le_1pct": 0.16666666666666666,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.8925128192181679,
+            "rows": 3855,
+            "threshold": 0.6317335963249207
+          },
+          "without_response": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "confusion_matrix": [
+              [
+                3168,
+                15
+              ],
+              [
+                497,
+                175
+              ]
+            ],
+            "f1": 0.4060324825986079,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 15
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    24,
+                    72
+                  ]
+                ],
+                "count": 96,
+                "detected": 72
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    93,
+                    3
+                  ]
+                ],
+                "count": 96,
+                "detected": 3
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    95,
+                    1
+                  ]
+                ],
+                "count": 96,
+                "detected": 1
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3168,
+                    15
+                  ],
+                  [
+                    93,
+                    3
+                  ]
+                ],
+                "count": 96,
+                "detected": 3
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                3168,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3,
+                12
+              ],
+              [
+                96,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                93,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ],
+              [
+                96,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                93,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ],
+              [
+                95,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                24,
+                0,
+                0,
+                0,
+                0,
+                0,
+                72,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                96
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.6618803549652355,
+            "pr_auc_trapezoidal": 0.6616048280036995,
+            "precision": 0.9210526315789473,
+            "recall": 0.2604166666666667,
+            "recall_at_fpr_le_1pct": 0.34375,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.876430123573149,
+            "rows": 3855,
+            "threshold": 0.6317335963249207
+          }
+        },
+        "validation_evaluation": {
+          "confusion_matrix": [
+            [
+              3153,
+              30
+            ],
+            [
+              380,
+              292
+            ]
+          ],
+          "f1": 0.5875251509054326,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  0,
+                  96
+                ]
+              ],
+              "count": 96,
+              "detected": 96
+            },
+            "benign": {
+              "count": 3183,
+              "false_positives": 30
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  6,
+                  90
+                ]
+              ],
+              "count": 96,
+              "detected": 90
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  91,
+                  5
+                ]
+              ],
+              "count": 96,
+              "detected": 5
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  93,
+                  3
+                ]
+              ],
+              "count": 96,
+              "detected": 3
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  1,
+                  95
+                ]
+              ],
+              "count": 96,
+              "detected": 95
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  95,
+                  1
+                ]
+              ],
+              "count": 96,
+              "detected": 1
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  94,
+                  2
+                ]
+              ],
+              "count": 96,
+              "detected": 2
+            }
+          },
+          "final_test_metrics_computed": false,
+          "latency_ms": {
+            "native": {
+              "p50": 0.009798999999999999,
+              "p95": 0.01061755,
+              "p99": 0.011824770000000005
+            },
+            "onnxruntime": {
+              "p50": 0.00655,
+              "p95": 0.0072432,
+              "p99": 0.007439250000000014
+            },
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "multiclass_confusion_matrix": [
+            [
+              3153,
+              13,
+              11,
+              0,
+              0,
+              0,
+              3,
+              3
+            ],
+            [
+              95,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              94,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            [
+              93,
+              2,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              91,
+              3,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0,
+              95,
+              0,
+              0
+            ],
+            [
+              6,
+              0,
+              0,
+              0,
+              0,
+              0,
+              90,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              96
+            ]
+          ],
+          "multiclass_labels": [
+            "benign",
+            "sqli",
+            "xss",
+            "path_traversal",
+            "cmd_injection",
+            "scanner_recon",
+            "brute_force",
+            "behavioral_anomaly"
+          ],
+          "partition": "val",
+          "pr_auc_average_precision": 0.7569710125463878,
+          "pr_auc_trapezoidal": 0.7568206420596081,
+          "precision": 0.906832298136646,
+          "recall": 0.43452380952380953,
+          "recall_at_fpr_le_1pct": 0.43452380952380953,
+          "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+          "roc_auc": 0.9253958436186287,
+          "rows": 3855,
+          "threshold": 0.6317335963249207
+        }
+      },
+      "residual": {
+        "benign_only_training": false,
+        "calibration": {
+          "benign_count": 3183,
+          "finite_sample_warning": "Empirical FPR only; small synthetic samples do not certify production FPR",
+          "fit_partition": "val",
+          "target_fpr": 0.01,
+          "threshold": 0.6971818208694458,
+          "validation_fpr": 0.00942507068803016,
+          "validation_recall": 0.4330357142857143
+        },
+        "checkpoint_manifest_sha256": "96ea6d5d507f676281f75cb286975f825aeb47eea2281dae4c76652bce555fed",
+        "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+        "continuous_reference_session": {
+          "best_metric": 0.7678729108354447,
+          "checkpoint": "checkpoints/step-000000000905-eb4386d20258",
+          "checkpoint_manifest_sha256": "774ececb3b009c627bb859bd75095c8afaac004e4606cb0b6bf807cb9e665b0a",
+          "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+          "cumulative_optimizer_seconds": 0.27529036299984,
+          "cumulative_wall_seconds": 3.343984639000155,
+          "cursor": 0,
+          "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+          "ended_at_unix": 1793160625.9227784,
+          "epoch": 5,
+          "global_step": 905,
+          "process_id": 53258,
+          "resources": {
+            "address_space_limit_effective": 12884901888,
+            "affinity_effective": [
+              0,
+              1
+            ],
+            "cgroup_v2": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 40347174\nuser_usec 33418063\nsystem_usec 6929110\nnice_usec 33431000\ncore_sched.force_idle_usec 0\nnr_periods 367\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "285376512",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "315576320",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "cgroup_v2_final": {
+              "cpu.max": "200000 100000",
+              "cpu.stat": "usage_usec 46224806\nuser_usec 37917615\nsystem_usec 8307191\nnice_usec 37934000\ncore_sched.force_idle_usec 0\nnr_periods 401\nnr_throttled 4\nthrottled_usec 4578\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "320167936",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "10737418240",
+              "memory.max": "12884901888",
+              "memory.peak": "321220608",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 2,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 12884901888,
+            "peak_rss_bytes": 189042688,
+            "peak_tree_rss_bytes": 189042688,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+            "total_host_memory_bytes": 32440909824
+          },
+          "run_id": "187573fe11c44976bee976fe093f439c",
+          "session_id": "a0aa6f9d818f4516b3e4d4ee0fb7b6fc",
+          "session_optimizer_seconds": 0.27529036299984,
+          "session_wall_seconds": 3.3950566369994704,
+          "started_at_unix": 1793160622.5277367,
+          "stop_reason": "epochs_complete",
+          "used_previous_checkpoint": false
+        },
+        "epoch": 5,
+        "exact_resume": true,
+        "global_step": 905,
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 19275,
+          "rtol": 1e-05
+        },
+        "onnx_sha256": "4b043896dd4c09957d8b3ef1fff5984c6a6bdbd2c2638d7d1b1e370710441472",
+        "parameter_count": 14216,
+        "sessions": [
+          {
+            "best_metric": 0.7619093198374448,
+            "checkpoint": "checkpoints/step-000000000362-96e41928dc3a",
+            "checkpoint_manifest_sha256": "27d0cfb0ded7b032d694e5080bea6dc6e3c406697443ab18ca10f5d9b4662073",
+            "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+            "cumulative_optimizer_seconds": 0.11241558499114035,
+            "cumulative_wall_seconds": 1.4870340739998937,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160619.0557315,
+            "epoch": 2,
+            "global_step": 362,
+            "process_id": 53243,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 32821773\nuser_usec 27419773\nsystem_usec 5402000\nnice_usec 27434000\ncore_sched.force_idle_usec 0\nnr_periods 316\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "271380480",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 35313149\nuser_usec 29350994\nsystem_usec 5962155\nnice_usec 29364000\ncore_sched.force_idle_usec 0\nnr_periods 332\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "307167232",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 189112320,
+              "peak_tree_rss_bytes": 189112320,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "343233c6757344b0b553f6995f7eb273",
+            "session_id": "a71ade923d954d9dba4f5d009c077fd1",
+            "session_optimizer_seconds": 0.11241558499114035,
+            "session_wall_seconds": 1.537371778999841,
+            "started_at_unix": 1793160617.5183742,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          },
+          {
+            "best_metric": 0.7678729108354447,
+            "checkpoint": "checkpoints/step-000000000905-2142289f5660",
+            "checkpoint_manifest_sha256": "96ea6d5d507f676281f75cb286975f825aeb47eea2281dae4c76652bce555fed",
+            "config_sha256": "dfbec35b0534e097de92991fc6532447659b1b6d870563e669c6813dd1b9c8ad",
+            "cumulative_optimizer_seconds": 0.2785898150050343,
+            "cumulative_wall_seconds": 3.6792490190000535,
+            "cursor": 0,
+            "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+            "ended_at_unix": 1793160621.8979697,
+            "epoch": 5,
+            "global_step": 905,
+            "process_id": 53250,
+            "resources": {
+              "address_space_limit_effective": 12884901888,
+              "affinity_effective": [
+                0,
+                1
+              ],
+              "cgroup_v2": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 36023405\nuser_usec 29998348\nsystem_usec 6025057\nnice_usec 30012000\ncore_sched.force_idle_usec 0\nnr_periods 338\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "284192768",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "cgroup_v2_final": {
+                "cpu.max": "200000 100000",
+                "cpu.stat": "usage_usec 39635052\nuser_usec 32772986\nsystem_usec 6862065\nnice_usec 32786000\ncore_sched.force_idle_usec 0\nnr_periods 360\nnr_throttled 1\nthrottled_usec 754\nnr_bursts 0\nburst_usec 0",
+                "memory.current": "307261440",
+                "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+                "memory.high": "10737418240",
+                "memory.max": "12884901888",
+                "memory.peak": "315576320",
+                "memory.swap.max": "0",
+                "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+              },
+              "effective_cpus_before_cap": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+              "max_threads": 2,
+              "memory_guard": "process-tree RSS at optimizer boundaries",
+              "memory_limit_bytes": 12884901888,
+              "peak_rss_bytes": 189083648,
+              "peak_tree_rss_bytes": 189083648,
+              "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+              "python": "3.12.14",
+              "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+              "total_host_memory_bytes": 32440909824
+            },
+            "run_id": "343233c6757344b0b553f6995f7eb273",
+            "session_id": "81fde5d453984ee4bd236761872c8616",
+            "session_optimizer_seconds": 0.16617423001389398,
+            "session_wall_seconds": 2.2404320340001505,
+            "started_at_unix": 1793160619.6575534,
+            "stop_reason": "epochs_complete",
+            "used_previous_checkpoint": false
+          }
+        ],
+        "threshold": 0.6971818208694458,
+        "training_rows": 11565,
+        "validation_diagnostics": {
+          "available_inputs": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 0
+            },
+            "confusion_matrix": [
+              [
+                3153,
+                30
+              ],
+              [
+                381,
+                291
+              ]
+            ],
+            "f1": 0.5861027190332326,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 30
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    12,
+                    84
+                  ]
+                ],
+                "count": 96,
+                "detected": 84
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    91,
+                    5
+                  ]
+                ],
+                "count": 96,
+                "detected": 5
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    89,
+                    7
+                  ]
+                ],
+                "count": 96,
+                "detected": 7
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    95,
+                    1
+                  ]
+                ],
+                "count": 96,
+                "detected": 1
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3153,
+                    30
+                  ],
+                  [
+                    94,
+                    2
+                  ]
+                ],
+                "count": 96,
+                "detected": 2
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                3153,
+                9,
+                19,
+                0,
+                0,
+                0,
+                0,
+                2
+              ],
+              [
+                95,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                94,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                89,
+                2,
+                5,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                91,
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                96,
+                0,
+                0
+              ],
+              [
+                12,
+                0,
+                0,
+                0,
+                0,
+                0,
+                84,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                96
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.7621378821336362,
+            "pr_auc_trapezoidal": 0.7619964896099867,
+            "precision": 0.9065420560747663,
+            "recall": 0.4330357142857143,
+            "recall_at_fpr_le_1pct": 0.4330357142857143,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9267619178522808,
+            "rows": 3855,
+            "threshold": 0.6971818208694458
+          },
+          "fixed_threshold": 0.6971818208694458,
+          "partition": "val",
+          "rule_or_ai": {
+            "all_rules": {
+              "confusion_matrix": [
+                [
+                  2957,
+                  226
+                ],
+                [
+                  12,
+                  660
+                ]
+              ],
+              "empirical_fpr": 0.07100219918316054,
+              "f1": 0.8472400513478819,
+              "families": {
+                "behavioral_anomaly": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "benign": {
+                  "count": 3183,
+                  "false_positives": 226
+                },
+                "brute_force": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      12,
+                      84
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 84
+                },
+                "cmd_injection": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "path_traversal": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "scanner_recon": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "sqli": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "xss": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      2957,
+                      226
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                }
+              },
+              "meets_1pct_false_alert_budget": false,
+              "pr_auc_average_precision": 0.7347316731015601,
+              "pr_auc_trapezoidal": 0.865088345418887,
+              "precision": 0.744920993227991,
+              "recall": 0.9821428571428571,
+              "recall_at_fpr_le_1pct": 0.0,
+              "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+              "roc_auc": 0.9555703289798483,
+              "rows": 3855,
+              "threshold": 0.5
+            },
+            "web_rules": {
+              "confusion_matrix": [
+                [
+                  3147,
+                  36
+                ],
+                [
+                  12,
+                  660
+                ]
+              ],
+              "empirical_fpr": 0.011310084825636193,
+              "f1": 0.9649122807017544,
+              "families": {
+                "behavioral_anomaly": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "benign": {
+                  "count": 3183,
+                  "false_positives": 36
+                },
+                "brute_force": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      12,
+                      84
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 84
+                },
+                "cmd_injection": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "path_traversal": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "scanner_recon": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "sqli": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                },
+                "xss": {
+                  "confusion_matrix_vs_benign": [
+                    [
+                      3147,
+                      36
+                    ],
+                    [
+                      0,
+                      96
+                    ]
+                  ],
+                  "count": 96,
+                  "detected": 96
+                }
+              },
+              "meets_1pct_false_alert_budget": false,
+              "pr_auc_average_precision": 0.9344552049989457,
+              "pr_auc_trapezoidal": 0.9667657798393744,
+              "precision": 0.9482758620689655,
+              "recall": 0.9821428571428571,
+              "recall_at_fpr_le_1pct": 0.0,
+              "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+              "roc_auc": 0.9854163861586105,
+              "rows": 3855,
+              "threshold": 0.5
+            }
+          },
+          "scope": "inference-only missing-input sensitivity; not ablation retraining",
+          "without_actor": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 437
+            },
+            "confusion_matrix": [
+              [
+                1056,
+                2127
+              ],
+              [
+                21,
+                651
+              ]
+            ],
+            "f1": 0.3773913043478261,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 2127
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    12,
+                    84
+                  ]
+                ],
+                "count": 96,
+                "detected": 84
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    3,
+                    93
+                  ]
+                ],
+                "count": 96,
+                "detected": 93
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    3,
+                    93
+                  ]
+                ],
+                "count": 96,
+                "detected": 93
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    0,
+                    96
+                  ]
+                ],
+                "count": 96,
+                "detected": 96
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    1056,
+                    2127
+                  ],
+                  [
+                    3,
+                    93
+                  ]
+                ],
+                "count": 96,
+                "detected": 93
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                1056,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2122,
+                5
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                96,
+                0
+              ],
+              [
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                93,
+                0
+              ],
+              [
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                93,
+                0
+              ],
+              [
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                93,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                84,
+                12,
+                0
+              ],
+              [
+                12,
+                0,
+                0,
+                0,
+                0,
+                0,
+                84,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                63,
+                33
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.49873605841969365,
+            "pr_auc_trapezoidal": 0.49845983918971976,
+            "precision": 0.234341252699784,
+            "recall": 0.96875,
+            "recall_at_fpr_le_1pct": 0.19345238095238096,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.7662493641817393,
+            "rows": 3855,
+            "threshold": 0.6971818208694458
+          },
+          "without_flow": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "confusion_matrix": [
+              [
+                3142,
+                41
+              ],
+              [
+                465,
+                207
+              ]
+            ],
+            "f1": 0.45,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    78,
+                    18
+                  ]
+                ],
+                "count": 96,
+                "detected": 18
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 41
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    11,
+                    85
+                  ]
+                ],
+                "count": 96,
+                "detected": 85
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    93,
+                    3
+                  ]
+                ],
+                "count": 96,
+                "detected": 3
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    84,
+                    12
+                  ]
+                ],
+                "count": 96,
+                "detected": 12
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    18,
+                    78
+                  ]
+                ],
+                "count": 96,
+                "detected": 78
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3142,
+                    41
+                  ],
+                  [
+                    85,
+                    11
+                  ]
+                ],
+                "count": 96,
+                "detected": 11
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                3142,
+                9,
+                29,
+                0,
+                0,
+                0,
+                3,
+                0
+              ],
+              [
+                96,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                85,
+                0,
+                11,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                84,
+                2,
+                10,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                93,
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                18,
+                0,
+                0,
+                0,
+                0,
+                78,
+                0,
+                0
+              ],
+              [
+                11,
+                0,
+                0,
+                0,
+                0,
+                0,
+                85,
+                0
+              ],
+              [
+                78,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                18
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.682454823020654,
+            "pr_auc_trapezoidal": 0.6822062684709783,
+            "precision": 0.8346774193548387,
+            "recall": 0.3080357142857143,
+            "recall_at_fpr_le_1pct": 0.28869047619047616,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9083732122286552,
+            "rows": 3855,
+            "threshold": 0.6971818208694458
+          },
+          "without_response": {
+            "benign_http_error_cases": {
+              "count": 938,
+              "flagged": 3
+            },
+            "confusion_matrix": [
+              [
+                3171,
+                12
+              ],
+              [
+                480,
+                192
+              ]
+            ],
+            "f1": 0.4383561643835616,
+            "families": {
+              "behavioral_anomaly": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    1,
+                    95
+                  ]
+                ],
+                "count": 96,
+                "detected": 95
+              },
+              "benign": {
+                "count": 3183,
+                "false_positives": 12
+              },
+              "brute_force": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    6,
+                    90
+                  ]
+                ],
+                "count": 96,
+                "detected": 90
+              },
+              "cmd_injection": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    93,
+                    3
+                  ]
+                ],
+                "count": 96,
+                "detected": 3
+              },
+              "path_traversal": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "scanner_recon": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    95,
+                    1
+                  ]
+                ],
+                "count": 96,
+                "detected": 1
+              },
+              "sqli": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    96,
+                    0
+                  ]
+                ],
+                "count": 96,
+                "detected": 0
+              },
+              "xss": {
+                "confusion_matrix_vs_benign": [
+                  [
+                    3171,
+                    12
+                  ],
+                  [
+                    93,
+                    3
+                  ]
+                ],
+                "count": 96,
+                "detected": 3
+              }
+            },
+            "multiclass_confusion_matrix": [
+              [
+                3171,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3,
+                9
+              ],
+              [
+                96,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                93,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ],
+              [
+                96,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                93,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ],
+              [
+                95,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                6,
+                0,
+                0,
+                0,
+                0,
+                0,
+                90,
+                0
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                95
+              ]
+            ],
+            "multiclass_labels": [
+              "benign",
+              "sqli",
+              "xss",
+              "path_traversal",
+              "cmd_injection",
+              "scanner_recon",
+              "brute_force",
+              "behavioral_anomaly"
+            ],
+            "pr_auc_average_precision": 0.7034135425046233,
+            "pr_auc_trapezoidal": 0.7032010089170588,
+            "precision": 0.9411764705882353,
+            "recall": 0.2857142857142857,
+            "recall_at_fpr_le_1pct": 0.38244047619047616,
+            "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+            "roc_auc": 0.9031683852460242,
+            "rows": 3855,
+            "threshold": 0.6971818208694458
+          }
+        },
+        "validation_evaluation": {
+          "confusion_matrix": [
+            [
+              3153,
+              30
+            ],
+            [
+              381,
+              291
+            ]
+          ],
+          "f1": 0.5861027190332326,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  0,
+                  96
+                ]
+              ],
+              "count": 96,
+              "detected": 96
+            },
+            "benign": {
+              "count": 3183,
+              "false_positives": 30
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  12,
+                  84
+                ]
+              ],
+              "count": 96,
+              "detected": 84
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  91,
+                  5
+                ]
+              ],
+              "count": 96,
+              "detected": 5
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  89,
+                  7
+                ]
+              ],
+              "count": 96,
+              "detected": 7
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  0,
+                  96
+                ]
+              ],
+              "count": 96,
+              "detected": 96
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  95,
+                  1
+                ]
+              ],
+              "count": 96,
+              "detected": 1
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  3153,
+                  30
+                ],
+                [
+                  94,
+                  2
+                ]
+              ],
+              "count": 96,
+              "detected": 2
+            }
+          },
+          "final_test_metrics_computed": false,
+          "latency_ms": {
+            "native": {
+              "p50": 0.015772,
+              "p95": 0.016408799999999998,
+              "p99": 0.017328950000000017
+            },
+            "onnxruntime": {
+              "p50": 0.009505,
+              "p95": 0.010407350000000001,
+              "p99": 0.010735220000000014
+            },
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "multiclass_confusion_matrix": [
+            [
+              3153,
+              9,
+              19,
+              0,
+              0,
+              0,
+              0,
+              2
+            ],
+            [
+              95,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              94,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              89,
+              2,
+              5,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              91,
+              3,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              96,
+              0,
+              0
+            ],
+            [
+              12,
+              0,
+              0,
+              0,
+              0,
+              0,
+              84,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              96
+            ]
+          ],
+          "multiclass_labels": [
+            "benign",
+            "sqli",
+            "xss",
+            "path_traversal",
+            "cmd_injection",
+            "scanner_recon",
+            "brute_force",
+            "behavioral_anomaly"
+          ],
+          "partition": "val",
+          "pr_auc_average_precision": 0.7621378821336362,
+          "pr_auc_trapezoidal": 0.7619964896099867,
+          "precision": 0.9065420560747663,
+          "recall": 0.4330357142857143,
+          "recall_at_fpr_le_1pct": 0.4330357142857143,
+          "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+          "roc_auc": 0.9267619178522808,
+          "rows": 3855,
+          "threshold": 0.6971818208694458
+        }
+      }
+    },
+    "optimizer_seconds": 0.573298903007526,
+    "production_ready": false,
+    "purpose": "five epoch offline lab pilot, not formal champion training",
+    "readiness_report_sha256": "0d683779610ec81251f3e6a88ef34559cf948e41045f6de09016f4132ffe2c86",
+    "reference_optimizer_seconds": 0.5692723999945883,
+    "started_at_unix": 1793160586.3919816,
+    "test_metrics_computed": false,
+    "wall_seconds": 47.44991707801819
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/pilot-report.json",
+  "original_sha256": "efd0321c6f132a2d553bf6d5ad1e69e3fe18803c118df86d03d2dab470bd2525",
+  "redactions": {
+    "strings_changed": 18
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

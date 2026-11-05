@@ -1,0 +1,39 @@
+{
+  "content": {
+    "archive_publisher_md5": "6706a0bf3f570ef5e7c56bd14e3c08d1",
+    "archive_sha256_verified": false,
+    "archive_size": 783022916,
+    "license": "CC BY-NC-SA 4.0 publisher claim",
+    "members": [
+      {
+        "local": "<PROJECT_ROOT>/ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/access.log",
+        "member": "gather/intranet_server/logs/apache2/intranet.company.cyberrange.at-access.log.4",
+        "sha256": "e324866358022952b825fcc7a60dd0d0f42a3fce3bef95c9d60fc3e2cc19fbc6",
+        "size": 66272659,
+        "zip_crc32": 1425307139
+      },
+      {
+        "local": "<PROJECT_ROOT>/ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/labels.json",
+        "member": "labels/intranet_server/logs/apache2/intranet.company.cyberrange.at-access.log.4",
+        "sha256": "7cf43efd4630a1da4ac87e6c76a9fad6f0f2bc3e985ffe825bdf1fd7b54d8b62",
+        "size": 86144689,
+        "zip_crc32": 3989839497
+      },
+      {
+        "local": "<PROJECT_ROOT>/ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/apache-rules.yaml",
+        "member": "rules/apache.yaml",
+        "sha256": "5af6ba52ebeac606df066ee39e701c44dd27ce4aca1407260f75c24a0b563fea",
+        "size": 15604,
+        "zip_crc32": 1607643400
+      }
+    ],
+    "scope": "ZIP member CRC only, full archive not downloaded",
+    "source_url": "https://zenodo.org/records/5779411/files/scenario1.zip?download=1"
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/slice-manifest.json",
+  "original_sha256": "05de20f7baabb38d8a3ce32df0837b0abcab8ad2f6c2a253dcb863f63a2930e0",
+  "redactions": {
+    "strings_changed": 3
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

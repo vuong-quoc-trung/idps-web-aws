@@ -1,0 +1,6 @@
+*.py text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+# Model/data archives are distributed as checksum-pinned GitHub Release assets.
+# No Git LFS objects are required by the team bootstrap.

@@ -1,0 +1,47 @@
+{
+  "content": {
+    "captures": [
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b",
+        "pending_evidence_sha256": "658d3e55875201e51138e153c851041b56be4a6002f283b0d475ee7fe757fc8b",
+        "request_ids": 54
+      },
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "603f3074e0bb64ae0135134a00c7a46201bc75cff03d22a2635ed43cb788b669",
+        "pending_evidence_sha256": "ad9e4f6ab907c1e1693fff134eb91a5605888dd3b03cd73a7e3177b16f471cb6",
+        "request_ids": 54
+      },
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "1d197358afe8123bf1887f923474447bdf4fc978b228b9fef3be4ffcff3ef1ea",
+        "pending_evidence_sha256": "088ba2aa3f1efcdc54bdfe00c20ef49ad71d91aa903f64f2fcec6d2f42ff89eb",
+        "request_ids": 54
+      },
+      {
+        "campaign_ids": 1,
+        "capture_report_sha256": "9d9a94360676ab3851d0bbc28fc89c3d0c4bdbe9db4dc20d12fc99bd42ae7c30",
+        "pending_evidence_sha256": "fc00605900b103fbc8f39a03d87213388ddc49daf88893d174db611045d814c4",
+        "request_ids": 8
+      }
+    ],
+    "cross_run_id_collisions": 0,
+    "distinct_campaign_ids": 10,
+    "distinct_target_hashes": 79,
+    "format_version": 1,
+    "historical_student_ids_scanned": 0,
+    "independently_reviewed_attack": 0,
+    "independently_reviewed_benign": 0,
+    "limits": "Only supplied development captures and explicitly supplied unsealed Student logs are compared by request ID. Historical log IDs may include setup events and are not added to training-request counts. Repeated targets are real separate HTTP requests, not new behavior templates. The sealed historical cohort is untouched, so the full 75,150-request corpus is not globally deduplicated by this audit; semantic labels and physical request provenance still need independent review.",
+    "physical_request_ids_observed": 170,
+    "repeated_target_observations": 91,
+    "status": "DEVELOPMENT_CAPTURE_IDS_DISTINCT_NO_TRAINING_ADMISSION",
+    "training_admission": 0,
+    "unsealed_historical_student_logs": []
+  },
+  "original_relative_path": "ai-training/.artifacts/devgt1/lineage-audit/report.json",
+  "original_sha256": "b35e199897451b7e6fbb16f5e10fe43edc0fe459d65e0b572788671891b0d3d9",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

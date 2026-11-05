@@ -1,0 +1,54 @@
+{
+  "content": {
+    "captures": [
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "0f007b12d627cf465933d69efd485be07fd0a53e83c9351c6d9321c5fa8236b0",
+        "pending_evidence_sha256": "c51addad62ab83c6f6e35e775794b65718b36443a406e4e2d173181c507a4b6b",
+        "request_ids": 48
+      },
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b",
+        "pending_evidence_sha256": "658d3e55875201e51138e153c851041b56be4a6002f283b0d475ee7fe757fc8b",
+        "request_ids": 54
+      },
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "603f3074e0bb64ae0135134a00c7a46201bc75cff03d22a2635ed43cb788b669",
+        "pending_evidence_sha256": "ad9e4f6ab907c1e1693fff134eb91a5605888dd3b03cd73a7e3177b16f471cb6",
+        "request_ids": 54
+      }
+    ],
+    "cross_run_id_collisions": 0,
+    "distinct_campaign_ids": 9,
+    "distinct_target_hashes": 36,
+    "format_version": 1,
+    "historical_student_ids_scanned": 73218,
+    "independently_reviewed_attack": 0,
+    "independently_reviewed_benign": 0,
+    "limits": "Only supplied development captures and explicitly supplied unsealed Student logs are compared by request ID. Historical log IDs may include setup events and are not added to training-request counts. Repeated targets are real separate HTTP requests, not new behavior templates. The sealed historical cohort is untouched, so the full 75,150-request corpus is not globally deduplicated by this audit; semantic labels and physical request provenance still need independent review.",
+    "physical_request_ids_observed": 156,
+    "repeated_target_observations": 120,
+    "status": "DEVELOPMENT_CAPTURE_IDS_DISTINCT_NO_TRAINING_ADMISSION",
+    "training_admission": 0,
+    "unsealed_historical_student_logs": [
+      {
+        "file_sha256": "cc01fe85979112cc02d4273ba8feea679aa0abf92e2c1d86d5d230e8cabbbc33",
+        "student_log_request_ids": 69346
+      },
+      {
+        "file_sha256": "acea7e76026eb958078a7d80706867b9c65632efe062c6d7fff8cf93606a4910",
+        "student_log_request_ids": 1936
+      },
+      {
+        "file_sha256": "f598772247cc140d1b3d6b8c215aebba8b2250323ce6632d4ff3a295b089516c",
+        "student_log_request_ids": 1936
+      }
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/lineage-audit-v3/report.json",
+  "original_sha256": "de0250144dc4544dc6267b8c4a2c4eb75e35fd8df8b9b8935eae5f66ac75d1b2",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

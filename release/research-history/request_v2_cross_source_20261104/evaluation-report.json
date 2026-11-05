@@ -1,0 +1,340 @@
+{
+  "content": {
+    "all_prepared_transaction_proxy_metrics": {
+      "descriptive_binomial_95_interval": {
+        "normal_flagged_fraction": [
+          0.36287055628838616,
+          0.3905159103807482
+        ],
+        "positive_sensitivity": [
+          0.9207674180517119,
+          0.9285239831242074
+        ],
+        "precision": [
+          0.8980332112317834,
+          0.9066438799996569
+        ],
+        "warning": "Clopper-Pearson treats observations as IID; repeated templates, one lab/source and weak labels invalidate independent-population coverage."
+      },
+      "publisher_attack_family": 18038,
+      "publisher_label_pr_auc": 0.983756363656805,
+      "publisher_label_precision": 0.9024020774724085,
+      "publisher_normal": 4790,
+      "publisher_normal_flagged": 1804,
+      "publisher_normal_flagged_fraction": 0.3766179540709812,
+      "publisher_normal_flags_per_10000": 3766.179540709812,
+      "publisher_positive_flagged": 16680,
+      "publisher_positive_sensitivity": 0.9247144916287837
+    },
+    "development_shortcut_controls": {
+      "interpretation": "Controls are descriptive; method/length association is a shortcut risk, not proof of model reliance. Numeric v1 used a different fit cohort. No external scores used to fit controls.",
+      "method_only": {
+        "development_pr_auc": 0.7304605011574451,
+        "train_class_posterior": {
+          "method_CONNECT": {
+            "publisher_anomalous_probability": 0.6666666666666666,
+            "train_rows": 1
+          },
+          "method_DELETE": {
+            "publisher_anomalous_probability": 0.5,
+            "train_rows": 0
+          },
+          "method_GET": {
+            "publisher_anomalous_probability": 0.7108843236353659,
+            "train_rows": 112977
+          },
+          "method_HEAD": {
+            "publisher_anomalous_probability": 0.9907407407407407,
+            "train_rows": 106
+          },
+          "method_OPTIONS": {
+            "publisher_anomalous_probability": 0.38860103626943004,
+            "train_rows": 191
+          },
+          "method_OTHER": {
+            "publisher_anomalous_probability": 0.9964285714285714,
+            "train_rows": 278
+          },
+          "method_PATCH": {
+            "publisher_anomalous_probability": 0.9921875,
+            "train_rows": 126
+          },
+          "method_POST": {
+            "publisher_anomalous_probability": 0.7940261356565028,
+            "train_rows": 6426
+          },
+          "method_PUT": {
+            "publisher_anomalous_probability": 0.9927007299270073,
+            "train_rows": 135
+          },
+          "method_TRACE": {
+            "publisher_anomalous_probability": 0.08629441624365482,
+            "train_rows": 195
+          }
+        }
+      },
+      "numeric_only_frozen_v1_checkpoint": {
+        "development_pr_auc": 0.9717572516313909,
+        "different_fit_cohort": true
+      },
+      "request_length_structure_only": {
+        "columns": [
+          "decoded_uri_length",
+          "decoded_query_length",
+          "boolean_operator_count",
+          "comparison_operator_count",
+          "quote_single"
+        ],
+        "development_pr_auc": 0.7664384525427648
+      },
+      "rich_v2_frozen": {
+        "development_pr_auc": 0.9988360637381601,
+        "score_by_method": {
+          "method_GET": {
+            "median": 0.9975707530975342,
+            "rows": 18822
+          },
+          "method_HEAD": {
+            "median": 0.9989738464355469,
+            "rows": 15
+          },
+          "method_OPTIONS": {
+            "median": 0.5774409770965576,
+            "rows": 49
+          },
+          "method_OTHER": {
+            "median": 0.9984332323074341,
+            "rows": 30
+          },
+          "method_PATCH": {
+            "median": 0.9984356164932251,
+            "rows": 18
+          },
+          "method_POST": {
+            "median": 0.9977635741233826,
+            "rows": 1087
+          },
+          "method_PUT": {
+            "median": 0.9985105991363525,
+            "rows": 22
+          },
+          "method_TRACE": {
+            "median": 0.034741729497909546,
+            "rows": 40
+          }
+        }
+      },
+      "scope": "same WAF train-source development roles, not cross-source validation"
+    },
+    "false_negatives_primary": {
+      "body_present": 25,
+      "by_family": {
+        "fileinclusion-ldf": 82,
+        "rce": 771,
+        "sqli": 208,
+        "xss": 284
+      },
+      "by_method": {
+        "GET": 1320,
+        "POST": 25
+      },
+      "score_margin_below_threshold_median": 0.6197947859764099,
+      "user_agent_missing": 0
+    },
+    "formal_admitted": 0,
+    "format_version": 1,
+    "http_method_primary": {
+      "GET": {
+        "descriptive_binomial_95_interval": {
+          "normal_flagged_fraction": [
+            0.3114117090777164,
+            0.3413923121658163
+          ],
+          "positive_sensitivity": [
+            0.9138758244209354,
+            0.922393827432495
+          ],
+          "precision": [
+            0.9181371930952607,
+            0.9264744653386596
+          ],
+          "warning": "Clopper-Pearson treats observations as IID; repeated templates, one lab/source and weak labels invalidate independent-population coverage."
+        },
+        "publisher_attack_family": 16139,
+        "publisher_label_pr_auc": 0.9854292215572116,
+        "publisher_label_precision": 0.9223826714801444,
+        "publisher_normal": 3822,
+        "publisher_normal_flagged": 1247,
+        "publisher_normal_flagged_fraction": 0.326268969126112,
+        "publisher_normal_flags_per_10000": 3262.6896912611196,
+        "publisher_positive_flagged": 14819,
+        "publisher_positive_sensitivity": 0.9182105458826445
+      },
+      "POST": {
+        "descriptive_binomial_95_interval": {
+          "normal_flagged_fraction": [
+            0.40987474476163754,
+            0.4864178959726413
+          ],
+          "positive_sensitivity": [
+            0.9804939903391594,
+            0.9914038218492972
+          ],
+          "precision": [
+            0.8454645917868537,
+            0.8751040922121633
+          ],
+          "warning": "Clopper-Pearson treats observations as IID; repeated templates, one lab/source and weak labels invalidate independent-population coverage."
+        },
+        "publisher_attack_family": 1886,
+        "publisher_label_pr_auc": 0.9945395764273518,
+        "publisher_label_precision": 0.8607770582793709,
+        "publisher_normal": 672,
+        "publisher_normal_flagged": 301,
+        "publisher_normal_flagged_fraction": 0.4479166666666667,
+        "publisher_normal_flags_per_10000": 4479.166666666667,
+        "publisher_positive_flagged": 1861,
+        "publisher_positive_sensitivity": 0.986744432661718
+      }
+    },
+    "latency": {
+      "encoder_and_workbook_io_excluded": true,
+      "model_only_amortized_ms_per_transaction_proxy": 0.0023829444541757137,
+      "model_only_batch_all_ms": 54.397855999923195
+    },
+    "limits": [
+      "Publisher labels mix scenario/time, regex and manual review; no per-row independent ground truth",
+      "One WordPress testbed with repeated transactions and near-duplicate requests",
+      "Source was previously audited, so this is retrospective cross-source, not blind evaluation",
+      "Exact raw/view/template overlap checked against WAF train; near-duplicate probe is sampled only",
+      "WAF train may share upstream patterns with this source despite distinct publishers",
+      "User-Agent/Host only; other HTTP header values unavailable, causing input missingness/domain shift",
+      "Clopper-Pearson intervals assume IID and are descriptive only under this clustering",
+      "No external threshold tuning, model fitting, champion selection or formal admission"
+    ],
+    "missingness": {
+      "body_absent": 20317,
+      "host_absent": 0,
+      "other_header_values": "not observed in workbook; no invented values",
+      "user_agent_absent": 0
+    },
+    "overlap": {
+      "exact_safe_template_rows": 305,
+      "exact_v2_view_rows": 0,
+      "raw_method_url_body_rows": 289
+    },
+    "plan_file_sha256": "798bb90391b53a2e3a8f968e91bfb8f0aa747b4802766658648e469e6af0f670",
+    "plan_sha256": "d2c825dac090127a28d5d8e4c71a278cde374b20889627f58f2807fc390a7ffa",
+    "prepared_transaction_id_proxies": 22828,
+    "prepared_unique_request_representations": 18294,
+    "prepared_unique_v2_feature_views": 15194,
+    "primary_no_exact_raw_view_template_overlap": 22519,
+    "primary_transaction_proxy_metrics": {
+      "descriptive_binomial_95_interval": {
+        "normal_flagged_fraction": [
+          0.3305596816619945,
+          0.35856127995488085
+        ],
+        "positive_sensitivity": [
+          0.9214484848507127,
+          0.9291764412816609
+        ],
+        "precision": [
+          0.9109348329284891,
+          0.9190835972479761
+        ],
+        "warning": "Clopper-Pearson treats observations as IID; repeated templates, one lab/source and weak labels invalidate independent-population coverage."
+      },
+      "publisher_attack_family": 18025,
+      "publisher_label_pr_auc": 0.9855957946680054,
+      "publisher_label_precision": 0.9150757077024358,
+      "publisher_normal": 4494,
+      "publisher_normal_flagged": 1548,
+      "publisher_normal_flagged_fraction": 0.3444592790387183,
+      "publisher_normal_flags_per_10000": 3444.592790387183,
+      "publisher_positive_flagged": 16680,
+      "publisher_positive_sensitivity": 0.925381414701803
+    },
+    "primary_unique_v2_views": 15168,
+    "primary_unique_view_metrics": {
+      "descriptive_binomial_95_interval": {
+        "normal_flagged_fraction": [
+          0.25303849722979754,
+          0.2970401715923643
+        ],
+        "positive_sensitivity": [
+          0.9586939062034174,
+          0.9652048832927753
+        ],
+        "precision": [
+          0.9637441464989975,
+          0.9698603214279471
+        ],
+        "warning": "Clopper-Pearson treats observations as IID; repeated templates, one lab/source and weak labels invalidate independent-population coverage."
+      },
+      "publisher_attack_family": 13544,
+      "publisher_label_pr_auc": 0.9964304550858587,
+      "publisher_label_precision": 0.9669041258533689,
+      "publisher_normal": 1624,
+      "publisher_normal_flagged": 446,
+      "publisher_normal_flagged_fraction": 0.2746305418719212,
+      "publisher_normal_flags_per_10000": 2746.305418719212,
+      "publisher_positive_flagged": 13030,
+      "publisher_positive_sensitivity": 0.9620496160661548
+    },
+    "publisher_family_primary": {
+      "bruteforce": {
+        "flagged": 1770,
+        "median_score": 0.9991899132728577,
+        "missed": 0,
+        "transaction_proxies": 1770
+      },
+      "fileinclusion-ldf": {
+        "flagged": 864,
+        "median_score": 0.9762208461761475,
+        "missed": 82,
+        "transaction_proxies": 946
+      },
+      "normal": {
+        "flagged": 1548,
+        "median_score": 0.6824888586997986,
+        "missed": null,
+        "transaction_proxies": 4494
+      },
+      "rce": {
+        "flagged": 274,
+        "median_score": 0.3867112994194031,
+        "missed": 771,
+        "transaction_proxies": 1045
+      },
+      "sqli": {
+        "flagged": 12474,
+        "median_score": 0.999518632888794,
+        "missed": 208,
+        "transaction_proxies": 12682
+      },
+      "xss": {
+        "flagged": 1298,
+        "median_score": 0.9997763633728027,
+        "missed": 284,
+        "transaction_proxies": 1582
+      }
+    },
+    "raw_workbook_rows": 108883,
+    "report_sha256": "6505e59a88fa88cf8b69e7b1daf32d945349f55a26ec94c98a96baa9579c061e",
+    "resource": {
+      "cgroup_memory_cap_gib": 16,
+      "max_cpus": 4,
+      "peak_process_rss_kib": 744260
+    },
+    "same_method_path_mixed_label_route_groups": 9,
+    "same_method_path_mixed_label_transaction_proxies": 19460,
+    "scope": "one frozen cross-source publisher-label retrospective evaluation",
+    "source": "ModSec-WP v2 Zenodo 10.5281/zenodo.21872151; CC BY 4.0 publisher metadata",
+    "source_audit_level": "publisher labels/hybrid scenario+regex+manual, no per-row independent intent proof"
+  },
+  "original_relative_path": "ai-training/.artifacts/request_v2_cross_source_20261104/evaluation-report.json",
+  "original_sha256": "de5a31205ca2df17ed2746de7bd7a86f9728ad574e8f10688d3bce1b370d6180",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

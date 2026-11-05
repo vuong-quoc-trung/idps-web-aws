@@ -1,0 +1,29 @@
+{
+  "content": {
+    "cpu_temperature_max": 48.0,
+    "cpu_temperature_mean": 47.0,
+    "cpu_temperature_min": 46.0,
+    "events": [],
+    "failure": null,
+    "kernel_cpu_quota_percent": 25,
+    "peak_cgroup_memory_bytes": 3608576,
+    "peak_system_used_bytes": 8425947136,
+    "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee",
+    "source_sha256": "7d87a9c6f524059509596eb0b343951b8170a10750c2e9f78782844fccbcf307",
+    "status": "PASS",
+    "systemd_result": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "32212000",
+      "ExecMainStatus": "0",
+      "MemoryPeak": "3608576",
+      "Result": "success",
+      "SubState": "exited"
+    },
+    "unit": "idps-integration-15030-28707872.service",
+    "wall_seconds": 2.4320404579999604
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/guard-smoke/resource-report.json",
+  "original_sha256": "d6e3f152c1836c07092d30eaddbc5c50d94ca87dda73001be8e673100a5f65f6",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

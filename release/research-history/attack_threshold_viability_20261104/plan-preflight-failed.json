@@ -1,0 +1,44 @@
+{
+  "content": {
+    "candidate_root": ".artifacts/research_glu207_bounded_final_20261104",
+    "checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_manifest_sha256": "0c1a5ca3523c8ff769148766cee152d0a47c62c012a08200f0586f2349ee221e",
+    "dedup": "exact float32 bytes; reject label conflicts",
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "features_sha256": "7e02bbbc66621560a23beb3c80c1d8c1bf790aba0e012df93c1d3c9ec7edfb5e",
+    "format_version": 1,
+    "metrics": [
+      "class-conditional score quantiles",
+      "train positive flag rate",
+      "family breakdown",
+      "near-threshold margin",
+      "flow availability",
+      "source-label provenance"
+    ],
+    "model_or_threshold_tuning": false,
+    "no_validation_test_holdout_scoring": true,
+    "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+    "partition": "train only; read first82 row groups and filter mixed boundary per row",
+    "prepared_dataset": ".artifacts/scale_upgrade_20261030/prepared-v5",
+    "purpose": "TRAIN_ONLY_THRESHOLD_VIABILITY_NO_QUALITY_CLAIM",
+    "requests_sha256": "d04633aaea53bd34490faafd94d446701c7b8cf80a69d50d763e949516f93784",
+    "script_sha256": "b9619841d577ca38e8bf62db7e0ad97674105ce2b5a8b2cbbc6b2b7463aa6b3a",
+    "threshold": 0.5396780371665955,
+    "threshold_manifest": ".artifacts/bc27_1104/threshold-manifest.json",
+    "threshold_manifest_sha256": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2"
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_threshold_viability_20261104/plan-preflight-failed.json",
+  "original_sha256": "94eb948d0c664dcd2b8beb37d82de38ca6c16ca5195eb6f6139553dd2bc47a41",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,613 @@
+{
+  "content": {
+    "champion_selected": false,
+    "models": {
+      "glu_faster_start": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/development-pilot/glu_faster_start-bundle",
+        "bundle_manifest_sha256": "78af9f0d6eb3fdc109865c858a90f56e052b48785ee3701de1b6fecbf07d841e",
+        "checkpoint_manifest_sha256": "13065c0ae8804b724227d1e3dd6ef49f75feb45254554e96ea34f3b8446e506b",
+        "config_sha256": "c238ca857fdb97d323c8323955fd3bb6bef45050fadd17de25caccd862031327",
+        "evaluation": {
+          "confusion_matrix": [
+            [
+              6501,
+              57
+            ],
+            [
+              17,
+              2671
+            ]
+          ],
+          "f1": 0.9863367799113737,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  6,
+                  378
+                ]
+              ],
+              "count": 384,
+              "detected": 378,
+              "f1_vs_benign": 0.9230769230769231,
+              "precision_vs_benign": 0.8689655172413793,
+              "recall": 0.984375
+            },
+            "benign": {
+              "count": 6558,
+              "false_positives": 57
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  6,
+                  378
+                ]
+              ],
+              "count": 384,
+              "detected": 378,
+              "f1_vs_benign": 0.9230769230769231,
+              "precision_vs_benign": 0.8689655172413793,
+              "recall": 0.984375
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  5,
+                  379
+                ]
+              ],
+              "count": 384,
+              "detected": 379,
+              "f1_vs_benign": 0.9243902439024391,
+              "precision_vs_benign": 0.8692660550458715,
+              "recall": 0.9869791666666666
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9309090909090908,
+              "precision_vs_benign": 0.8707482993197279,
+              "recall": 1.0
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9309090909090908,
+              "precision_vs_benign": 0.8707482993197279,
+              "recall": 1.0
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9309090909090908,
+              "precision_vs_benign": 0.8707482993197279,
+              "recall": 1.0
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6501,
+                  57
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9309090909090908,
+              "precision_vs_benign": 0.8707482993197279,
+              "recall": 1.0
+            }
+          },
+          "final_test_metrics_computed": false,
+          "fpr": 0.00869167429094236,
+          "latency_ms": {
+            "native": {
+              "p50": 9.980233,
+              "p95": 10.29374595,
+              "p99": 10.470902510000002
+            },
+            "onnxruntime": {
+              "p50": 3.687147,
+              "p95": 4.77215735,
+              "p99": 7.689781890000069
+            },
+            "sample_partition": "val",
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "multiclass_confusion_matrix": [
+            [
+              6501,
+              36,
+              0,
+              0,
+              9,
+              0,
+              3,
+              9
+            ],
+            [
+              0,
+              242,
+              0,
+              0,
+              142,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              384,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              383,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              5,
+              0,
+              0,
+              0,
+              379,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              384,
+              0,
+              0
+            ],
+            [
+              6,
+              0,
+              0,
+              0,
+              0,
+              0,
+              378,
+              0
+            ],
+            [
+              6,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              378
+            ]
+          ],
+          "multiclass_labels": [
+            "benign",
+            "sqli",
+            "xss",
+            "path_traversal",
+            "cmd_injection",
+            "scanner_recon",
+            "brute_force",
+            "behavioral_anomaly"
+          ],
+          "partition": "val_selection_groups",
+          "pr_auc_average_precision": 0.9990034992058268,
+          "pr_auc_trapezoidal": 0.9990033498638954,
+          "precision": 0.9791055718475073,
+          "recall": 0.9936755952380952,
+          "recall_at_fpr_le_1pct": 0.9936755952380952,
+          "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+          "roc_auc": 0.9993622043777864,
+          "rows": 9246,
+          "threshold": 0.07943058013916016
+        },
+        "history": [
+          {
+            "calibration": null,
+            "epoch": 1,
+            "global_step": 326,
+            "last_learning_rate": 0.0004795177858761205,
+            "training_loss": 0.11848406835549627,
+            "validation_average_precision": null,
+            "validation_loss": null,
+            "validation_pr_auc": null,
+            "validation_unweighted_all_class_loss": null
+          },
+          {
+            "calibration": null,
+            "epoch": 2,
+            "global_step": 652,
+            "last_learning_rate": 0.00019348588810798998,
+            "training_loss": 0.04815088678086938,
+            "validation_average_precision": null,
+            "validation_loss": null,
+            "validation_pr_auc": null,
+            "validation_unweighted_all_class_loss": null
+          }
+        ],
+        "parameters": 9675784,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 69345,
+          "rtol": 1e-05
+        },
+        "resume_exact_against_continuous": null,
+        "steps": 652,
+        "training_seconds": 121.95809306501178
+      },
+      "glu_low_smoothing": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-bundle",
+        "bundle_manifest_sha256": "e49d5598566afa4e97c1a86abab37b805b8c15b9b395d399fbcaa1a8178ad5f4",
+        "checkpoint_manifest_sha256": "34f2a0175d72ab156d4e2aa35f5a222380a5008e7dfc7a2e488e0ec9bf060686",
+        "config_sha256": "b25f0cd1d25b15e99a74d59848139936f52ce521cb7293f1630869be5bf91c18",
+        "evaluation": {
+          "confusion_matrix": [
+            [
+              6506,
+              52
+            ],
+            [
+              31,
+              2657
+            ]
+          ],
+          "f1": 0.984621085788401,
+          "families": {
+            "behavioral_anomaly": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  5,
+                  379
+                ]
+              ],
+              "count": 384,
+              "detected": 379,
+              "f1_vs_benign": 0.9300613496932515,
+              "precision_vs_benign": 0.8793503480278422,
+              "recall": 0.9869791666666666
+            },
+            "benign": {
+              "count": 6558,
+              "false_positives": 52
+            },
+            "brute_force": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  7,
+                  377
+                ]
+              ],
+              "count": 384,
+              "detected": 377,
+              "f1_vs_benign": 0.9274292742927429,
+              "precision_vs_benign": 0.8787878787878788,
+              "recall": 0.9817708333333334
+            },
+            "cmd_injection": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  19,
+                  365
+                ]
+              ],
+              "count": 384,
+              "detected": 365,
+              "f1_vs_benign": 0.9113607990012484,
+              "precision_vs_benign": 0.8752997601918465,
+              "recall": 0.9505208333333334
+            },
+            "path_traversal": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9365853658536586,
+              "precision_vs_benign": 0.8807339449541285,
+              "recall": 1.0
+            },
+            "scanner_recon": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9365853658536586,
+              "precision_vs_benign": 0.8807339449541285,
+              "recall": 1.0
+            },
+            "sqli": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9365853658536586,
+              "precision_vs_benign": 0.8807339449541285,
+              "recall": 1.0
+            },
+            "xss": {
+              "confusion_matrix_vs_benign": [
+                [
+                  6506,
+                  52
+                ],
+                [
+                  0,
+                  384
+                ]
+              ],
+              "count": 384,
+              "detected": 384,
+              "f1_vs_benign": 0.9365853658536586,
+              "precision_vs_benign": 0.8807339449541285,
+              "recall": 1.0
+            }
+          },
+          "final_test_metrics_computed": false,
+          "fpr": 0.007929246721561452,
+          "latency_ms": {
+            "native": {
+              "p50": 10.3535425,
+              "p95": 10.691245200000001,
+              "p99": 11.551937410000003
+            },
+            "onnxruntime": {
+              "p50": 4.2300155,
+              "p95": 6.271105399999997,
+              "p99": 7.888102200000079
+            },
+            "sample_partition": "val",
+            "scope": "warm batch1 model inference; preprocessing excluded"
+          },
+          "multiclass_confusion_matrix": [
+            [
+              6506,
+              3,
+              0,
+              0,
+              38,
+              3,
+              3,
+              5
+            ],
+            [
+              0,
+              244,
+              0,
+              0,
+              139,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              384,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              384,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              19,
+              0,
+              0,
+              0,
+              364,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              384,
+              0,
+              0
+            ],
+            [
+              7,
+              0,
+              0,
+              0,
+              0,
+              0,
+              377,
+              0
+            ],
+            [
+              5,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              379
+            ]
+          ],
+          "multiclass_labels": [
+            "benign",
+            "sqli",
+            "xss",
+            "path_traversal",
+            "cmd_injection",
+            "scanner_recon",
+            "brute_force",
+            "behavioral_anomaly"
+          ],
+          "partition": "val_selection_groups",
+          "pr_auc_average_precision": 0.9978115109409696,
+          "pr_auc_trapezoidal": 0.9978113183903851,
+          "precision": 0.9808047249907715,
+          "recall": 0.9884672619047619,
+          "recall_at_fpr_le_1pct": 0.9910714285714286,
+          "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+          "roc_auc": 0.9980950372772622,
+          "rows": 9246,
+          "threshold": 0.12905281782150269
+        },
+        "history": [
+          {
+            "calibration": null,
+            "epoch": 1,
+            "global_step": 326,
+            "last_learning_rate": 0.00023975889293806026,
+            "training_loss": 0.12837515158735197,
+            "validation_average_precision": null,
+            "validation_loss": null,
+            "validation_pr_auc": null,
+            "validation_unweighted_all_class_loss": null
+          },
+          {
+            "calibration": null,
+            "epoch": 2,
+            "global_step": 652,
+            "last_learning_rate": 9.674294405399499e-05,
+            "training_loss": 0.04491031644803157,
+            "validation_average_precision": null,
+            "validation_loss": null,
+            "validation_pr_auc": null,
+            "validation_unweighted_all_class_loss": null
+          }
+        ],
+        "parameters": 9675784,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 69345,
+          "rtol": 1e-05
+        },
+        "resume_exact_against_continuous": true,
+        "steps": 652,
+        "training_seconds": 119.42256405899207
+      }
+    },
+    "plan_sha256": "9c6cd8159fa6ad08633061fa199d406fd1f94a1e264bf08f23c6f10d673fe210",
+    "purpose": "Development validation probes, not formal training or champion selection",
+    "readiness_sha256": "6c066b956454e7ca405177c27f4241b7d9b722bc5ba623b8f757fc431a3f0ed0",
+    "status": "COMPLETE_DEVELOPMENT_ONLY",
+    "test_quality_opened": false,
+    "wall_seconds_this_invocation": 480.75380018099895
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/development-pilot/report.json",
+  "original_sha256": "a27a0a4c7a2369fa77724075cafae2dd5f990e384573c1bfdd69f7ea00537e3a",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,84 @@
+{
+  "content": {
+    "feature_rows": 46134,
+    "gate_checks": 48,
+    "models": {
+      "autoencoder": {
+        "average_precision": 0.7846693188453515,
+        "confusion_matrix": [
+          [
+            6493,
+            65
+          ],
+          [
+            2022,
+            570
+          ]
+        ],
+        "empirical_fpr": 0.009911558401951815,
+        "precision": 0.8976377952755905,
+        "recall": 0.2199074074074074
+      },
+      "mlp": {
+        "average_precision": 0.997807269455477,
+        "confusion_matrix": [
+          [
+            6504,
+            54
+          ],
+          [
+            17,
+            2575
+          ]
+        ],
+        "empirical_fpr": 0.008234217749313814,
+        "precision": 0.9794598706732598,
+        "recall": 0.9934413580246914
+      },
+      "residual": {
+        "average_precision": 0.9987485506673807,
+        "confusion_matrix": [
+          [
+            6509,
+            49
+          ],
+          [
+            20,
+            2572
+          ]
+        ],
+        "empirical_fpr": 0.007471790179932906,
+        "precision": 0.9813048454788249,
+        "recall": 0.9922839506172839
+      },
+      "weighted_residual": {
+        "average_precision": 0.9983494741996927,
+        "confusion_matrix": [
+          [
+            6499,
+            59
+          ],
+          [
+            30,
+            2562
+          ]
+        ],
+        "empirical_fpr": 0.008996645318694724,
+        "precision": 0.9774895078214422,
+        "recall": 0.9884259259259259
+      }
+    },
+    "recommended": "residual",
+    "report_sha256": "bc271a4e9632a0e751a67e8e0e689838127b3b1a7ccb99d58c78517238ac89ec",
+    "requests": 46230,
+    "split": {
+      "test": 9246,
+      "train": 27738,
+      "val": 9150
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261029_query/report-summary.json",
+  "original_sha256": "5b8c8381562c089611ceb8214cb8b6fa2da21c69b14f5c8a031eff7821b3e78e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

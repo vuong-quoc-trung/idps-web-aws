@@ -1,0 +1,280 @@
+{
+  "content": {
+    "heavy_workload_status": "THERMAL_CONTROL_NOT_VERIFIED",
+    "limits": [
+      "Injected values test actual signal/control effects, not physical thermal containment",
+      "No heavy workload, container pause/recovery, escaped process-group or supervisor SIGKILL watchdog certification",
+      "Host CPU temperatures include other applications; cannot attribute P0 96C uniquely"
+    ],
+    "physical_heating_test": false,
+    "real_cpu_temperature_max": 48.0,
+    "real_cpu_temperature_min": 46.0,
+    "status": "FUNCTIONAL_CONTROL_VERIFIED_FOR_LIGHT_PROCESS_GROUP_ONLY",
+    "tests": {
+      "hard_stop": {
+        "events": [
+          {
+            "action": "PAUSE",
+            "memory_pressure": false,
+            "rapid_temperature_rise": true,
+            "seconds": 0.22784658599994145,
+            "temperature": 81
+          }
+        ],
+        "heartbeat_observations": [
+          {
+            "count": -1,
+            "sensor_call": 1,
+            "time": 15216.706618621
+          },
+          {
+            "count": -1,
+            "sensor_call": 2,
+            "time": 15216.715933542
+          },
+          {
+            "count": 9,
+            "sensor_call": 3,
+            "time": 15216.934431564
+          }
+        ],
+        "injected_failure": "CPU thermal hard stop; ending workload without automatic resume",
+        "returncode": -9,
+        "status": "PASS_REAL_PROCESS"
+      },
+      "leader_affinity_does_not_constrain_existing_threads": {
+        "leader_after": [
+          0
+        ],
+        "status": "PASS_REAL_KERNEL",
+        "worker_after": [
+          0,
+          1
+        ],
+        "worker_before": [
+          0,
+          1
+        ]
+      },
+      "pause_resume": {
+        "events": [
+          {
+            "action": "PAUSE",
+            "memory_pressure": false,
+            "rapid_temperature_rise": true,
+            "seconds": 0.44279786799961585,
+            "temperature": 74
+          },
+          {
+            "action": "REDUCE_LOAD",
+            "seconds": 0.44279786799961585,
+            "temperature": 74
+          },
+          {
+            "action": "RESUME",
+            "seconds": 3.69919755599949,
+            "temperature": 69
+          }
+        ],
+        "heartbeat_observations": [
+          {
+            "count": -1,
+            "sensor_call": 1,
+            "time": 15211.264850397
+          },
+          {
+            "count": -1,
+            "sensor_call": 2,
+            "time": 15211.272757427
+          },
+          {
+            "count": 9,
+            "sensor_call": 3,
+            "time": 15211.492264802
+          },
+          {
+            "count": 19,
+            "sensor_call": 4,
+            "time": 15211.70761256
+          },
+          {
+            "count": 20,
+            "sensor_call": 5,
+            "time": 15211.932930559
+          },
+          {
+            "count": 20,
+            "sensor_call": 6,
+            "time": 15212.148275946
+          },
+          {
+            "count": 20,
+            "sensor_call": 7,
+            "time": 15212.363354711
+          },
+          {
+            "count": 20,
+            "sensor_call": 8,
+            "time": 15212.579395697
+          },
+          {
+            "count": 20,
+            "sensor_call": 9,
+            "time": 15212.791461924
+          },
+          {
+            "count": 20,
+            "sensor_call": 10,
+            "time": 15213.007720246
+          },
+          {
+            "count": 20,
+            "sensor_call": 11,
+            "time": 15213.223166842
+          },
+          {
+            "count": 20,
+            "sensor_call": 12,
+            "time": 15213.438469214
+          },
+          {
+            "count": 20,
+            "sensor_call": 13,
+            "time": 15213.660635313
+          },
+          {
+            "count": 20,
+            "sensor_call": 14,
+            "time": 15213.878135263
+          },
+          {
+            "count": 20,
+            "sensor_call": 15,
+            "time": 15214.095563597
+          },
+          {
+            "count": 20,
+            "sensor_call": 16,
+            "time": 15214.311213927
+          },
+          {
+            "count": 20,
+            "sensor_call": 17,
+            "time": 15214.528983371
+          },
+          {
+            "count": 20,
+            "sensor_call": 18,
+            "time": 15214.746435167
+          },
+          {
+            "count": 20,
+            "sensor_call": 19,
+            "time": 15214.964037159
+          },
+          {
+            "count": 31,
+            "sensor_call": 20,
+            "time": 15215.180891898
+          },
+          {
+            "count": 41,
+            "sensor_call": 21,
+            "time": 15215.39770683
+          },
+          {
+            "count": 52,
+            "sensor_call": 22,
+            "time": 15215.616823036
+          },
+          {
+            "count": 62,
+            "sensor_call": 23,
+            "time": 15215.832931031
+          },
+          {
+            "count": 73,
+            "sensor_call": 24,
+            "time": 15216.049573983
+          },
+          {
+            "count": 83,
+            "sensor_call": 25,
+            "time": 15216.265898504
+          },
+          {
+            "count": 94,
+            "sensor_call": 26,
+            "time": 15216.481780985
+          }
+        ],
+        "injected_failure": null,
+        "returncode": 0,
+        "status": "PASS_REAL_PROCESS"
+      },
+      "sensor_loss": {
+        "events": [],
+        "heartbeat_observations": [
+          {
+            "count": -1,
+            "sensor_call": 1,
+            "time": 15216.95561509
+          },
+          {
+            "count": -1,
+            "sensor_call": 2,
+            "time": 15216.965990547
+          },
+          {
+            "count": 8,
+            "sensor_call": 3,
+            "time": 15217.188850271
+          }
+        ],
+        "injected_failure": "INJECTED_SENSOR_LOSS",
+        "returncode": -15,
+        "status": "PASS_REAL_PROCESS"
+      },
+      "supervisor_sigterm": {
+        "events": [],
+        "heartbeat_observations": [
+          {
+            "count": -1,
+            "sensor_call": 1,
+            "time": 15217.197798102
+          },
+          {
+            "count": -1,
+            "sensor_call": 2,
+            "time": 15217.207893108
+          },
+          {
+            "count": 9,
+            "sensor_call": 3,
+            "time": 15217.430894267
+          },
+          {
+            "count": 19,
+            "sensor_call": 4,
+            "time": 15217.648371387
+          }
+        ],
+        "injected_failure": "Supervisor interrupted by signal 15",
+        "returncode": -15,
+        "status": "PASS_REAL_PROCESS"
+      },
+      "transient_kernel_quota": {
+        "readback": {
+          "cpu.max": "2500 10000",
+          "memory.max": "1073741824",
+          "memory.swap.max": "0"
+        },
+        "status": "PASS_READBACK_ONLY"
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/p05_consolidation_20261105/thermal-functional-report.json",
+  "original_sha256": "fe544fec2e9a23fb11ce80fe50e4b62f3e080bcdff0004968d8404e1414fbe03",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

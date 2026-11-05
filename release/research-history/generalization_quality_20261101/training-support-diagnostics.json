@@ -1,0 +1,88 @@
+{
+  "content": {
+    "distance": "L1inbounded76 fixedencoder,no new learnedtransform",
+    "false_positives": 79,
+    "frozen_threshold": 0.9984238147735596,
+    "interpretation": "Descriptive nearest-view overlap/support check, not a causal attribution, probability guarantee or new feature-selection procedure. No holdout or threshold tuning.",
+    "results": {
+      "all_0": {
+        "FP_median_distance": 1.3507457971572876,
+        "FP_minmax": [
+          1.3466310501098633,
+          1.364379644393921
+        ],
+        "TN_median_distance": 1.7417089939117432,
+        "TN_minmax": [
+          0.29499921202659607,
+          2.8016812801361084
+        ]
+      },
+      "all_1": {
+        "FP_median_distance": 1.02738618850708,
+        "FP_minmax": [
+          1.0232715606689453,
+          1.041020154953003
+        ],
+        "TN_median_distance": 1.898066759109497,
+        "TN_minmax": [
+          1.3895004987716675,
+          2.68147349357605
+        ]
+      },
+      "student-lab_0": {
+        "FP_median_distance": 1.3507457971572876,
+        "FP_minmax": [
+          1.3466310501098633,
+          1.364379644393921
+        ],
+        "TN_median_distance": 2.0839216709136963,
+        "TN_minmax": [
+          0.29499921202659607,
+          3.1372385025024414
+        ]
+      },
+      "student-lab_1": {
+        "FP_median_distance": 1.02738618850708,
+        "FP_minmax": [
+          1.0232715606689453,
+          1.041020154953003
+        ],
+        "TN_median_distance": 2.2697274684906006,
+        "TN_minmax": [
+          1.428248405456543,
+          2.68147349357605
+        ]
+      }
+    },
+    "training_pool": {
+      "counts": [
+        {
+          "label": 0,
+          "source": "srbh2020",
+          "unique_views": 10059
+        },
+        {
+          "label": 1,
+          "source": "srbh2020",
+          "unique_views": 15850
+        },
+        {
+          "label": 0,
+          "source": "student-lab",
+          "unique_views": 206
+        },
+        {
+          "label": 1,
+          "source": "student-lab",
+          "unique_views": 1027
+        }
+      ],
+      "total_unique_views": 27142
+    },
+    "true_negatives": 657
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/training-support-diagnostics.json",
+  "original_sha256": "5102876684dd390e0d191616ae8addf3174bd066d5190ed3c91dd192e4cb13fb",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,111 @@
+{
+  "content": {
+    "bundle_manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+    "capture_type": "real packets decoded from existing PCAP offline; controlled lab requests, no live sensor receipt-time claim",
+    "collected_dataset_sha256": "0003c4332d5626ebc5727d091e35f92798a5b74e31883af534e119e04ad83355",
+    "collected_requests": 55,
+    "columns_nonzero_at_least_once_on_54": 143,
+    "columns_varying_on_54": 122,
+    "computed_finite_feature_columns": 207,
+    "enforcement_actions": 0,
+    "feature_columns": 207,
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "finite_model_outputs": 54,
+    "inference_stage": "post_response",
+    "input_presence_on_54": {
+      "client_key": 54,
+      "flow_bytes_to_client": 0,
+      "flow_bytes_to_server": 0,
+      "flow_duration_seconds": 0,
+      "flow_packets_to_client": 0,
+      "flow_packets_to_server": 0,
+      "ip_10s_context_incomplete": 54,
+      "ip_300s_context_incomplete": 54,
+      "ip_60s_context_incomplete": 54,
+      "latency_ms": 54,
+      "object_identity_available": 0,
+      "query_lexical_available": 54,
+      "query_original_available": 0,
+      "request_bytes": 54,
+      "response_bytes": 54,
+      "status_code": 54,
+      "structure_available": 54,
+      "uri_lexical_available": 54,
+      "uri_path": 54,
+      "user_10s_context_incomplete": 54,
+      "user_300s_context_incomplete": 54,
+      "user_60s_context_incomplete": 54,
+      "user_agent": 54,
+      "user_key": 51
+    },
+    "labels_used_for_training_or_quality": 0,
+    "latency_ms": {
+      "max": 7.187823,
+      "p50": 6.7419899999999995,
+      "p95": 7.03420245,
+      "p99": 7.11843116
+    },
+    "latency_scope": "Python feature extraction + ONNX on 54 chronologically replayed fused requests; model init separate; no sensor/correlation queue delay",
+    "limitations": [
+      "Same Python implementation on both vector paths, not independent Rust/live edge parity",
+      "New capture spans only ~11s and all 10/60/300s histories remain incomplete for these actors",
+      "No prior completed EVE flow is available for any of the 54 requests; training had flow for most rows",
+      "One two-source setup row is deliberately not scored",
+      "No independent intent labels or external environment; no model accuracy claim"
+    ],
+    "missingness_indicators_preserved": true,
+    "model_load_ms": 193.474223,
+    "new_requests_sent": 0,
+    "new_three_source_duration_seconds": 11.339910984039307,
+    "offline_same_implementation_vector_equal": 54,
+    "onnx_forward_only_no_prediction_quality": true,
+    "plan_sha256": "310e7d9920686697241e6364912777a0ec6a53cf7ea349dcb99332f54ee521c6",
+    "pre_response_valid_predictions": 0,
+    "resource": {
+      "effective_affinity": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "guard_thermal_stop": false,
+      "memory_ceiling_gib": 16,
+      "peak_process_rss_bytes": 322805760,
+      "requested_cpus": 4
+    },
+    "skipped_incomplete_source_rows": 1,
+    "source_supported_value_columns": 197,
+    "status": "PASS_OFFLINE_SHADOW_WITH_COVERAGE_GAP",
+    "three_source_fraction": 0.9818181818181818,
+    "three_source_request_id_correlated": 54,
+    "training_reference": {
+      "prior_flow_available": 36443,
+      "query_lexical_available": 41607,
+      "query_original_available": 0,
+      "rows": 41607,
+      "three_sources": 41607
+    },
+    "training_vs_new_prior_flow_available": {
+      "new": 0,
+      "new_total": 54,
+      "training": 36443,
+      "training_total": 41607
+    },
+    "unavailable_value_columns": [
+      "flow_bytes_to_client_log1p",
+      "flow_bytes_to_server_log1p",
+      "flow_duration_seconds_log1p",
+      "flow_packets_to_client_log1p",
+      "flow_packets_to_server_log1p",
+      "query_original_length",
+      "query_original_operator_count",
+      "query_original_parameter_count",
+      "query_original_percent_count",
+      "query_original_quote_count"
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/glu207_shadow_20261103/shadow-report-v2-4cpu.json",
+  "original_sha256": "ba48c526e651d0dda57256525527d44ef9e933b2d056fe8625431920c3ffa549",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

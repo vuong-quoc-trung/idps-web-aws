@@ -1,0 +1,13 @@
+{
+  "content": {
+    "changed_or_missing": [],
+    "old_original_raw_labels_reports_checkpoints_and_holdout_bytes_unchanged": true,
+    "original_Student_Security_contract_Docker_unchanged": true,
+    "protected_files": 2682,
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/preservation.json",
+  "original_sha256": "eec9ef7436baa1ba92cc4d7997ed2150749804c7900902599c7d57862fd22989",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

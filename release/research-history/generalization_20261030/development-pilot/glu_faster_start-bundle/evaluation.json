@@ -1,0 +1,262 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        6501,
+        57
+      ],
+      [
+        17,
+        2671
+      ]
+    ],
+    "f1": 0.9863367799113737,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            6,
+            378
+          ]
+        ],
+        "count": 384,
+        "detected": 378,
+        "f1_vs_benign": 0.9230769230769231,
+        "precision_vs_benign": 0.8689655172413793,
+        "recall": 0.984375
+      },
+      "benign": {
+        "count": 6558,
+        "false_positives": 57
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            6,
+            378
+          ]
+        ],
+        "count": 384,
+        "detected": 378,
+        "f1_vs_benign": 0.9230769230769231,
+        "precision_vs_benign": 0.8689655172413793,
+        "recall": 0.984375
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            5,
+            379
+          ]
+        ],
+        "count": 384,
+        "detected": 379,
+        "f1_vs_benign": 0.9243902439024391,
+        "precision_vs_benign": 0.8692660550458715,
+        "recall": 0.9869791666666666
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9309090909090908,
+        "precision_vs_benign": 0.8707482993197279,
+        "recall": 1.0
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9309090909090908,
+        "precision_vs_benign": 0.8707482993197279,
+        "recall": 1.0
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9309090909090908,
+        "precision_vs_benign": 0.8707482993197279,
+        "recall": 1.0
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            6501,
+            57
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9309090909090908,
+        "precision_vs_benign": 0.8707482993197279,
+        "recall": 1.0
+      }
+    },
+    "final_test_metrics_computed": false,
+    "fpr": 0.00869167429094236,
+    "latency_ms": {
+      "native": {
+        "p50": 9.980233,
+        "p95": 10.29374595,
+        "p99": 10.470902510000002
+      },
+      "onnxruntime": {
+        "p50": 3.687147,
+        "p95": 4.77215735,
+        "p99": 7.689781890000069
+      },
+      "sample_partition": "val",
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "multiclass_confusion_matrix": [
+      [
+        6501,
+        36,
+        0,
+        0,
+        9,
+        0,
+        3,
+        9
+      ],
+      [
+        0,
+        242,
+        0,
+        0,
+        142,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        384,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        383,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        5,
+        0,
+        0,
+        0,
+        379,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        384,
+        0,
+        0
+      ],
+      [
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        378,
+        0
+      ],
+      [
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        378
+      ]
+    ],
+    "multiclass_labels": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "partition": "val_selection_groups",
+    "pr_auc_average_precision": 0.9990034992058268,
+    "pr_auc_trapezoidal": 0.9990033498638954,
+    "precision": 0.9791055718475073,
+    "recall": 0.9936755952380952,
+    "recall_at_fpr_le_1pct": 0.9936755952380952,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.9993622043777864,
+    "rows": 9246,
+    "threshold": 0.07943058013916016
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_faster_start-bundle/evaluation.json",
+  "original_sha256": "954419856e254c0cbe2a0e195a978b4a029423e212283b41cc7f493505179cc9",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,152 @@
+{
+  "content": {
+    "checks": [
+      {
+        "detail": {
+          "eligible": 0,
+          "required": 2000000
+        },
+        "id": "request_volume",
+        "pass": false
+      },
+      {
+        "detail": {
+          "attestation_is_not_automatic_truth_verification": true,
+          "unreviewed_requests": 0
+        },
+        "id": "reviewed_sources",
+        "pass": false
+      },
+      {
+        "detail": 0,
+        "id": "label_confidence",
+        "pass": false
+      },
+      {
+        "detail": [],
+        "id": "independent_environments",
+        "pass": false
+      },
+      {
+        "detail": [],
+        "id": "capture_days",
+        "pass": false
+      },
+      {
+        "detail": 0,
+        "id": "campaign_depth",
+        "pass": false
+      },
+      {
+        "detail": {
+          "correlated": 0,
+          "total": 0
+        },
+        "id": "three_source_coverage",
+        "pass": false
+      },
+      {
+        "detail": 0,
+        "id": "identity_and_payload_holdouts",
+        "pass": false
+      },
+      {
+        "detail": {
+          "train": []
+        },
+        "id": "environment_holdouts",
+        "pass": false
+      },
+      {
+        "detail": {},
+        "id": "train_families",
+        "pass": false
+      },
+      {
+        "detail": {},
+        "id": "calibration_families",
+        "pass": false
+      },
+      {
+        "detail": {},
+        "id": "validation_families",
+        "pass": false
+      },
+      {
+        "detail": {},
+        "id": "test_families",
+        "pass": false
+      },
+      {
+        "detail": {
+          "embargo_each_side_seconds": 300,
+          "left_max": null,
+          "right_min": null
+        },
+        "id": "train_before_calibration",
+        "pass": false
+      },
+      {
+        "detail": {
+          "embargo_each_side_seconds": 300,
+          "left_max": null,
+          "right_min": null
+        },
+        "id": "calibration_before_validation",
+        "pass": false
+      },
+      {
+        "detail": {
+          "embargo_each_side_seconds": 300,
+          "left_max": null,
+          "right_min": null
+        },
+        "id": "validation_before_test",
+        "pass": false
+      }
+    ],
+    "dataset_assembly_required": true,
+    "eligible_requests": 0,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "index_sha256": "a601cc2834e054f769b64a56444b4a18afd0443f6f5c47f69ab59c5986353fa1",
+    "limits": [
+      "This catalog audits inputs; differently normalized shards are never concatenated as feature vectors.",
+      "Environment/review attestations need genuine human verification; metadata alone does not certify realism.",
+      "A passing catalog still needs train-only shared scaler, immutable assembled dataset and source-bound readiness before formal training.",
+      "Near-duplicate semantic grammars may survive exact payload identity checks; independent unseen-campaign review is required."
+    ],
+    "policy_sha256": "aac20e23b70eb45023867795f94054f11f3254494f4ff7533d9ab399ec172967",
+    "problems": [],
+    "reference_requests": 69345,
+    "registry_sha256": "a4654ac5b0b4e1eb6f2159b7b78c392bff7269b3f82bc7a07b1b7b3e9022235b",
+    "report_sha256": "8ff988dfddaa684f58e7bdf8eaed810bff69e14583452717d544e379b280c500",
+    "sources": [
+      {
+        "collection_kind": "scripted_lab",
+        "counts": {
+          "actual_requests": 69345
+        },
+        "dataset_manifest_sha256": "2ac034da71bdb6cebbd418fe07013e34a70b2b31461ae52cd872aeea0665d38c",
+        "dataset_sha256": "f143742a7dd5c130a3adcbc40b611f14938a4759a50816efada9b59308b18f50",
+        "environment_id": "localhost-student-lab",
+        "id": "lab-20261030-reference",
+        "independent_review_attested": false,
+        "partition_map": {
+          "test": "reference",
+          "train": "reference",
+          "val": "reference"
+        },
+        "profile_compatible": true,
+        "provenance_sha256": "b1d9300ad71eb1b9f54da1f8262e3a00e953e8a9f85f95a58898472af2374c4a",
+        "review_sha256": null
+      }
+    ],
+    "status": "NOT_READY",
+    "unreviewed_requests": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/scale_upgrade_20261030/corpus-audit/report.json",
+  "original_sha256": "8fba10d3f954e4cffa29620d8470f1c70d3e52a7aa1d85cf3b89783e9e632363",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

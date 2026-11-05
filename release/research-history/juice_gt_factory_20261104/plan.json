@@ -1,0 +1,504 @@
+{
+  "content": {
+    "cases": [
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-1",
+        "expected": {
+          "id": 1,
+          "name": "Apple Juice (1000ml)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/1",
+        "request_id": "ab015d1314e7293944e118c9202b2607",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-2",
+        "expected": {
+          "id": 2,
+          "name": "Orange Juice (1000ml)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/2",
+        "request_id": "5c93b67f03e5c4319f41eb5addfb1c70",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-3",
+        "expected": {
+          "id": 3,
+          "name": "Eggfruit Juice (500ml)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/3",
+        "request_id": "f0288ff508236ce2363d0793e6510b34",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-4",
+        "expected": {
+          "id": 4,
+          "name": "Raspberry Juice (1000ml)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/4",
+        "request_id": "b918f97066bd74b00ac2a7aef5ecc755",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-5",
+        "expected": {
+          "id": 5,
+          "name": "Lemon Juice (500ml)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/5",
+        "request_id": "9a1130ab1e9a2ead01600e9fc660f5eb",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-6",
+        "expected": {
+          "id": 6,
+          "name": "Banana Juice (1000ml)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/6",
+        "request_id": "c03a6fd0ee782a3e783d218d651c8d5e",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-7",
+        "expected": {
+          "id": 7,
+          "name": "OWASP Juice Shop T-Shirt"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/7",
+        "request_id": "85438d14b9607fbfee77ad5e6c6137e6",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-8",
+        "expected": {
+          "id": 8,
+          "name": "OWASP Juice Shop CTF Girlie-Shirt"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/8",
+        "request_id": "5a5907fd35b0cdf4b2e00827a4aec875",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-9",
+        "expected": {
+          "id": 9,
+          "name": "OWASP SSL Advanced Forensic Tool (O-Saft)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/9",
+        "request_id": "53e173a65b5a45db5fa44a39f56ce4dc",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-13",
+        "expected": {
+          "id": 13,
+          "name": "OWASP Juice Shop Iron-Ons (16pcs)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/13",
+        "request_id": "b08958f3b824eb8e58ea21a020354ee4",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-14",
+        "expected": {
+          "id": 14,
+          "name": "OWASP Juice Shop Magnets (16pcs)"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/14",
+        "request_id": "c2079b383c359b655575244f33dbaa46",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "browse-products",
+        "case_id": "browse-15",
+        "expected": {
+          "id": 15,
+          "name": "OWASP Juice Shop Sticker Page"
+        },
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "product_identity",
+        "path": "/api/Products/15",
+        "request_id": "62115ea7e8ca0b766c7ddf15d9ed1924",
+        "scenario_family": "product_browse"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-0",
+        "expected": "apple",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Apple",
+        "request_id": "5cbd187d3a68ded47e672935f6c6be97",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-1",
+        "expected": "orange",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Orange",
+        "request_id": "7d61be0941ef92175f674997b744a131",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-2",
+        "expected": "eggfruit",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Eggfruit",
+        "request_id": "1fdddd8ae0e7d0028c79d76a7a43383c",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-3",
+        "expected": "raspberry",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Raspberry",
+        "request_id": "d1369043f77a497f268777b4b8cf031d",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-4",
+        "expected": "lemon",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Lemon",
+        "request_id": "beee8539d37f0f362a280e177a99bedb",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-5",
+        "expected": "banana",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Banana",
+        "request_id": "5f5382af76ca551e42772a2f4a458d10",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-6",
+        "expected": "owasp",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=OWASP",
+        "request_id": "60e3c84ee9db297a1fd9e68e33e4c3c4",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-7",
+        "expected": "woodruff",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Woodruff",
+        "request_id": "e4f8c6380fb934357f0b394f0994a071",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-8",
+        "expected": "green",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Green",
+        "request_id": "cb7f2f471cda0f35ea550548e7f3c31e",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-9",
+        "expected": "quince",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Quince",
+        "request_id": "6b26680e0d295443a97913bfebddecc5",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-10",
+        "expected": "fruit",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Fruit",
+        "request_id": "46aa500af78d66e02fe8fa21a1043864",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "search-products",
+        "case_id": "search-11",
+        "expected": "strawberry",
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "search_product_name",
+        "path": "/rest/products/search?q=Strawberry",
+        "request_id": "e4249f210e2675a6c7002a8e9d85758b",
+        "scenario_family": "product_search"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "hardneg-search",
+        "case_id": "hardneg-0",
+        "expected": null,
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "valid_search_schema",
+        "path": "/rest/products/search?q=O%27Connor",
+        "request_id": "9f9eef99ec3b028227fb009540034f98",
+        "scenario_family": "benign_special_query"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "hardneg-search",
+        "case_id": "hardneg-1",
+        "expected": null,
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "valid_search_schema",
+        "path": "/rest/products/search?q=C%2B%2B",
+        "request_id": "2a61a07328a7391ae1fbc98166c184ef",
+        "scenario_family": "benign_special_query"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "hardneg-search",
+        "case_id": "hardneg-2",
+        "expected": null,
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "valid_search_schema",
+        "path": "/rest/products/search?q=rock%20%26%20roll",
+        "request_id": "4ee68933bc6865f42c8ed3e213b857f3",
+        "scenario_family": "benign_special_query"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "hardneg-search",
+        "case_id": "hardneg-3",
+        "expected": null,
+        "intended_class": "benign",
+        "method": "GET",
+        "oracle": "valid_search_schema",
+        "path": "/rest/products/search?q=2%2B2",
+        "request_id": "32ab333e48ffc6f402abacc5406ec83b",
+        "scenario_family": "benign_special_query"
+      },
+      {
+        "body_profile": "invalid_login_v1",
+        "body_sha256": "4e15d6dc7bd3442d16724874723f4bd098be1fe63cf8661ae2b3c3bbcb713fb0",
+        "campaign_id": "auth-denial",
+        "case_id": "invalid-login",
+        "expected": null,
+        "intended_class": "benign",
+        "method": "POST",
+        "oracle": "invalid_login_denied",
+        "path": "/rest/user/login",
+        "request_id": "c9d50e2d238de607f42ecd1e758fc789",
+        "scenario_family": "benign_auth_failure"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "attack-xss",
+        "case_id": "attack-xss",
+        "expected": null,
+        "intended_class": "attack",
+        "method": "GET",
+        "oracle": "request_receipt_only",
+        "path": "/rest/products/search?q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E",
+        "request_id": "4641e17507e5dadd65cecf7eea354f23",
+        "scenario_family": "xss"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "attack-traversal",
+        "case_id": "attack-traversal",
+        "expected": null,
+        "intended_class": "attack",
+        "method": "GET",
+        "oracle": "request_receipt_only",
+        "path": "/rest/products/search?q=..%2F..%2Fetc%2Fpasswd",
+        "request_id": "e56d51cbb568392b5ab4a9d6ae471e63",
+        "scenario_family": "traversal"
+      },
+      {
+        "body_profile": null,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "campaign_id": "attack-command",
+        "case_id": "attack-command",
+        "expected": null,
+        "intended_class": "attack",
+        "method": "GET",
+        "oracle": "request_receipt_only",
+        "path": "/rest/products/search?q=%3Bid",
+        "request_id": "78b913333432dbc2c6315bd48e1066ea",
+        "scenario_family": "command"
+      },
+      {
+        "body_profile": "login_admin_sqli_v1",
+        "body_sha256": "65ea069fe55c55e77a1ccc77325d92b40532d51954fd460743f67c6af8377d17",
+        "campaign_id": "attack-login-sqli",
+        "case_id": "attack-login-sqli",
+        "expected": null,
+        "intended_class": "attack",
+        "method": "POST",
+        "oracle": "login_admin_challenge_transition",
+        "path": "/rest/user/login",
+        "request_id": "9ba6e0f0f025e4f576314e13736abed1",
+        "scenario_family": "sqli_auth_bypass"
+      }
+    ],
+    "catalog_response_sha256": "cdc3108914af0adf3d397af809352118678046f0244df3b2a8a3123b0e75e3e7",
+    "created_at": "2026-11-04T08:11:46.768151+00:00",
+    "format_version": 1,
+    "image_digest": "sha256:318714401c46c3c0a2458b5dccfc84af8e4839181d1a723701f8a6822b19294f",
+    "initial_challenge": {
+      "challenge": "Login Admin",
+      "id": 45,
+      "observed_at": "2026-11-04T08:11:46.734857+00:00",
+      "response_sha256": "20aa39358f078d52a5d710cff29d0d0749407cccb320498cc8fa249bb2d15c0a",
+      "solved": false
+    },
+    "label_rules": {
+      "attack_attempt": "precommitted scenario plus matching proxy receipt and target HTTP response; never equate to exploit success",
+      "benign": "proxy receipt plus expected product identity/name, valid JSON search schema, or explicit invalid-login denial",
+      "exploit_success": "Login Admin challenge false before and true after login SQLi case, with returned admin identity; other cases unknown",
+      "unknown": "missing/mismatched proxy, response or application Oracle"
+    },
+    "max_requests": 40,
+    "partition": "development_only_no_model_evaluation",
+    "plan_sha256": "d2f2d12db52f53d79e452205ad1939d14cde43541515328cd3ed5a468d4eb443",
+    "scope": "single_juice_shop_development_lab_only",
+    "script_sha256": "4385db187493da4516e0480dc382d9494afffd2c00c463bb44ac2ac357ef3740",
+    "target": {
+      "app_port": 13081,
+      "container_id": "eed42146f9892c0acd18b131ae72ef62f8d9ec5d1a7b2e48c4727d76a8bae80d",
+      "host": "127.0.0.1",
+      "image_id": "2d370ec11ab40bc24b3516c042f7317a053c80f668e572538469d1fd7e91d7f8",
+      "internal_network": "ai-idps-gt-factory-20261104"
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/juice_gt_factory_20261104/plan.json",
+  "original_sha256": "36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,13 @@
+{
+  "content": {
+    "ai-training/RESEARCH_MVP_V1_0_FROZEN.json": "7b528557888c29dd03b524a296516481128ebdbbfc14236fbaa1bcf1ac725ba4",
+    "ai-training/reports/P0_DVWA_20261105.json": "6156ced13cac7e695e8766f8a6abdd4a8772253889ac2bf4ac0aac2fdfc20ac5",
+    "ai-training/scripts/p0-thermal-run.py": "309a2bd7b021b485fa73f7e96aedb9b93655b62f2343deb10029467f72061a80",
+    "ai-training/tests/test_p0_research.py": "9024153a467c21fd26bfbf089f47db5a0f5580b197a71b4b730697f9397df076",
+    "docs/08_P0_DVWA_RESEARCH_20261105.md": "eddf7558b9fa6ebbe2c37fe69ccc3f6e3694e520b991730e3de2fb55d828e7dc"
+  },
+  "original_relative_path": "ai-training/.artifacts/p05_consolidation_20261105/preservation-before.json",
+  "original_sha256": "3383b1dce833e586574709fb28dec0dd0fa360d15d30495dfd56c29e04efe9ed",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

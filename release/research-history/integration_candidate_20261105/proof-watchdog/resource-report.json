@@ -1,0 +1,22 @@
+{
+  "content": {
+    "cpu_temperature_max": 46.0,
+    "cpu_temperature_mean": 46.0,
+    "cpu_temperature_min": 46.0,
+    "events": [],
+    "failure": "monitor_heartbeat_stale",
+    "kernel_cpu_quota_percent": 25,
+    "peak_cgroup_memory_bytes": 3616768,
+    "peak_system_used_bytes": 8358486016,
+    "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee",
+    "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+    "status": "STOPPED",
+    "systemd_result": "ActiveState=failed\nResult=signal\nExecMainStatus=9\nMemoryPeak=3616768\nCPUUsageNSec=24468000\n",
+    "unit": "idps-integration-15260-14192274.service",
+    "wall_seconds": 3.7829129890000104
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/proof-watchdog/resource-report.json",
+  "original_sha256": "7b3f588fce1ec5941fb7ec9eaeee38d237aebe96a3f7efca9597ce5a89c6165f",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

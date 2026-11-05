@@ -1,0 +1,46 @@
+{
+  "content": {
+    "data_kind": "lab_capture",
+    "ended_at_utc": "2026-10-28T04:02:05.386184+00:00",
+    "format_version": 1,
+    "inputs": [
+      {
+        "append_during_capture": false,
+        "bytes": 18183655,
+        "discarded_tail_bytes": 0,
+        "file": "00-student.jsonl",
+        "sha256": "0079557f38868a0651b4bed6263d42132cf7b1c392303305478eaf3270bc630f",
+        "source": "student",
+        "source_identity_sha256": "7ee2acb2bdb615060d1d55d5397e08608355fccd22add257b4d61d3766a116ad",
+        "source_prefix_bytes": 18183655
+      },
+      {
+        "append_during_capture": false,
+        "bytes": 8000158,
+        "discarded_tail_bytes": 0,
+        "file": "01-nginx.jsonl",
+        "sha256": "8ffc6e0a00e0f2cf8b0be792e0ddca124b4e73a0e8d3e7df8e499bcb5923b288",
+        "source": "nginx",
+        "source_identity_sha256": "ea531a7fd5d30e2ed043c1c1a756ade2aad0a44682ec3c4d2fdb50511cee69cf",
+        "source_prefix_bytes": 8000158
+      },
+      {
+        "append_during_capture": false,
+        "bytes": 24173151,
+        "discarded_tail_bytes": 0,
+        "file": "02-suricata.jsonl",
+        "sha256": "70c671122be7512c268834104a9034caae9da51c08b5c77976de98cb8f571f19",
+        "source": "suricata",
+        "source_identity_sha256": "9fda104ab4fe04d0c39cb7022cbbece7537be74cb1dd692e382ebf1f811b58d9",
+        "source_prefix_bytes": 24173151
+      }
+    ],
+    "semantics": "Independent complete-line prefixes, not a cross-source atomic transaction; no labels inferred",
+    "snapshot_sha256": "1addd778784fe38eb3309ea7be3fff4e76d7967db48610259190c2494a08508c",
+    "started_at_utc": "2026-10-28T04:02:05.296035+00:00"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/dataset-ready/snapshot/snapshot_manifest.json",
+  "original_sha256": "cd1ff46afee905a24a1be97fab948b9016438660efba9efd96d8c6dc245b3499",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

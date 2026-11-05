@@ -1,0 +1,145 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        24,
+        0
+      ],
+      [
+        168,
+        0
+      ]
+    ],
+    "f1": 0.0,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "benign": {
+        "count": 24,
+        "false_positives": 0
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            24,
+            0
+          ],
+          [
+            24,
+            0
+          ]
+        ],
+        "count": 24,
+        "detected": 0
+      }
+    },
+    "latency_ms": {
+      "native": {
+        "p50": 0.0066195,
+        "p95": 0.007173049999999999,
+        "p99": 0.007715910000000006
+      },
+      "onnxruntime": {
+        "p50": 0.004543,
+        "p95": 0.0052339,
+        "p99": 0.00548408000000001
+      },
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "pr_auc_average_precision": 0.8788914266490243,
+    "pr_auc_trapezoidal": 0.8778459126106806,
+    "precision": 0.0,
+    "recall": 0.0,
+    "recall_at_fpr_le_1pct": 0.02976190476190476,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.46924603174603174,
+    "rows": 192,
+    "threshold": 6.2777276039123535
+  },
+  "original_relative_path": "ai-training/.artifacts/synthetic_s0_20261027_final/autoencoder-bundle/evaluation.json",
+  "original_sha256": "56e29015f9e605e8faf13647f1572c020062ba251c4ebc3c832644d7c6839080",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

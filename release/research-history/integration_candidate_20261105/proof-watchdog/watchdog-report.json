@@ -1,0 +1,12 @@
+{
+  "content": {
+    "reason": "monitor_heartbeat_stale",
+    "samples": 18,
+    "temperature_max": 46.0,
+    "temperature_min": 46.0
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/proof-watchdog/watchdog-report.json",
+  "original_sha256": "7a926f338a966c9a2182adcec220a0c91bf519fe786da74d15040125402b295f",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

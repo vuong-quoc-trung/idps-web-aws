@@ -1,0 +1,58 @@
+{
+  "content": {
+    "final_mixed_views_checked": 245,
+    "final_mixed_views_with_field_variation": {
+      "body": 26,
+      "headers": 180,
+      "method": 0,
+      "protocol": 0,
+      "url": 91
+    },
+    "format_version": 1,
+    "input_sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+    "interpretation": "Raw conflicts and lossy view conflicts are distinct; field variation does not prove publisher labels correct or infer malicious intent",
+    "plaintext_output": false,
+    "raw_exact_mixed_label_representations_full_train": 192,
+    "raw_exact_unique_representations_full_train": 1612017,
+    "report_sha256": "5dc22448e27453e3f51c1f479d3e9e6c37ae3cd546d13f810c12245db9718a66",
+    "safe_content_sha256": "8a9c58c97aa627608eb4a8bb4209cbe3d72ca7928c345fbbe06471ae1b89a00a",
+    "sampled_nonconflicting_raw_representations": 101098,
+    "scope": "WAF train exact-nonconflicting SHA-mod16 sample; prior v2 development cohort, diagnostic only",
+    "script_sha256": "47f777cdbd0bf69a5c7c6ce39b957e2fcf27ff2d494882cb2854355040d30b32",
+    "stages": {
+      "final_float32_numeric76_plus_hashed_content512": {
+        "minimum_minor_label_rows": 1328,
+        "mixed_keys_with_distinct_raw_requests": 245,
+        "mixed_label_keys": 245,
+        "rows_on_mixed_keys": 43171,
+        "unique_keys": 28581
+      },
+      "numeric76": {
+        "minimum_minor_label_rows": 5687,
+        "mixed_keys_with_distinct_raw_requests": 269,
+        "mixed_label_keys": 269,
+        "rows_on_mixed_keys": 77978,
+        "unique_keys": 18237
+      },
+      "safe_symbolic_plus_numeric76_before_hashing": {
+        "minimum_minor_label_rows": 1326,
+        "mixed_keys_with_distinct_raw_requests": 243,
+        "mixed_label_keys": 243,
+        "rows_on_mixed_keys": 43167,
+        "unique_keys": 28736
+      },
+      "safe_symbolic_text": {
+        "minimum_minor_label_rows": 1505,
+        "mixed_keys_with_distinct_raw_requests": 274,
+        "mixed_label_keys": 274,
+        "rows_on_mixed_keys": 44502,
+        "unique_keys": 26065
+      }
+    },
+    "test_or_heldout_opened": false
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_content_intelligence_20261104/collision-attribution-v1.json",
+  "original_sha256": "dba7d2409d9b7a842bfa8ccf89c4f7f7e4c75359cec826e445df81036266868c",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

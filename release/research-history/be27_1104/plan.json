@@ -1,0 +1,183 @@
+{
+  "content": {
+    "attack_recall": null,
+    "campaign_id": "benign-evaluation-20261104-01",
+    "checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "collector_sha256": "4290ea2e9ffedbdef26e2ad8cdc2059b9b7497924955c998c87d0f6d2b58a08e",
+    "dedup": "unique client X-Request-Id and one Student, one Nginx, one EVE HTTP observation per request; unique float32 vector SHA counted separately",
+    "early_before_seconds": 65,
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "format_version": 1,
+    "fpr_budget": 0.01,
+    "holdout_access": false,
+    "metrics": [
+      "physical_request_count",
+      "three_source_count",
+      "lab_benign_verified",
+      "unknown",
+      "unique_float32_views",
+      "prior_flow_by_phase",
+      "history_flags_by_phase",
+      "score_distribution_by_phase",
+      "ONNX_forward_latency_ms",
+      "FPR_if_valid_threshold_else_null"
+    ],
+    "model_selection": false,
+    "nginx_sha256": "94eb839f1cdc7f3f42062d352b504fe406e2f888d83b554af7ea25bcdc9506f5",
+    "observation_seconds": 460,
+    "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+    "oracle": "Expected authenticated fixture identity, schema and pagination, plus created-faculty identity readback. A status code alone never verifies benign intent.",
+    "orchestrator_sha256": "ea854845217865bfa51a534bdab632001afbf328c5b7c6a3a69170f3c97f98ba",
+    "purpose": "prospective_benign_fpr_with_frozen_provisional_threshold",
+    "request_manifest": [
+      {
+        "kind": "csrf",
+        "offset": 0,
+        "path": "/api/auth/csrf"
+      },
+      {
+        "kind": "login",
+        "offset": 2,
+        "path": "/api/auth/login"
+      },
+      {
+        "kind": "csrf",
+        "offset": 4,
+        "path": "/api/auth/csrf"
+      },
+      {
+        "kind": "me",
+        "offset": 6,
+        "path": "/api/auth/me"
+      },
+      {
+        "kind": "page",
+        "offset": 20,
+        "path": "/api/classes?page=7&size=11"
+      },
+      {
+        "kind": "page",
+        "offset": 40,
+        "path": "/api/faculties?page=8&size=12"
+      },
+      {
+        "kind": "page",
+        "offset": 60,
+        "path": "/api/training-programs?page=9&size=13"
+      },
+      {
+        "kind": "page",
+        "offset": 80,
+        "path": "/api/majors?page=7&size=14&q=Python+3"
+      },
+      {
+        "kind": "page",
+        "offset": 100,
+        "path": "/api/classes?page=8&size=15"
+      },
+      {
+        "kind": "page",
+        "offset": 120,
+        "path": "/api/faculties?page=9&size=16"
+      },
+      {
+        "kind": "page",
+        "offset": 140,
+        "path": "/api/training-programs?page=7&size=17"
+      },
+      {
+        "kind": "page",
+        "offset": 160,
+        "path": "/api/majors?page=8&size=11"
+      },
+      {
+        "kind": "page",
+        "offset": 180,
+        "path": "/api/classes?page=9&size=12"
+      },
+      {
+        "kind": "page",
+        "offset": 200,
+        "path": "/api/faculties?page=7&size=13"
+      },
+      {
+        "kind": "page",
+        "offset": 220,
+        "path": "/api/training-programs?page=8&size=14"
+      },
+      {
+        "kind": "page",
+        "offset": 240,
+        "path": "/api/majors?page=9&size=15&q=75%25+complete"
+      },
+      {
+        "kind": "page",
+        "offset": 260,
+        "path": "/api/classes?page=7&size=16"
+      },
+      {
+        "kind": "page",
+        "offset": 280,
+        "path": "/api/faculties?page=8&size=17"
+      },
+      {
+        "kind": "create",
+        "offset": 300,
+        "path": "/api/faculties"
+      },
+      {
+        "kind": "created_get",
+        "offset": 320,
+        "path": "/api/faculties/{created_id}"
+      },
+      {
+        "kind": "page",
+        "offset": 340,
+        "path": "/api/classes?page=8&size=13"
+      },
+      {
+        "kind": "page",
+        "offset": 360,
+        "path": "/api/faculties?page=9&size=14&q=x%26y"
+      },
+      {
+        "kind": "page",
+        "offset": 380,
+        "path": "/api/training-programs?page=7&size=15"
+      },
+      {
+        "kind": "page",
+        "offset": 400,
+        "path": "/api/majors?page=8&size=16"
+      },
+      {
+        "kind": "page",
+        "offset": 420,
+        "path": "/api/classes?page=9&size=17"
+      },
+      {
+        "kind": "page",
+        "offset": 440,
+        "path": "/api/faculties?page=7&size=11&q=l%E1%BB%9Bp+h%E1%BB%8Dc"
+      },
+      {
+        "kind": "page",
+        "offset": 460,
+        "path": "/api/training-programs?page=8&size=12"
+      }
+    ],
+    "role": "evaluation",
+    "scope": "AI-owned disposable loopback Student lab; valid workflows only",
+    "script_sha256": "4290ea2e9ffedbdef26e2ad8cdc2059b9b7497924955c998c87d0f6d2b58a08e",
+    "suricata_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "threshold": 0.5396780371665955,
+    "threshold_manifest_sha256": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2",
+    "threshold_reason": "Research step652 checkpoint has no valid locked calibration threshold",
+    "threshold_selection_algorithm": "No selection: apply frozen threshold-manifest exactly.",
+    "warm_after_seconds": 300
+  },
+  "original_relative_path": "ai-training/.artifacts/be27_1104/plan.json",
+  "original_sha256": "ac11fd91d41125fa5ff589698133cbaf89bc3cd7c871e82abef609f0ef3796e2",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

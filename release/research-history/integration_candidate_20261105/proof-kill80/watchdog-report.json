@@ -1,0 +1,12 @@
+{
+  "content": {
+    "reason": "monitor_completed",
+    "samples": 5,
+    "temperature_max": 46.0,
+    "temperature_min": 46.0
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/proof-kill80/watchdog-report.json",
+  "original_sha256": "eaae67072ba88a3d52b272dc5da2e6176db5e30aff0b4195271abf3b280cda44",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

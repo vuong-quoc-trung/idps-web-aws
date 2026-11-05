@@ -1,0 +1,586 @@
+{
+  "content": {
+    "campaigns": [
+      {
+        "campaign_id": "evidence-lab-00-0004bb03",
+        "cases": [
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "csrf_setup",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": "private_fixture_password",
+            "body_sha256": null,
+            "case_id": "fixture_login",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "scenario": "authorized_fixture_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf_refresh",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "csrf_after_login",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_3",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "060d88a76645074662ad15197a583cc4cdc0bbb4aa576c0c38f424a96137feb0"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_1",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "f966aecad5f1f3ef99271d9e8b2af08c8b2135851e5273b18b8af30e7a0f4c8a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_0",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "afeffc0ea1fe76416692d6359d3ae02c225f2d6b083c570a9a4bd7a170dab92d"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_0",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_1",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "74270753413856cc032c5c1efcc8065d0e71b306fc1d2d98fc3357df34b0a240"
+          },
+          {
+            "attack_family": "path_traversal",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "path_traversal_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "3e15e0fba2f369ed48c6c56b8bafb294eb3f77bfc34f5770ad91f5ce6b7c3a35"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_3",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "b0f4af9086f85fdc24b3f04fb07992e79d9d26a900ba29408f74e9bb18caa788"
+          },
+          {
+            "attack_family": "cmd_injection",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "cmd_injection_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "ae8238f2eedd8f10b519bf041ce8122cfe752f75ba6262aa13a5a8f3e23515e1"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_2",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "03fd12b818bc0e006aa52203aed2d02ccc0411208191a5bc0a86c81ce2761ef5"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_1",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "6a136b717f8aec339fd26b7422506937452a5a97619ee97f948d45f12c31b7a0"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_2",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "685494c4ef36116e364f29980cd72cf71229910790d0598c5d5b4935bc6c5c6e"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "2318880346425c8a258c35a9128ba9c9ae88743682cf68a7712bd98879efd328"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_1",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "29e7020ff55f64da6c0ec1e7f96730ac83249ba2d96067eae52892d5df040b39"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "bf1f78edc4c9b823f80ba883be189dac3e3373480524b1af4f5e5ac5d886e89a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "9ea28a2b92ebb21190be083e24fff4db989e66202dd05f297367822611e6a60f",
+            "case_id": "login_typo",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "scenario": "single_invalid_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          }
+        ],
+        "partition": "development_review_only",
+        "seed": 310019,
+        "source_ip": "127.0.0.40"
+      },
+      {
+        "campaign_id": "evidence-lab-01-000641ad",
+        "cases": [
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "csrf_setup",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": "private_fixture_password",
+            "body_sha256": null,
+            "case_id": "fixture_login",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "scenario": "authorized_fixture_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf_refresh",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "csrf_after_login",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_2",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "602c5ca30e0c44d3d2bf9137556e50c073008a239d51eeee0c30a1b7a540e3fb"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "3f1ab0d37e4e246b2e7df3748fcf26174c87acee26e7cb521db2acb9368a47d0"
+          },
+          {
+            "attack_family": "path_traversal",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "path_traversal_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "2aedb7a4865fb49a016638a8a6cf5fecef835f4d5e45cf3bdf19a985bd459c0c"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_1",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "e05e789f52f00980fdd1c9a877e6771c0dfd0bb184e2434fd35c30a3a6943b94"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_3",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "d2191051355dda166dea2fa3ac4204a5d74ee8dc202f6ba5c1b462276a5247c8"
+          },
+          {
+            "attack_family": "cmd_injection",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "cmd_injection_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "ed9cb556b72b496dfb7f06d8dda1223b38812c0f20eec0d69828fcef8f2fa581"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_2",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "685494c4ef36116e364f29980cd72cf71229910790d0598c5d5b4935bc6c5c6e"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_1",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "153c74bcebcb70f156c31aea1abe1bdee3bb4fd9114a7f3c5be7fdbedcb5bc20"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_1",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "6d663f95e42b95cfdcc1a67da1ec953f3be6a96f705d78a31d2a73fe54a8570a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_0",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_3",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "060d88a76645074662ad15197a583cc4cdc0bbb4aa576c0c38f424a96137feb0"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_1",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "6a136b717f8aec339fd26b7422506937452a5a97619ee97f948d45f12c31b7a0"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "031610017fe3d45c9441526f7a25c5ee1faa4d01d071edb2f9a9021db2caed0c"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_0",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "254e0e8d5e96abb68ef67336671fd0880bffaa8e029d2b9e643d2cfc20f1093d"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "bd1aa3a22cc3ab030621216838660463b4bcb5922507a5a4404f5bdc3a7c9456",
+            "case_id": "login_typo",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "scenario": "single_invalid_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          }
+        ],
+        "partition": "development_review_only",
+        "seed": 410029,
+        "source_ip": "127.0.0.41"
+      },
+      {
+        "campaign_id": "evidence-lab-02-0007c85f",
+        "cases": [
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "csrf_setup",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": "private_fixture_password",
+            "body_sha256": null,
+            "case_id": "fixture_login",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "scenario": "authorized_fixture_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf_refresh",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "csrf_after_login",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_2",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "3d350ea5f176d3d5cf8f2c31b6113894f962e51800242ecd40eb49154ac88849"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "a72e6d4d05a3edfe4a3aac1b0d44055f44d82337b6109476be7a14c9bad27758"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_3",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "060d88a76645074662ad15197a583cc4cdc0bbb4aa576c0c38f424a96137feb0"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_1",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "2a135f45e9093f78cbacb9e81aa517d1a21b0e81d8220a9c05702635d3f75fc2"
+          },
+          {
+            "attack_family": "path_traversal",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "path_traversal_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "07c60b68e25d9ea0f7d1fb15fa2019d7ea6818ef6531354161a9ed3bc8aceeab"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_1",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "bb47f8d50161d912ae8b0b311182f394783c780004ae234197db15ae291e8abd"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "f0d031ecb68909aaf0019935a69aa9580063c95565582c06999c08cc794b611f"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_0",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_1",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "6a136b717f8aec339fd26b7422506937452a5a97619ee97f948d45f12c31b7a0"
+          },
+          {
+            "attack_family": "cmd_injection",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "cmd_injection_0",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "e38062a60afed7a722c33ee356cf16766b5b0fdd87e71d2cb35b0109c1b540cd"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_2",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "benign_catalog",
+            "target_sha256": "685494c4ef36116e364f29980cd72cf71229910790d0598c5d5b4935bc6c5c6e"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_3",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "646dbe5a6cb9aba143c371b3fa4a8445977efd6070e63c2a9e902fe0c0ba3fc8"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative_0",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "scenario": "hard_negative_search",
+            "target_sha256": "5b8e876f92710e9ab99b8022d383a58f8b5a16f8fa5e49b966b8a6c7fb7352b5"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_1",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "f4f110b6086a8582194f3a35da9225f2f5f426b929a95466373aebad43c4589b"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "43601fdf10bf3f004d1c6be68dea21c8c88052286f39a12bd90fdbf34ff24394",
+            "case_id": "login_typo",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "scenario": "single_invalid_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          }
+        ],
+        "partition": "development_review_only",
+        "seed": 510047,
+        "source_ip": "127.0.0.42"
+      }
+    ],
+    "collector_source_sha256": "4b42a9c117d1745755d22a27013ce8625038909323425255a1923291747a03bb",
+    "created_at_utc": "2026-11-02T01:22:34.795291+00:00",
+    "format_version": 1,
+    "future_holdout": {
+      "allow_for_tuning": false,
+      "environment": "new_independent_authorized_environment_required",
+      "status": "RESERVED_NOT_GENERATED_OR_CAPTURED"
+    },
+    "label_policy": "Planned intent is evidence, not approval; independent semantic review required. Exploit outcome remains unknown without application oracle.",
+    "plan_sha256": "68fbc8ca07a28152dd78dd51ad78774fc20e0df9029683f8757cf5b56d46086e",
+    "purpose": "authorized_ai_owned_loopback_http_evidence",
+    "target": "127.0.0.1:18881"
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/plan-v1/plan.json",
+  "original_sha256": "200ef9dc52ba77922128274f42e02daf246ac78edd662b467f3b26daf6a20c38",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

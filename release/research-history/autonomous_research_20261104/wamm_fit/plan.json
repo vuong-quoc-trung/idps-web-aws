@@ -1,0 +1,37 @@
+{
+  "content": {
+    "batch_size": 128,
+    "fit_models": [
+      "publisher",
+      "shuffled_control"
+    ],
+    "format_version": 1,
+    "learning_rate": 0.001,
+    "no_independent_detection_claim": true,
+    "no_validation_or_test": true,
+    "plan_sha256": "ca0f5d36a6c33b7f78f0477870604618a19fa21082bcd7639afba40c6d201767",
+    "qa_report": "<PROJECT_ROOT>/ai-training/.artifacts/automated_quality_20261104/report-v6.json",
+    "qa_report_sha256": "9ee4f1f41c3144693fa5ebbc94cc020c32e466cfe42e6136387a9fa1704ba7f6",
+    "question": "Do conflict-free 76-feature WAMM publisher labels produce lower train-only objective than identically budgeted shuffled labels?",
+    "scope": "publisher_label_train_only_no_evaluation",
+    "script_sha256": "f16735db09f53ccb659406fd10231c9066ac3720771943e960f5fdf3b508af67",
+    "seed": 17,
+    "source": "WAMM SR-BH derivative CC BY 4.0; publisher labels only",
+    "staging": "<PROJECT_ROOT>/ai-training/.artifacts/autonomous_research_20261103/wamm/research-nonoverlap-v2.parquet",
+    "staging_sha256": "92b9fe8a49126fba52f132a7829393c6528afc3e3ce8951860e46ff6dae55445",
+    "training_code_sha256": {
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+      "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+      "src/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3"
+    },
+    "updates": 200,
+    "width": 64
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_research_20261104/wamm_fit/plan.json",
+  "original_sha256": "b8492c5c6d8504983abbf36561bd9f38a1afbd09b05763af1d4dd5acb1495978",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

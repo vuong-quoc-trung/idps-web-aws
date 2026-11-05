@@ -1,0 +1,318 @@
+{
+  "content": {
+    "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+    "formal_admission": 0,
+    "holdout_opened": false,
+    "limits": [
+      "Publisher/runner labels lack independent review",
+      "Val is development-exposed, not independent",
+      "Source/campaign dependence means rows are not IID",
+      "Train/val gaps are diagnostics, not production generalization estimates"
+    ],
+    "models": {
+      "glu1024": {
+        "srbh2020": {
+          "train": {
+            "attack": 42094,
+            "benign": 17906,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.9990102400571689,
+            "recall": 0.3154606357200551,
+            "rows": 60000,
+            "score_median_attack": 0.9980775713920593,
+            "score_median_benign": 0.0037570595741271973,
+            "true_positives": 13279
+          },
+          "train_distinct_view": {
+            "attack": 15850,
+            "benign": 10059,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.9975707563198632,
+            "recall": 0.3058044164037855,
+            "rows": 25909,
+            "score_median_attack": 0.9980465173721313,
+            "score_median_benign": 0.004157960414886475,
+            "true_positives": 4847
+          },
+          "val": {
+            "attack": 5155,
+            "benign": 4845,
+            "false_positives": 14,
+            "fpr": 0.002889576883384933,
+            "pr_auc": 0.8370173520874067,
+            "recall": 0.3136760426770126,
+            "rows": 10000,
+            "score_median_attack": 0.997978687286377,
+            "score_median_benign": 0.3056459426879883,
+            "true_positives": 1617
+          },
+          "val_distinct_view": {
+            "attack": 3675,
+            "benign": 3165,
+            "false_positives": 11,
+            "fpr": 0.0034755134281200632,
+            "pr_auc": 0.8253174575468196,
+            "recall": 0.2182312925170068,
+            "rows": 6840,
+            "score_median_attack": 0.997824490070343,
+            "score_median_benign": 0.3388122320175171,
+            "true_positives": 802
+          }
+        },
+        "student-lab": {
+          "train": {
+            "attack": 6912,
+            "benign": 29511,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 1.0,
+            "recall": 0.32175925925925924,
+            "rows": 36423,
+            "score_median_attack": 0.9979199171066284,
+            "score_median_benign": 0.0024660825729370117,
+            "true_positives": 2224
+          },
+          "train_distinct_view": {
+            "attack": 1027,
+            "benign": 206,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 1.0,
+            "recall": 0.29990262901655307,
+            "rows": 1233,
+            "score_median_attack": 0.9979907870292664,
+            "score_median_benign": 0.0016352534294128418,
+            "true_positives": 308
+          },
+          "val": {
+            "attack": 288,
+            "benign": 736,
+            "false_positives": 79,
+            "fpr": 0.10733695652173914,
+            "pr_auc": 0.5145685771742765,
+            "recall": 0.18055555555555555,
+            "rows": 1024,
+            "score_median_attack": 0.9970105886459351,
+            "score_median_benign": 0.03228220343589783,
+            "true_positives": 52
+          },
+          "val_distinct_view": {
+            "attack": 153,
+            "benign": 137,
+            "false_positives": 14,
+            "fpr": 0.10218978102189781,
+            "pr_auc": 0.7257080678286998,
+            "recall": 0.1503267973856209,
+            "rows": 290,
+            "score_median_attack": 0.9976129531860352,
+            "score_median_benign": 0.05604243278503418,
+            "true_positives": 23
+          }
+        }
+      },
+      "mlp256": {
+        "srbh2020": {
+          "train": {
+            "attack": 42094,
+            "benign": 17906,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.9965920508251855,
+            "recall": 0.0005939088706228916,
+            "rows": 60000,
+            "score_median_attack": 0.9969132542610168,
+            "score_median_benign": 0.04383200407028198,
+            "true_positives": 25
+          },
+          "train_distinct_view": {
+            "attack": 15850,
+            "benign": 10059,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.9914136712964895,
+            "recall": 0.0011356466876971609,
+            "rows": 25909,
+            "score_median_attack": 0.9966330528259277,
+            "score_median_benign": 0.041982293128967285,
+            "true_positives": 18
+          },
+          "val": {
+            "attack": 5155,
+            "benign": 4845,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.8536516326780083,
+            "recall": 0.2283220174587779,
+            "rows": 10000,
+            "score_median_attack": 0.9995566010475159,
+            "score_median_benign": 0.36521804332733154,
+            "true_positives": 1177
+          },
+          "val_distinct_view": {
+            "attack": 3675,
+            "benign": 3165,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.8563807620764281,
+            "recall": 0.31891156462585035,
+            "rows": 6840,
+            "score_median_attack": 0.999718964099884,
+            "score_median_benign": 0.41286736726760864,
+            "true_positives": 1172
+          }
+        },
+        "student-lab": {
+          "train": {
+            "attack": 6912,
+            "benign": 29511,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.9975543059852227,
+            "recall": 0.15494791666666666,
+            "rows": 36423,
+            "score_median_attack": 0.9971193075180054,
+            "score_median_benign": 0.009966671466827393,
+            "true_positives": 1071
+          },
+          "train_distinct_view": {
+            "attack": 1027,
+            "benign": 206,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.9995994479269306,
+            "recall": 0.16358325219084713,
+            "rows": 1233,
+            "score_median_attack": 0.9980983138084412,
+            "score_median_benign": 0.026623934507369995,
+            "true_positives": 168
+          },
+          "val": {
+            "attack": 288,
+            "benign": 736,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.5773743074074799,
+            "recall": 0.125,
+            "rows": 1024,
+            "score_median_attack": 0.9949564933776855,
+            "score_median_benign": 0.8507447242736816,
+            "true_positives": 36
+          },
+          "val_distinct_view": {
+            "attack": 153,
+            "benign": 137,
+            "false_positives": 0,
+            "fpr": 0.0,
+            "pr_auc": 0.7966562187751777,
+            "recall": 0.17647058823529413,
+            "rows": 290,
+            "score_median_attack": 0.9975771903991699,
+            "score_median_benign": 0.8539333343505859,
+            "true_positives": 27
+          }
+        }
+      }
+    },
+    "optimizer_updates": 0,
+    "paired_validation_distinct_views": {
+      "srbh2020": {
+        "0": {
+          "both_flagged": 0,
+          "glu_only": 11,
+          "mlp_only": 0,
+          "neither_flagged": 3154,
+          "views": 3165
+        },
+        "1": {
+          "both_flagged": 125,
+          "glu_only": 677,
+          "mlp_only": 1047,
+          "neither_flagged": 1826,
+          "views": 3675
+        }
+      },
+      "student-lab": {
+        "0": {
+          "both_flagged": 0,
+          "glu_only": 14,
+          "mlp_only": 0,
+          "neither_flagged": 123,
+          "views": 137
+        },
+        "1": {
+          "both_flagged": 0,
+          "glu_only": 23,
+          "mlp_only": 27,
+          "neither_flagged": 103,
+          "views": 153
+        }
+      }
+    },
+    "paired_validation_flags": {
+      "srbh2020": {
+        "0": {
+          "both_flagged": 0,
+          "glu_only": 14,
+          "mlp_only": 0,
+          "neither_flagged": 4831,
+          "rows": 4845
+        },
+        "1": {
+          "both_flagged": 125,
+          "glu_only": 1492,
+          "mlp_only": 1052,
+          "neither_flagged": 2486,
+          "rows": 5155
+        }
+      },
+      "student-lab": {
+        "0": {
+          "both_flagged": 0,
+          "glu_only": 79,
+          "mlp_only": 0,
+          "neither_flagged": 657,
+          "rows": 736
+        },
+        "1": {
+          "both_flagged": 0,
+          "glu_only": 52,
+          "mlp_only": 36,
+          "neither_flagged": 200,
+          "rows": 288
+        }
+      }
+    },
+    "plan_sha256": "966b575cc4a6085b7087bb4ee9d475f161daace11266cd74838a57cfce3be284",
+    "rows_scored": 118760,
+    "scope": "exposed development diagnostic only; same frozen 76-feature corpus and checkpoints",
+    "thresholds_changed": false,
+    "train_val_within_role_mixed_label_view_keys": {
+      "srbh2020": {
+        "train": 0,
+        "val": 0
+      },
+      "student-lab": {
+        "train": 0,
+        "val": 0
+      }
+    },
+    "validation_view_collisions": {
+      "srbh2020": {
+        "distinct_feature_keys": 6840,
+        "mixed_label_feature_keys": 0,
+        "rows": 10000
+      },
+      "student-lab": {
+        "distinct_feature_keys": 290,
+        "mixed_label_feature_keys": 0,
+        "rows": 1024
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/development_diagnostic_20261103/report.json",
+  "original_sha256": "645c0077ef054eb514cad7f6fa45be42962734d7be5e2225021070cc2c9c04df",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

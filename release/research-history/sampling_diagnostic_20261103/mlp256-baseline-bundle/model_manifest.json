@@ -1,0 +1,224 @@
+{
+  "content": {
+    "calibration": {
+      "srbh2020": {
+        "benign_count": 1536,
+        "calibration_fpr": 0.009114583333333334,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.9999801516532898
+      },
+      "student-lab": {
+        "benign_count": 1025,
+        "calibration_fpr": 0.0,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.999978244304657
+      }
+    },
+    "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+    "champion_selected": false,
+    "checkpoint_manifest_sha256": "fdeb0a9de85c0d7acf06917fd8165bca8848280c07b82dce4617d7f475a52c23",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+    "deployment_status": "offline research candidate only",
+    "family_output": "disabled; conditional family heads lack independent validation",
+    "feature_version": "bounded-request-v1",
+    "files": {
+      "feature_spec.json": "30e15bfaf8c6dc4ddecdb199d44d12d68b8ba79f28d1f5b10110ca2120c018e4",
+      "model.onnx": "a60e976d1f2b6924a40fb1e9f63b584ef4bba407a633ca4c95cdbe086a0b2dd3"
+    },
+    "format_version": 1,
+    "input_dtype": "float32",
+    "input_shape": [
+      null,
+      76
+    ],
+    "model_kind": "deep_mlp",
+    "objective": {
+      "family_weight": 0.0,
+      "kind": "partial_binary_v1",
+      "smoothing": 0.005
+    },
+    "parity": {
+      "all_rows_match": true,
+      "atol": 1e-06,
+      "max_absolute_error": 2.384185791015625e-07,
+      "rows": 118760,
+      "rtol": 1e-05
+    },
+    "profile": "request-structure-v1",
+    "score_semantics": "1-P(benign); public unknown family never imputed",
+    "threshold": 0.9999801516532898,
+    "validation": {
+      "attack": 5443,
+      "benign": 5581,
+      "confusion_matrix": [
+        [
+          5581,
+          0
+        ],
+        [
+          4230,
+          1213
+        ]
+      ],
+      "f1": 0.3644831730769231,
+      "fpr": 0.0,
+      "pr_auc_average_precision": 0.8335904179483642,
+      "precision": 1.0,
+      "recall": 0.22285504317471982,
+      "rows": 11024,
+      "threshold": 0.9999801516532898
+    },
+    "validation_by_source": {
+      "srbh2020": {
+        "attack": 5155,
+        "benign": 4845,
+        "confusion_matrix": [
+          [
+            4845,
+            0
+          ],
+          [
+            3978,
+            1177
+          ]
+        ],
+        "f1": 0.3717624763108023,
+        "fpr": 0.0,
+        "pr_auc_average_precision": 0.8536516326780083,
+        "precision": 1.0,
+        "recall": 0.2283220174587779,
+        "rows": 10000,
+        "threshold": 0.9999801516532898
+      },
+      "student-lab": {
+        "attack": 288,
+        "benign": 736,
+        "confusion_matrix": [
+          [
+            736,
+            0
+          ],
+          [
+            252,
+            36
+          ]
+        ],
+        "f1": 0.2222222222222222,
+        "fpr": 0.0,
+        "pr_auc_average_precision": 0.5773743074074799,
+        "precision": 1.0,
+        "recall": 0.125,
+        "rows": 1024,
+        "threshold": 0.9999801516532898
+      }
+    },
+    "validation_encoded_views": {
+      "conflicting_label_rows": 0,
+      "conflicting_label_views": 0,
+      "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+      "metrics": {
+        "attack": 3828,
+        "benign": 3301,
+        "confusion_matrix": [
+          [
+            3301,
+            0
+          ],
+          [
+            2629,
+            1199
+          ]
+        ],
+        "f1": 0.47702407002188185,
+        "fpr": 0.0,
+        "pr_auc_average_precision": 0.8548629019777212,
+        "precision": 1.0,
+        "recall": 0.3132183908045977,
+        "rows": 7129,
+        "threshold": 0.9999801516532898
+      },
+      "repeated_view_rows": 3895,
+      "rows": 11024,
+      "unique_views": 7129,
+      "view_definition": "exact float32 model input bytes"
+    },
+    "validation_encoded_views_by_source": {
+      "srbh2020": {
+        "conflicting_label_rows": 0,
+        "conflicting_label_views": 0,
+        "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+        "metrics": {
+          "attack": 3675,
+          "benign": 3164,
+          "confusion_matrix": [
+            [
+              3164,
+              0
+            ],
+            [
+              2503,
+              1172
+            ]
+          ],
+          "f1": 0.48359810191871255,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.8563813214250773,
+          "precision": 1.0,
+          "recall": 0.31891156462585035,
+          "rows": 6839,
+          "threshold": 0.9999801516532898
+        },
+        "repeated_view_rows": 3161,
+        "rows": 10000,
+        "unique_views": 6839,
+        "view_definition": "exact float32 model input bytes"
+      },
+      "student-lab": {
+        "conflicting_label_rows": 0,
+        "conflicting_label_views": 0,
+        "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+        "metrics": {
+          "attack": 153,
+          "benign": 137,
+          "confusion_matrix": [
+            [
+              137,
+              0
+            ],
+            [
+              126,
+              27
+            ]
+          ],
+          "f1": 0.3,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.7966562187751777,
+          "precision": 1.0,
+          "recall": 0.17647058823529413,
+          "rows": 290,
+          "threshold": 0.9999801516532898
+        },
+        "repeated_view_rows": 734,
+        "rows": 1024,
+        "unique_views": 290,
+        "view_definition": "exact float32 model input bytes"
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/sampling_diagnostic_20261103/mlp256-baseline-bundle/model_manifest.json",
+  "original_sha256": "3aa850a48ab63c5689e0405ece73f0182bc9ee3e211ba5d70453bce916f53fb3",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

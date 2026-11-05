@@ -1,0 +1,15 @@
+{
+  "content": {
+    "actual_evaluation_script_sha256": "e33c1e1d80e6e12557446c5dbb3b001f4626bf4295b64119164c68efe7090cdd",
+    "current_evaluation_script_sha256": "e33c1e1d80e6e12557446c5dbb3b001f4626bf4295b64119164c68efe7090cdd",
+    "difference": "Before any external scoring, report wrapper was corrected to express undefined benign-only Precision/Recall/F1/AP and related intervals asnull. Weights, thresholds, sampling and subset criterion unchanged. Actual source hash bound before scoring in EVALUATION_DATA_BINDING.",
+    "frozen_models_unchanged": true,
+    "no_forced_hash_or_recomputed_scores": true,
+    "numeric_subset_original_script_sha256": "e3528dadc91b31d0899818e748280b69dc5f8311001e452defb510a59f072404",
+    "semantic_subset_criterion_changed": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/evaluation-source-lineage.json",
+  "original_sha256": "8168aada000195f5813228cc7d6e6561a89b6ff93685d6fbf733dcdfbdc5e8e7",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

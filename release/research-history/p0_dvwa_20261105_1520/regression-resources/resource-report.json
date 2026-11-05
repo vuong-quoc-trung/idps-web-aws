@@ -1,0 +1,104 @@
+{
+  "content": {
+    "abort_after_hard_stops": 2,
+    "cpu_sensor_sources": {
+      "/sys/class/hwmon/hwmon8/temp10_input": {
+        "celsius": 50.0,
+        "label": "Core 8"
+      },
+      "/sys/class/hwmon/hwmon8/temp11_input": {
+        "celsius": 50.0,
+        "label": "Core 9"
+      },
+      "/sys/class/hwmon/hwmon8/temp12_input": {
+        "celsius": 50.0,
+        "label": "Core 10"
+      },
+      "/sys/class/hwmon/hwmon8/temp13_input": {
+        "celsius": 50.0,
+        "label": "Core 11"
+      },
+      "/sys/class/hwmon/hwmon8/temp14_input": {
+        "celsius": 56.0,
+        "label": "Core 12"
+      },
+      "/sys/class/hwmon/hwmon8/temp15_input": {
+        "celsius": 56.0,
+        "label": "Core 13"
+      },
+      "/sys/class/hwmon/hwmon8/temp16_input": {
+        "celsius": 56.0,
+        "label": "Core 14"
+      },
+      "/sys/class/hwmon/hwmon8/temp17_input": {
+        "celsius": 56.0,
+        "label": "Core 15"
+      },
+      "/sys/class/hwmon/hwmon8/temp18_input": {
+        "celsius": 50.0,
+        "label": "Core 16"
+      },
+      "/sys/class/hwmon/hwmon8/temp1_input": {
+        "celsius": 57.0,
+        "label": "Package id 0"
+      },
+      "/sys/class/hwmon/hwmon8/temp22_input": {
+        "celsius": 50.0,
+        "label": "Core 20"
+      },
+      "/sys/class/hwmon/hwmon8/temp26_input": {
+        "celsius": 50.0,
+        "label": "Core 24"
+      },
+      "/sys/class/hwmon/hwmon8/temp2_input": {
+        "celsius": 50.0,
+        "label": "Core 0"
+      },
+      "/sys/class/hwmon/hwmon8/temp30_input": {
+        "celsius": 48.0,
+        "label": "Core 28"
+      },
+      "/sys/class/hwmon/hwmon8/temp34_input": {
+        "celsius": 48.0,
+        "label": "Core 32"
+      },
+      "/sys/class/hwmon/hwmon8/temp35_input": {
+        "celsius": 48.0,
+        "label": "Core 33"
+      },
+      "/sys/class/hwmon/hwmon8/temp6_input": {
+        "celsius": 54.0,
+        "label": "Core 4"
+      }
+    },
+    "cpu_temperature_max": 57.0,
+    "cpu_temperature_mean": 57.0,
+    "cpu_temperature_min": 57.0,
+    "events": [],
+    "exit_reason": "completed",
+    "hard_pause_celsius": 80,
+    "initial_ai_headroom_bytes_after_reserve": 17333225472,
+    "initial_cpu_affinity_count": 1,
+    "limits": "Reactive sensor sampling; spikes cannot be absolutely excluded; tree RSS excludes detached container processes; system RAM covers all workloads",
+    "minimum_continuously_cool_seconds": 3,
+    "peak_process_tree_rss_bytes": 186499072,
+    "peak_system_used_bytes": 10842464256,
+    "proactive_pause_celsius": 74,
+    "reduce_load_celsius": 72,
+    "reserve_bytes": 2000000000,
+    "resume_below_celsius": 70,
+    "returncode": 0,
+    "sample_seconds": 0.2,
+    "samples": 5,
+    "shared_system_budget_bytes": 30000000000,
+    "supervisor_source_sha256": "309a2bd7b021b485fa73f7e96aedb9b93655b62f2343deb10029467f72061a80",
+    "system_cpu_percent_max": 28.6,
+    "system_cpu_percent_mean": 15.14,
+    "wall_seconds": 1.0382455279996066,
+    "warning_celsius": 75
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/regression-resources/resource-report.json",
+  "original_sha256": "d41565cdf627107752795a5d1f326b666f98c9c5b17431bd488b9a9f87211909",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,65 @@
+{
+  "content": {
+    "correlation_window_seconds": 2.0,
+    "dataset_sha256": "3cbfab3d631a83fa53af9535947fbe13c4db3a131ab7ac7494c7a0193e61ea14",
+    "files": {
+      "observations.parquet": {
+        "bytes": 34092622,
+        "sha256": "8f3405dad8d0817cd5a97b2c922c35af88f64e78183c010e984db7f58979f10a"
+      },
+      "requests.parquet": {
+        "bytes": 13530959,
+        "sha256": "2b5c370e3e8f3b9c4c623fb5369a0e22f8550693bf8e1a03a2e49b93905f3b02"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "safe_query_numeric_v2",
+    "input_semantics": "finite immutable snapshots; raw input files never written",
+    "inputs": [
+      {
+        "bytes": 65486620,
+        "sha256": "56403c95ff24fe5e5614b1894dc0d481c048ad6cbbff61597d076493abb992f3",
+        "source": "student"
+      },
+      {
+        "bytes": 28695791,
+        "sha256": "c2a554f965de5c531e1226c80c66fb92308fde7117611df6f00261fbd9acec92",
+        "source": "nginx"
+      },
+      {
+        "bytes": 189772199,
+        "sha256": "7875e21bed6e18798d742734b2f7db49c53d6a216541bc0d474373a2a808ffee",
+        "source": "suricata"
+      }
+    ],
+    "label_manifest_sha256": "f491cdc3b8c0aaacfa312bc3366b126c4bf90fcaaf94c056436cfaa89c2860d4",
+    "labels": "explicit_review_only",
+    "normalizer_version": "ai-normalizer-4.1",
+    "quality": {
+      "accepted": 297685,
+      "duplicates": 0
+    },
+    "redaction_key_fingerprint": "fc0103d51c1ccb0e6a22d00b78ce7c280d4f674d20c0e00f055e3a013042e3bb",
+    "rows": {
+      "observations": 297685,
+      "requests": 69345
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "sources": {
+      "NGINX": 69345,
+      "STUDENT_AUDIT": 69345,
+      "SURICATA": 158995
+    },
+    "stage": "collected",
+    "time_range": [
+      1793322677.636501,
+      1793325362.903692
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/collected/dataset_manifest.json",
+  "original_sha256": "76cc5fa6e134e006e530d1140ba4127203cc89ce11f6d525c33857d57537e6bd",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,24 @@
+{
+  "content": {
+    "assist_sha256": "596a9f27e9cb636c777bb34375a61b627414798d8a476f991f56518c7941626d",
+    "automatic_verified_labels": 0,
+    "blind_queue_sha256": "5702c1ac8890f9cea57120293eacf2c51c97e197f24a9d919b88849e9952f205",
+    "capture_report_sha256": "1d197358afe8123bf1887f923474447bdf4fc978b228b9fef3be4ffcff3ef1ea",
+    "counts": {
+      "query_visible_private": 42,
+      "requests": 54,
+      "syntax_cue_overlap": 0,
+      "three_source": 54
+    },
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "limits": "Syntax cues and collector claims are review aids only. This file contains no independent semantic decision and must never be imported as training ground truth.",
+    "status": "AUTOMATED_EVIDENCE_CHECKED_SEMANTIC_REVIEW_PENDING",
+    "three_source_report_sha256": "c020be0e927003b54a303a82c93fea8ab350c1c5787eafe79da287b43f6d06dc",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/eve3-1102c/assist/report.json",
+  "original_sha256": "49c03c021dbdcc2250303d8a9960a78b7f284858d35275a61c901bd375c3a24f",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,33 @@
+{
+  "content": {
+    "eve_flow_rows": 36,
+    "eve_flow_with_start_end": 36,
+    "eve_http_direct_request_id": 0,
+    "eve_http_numeric_v2": 4,
+    "eve_http_response_header_request_id": 4,
+    "eve_http_rows": 4,
+    "input_sha256": {
+      "eve_projected": "517a3a90199c4a591f43345efc5be1221db8bda01dd0c49ffff273e910ac1ae8",
+      "nginx": "4103159c0d3c564bdc1de7a571026a9a561581a26a63344dd2a990632b093366",
+      "student": "1726eb3445f629b11a74e35b96ef1827be528d75f2cff90f4cf4fdab09e21a68"
+    },
+    "limitation": "No normalized_events read-only export available locally; student canonical wrapper path proven, Rust Nginx/SURICATA canonical values not dynamically compared",
+    "mode": "read_only_existing_live_artifacts_no_new_traffic",
+    "nginx_required_fields_present": {
+      "latency_ms": 0,
+      "latency_seconds": 5,
+      "request_bytes": 5,
+      "request_id": 5,
+      "response_bytes": 5,
+      "status_code": 0
+    },
+    "nginx_rows": 5,
+    "postgres_export_adapter_student_canonical_exact_rows": 5,
+    "postgres_export_adapter_student_exact_parity": true,
+    "rust_canonical_export_replayed": false
+  },
+  "original_relative_path": "ai-training/.artifacts/edge_bridge_audit_20261103/report.json",
+  "original_sha256": "49e07a6593e97ec60ab38c7376f98546951c232fbd09e0b568bf8803e6d9f620",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

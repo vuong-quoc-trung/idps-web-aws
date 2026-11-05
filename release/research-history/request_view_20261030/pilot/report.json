@@ -1,0 +1,757 @@
+{
+  "content": {
+    "batch_size": 128,
+    "champion_selected": false,
+    "dataset_sha256": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+    "epochs": 2,
+    "formal_training": false,
+    "format_version": 1,
+    "models": {
+      "deep_mlp": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/pilot/deep_mlp-bundle",
+        "bundle_manifest_sha256": "cedbcea831a68fe36d9dc7e87dc87aaab23abf056922c3cbe809cb15698fc4ee",
+        "first_session": {
+          "epoch": 1,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 0.6951786075330707
+            }
+          ],
+          "kind": "deep_mlp",
+          "optimizer_seconds": 0.049144468999656965,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 4005586\nuser_usec 3799658\nsystem_usec 205927\nnice_usec 3799000\ncore_sched.force_idle_usec 0\nnr_periods 27\nnr_throttled 1\nthrottled_usec 171725\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "333160448",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "334970880",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-pilot-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 58.0,
+            "peak_rss_bytes": 253755392,
+            "peak_tree_rss_bytes": 253755392,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 10,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 1233
+        },
+        "optimizer_seconds": 0.07657270899926516,
+        "parameters": 217608,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.1920928955078125e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 0.05263992400250572,
+        "resume_exact": true,
+        "second_session": {
+          "epoch": 2,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 0.6951786075330707
+            },
+            {
+              "epoch": 2,
+              "step": 20,
+              "training_loss": 0.23703774113120335
+            }
+          ],
+          "kind": "deep_mlp",
+          "optimizer_seconds": 0.07657270899926516,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 6833534\nuser_usec 6456725\nsystem_usec 376808\nnice_usec 6458000\ncore_sched.force_idle_usec 0\nnr_periods 45\nnr_throttled 3\nthrottled_usec 669674\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "335855616",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "396357632",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-pilot-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 59.0,
+            "peak_rss_bytes": 257429504,
+            "peak_tree_rss_bytes": 257429504,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 20,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 1233
+        },
+        "steps": 20,
+        "threshold": 0.9883306622505188,
+        "unique_training_views": 1233,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14647,
+              67
+            ],
+            [
+              831,
+              705
+            ]
+          ],
+          "f1": 0.6109185441941074,
+          "fpr": 0.004553486475465543,
+          "pr_auc_average_precision": 0.7009950147446122,
+          "precision": 0.9132124352331606,
+          "recall": 0.458984375,
+          "rows": 16250,
+          "threshold": 0.9883306622505188
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.9883306622505188
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3642,
+                2
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0005488474204171241,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.9883306622505188
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6493,
+                65
+              ],
+              [
+                831,
+                705
+              ]
+            ],
+            "f1": 0.611448395490026,
+            "fpr": 0.009911558401951815,
+            "pr_auc_average_precision": 0.7787765242265976,
+            "precision": 0.9155844155844156,
+            "recall": 0.458984375,
+            "rows": 8094,
+            "threshold": 0.9883306622505188
+          }
+        }
+      },
+      "denoising_autoencoder": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/pilot/denoising_autoencoder-bundle",
+        "bundle_manifest_sha256": "1d120861355ba0d2a936d66f4d244106470b74e38bffa0869bd5aaba7b054dc0",
+        "first_session": {
+          "epoch": 1,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 147,
+              "training_loss": 0.8333260956525561
+            }
+          ],
+          "kind": "denoising_autoencoder",
+          "optimizer_seconds": 0.43723931699742025,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 233963559\nuser_usec 229071820\nsystem_usec 4891738\nnice_usec 229644000\ncore_sched.force_idle_usec 0\nnr_periods 704\nnr_throttled 297\nthrottled_usec 23874194\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "1181315072",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "1634975744",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-pilot-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 72.0,
+            "peak_rss_bytes": 307990528,
+            "peak_tree_rss_bytes": 307990528,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 147,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 18713
+        },
+        "optimizer_seconds": 0.8829456369990112,
+        "parameters": 233670,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 5.7220458984375e-06,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 0.9850912440010688,
+        "resume_exact": true,
+        "second_session": {
+          "epoch": 2,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 147,
+              "training_loss": 0.8333260956525561
+            },
+            {
+              "epoch": 2,
+              "step": 294,
+              "training_loss": 0.36569901917177333
+            }
+          ],
+          "kind": "denoising_autoencoder",
+          "optimizer_seconds": 0.8829456369990112,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 240659392\nuser_usec 235257739\nsystem_usec 5401653\nnice_usec 235837000\ncore_sched.force_idle_usec 0\nnr_periods 733\nnr_throttled 301\nthrottled_usec 24342123\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "1185050624",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "1634975744",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-pilot-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 70.0,
+            "peak_rss_bytes": 309067776,
+            "peak_tree_rss_bytes": 309067776,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 294,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 18713
+        },
+        "steps": 294,
+        "threshold": 7.532898426055908,
+        "unique_training_views": 18713,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14655,
+              59
+            ],
+            [
+              1093,
+              443
+            ]
+          ],
+          "f1": 0.4347399411187438,
+          "fpr": 0.0040097865977980155,
+          "pr_auc_average_precision": 0.7569072125038292,
+          "precision": 0.8824701195219123,
+          "recall": 0.2884114583333333,
+          "rows": 16250,
+          "threshold": 7.532898426055908
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 7.532898426055908
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3643,
+                1
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.00027442371020856203,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 7.532898426055908
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6500,
+                58
+              ],
+              [
+                1093,
+                443
+              ]
+            ],
+            "f1": 0.43495336278841434,
+            "fpr": 0.008844159804818542,
+            "pr_auc_average_precision": 0.7735243143122998,
+            "precision": 0.8842315369261478,
+            "recall": 0.2884114583333333,
+            "rows": 8094,
+            "threshold": 7.532898426055908
+          }
+        }
+      },
+      "residual_glu": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/pilot/residual_glu-bundle",
+        "bundle_manifest_sha256": "b8386fd9562eea54276fb8419763e8369f00b235465586d1b22f67bb315d085b",
+        "first_session": {
+          "epoch": 1,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 0.3243932123163721
+            }
+          ],
+          "kind": "residual_glu",
+          "optimizer_seconds": 1.6270262529992578,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 25704531\nuser_usec 23778612\nsystem_usec 1925918\nnice_usec 23827000\ncore_sched.force_idle_usec 0\nnr_periods 114\nnr_throttled 39\nthrottled_usec 2996313\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "342876160",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "514514944",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-pilot-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 58.0,
+            "peak_rss_bytes": 378605568,
+            "peak_tree_rss_bytes": 378605568,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 10,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 1233
+        },
+        "optimizer_seconds": 2.920234128998345,
+        "parameters": 9535496,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.7881393432617188e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 3.3958332879997215,
+        "resume_exact": true,
+        "second_session": {
+          "epoch": 2,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 0.3243932123163721
+            },
+            {
+              "epoch": 2,
+              "step": 20,
+              "training_loss": 0.03031306520536741
+            }
+          ],
+          "kind": "residual_glu",
+          "optimizer_seconds": 2.920234128998345,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 34017161\nuser_usec 31422572\nsystem_usec 2594588\nnice_usec 31474000\ncore_sched.force_idle_usec 0\nnr_periods 149\nnr_throttled 43\nthrottled_usec 3566021\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "461746176",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "646029312",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-pilot-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 58.0,
+            "peak_rss_bytes": 480546816,
+            "peak_tree_rss_bytes": 480546816,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 20,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 1233
+        },
+        "steps": 20,
+        "threshold": 1.0,
+        "unique_training_views": 1233,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14683,
+              31
+            ],
+            [
+              1477,
+              59
+            ]
+          ],
+          "f1": 0.07257072570725707,
+          "fpr": 0.0021068370259616693,
+          "pr_auc_average_precision": 0.6996832513409459,
+          "precision": 0.6555555555555556,
+          "recall": 0.038411458333333336,
+          "rows": 16250,
+          "threshold": 1.0
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 1.0
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3613,
+                31
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.008507135016465422,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 1.0
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                1477,
+                59
+              ]
+            ],
+            "f1": 0.07398119122257055,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.9233135637185573,
+            "precision": 1.0,
+            "recall": 0.038411458333333336,
+            "rows": 8094,
+            "threshold": 1.0
+          }
+        }
+      }
+    },
+    "quality_test_opened": false,
+    "seed": 17,
+    "status": "PASS_TECHNICAL_ONLY",
+    "wall_seconds": 82.92950043499968
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/pilot/report.json",
+  "original_sha256": "6359486ba50d66bace5e2240c2f41c553a26002bdf178f9f8326794d8f976be7",
+  "redactions": {
+    "strings_changed": 9
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

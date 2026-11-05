@@ -1,0 +1,140 @@
+{
+  "content": {
+    "bundle_manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+    "end_to_end_ms": {
+      "p50": 192.08526611328125,
+      "p95": 221.4354157447815,
+      "p99": 224.10008668899536
+    },
+    "enforcement_actions": 0,
+    "eve_event_counts": {
+      "flow": 25,
+      "http": 4,
+      "stats": 8
+    },
+    "feature_parity_scope": "Python collector + Python inference; Rust/production not measured",
+    "inferred": 4,
+    "mode": "isolated_live_post_response_shadow",
+    "per_request": [
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 224.76625442504883,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 200,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 32.988786697387695,
+          "student": 21.473169326782227,
+          "suricata": 33.07795524597168
+        },
+        "model_ms": 7.712093,
+        "prior_flow_available": false,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      },
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 168.95437240600586,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 401,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 20.828723907470703,
+          "student": 10.493755340576172,
+          "suricata": 25.649309158325195
+        },
+        "model_ms": 6.525702,
+        "prior_flow_available": false,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      },
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 202.5606632232666,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 200,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 27.757883071899414,
+          "student": 15.007734298706055,
+          "suricata": 35.041093826293945
+        },
+        "model_ms": 7.467611,
+        "prior_flow_available": true,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      },
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 181.6098690032959,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 401,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 19.01698112487793,
+          "student": 15.094518661499023,
+          "suricata": 24.87945556640625
+        },
+        "model_ms": 6.945979,
+        "prior_flow_available": true,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      }
+    ],
+    "post_response_only": true,
+    "requests_sent": 4,
+    "sensor_config_sha256": "71728c8c1868c8a27001b7cb9a03cc992d42133f7c4133a6f4092e4d6117e0f6",
+    "sensor_mode": "Suricata -i lo live pcap in private network namespace",
+    "skip_reasons": {},
+    "skipped": 0,
+    "three_source": 4
+  },
+  "original_relative_path": "ai-training/.artifacts/live_shadow_20261103_v2/live-report.json",
+  "original_sha256": "16711ba965d6bfc9b2b4b4ad1bf5cd888aa2626819648d3ddbf62bc804b1e143",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

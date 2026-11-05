@@ -1,0 +1,75 @@
+{
+  "content": {
+    "champion_selected": false,
+    "comparisons": {
+      "affine70-deep_mlp-seed17": {
+        "eligible": false,
+        "macrofamily_recall": 0.71875,
+        "worst_source_fpr": 0.012503812137846905
+      },
+      "affine70-glu-binary-only": {
+        "eligible": true,
+        "macrofamily_recall": 0.6920572916666666,
+        "worst_source_fpr": 0.00869167429094236
+      },
+      "affine70-residual_glu-seed17": {
+        "eligible": true,
+        "macrofamily_recall": 0.689453125,
+        "worst_source_fpr": 0.00960658737419945
+      },
+      "bounded76-glu17": {
+        "eligible": true,
+        "macrofamily_recall": 0.8274739583333334,
+        "worst_source_fpr": 0.009759072888075633
+      },
+      "bounded76-glu256-17": {
+        "eligible": false,
+        "macrofamily_recall": 0.7493489583333333,
+        "worst_source_fpr": 0.010673985971332723
+      },
+      "bounded76-mlp17": {
+        "eligible": true,
+        "macrofamily_recall": 0.763671875,
+        "worst_source_fpr": 0.009911558401951815
+      },
+      "security45-deep_mlp-seed17": {
+        "eligible": true,
+        "macrofamily_recall": 0.5,
+        "worst_source_fpr": 0.0
+      },
+      "security45-deep_mlp-seed29": {
+        "eligible": true,
+        "macrofamily_recall": 0.484375,
+        "worst_source_fpr": 0.0005488474204171241
+      },
+      "security45-residual_glu-seed17": {
+        "eligible": true,
+        "macrofamily_recall": 0.015625,
+        "worst_source_fpr": 0.0
+      },
+      "security45-residual_glu-seed29": {
+        "eligible": true,
+        "macrofamily_recall": 0.125,
+        "worst_source_fpr": 0.0
+      },
+      "security45-residual_glu256-seed17": {
+        "eligible": true,
+        "macrofamily_recall": 0.453125,
+        "worst_source_fpr": 0.0
+      }
+    },
+    "frozen_at": "2026-10-31T06:31:49.399194+07:00",
+    "limits": "11fixed300updateconfigs plusvalidationselection cause optimism; do not select champion from newcohort scores",
+    "phase_hashes": {
+      "phase1": "a2dac27190b76b863f7a1ed1b625b2e28663ce2c0d2994622e97e9c8e2fc2067",
+      "phase2": "916ca7198a5047dd4194a435d2aa8c0a49b787bb31dc4e64022885a6cc0c77de"
+    },
+    "rule": "worstsourcevalidationFPR<=1%, maximizefourfamilymacrorecall thenAP",
+    "selected_research_candidate": "bounded76-glu17",
+    "test_quality_opened": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/JOINT_VALIDATION_SELECTION.json",
+  "original_sha256": "146804a789c2cb0ccd0f9c0472bd00336f8eb26f32f31481e21b148e2eb381a9",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

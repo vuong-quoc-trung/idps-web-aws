@@ -1,0 +1,47 @@
+{
+  "content": {
+    "candidate_freeze_sha256": "8286b2e384e40dacc4407d89a5cd94c8a94f0d17ddfc7d87f9851018212d2ec6",
+    "candidate_report_sha256": "e805bc04bd956d642624b4cb2b1269ab98af415eee83a185d1e95da880ef3525",
+    "candidate_root": ".artifacts/research_glu207_bounded_final_20261104",
+    "checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "cohort": "existing Nov-02 Student/Nginx/Suricata offline PCAP capture; no new HTTP traffic; same lab as fitting, no intent labels",
+    "collected_dataset": ".artifacts/glu207_shadow_20261103/collected-54-plus-setup",
+    "collected_manifest_sha256": "39ee707a9be49e966ea98bef8c2fbc956de5160e0fbc50821799333e08e25762",
+    "collected_requests_sha256": "e32a652524a4caaf37f341fd4cf60e60bc0fdcda18b13db195c7882c275895cb",
+    "eligible_requests": 54,
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "forbidden": [
+      "Recall",
+      "FPR",
+      "PR-AUC",
+      "attack detection claims",
+      "threshold selection",
+      "model selection",
+      "final holdout access",
+      "automatic blocking"
+    ],
+    "format_version": 1,
+    "fpr_budget": 0.01,
+    "metrics": [
+      "feature availability",
+      "missingness",
+      "exact view overlap",
+      "cosine proximity",
+      "finite score distribution",
+      "ONNX parity",
+      "forward latency",
+      "resource guard"
+    ],
+    "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+    "purpose": "TECHNICAL_DIAGNOSTIC_ONLY_UNLABELED_OFFLINE_THREE_SOURCE",
+    "script_sha256": "10601c04013046b61441bc46d11d84ec172df20fdc1754afdf0128425c2cfba7",
+    "threshold": null,
+    "train_features_sha256": "7e02bbbc66621560a23beb3c80c1d8c1bf790aba0e012df93c1d3c9ec7edfb5e",
+    "train_reference": "prepared-v5 train only; do not score any train, validation or test row",
+    "training_dataset": ".artifacts/scale_upgrade_20261030/prepared-v5"
+  },
+  "original_relative_path": "ai-training/.artifacts/posttrain_shadow_glu207_20261104/plan-v1.json",
+  "original_sha256": "21f752de392730c6932015f3ca607dc6f45586829e6322eac484e019a8cd9c2a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

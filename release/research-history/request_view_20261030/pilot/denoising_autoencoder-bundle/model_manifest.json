@@ -1,0 +1,156 @@
+{
+  "content": {
+    "calibration": {
+      "csic-published-normal-training": {
+        "benign_count": 3804,
+        "calibration_fpr": 0.005257623554153523,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.5852088928222656
+      },
+      "pkdd-mirror-training": {
+        "benign_count": 3876,
+        "calibration_fpr": 0.009545923632610939,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 2.488687038421631
+      },
+      "student-lab": {
+        "benign_count": 3279,
+        "calibration_fpr": 0.009149130832570906,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 7.532898426055908
+      }
+    },
+    "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+    "champion_selected": false,
+    "checkpoint_manifest_sha256": "4ff62cfd1e58e90656d99888720e48524bbceab0a1d2612857e6cbe98c7d6947",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_sha256": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+    "deployment_status": "offline research candidate only",
+    "family_output": "disabled; conditional family heads lack independent validation",
+    "feature_version": "request-structure-v1",
+    "files": {
+      "feature_spec.json": "b816d19d8d4b8906786c385bd61426a7bb3156de51a49717f8306964282de1fa",
+      "model.onnx": "048668678374219e0404815220b9724ca457a8e6c92622bcf64207f51683375f"
+    },
+    "format_version": 1,
+    "input_dtype": "float32",
+    "input_shape": [
+      null,
+      70
+    ],
+    "model_kind": "denoising_autoencoder",
+    "objective": null,
+    "parity": {
+      "all_rows_match": true,
+      "atol": 1e-06,
+      "max_absolute_error": 5.7220458984375e-06,
+      "rows": 115980,
+      "rtol": 1e-05
+    },
+    "profile": "request-structure-v1",
+    "score_semantics": "MSE reconstruction, not attack probability",
+    "threshold": 7.532898426055908,
+    "validation": {
+      "attack": 1536,
+      "benign": 14714,
+      "confusion_matrix": [
+        [
+          14655,
+          59
+        ],
+        [
+          1093,
+          443
+        ]
+      ],
+      "f1": 0.4347399411187438,
+      "fpr": 0.0040097865977980155,
+      "pr_auc_average_precision": 0.7569072125038292,
+      "precision": 0.8824701195219123,
+      "recall": 0.2884114583333333,
+      "rows": 16250,
+      "threshold": 7.532898426055908
+    },
+    "validation_by_source": {
+      "csic-published-normal-training": {
+        "attack": 0,
+        "benign": 4512,
+        "confusion_matrix": [
+          [
+            4512,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.0,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 4512,
+        "threshold": 7.532898426055908
+      },
+      "pkdd-mirror-training": {
+        "attack": 0,
+        "benign": 3644,
+        "confusion_matrix": [
+          [
+            3643,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.00027442371020856203,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 3644,
+        "threshold": 7.532898426055908
+      },
+      "student-lab": {
+        "attack": 1536,
+        "benign": 6558,
+        "confusion_matrix": [
+          [
+            6500,
+            58
+          ],
+          [
+            1093,
+            443
+          ]
+        ],
+        "f1": 0.43495336278841434,
+        "fpr": 0.008844159804818542,
+        "pr_auc_average_precision": 0.7735243143122998,
+        "precision": 0.8842315369261478,
+        "recall": 0.2884114583333333,
+        "rows": 8094,
+        "threshold": 7.532898426055908
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/pilot/denoising_autoencoder-bundle/model_manifest.json",
+  "original_sha256": "1d120861355ba0d2a936d66f4d244106470b74e38bffa0869bd5aaba7b054dc0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

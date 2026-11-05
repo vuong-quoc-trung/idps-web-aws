@@ -1,0 +1,239 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        9740,
+        97
+      ],
+      [
+        18,
+        4014
+      ]
+    ],
+    "f1": 0.9858774407466536,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            4,
+            572
+          ]
+        ],
+        "count": 576,
+        "detected": 572
+      },
+      "benign": {
+        "count": 9837,
+        "false_positives": 97
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            0,
+            576
+          ]
+        ],
+        "count": 576,
+        "detected": 576
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            14,
+            562
+          ]
+        ],
+        "count": 576,
+        "detected": 562
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            0,
+            576
+          ]
+        ],
+        "count": 576,
+        "detected": 576
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            0,
+            576
+          ]
+        ],
+        "count": 576,
+        "detected": 576
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            0,
+            576
+          ]
+        ],
+        "count": 576,
+        "detected": 576
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            9740,
+            97
+          ],
+          [
+            0,
+            576
+          ]
+        ],
+        "count": 576,
+        "detected": 576
+      }
+    },
+    "final_test_metrics_computed": false,
+    "latency_ms": {
+      "native": {
+        "p50": 0.032249,
+        "p95": 0.0340368,
+        "p99": 0.03689480000000002
+      },
+      "onnxruntime": {
+        "p50": 0.021927000000000002,
+        "p95": 0.02304815,
+        "p99": 0.027310400000000026
+      },
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "multiclass_confusion_matrix": [
+      [
+        9740,
+        20,
+        6,
+        0,
+        0,
+        0,
+        42,
+        29
+      ],
+      [
+        0,
+        422,
+        11,
+        1,
+        142,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        576,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        576,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        14,
+        0,
+        0,
+        1,
+        561,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        576,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        576,
+        0
+      ],
+      [
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        572
+      ]
+    ],
+    "multiclass_labels": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "partition": "val",
+    "pr_auc_average_precision": 0.9991647004142636,
+    "pr_auc_trapezoidal": 0.9991646166371958,
+    "precision": 0.9764047676964243,
+    "recall": 0.9955357142857143,
+    "recall_at_fpr_le_1pct": 0.9955357142857143,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.9996675094718516,
+    "rows": 13869,
+    "threshold": 0.004794985055923462
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-bundle/evaluation.json",
+  "original_sha256": "ab30ad29a9fb87b489247688314abb5eebfad4ddd63f017b8da41cbeab3216f1",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

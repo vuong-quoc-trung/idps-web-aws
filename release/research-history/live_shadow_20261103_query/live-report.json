@@ -1,0 +1,186 @@
+{
+  "content": {
+    "bundle_manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+    "end_to_end_ms": {
+      "p50": 185.1116418838501,
+      "p95": 312.63780593872065,
+      "p99": 329.80909347534174
+    },
+    "enforcement_actions": 0,
+    "eve_counts_after_sensor_stop": {
+      "flow": 4,
+      "http": 4,
+      "stats": 1
+    },
+    "eve_event_counts": {
+      "http": 4
+    },
+    "feature_parity_scope": "Python collector + Python inference; Rust/production not measured",
+    "flow_wait_seconds": 0,
+    "inferred": 4,
+    "inferred_requests_per_second_over_probe": 4.530273254859332,
+    "mode": "isolated_live_post_response_shadow",
+    "per_request": [
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 334.10191535949707,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 200,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 136.57569885253906,
+          "student": 126.6317367553711,
+          "suricata": 136.53039932250977
+        },
+        "model_ms": 7.615893,
+        "numeric_v2_live_parity": true,
+        "prior_flow_available": false,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      },
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 191.0078525543213,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 401,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 21.7440128326416,
+          "student": 15.794992446899414,
+          "suricata": 21.455049514770508
+        },
+        "model_ms": 6.789132,
+        "numeric_v2_live_parity": true,
+        "prior_flow_available": false,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      },
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 178.086519241333,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 200,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 22.37081527709961,
+          "student": 17.353534698486328,
+          "suricata": 22.18770980834961
+        },
+        "model_ms": 6.838515,
+        "numeric_v2_live_parity": true,
+        "prior_flow_available": false,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      },
+      {
+        "correlation": "request_id",
+        "duplicate_source_observations": {
+          "nginx": 1,
+          "student": 1,
+          "suricata": 1
+        },
+        "end_to_end_ms": 179.2154312133789,
+        "finite_features": 207,
+        "finite_score": true,
+        "http_status": 401,
+        "inference": true,
+        "log_delay_ms": {
+          "nginx": 16.35289192199707,
+          "student": 11.684179306030273,
+          "suricata": 18.323183059692383
+        },
+        "model_ms": 7.125143,
+        "numeric_v2_live_parity": true,
+        "prior_flow_available": false,
+        "skip_reason": null,
+        "source_count": 3,
+        "sources": [
+          "NGINX",
+          "STUDENT_AUDIT",
+          "SURICATA"
+        ]
+      }
+    ],
+    "post_response_only": true,
+    "probe_elapsed_seconds": 0.8829489469999316,
+    "query_probe": true,
+    "requests_sent": 4,
+    "resource": {
+      "average_cpu_cores_over_probe": 0.2944677615658563,
+      "peak_sampled_rss_bytes": 1296506880,
+      "postgres_container_memory_cap_bytes": 536870912,
+      "postgres_rss_not_in_sample": true,
+      "process_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "sampled_processes": [
+        "AI worker",
+        "Nginx",
+        "Suricata",
+        "Student JVM"
+      ]
+    },
+    "runner_cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "sensor_config_sha256": "7ed72a51bc9ad7e63de674ceef32dd11b0364132753f4f67ff1dbc7c718e0df2",
+    "sensor_drop_free": true,
+    "sensor_drops": 0,
+    "sensor_mode": "Suricata -i lo live pcap in private network namespace",
+    "sensor_packets": 80,
+    "skip_reasons": {},
+    "skipped": 0,
+    "three_source": 4
+  },
+  "original_relative_path": "ai-training/.artifacts/live_shadow_20261103_query/live-report.json",
+  "original_sha256": "6297e030a851f21b51efa8ea5b36722c92bd2e4dcb59c66b45dbae535439055c",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

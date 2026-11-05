@@ -1,0 +1,91 @@
+{
+  "status": "INVENTORY_COMPLETE_NOT_DISTRIBUTION_APPROVAL",
+  "top_level": {
+    ".gitignore": {
+      "files": 1,
+      "logical_bytes": 701
+    },
+    "README.md": {
+      "files": 1,
+      "logical_bytes": 727
+    },
+    "skills-lock.json": {
+      "files": 1,
+      "logical_bytes": 790
+    },
+    "LICENSE": {
+      "files": 1,
+      "logical_bytes": 1077
+    },
+    ".github": {
+      "files": 2,
+      "logical_bytes": 4613
+    },
+    "ai-training": {
+      "files": 39760,
+      "logical_bytes": 21793934475
+    },
+    ".agents": {
+      "files": 181,
+      "logical_bytes": 4273148
+    },
+    ".vscode": {
+      "files": 1,
+      "logical_bytes": 53
+    },
+    ".local-dev": {
+      "files": 143,
+      "logical_bytes": 24836361
+    },
+    ".ruff_cache": {
+      "files": 3,
+      "logical_bytes": 266
+    },
+    "contracts": {
+      "files": 4,
+      "logical_bytes": 11745
+    },
+    "deliverables": {
+      "files": 2,
+      "logical_bytes": 94542
+    },
+    "docker": {
+      "files": 1,
+      "logical_bytes": 422
+    },
+    "security-web": {
+      "files": 5258,
+      "logical_bytes": 2580856644
+    },
+    "student-web": {
+      "files": 6593,
+      "logical_bytes": 182278393
+    },
+    "docs": {
+      "files": 19,
+      "logical_bytes": 1226828
+    },
+    "scripts": {
+      "files": 4,
+      "logical_bytes": 22699
+    }
+  },
+  "classification_counts": {
+    "SOURCE_OR_CONFIG": 797,
+    "LOCAL_UNTRACKED_REVIEW": 188,
+    "ARTIFACT_REQUIRES_CONTENT_REVIEW": 24070,
+    "RAW_EVIDENCE_OR_THIRDPARTY_RESTRICTED_UNTIL_REVIEW": 972,
+    "MODEL_ONNX_CANDIDATE": 53,
+    "MODEL_CHECKPOINT_CANDIDATE": 216,
+    "PRIVATE_AUTH_MATERIAL": 65,
+    "REBUILDABLE_ENV_OR_CACHE": 25139,
+    "SEALED_CONTENT_NOT_READ": 475
+  },
+  "model_candidates": 269,
+  "model_candidate_logical_bytes": 8371213183,
+  "model_unique_content_bytes": 6069652767,
+  "model_unique_objects": 164,
+  "sealed_content_read": false,
+  "secret_values_in_report": false,
+  "private_inventory_sha256": "5e4794d8512f77b9d6b4db46a1bab025229f3ac3ed63509762b1f5f8aad60cce"
+}

@@ -1,0 +1,83 @@
+{
+  "content": {
+    "batch_size": 128,
+    "champion_selection": false,
+    "datasets": {
+      "affine70": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+      "bounded76": "df04a81e767d2ee8f0222c73c7fdf01b2cd018bfc753d5ab78156e600ec74d65"
+    },
+    "external_plan_sha256": "ac32e92171c57e3d33b6a556dd51386b3242f1f782f807d73f629b5a8c03b8dd",
+    "plans": [
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "bounded76",
+        "name": "bounded76-mlp17"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "bounded76",
+        "name": "bounded76-glu17"
+      },
+      {
+        "config": {
+          "family_weight": 0.2,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "encoding": "bounded76",
+        "name": "bounded76-glu256-17"
+      },
+      {
+        "config": {
+          "family_weight": 0.0,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "source_family_balanced",
+          "seed": 17,
+          "total_steps": 300,
+          "training_pool": "multisource_benign",
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "encoding": "affine70",
+        "name": "affine70-glu-binary-only"
+      }
+    ],
+    "sampling_counts_are_not_new_HTTP_requests": true,
+    "selection": "validation only; source-wise FPR<=1% empirical, maximize lab macrofamily recall then AP; if none eligible keep none",
+    "source_sha256": "5a83fc1d4ca562fc54d0d8baa611bf8cacbce4beb5cb08bbd65922cd0ddf4c3d",
+    "steps": 300,
+    "test_partitions_opened": false,
+    "thresholds": "source-wise benign-only calibration target1%; no test tuning"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/study-phase2/preregistered-plan.json",
+  "original_sha256": "7d8df7e82ee9b311838119b9cba8729b5e7dce9d885aed4443cb419c2478acd0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

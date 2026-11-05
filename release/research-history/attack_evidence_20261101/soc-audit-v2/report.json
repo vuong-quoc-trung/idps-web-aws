@@ -1,0 +1,263 @@
+{
+  "content": {
+    "archive_sha256": "66aafa96a69ab54ee061abbb69284444476919295f1b16985122283dae2b3054",
+    "clocks": {
+      "http_max_utc": 1790480422.0,
+      "http_min_utc": 1790470124.0
+    },
+    "counts": {
+      "distinct_complete_log_observations": 193220,
+      "distinct_method_target_user_agent_representations": 6856,
+      "eve_rows": 178941,
+      "operator_label_rows": 6600,
+      "operator_naive_clock_rows": 6600,
+      "operator_rows_with_request_id": 0,
+      "operator_scenario_ids": 45,
+      "parseable_http_observations": 198082,
+      "raw_access_lines": 198122,
+      "repeated_complete_log_observations": 4862,
+      "unparsed_access_lines": 40
+    },
+    "curated": {
+      "dataset": {
+        "labels": {
+          "CMD_INJECTION": 300,
+          "CREDENTIAL_STUFFING": 40,
+          "DIR_ENUM": 40,
+          "DIR_FUZZ": 40,
+          "HEADER_INJECTION": 200,
+          "HPP_ATTACK": 120,
+          "HTTP_SMUGGLING": 40,
+          "ICMP_FLOOD": 160,
+          "ICMP_PING": 300,
+          "LFI_ATTEMPT": 300,
+          "LFI_EVASION": 300,
+          "NORMAL": 300,
+          "PATH_TRAVERSAL": 300,
+          "REFLECTED_XSS": 200,
+          "SLOWLORIS": 40,
+          "SLOW_BRUTEFORCE": 40,
+          "SQLI_ATTEMPT": 300,
+          "SQLI_EVASION": 300,
+          "SQLMAP": 40,
+          "SQLMAP_EVASION": 40,
+          "SSRF_ATTEMPT": 300,
+          "SYN_SCAN": 300,
+          "TCP_SCAN": 225,
+          "UA_ROTATION": 300,
+          "UA_SPOOF": 200,
+          "UDP_SCAN": 1,
+          "WEB_BRUTEFORCE": 300,
+          "WEB_CRAWL": 40,
+          "WEB_FINGERPRINT": 40,
+          "WEB_SCAN": 300,
+          "XSS_ATTEMPT": 300,
+          "XSS_EVASION": 300
+        },
+        "rows": 6006,
+        "source_types": {
+          "nginx": 4617,
+          "suricata": 1389
+        }
+      },
+      "test": {
+        "labels": {
+          "CMD_INJECTION": 67,
+          "CREDENTIAL_STUFFING": 9,
+          "DIR_ENUM": 8,
+          "DIR_FUZZ": 9,
+          "HEADER_INJECTION": 46,
+          "HPP_ATTACK": 27,
+          "HTTP_SMUGGLING": 9,
+          "ICMP_FLOOD": 29,
+          "LFI_ATTEMPT": 68,
+          "LFI_EVASION": 64,
+          "NORMAL": 86,
+          "PATH_TRAVERSAL": 69,
+          "REFLECTED_XSS": 45,
+          "SLOWLORIS": 9,
+          "SLOW_BRUTEFORCE": 9,
+          "SQLI_ATTEMPT": 65,
+          "SQLI_EVASION": 72,
+          "SQLMAP": 9,
+          "SQLMAP_EVASION": 9,
+          "SSRF_ATTEMPT": 72,
+          "SYN_SCAN": 69,
+          "TCP_SCAN": 50,
+          "UA_ROTATION": 59,
+          "UA_SPOOF": 25,
+          "WEB_BRUTEFORCE": 9,
+          "WEB_CRAWL": 10,
+          "WEB_FINGERPRINT": 10,
+          "WEB_SCAN": 70,
+          "XSS_ATTEMPT": 67,
+          "XSS_EVASION": 70
+        },
+        "rows": 1220,
+        "source_types": {
+          "nginx": 1037,
+          "suricata": 183
+        }
+      },
+      "train": {
+        "labels": {
+          "CMD_INJECTION": 233,
+          "CREDENTIAL_STUFFING": 31,
+          "DIR_ENUM": 32,
+          "DIR_FUZZ": 31,
+          "HEADER_INJECTION": 154,
+          "HPP_ATTACK": 93,
+          "HTTP_SMUGGLING": 31,
+          "ICMP_FLOOD": 131,
+          "ICMP_PING": 300,
+          "LFI_ATTEMPT": 232,
+          "LFI_EVASION": 236,
+          "NORMAL": 214,
+          "PATH_TRAVERSAL": 231,
+          "REFLECTED_XSS": 155,
+          "SLOWLORIS": 31,
+          "SLOW_BRUTEFORCE": 31,
+          "SQLI_ATTEMPT": 235,
+          "SQLI_EVASION": 228,
+          "SQLMAP": 31,
+          "SQLMAP_EVASION": 31,
+          "SSRF_ATTEMPT": 228,
+          "SYN_SCAN": 231,
+          "TCP_SCAN": 175,
+          "UA_ROTATION": 241,
+          "UA_SPOOF": 175,
+          "UDP_SCAN": 1,
+          "WEB_BRUTEFORCE": 291,
+          "WEB_CRAWL": 30,
+          "WEB_FINGERPRINT": 30,
+          "WEB_SCAN": 230,
+          "XSS_ATTEMPT": 233,
+          "XSS_EVASION": 230
+        },
+        "rows": 4786,
+        "source_types": {
+          "nginx": 3580,
+          "suricata": 1206
+        }
+      }
+    },
+    "eve_types": {
+      "alert": 28013,
+      "dhcp": 7,
+      "dns": 1184,
+      "fileinfo": 10162,
+      "flow": 119330,
+      "http": 11679,
+      "sip": 142,
+      "ssh": 162,
+      "stats": 1391,
+      "tftp": 236,
+      "tls": 6635
+    },
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "http_methods": {
+      "GET": 197402,
+      "HEAD": 40,
+      "POST": 640
+    },
+    "index_sha256": "6f4b68d0b732e18f58d33ca89469d19c45cbde3a3bc5321571b13c0119bb1617",
+    "label_state_for_new_raw_observations": "unknown",
+    "limits": [
+      "Exact log lines and partial method/URI/UA representations are not independently verified physical request identities.",
+      "Publisher curated labels mix temporal attribution and payload-rule fallback; no per-row label-basis trail is supplied. Nonmatches cannot be benign truth.",
+      "Operator timestamps without timezone and missing request IDs cannot be reliably linked by a guessed offset or nearest timestamp.",
+      "Precomputed alert/signature features, future +/-60s context, and complete-session aggregates are not accepted causal model inputs.",
+      "A single scripted external cyber range is a different publisher environment, not broad production diversity. No model training/evaluation, feature projection, replays or final holdout designation here."
+    ],
+    "member_hashes_sha256": "2e052c35b78b0a317907bebab384aa72f865ca6ce5bf95c2af50a0f24befb202",
+    "operator_labels": {
+      "ACK_FLOOD": 40,
+      "BANNER_GRAB": 40,
+      "CMD_INJECTION": 440,
+      "CREDENTIAL_STUFFING": 40,
+      "DECOY_SCAN": 40,
+      "DIR_ENUM": 40,
+      "DIR_FUZZ": 40,
+      "HEADER_INJECTION": 200,
+      "HPP_ATTACK": 120,
+      "HTTP_SMUGGLING": 40,
+      "ICMP_FLOOD": 80,
+      "ICMP_FRAG": 40,
+      "ICMP_PING": 120,
+      "LFI_ATTEMPT": 400,
+      "LFI_EVASION": 240,
+      "MASSCAN": 40,
+      "NORMAL": 480,
+      "OS_DETECTION": 40,
+      "PATH_TRAVERSAL": 320,
+      "REFLECTED_XSS": 200,
+      "SERVICE_ENUM": 40,
+      "SLOWLORIS": 40,
+      "SLOW_BRUTEFORCE": 40,
+      "SLOW_SYN": 40,
+      "SQLI_ATTEMPT": 600,
+      "SQLI_EVASION": 320,
+      "SQLMAP": 40,
+      "SQLMAP_EVASION": 40,
+      "SSH_BRUTEFORCE": 40,
+      "SSRF_ATTEMPT": 360,
+      "SYN_FLOOD": 40,
+      "SYN_SCAN": 40,
+      "TCP_SCAN": 40,
+      "TLS_FINGERPRINT": 40,
+      "UA_ROTATION": 800,
+      "UA_SPOOF": 200,
+      "UDP_SCAN": 40,
+      "WAF_DETECT": 40,
+      "WEB_BRUTEFORCE": 40,
+      "WEB_CRAWL": 40,
+      "WEB_FINGERPRINT": 40,
+      "WEB_SCAN": 40,
+      "XSS_ATTEMPT": 320,
+      "XSS_EVASION": 320
+    },
+    "operator_statuses_not_exploit_success": {
+      "OK": 6403,
+      "TIMEOUT": 197
+    },
+    "original_split": {
+      "shared_attack_instance_ids": 38,
+      "time_ranges": {
+        "test": [
+          1790470213.0,
+          1790480365.0
+        ],
+        "train": [
+          1790470036.132905,
+          1790480409.0
+        ]
+      }
+    },
+    "publisher_code_evidence_line_numbers": {
+      "future_suricata_window": [
+        266
+      ],
+      "payload_rule_fallback": [
+        711
+      ],
+      "signature_based_network_labels": [
+        749
+      ],
+      "time_proximity_label_assignment": [
+        708
+      ],
+      "unmatched_payload_normal_fallback": [
+        442
+      ]
+    },
+    "request_level_verified_labels": 0,
+    "status": "QUARANTINED_PENDING_REQUEST_BOUND_INTENT_REVIEW",
+    "supervised_training_eligible": 0,
+    "verified_physical_requests": null
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_evidence_20261101/soc-audit-v2/report.json",
+  "original_sha256": "9c0d1ff760261eab3059571de1ccb165b14a29d80061bb5d2cd99368719368f1",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

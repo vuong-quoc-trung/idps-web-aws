@@ -1,0 +1,45 @@
+{
+  "content": {
+    "campaign_ids": 8,
+    "candidate_attack_attempt_views": 3,
+    "candidate_benign_views": 16,
+    "curator_script_sha256": "73d4a7aaa327e7f1b2fd0ef1cfa9fcfc21a82e10417f13ea7e7d7b2d6085eb9d",
+    "eval_ready": false,
+    "factory_script_sha256": "4385db187493da4516e0480dc382d9494afffd2c00c463bb44ac2ac357ef3740",
+    "fit_ready": false,
+    "formal_admitted": 0,
+    "format_version": 1,
+    "independent_applications": 1,
+    "independent_environments": 0,
+    "labels_before_feature_quarantine": {
+      "attack_attempt": 4,
+      "benign": 28
+    },
+    "mixed_label_feature_views": 1,
+    "no_raw_http_or_secret_in_tensor": true,
+    "physical_client_requests_sent": 33,
+    "plan_file_sha256": "36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d",
+    "proxy_correlated": 33,
+    "quality_counts": {
+      "body_redacted": 2,
+      "redacted_query_fields": 1,
+      "rows_on_mixed_views_quarantined": 2,
+      "same_label_view_duplicate_rows": 11,
+      "unknown_quarantined": 1
+    },
+    "report_sha256": "9ce8d37270d50309e85a161a8a1d5732d1b596888996c679eb3f8c7a8674c40f",
+    "request_header_values_observed_for_projection": false,
+    "research_candidate_views_after_quarantine": 19,
+    "run_report_file_sha256": "e7fd267a9a4a3d1650ab4bdb052314756304c764435ee035301ec3a9f613efc0",
+    "scope": "single Juice Shop instance, collector-controlled lab intent; development only",
+    "tensor_sha256": "0c04fb9ea3a3bfe4ada15f1990aa2c392c4fb17a256f83c6a6a7593a11af47be",
+    "unique_complete_request_representations": 33,
+    "unique_numeric76_content512_views_before_quarantine": 20,
+    "unique_numeric76_views": 20,
+    "why_not_fit_or_evaluate": "Single short lab session with one application, no independent campaign/time or enough benign views to support FPR 1%; possible view-label collision and header missingness. Do not score model or select threshold on this cohort."
+  },
+  "original_relative_path": "ai-training/.artifacts/juice_gt_factory_20261104/curated/report.json",
+  "original_sha256": "04aaca4b47c88d2856e8969f0c689d554f56b52f53b13bc20fe8514245472fa3",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

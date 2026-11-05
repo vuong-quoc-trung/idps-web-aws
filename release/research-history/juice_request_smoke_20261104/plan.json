@@ -1,0 +1,43 @@
+{
+  "content": {
+    "checkpoint_manifest_sha256": "43c32a47970dcd26879124328e933fbaed2d96afb31959e73a5d66a7b6583676",
+    "content_availability": {
+      "body_nonempty": 2,
+      "body_redacted": 2,
+      "redacted_query_fields": 1,
+      "visible_query_fields": 18
+    },
+    "evaluator_sha256": "2b20098030f5ce67c8f948b24e30d2b8dc2a3457b1f3f411d24cb40c5efc4d21",
+    "files_sha256": {
+      "encoder": "4031f4898c8510221630eed00ccec95cb4706186aed2f99e184fd97ee3f63d27",
+      "juice_curation": "04aaca4b47c88d2856e8969f0c689d554f56b52f53b13bc20fe8514245472fa3",
+      "juice_curator_v1": "73d4a7aaa327e7f1b2fd0ef1cfa9fcfc21a82e10417f13ea7e7d7b2d6085eb9d",
+      "juice_factory_code": "4385db187493da4516e0480dc382d9494afffd2c00c463bb44ac2ac357ef3740",
+      "juice_plan": "36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d",
+      "juice_run": "e7fd267a9a4a3d1650ab4bdb052314756304c764435ee035301ec3a9f613efc0",
+      "numeric_encoder": "740813e7ab15a2cd27cd13e6471331970a6c1ff2bf0f8799853d432abc991312",
+      "waf_curation": "0b86a38cb92a064d21a9131dd16fc55cfb2c0e18f6bd3441f6afea3147cd83f8",
+      "waf_study_plan": "3ea696c6892becd1de80c994d6c7643fd77488777f27c1790fdd05a3c482946a",
+      "waf_study_report": "18ef4823b8918ada4502767be229ff005398ada9befcb84aa3f09896fd6a4c81",
+      "waf_tensor": "be908d65743dcbbf8a996edf1e92be2048656e53df365f42828499f30f52ac61"
+    },
+    "format_version": 1,
+    "header_values_observed": false,
+    "juice_labels": "28 benign workflow, 4 collector-controlled attack attempts, 1 unknown; exploit-success subset",
+    "juice_mixed_label_views": 1,
+    "juice_unique_views": 21,
+    "juice_views_overlapping_waf_train": 0,
+    "metrics": "request and unique-view; UNKNOWN excluded; mixed-label views flagged separately",
+    "model_task": "WAF publisher NORMAL/ANOMALOUS; positive score means anomalous candidate",
+    "no_network_or_new_requests": true,
+    "no_threshold_or_model_selection_on_juice": true,
+    "operating_rule": "score > frozen WAF publisher-normal calibration p99",
+    "plan_sha256": "54463677b4cc9ddeeefffb36e88a2fcd34e2c0659585e64999b611ea469064f5",
+    "scope": "single-application historical lab attack smoke; not independent recall",
+    "threshold": 0.9416964650154114
+  },
+  "original_relative_path": "ai-training/.artifacts/juice_request_smoke_20261104/plan.json",
+  "original_sha256": "06e298559a5ce9016bd8de347f1573106bd7dcf11d7a7ebf40c9d8f097209a06",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

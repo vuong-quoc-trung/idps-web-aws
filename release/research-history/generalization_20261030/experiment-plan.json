@@ -1,0 +1,33 @@
+{
+  "content": {
+    "baselines": "Reuse immutable scale pilot MLP253k and GLU9675784; same data/seed/batch652updates; differing regularizers/optimizer prevent isolated architecture claim",
+    "batch_size": 128,
+    "data": "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5",
+    "external_challenge": "Full published CSIC test with fixed lab thresholds; no HPO on external metrics; original3-source final test stays sealed",
+    "format_version": 1,
+    "frozen_before_external_scores": true,
+    "max_epochs_per_session": 2,
+    "official_training": false,
+    "seed": 17,
+    "selection": "Previously inspected val selection groups are development only; choose no champion; freeze before public challenge",
+    "steps_per_candidate": 652,
+    "variants": {
+      "glu_faster_start": {
+        "dropout": 0.1,
+        "label_smoothing": 0.005,
+        "learning_rate": 0.0006,
+        "weight_decay": 0.0001
+      },
+      "glu_low_smoothing": {
+        "dropout": 0.1,
+        "label_smoothing": 0.005,
+        "learning_rate": 0.0003,
+        "weight_decay": 0.0001
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/experiment-plan.json",
+  "original_sha256": "9c6cd8159fa6ad08633061fa199d406fd1f94a1e264bf08f23c6f10d673fe210",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

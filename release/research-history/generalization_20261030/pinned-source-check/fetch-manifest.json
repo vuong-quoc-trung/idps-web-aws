@@ -1,0 +1,37 @@
+{
+  "content": {
+    "doi": "10.60895/redata/RWUUSV",
+    "files": [
+      {
+        "file": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/pinned-source-check/csic_2010_anomalousTrafficTest.txt",
+        "label": 1,
+        "partition": "test",
+        "sha256": "ec77d784966896330869c5b596ede6a716101c14b5f139144915bb10822a03e1",
+        "source_id": "csic_2010_anomalousTrafficTest"
+      },
+      {
+        "file": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/pinned-source-check/csic_2010_normalTrafficTest.txt",
+        "label": 0,
+        "partition": "test",
+        "sha256": "89600eea871cd0770544a96f6580da14874c4a5211372ad56d23002e1c572603",
+        "source_id": "csic_2010_normalTrafficTest"
+      },
+      {
+        "file": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_20261030/pinned-source-check/csic_2010_normalTrafficTraining.txt",
+        "label": 0,
+        "partition": "train",
+        "sha256": "d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000",
+        "source_id": "csic_2010_normalTrafficTraining"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "metadata_sha256": "5a78895f14e18e9cf3299a18847d3d54a087b2fda6198b53c0ab1a91a09cfa08",
+    "registry_sha256": "eeecd3ea50b3449b0593aad38dab748ad4dfc21978b774ebfc1107ca458b28b3"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/pinned-source-check/fetch-manifest.json",
+  "original_sha256": "896496a66e04595a996cc07bef6d3f2a0264ef222f1c10cc6e90a507be78cfe3",
+  "redactions": {
+    "strings_changed": 3
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

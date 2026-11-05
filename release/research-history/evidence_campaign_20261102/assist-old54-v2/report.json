@@ -1,0 +1,28 @@
+{
+  "content": {
+    "assist_sha256": "6c79e97377e3d6323c72f2fd1552bfc9a63bef1c14268bb6ad89b01c117f2471",
+    "automatic_verified_labels": 0,
+    "blind_queue_sha256": "85c433dc4bcdf90bcbd9a0d01091a41fa3a50804d9d5eb1d880fde652e4dbf3d",
+    "capture_report_sha256": "3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b",
+    "counts": {
+      "cue_on_collector_attack": 18,
+      "cue_on_collector_benign": 6,
+      "post_body_unobserved": 6,
+      "query_visible_private": 30,
+      "requests": 54,
+      "syntax_cue_overlap": 0,
+      "three_source": 0
+    },
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "limits": "Blind facts and separate unblind proposals contain no independent semantic decision. Reviewers inspect private request context first; neither file may become training ground truth.",
+    "proposal_sha256": "27cbe8557c4ade8f36ecf4a5e2c50654471d9f20214a6875dc49a53e9566f938",
+    "status": "AUTOMATED_EVIDENCE_CHECKED_SEMANTIC_REVIEW_PENDING",
+    "three_source_report_sha256": null,
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/assist-old54-v2/report.json",
+  "original_sha256": "dbbc3d2fc6d896238f7539e88f8de49fff6af2fbb58ebc87830637774f406332",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

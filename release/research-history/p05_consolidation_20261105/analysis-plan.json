@@ -1,0 +1,34 @@
+{
+  "content": {
+    "capture_plan_sha256": "86ce7df008cd7a64a09b59aaf045dd65a160baad335d9b0907d27737e93f654d",
+    "diagnostics": [
+      "exact baseline replay111",
+      "header reverse/sorted111 each",
+      "command header removal with original versus new L2 denominator12",
+      "XSS name-to-q numeric-only and content-only factor12 each",
+      "XSS void-to-alert lexical probe12",
+      "three canonical command text probes"
+    ],
+    "inputs_sha256": {
+      "evaluation/evaluation-report.json": "f49741c5ec726e5afe0b4bda164d5c5d8330e54421942cd9e31817fba6a4e2d6",
+      "header-diagnostic-report.json": "fadd7cedb0b80b9776e09d59efa5d7d7c017742d856d15a8abd4633bdec0dc97",
+      "suricata/comparison-report.json": "11c4d80fa91c1ad27bbf5783d40a1b6e8693aea310b41606e35998d82c22aed2"
+    },
+    "kernel_limits": {
+      "cpu.max": "2500 10000",
+      "memory.max": "1073741824",
+      "memory.swap.max": "0"
+    },
+    "limits": "Hybrid tensors and changed requests are mechanism probes, never new captured requests, quality estimates or a threshold search",
+    "pacing_seconds": 0.01,
+    "plan_sha256": "746e4a23f49ca1d75f6ac903ab1c28df8cb2acc648c9bc7932a588451bd81f2c",
+    "scope": "POST_HOC_ON_EXPOSED_DEVELOPMENT_ONLY",
+    "script_sha256": "d65519811cdff8b6ffceacd9c2094de9eedd4cc0f4915fe853b0b5a0cf0bd3e5",
+    "training_updates": 0,
+    "worker_threads": 1
+  },
+  "original_relative_path": "ai-training/.artifacts/p05_consolidation_20261105/analysis-plan.json",
+  "original_sha256": "8877c984a22bd457f0e3cae86e90122737e607b6af57e9987b67112e201c2be8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

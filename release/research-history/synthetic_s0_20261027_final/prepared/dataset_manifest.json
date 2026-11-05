@@ -1,0 +1,95 @@
+{
+  "content": {
+    "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+    "feature_count": 125,
+    "feature_rows": 960,
+    "files": {
+      "feature_spec.json": {
+        "bytes": 7362,
+        "sha256": "1eec80eae30c3e5ec8e59276c3d2c3b4b90e18c0f70da9c7f54c0a09734edc43"
+      },
+      "features.parquet": {
+        "bytes": 110097,
+        "sha256": "d704297ecff5a890813442bd5ed6a8652168b5386db4271ab9c2c81762312a57"
+      },
+      "observations.parquet": {
+        "bytes": 292621,
+        "sha256": "471ec6f46d34d188d1260efa82892a67851f2d3d8a82addc665052efe0eaba5c"
+      },
+      "requests.parquet": {
+        "bytes": 144769,
+        "sha256": "258185cecbc01fb7ffc9aec8894a62bf483231ba949fbed1ada884a4fdaacc34"
+      }
+    },
+    "format_version": 1,
+    "label_distribution": {
+      "test": {
+        "behavioral_anomaly": 24,
+        "benign": 24,
+        "brute_force": 24,
+        "cmd_injection": 24,
+        "path_traversal": 24,
+        "scanner_recon": 24,
+        "sqli": 24,
+        "xss": 24
+      },
+      "train": {
+        "behavioral_anomaly": 72,
+        "benign": 72,
+        "brute_force": 72,
+        "cmd_injection": 72,
+        "path_traversal": 72,
+        "scanner_recon": 72,
+        "sqli": 72,
+        "xss": 72
+      },
+      "val": {
+        "behavioral_anomaly": 24,
+        "benign": 24,
+        "brute_force": 24,
+        "cmd_injection": 24,
+        "path_traversal": 24,
+        "scanner_recon": 24,
+        "sqli": 24,
+        "xss": 24
+      }
+    },
+    "label_manifest_sha256": "23f390e58bf50fe94d0789d2e81eb34e4d168a108e29bc725705adb792659eb3",
+    "normalizer_version": "ai-normalizer-1",
+    "note": "Synthetic metrics verify plumbing only when the capture is synthetic; unknown/weak labels never trained",
+    "parent_dataset_sha256": "44e9afe9c2383800c256345df641464ddda451fb2a8be225d0f7cf1fd8e5d53a",
+    "redaction_key_fingerprint": "59c18cb443bb77a20c3fc7d1692886654e1734657f7f81fd1da4802d1d2728af",
+    "rows": {
+      "test": 192,
+      "train": 576,
+      "val": 192
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "split": {
+      "cutoffs": [
+        1767235847.3612952,
+        1767239447.346566
+      ],
+      "embargo_seconds": 300,
+      "group_columns": [
+        "campaign_key",
+        "client_key",
+        "user_key",
+        "session_key"
+      ],
+      "groups": 15,
+      "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+      "reviewed_rows": {
+        "test": 192,
+        "train": 576,
+        "val": 192
+      }
+    },
+    "stage": "prepared"
+  },
+  "original_relative_path": "ai-training/.artifacts/synthetic_s0_20261027_final/prepared/dataset_manifest.json",
+  "original_sha256": "3a74e1eaadb006d10c2c04cdb8f4631375a273504aad735549d587702ee3357c",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}
