@@ -10,7 +10,8 @@ public class SecurityAuditService {
     private final AuditJsonlExporter exporter;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SecurityAuditService.class);
 
-    public void record(AuditEvent event) {
+    public void record(AuditEvent event) { record(event, null); }
+    public void record(AuditEvent event, SecuritySignals signals) {
         try { database.record(event); }
         catch (RuntimeException e) {
             String state = "unknown";
@@ -21,7 +22,7 @@ public class SecurityAuditService {
             // Never include exception text, request fields, paths or secrets in this warning.
             LOG.warn("Security audit database write failed: type={}, SQLSTATE={}", e.getClass().getSimpleName(), state);
         }
-        try { exporter.append(event); }
+        try { exporter.append(event, signals); }
         catch (java.io.IOException | RuntimeException e) {
             LOG.warn("Security audit JSONL write failed: type={}; inspect exporter permissions/capacity", e.getClass().getSimpleName());
         }

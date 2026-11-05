@@ -20,7 +20,7 @@ class SecurityRequestFilterTests {
             assertThat(response.getStatus()).isEqualTo(i == 20 ? 429 : 401);
             if (i == 20) assertThat(response.getHeader("Retry-After")).isEqualTo("60");
         }
-        verify(audit).record(argThat(e -> e.statusCode() == 429 && "192.0.2.1".equals(e.clientIp()) && e.queryString() == null));
+        verify(audit).record(argThat(e -> e.statusCode() == 429 && "192.0.2.1".equals(e.clientIp()) && e.queryString() == null), any());
     }
     @Test void windowExpiresAndClientsAreIndependent() {
         Clock clock = mock(Clock.class);
@@ -44,7 +44,7 @@ class SecurityRequestFilterTests {
                 var response = new MockHttpServletResponse();
                 filter.doFilter(request, response, (req, res) -> ((jakarta.servlet.http.HttpServletResponse)res).setStatus(204));
                 assertThat(response.getHeader("X-Request-Id")).isEqualTo("edge-456");
-                if (includeReads) verify(audit).record(argThat(e -> "192.0.2.3".equals(e.clientIp()) && "edge-456".equals(e.requestId()) && "Mozilla".equals(e.userAgent()) && e.timestamp()!=null));
+                if (includeReads) verify(audit).record(argThat(e -> "192.0.2.3".equals(e.clientIp()) && "edge-456".equals(e.requestId()) && "Mozilla".equals(e.userAgent()) && e.timestamp()!=null), any());
                 else verifyNoInteractions(audit);
             }
         }

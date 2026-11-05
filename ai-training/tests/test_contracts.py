@@ -169,3 +169,19 @@ def test_missing_shard_and_mathematical_entropy_cases(tmp_path, prepared):
     (target / "features.parquet").unlink()
     with pytest.raises(ValueError, match="Missing"):
         verify_dataset(target)
+
+
+def test_security_decisions_do_not_change_ai_features_or_labels(tmp_path):
+    fixture = load_json(REPO_ROOT / "contracts/fixtures/student-audit-v1.jsonl")
+    a, b = tmp_path / "old.jsonl", tmp_path / "new.jsonl"
+    a.write_text(json.dumps(fixture) + "\n")
+    fixture["security"] = {
+        "reasons": ["LOGIN_FAILED"],
+        "account_hmac": "hmac-sha256:" + "a" * 64,
+        "object_hmac": None,
+        "forbidden_fields": [],
+    }
+    b.write_text(json.dumps(fixture) + "\n")
+    assert list(read_events([Input("canonical", a)], KEY)) == list(
+        read_events([Input("canonical", b)], KEY)
+    )

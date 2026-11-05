@@ -348,6 +348,7 @@ async fn ingest_line(
             .bind(&key).bind(&event.schema_version).bind(&event.source).bind(&event.source_instance).bind(&event.event_id).bind(event.timestamp).bind(&event.request_id).bind(event.client_ip.map(|v|v.to_string())).bind(event.dest_ip.map(|v|v.to_string())).bind(&event.event_type).bind(&event.http_method).bind(&event.uri_path).bind(event.status_code.map(i32::from)).bind(serde_json::to_value(&event)?).execute(&mut **tx).await?;
     }
     application_detection::observe(tx, state, event, &key).await?;
+    crate::security_detection::observe(tx, event, &key).await?;
     if let Some(native) = &parsed.native_alert {
         save_alert(
             tx,
@@ -465,6 +466,7 @@ pub async fn process_file(state: &AppState, source: &str, path: &FsPath) -> Resu
 }
 
 pub async fn prune(state: &AppState) -> Result<()> {
+    sqlx::query("DELETE FROM application_security_observations WHERE received_at < now()-interval '10 minutes'").execute(&state.pool).await?;
     sqlx::query(
         "DELETE FROM application_observations WHERE received_at<now()-interval '5 minutes'",
     )

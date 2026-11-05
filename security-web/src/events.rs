@@ -29,7 +29,18 @@ pub struct QueryFeatures {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct SecuritySignals {
+    pub reasons: Vec<String>,
+    pub account_hmac: Option<String>,
+    pub object_hmac: Option<String>,
+    pub forbidden_fields: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CanonicalEvent {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub security: Option<SecuritySignals>,
     pub schema_version: String,
     pub event_id: String,
     pub source: String,
@@ -77,6 +88,7 @@ pub struct CanonicalEvent {
 impl CanonicalEvent {
     pub fn new(source: &str, timestamp: DateTime<Utc>) -> Self {
         Self {
+            security: None,
             schema_version: SCHEMA_VERSION.into(),
             event_id: String::new(),
             source: source.into(),
@@ -133,9 +145,66 @@ impl CanonicalEvent {
         if let Some(id) = &self.request_id {
             anyhow::ensure!(valid_request_id(id), "Invalid request ID");
         }
-        for value in [&self.user_id, &self.username, &self.session_hmac]
-            .into_iter()
-            .flatten()
+        if let Some(security) = &self.security {
+            anyhow::ensure!(
+                self.source == "STUDENT_AUDIT" && self.event_type == "http_request",
+                "Security signals require Student audit"
+            );
+            anyhow::ensure!(
+                security
+                    .reasons
+                    .iter()
+                    .collect::<std::collections::HashSet<_>>()
+                    .len()
+                    == security.reasons.len()
+                    && !security.reasons.is_empty()
+                    && security.reasons.len() <= 7
+                    && security.reasons.iter().all(|r| matches!(
+                        r.as_str(),
+                        "LOGIN_FAILED"
+                            | "OBJECT_ACCESS_DENIED"
+                            | "MASS_ASSIGNMENT"
+                            | "PRIVILEGE_DENIED"
+                            | "INVALID_SESSION"
+                            | "SESSION_REVOKED"
+                            | "WORKFLOW_DENIED"
+                    )),
+                "Invalid security reason"
+            );
+            anyhow::ensure!(
+                security
+                    .forbidden_fields
+                    .iter()
+                    .collect::<std::collections::HashSet<_>>()
+                    .len()
+                    == security.forbidden_fields.len()
+                    && security.forbidden_fields.len() <= 7
+                    && security.forbidden_fields.iter().all(|f| matches!(
+                        f.as_str(),
+                        "role"
+                            | "isAdmin"
+                            | "ownerId"
+                            | "userId"
+                            | "studentId"
+                            | "authorities"
+                            | "permissions"
+                    )),
+                "Invalid forbidden field"
+            );
+        }
+        for value in [
+            self.user_id.as_deref(),
+            self.username.as_deref(),
+            self.session_hmac.as_deref(),
+            self.security
+                .as_ref()
+                .and_then(|s| s.account_hmac.as_deref()),
+            self.security
+                .as_ref()
+                .and_then(|s| s.object_hmac.as_deref()),
+        ]
+        .into_iter()
+        .flatten()
         {
             anyhow::ensure!(
                 value
@@ -678,7 +747,14 @@ mod contract_tests {
     #[test]
     fn canonical_fixture_and_typed_fields_match_the_frozen_contract() {
         let fixture = include_str!("../../contracts/fixtures/student-audit-v1.jsonl");
-        let event: CanonicalEvent = serde_json::from_str(fixture).unwrap();
+        let mut event: CanonicalEvent = serde_json::from_str(fixture).unwrap();
+        event.validate().unwrap();
+        event.security = Some(SecuritySignals {
+            reasons: vec!["LOGIN_FAILED".into()],
+            account_hmac: None,
+            object_hmac: None,
+            forbidden_fields: vec![],
+        });
         event.validate().unwrap();
         let schema: Value = serde_json::from_str(include_str!(
             "../../contracts/canonical-event-v1.schema.json"

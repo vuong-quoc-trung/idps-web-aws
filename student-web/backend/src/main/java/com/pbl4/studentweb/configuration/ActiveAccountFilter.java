@@ -27,6 +27,11 @@ final class ActiveAccountFilter extends OncePerRequestFilter {
                     && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + u.getRole().name())))
                     .isPresent();
             if (!active) {
+                var signals = com.pbl4.studentweb.accesslog.service.SecuritySignals.get(request);
+                signals.mark(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.SESSION_REVOKED);
+                if (account.filter(u -> !u.isEnabled() || u.isPasswordSetupRequired()).isPresent()
+                        && !java.util.Set.of("GET", "HEAD", "OPTIONS").contains(request.getMethod()))
+                    signals.mark(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.WORKFLOW_DENIED);
                 new SecurityContextLogoutHandler().logout(request, response, auth);
                 SecurityConfiguration.error(response, 401, "Authentication required");
                 return;

@@ -64,7 +64,11 @@ public class EmergencyContactService {
     }
     private EmergencyContact require(Long studentId, Long id) {
         return repository.findByIdAndStudentId(id, studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("EmergencyContact"));
+                .orElseThrow(() -> {
+                    if (repository.existsById(id))
+                        com.pbl4.studentweb.accesslog.service.SecuritySignals.objectDenied("EmergencyContact", id);
+                    return new ResourceNotFoundException("EmergencyContact");
+                });
     }
     private void apply(EmergencyContact e, EmergencyContactRequest r) {
         e.setFullName(optional(r.fullName()));

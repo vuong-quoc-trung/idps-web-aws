@@ -7,6 +7,7 @@ mod firewall;
 mod ingest;
 mod metrics;
 mod network;
+mod security_detection;
 use anyhow::{Context, Result, bail};
 use axum::{
     Extension, Json, Router,
@@ -461,7 +462,7 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>
     rules.extend(application_detection::RULES.iter().map(|r| {
         serde_json::json!({
             "sid":null,"code":r.code,"source":"STUDENT_AUDIT","name":r.name,
-            "category":"Application Behavior","severity":if r.code == "APP-1010" {3} else {2},"auto_block_eligible":false,
+            "category":"Application Behavior","severity":if r.code == "APP-1010" {3} else if matches!(r.code, "APP-1013"|"APP-1014") {1} else {2},"auto_block_eligible":false,
             "action_mode":"ALERT_ONLY","threshold":r.threshold,"window_seconds":r.seconds
         })
     }));

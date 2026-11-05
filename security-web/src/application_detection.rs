@@ -12,7 +12,7 @@ pub struct Rule {
     pub threshold: i64,
     pub seconds: i64,
 }
-pub const RULES: [Rule; 10] = [
+pub const RULES: [Rule; 16] = [
     Rule {
         code: "APP-1001",
         name: "Repeated Authentication Failures",
@@ -71,6 +71,42 @@ pub const RULES: [Rule; 10] = [
         code: "APP-1010",
         name: "HTTP Method Probing",
         threshold: 5,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1011",
+        name: "Password Spraying",
+        threshold: 8,
+        seconds: 300,
+    },
+    Rule {
+        code: "APP-1012",
+        name: "BOLA / IDOR Attempts",
+        threshold: 5,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1013",
+        name: "Mass Assignment Attempt",
+        threshold: 1,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1014",
+        name: "Unauthorized Privilege Change",
+        threshold: 1,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1015",
+        name: "Invalid or Revoked Session Reuse",
+        threshold: 10,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1016",
+        name: "Business Workflow Abuse",
+        threshold: 1,
         seconds: 60,
     },
 ];
@@ -203,7 +239,7 @@ pub async fn observe(
     }
     let rows=sqlx::query_as::<_,Observation>("SELECT occurred_at,uri_path,status_code,outcome,http_method FROM application_observations WHERE source_instance=$1 AND client_ip=$2::inet AND occurred_at>$3 AND occurred_at<=$4 ORDER BY occurred_at")
         .bind(&event.source_instance).bind(ip.to_string()).bind(watermark-chrono::Duration::seconds(120)).bind(watermark).fetch_all(&mut **tx).await?;
-    for (index, rule) in RULES.iter().enumerate() {
+    for (index, rule) in RULES.iter().take(10).enumerate() {
         let current = Observation {
             occurred_at: event.timestamp,
             uri_path: event.uri_path.clone(),

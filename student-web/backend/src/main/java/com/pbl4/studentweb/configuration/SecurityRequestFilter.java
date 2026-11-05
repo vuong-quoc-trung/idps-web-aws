@@ -60,7 +60,7 @@ final class SecurityRequestFilter extends OncePerRequestFilter {
                 var session = request.getSession(false);
                 audit.record(new AuditEvent(UUID.randomUUID().toString(), Instant.now(), client.requestId(), client.clientIp(), client.peerIp(),
                     userId, username, role, session == null ? null : session.getId(), method, path, request.getQueryString(),
-                    failed ? 500 : response.getStatus(), (System.nanoTime() - start) / 1000000, request.getHeader("User-Agent"), false));
+                    failed ? 500 : response.getStatus(), (System.nanoTime() - start) / 1000000, request.getHeader("User-Agent"), false), com.pbl4.studentweb.accesslog.service.SecuritySignals.get(request));
             }
         }
     }
