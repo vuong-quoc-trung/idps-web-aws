@@ -22,6 +22,11 @@ cho inference. Monitor tài nguyên ở ngoài clone chỉ là test harness. Ch�
 trên máy đồng nghiệp. Runtime source đã kiểm là revision trên; các commit tiếp
 theo chỉ ghi báo cáo và xác nhận nhánh, không đổi code đã kiểm.
 
+Nhánh `feature/ai-idps-shadow-integration` đã được tạo/push và kiểm remote SHA
+tại commit bằng chứng `d036cc2225428904caaa4757b9a0cf930e5c4708`; các commit
+xác nhận tài liệu sau đó được fast-forward lên cả hai nhánh. Đây chỉ là chuẩn bị
+nhánh, chưa sửa Web, chưa integration/deploy. Training handoff vẫn **PARTIAL**.
+
 ## Clone → setup → verify → run
 
 ```sh
