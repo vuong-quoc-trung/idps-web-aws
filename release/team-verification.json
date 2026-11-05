@@ -1,14 +1,14 @@
 {
-  "status": "REMOTE_SOURCE_MODELS_VERIFIED_BRANCH_PENDING",
+  "status": "TEAM_PUBLIC_INFERENCE_HANDOFF_VERIFIED",
   "source_base_revision": "09a12e46329fbb98ccba1fd1c884a79bf49ab2b4",
   "release_tag": "ai-research-team-20261105",
   "release_published": true,
   "source_push_verified": true,
-  "TEAM_REPOSITORY_READY": false,
+  "TEAM_REPOSITORY_READY": true,
   "REMOTE_CLONE_VERIFIED": true,
   "MODEL_RESTORE_VERIFIED": true,
   "TRAINING_HANDOFF": "PARTIAL",
-  "INTEGRATION_BRANCH_READY": false,
+  "INTEGRATION_BRANCH_READY": true,
   "local_prepublication": {
     "method": "Local clone of original Git HEAD plus explicit reviewed uncommitted source overlay; fresh managed Python/venv/cache; local checksum-pinned assets. Not remote clean-clone acceptance.",
     "bootstrap": {
@@ -816,6 +816,10 @@
   },
   "integration_branch": {
     "name": "feature/ai-idps-shadow-integration",
-    "status": "PENDING_CREATION_AFTER_THIS_VERIFICATION_COMMIT"
-  }
+    "status": "CREATED_PUSHED_AND_REMOTE_SHA_VERIFIED",
+    "created_from_revision": "d036cc2225428904caaa4757b9a0cf930e5c4708",
+    "remote_sha_at_creation": "d036cc2225428904caaa4757b9a0cf930e5c4708",
+    "later_changes": "Only handoff confirmation documentation; runtime source remains the verified adfce1b revision."
+  },
+  "readiness_scope": "Public offline inference/research handoff, with restricted raw/private training data explicitly deferred by user. Not full private-corpus reproducibility or production detection certification."
 }
