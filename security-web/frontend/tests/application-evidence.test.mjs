@@ -25,3 +25,20 @@ test("APP evidence preserves explicit recommendation and bounded display fields"
     "ALERT_ONLY",
   );
 });
+
+test("new application rules render aggregates and reject unknown codes", () => {
+  for (const code of [
+    "APP-1006",
+    "APP-1007",
+    "APP-1008",
+    "APP-1009",
+    "APP-1010",
+  ]) {
+    assert.equal(
+      applicationEvidence(JSON.stringify({ rule_code: code, event_count: 5 }))
+        .code,
+      code,
+    );
+  }
+  assert.equal(applicationEvidence('{"rule_code":"APP-1011"}'), null);
+});

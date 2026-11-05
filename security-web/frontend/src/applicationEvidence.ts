@@ -4,7 +4,7 @@ export function applicationEvidence(raw: string) {
     if (
       !v ||
       typeof v.rule_code !== "string" ||
-      !/^APP-100[1-5]$/.test(v.rule_code)
+      !/^APP-(?:100[1-9]|1010)$/.test(v.rule_code)
     )
       return null;
     return {
