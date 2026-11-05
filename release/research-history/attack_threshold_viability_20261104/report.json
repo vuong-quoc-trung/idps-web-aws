@@ -1,0 +1,293 @@
+{
+  "content": {
+    "attack_flagged_train_views": 12069,
+    "attack_score_distribution": {
+      "max": 0.999862790107727,
+      "median": 0.9977960288524628,
+      "min": 0.05686759948730469,
+      "p05": 0.9869351089000702,
+      "p25": 0.996592253446579,
+      "p75": 0.9984298795461655,
+      "p95": 0.9992293864488602
+    },
+    "attack_unique_train_views": 12096,
+    "benign_flagged_train_views": 32,
+    "benign_score_distribution": {
+      "max": 0.9967360496520996,
+      "median": 0.015658438205718994,
+      "min": 0.004616439342498779,
+      "p05": 0.012259280681610108,
+      "p25": 0.014513373374938965,
+      "p75": 0.01674485206604004,
+      "p95": 0.019117414951324463
+    },
+    "benign_unique_train_views": 29489,
+    "by_family": {
+      "behavioral_anomaly": {
+        "below_threshold_prior_flow_available": 1,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 0.9994212962962963,
+        "flagged": 1727,
+        "prior_flow_available": 1728,
+        "scores": {
+          "max": 0.9992030262947083,
+          "median": 0.9960715174674988,
+          "min": 0.5025356411933899,
+          "p05": 0.9606124818325043,
+          "p25": 0.9923369735479355,
+          "p75": 0.9973887950181961,
+          "p95": 0.9981772899627686
+        },
+        "unique_train_views": 1728
+      },
+      "benign": {
+        "below_threshold_prior_flow_available": 25436,
+        "below_threshold_prior_flow_missing": 4021,
+        "flag_rate_train_only": 0.0010851503950625658,
+        "flagged": 32,
+        "prior_flow_available": 25468,
+        "scores": {
+          "max": 0.9967360496520996,
+          "median": 0.015658438205718994,
+          "min": 0.004616439342498779,
+          "p05": 0.012259280681610108,
+          "p25": 0.014513373374938965,
+          "p75": 0.01674485206604004,
+          "p95": 0.019117414951324463
+        },
+        "unique_train_views": 29489
+      },
+      "brute_force": {
+        "below_threshold_prior_flow_available": 26,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 0.9849537037037037,
+        "flagged": 1702,
+        "prior_flow_available": 1728,
+        "scores": {
+          "max": 0.9997878670692444,
+          "median": 0.9954628944396973,
+          "min": 0.05686759948730469,
+          "p05": 0.9530094683170319,
+          "p25": 0.9912958443164825,
+          "p75": 0.9976061582565308,
+          "p95": 0.9995467215776443
+        },
+        "unique_train_views": 1728
+      },
+      "cmd_injection": {
+        "below_threshold_prior_flow_available": 0,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 1.0,
+        "flagged": 1728,
+        "prior_flow_available": 1492,
+        "scores": {
+          "max": 0.9998324513435364,
+          "median": 0.9982829689979553,
+          "min": 0.5844762921333313,
+          "p05": 0.9952594488859177,
+          "p25": 0.9974749237298965,
+          "p75": 0.9988489896059036,
+          "p95": 0.999370414018631
+        },
+        "unique_train_views": 1728
+      },
+      "path_traversal": {
+        "below_threshold_prior_flow_available": 0,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 1.0,
+        "flagged": 1728,
+        "prior_flow_available": 1509,
+        "scores": {
+          "max": 0.9998167157173157,
+          "median": 0.9979345798492432,
+          "min": 0.7743134498596191,
+          "p05": 0.9953972160816192,
+          "p25": 0.9973185956478119,
+          "p75": 0.9983179122209549,
+          "p95": 0.9990293264389039
+        },
+        "unique_train_views": 1728
+      },
+      "scanner_recon": {
+        "below_threshold_prior_flow_available": 0,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 1.0,
+        "flagged": 1728,
+        "prior_flow_available": 1513,
+        "scores": {
+          "max": 0.999850869178772,
+          "median": 0.9981782138347626,
+          "min": 0.6562098264694214,
+          "p05": 0.996239322423935,
+          "p25": 0.9976250380277634,
+          "p75": 0.9986575394868851,
+          "p95": 0.9992645472288132
+        },
+        "unique_train_views": 1728
+      },
+      "sqli": {
+        "below_threshold_prior_flow_available": 0,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 1.0,
+        "flagged": 1728,
+        "prior_flow_available": 1502,
+        "scores": {
+          "max": 0.999862790107727,
+          "median": 0.9981098473072052,
+          "min": 0.9382982850074768,
+          "p05": 0.9950382351875305,
+          "p25": 0.9972265511751175,
+          "p75": 0.9986721277236938,
+          "p95": 0.9992772340774536
+        },
+        "unique_train_views": 1728
+      },
+      "xss": {
+        "below_threshold_prior_flow_available": 0,
+        "below_threshold_prior_flow_missing": 0,
+        "flag_rate_train_only": 1.0,
+        "flagged": 1728,
+        "prior_flow_available": 1503,
+        "scores": {
+          "max": 0.9997232556343079,
+          "median": 0.9980068206787109,
+          "min": 0.9672247171401978,
+          "p05": 0.9960056483745575,
+          "p25": 0.9974005073308945,
+          "p75": 0.9984785616397858,
+          "p95": 0.998968032002449
+        },
+        "unique_train_views": 1728
+      }
+    },
+    "conflicting_label_views": 0,
+    "false_negative_risk_train_only": {
+      "attack_below_threshold": 27,
+      "attack_below_threshold_missing_flow": 0,
+      "attack_below_threshold_with_flow": 27,
+      "attack_within_0_01_below_threshold": 0,
+      "attack_within_0_05_below_threshold": 1,
+      "benign_within_0_01_above_threshold": 0,
+      "benign_within_0_05_below_threshold": 2,
+      "missed_attack_margin_quantiles": {
+        "max": -0.037142395973205566,
+        "median": -0.4164125323295593,
+        "min": -0.48281043767929077,
+        "p05": -0.4682173848152161,
+        "p25": -0.4453236758708954,
+        "p75": -0.3679864704608917,
+        "p95": -0.13793713450431835
+      }
+    },
+    "formal_admitted": 0,
+    "fpr_on_new_cohort": null,
+    "independent_recall": null,
+    "label_semantics": "scenario_manifest development binary label 0 benign/1 attack; attack_family separately names seven families; not independent Ground Truth",
+    "label_sources": {
+      "scenario_manifest": 41585
+    },
+    "labels_by_provenance": {
+      "canonical": {
+        "behavioral_anomaly": 1728,
+        "benign": 29489,
+        "brute_force": 1728,
+        "cmd_injection": 1728,
+        "path_traversal": 1728,
+        "scanner_recon": 1728,
+        "sqli": 1728,
+        "xss": 1728
+      }
+    },
+    "labels_by_source": {
+      "STUDENT_AUDIT": {
+        "behavioral_anomaly": 1728,
+        "benign": 29489,
+        "brute_force": 1728,
+        "cmd_injection": 1728,
+        "path_traversal": 1728,
+        "scanner_recon": 1728,
+        "sqli": 1728,
+        "xss": 1728
+      }
+    },
+    "limits": [
+      "All scored views were used to fit this checkpoint; flag rate is not independent recall",
+      "Development scenario labels are not independent attack intent evidence",
+      "Last train row group physically contains 377 development validation rows; discarded before scoring/statistics",
+      "Source/campaign association in one lab cannot establish domain generalization"
+    ],
+    "model_checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "model_or_threshold_changed": false,
+    "plan_sha256": "2b2d23ec9cc9d382edb5483e6ed0d348ea5b2c3f9cbd8d08e9239ddb4bea03b8",
+    "raw_train_rows": 41607,
+    "request_id_overlap_across_hmac_namespaces": null,
+    "resource_envelope": {
+      "address_space_limit_effective": 17179869184,
+      "affinity_effective": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cgroup_v2": {
+        "cpu.max": "400000 100000",
+        "cpu.stat": "usage_usec 1880459\nuser_usec 1643293\nsystem_usec 237166\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 15\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "436604928",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "449286144",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/run-p38796-i27395.scope"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 4,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 17179869184,
+      "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+      "total_host_memory_bytes": 32440905728
+    },
+    "resource_guard": {
+      "peak_cpu_temperature_celsius": 66.0,
+      "peak_rss_bytes": 623460352,
+      "peak_tree_rss_bytes": 623460352,
+      "temperature_monitoring": "hardware_critical_limit_available",
+      "thermal_limit_reached": false,
+      "thermal_stop_threshold_celsius": 100.0
+    },
+    "same_label_repeated_views": 22,
+    "score_semantics": "1 - P(benign class 0); larger score means more attack-like",
+    "status": "TRAINING_VIEW_THRESHOLD_VIABILITY_DIAGNOSTIC_ONLY",
+    "threshold": 0.5396780371665955,
+    "threshold_manifest_sha256": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2",
+    "train_benign_flag_rate": 0.0010851503950625658,
+    "train_positive_flag_rate": 0.9977678571428571,
+    "unique_float32_train_views": 41585
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_threshold_viability_20261104/report.json",
+  "original_sha256": "f4308f7940cd605c394c5b4f99a99cc455cdd9bff62d94f0d0451b148559a9d5",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,61 @@
+{
+  "content": {
+    "best_epoch": 6,
+    "command_executed": true,
+    "commits": {
+      "data": "cea18c4",
+      "docs": "03b29cf",
+      "lab_tests": "6f432a2",
+      "training": "1d526b3"
+    },
+    "completed_at": "2026-10-29T17:21:17.479104+07:00",
+    "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/dataset-ready/prepared",
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "final_epoch": 14,
+    "first_command": "bash <PROJECT_ROOT>/ai-training/scripts/train-first-session.sh",
+    "formal_job_running": false,
+    "formal_report": "<PROJECT_ROOT>/ai-training/reports/FORMAL_RESIDUAL_20261029.json",
+    "formal_report_sha256": "b48901f6b8cc2f2c8480a201922a4f7262fda6b769ab8d7a84aa45f5b43f7cf4",
+    "formal_run": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/formal/residual-seed17",
+    "formal_run_id": "8ea1ded50c7b43aabd98d2ef93236ef9",
+    "git_status_at_handoff": "clean; ahead7; not pushed",
+    "instruction": "Formal residual run completed by early stopping; historical pilot preserved. Read formal report. Do not force-resume this terminal run.",
+    "next_action": "Review low payload-family recall and telemetry/data design; choose a separate experiment only after review. Do not deploy or force-resume this terminal run.",
+    "not_production_acceptance": true,
+    "obsolete_attempts": [
+      "dataset:NOT_READY double flow delay",
+      "dataset-ready/readiness:stale after precision source change",
+      "pilot:failed AE numerical parity; source copy preserved"
+    ],
+    "pilot": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/pilot-ready/pilot-report.json",
+    "previous_readiness_preserved": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/dataset-ready/readiness-final/readiness.json",
+    "readiness": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/dataset-ready/readiness-resource8/readiness.json",
+    "readiness_sha256": "387ba70ff41a599700328953b6de1e46508fabc0c6dcb8c9447c27afba3afa30",
+    "report_sha256": "b19ac674e67c0780249a009b9025ec08f9d9ea936188c4bb36d076d6f7f73fb6",
+    "resource_policy": {
+      "blas_omp_threads": 8,
+      "host_affinity_count": 16,
+      "host_logical_fraction": 0.5,
+      "logical_cpus": 8,
+      "memory_high_gib": 15,
+      "memory_max_gib": 16,
+      "memory_swap_max": 0,
+      "nice": 10,
+      "onnx_inter_op_threads": 1,
+      "onnx_intra_op_threads": 8,
+      "onnx_mode": "sequential; inter-op1 avoids multiplying pools",
+      "quota": "800%"
+    },
+    "resource_report": "<PROJECT_ROOT>/ai-training/reports/RESOURCE_GUARD_20261028.json",
+    "resource_report_sha256": "d0370e9849da7df9dab8442a7557768c4327f78a2677e712c42b35389174b36c",
+    "script_sha256": "75cc88618cd91d33b1dcebf4c156b456830863881691831265e1b6bd61128a69",
+    "status": "FORMAL_EXPERIMENT_COMPLETED_EARLY_STOPPING",
+    "stop_reason": "early_stopping"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/FINAL_TRAINING_HANDOFF.json",
+  "original_sha256": "8371c99b4769c7e255e558deafc0e2faef065cdf299bc352548e664994f0ab82",
+  "redactions": {
+    "strings_changed": 8
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

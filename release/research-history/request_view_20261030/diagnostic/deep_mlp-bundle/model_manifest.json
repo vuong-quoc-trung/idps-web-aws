@@ -1,0 +1,164 @@
+{
+  "content": {
+    "calibration": {
+      "csic-published-normal-training": {
+        "benign_count": 3804,
+        "calibration_fpr": 0.009726603575184017,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.5971667170524597
+      },
+      "pkdd-mirror-training": {
+        "benign_count": 3876,
+        "calibration_fpr": 0.009545923632610939,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.9675579071044922
+      },
+      "student-lab": {
+        "benign_count": 3279,
+        "calibration_fpr": 0.009149130832570906,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.7233919501304626
+      }
+    },
+    "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+    "champion_selected": false,
+    "checkpoint_manifest_sha256": "4e45e4f349894b53dff4d378bd650fe702f1bf7af010f28a5d2029f2f32b262f",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_sha256": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+    "deployment_status": "offline research candidate only",
+    "family_output": "disabled; conditional family heads lack independent validation",
+    "feature_version": "request-structure-v1",
+    "files": {
+      "feature_spec.json": "b816d19d8d4b8906786c385bd61426a7bb3156de51a49717f8306964282de1fa",
+      "model.onnx": "5580aff9566d24c9f7d97521094718f7af1f53eb41363ec9186022eb3d3fa45a"
+    },
+    "format_version": 1,
+    "input_dtype": "float32",
+    "input_shape": [
+      null,
+      70
+    ],
+    "model_kind": "deep_mlp",
+    "objective": {
+      "binary_class_weights": [
+        2.9927184466019416,
+        0.6002921129503408
+      ],
+      "family_weight": 0.2,
+      "kind": "partial_binary_v1",
+      "smoothing": 0.005
+    },
+    "parity": {
+      "all_rows_match": true,
+      "atol": 1e-06,
+      "max_absolute_error": 2.384185791015625e-07,
+      "rows": 115980,
+      "rtol": 1e-05
+    },
+    "profile": "request-structure-v1",
+    "score_semantics": "1-P(benign); public unknown family never imputed",
+    "threshold": 0.9675579071044922,
+    "validation": {
+      "attack": 1536,
+      "benign": 14714,
+      "confusion_matrix": [
+        [
+          14674,
+          40
+        ],
+        [
+          425,
+          1111
+        ]
+      ],
+      "f1": 0.8269445478228508,
+      "fpr": 0.0027184993883376377,
+      "pr_auc_average_precision": 0.8291399999580845,
+      "precision": 0.9652476107732406,
+      "recall": 0.7233072916666666,
+      "rows": 16250,
+      "threshold": 0.9675579071044922
+    },
+    "validation_by_source": {
+      "csic-published-normal-training": {
+        "attack": 0,
+        "benign": 4512,
+        "confusion_matrix": [
+          [
+            4511,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.00022163120567375886,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 4512,
+        "threshold": 0.9675579071044922
+      },
+      "pkdd-mirror-training": {
+        "attack": 0,
+        "benign": 3644,
+        "confusion_matrix": [
+          [
+            3605,
+            39
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.010702524698133918,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 3644,
+        "threshold": 0.9675579071044922
+      },
+      "student-lab": {
+        "attack": 1536,
+        "benign": 6558,
+        "confusion_matrix": [
+          [
+            6558,
+            0
+          ],
+          [
+            425,
+            1111
+          ]
+        ],
+        "f1": 0.8394408764639214,
+        "fpr": 0.0,
+        "pr_auc_average_precision": 0.8896741489658799,
+        "precision": 1.0,
+        "recall": 0.7233072916666666,
+        "rows": 8094,
+        "threshold": 0.9675579071044922
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-bundle/model_manifest.json",
+  "original_sha256": "bb2bb251e1f8f64da33485e4c2dfedc99101993d77e19d9535fe9c371cc3cfd8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

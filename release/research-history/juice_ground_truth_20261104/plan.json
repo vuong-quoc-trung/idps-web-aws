@@ -1,0 +1,121 @@
+{
+  "content": {
+    "cases": [
+      {
+        "campaign_id": "juice-gt-pilot-20261104-benign",
+        "case_id": "benign-apple",
+        "expected_product_name_contains": "apple",
+        "family": null,
+        "intent": "benign",
+        "method": "GET",
+        "path": "/rest/products/search?q=apple",
+        "query": "apple",
+        "request_id": "8131a93fd886b9d04acc3ab61ddec5f6"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-benign",
+        "case_id": "benign-orange",
+        "expected_product_name_contains": "orange",
+        "family": null,
+        "intent": "benign",
+        "method": "GET",
+        "path": "/rest/products/search?q=orange",
+        "query": "orange",
+        "request_id": "1706018ff113f6341c94680ca78a3d46"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-benign",
+        "case_id": "benign-banana",
+        "expected_product_name_contains": "banana",
+        "family": null,
+        "intent": "benign",
+        "method": "GET",
+        "path": "/rest/products/search?q=banana",
+        "query": "banana",
+        "request_id": "ea7c7ea7c84b25c236a84dd9be4e03d9"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-benign",
+        "case_id": "benign-apostrophe",
+        "expected_product_name_contains": null,
+        "family": null,
+        "intent": "benign",
+        "method": "GET",
+        "path": "/rest/products/search?q=O%27Connor",
+        "query": "O'Connor",
+        "request_id": "c74cdd6bf20a9c0f8267343503b64448"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-sqli",
+        "case_id": "attack-sqli",
+        "expected_product_name_contains": null,
+        "family": "sqli",
+        "intent": "attack",
+        "method": "GET",
+        "path": "/rest/products/search?q=%27%20OR%201%3D1--",
+        "query": "' OR 1=1--",
+        "request_id": "27241c1dd96574171d3dcd7980da15f5"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-xss",
+        "case_id": "attack-xss",
+        "expected_product_name_contains": null,
+        "family": "xss",
+        "intent": "attack",
+        "method": "GET",
+        "path": "/rest/products/search?q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E",
+        "query": "<script>alert(1)</script>",
+        "request_id": "97dc4b8b0d6ab58dde0c5e27ec1a073a"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-traversal",
+        "case_id": "attack-traversal",
+        "expected_product_name_contains": null,
+        "family": "traversal",
+        "intent": "attack",
+        "method": "GET",
+        "path": "/rest/products/search?q=..%2F..%2Fetc%2Fpasswd",
+        "query": "../../etc/passwd",
+        "request_id": "9de707ca811f42b5309bdc77880d878a"
+      },
+      {
+        "campaign_id": "juice-gt-pilot-20261104-command",
+        "case_id": "attack-command",
+        "expected_product_name_contains": null,
+        "family": "command",
+        "intent": "attack",
+        "method": "GET",
+        "path": "/rest/products/search?q=%3Bid",
+        "query": ";id",
+        "request_id": "d4061ef3d0c46f305d4fdad63bfde688"
+      }
+    ],
+    "created_at": "2026-11-04T07:56:11.016660+00:00",
+    "formal_admission": false,
+    "format_version": 1,
+    "fpr_budget": 0.01,
+    "image_digest": "sha256:318714401c46c3c0a2458b5dccfc84af8e4839181d1a723701f8a6822b19294f",
+    "label_rules": {
+      "attack_attempt_verified": "Precommitted security test query reaches pinned local target and gets target response; request-bound test intent only, not independent semantic review or exploit success",
+      "benign_verified": "Precommitted ordinary product search, matching application JSON response and expected product name where specified; HTTP 200 alone insufficient",
+      "exploit_success_verified": "Requires separate application-state or challenge Oracle; this pilot has no such Oracle and must report zero",
+      "unknown": "Any missing/mismatched request, target, response or JSON semantic evidence"
+    },
+    "partition": "development_pilot_only_no_train_or_evaluation_assignment",
+    "plan_sha256": "f6e97b4d057ba50635deea733ffb80857b3241f4e4cfcfa57e804491b4648463",
+    "scope": "controlled_local_juice_shop_development_pilot_only",
+    "script_sha256": "a3339fda0ada0dfc4021a646c454be426bdbe9ec88e4d3a90c8f75ed216c38d5",
+    "target": {
+      "container_id": "ddcdc6a8c60c1d4e3f0472e4dd0a146175817925380453bd15c47f1f26ec5408",
+      "host": "127.0.0.1",
+      "image_id": "2d370ec11ab40bc24b3516c042f7317a053c80f668e572538469d1fd7e91d7f8",
+      "internal": true,
+      "network": "ai-idps-gt-lab-20261104",
+      "port": 13080
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/juice_ground_truth_20261104/plan.json",
+  "original_sha256": "766dfdf06bc486b40d446516099c3f633025392f2b1543e9d5870a4abfde9e4e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

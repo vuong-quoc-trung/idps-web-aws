@@ -1,0 +1,2586 @@
+{
+  "content": {
+    "entries": [
+      {
+        "bytes": 5475375,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/synthetic_s0_20261027"
+      },
+      {
+        "bytes": 18364309,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/pretrain_lab_20261027_v2"
+      },
+      {
+        "bytes": 18637878,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/pretrain_lab_20261027_v2_ready"
+      },
+      {
+        "bytes": 136624235,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/lab_20261027"
+      },
+      {
+        "bytes": 61550276,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/lifecycle_recheck_20261027"
+      },
+      {
+        "bytes": 131326467,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/dataset"
+      },
+      {
+        "bytes": 45770000,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/pilot"
+      },
+      {
+        "bytes": 285517,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/pilot-failed-source"
+      },
+      {
+        "bytes": 61546149,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/failed-namespace-nginx-user"
+      },
+      {
+        "bytes": 1391,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/probe"
+      },
+      {
+        "bytes": 1532,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/verified-probe"
+      },
+      {
+        "bytes": 20933,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/decoded-probe"
+      },
+      {
+        "bytes": 14381964,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/decoded-prefix"
+      },
+      {
+        "bytes": 15286102,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/decoded-prefix-redacted"
+      },
+      {
+        "bytes": 11565768,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/parity-diagnostics"
+      },
+      {
+        "bytes": 12498,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/dataset-ready/readiness"
+      },
+      {
+        "bytes": 61524736,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/build-source"
+      },
+      {
+        "bytes": 28476391,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/capture-prefix.pcap"
+      },
+      {
+        "bytes": 236,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/capture-prefix-manifest.json"
+      },
+      {
+        "bytes": 39125,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/ae-parity-diagnostic.onnx"
+      },
+      {
+        "bytes": 472,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/run_capture.py"
+      },
+      {
+        "bytes": 1842,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/finalize.py"
+      },
+      {
+        "bytes": 10733,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/build_report.py"
+      },
+      {
+        "bytes": 17772,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/update_docs.py"
+      },
+      {
+        "bytes": 1585,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/parity_diagnostic.py"
+      },
+      {
+        "bytes": 1739,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/dataset-ready/NEXT_COMMANDS.txt"
+      },
+      {
+        "bytes": 4497,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/dataset-ready/handoff.json"
+      },
+      {
+        "bytes": 27948,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-ring26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 92624,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/libevent-core-2.1-7t64_2.1.12-stable-10ubuntu0.2_amd64.deb"
+      },
+      {
+        "bytes": 23746,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-ip-frag26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 7530,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-meter26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 24942,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-sched26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 13728,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-net26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 7240,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-pci26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 7556,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-kvargs26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 11828,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-bus-vdev26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 11536,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-argparse26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 12288,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-rcu26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 27710,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-bus-pci26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 40496,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-hash26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 17390,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/librte-telemetry26_25.11-2_amd64.deb"
+      },
+      {
+        "bytes": 1470,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/checks-initial.log"
+      },
+      {
+        "bytes": 112,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/formal-gate-red.log"
+      },
+      {
+        "bytes": 973,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/finalize-driver.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/readiness-final.stderr.log"
+      },
+      {
+        "bytes": 393,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/pilot-cgroup.stderr.log"
+      },
+      {
+        "bytes": 13167,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/readiness-final.stdout.log"
+      },
+      {
+        "bytes": 112,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/pilot-regression-fixed.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/decode-full.stderr.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/prepare-ready.stderr.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/prepare-three-source.stderr.log"
+      },
+      {
+        "bytes": 5038,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/checks-final.log"
+      },
+      {
+        "bytes": 3632,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/pilot-regression.log"
+      },
+      {
+        "bytes": 41,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/ruff-initial.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/pilot-cgroup.stdout.log"
+      },
+      {
+        "bytes": 1270,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/decode-full.stdout.log"
+      },
+      {
+        "bytes": 4643,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/prepare-ready.stdout.log"
+      },
+      {
+        "bytes": 792,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab-start.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/capture-driver.log"
+      },
+      {
+        "bytes": 4575,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/prepare-three-source.stdout.log"
+      },
+      {
+        "bytes": 1447,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/tools/download.log"
+      },
+      {
+        "bytes": 7747,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/student.log"
+      },
+      {
+        "bytes": 97,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/nginx-error.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/namespace.log"
+      },
+      {
+        "bytes": 0,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/sensor-nginx.log"
+      },
+      {
+        "bytes": 413,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/access-lab.log"
+      },
+      {
+        "bytes": 328,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/build.log"
+      },
+      {
+        "bytes": 240,
+        "kind": "file",
+        "path": "ai-training/.artifacts/upgrade_20261028/lab/eve/decode.log"
+      },
+      {
+        "bytes": 78,
+        "kind": "directory",
+        "path": ".ruff_cache"
+      },
+      {
+        "bytes": 2838,
+        "kind": "directory",
+        "path": "ai-training/.ruff_cache"
+      },
+      {
+        "bytes": 8005,
+        "kind": "directory",
+        "path": "ai-training/.pytest_cache"
+      },
+      {
+        "bytes": 39647,
+        "kind": "directory",
+        "path": "ai-training/.artifacts/upgrade_20261028/__pycache__"
+      },
+      {
+        "bytes": 192257,
+        "kind": "directory",
+        "path": "ai-training/tests/__pycache__"
+      },
+      {
+        "bytes": 239298,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/__pycache__"
+      },
+      {
+        "bytes": 353,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/rpds/__pycache__"
+      },
+      {
+        "bytes": 370353,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/joblib/__pycache__"
+      },
+      {
+        "bytes": 206,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/joblib/externals/__pycache__"
+      },
+      {
+        "bytes": 72989,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/joblib/externals/loky/__pycache__"
+      },
+      {
+        "bytes": 123960,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/joblib/externals/loky/backend/__pycache__"
+      },
+      {
+        "bytes": 442740,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/joblib/test/__pycache__"
+      },
+      {
+        "bytes": 4402,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/joblib/test/data/__pycache__"
+      },
+      {
+        "bytes": 19859,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/__pycache__"
+      },
+      {
+        "bytes": 567126,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/quantization/__pycache__"
+      },
+      {
+        "bytes": 35174,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/quantization/fusions/__pycache__"
+      },
+      {
+        "bytes": 106964,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/quantization/neural_compressor/__pycache__"
+      },
+      {
+        "bytes": 103297,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/quantization/operators/__pycache__"
+      },
+      {
+        "bytes": 9159,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/quantization/CalTableFlatBuffers/__pycache__"
+      },
+      {
+        "bytes": 67764,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/quantization/execution_providers/qnn/__pycache__"
+      },
+      {
+        "bytes": 13512,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/backend/__pycache__"
+      },
+      {
+        "bytes": 284807,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/__pycache__"
+      },
+      {
+        "bytes": 1924,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/qdq_helpers/__pycache__"
+      },
+      {
+        "bytes": 31186,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/mobile_helpers/__pycache__"
+      },
+      {
+        "bytes": 45325,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/ort_format_model/__pycache__"
+      },
+      {
+        "bytes": 243,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/ort_format_model/ort_flatbuffers_py/__pycache__"
+      },
+      {
+        "bytes": 301116,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/ort_format_model/ort_flatbuffers_py/fbs/__pycache__"
+      },
+      {
+        "bytes": 34194,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/tools/qnn/__pycache__"
+      },
+      {
+        "bytes": 108803,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/capi/__pycache__"
+      },
+      {
+        "bytes": 1330411,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/__pycache__"
+      },
+      {
+        "bytes": 12936,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/bert/__pycache__"
+      },
+      {
+        "bytes": 59787,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/t5/__pycache__"
+      },
+      {
+        "bytes": 55640,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/longformer/__pycache__"
+      },
+      {
+        "bytes": 131026,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/gpt2/__pycache__"
+      },
+      {
+        "bytes": 43276,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/phi2/__pycache__"
+      },
+      {
+        "bytes": 336840,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/stable_diffusion/__pycache__"
+      },
+      {
+        "bytes": 117721,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/sam2/__pycache__"
+      },
+      {
+        "bytes": 190950,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/whisper/__pycache__"
+      },
+      {
+        "bytes": 6200,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/bart/__pycache__"
+      },
+      {
+        "bytes": 156406,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/transformers/models/llama/__pycache__"
+      },
+      {
+        "bytes": 950,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnxruntime/datasets/__pycache__"
+      },
+      {
+        "bytes": 439689,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/packaging/__pycache__"
+      },
+      {
+        "bytes": 55656,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/packaging/licenses/__pycache__"
+      },
+      {
+        "bytes": 95328,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/__pycache__"
+      },
+      {
+        "bytes": 11704,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/testing/__pycache__"
+      },
+      {
+        "bytes": 130004,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/testing/tests/__pycache__"
+      },
+      {
+        "bytes": 122580,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/testing/_private/__pycache__"
+      },
+      {
+        "bytes": 296,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/strings/__pycache__"
+      },
+      {
+        "bytes": 33224,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_utils/__pycache__"
+      },
+      {
+        "bytes": 510565,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/f2py/__pycache__"
+      },
+      {
+        "bytes": 317213,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/f2py/tests/__pycache__"
+      },
+      {
+        "bytes": 16329,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/f2py/_backends/__pycache__"
+      },
+      {
+        "bytes": 292,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/rec/__pycache__"
+      },
+      {
+        "bytes": 72884,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/tests/__pycache__"
+      },
+      {
+        "bytes": 10456,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/random/__pycache__"
+      },
+      {
+        "bytes": 573158,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/random/tests/__pycache__"
+      },
+      {
+        "bytes": 213,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/random/tests/data/__pycache__"
+      },
+      {
+        "bytes": 6624,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/random/_examples/numba/__pycache__"
+      },
+      {
+        "bytes": 3969,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/random/_examples/cffi/__pycache__"
+      },
+      {
+        "bytes": 1014810,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_core/__pycache__"
+      },
+      {
+        "bytes": 4062587,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_core/tests/__pycache__"
+      },
+      {
+        "bytes": 826,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_core/tests/examples/limited_api/__pycache__"
+      },
+      {
+        "bytes": 1286,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_core/tests/examples/cython/__pycache__"
+      },
+      {
+        "bytes": 469354,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/polynomial/__pycache__"
+      },
+      {
+        "bytes": 308481,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/polynomial/tests/__pycache__"
+      },
+      {
+        "bytes": 5633,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/doc/__pycache__"
+      },
+      {
+        "bytes": 49889,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_typing/__pycache__"
+      },
+      {
+        "bytes": 128922,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/linalg/__pycache__"
+      },
+      {
+        "bytes": 165182,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/linalg/tests/__pycache__"
+      },
+      {
+        "bytes": 36741,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/matrixlib/__pycache__"
+      },
+      {
+        "bytes": 82741,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/matrixlib/tests/__pycache__"
+      },
+      {
+        "bytes": 22864,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/ctypeslib/__pycache__"
+      },
+      {
+        "bytes": 1142,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_pyinstaller/__pycache__"
+      },
+      {
+        "bytes": 5183,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/_pyinstaller/tests/__pycache__"
+      },
+      {
+        "bytes": 1279,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/char/__pycache__"
+      },
+      {
+        "bytes": 960328,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/lib/__pycache__"
+      },
+      {
+        "bytes": 1279186,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/lib/tests/__pycache__"
+      },
+      {
+        "bytes": 442200,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/ma/__pycache__"
+      },
+      {
+        "bytes": 631829,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/ma/tests/__pycache__"
+      },
+      {
+        "bytes": 81238,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/fft/__pycache__"
+      },
+      {
+        "bytes": 58331,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/fft/tests/__pycache__"
+      },
+      {
+        "bytes": 15403,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/core/__pycache__"
+      },
+      {
+        "bytes": 16221,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/typing/__pycache__"
+      },
+      {
+        "bytes": 17573,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/typing/tests/__pycache__"
+      },
+      {
+        "bytes": 222370,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/numpy/typing/tests/data/pass/__pycache__"
+      },
+      {
+        "bytes": 205816,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/attr/__pycache__"
+      },
+      {
+        "bytes": 1033216,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/__pycache__"
+      },
+      {
+        "bytes": 435,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/testing/__pycache__"
+      },
+      {
+        "bytes": 25207,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/testing/asserts/__pycache__"
+      },
+      {
+        "bytes": 276748,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_pandas_like/__pycache__"
+      },
+      {
+        "bytes": 80903,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_sql/__pycache__"
+      },
+      {
+        "bytes": 164414,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_polars/__pycache__"
+      },
+      {
+        "bytes": 241881,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_arrow/__pycache__"
+      },
+      {
+        "bytes": 127296,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_spark_like/__pycache__"
+      },
+      {
+        "bytes": 106138,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_ibis/__pycache__"
+      },
+      {
+        "bytes": 131882,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_dask/__pycache__"
+      },
+      {
+        "bytes": 117940,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_duckdb/__pycache__"
+      },
+      {
+        "bytes": 200814,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_compliant/__pycache__"
+      },
+      {
+        "bytes": 346,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/stable/__pycache__"
+      },
+      {
+        "bytes": 62440,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/stable/v2/__pycache__"
+      },
+      {
+        "bytes": 67176,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/stable/v1/__pycache__"
+      },
+      {
+        "bytes": 11272,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/narwhals/_interchange/__pycache__"
+      },
+      {
+        "bytes": 1127823,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/__pycache__"
+      },
+      {
+        "bytes": 131661,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/config/__pycache__"
+      },
+      {
+        "bytes": 58886,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/mark/__pycache__"
+      },
+      {
+        "bytes": 82922,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/_code/__pycache__"
+      },
+      {
+        "bytes": 109599,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/assertion/__pycache__"
+      },
+      {
+        "bytes": 73919,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/_py/__pycache__"
+      },
+      {
+        "bytes": 44592,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_pytest/_io/__pycache__"
+      },
+      {
+        "bytes": 2396,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/attrs/__pycache__"
+      },
+      {
+        "bytes": 88915,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pluggy/__pycache__"
+      },
+      {
+        "bytes": 3784,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/__pycache__"
+      },
+      {
+        "bytes": 112660,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/__pycache__"
+      },
+      {
+        "bytes": 43389,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/operations/__pycache__"
+      },
+      {
+        "bytes": 22324,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/operations/build/__pycache__"
+      },
+      {
+        "bytes": 36218,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/operations/install/__pycache__"
+      },
+      {
+        "bytes": 16327,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/distributions/__pycache__"
+      },
+      {
+        "bytes": 125087,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/req/__pycache__"
+      },
+      {
+        "bytes": 149310,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/commands/__pycache__"
+      },
+      {
+        "bytes": 35108,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/locations/__pycache__"
+      },
+      {
+        "bytes": 67461,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/models/__pycache__"
+      },
+      {
+        "bytes": 73828,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/vcs/__pycache__"
+      },
+      {
+        "bytes": 75806,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/index/__pycache__"
+      },
+      {
+        "bytes": 1416,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/resolution/__pycache__"
+      },
+      {
+        "bytes": 120430,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/__pycache__"
+      },
+      {
+        "bytes": 22817,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/resolution/legacy/__pycache__"
+      },
+      {
+        "bytes": 155789,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/utils/__pycache__"
+      },
+      {
+        "bytes": 104846,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/cli/__pycache__"
+      },
+      {
+        "bytes": 60184,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/metadata/__pycache__"
+      },
+      {
+        "bytes": 28875,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/metadata/importlib/__pycache__"
+      },
+      {
+        "bytes": 73731,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_internal/network/__pycache__"
+      },
+      {
+        "bytes": 144036,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/__pycache__"
+      },
+      {
+        "bytes": 53619,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/msgpack/__pycache__"
+      },
+      {
+        "bytes": 46614,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/resolvelib/__pycache__"
+      },
+      {
+        "bytes": 658,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/resolvelib/compat/__pycache__"
+      },
+      {
+        "bytes": 48164,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/cachecontrol/__pycache__"
+      },
+      {
+        "bytes": 10966,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/cachecontrol/caches/__pycache__"
+      },
+      {
+        "bytes": 18831,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/__pycache__"
+      },
+      {
+        "bytes": 16428,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_in_process/__pycache__"
+      },
+      {
+        "bytes": 34171,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/tomli/__pycache__"
+      },
+      {
+        "bytes": 177403,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/packaging/__pycache__"
+      },
+      {
+        "bytes": 51520,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/packaging/licenses/__pycache__"
+      },
+      {
+        "bytes": 210728,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/requests/__pycache__"
+      },
+      {
+        "bytes": 166710,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/__pycache__"
+      },
+      {
+        "bytes": 100436,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/util/__pycache__"
+      },
+      {
+        "bytes": 86917,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/__pycache__"
+      },
+      {
+        "bytes": 32462,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/contrib/_securetransport/__pycache__"
+      },
+      {
+        "bytes": 41492,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/packages/__pycache__"
+      },
+      {
+        "bytes": 9427,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/packages/backports/__pycache__"
+      },
+      {
+        "bytes": 56287,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/truststore/__pycache__"
+      },
+      {
+        "bytes": 83725,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/platformdirs/__pycache__"
+      },
+      {
+        "bytes": 284189,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/idna/__pycache__"
+      },
+      {
+        "bytes": 55098,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/distro/__pycache__"
+      },
+      {
+        "bytes": 167061,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pygments/__pycache__"
+      },
+      {
+        "bytes": 6350,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pygments/styles/__pycache__"
+      },
+      {
+        "bytes": 37930,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pygments/filters/__pycache__"
+      },
+      {
+        "bytes": 172336,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pygments/formatters/__pycache__"
+      },
+      {
+        "bytes": 125908,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pygments/lexers/__pycache__"
+      },
+      {
+        "bytes": 1131379,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/rich/__pycache__"
+      },
+      {
+        "bytes": 4228,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/certifi/__pycache__"
+      },
+      {
+        "bytes": 161279,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/pkg_resources/__pycache__"
+      },
+      {
+        "bytes": 469066,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pip/_vendor/distlib/__pycache__"
+      },
+      {
+        "bytes": 611958,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/__pycache__"
+      },
+      {
+        "bytes": 79919,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/compose/__pycache__"
+      },
+      {
+        "bytes": 151352,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/compose/tests/__pycache__"
+      },
+      {
+        "bytes": 39849,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/cross_decomposition/__pycache__"
+      },
+      {
+        "bytes": 33221,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/cross_decomposition/tests/__pycache__"
+      },
+      {
+        "bytes": 159060,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/manifold/__pycache__"
+      },
+      {
+        "bytes": 111705,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/manifold/tests/__pycache__"
+      },
+      {
+        "bytes": 121938,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/svm/__pycache__"
+      },
+      {
+        "bytes": 109285,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/svm/tests/__pycache__"
+      },
+      {
+        "bytes": 356759,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/preprocessing/__pycache__"
+      },
+      {
+        "bytes": 460090,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/preprocessing/tests/__pycache__"
+      },
+      {
+        "bytes": 46431,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/inspection/__pycache__"
+      },
+      {
+        "bytes": 71584,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/inspection/tests/__pycache__"
+      },
+      {
+        "bytes": 89151,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/inspection/_plot/__pycache__"
+      },
+      {
+        "bytes": 93511,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/inspection/_plot/tests/__pycache__"
+      },
+      {
+        "bytes": 105871,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/neural_network/__pycache__"
+      },
+      {
+        "bytes": 69433,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/neural_network/tests/__pycache__"
+      },
+      {
+        "bytes": 363558,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/decomposition/__pycache__"
+      },
+      {
+        "bytes": 274356,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/decomposition/tests/__pycache__"
+      },
+      {
+        "bytes": 762671,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/tests/__pycache__"
+      },
+      {
+        "bytes": 3667,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/experimental/__pycache__"
+      },
+      {
+        "bytes": 5089,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/experimental/tests/__pycache__"
+      },
+      {
+        "bytes": 161844,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/feature_selection/__pycache__"
+      },
+      {
+        "bytes": 161642,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/feature_selection/tests/__pycache__"
+      },
+      {
+        "bytes": 99626,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/impute/__pycache__"
+      },
+      {
+        "bytes": 134219,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/impute/tests/__pycache__"
+      },
+      {
+        "bytes": 740545,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/linear_model/__pycache__"
+      },
+      {
+        "bytes": 56529,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/linear_model/_glm/__pycache__"
+      },
+      {
+        "bytes": 51482,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/linear_model/_glm/tests/__pycache__"
+      },
+      {
+        "bytes": 714662,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/linear_model/tests/__pycache__"
+      },
+      {
+        "bytes": 2293,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/__check_build/__pycache__"
+      },
+      {
+        "bytes": 420820,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/ensemble/__pycache__"
+      },
+      {
+        "bytes": 142065,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/ensemble/_hist_gradient_boosting/__pycache__"
+      },
+      {
+        "bytes": 211029,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/ensemble/_hist_gradient_boosting/tests/__pycache__"
+      },
+      {
+        "bytes": 354133,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/ensemble/tests/__pycache__"
+      },
+      {
+        "bytes": 139316,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/feature_extraction/__pycache__"
+      },
+      {
+        "bytes": 112553,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/feature_extraction/tests/__pycache__"
+      },
+      {
+        "bytes": 45184,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/__pycache__"
+      },
+      {
+        "bytes": 111233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_extra/__pycache__"
+      },
+      {
+        "bytes": 38918,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_extra/testing/__pycache__"
+      },
+      {
+        "bytes": 32194,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_extra/_lib/__pycache__"
+      },
+      {
+        "bytes": 43328,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_extra/_agnostic/__pycache__"
+      },
+      {
+        "bytes": 32560,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/_numpydoc/__pycache__"
+      },
+      {
+        "bytes": 214,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/_scipy/__pycache__"
+      },
+      {
+        "bytes": 221,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/_scipy/sparse/__pycache__"
+      },
+      {
+        "bytes": 21838,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/_scipy/sparse/csgraph/__pycache__"
+      },
+      {
+        "bytes": 4507,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/__pycache__"
+      },
+      {
+        "bytes": 28245,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/cupy/__pycache__"
+      },
+      {
+        "bytes": 77614,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/common/__pycache__"
+      },
+      {
+        "bytes": 29978,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/numpy/__pycache__"
+      },
+      {
+        "bytes": 61025,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/torch/__pycache__"
+      },
+      {
+        "bytes": 229,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/dask/__pycache__"
+      },
+      {
+        "bytes": 32071,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/array_api_compat/dask/array/__pycache__"
+      },
+      {
+        "bytes": 24220,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/externals/_packaging/__pycache__"
+      },
+      {
+        "bytes": 69153,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/_loss/__pycache__"
+      },
+      {
+        "bytes": 67119,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/_loss/tests/__pycache__"
+      },
+      {
+        "bytes": 68628,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/callback/__pycache__"
+      },
+      {
+        "bytes": 94419,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/callback/tests/__pycache__"
+      },
+      {
+        "bytes": 128383,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/tree/__pycache__"
+      },
+      {
+        "bytes": 208910,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/tree/tests/__pycache__"
+      },
+      {
+        "bytes": 347567,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/cluster/__pycache__"
+      },
+      {
+        "bytes": 266183,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/cluster/tests/__pycache__"
+      },
+      {
+        "bytes": 39295,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/cluster/_hdbscan/__pycache__"
+      },
+      {
+        "bytes": 4045,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/cluster/_hdbscan/tests/__pycache__"
+      },
+      {
+        "bytes": 4093,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/_build_utils/__pycache__"
+      },
+      {
+        "bytes": 409862,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/model_selection/__pycache__"
+      },
+      {
+        "bytes": 438248,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/model_selection/tests/__pycache__"
+      },
+      {
+        "bytes": 209249,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/neighbors/__pycache__"
+      },
+      {
+        "bytes": 244207,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/neighbors/tests/__pycache__"
+      },
+      {
+        "bytes": 926208,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/utils/__pycache__"
+      },
+      {
+        "bytes": 34298,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/utils/_test_common/__pycache__"
+      },
+      {
+        "bytes": 802683,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/utils/tests/__pycache__"
+      },
+      {
+        "bytes": 44718,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/utils/_repr_html/__pycache__"
+      },
+      {
+        "bytes": 65938,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/utils/_repr_html/tests/__pycache__"
+      },
+      {
+        "bytes": 6599,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/frozen/__pycache__"
+      },
+      {
+        "bytes": 11033,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/frozen/tests/__pycache__"
+      },
+      {
+        "bytes": 100638,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/mixture/__pycache__"
+      },
+      {
+        "bytes": 90894,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/mixture/tests/__pycache__"
+      },
+      {
+        "bytes": 332218,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/__pycache__"
+      },
+      {
+        "bytes": 213,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/images/__pycache__"
+      },
+      {
+        "bytes": 199216,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/__pycache__"
+      },
+      {
+        "bytes": 217,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/__pycache__"
+      },
+      {
+        "bytes": 224,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/__pycache__"
+      },
+      {
+        "bytes": 231,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_292/__pycache__"
+      },
+      {
+        "bytes": 233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_40589/__pycache__"
+      },
+      {
+        "bytes": 232,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_1119/__pycache__"
+      },
+      {
+        "bytes": 233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_40675/__pycache__"
+      },
+      {
+        "bytes": 230,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_62/__pycache__"
+      },
+      {
+        "bytes": 229,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_1/__pycache__"
+      },
+      {
+        "bytes": 233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_42585/__pycache__"
+      },
+      {
+        "bytes": 233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_40945/__pycache__"
+      },
+      {
+        "bytes": 229,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_3/__pycache__"
+      },
+      {
+        "bytes": 231,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_561/__pycache__"
+      },
+      {
+        "bytes": 233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_42074/__pycache__"
+      },
+      {
+        "bytes": 233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_40966/__pycache__"
+      },
+      {
+        "bytes": 232,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_1590/__pycache__"
+      },
+      {
+        "bytes": 229,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_2/__pycache__"
+      },
+      {
+        "bytes": 230,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/tests/data/openml/id_61/__pycache__"
+      },
+      {
+        "bytes": 212,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/descr/__pycache__"
+      },
+      {
+        "bytes": 211,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/datasets/data/__pycache__"
+      },
+      {
+        "bytes": 130916,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/covariance/__pycache__"
+      },
+      {
+        "bytes": 42834,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/covariance/tests/__pycache__"
+      },
+      {
+        "bytes": 442381,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/__pycache__"
+      },
+      {
+        "bytes": 619207,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/tests/__pycache__"
+      },
+      {
+        "bytes": 71926,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/cluster/__pycache__"
+      },
+      {
+        "bytes": 54376,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/cluster/tests/__pycache__"
+      },
+      {
+        "bytes": 106492,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/_plot/__pycache__"
+      },
+      {
+        "bytes": 121335,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/_plot/tests/__pycache__"
+      },
+      {
+        "bytes": 30701,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/metrics/_pairwise_distances_reduction/__pycache__"
+      },
+      {
+        "bytes": 164900,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/gaussian_process/__pycache__"
+      },
+      {
+        "bytes": 82954,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/gaussian_process/tests/__pycache__"
+      },
+      {
+        "bytes": 45856,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/semi_supervised/__pycache__"
+      },
+      {
+        "bytes": 34354,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/sklearn/semi_supervised/tests/__pycache__"
+      },
+      {
+        "bytes": 38088,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/__pycache__"
+      },
+      {
+        "bytes": 1477283,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/__pycache__"
+      },
+      {
+        "bytes": 1471427,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/tests/__pycache__"
+      },
+      {
+        "bytes": 5121,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/cython_optimize/__pycache__"
+      },
+      {
+        "bytes": 111400,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/_trustregion_constr/__pycache__"
+      },
+      {
+        "bytes": 58858,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/_trustregion_constr/tests/__pycache__"
+      },
+      {
+        "bytes": 135397,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/_lsq/__pycache__"
+      },
+      {
+        "bytes": 67953,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/_shgo_lib/__pycache__"
+      },
+      {
+        "bytes": 11846,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/_highspy/__pycache__"
+      },
+      {
+        "bytes": 805,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/optimize/_trlib/__pycache__"
+      },
+      {
+        "bytes": 74939,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/odr/__pycache__"
+      },
+      {
+        "bytes": 32763,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/odr/tests/__pycache__"
+      },
+      {
+        "bytes": 241000,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_lib/__pycache__"
+      },
+      {
+        "bytes": 127112,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_lib/tests/__pycache__"
+      },
+      {
+        "bytes": 29797,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_lib/_uarray/__pycache__"
+      },
+      {
+        "bytes": 371,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/__pycache__"
+      },
+      {
+        "bytes": 60463,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_extra/__pycache__"
+      },
+      {
+        "bytes": 78674,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_extra/_lib/__pycache__"
+      },
+      {
+        "bytes": 25075,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_extra/_lib/_utils/__pycache__"
+      },
+      {
+        "bytes": 7580,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/pyprima/__pycache__"
+      },
+      {
+        "bytes": 96222,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/pyprima/common/__pycache__"
+      },
+      {
+        "bytes": 88026,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/pyprima/cobyla/__pycache__"
+      },
+      {
+        "bytes": 23775,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/packaging_version/__pycache__"
+      },
+      {
+        "bytes": 4503,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/__pycache__"
+      },
+      {
+        "bytes": 28197,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/cupy/__pycache__"
+      },
+      {
+        "bytes": 77113,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/common/__pycache__"
+      },
+      {
+        "bytes": 29913,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/numpy/__pycache__"
+      },
+      {
+        "bytes": 59845,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/torch/__pycache__"
+      },
+      {
+        "bytes": 227,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/dask/__pycache__"
+      },
+      {
+        "bytes": 32008,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/dask/array/__pycache__"
+      },
+      {
+        "bytes": 227179,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/cobyqa/__pycache__"
+      },
+      {
+        "bytes": 61029,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/cobyqa/subsolvers/__pycache__"
+      },
+      {
+        "bytes": 7656,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/_external/cobyqa/utils/__pycache__"
+      },
+      {
+        "bytes": 635104,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/__pycache__"
+      },
+      {
+        "bytes": 32156,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/csgraph/__pycache__"
+      },
+      {
+        "bytes": 106859,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/csgraph/tests/__pycache__"
+      },
+      {
+        "bytes": 770172,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/tests/__pycache__"
+      },
+      {
+        "bytes": 228790,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/__pycache__"
+      },
+      {
+        "bytes": 45436,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_dsolve/__pycache__"
+      },
+      {
+        "bytes": 60111,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_dsolve/tests/__pycache__"
+      },
+      {
+        "bytes": 222852,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/tests/__pycache__"
+      },
+      {
+        "bytes": 36121,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_eigen/__pycache__"
+      },
+      {
+        "bytes": 54236,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_eigen/tests/__pycache__"
+      },
+      {
+        "bytes": 71973,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_eigen/arpack/__pycache__"
+      },
+      {
+        "bytes": 35273,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_eigen/arpack/tests/__pycache__"
+      },
+      {
+        "bytes": 40026,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_eigen/lobpcg/__pycache__"
+      },
+      {
+        "bytes": 42883,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_eigen/lobpcg/tests/__pycache__"
+      },
+      {
+        "bytes": 121731,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_isolve/__pycache__"
+      },
+      {
+        "bytes": 100944,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/sparse/linalg/_isolve/tests/__pycache__"
+      },
+      {
+        "bytes": 3545256,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/__pycache__"
+      },
+      {
+        "bytes": 209,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/_unuran/__pycache__"
+      },
+      {
+        "bytes": 3209966,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/tests/__pycache__"
+      },
+      {
+        "bytes": 20439,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/tests/data/__pycache__"
+      },
+      {
+        "bytes": 47011,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/tests/test_generation/__pycache__"
+      },
+      {
+        "bytes": 51603,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/_levy_stable/__pycache__"
+      },
+      {
+        "bytes": 309,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/stats/_rcont/__pycache__"
+      },
+      {
+        "bytes": 1157833,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/signal/__pycache__"
+      },
+      {
+        "bytes": 106708,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/signal/windows/__pycache__"
+      },
+      {
+        "bytes": 1218676,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/signal/tests/__pycache__"
+      },
+      {
+        "bytes": 165534,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/__pycache__"
+      },
+      {
+        "bytes": 21226,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/_fast_matrix_market/__pycache__"
+      },
+      {
+        "bytes": 172669,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/tests/__pycache__"
+      },
+      {
+        "bytes": 118676,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/matlab/__pycache__"
+      },
+      {
+        "bytes": 102083,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/matlab/tests/__pycache__"
+      },
+      {
+        "bytes": 34061,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/arff/__pycache__"
+      },
+      {
+        "bytes": 21093,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/arff/tests/__pycache__"
+      },
+      {
+        "bytes": 40147,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/_harwell_boeing/__pycache__"
+      },
+      {
+        "bytes": 11032,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/io/_harwell_boeing/tests/__pycache__"
+      },
+      {
+        "bytes": 191934,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/spatial/__pycache__"
+      },
+      {
+        "bytes": 292631,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/spatial/transform/__pycache__"
+      },
+      {
+        "bytes": 318891,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/spatial/transform/tests/__pycache__"
+      },
+      {
+        "bytes": 367845,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/spatial/tests/__pycache__"
+      },
+      {
+        "bytes": 527088,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/integrate/__pycache__"
+      },
+      {
+        "bytes": 39634,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/integrate/_rules/__pycache__"
+      },
+      {
+        "bytes": 336701,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/integrate/tests/__pycache__"
+      },
+      {
+        "bytes": 169700,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/integrate/_ivp/__pycache__"
+      },
+      {
+        "bytes": 73323,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/integrate/_ivp/tests/__pycache__"
+      },
+      {
+        "bytes": 51453,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/differentiate/__pycache__"
+      },
+      {
+        "bytes": 52515,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/differentiate/tests/__pycache__"
+      },
+      {
+        "bytes": 1174,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/misc/__pycache__"
+      },
+      {
+        "bytes": 762985,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/interpolate/__pycache__"
+      },
+      {
+        "bytes": 870188,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/interpolate/tests/__pycache__"
+      },
+      {
+        "bytes": 1145,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/cluster/__pycache__"
+      },
+      {
+        "bytes": 35178,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/cluster/vq/__pycache__"
+      },
+      {
+        "bytes": 30922,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/cluster/vq/tests/__pycache__"
+      },
+      {
+        "bytes": 162439,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/cluster/hierarchy/__pycache__"
+      },
+      {
+        "bytes": 90340,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/cluster/hierarchy/tests/__pycache__"
+      },
+      {
+        "bytes": 567990,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/linalg/__pycache__"
+      },
+      {
+        "bytes": 1142838,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/linalg/tests/__pycache__"
+      },
+      {
+        "bytes": 64008,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/fftpack/__pycache__"
+      },
+      {
+        "bytes": 129177,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/fftpack/tests/__pycache__"
+      },
+      {
+        "bytes": 349815,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/ndimage/__pycache__"
+      },
+      {
+        "bytes": 537762,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/ndimage/tests/__pycache__"
+      },
+      {
+        "bytes": 232542,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/constants/__pycache__"
+      },
+      {
+        "bytes": 11329,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/constants/tests/__pycache__"
+      },
+      {
+        "bytes": 641629,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/special/__pycache__"
+      },
+      {
+        "bytes": 1108588,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/special/tests/__pycache__"
+      },
+      {
+        "bytes": 214,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/special/tests/data/__pycache__"
+      },
+      {
+        "bytes": 81836,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/special/_precompute/__pycache__"
+      },
+      {
+        "bytes": 146663,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/fft/__pycache__"
+      },
+      {
+        "bytes": 108909,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/fft/tests/__pycache__"
+      },
+      {
+        "bytes": 23841,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/fft/_duccfft/__pycache__"
+      },
+      {
+        "bytes": 90696,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/fft/_duccfft/tests/__pycache__"
+      },
+      {
+        "bytes": 17545,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/datasets/__pycache__"
+      },
+      {
+        "bytes": 6318,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/scipy/datasets/tests/__pycache__"
+      },
+      {
+        "bytes": 716860,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/google/protobuf/__pycache__"
+      },
+      {
+        "bytes": 210,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/google/protobuf/util/__pycache__"
+      },
+      {
+        "bytes": 310614,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/google/protobuf/internal/__pycache__"
+      },
+      {
+        "bytes": 214,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/google/protobuf/testdata/__pycache__"
+      },
+      {
+        "bytes": 3573,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/google/protobuf/compiler/__pycache__"
+      },
+      {
+        "bytes": 1904,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/google/protobuf/pyext/__pycache__"
+      },
+      {
+        "bytes": 18271,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/iniconfig/__pycache__"
+      },
+      {
+        "bytes": 175276,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/jsonschema/__pycache__"
+      },
+      {
+        "bytes": 275768,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/jsonschema/tests/__pycache__"
+      },
+      {
+        "bytes": 1226,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/jsonschema/tests/typing/__pycache__"
+      },
+      {
+        "bytes": 19664,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/jsonschema/benchmarks/__pycache__"
+      },
+      {
+        "bytes": 383080,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/psutil/__pycache__"
+      },
+      {
+        "bytes": 132044,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/flatbuffers/__pycache__"
+      },
+      {
+        "bytes": 168387,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pygments/__pycache__"
+      },
+      {
+        "bytes": 160377,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pygments/styles/__pycache__"
+      },
+      {
+        "bytes": 37875,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pygments/filters/__pycache__"
+      },
+      {
+        "bytes": 171922,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pygments/formatters/__pycache__"
+      },
+      {
+        "bytes": 3359378,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pygments/lexers/__pycache__"
+      },
+      {
+        "bytes": 56667,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/cloudpickle/__pycache__"
+      },
+      {
+        "bytes": 61864,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/referencing/__pycache__"
+      },
+      {
+        "bytes": 87834,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/referencing/tests/__pycache__"
+      },
+      {
+        "bytes": 270478,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/__pycache__"
+      },
+      {
+        "bytes": 96268,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/parquet/__pycache__"
+      },
+      {
+        "bytes": 3206363,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/tests/__pycache__"
+      },
+      {
+        "bytes": 371762,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/tests/parquet/__pycache__"
+      },
+      {
+        "bytes": 44594,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/tests/interchange/__pycache__"
+      },
+      {
+        "bytes": 52773,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/vendored/__pycache__"
+      },
+      {
+        "bytes": 54009,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pyarrow/interchange/__pycache__"
+      },
+      {
+        "bytes": 39629,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/ml_dtypes/__pycache__"
+      },
+      {
+        "bytes": 2046,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/jsonschema_specifications/__pycache__"
+      },
+      {
+        "bytes": 2186,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/jsonschema_specifications/tests/__pycache__"
+      },
+      {
+        "bytes": 6124,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/ruff/__pycache__"
+      },
+      {
+        "bytes": 4990,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/pytest/__pycache__"
+      },
+      {
+        "bytes": 268875,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/__pycache__"
+      },
+      {
+        "bytes": 27590,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/defs/__pycache__"
+      },
+      {
+        "bytes": 6995,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/__pycache__"
+      },
+      {
+        "bytes": 209,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/sample/__pycache__"
+      },
+      {
+        "bytes": 1863,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/sample/ops/__pycache__"
+      },
+      {
+        "bytes": 26327,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/__pycache__"
+      },
+      {
+        "bytes": 16623,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/report/__pycache__"
+      },
+      {
+        "bytes": 6136,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/case/__pycache__"
+      },
+      {
+        "bytes": 1626885,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/case/node/__pycache__"
+      },
+      {
+        "bytes": 12233,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/case/node/ai_onnx_ml/__pycache__"
+      },
+      {
+        "bytes": 47103,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/case/model/__pycache__"
+      },
+      {
+        "bytes": 3546,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/loader/__pycache__"
+      },
+      {
+        "bytes": 31418,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/backend/test/runner/__pycache__"
+      },
+      {
+        "bytes": 1733,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/bin/__pycache__"
+      },
+      {
+        "bytes": 21508,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/tools/__pycache__"
+      },
+      {
+        "bytes": 42175,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/fuzz/__pycache__"
+      },
+      {
+        "bytes": 78775,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/reference/__pycache__"
+      },
+      {
+        "bytes": 546229,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/reference/ops/__pycache__"
+      },
+      {
+        "bytes": 12543,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/reference/ops/aionnx_preview_training/__pycache__"
+      },
+      {
+        "bytes": 5202,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/reference/ops/experimental/__pycache__"
+      },
+      {
+        "bytes": 83071,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/reference/ops/aionnxml/__pycache__"
+      },
+      {
+        "bytes": 10794,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/reference/ops/aionnx_preview/__pycache__"
+      },
+      {
+        "bytes": 203,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/onnx/frontend/__pycache__"
+      },
+      {
+        "bytes": 877,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/_yaml/__pycache__"
+      },
+      {
+        "bytes": 250393,
+        "kind": "directory",
+        "path": "ai-training/.venv/lib/python3.12/site-packages/yaml/__pycache__"
+      },
+      {
+        "bytes": 50045,
+        "kind": "directory",
+        "path": "ai-training/src/idps_ai/__pycache__"
+      },
+      {
+        "bytes": 15884,
+        "kind": "directory",
+        "path": "ai-training/src/idps_ai/export/__pycache__"
+      },
+      {
+        "bytes": 211122,
+        "kind": "directory",
+        "path": "ai-training/src/idps_ai/data/__pycache__"
+      },
+      {
+        "bytes": 65404,
+        "kind": "directory",
+        "path": "ai-training/src/idps_ai/training/__pycache__"
+      },
+      {
+        "bytes": 14856,
+        "kind": "directory",
+        "path": "ai-training/src/idps_ai/features/__pycache__"
+      },
+      {
+        "bytes": 158964,
+        "kind": "directory",
+        "path": ".agents/skills/ui-ux-pro-max/scripts/__pycache__"
+      },
+      {
+        "bytes": 4008,
+        "kind": "directory",
+        "path": "contracts/__pycache__"
+      },
+      {
+        "bytes": 36794,
+        "kind": "directory",
+        "path": "security-web/scripts/__pycache__"
+      },
+      {
+        "bytes": 29923,
+        "kind": "directory",
+        "path": "scripts/__pycache__"
+      }
+    ],
+    "total_bytes": 695826068
+  },
+  "original_relative_path": "ai-training/.artifacts/resource_upgrade_20261028/cleanup-plan.json",
+  "original_sha256": "fc4959fcf6086430f4242c45348f45a6e0d53cb577e3df488d9c4863d98a880a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

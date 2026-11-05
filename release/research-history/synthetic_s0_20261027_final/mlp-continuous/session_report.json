@@ -1,0 +1,62 @@
+{
+  "content": {
+    "best_metric": 0.9179554128993026,
+    "checkpoint": "checkpoints/step-000000000036-ee381ac2e8fa",
+    "checkpoint_manifest_sha256": "6bf2e493c7d9b86d29d00b8c3c2567dcffaad472b2dd0340bdad207396d32c73",
+    "config_sha256": "2fd43ee1edf20763546edb50e7d826f3a4182f819134abadc4ad078d4e0073e8",
+    "cumulative_optimizer_seconds": 0.010867021003832633,
+    "cumulative_wall_seconds": 0.5280835949997709,
+    "cursor": 0,
+    "dataset_sha256": "2db5c8452c7bf7df7931562c0a55b9db78642495234be10d63ae03f5cbfafc4a",
+    "ended_at_unix": 1793079596.8598313,
+    "epoch": 4,
+    "global_step": 36,
+    "process_id": 31611,
+    "resources": {
+      "address_space_limit_effective": 12884901888,
+      "affinity_effective": [
+        0,
+        1
+      ],
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 2,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 12884901888,
+      "peak_rss_bytes": 218185728,
+      "peak_tree_rss_bytes": 218185728,
+      "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+      "total_host_memory_bytes": 32440905728
+    },
+    "run_id": "bc765eda609e464bb5d19da11331b093",
+    "session_id": "5ee1d19e99c54ec485dbac109273e518",
+    "session_optimizer_seconds": 0.010867021003832633,
+    "session_wall_seconds": 0.5789467240001613,
+    "started_at_unix": 1793079596.2809029,
+    "stop_reason": "epochs_complete",
+    "used_previous_checkpoint": false
+  },
+  "original_relative_path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-continuous/session_report.json",
+  "original_sha256": "cc146ace2dcf3e330b9ed180d84ab1e7f50bee7ddcd352a4bde538d1707e3311",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

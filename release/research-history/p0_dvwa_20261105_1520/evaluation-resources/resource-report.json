@@ -1,0 +1,148 @@
+{
+  "content": {
+    "cpu_sensor_sources": {
+      "/sys/class/hwmon/hwmon8/temp10_input": {
+        "celsius": 52.0,
+        "label": "Core 8"
+      },
+      "/sys/class/hwmon/hwmon8/temp11_input": {
+        "celsius": 52.0,
+        "label": "Core 9"
+      },
+      "/sys/class/hwmon/hwmon8/temp12_input": {
+        "celsius": 52.0,
+        "label": "Core 10"
+      },
+      "/sys/class/hwmon/hwmon8/temp13_input": {
+        "celsius": 52.0,
+        "label": "Core 11"
+      },
+      "/sys/class/hwmon/hwmon8/temp14_input": {
+        "celsius": 52.0,
+        "label": "Core 12"
+      },
+      "/sys/class/hwmon/hwmon8/temp15_input": {
+        "celsius": 52.0,
+        "label": "Core 13"
+      },
+      "/sys/class/hwmon/hwmon8/temp16_input": {
+        "celsius": 52.0,
+        "label": "Core 14"
+      },
+      "/sys/class/hwmon/hwmon8/temp17_input": {
+        "celsius": 52.0,
+        "label": "Core 15"
+      },
+      "/sys/class/hwmon/hwmon8/temp18_input": {
+        "celsius": 54.0,
+        "label": "Core 16"
+      },
+      "/sys/class/hwmon/hwmon8/temp1_input": {
+        "celsius": 54.0,
+        "label": "Package id 0"
+      },
+      "/sys/class/hwmon/hwmon8/temp22_input": {
+        "celsius": 52.0,
+        "label": "Core 20"
+      },
+      "/sys/class/hwmon/hwmon8/temp26_input": {
+        "celsius": 52.0,
+        "label": "Core 24"
+      },
+      "/sys/class/hwmon/hwmon8/temp2_input": {
+        "celsius": 52.0,
+        "label": "Core 0"
+      },
+      "/sys/class/hwmon/hwmon8/temp30_input": {
+        "celsius": 52.0,
+        "label": "Core 28"
+      },
+      "/sys/class/hwmon/hwmon8/temp34_input": {
+        "celsius": 48.0,
+        "label": "Core 32"
+      },
+      "/sys/class/hwmon/hwmon8/temp35_input": {
+        "celsius": 48.0,
+        "label": "Core 33"
+      },
+      "/sys/class/hwmon/hwmon8/temp6_input": {
+        "celsius": 54.0,
+        "label": "Core 4"
+      }
+    },
+    "cpu_temperature_max": 96.0,
+    "cpu_temperature_mean": 73.16666666666667,
+    "cpu_temperature_min": 53.0,
+    "events": [
+      {
+        "action": "REDUCE_LOAD",
+        "seconds": 1.0149409149998974,
+        "temperature": 76.0
+      },
+      {
+        "action": "PAUSE",
+        "memory_pressure": false,
+        "seconds": 3.0498299560003943,
+        "temperature": 92.0
+      },
+      {
+        "action": "RESUME",
+        "seconds": 4.062954660001196,
+        "temperature": 54.0
+      },
+      {
+        "action": "PAUSE",
+        "memory_pressure": false,
+        "seconds": 5.077157765001175,
+        "temperature": 94.0
+      },
+      {
+        "action": "RESUME",
+        "seconds": 6.090947661999962,
+        "temperature": 53.0
+      },
+      {
+        "action": "PAUSE",
+        "memory_pressure": false,
+        "seconds": 7.103171819000636,
+        "temperature": 95.0
+      },
+      {
+        "action": "RESUME",
+        "seconds": 8.115581383000972,
+        "temperature": 54.0
+      },
+      {
+        "action": "PAUSE",
+        "memory_pressure": false,
+        "seconds": 10.139526728000419,
+        "temperature": 96.0
+      },
+      {
+        "action": "RESUME",
+        "seconds": 11.153060700000424,
+        "temperature": 54.0
+      }
+    ],
+    "exit_reason": "completed",
+    "hard_pause_celsius": 80,
+    "initial_ai_headroom_bytes_after_reserve": 16639928320,
+    "limits": "1s reactive sensor sampling; spikes cannot be absolutely excluded; tree RSS excludes detached container processes; system RAM covers all workloads",
+    "peak_process_tree_rss_bytes": 415100928,
+    "peak_system_used_bytes": 11682447360,
+    "reduce_load_celsius": 72,
+    "reserve_bytes": 2000000000,
+    "resume_below_celsius": 70,
+    "returncode": 0,
+    "samples": 12,
+    "shared_system_budget_bytes": 30000000000,
+    "system_cpu_percent_max": 16.7,
+    "system_cpu_percent_mean": 8.133333333333333,
+    "wall_seconds": 12.163074249001511,
+    "warning_celsius": 75
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/evaluation-resources/resource-report.json",
+  "original_sha256": "efd2216a8e9928b387dec09bbe9691b7345b3a61196f5e3f79af9b64afa7f594",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

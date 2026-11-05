@@ -1,0 +1,28 @@
+{
+  "content": {
+    "capture_report_sha256": "9d9a94360676ab3851d0bbc28fc89c3d0c4bdbe9db4dc20d12fc99bd42ae7c30",
+    "eve_sha256": "d4e51b3c2b150ee5b9e20ccec0106a2479bb7080825b3e6a0f971a431dcca3f5",
+    "feature_visibility": "Masked lab Nginx and offline EVE v2 are request-bound; live production sensor and end-to-end 207-feature parity remain untested.",
+    "flow_causality": "Flow records are evidence only; their values are unavailable to per-request inference until the sensor actually emits them.",
+    "format_version": 1,
+    "independently_reviewed_attack": 0,
+    "independently_reviewed_benign": 0,
+    "lab_input_profile": "safe_query_numeric_v2",
+    "lab_nginx_eve_numeric_projection_mismatches": 0,
+    "masked_nginx_query_null_requests": 8,
+    "max_client_to_eve_http_delta_seconds": 0.611753,
+    "max_eve_http_to_flow_emission_seconds": 1.853904,
+    "offline_eve_input_profile": "safe_query_numeric_v2",
+    "offline_visibility_status": "LAB_MASKED_EDGE_AND_EVE_V2_BOUND",
+    "pcap_sha256": "942e44ec084d8fdbfa376bc4b05ea8e1adc90e512593d3d315fe421c75a7eacb",
+    "request_count": 8,
+    "source_count_per_request": 3,
+    "status": "THREE_SOURCE_CORRELATED_DEVELOPMENT_ONLY",
+    "three_source_evidence_sha256": "5fb41bd67e4a66bdfc30ae8e50799756b48e8b9a1c4c1300966009acc63ca8b1",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/devgt1/run/correlated/report.json",
+  "original_sha256": "f33c7f2a24f61d5cf6b824487294818fe45023fc46b82590641b0dae02648a9e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

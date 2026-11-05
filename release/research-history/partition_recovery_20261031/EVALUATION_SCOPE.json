@@ -1,0 +1,17 @@
+{
+  "content": {
+    "campaign_reason": "One recorded private source address; day blocks are not independently identified attackers or campaigns.",
+    "corpus_role": "exposed_retrospective_development",
+    "final_holdouts_still_sealed": true,
+    "future_requirement": "Validate frozen models on sealed independently reviewed sources, including unfiltered/missing-view failures; do not claim partition engineering solved real-world generalization.",
+    "global_curation_selection_bias": "SRBH curation used full-source original annotations to quarantine contradictory input views before this split. Forward role ordering prevents training on later observations but cannot undo knowledge used to define the curated population. This is a retrospective curated development study, not an unbiased prospective/all-original-request estimate.",
+    "model_fit_or_threshold_uses_validation_labels": false,
+    "no_champion_from_this_study": true,
+    "source_campaign_acceptance": false,
+    "strict_future_prospective_acceptance": false
+  },
+  "original_relative_path": "ai-training/.artifacts/partition_recovery_20261031/EVALUATION_SCOPE.json",
+  "original_sha256": "595fcbb4427a76cf93ae8995b8c78ec216a396d33167da0aa0d1b57694a5de4a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

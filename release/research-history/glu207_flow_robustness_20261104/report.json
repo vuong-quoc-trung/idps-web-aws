@@ -1,0 +1,338 @@
+{
+  "content": {
+    "baseline_score_distribution": {
+      "max": 0.9998191595077515,
+      "median": 0.10662385821342468,
+      "min": 0.006328940391540527,
+      "p05": 0.013394320383667946,
+      "p95": 0.9988332986831665
+    },
+    "counterfactual_arms": {
+      "all_flow": {
+        "abs_delta_gt_0_1": 15,
+        "abs_delta_gt_0_25": 5,
+        "absolute_score_delta": {
+          "max": 0.4946480989456177,
+          "median": 0.004081934690475464,
+          "min": 9.655952453613281e-06,
+          "p05": 9.222626977134496e-05,
+          "p95": 0.05232792720198631
+        },
+        "argmax_class_changes": 2,
+        "by_development_binary_label": {
+          "attack": {
+            "argmax_class_changes": 1,
+            "median_abs_delta": 0.0008806288242340088,
+            "p95_abs_delta": 0.04953230544924736,
+            "rows": 512
+          },
+          "benign": {
+            "argmax_class_changes": 1,
+            "median_abs_delta": 0.00898924469947815,
+            "p95_abs_delta": 0.05589177832007408,
+            "rows": 512
+          }
+        },
+        "fields": [
+          "duration_seconds",
+          "bytes_to_server",
+          "bytes_to_client",
+          "packets_to_server",
+          "packets_to_client"
+        ],
+        "largest_50_development_families": {
+          "behavioral_anomaly": 7,
+          "benign": 27,
+          "brute_force": 16
+        },
+        "mean_signed_score_delta": 0.00279389601200819,
+        "score_delta": {
+          "max": 0.4946480989456177,
+          "median": 0.0009735822677612305,
+          "min": -0.4696512222290039,
+          "p05": -0.031479526311159134,
+          "p95": 0.03694728761911392
+        }
+      },
+      "bytes": {
+        "abs_delta_gt_0_1": 5,
+        "abs_delta_gt_0_25": 1,
+        "absolute_score_delta": {
+          "max": 0.4445604681968689,
+          "median": 0.0029337704181671143,
+          "min": 1.9073486328125e-06,
+          "p05": 0.00012746751599479467,
+          "p95": 0.03127391263842583
+        },
+        "argmax_class_changes": 2,
+        "fields": [
+          "bytes_to_server",
+          "bytes_to_client"
+        ],
+        "mean_signed_score_delta": 0.005556115414947271,
+        "score_delta": {
+          "max": 0.4445604681968689,
+          "median": 0.0006402730941772461,
+          "min": -0.20021748542785645,
+          "p05": -0.006474918220192194,
+          "p95": 0.028169050812721252
+        }
+      },
+      "duration": {
+        "abs_delta_gt_0_1": 0,
+        "abs_delta_gt_0_25": 0,
+        "absolute_score_delta": {
+          "max": 0.0853002667427063,
+          "median": 0.0012827813625335693,
+          "min": 8.344650268554688e-07,
+          "p05": 5.3772331739310175e-05,
+          "p95": 0.007444825954735279
+        },
+        "argmax_class_changes": 0,
+        "fields": [
+          "duration_seconds"
+        ],
+        "mean_signed_score_delta": 0.0015027819899842143,
+        "score_delta": {
+          "max": 0.08257865905761719,
+          "median": 0.0007426440715789795,
+          "min": -0.0853002667427063,
+          "p05": -0.0013575286138802767,
+          "p95": 0.006675309035927057
+        }
+      },
+      "packets": {
+        "abs_delta_gt_0_1": 4,
+        "abs_delta_gt_0_25": 0,
+        "absolute_score_delta": {
+          "max": 0.2079070806503296,
+          "median": 0.0023913681507110596,
+          "min": 5.960464477539063e-08,
+          "p05": 6.623566150665283e-05,
+          "p95": 0.02286265417933464
+        },
+        "argmax_class_changes": 0,
+        "fields": [
+          "packets_to_server",
+          "packets_to_client"
+        ],
+        "mean_signed_score_delta": 0.004333384335041046,
+        "score_delta": {
+          "max": 0.2079070806503296,
+          "median": 0.0007700622081756592,
+          "min": -0.12675780057907104,
+          "p05": -0.006184682250022888,
+          "p95": 0.020525610074400902
+        }
+      }
+    },
+    "feature_groups": {
+      "flow": {
+        "columns": 10,
+        "columns_zero_rate_gap_ge_0_5": 10,
+        "explicit_missing_indicator_columns": 5,
+        "mean_explicit_missing_rate_shadow": 1.0,
+        "mean_explicit_missing_rate_train": 0.12411373108625412,
+        "shadow_columns_nonzero": 5,
+        "shadow_columns_varying": 0,
+        "shadow_median_zero_rate": 0.5,
+        "train_columns_nonzero": 10,
+        "train_median_zero_rate": 0.5,
+        "zero_rate_note": "Raw zero may be a valid value; only explicit indicators define missingness"
+      },
+      "method_role_agent": {
+        "columns": 39,
+        "columns_zero_rate_gap_ge_0_5": 0,
+        "explicit_missing_indicator_columns": 1,
+        "mean_explicit_missing_rate_shadow": 0.0,
+        "mean_explicit_missing_rate_train": 0.0,
+        "shadow_columns_nonzero": 9,
+        "shadow_columns_varying": 7,
+        "shadow_median_zero_rate": 1.0,
+        "train_columns_nonzero": 23,
+        "train_median_zero_rate": 0.9896171317326411,
+        "zero_rate_note": "Raw zero may be a valid value; only explicit indicators define missingness"
+      },
+      "request_size": {
+        "columns": 2,
+        "columns_zero_rate_gap_ge_0_5": 0,
+        "explicit_missing_indicator_columns": 1,
+        "mean_explicit_missing_rate_shadow": 0.0,
+        "mean_explicit_missing_rate_train": 0.0,
+        "shadow_columns_nonzero": 1,
+        "shadow_columns_varying": 1,
+        "shadow_median_zero_rate": 0.5,
+        "train_columns_nonzero": 1,
+        "train_median_zero_rate": 0.5,
+        "zero_rate_note": "Raw zero may be a valid value; only explicit indicators define missingness"
+      },
+      "request_structure": {
+        "columns": 69,
+        "columns_zero_rate_gap_ge_0_5": 0,
+        "explicit_missing_indicator_columns": 0,
+        "mean_explicit_missing_rate_shadow": null,
+        "mean_explicit_missing_rate_train": null,
+        "shadow_columns_nonzero": 52,
+        "shadow_columns_varying": 49,
+        "shadow_median_zero_rate": 0.9259259259259259,
+        "train_columns_nonzero": 52,
+        "train_median_zero_rate": 0.9531328862931718,
+        "zero_rate_note": "Raw zero may be a valid value; only explicit indicators define missingness"
+      },
+      "response": {
+        "columns": 9,
+        "columns_zero_rate_gap_ge_0_5": 0,
+        "explicit_missing_indicator_columns": 3,
+        "mean_explicit_missing_rate_shadow": 0.0,
+        "mean_explicit_missing_rate_train": 0.0,
+        "shadow_columns_nonzero": 4,
+        "shadow_columns_varying": 4,
+        "shadow_median_zero_rate": 1.0,
+        "train_columns_nonzero": 4,
+        "train_median_zero_rate": 1.0,
+        "zero_rate_note": "Raw zero may be a valid value; only explicit indicators define missingness"
+      },
+      "temporal_behavior": {
+        "columns": 78,
+        "columns_zero_rate_gap_ge_0_5": 11,
+        "explicit_missing_indicator_columns": 8,
+        "mean_explicit_missing_rate_shadow": 0.7708333134651184,
+        "mean_explicit_missing_rate_train": 0.21823550760746002,
+        "shadow_columns_nonzero": 72,
+        "shadow_columns_varying": 61,
+        "shadow_median_zero_rate": 0.05555555555555555,
+        "train_columns_nonzero": 68,
+        "train_median_zero_rate": 0.09270074747037758,
+        "zero_rate_note": "Raw zero may be a valid value; only explicit indicators define missingness"
+      }
+    },
+    "formal_admitted_requests": 0,
+    "fpr": null,
+    "interpretation_limits": [
+      "Ablation changes one observed group to its legitimate missing encoding, not a real new request",
+      "Development runner labels are not independent attack ground truth",
+      "Argmax changes are eight-class predictions, not alerts under a calibrated threshold",
+      "No final holdout, development validation, or test row was used",
+      "No model weights, threshold, or feature semantics were changed"
+    ],
+    "native_onnx_parity_first_16": "PASS",
+    "plan_sha256": "a023e99bd8124cb3db22c25b8607516987b819540a44da1cf18c38d28bb49b0a",
+    "recall": null,
+    "request_id_overlap_train_shadow": null,
+    "resource_envelope": {
+      "address_space_limit_effective": 17179869184,
+      "affinity_effective": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cgroup_v2": {
+        "cpu.max": "400000 100000",
+        "cpu.stat": "usage_usec 72948550\nuser_usec 72490497\nsystem_usec 458053\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 724\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "725811200",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "791588864",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/run-p17081-i49756.scope"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 4,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 17179869184,
+      "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+      "total_host_memory_bytes": 32440905728
+    },
+    "resource_guard": {
+      "peak_cpu_temperature_celsius": 74.0,
+      "peak_rss_bytes": 923074560,
+      "peak_tree_rss_bytes": 923074560,
+      "temperature_monitoring": "hardware_critical_limit_available",
+      "thermal_limit_reached": false,
+      "thermal_stop_threshold_celsius": 100.0
+    },
+    "sampled_attack_development": 512,
+    "sampled_benign_development": 512,
+    "sampled_train_only_rows": 1024,
+    "sampled_train_only_unique_views": 1024,
+    "shadow_207_values_finite": true,
+    "shadow_flow_timing": {
+      "earliest_flow_available_after_last_request_seconds": 53.66083097457886,
+      "earliest_flow_event_after_last_request_seconds": 0.0005600452423095703,
+      "eve_flow_available_before_last_request": 0,
+      "eve_flow_event_before_last_request": 0,
+      "eve_flow_observations": 54,
+      "latest_flow_available_after_last_request_seconds": 65.00056004524231,
+      "request_span_seconds": 11.339910984039307
+    },
+    "shadow_prior_flow_rows": 0,
+    "shadow_rows": 54,
+    "status": "TRAIN_ONLY_SYNTHETIC_MISSINGNESS_DIAGNOSTIC",
+    "threshold": null,
+    "train_feature_replay_exact": 41607,
+    "train_first_prior_flow_seconds_after_start": 65.08843803405762,
+    "train_prior_flow_rows": 36443,
+    "train_rows": 41607,
+    "train_rows_before_first_prior_flow": 5114,
+    "train_span_seconds": 481.59377002716064,
+    "window_incomplete_rates": {
+      "ip_10s_context_incomplete": {
+        "shadow": 1.0,
+        "train": 0.02016487531363964
+      },
+      "ip_300s_context_incomplete": {
+        "shadow": 1.0,
+        "train": 0.5712740421295166
+      },
+      "ip_60s_context_incomplete": {
+        "shadow": 1.0,
+        "train": 0.11416348069906235
+      },
+      "user_10s_context_incomplete": {
+        "shadow": 1.0,
+        "train": 0.11202441900968552
+      },
+      "user_300s_context_incomplete": {
+        "shadow": 1.0,
+        "train": 0.6333309412002563
+      },
+      "user_60s_context_incomplete": {
+        "shadow": 1.0,
+        "train": 0.200927734375
+      }
+    },
+    "windows_seconds": [
+      10,
+      60,
+      300
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/glu207_flow_robustness_20261104/report.json",
+  "original_sha256": "2ceaafe85a633330e6c7cccb5379253723efca46c005c97c112fd1059fa2a280",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

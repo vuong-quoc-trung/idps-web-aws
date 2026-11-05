@@ -1,0 +1,102 @@
+{
+  "content": {
+    "attack_recall": null,
+    "automatic_blocking": false,
+    "binomial_95_ci": [
+      0.0,
+      0.12770286761543234
+    ],
+    "binomial_ci_limit": "Descriptive exact-binomial interval assumes independent requests; one session/lab violates that assumption, so population FPR is not certified.",
+    "by_phase": {
+      "EARLY": {
+        "benign": 7,
+        "binomial_95_ci": [
+          0.0,
+          0.40961639722500337
+        ],
+        "false_positives": 0,
+        "observed_fpr": 0.0,
+        "prior_flow": 0
+      },
+      "WARM": {
+        "benign": 9,
+        "binomial_95_ci": [
+          0.0,
+          0.3362671168799428
+        ],
+        "false_positives": 0,
+        "observed_fpr": 0.0,
+        "prior_flow": 9
+      },
+      "WARMING": {
+        "benign": 11,
+        "binomial_95_ci": [
+          0.0,
+          0.28491415291815436
+        ],
+        "false_positives": 0,
+        "observed_fpr": 0.0,
+        "prior_flow": 11
+      }
+    },
+    "by_workflow": {
+      "create": {
+        "benign": 1,
+        "false_positives": 0
+      },
+      "created_get": {
+        "benign": 1,
+        "false_positives": 0
+      },
+      "csrf": {
+        "benign": 2,
+        "false_positives": 0
+      },
+      "login": {
+        "benign": 1,
+        "false_positives": 0
+      },
+      "me": {
+        "benign": 1,
+        "false_positives": 0
+      },
+      "page": {
+        "benign": 21,
+        "false_positives": 0
+      }
+    },
+    "calibration_benign": 27,
+    "calibration_campaigns": 1,
+    "calibration_evaluation_exact_feature_view_overlap": 0,
+    "calibration_plan_sha256": "830fafa6a9791d5ab4b686f9f6cb96e51d0492350754cf2c2bf43a4e7f820fbd",
+    "calibration_report_sha256": "05c91c34f9dc9c74fc7d60edaa11927727ccc491cd5bfb8e42181ff3c4fc4615",
+    "evaluation_benign": 27,
+    "evaluation_campaigns": 1,
+    "evaluation_capture_report_sha256": "6372e23a841f7aad5f74dc0ebf5df2ce678bde113bbf64fec9b5130846186608",
+    "evaluation_plan_sha256": "ac11fd91d41125fa5ff589698133cbaf89bc3cd7c871e82abef609f0ef3796e2",
+    "evaluation_unique_views": 27,
+    "false_positives": 0,
+    "false_positives_per_10000": 0.0,
+    "formal_admitted": 0,
+    "observed_fpr": 0.0,
+    "onnx_forward_ms_p95": 16.46033109999999,
+    "physical_request_ids_disjoint": true,
+    "prior_flow": 20,
+    "production_ready": false,
+    "same_environment_as_calibration": true,
+    "score_max": 0.5180703401565552,
+    "score_median": 0.33939504623413086,
+    "score_min": 0.024213314056396484,
+    "score_p95": 0.5028233528137207,
+    "status": "PROSPECTIVE_LAB_FPR_ESTIMATED_PROVISIONAL_THRESHOLD",
+    "threshold": 0.5396780371665955,
+    "threshold_changed_after_evaluation": false,
+    "threshold_manifest_sha256": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2",
+    "unique_view_false_positives": 0,
+    "unique_view_fpr": 0.0
+  },
+  "original_relative_path": "ai-training/.artifacts/be27_1104/fpr-report.json",
+  "original_sha256": "e49afbbd4af3671f93ef694de185a17be2a1738795416f634c0ca3a0aa96ed58",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

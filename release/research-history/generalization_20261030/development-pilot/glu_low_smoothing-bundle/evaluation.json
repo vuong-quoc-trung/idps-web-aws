@@ -1,0 +1,262 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        6506,
+        52
+      ],
+      [
+        31,
+        2657
+      ]
+    ],
+    "f1": 0.984621085788401,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            5,
+            379
+          ]
+        ],
+        "count": 384,
+        "detected": 379,
+        "f1_vs_benign": 0.9300613496932515,
+        "precision_vs_benign": 0.8793503480278422,
+        "recall": 0.9869791666666666
+      },
+      "benign": {
+        "count": 6558,
+        "false_positives": 52
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            7,
+            377
+          ]
+        ],
+        "count": 384,
+        "detected": 377,
+        "f1_vs_benign": 0.9274292742927429,
+        "precision_vs_benign": 0.8787878787878788,
+        "recall": 0.9817708333333334
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            19,
+            365
+          ]
+        ],
+        "count": 384,
+        "detected": 365,
+        "f1_vs_benign": 0.9113607990012484,
+        "precision_vs_benign": 0.8752997601918465,
+        "recall": 0.9505208333333334
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9365853658536586,
+        "precision_vs_benign": 0.8807339449541285,
+        "recall": 1.0
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9365853658536586,
+        "precision_vs_benign": 0.8807339449541285,
+        "recall": 1.0
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9365853658536586,
+        "precision_vs_benign": 0.8807339449541285,
+        "recall": 1.0
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            6506,
+            52
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9365853658536586,
+        "precision_vs_benign": 0.8807339449541285,
+        "recall": 1.0
+      }
+    },
+    "final_test_metrics_computed": false,
+    "fpr": 0.007929246721561452,
+    "latency_ms": {
+      "native": {
+        "p50": 10.3535425,
+        "p95": 10.691245200000001,
+        "p99": 11.551937410000003
+      },
+      "onnxruntime": {
+        "p50": 4.2300155,
+        "p95": 6.271105399999997,
+        "p99": 7.888102200000079
+      },
+      "sample_partition": "val",
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "multiclass_confusion_matrix": [
+      [
+        6506,
+        3,
+        0,
+        0,
+        38,
+        3,
+        3,
+        5
+      ],
+      [
+        0,
+        244,
+        0,
+        0,
+        139,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        384,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        384,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        19,
+        0,
+        0,
+        0,
+        364,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        384,
+        0,
+        0
+      ],
+      [
+        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        377,
+        0
+      ],
+      [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        379
+      ]
+    ],
+    "multiclass_labels": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "partition": "val_selection_groups",
+    "pr_auc_average_precision": 0.9978115109409696,
+    "pr_auc_trapezoidal": 0.9978113183903851,
+    "precision": 0.9808047249907715,
+    "recall": 0.9884672619047619,
+    "recall_at_fpr_le_1pct": 0.9910714285714286,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.9980950372772622,
+    "rows": 9246,
+    "threshold": 0.12905281782150269
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-bundle/evaluation.json",
+  "original_sha256": "c304d82d6aee29eb17b284880e4265d5617c4ce26c0899d35fd1b9eb2f80b05a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

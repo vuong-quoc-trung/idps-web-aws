@@ -1,0 +1,76 @@
+{
+  "content": {
+    "baseline": "LogisticRegression fixed C1,max_iter200,class/source/family training weights",
+    "batch_size": 128,
+    "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+    "fresh_test_quality_opened": false,
+    "limits": "SRBH day blocks, one recorded private source IP; publisher/runner annotations, no independent human review. Not a production generalization certificate.",
+    "plans": [
+      {
+        "config": {
+          "family_weight": 0.0,
+          "kind": "deep_mlp",
+          "learning_rate": 0.0003,
+          "sampling": "domain_family_balanced",
+          "seed": 17,
+          "smoothing": 0.005,
+          "total_steps": 300,
+          "training_pool": "curated_multisource",
+          "training_sources": [
+            "srbh2020",
+            "student-lab"
+          ],
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "name": "mlp256"
+      },
+      {
+        "config": {
+          "family_weight": 0.0,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "domain_family_balanced",
+          "seed": 17,
+          "smoothing": 0.005,
+          "total_steps": 300,
+          "training_pool": "curated_multisource",
+          "training_sources": [
+            "srbh2020",
+            "student-lab"
+          ],
+          "warmup_steps": 15,
+          "width": 256
+        },
+        "name": "glu256"
+      },
+      {
+        "config": {
+          "family_weight": 0.0,
+          "kind": "residual_glu",
+          "learning_rate": 0.0003,
+          "sampling": "domain_family_balanced",
+          "seed": 17,
+          "smoothing": 0.005,
+          "total_steps": 300,
+          "training_pool": "curated_multisource",
+          "training_sources": [
+            "srbh2020",
+            "student-lab"
+          ],
+          "warmup_steps": 15,
+          "width": 1024
+        },
+        "name": "glu1024"
+      }
+    ],
+    "selection": "Report all candidates; validation only, no HPO, champion or final-test selection",
+    "source_sha256": "34bf40167db9f21ad605273709e2a603360732471c8faad0ba1cd96371d197f3",
+    "steps_per_model": 300,
+    "threshold": "max per-source benign calibration quantile at1%FPR, never validation or test"
+  },
+  "original_relative_path": "ai-training/.artifacts/partition_recovery_20261031/study/preregistered-plan.json",
+  "original_sha256": "bca75653858c7e7246a1dca467745c4048bbcf628371f524a9429a36e79ea61b",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,181 @@
+{
+  "content": {
+    "attack_recall": null,
+    "campaign_id": "benign-calibration-20261104-01",
+    "checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "collector_sha256": "4290ea2e9ffedbdef26e2ad8cdc2059b9b7497924955c998c87d0f6d2b58a08e",
+    "dedup": "unique client X-Request-Id and one Student, one Nginx, one EVE HTTP observation per request; unique float32 vector SHA counted separately",
+    "early_before_seconds": 65,
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "format_version": 1,
+    "holdout_access": false,
+    "metrics": [
+      "physical_request_count",
+      "three_source_count",
+      "lab_benign_verified",
+      "unknown",
+      "unique_float32_views",
+      "prior_flow_by_phase",
+      "history_flags_by_phase",
+      "score_distribution_by_phase",
+      "ONNX_forward_latency_ms",
+      "FPR_if_valid_threshold_else_null"
+    ],
+    "model_selection": false,
+    "nginx_sha256": "94eb839f1cdc7f3f42062d352b504fe406e2f888d83b554af7ea25bcdc9506f5",
+    "observation_seconds": 460,
+    "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+    "oracle": "Expected authenticated fixture identity, schema and pagination, plus created-faculty identity readback. A status code alone never verifies benign intent.",
+    "orchestrator_sha256": "ea854845217865bfa51a534bdab632001afbf328c5b7c6a3a69170f3c97f98ba",
+    "purpose": "provisional_benign_calibration_no_quality_claim",
+    "request_manifest": [
+      {
+        "kind": "csrf",
+        "offset": 0,
+        "path": "/api/auth/csrf"
+      },
+      {
+        "kind": "login",
+        "offset": 2,
+        "path": "/api/auth/login"
+      },
+      {
+        "kind": "csrf",
+        "offset": 4,
+        "path": "/api/auth/csrf"
+      },
+      {
+        "kind": "me",
+        "offset": 6,
+        "path": "/api/auth/me"
+      },
+      {
+        "kind": "page",
+        "offset": 20,
+        "path": "/api/majors?page=3&size=3"
+      },
+      {
+        "kind": "page",
+        "offset": 40,
+        "path": "/api/training-programs?page=4&size=4"
+      },
+      {
+        "kind": "page",
+        "offset": 60,
+        "path": "/api/faculties?page=5&size=5"
+      },
+      {
+        "kind": "page",
+        "offset": 80,
+        "path": "/api/classes?page=3&size=6&q=C%23+basics"
+      },
+      {
+        "kind": "page",
+        "offset": 100,
+        "path": "/api/majors?page=4&size=7"
+      },
+      {
+        "kind": "create",
+        "offset": 120,
+        "path": "/api/faculties"
+      },
+      {
+        "kind": "created_get",
+        "offset": 140,
+        "path": "/api/faculties/{created_id}"
+      },
+      {
+        "kind": "page",
+        "offset": 160,
+        "path": "/api/classes?page=4&size=3"
+      },
+      {
+        "kind": "page",
+        "offset": 180,
+        "path": "/api/majors?page=5&size=4"
+      },
+      {
+        "kind": "page",
+        "offset": 200,
+        "path": "/api/training-programs?page=3&size=5"
+      },
+      {
+        "kind": "page",
+        "offset": 220,
+        "path": "/api/faculties?page=4&size=6"
+      },
+      {
+        "kind": "page",
+        "offset": 240,
+        "path": "/api/classes?page=5&size=7&q=50%25+progress"
+      },
+      {
+        "kind": "page",
+        "offset": 260,
+        "path": "/api/majors?page=3&size=8"
+      },
+      {
+        "kind": "page",
+        "offset": 280,
+        "path": "/api/training-programs?page=4&size=9"
+      },
+      {
+        "kind": "page",
+        "offset": 300,
+        "path": "/api/faculties?page=5&size=3"
+      },
+      {
+        "kind": "page",
+        "offset": 320,
+        "path": "/api/classes?page=3&size=4"
+      },
+      {
+        "kind": "page",
+        "offset": 340,
+        "path": "/api/majors?page=4&size=5"
+      },
+      {
+        "kind": "page",
+        "offset": 360,
+        "path": "/api/training-programs?page=5&size=6&q=a%2Bb"
+      },
+      {
+        "kind": "page",
+        "offset": 380,
+        "path": "/api/faculties?page=3&size=7"
+      },
+      {
+        "kind": "page",
+        "offset": 400,
+        "path": "/api/classes?page=4&size=8"
+      },
+      {
+        "kind": "page",
+        "offset": 420,
+        "path": "/api/majors?page=5&size=9"
+      },
+      {
+        "kind": "page",
+        "offset": 440,
+        "path": "/api/training-programs?page=3&size=3&q=h%E1%BB%8Dc+ph%E1%BA%A7n"
+      },
+      {
+        "kind": "page",
+        "offset": 460,
+        "path": "/api/faculties?page=4&size=4"
+      }
+    ],
+    "role": "calibration",
+    "scope": "AI-owned disposable loopback Student lab; valid workflows only",
+    "script_sha256": "4290ea2e9ffedbdef26e2ad8cdc2059b9b7497924955c998c87d0f6d2b58a08e",
+    "suricata_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "threshold": null,
+    "threshold_reason": "Research step652 checkpoint has no valid locked calibration threshold",
+    "threshold_selection_algorithm": "For 27 oracle-verified benign scores, take the maximum float32 score and the next greater representable float32 value; alert iff score >= threshold. This yields zero in-sample alerts by construction and no 1% guarantee.",
+    "warm_after_seconds": 300
+  },
+  "original_relative_path": "ai-training/.artifacts/bc27_1104/plan.json",
+  "original_sha256": "830fafa6a9791d5ab4b686f9f6cb96e51d0492350754cf2c2bf43a4e7f820fbd",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

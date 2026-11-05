@@ -1,0 +1,205 @@
+{
+  "content": {
+    "DVWA_exposed_regression": {
+      "candidate": {
+        "FN": 31,
+        "FP": 0,
+        "TN": 59,
+        "TP": 17,
+        "descriptive_iid_95_ci_normal_flag_fraction": [
+          0.0,
+          0.060608900950339835
+        ],
+        "descriptive_iid_95_ci_sensitivity": [
+          0.22160593291183364,
+          0.5054317445633696
+        ],
+        "descriptive_lab_normal_flag_fraction": 0.0,
+        "descriptive_lab_sensitivity": 0.3541666666666667,
+        "independent_population_fpr": null,
+        "independent_population_recall": null,
+        "labeled_requests": 107,
+        "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+        "unknown_excluded": 4
+      },
+      "candidate_by_family": {
+        "cmd_injection": {
+          "FN": 12,
+          "FP": 0,
+          "TN": 0,
+          "TP": 0,
+          "descriptive_iid_95_ci_normal_flag_fraction": null,
+          "descriptive_iid_95_ci_sensitivity": [
+            0.0,
+            0.2646484693970512
+          ],
+          "descriptive_lab_normal_flag_fraction": null,
+          "descriptive_lab_sensitivity": 0.0,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 12,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 4
+        },
+        "path_traversal": {
+          "FN": 6,
+          "FP": 0,
+          "TN": 3,
+          "TP": 6,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.7075982261787133
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.21094463823929666,
+            0.7890553617607033
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.5,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 15,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 0
+        },
+        "sqli": {
+          "FN": 1,
+          "FP": 0,
+          "TN": 20,
+          "TP": 11,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.1684334709830853
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.6152038348490559,
+            0.9978924067681397
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.9166666666666666,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 32,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 0
+        },
+        "xss": {
+          "FN": 12,
+          "FP": 0,
+          "TN": 36,
+          "TP": 0,
+          "descriptive_iid_95_ci_normal_flag_fraction": [
+            0.0,
+            0.09739375591449193
+          ],
+          "descriptive_iid_95_ci_sensitivity": [
+            0.0,
+            0.2646484693970512
+          ],
+          "descriptive_lab_normal_flag_fraction": 0.0,
+          "descriptive_lab_sensitivity": 0.0,
+          "independent_population_fpr": null,
+          "independent_population_recall": null,
+          "labeled_requests": 48,
+          "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+          "unknown_excluded": 0
+        }
+      },
+      "frozen_reference": {
+        "FN": 30,
+        "FP": 0,
+        "TN": 59,
+        "TP": 18,
+        "descriptive_iid_95_ci_normal_flag_fraction": [
+          0.0,
+          0.060608900950339835
+        ],
+        "descriptive_iid_95_ci_sensitivity": [
+          0.2395224034565858,
+          0.5264942393532239
+        ],
+        "descriptive_lab_normal_flag_fraction": 0.0,
+        "descriptive_lab_sensitivity": 0.375,
+        "independent_population_fpr": null,
+        "independent_population_recall": null,
+        "labeled_requests": 107,
+        "scope": "collector-controlled prospective single-lab intent; review pending; IID intervals descriptive only",
+        "unknown_excluded": 4
+      },
+      "scope": "exposed DVWA, lab labels/review pending, no fitting or threshold selection"
+    },
+    "candidate_checkpoint": "<PROJECT_ROOT>/ai-training/.artifacts/integration_candidate_20261105/candidate-run/checkpoints/step-000000003072-ce01c352a9df",
+    "candidate_checkpoint_sha256": "09ae4a6900806c87b5f277c97e9b0b30403700d4c185e112455b000a2761f2d3",
+    "candidate_threshold": 0.9068083763122559,
+    "development": {
+      "candidate": {
+        "FN": 665,
+        "FP": 60,
+        "TN": 5542,
+        "TP": 13816,
+        "publisher_NORMAL": 5602,
+        "publisher_PR_AUC": 0.9987829476091674,
+        "publisher_anomalous": 14481,
+        "publisher_normal_fraction_flagged": 0.010710460549803642,
+        "publisher_positive_fraction_flagged": 0.9540777570609764,
+        "scope": "publisher labels, not independent Ground Truth"
+      },
+      "frozen_reference": {
+        "FN": 587,
+        "FP": 56,
+        "TN": 5546,
+        "TP": 13894,
+        "publisher_NORMAL": 5602,
+        "publisher_PR_AUC": 0.9988360637381601,
+        "publisher_anomalous": 14481,
+        "publisher_normal_fraction_flagged": 0.009996429846483398,
+        "publisher_positive_fraction_flagged": 0.959464125405704,
+        "scope": "publisher labels, not independent Ground Truth"
+      }
+    },
+    "frozen_reference_threshold": 0.8826237916946411,
+    "limitations": [
+      "WAF weak publisher labels; near duplicates and source dependence remain",
+      "DVWA used for exposed regression selection, never a blind generalization claim",
+      "single seed bounded experiment; no production champion",
+      "Neither full GLU contract nor GLU training performed"
+    ],
+    "new_independent_evaluation": false,
+    "new_physical_requests": 0,
+    "report_sha256": "22e9ea5a8c410b8a88c8308db734b85b6ad168d468669b562e22a33782b85a14",
+    "selection": "FROZEN_REQUEST_V2",
+    "selection_checks": {
+      "DVWA_additional_attempts_ge4": false,
+      "DVWA_no_additional_benign_flags": true,
+      "development_normal_budget": true,
+      "development_positive_noninferiority": true
+    },
+    "selection_rule_precommitted": "promote for demo only if WAF development normal flags<=baseline+0.002 absolute and anomaly flagged fraction>=baseline-0.01; require DVWA improvement>=4 additional attempts with no additional benign flags; otherwise package frozen reference. No threshold search or hyperparameter retries.",
+    "status": "COMPLETED_SINGLE_CANDIDATE_STUDY",
+    "threshold_file_sha256": "4791d5e08415dd1133f6fa9a2587b2cb324405e6cc43d8ec9ff556c71eb23d85",
+    "training_diagnostic": {
+      "candidate": {
+        "FN": 73,
+        "FP": 4,
+        "TN": 546,
+        "TP": 1425,
+        "publisher_NORMAL": 550,
+        "publisher_PR_AUC": 0.9987037779293372,
+        "publisher_anomalous": 1498,
+        "publisher_normal_fraction_flagged": 0.007272727272727273,
+        "publisher_positive_fraction_flagged": 0.9512683578104139,
+        "scope": "publisher labels, not independent Ground Truth"
+      },
+      "scope": "2048 fixed train diagnostic; not quality acceptance"
+    },
+    "training_plan_sha256": "811fbcb7712cffcb69aaa2792a5ec602b601ad2ec4a5af18731e945ece43a351",
+    "training_updates_in_evaluation": 0,
+    "wall_seconds": 1.5986536109999179
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/portable-verification/relocated-bundle/evaluation-evidence.json",
+  "original_sha256": "a632e8d22cc32180ac06066fadb921fb8edbd00fb243b7cf369688bbd6eb786d",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

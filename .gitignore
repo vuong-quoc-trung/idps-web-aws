@@ -47,3 +47,10 @@ weights/
 *.pfx
 credentials.json
 *-private.json
+
+# Team bootstrap downloads and local verification; published binaries live in
+# GitHub Releases, never as ordinary Git blobs or accidental LFS pointers.
+/.team-tools/
+/.team-state/
+/.team-verify/
+/release-assets/

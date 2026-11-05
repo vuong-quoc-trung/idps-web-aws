@@ -1,0 +1,95 @@
+{
+  "content": {
+    "accepted_family_counts": {
+      "benign": 69228,
+      "cmd_injection": 1161,
+      "path_traversal": 12141,
+      "sqli": 227784
+    },
+    "accepted_label_counts": {
+      "0": 69228,
+      "1": 241086
+    },
+    "all_source_rows_accounted_for": true,
+    "curation_sha256": "ed80d18a87a326ac98b49ca658a05775ad437ceecf1087397311d80237078e87",
+    "decision_reference": "sourceSHA+zero-based record_index+eventHMAC; original private file retained",
+    "decisions": {
+      "accepted_research": 310314,
+      "duplicate": 234,
+      "quarantine": 597267
+    },
+    "encoder_sha256": "8247e88391fdaa7e67aa8d61ba69be1ae6452991698a342eaa28afa5fb96e14a",
+    "files": {
+      "curated.parquet": "dd0c78cee08ebc569a898bf75f13a4ad79ad9ef95c40d4e3d5e32bffe32b97bd",
+      "decisions.parquet": "175811b76efbb307deadf7166195e58dc759dcd6680cca5178c78e11a3dcced5",
+      "policy.json": "324bcbb9bccee1ac555e3ef3cfb0704a2044fa6aa95806b138f537a1e3d2f7b1"
+    },
+    "format_version": 1,
+    "independent_human_review": false,
+    "input_records": 907815,
+    "model_view_conflict_groups": 1415,
+    "natural_conflict_groups": 26,
+    "original_labels_unchanged": true,
+    "policy": {
+      "body_policy": "exclude all body-present records from URI-only research fit",
+      "conflict_policy": "quarantine every member, never majority vote or relabel",
+      "duplicate_policy": "first physical source row; later exact observation duplicates retain references",
+      "label_basis": "publisher annotations plus structural audit; no independent human review claim",
+      "role": "development_exposed",
+      "supported_positive_families": [
+        "sqli",
+        "path_traversal",
+        "cmd_injection"
+      ],
+      "time_end_UTC_exclusive": 1596240000.0,
+      "time_start_UTC": 1593561600.0,
+      "version": "http-curation-1"
+    },
+    "policy_sha256": "324bcbb9bccee1ac555e3ef3cfb0704a2044fa6aa95806b138f537a1e3d2f7b1",
+    "production_admitted": false,
+    "projection_sha256": "e1c3df19f511be2773e56af61828ebe201bdbe8eae7cd8475de3b290fab4522b",
+    "provenance": {
+      "download_manifest_sha256": "e33696b374760fe98d373a52d5d140f7070b8f0dbe99b5cca273891340fb854b",
+      "labels": "publisher signature-assisted manual/semi-automatic annotations, not our independent adjudication",
+      "license": "CC0 1.0",
+      "physical_source_rows": 907815,
+      "policy": {
+        "body_policy": "exclude all body-present records from URI-only research fit",
+        "conflict_policy": "quarantine every member, never majority vote or relabel",
+        "duplicate_policy": "first physical source row; later exact observation duplicates retain references",
+        "label_basis": "publisher annotations plus structural audit; no independent human review claim",
+        "role": "development_exposed",
+        "supported_positive_families": [
+          "sqli",
+          "path_traversal",
+          "cmd_injection"
+        ],
+        "time_end_UTC_exclusive": 1596240000.0,
+        "time_start_UTC": 1593561600.0,
+        "version": "http-curation-1"
+      },
+      "source_doi": "10.7910/DVN/OGOIXX",
+      "source_role": "development_exposed",
+      "source_sha256": "9c73c90ce6564ae48b14f7179cd864d037a6a130ef69c68c1626ec5d7ce4a910"
+    },
+    "reason_counts_overlapping": {
+      "body_view_unavailable": 26743,
+      "contradictory_model_view_labels": 508500,
+      "contradictory_observation_labels": 110,
+      "duplicate_observation": 234,
+      "missing_URI_projection": 2,
+      "missing_client_identity": 2,
+      "missing_timestamp": 2,
+      "outside_documented_time_range": 4666,
+      "unsupported_attack_scope": 113858
+    },
+    "research_admission": "structural integrity, complete URI view, documented time, supported scope, no exact/model-view label contradiction",
+    "scale_admitted": false,
+    "source_id": "srbh2020",
+    "stage": "research_curated"
+  },
+  "original_relative_path": "ai-training/.artifacts/data_quality_20261031/srbh-curated/manifest.json",
+  "original_sha256": "33a48f33e6f5d7bfe26ea429554ea6438186cd1cfc8fd2e55ba2fa982c79e862",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,53 @@
+{
+  "content": {
+    "archive_sha256": "58faee18c54229759287a574f6f8cb1e3b951fa135e403ea9a679d2b18efd778",
+    "count_caution": "Distinct recorded HTTP representations, not verified unique physical request IDs. Reserved members not opened or counted. No benchmark replay, observation padding or counting projections as new HTTP.",
+    "distinct_request_signatures": 756548,
+    "duplicate_records": 54391,
+    "files": {
+      "decisions.parquet": "70bdc16cf7ca5d4e53cbf2a2e36bf999bff99fb7e6e512a27fbf7f9f16d2cdd2",
+      "observations.parquet": "384f2582048a3f7bd2baae7ff7520895353e6604b55152c766d74c2225d0f250",
+      "rejected.json": "48f8be2b0757f36807eec6fa7b693bc312f9dccfcfa2dd17e20efb4f09bc106d",
+      "reserved/AI_HOLDOUT.json": "91e936c54a780c2a63c1ed69cf240d5ca86227f0d0d4f47d0ee02404eec94c0b",
+      "site-distribution.json": "8ea198133e81d2a34fa2081ca7b039e96d9f321fe6d9933fafb00225e36608d5"
+    },
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "independent_human_review": false,
+    "license": "Apache-2.0",
+    "methods": {
+      "DELETE": 289,
+      "GET": 529802,
+      "HEAD": 311,
+      "PATCH": 48,
+      "POST": 224358,
+      "PUT": 1740
+    },
+    "missing_or_oversized_URI": 170,
+    "model_view_encoder_sha256": "8247e88391fdaa7e67aa8d61ba69be1ae6452991698a342eaa28afa5fb96e14a",
+    "model_view_encoding": "bounded-request-v1",
+    "no_temporal_independence_claim": true,
+    "nonreserved_members": 544,
+    "projected_records": 44437,
+    "projected_view_seen_in_earlier_role": 4245,
+    "projection_sampling": "PrivateHMAC request signature modulo17; independent of label/predictions",
+    "projection_sha256": "e1c3df19f511be2773e56af61828ebe201bdbe8eae7cd8475de3b290fab4522b",
+    "publisher_recorded_HTTP_not_local_new_capture": true,
+    "reserved_members_unopened": 148,
+    "reserved_request_count": null,
+    "role_rows": {
+      "calibration": 87189,
+      "train_candidates": 443897,
+      "validation": 225462
+    },
+    "source": "openappsec_WCP_legitimate",
+    "source_records_audited": 811129,
+    "supervised_training_permitted": false,
+    "timestamp_available": false,
+    "unparsed_or_oversized_JSON_object": 20
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/wcp-corpus-v2/manifest.json",
+  "original_sha256": "409abcb4a979bba15e1a1a681e1236a0e871c4db02395aee67dcdbce05328cf9",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

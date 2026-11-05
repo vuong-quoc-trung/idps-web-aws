@@ -1,0 +1,1123 @@
+{
+  "content": {
+    "batch_size": 128,
+    "champion_selected": false,
+    "dataset_sha256": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+    "diagnostic_update_cap": 300,
+    "epochs": null,
+    "formal_training": false,
+    "format_version": 1,
+    "models": {
+      "deep_mlp": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-bundle",
+        "bundle_manifest_sha256": "bb2bb251e1f8f64da33485e4c2dfedc99101993d77e19d9535fe9c371cc3cfd8",
+        "first_session": {
+          "epoch": 10,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 1.2571654702145778
+            },
+            {
+              "epoch": 2,
+              "step": 20,
+              "training_loss": 0.45950664083058185
+            },
+            {
+              "epoch": 3,
+              "step": 30,
+              "training_loss": 0.18510092569160116
+            },
+            {
+              "epoch": 4,
+              "step": 40,
+              "training_loss": 0.08427913602053079
+            },
+            {
+              "epoch": 5,
+              "step": 50,
+              "training_loss": 0.04613937187160332
+            },
+            {
+              "epoch": 6,
+              "step": 60,
+              "training_loss": 0.03384499288746176
+            },
+            {
+              "epoch": 7,
+              "step": 70,
+              "training_loss": 0.027783619264021585
+            },
+            {
+              "epoch": 8,
+              "step": 80,
+              "training_loss": 0.02503091489827766
+            },
+            {
+              "epoch": 9,
+              "step": 90,
+              "training_loss": 0.0230698910506718
+            },
+            {
+              "epoch": 10,
+              "step": 100,
+              "training_loss": 0.02182479295995556
+            }
+          ],
+          "kind": "deep_mlp",
+          "optimizer_seconds": 0.3603632019990073,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 3800352\nuser_usec 3609735\nsystem_usec 190616\nnice_usec 3615000\ncore_sched.force_idle_usec 0\nnr_periods 27\nnr_throttled 2\nthrottled_usec 454137\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "333946880",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "335892480",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-diagnostic-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 56.0,
+            "peak_rss_bytes": 252108800,
+            "peak_tree_rss_bytes": 252108800,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 100,
+          "stop_reason": "technical_step_cap",
+          "unique_training_views": 1233
+        },
+        "optimizer_seconds": 0.9996833049995075,
+        "parameters": 217608,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 2.384185791015625e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 1.2803324269980294,
+        "resume_exact": true,
+        "second_session": {
+          "epoch": 30,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 1.2571654702145778
+            },
+            {
+              "epoch": 2,
+              "step": 20,
+              "training_loss": 0.45950664083058185
+            },
+            {
+              "epoch": 3,
+              "step": 30,
+              "training_loss": 0.18510092569160116
+            },
+            {
+              "epoch": 4,
+              "step": 40,
+              "training_loss": 0.08427913602053079
+            },
+            {
+              "epoch": 5,
+              "step": 50,
+              "training_loss": 0.04613937187160332
+            },
+            {
+              "epoch": 6,
+              "step": 60,
+              "training_loss": 0.03384499288746176
+            },
+            {
+              "epoch": 7,
+              "step": 70,
+              "training_loss": 0.027783619264021585
+            },
+            {
+              "epoch": 8,
+              "step": 80,
+              "training_loss": 0.02503091489827766
+            },
+            {
+              "epoch": 9,
+              "step": 90,
+              "training_loss": 0.0230698910506718
+            },
+            {
+              "epoch": 10,
+              "step": 100,
+              "training_loss": 0.02182479295995556
+            },
+            {
+              "epoch": 11,
+              "step": 110,
+              "training_loss": 0.0209740814629261
+            },
+            {
+              "epoch": 12,
+              "step": 120,
+              "training_loss": 0.020278176550402562
+            },
+            {
+              "epoch": 13,
+              "step": 130,
+              "training_loss": 0.01982546353804259
+            },
+            {
+              "epoch": 14,
+              "step": 140,
+              "training_loss": 0.019520215508932823
+            },
+            {
+              "epoch": 15,
+              "step": 150,
+              "training_loss": 0.019249166033267796
+            },
+            {
+              "epoch": 16,
+              "step": 160,
+              "training_loss": 0.01907466332025242
+            },
+            {
+              "epoch": 17,
+              "step": 170,
+              "training_loss": 0.018905174108132815
+            },
+            {
+              "epoch": 18,
+              "step": 180,
+              "training_loss": 0.018795711909959847
+            },
+            {
+              "epoch": 19,
+              "step": 190,
+              "training_loss": 0.01870211397173251
+            },
+            {
+              "epoch": 20,
+              "step": 200,
+              "training_loss": 0.018626702919322384
+            },
+            {
+              "epoch": 21,
+              "step": 210,
+              "training_loss": 0.01857147508238765
+            },
+            {
+              "epoch": 22,
+              "step": 220,
+              "training_loss": 0.01850016091522852
+            },
+            {
+              "epoch": 23,
+              "step": 230,
+              "training_loss": 0.01845397619265965
+            },
+            {
+              "epoch": 24,
+              "step": 240,
+              "training_loss": 0.018447654949388263
+            },
+            {
+              "epoch": 25,
+              "step": 250,
+              "training_loss": 0.0184163441936074
+            },
+            {
+              "epoch": 26,
+              "step": 260,
+              "training_loss": 0.018399500569251118
+            },
+            {
+              "epoch": 27,
+              "step": 270,
+              "training_loss": 0.018374614706416523
+            },
+            {
+              "epoch": 28,
+              "step": 280,
+              "training_loss": 0.01836311204604689
+            },
+            {
+              "epoch": 29,
+              "step": 290,
+              "training_loss": 0.018358145395852482
+            },
+            {
+              "epoch": 30,
+              "step": 300,
+              "training_loss": 0.01834270881681774
+            }
+          ],
+          "kind": "deep_mlp",
+          "optimizer_seconds": 0.9996833049995075,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 9342286\nuser_usec 8687178\nsystem_usec 655108\nnice_usec 8697000\ncore_sched.force_idle_usec 0\nnr_periods 51\nnr_throttled 5\nthrottled_usec 659296\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "336412672",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "395390976",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-diagnostic-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 56.0,
+            "peak_rss_bytes": 257085440,
+            "peak_tree_rss_bytes": 257085440,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 300,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 1233
+        },
+        "steps": 300,
+        "threshold": 0.9675579071044922,
+        "unique_training_views": 1233,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14674,
+              40
+            ],
+            [
+              425,
+              1111
+            ]
+          ],
+          "f1": 0.8269445478228508,
+          "fpr": 0.0027184993883376377,
+          "pr_auc_average_precision": 0.8291399999580845,
+          "precision": 0.9652476107732406,
+          "recall": 0.7233072916666666,
+          "rows": 16250,
+          "threshold": 0.9675579071044922
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4511,
+                1
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.00022163120567375886,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.9675579071044922
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3605,
+                39
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.010702524698133918,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.9675579071044922
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                425,
+                1111
+              ]
+            ],
+            "f1": 0.8394408764639214,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.8896741489658799,
+            "precision": 1.0,
+            "recall": 0.7233072916666666,
+            "rows": 8094,
+            "threshold": 0.9675579071044922
+          }
+        }
+      },
+      "denoising_autoencoder": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/diagnostic/denoising_autoencoder-bundle",
+        "bundle_manifest_sha256": "6f92ddb2d0684901e6681edae22d8b271081757e476e51b112f6e2c8e0e1a087",
+        "first_session": {
+          "epoch": 0,
+          "formal_training": false,
+          "history": [],
+          "kind": "denoising_autoencoder",
+          "optimizer_seconds": 0.24271119099557836,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 593293694\nuser_usec 568803375\nsystem_usec 24490318\nnice_usec 569723000\ncore_sched.force_idle_usec 0\nnr_periods 1711\nnr_throttled 398\nthrottled_usec 20123715\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "1421922304",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "1873850368",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-diagnostic-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 78.0,
+            "peak_rss_bytes": 310722560,
+            "peak_tree_rss_bytes": 310722560,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 100,
+          "stop_reason": "technical_step_cap",
+          "unique_training_views": 18713
+        },
+        "optimizer_seconds": 0.9107660209924688,
+        "parameters": 233670,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 3.814697265625e-06,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 1.009539316001792,
+        "resume_exact": true,
+        "second_session": {
+          "epoch": 2,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 147,
+              "training_loss": 0.9174558710330175
+            },
+            {
+              "epoch": 2,
+              "step": 294,
+              "training_loss": 0.37830202824949793
+            }
+          ],
+          "kind": "denoising_autoencoder",
+          "optimizer_seconds": 0.9107660209924688,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 598002126\nuser_usec 573105671\nsystem_usec 24896454\nnice_usec 574037000\ncore_sched.force_idle_usec 0\nnr_periods 1733\nnr_throttled 400\nthrottled_usec 20657653\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "1423822848",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "1873850368",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-diagnostic-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 72.0,
+            "peak_rss_bytes": 311529472,
+            "peak_tree_rss_bytes": 311529472,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 300,
+          "stop_reason": "diagnostic_update_cap",
+          "unique_training_views": 18713
+        },
+        "steps": 300,
+        "threshold": 7.702759265899658,
+        "unique_training_views": 18713,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14663,
+              51
+            ],
+            [
+              1086,
+              450
+            ]
+          ],
+          "f1": 0.4418262150220913,
+          "fpr": 0.003466086720130488,
+          "pr_auc_average_precision": 0.7578642340935736,
+          "precision": 0.8982035928143712,
+          "recall": 0.29296875,
+          "rows": 16250,
+          "threshold": 7.702759265899658
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 7.702759265899658
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3643,
+                1
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.00027442371020856203,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 7.702759265899658
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6508,
+                50
+              ],
+              [
+                1086,
+                450
+              ]
+            ],
+            "f1": 0.4420432220039293,
+            "fpr": 0.007624275693809088,
+            "pr_auc_average_precision": 0.7749491937138882,
+            "precision": 0.9,
+            "recall": 0.29296875,
+            "rows": 8094,
+            "threshold": 7.702759265899658
+          }
+        }
+      },
+      "residual_glu": {
+        "bundle": "<PROJECT_ROOT>/ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-bundle",
+        "bundle_manifest_sha256": "79af7198db40e792a54ebad49f02b1fa8ac65bac340e0da018d59fd6f8ffcf53",
+        "first_session": {
+          "epoch": 10,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 0.7991599313900629
+            },
+            {
+              "epoch": 2,
+              "step": 20,
+              "training_loss": 0.08471355887097304
+            },
+            {
+              "epoch": 3,
+              "step": 30,
+              "training_loss": 0.027585928938659455
+            },
+            {
+              "epoch": 4,
+              "step": 40,
+              "training_loss": 0.026976296870396356
+            },
+            {
+              "epoch": 5,
+              "step": 50,
+              "training_loss": 0.024176998856643293
+            },
+            {
+              "epoch": 6,
+              "step": 60,
+              "training_loss": 0.021199788774634274
+            },
+            {
+              "epoch": 7,
+              "step": 70,
+              "training_loss": 0.019576497509497255
+            },
+            {
+              "epoch": 8,
+              "step": 80,
+              "training_loss": 0.018673145692373744
+            },
+            {
+              "epoch": 9,
+              "step": 90,
+              "training_loss": 0.018269691107443142
+            },
+            {
+              "epoch": 10,
+              "step": 100,
+              "training_loss": 0.017960808782233093
+            }
+          ],
+          "kind": "residual_glu",
+          "optimizer_seconds": 16.985518161997334,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 45055342\nuser_usec 41193512\nsystem_usec 3861829\nnice_usec 41300000\ncore_sched.force_idle_usec 0\nnr_periods 167\nnr_throttled 57\nthrottled_usec 3115161\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "343785472",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "513835008",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-diagnostic-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 62.0,
+            "peak_rss_bytes": 377888768,
+            "peak_tree_rss_bytes": 377888768,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 100,
+          "stop_reason": "technical_step_cap",
+          "unique_training_views": 1233
+        },
+        "optimizer_seconds": 46.0339475629944,
+        "parameters": 9535496,
+        "parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 2.384185791015625e-07,
+          "rows": 115980,
+          "rtol": 1e-05
+        },
+        "reference_optimizer_seconds": 51.98816468100449,
+        "resume_exact": true,
+        "second_session": {
+          "epoch": 30,
+          "formal_training": false,
+          "history": [
+            {
+              "epoch": 1,
+              "step": 10,
+              "training_loss": 0.7991599313900629
+            },
+            {
+              "epoch": 2,
+              "step": 20,
+              "training_loss": 0.08471355887097304
+            },
+            {
+              "epoch": 3,
+              "step": 30,
+              "training_loss": 0.027585928938659455
+            },
+            {
+              "epoch": 4,
+              "step": 40,
+              "training_loss": 0.026976296870396356
+            },
+            {
+              "epoch": 5,
+              "step": 50,
+              "training_loss": 0.024176998856643293
+            },
+            {
+              "epoch": 6,
+              "step": 60,
+              "training_loss": 0.021199788774634274
+            },
+            {
+              "epoch": 7,
+              "step": 70,
+              "training_loss": 0.019576497509497255
+            },
+            {
+              "epoch": 8,
+              "step": 80,
+              "training_loss": 0.018673145692373744
+            },
+            {
+              "epoch": 9,
+              "step": 90,
+              "training_loss": 0.018269691107443142
+            },
+            {
+              "epoch": 10,
+              "step": 100,
+              "training_loss": 0.017960808782233093
+            },
+            {
+              "epoch": 11,
+              "step": 110,
+              "training_loss": 0.017855765845801026
+            },
+            {
+              "epoch": 12,
+              "step": 120,
+              "training_loss": 0.017776355352244887
+            },
+            {
+              "epoch": 13,
+              "step": 130,
+              "training_loss": 0.017741638631598347
+            },
+            {
+              "epoch": 14,
+              "step": 140,
+              "training_loss": 0.017745942609449512
+            },
+            {
+              "epoch": 15,
+              "step": 150,
+              "training_loss": 0.01772293564745285
+            },
+            {
+              "epoch": 16,
+              "step": 160,
+              "training_loss": 0.01770615931925957
+            },
+            {
+              "epoch": 17,
+              "step": 170,
+              "training_loss": 0.017680084384695822
+            },
+            {
+              "epoch": 18,
+              "step": 180,
+              "training_loss": 0.01770296681294747
+            },
+            {
+              "epoch": 19,
+              "step": 190,
+              "training_loss": 0.017696128408432737
+            },
+            {
+              "epoch": 20,
+              "step": 200,
+              "training_loss": 0.01769433159234725
+            },
+            {
+              "epoch": 21,
+              "step": 210,
+              "training_loss": 0.017693090128512008
+            },
+            {
+              "epoch": 22,
+              "step": 220,
+              "training_loss": 0.017676412449542326
+            },
+            {
+              "epoch": 23,
+              "step": 230,
+              "training_loss": 0.01768873062141486
+            },
+            {
+              "epoch": 24,
+              "step": 240,
+              "training_loss": 0.017667576132271358
+            },
+            {
+              "epoch": 25,
+              "step": 250,
+              "training_loss": 0.01767263106732814
+            },
+            {
+              "epoch": 26,
+              "step": 260,
+              "training_loss": 0.017666039841129733
+            },
+            {
+              "epoch": 27,
+              "step": 270,
+              "training_loss": 0.01766726637364788
+            },
+            {
+              "epoch": 28,
+              "step": 280,
+              "training_loss": 0.01765923453739811
+            },
+            {
+              "epoch": 29,
+              "step": 290,
+              "training_loss": 0.01765493715025065
+            },
+            {
+              "epoch": 30,
+              "step": 300,
+              "training_loss": 0.01767348624844976
+            }
+          ],
+          "kind": "residual_glu",
+          "optimizer_seconds": 46.0339475629944,
+          "resources": {
+            "address_space_limit_effective": 17179869184,
+            "affinity_effective": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cgroup_v2": {
+              "cpu.max": "400000 100000",
+              "cpu.stat": "usage_usec 110779367\nuser_usec 102175687\nsystem_usec 8603679\nnice_usec 102320000\ncore_sched.force_idle_usec 0\nnr_periods 362\nnr_throttled 71\nthrottled_usec 3669897\nnr_bursts 0\nburst_usec 0",
+              "memory.current": "461729792",
+              "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+              "memory.high": "16106127360",
+              "memory.max": "17179869184",
+              "memory.peak": "645222400",
+              "memory.swap.max": "0",
+              "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-request-diagnostic-20261030.service"
+            },
+            "effective_cpus_before_cap": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+            "max_threads": 4,
+            "memory_guard": "process-tree RSS at optimizer boundaries",
+            "memory_limit_bytes": 17179869184,
+            "peak_cpu_temperature_celsius": 64.0,
+            "peak_rss_bytes": 482025472,
+            "peak_tree_rss_bytes": 482025472,
+            "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+            "python": "3.12.14",
+            "temperature_monitoring": "hardware_critical_limit_available",
+            "thermal_limit_reached": false,
+            "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+            "thermal_stop_threshold_celsius": 100.0,
+            "total_host_memory_bytes": 32440909824
+          },
+          "steps": 300,
+          "stop_reason": "epochs_complete",
+          "unique_training_views": 1233
+        },
+        "steps": 300,
+        "threshold": 0.9987680315971375,
+        "unique_training_views": 1233,
+        "validation": {
+          "attack": 1536,
+          "benign": 14714,
+          "confusion_matrix": [
+            [
+              14684,
+              30
+            ],
+            [
+              1397,
+              139
+            ]
+          ],
+          "f1": 0.16304985337243402,
+          "fpr": 0.0020388745412532284,
+          "pr_auc_average_precision": 0.807106664537759,
+          "precision": 0.8224852071005917,
+          "recall": 0.09049479166666667,
+          "rows": 16250,
+          "threshold": 0.9987680315971375
+        },
+        "validation_by_source": {
+          "csic-published-normal-training": {
+            "attack": 0,
+            "benign": 4512,
+            "confusion_matrix": [
+              [
+                4512,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 4512,
+            "threshold": 0.9987680315971375
+          },
+          "pkdd-mirror-training": {
+            "attack": 0,
+            "benign": 3644,
+            "confusion_matrix": [
+              [
+                3614,
+                30
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.00823271130625686,
+            "pr_auc_average_precision": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 3644,
+            "threshold": 0.9987680315971375
+          },
+          "student-lab": {
+            "attack": 1536,
+            "benign": 6558,
+            "confusion_matrix": [
+              [
+                6558,
+                0
+              ],
+              [
+                1397,
+                139
+              ]
+            ],
+            "f1": 0.16597014925373135,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.9742545181012654,
+            "precision": 1.0,
+            "recall": 0.09049479166666667,
+            "rows": 8094,
+            "threshold": 0.9987680315971375
+          }
+        }
+      }
+    },
+    "quality_test_opened": false,
+    "seed": 17,
+    "short_learning_curve": true,
+    "status": "PASS_TECHNICAL_ONLY",
+    "wall_seconds": 185.33759957099983
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/diagnostic/report.json",
+  "original_sha256": "33eb9a2dc11f571da63f9186581079ff2f9184681b9dbf04cce0fd27be4b8c54",
+  "redactions": {
+    "strings_changed": 9
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

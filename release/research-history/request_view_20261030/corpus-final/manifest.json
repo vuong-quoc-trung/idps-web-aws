@@ -1,0 +1,141 @@
+{
+  "content": {
+    "champion_selected": false,
+    "cross_partition_vector_collision_groups": 600,
+    "dataset_sha256": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+    "feature_count": 70,
+    "files": {
+      "feature_spec.json": "b816d19d8d4b8906786c385bd61426a7bb3156de51a49717f8306964282de1fa",
+      "features.parquet": "6b2b0401308f423b2ebed9e5aee193d7bf585a2edee36539c23657fd0e6399d7",
+      "requests.parquet": "b456617d6970608089ff3927a516b6283f4cbde70a2ea182c7c04e4d256f35e3"
+    },
+    "fit_train_benign_only": true,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "limitations": [
+      "Group splits on public data have no invented timestamps or temporal independence",
+      "Full-profile v5 actors/flows/roles remain a different task",
+      "Mirror labels are publisher annotations, not independent human realism/visibility review",
+      "Exact view collisions are reported; no held-out hard cases removed",
+      "Scale admission and production acceptance are separate and not granted"
+    ],
+    "profile": "request-structure-v1",
+    "provenance": {
+      "decoder_manifest_sha256": "74801b28e01c11d48881b73a0cccc2367c7726284c3de4e4bf9dc192811b6a31",
+      "lab_pcap_sha256": "a224671b8759c8f3e2bc1fd5057f585e3a8b94ee195be1bc5cc0723f21dbfc26",
+      "public_positive_training_sources": 0,
+      "public_use": "benign-only AE and train-benign common scaler; no source-ID positive shortcut",
+      "registry_sha256": "51b056c5ca2c9dd0c8582dfcfee6c34dc4fb931d610255c84a9c1e86f5de62d7",
+      "scale_admission": false,
+      "supervised_sources": [
+        "student-lab"
+      ],
+      "verified_public_training_shards": {
+        "csic_training": "d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000",
+        "pkdd_training": "b4e85e85a315eb522f5175e11ed0d35d0e0aab5cd41c4618102b624772692a86"
+      }
+    },
+    "rows": {
+      "calibration": 12303,
+      "train": 86275,
+      "val": 17402
+    },
+    "source_partition_labels": [
+      {
+        "label": "0",
+        "rows": 3804,
+        "source": "csic-published-normal-training",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 27684,
+        "source": "csic-published-normal-training",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 4512,
+        "source": "csic-published-normal-training",
+        "split": "val"
+      },
+      {
+        "label": "0",
+        "rows": 3876,
+        "source": "pkdd-mirror-training",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 16984,
+        "source": "pkdd-mirror-training",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 3644,
+        "source": "pkdd-mirror-training",
+        "split": "val"
+      },
+      {
+        "label": "0",
+        "rows": 3279,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "1",
+        "rows": 768,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "None",
+        "rows": 576,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 29511,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "1",
+        "rows": 6912,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "None",
+        "rows": 5184,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 6558,
+        "source": "student-lab",
+        "split": "val"
+      },
+      {
+        "label": "1",
+        "rows": 1536,
+        "source": "student-lab",
+        "split": "val"
+      },
+      {
+        "label": "None",
+        "rows": 1152,
+        "source": "student-lab",
+        "split": "val"
+      }
+    ],
+    "unique_training_views": 19740
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/corpus-final/manifest.json",
+  "original_sha256": "481c92168de01e5477eab35e5154a7c85f52f7741bfbcc398d6dfb65cbe6bd46",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

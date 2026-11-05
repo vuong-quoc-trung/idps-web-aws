@@ -1,0 +1,141 @@
+{
+  "content": {
+    "campaigns": [
+      {
+        "campaign_id": "evidence-lab-00-00000385",
+        "cases": [
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/auth/csrf",
+            "scenario": "csrf_setup",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": "private_fixture_password",
+            "body_sha256": null,
+            "case_id": "fixture_login",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/auth/login",
+            "scenario": "authorized_fixture_login",
+            "target_sha256": "0601f3f5960a860ab7fa38368198782a22b73ecc69cd3a74bed66cadd6cfcbd5"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "csrf_refresh",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/auth/csrf",
+            "scenario": "csrf_after_login",
+            "target_sha256": "9b2c893af33ef4289253800afd956640079b621abd17d6584ff9e865821cc85a"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "catalog_read",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/faculties",
+            "scenario": "benign_catalog",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "hard_negative",
+            "http_method": "GET",
+            "planned_intent": "benign",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/faculties?q=course+notes+about+UNION+SELECT",
+            "scenario": "hard_negative_search",
+            "target_sha256": "561622ab1fcfa2c2357d58916dfd793bf3a7b0bc25da86bcf430202afc6cf917"
+          },
+          {
+            "attack_family": "sqli",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "sqli_probe",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/faculties?q=7%27+OR+%27x%27%3D%27x%27+--",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "bf1f78edc4c9b823f80ba883be189dac3e3373480524b1af4f5e5ac5d886e89a"
+          },
+          {
+            "attack_family": "xss",
+            "body_kind": null,
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "case_id": "xss_probe",
+            "http_method": "GET",
+            "planned_intent": "attack",
+            "review_body": null,
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/faculties?q=%3Csvg+onload%3Dconfirm%2871%29%3E",
+            "scenario": "bounded_attack_intent_probe",
+            "target_sha256": "2318880346425c8a258c35a9128ba9c9ae88743682cf68a7712bd98879efd328"
+          },
+          {
+            "attack_family": "benign",
+            "body_kind": null,
+            "body_sha256": "2490cd5029456e073102282663cfbde0adbfde1000f7ae145b41ac5f6e890e17",
+            "case_id": "faculty_create",
+            "http_method": "POST",
+            "planned_intent": "benign",
+            "review_body": {
+              "active": true,
+              "description": "AI-owned lab oracle marker",
+              "name": "Ground Truth Pilot",
+              "shortCode": "GTPILOT01"
+            },
+            "review_note": "Private lab-only request; independently inspect semantics before signing. Fixture login password is withheld.",
+            "review_target": "/api/faculties",
+            "scenario": "benign_mutation_with_db_oracle",
+            "target_sha256": "1361385a35df3af7b61d073db6ad597e63457a03681fc02af8024c92b0504e31"
+          }
+        ],
+        "partition": "development_review_only",
+        "seed": 901,
+        "source_ip": "127.0.0.40"
+      }
+    ],
+    "case_profile": "gt-pilot-v1",
+    "collector_source_sha256": "8ebc5649c433ea0a927fc148fc2c832c5a415e7f3abc0c2a2f7a93f45948f81d",
+    "created_at_utc": "2026-11-02T03:05:12.710237+00:00",
+    "excluded_plan_file_sha256": [],
+    "format_version": 1,
+    "future_holdout": {
+      "allow_for_tuning": false,
+      "environment": "new_independent_authorized_environment_required",
+      "status": "RESERVED_NOT_GENERATED_OR_CAPTURED"
+    },
+    "label_policy": "Prospective pilot needs an independently signed exact protocol before capture; a matching request is staging only until the evidence-v2 gate. Application DB state verifies outcome separately from intent.",
+    "plan_sha256": "2131ffc16aeb341916963e02ad4f3af9ef0455e7aff17c97bf3ced452e8b2466",
+    "purpose": "authorized_ai_owned_loopback_http_evidence",
+    "target": "127.0.0.1:18881"
+  },
+  "original_relative_path": "ai-training/.artifacts/ground_truth_pilot_20261102/plan-v2/plan.json",
+  "original_sha256": "acde2d256700bdb493b189e3a7137d624f456f46067d6a5a52052fa5433a3c12",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

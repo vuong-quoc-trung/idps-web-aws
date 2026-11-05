@@ -1,0 +1,132 @@
+{
+  "content": {
+    "champion_selected": false,
+    "cross_partition_vector_collision_groups": 600,
+    "dataset_sha256": "32bcd01d379743c438f85790670d46fcabb7317b8260669d0f86d30c3056f7c8",
+    "encoding": "bounded-security-v1",
+    "feature_count": 45,
+    "files": {
+      "feature_spec.json": "16e5f16afafd5bb21859af63c1f79d85212d7f334edbb77aeeacb9c87db720c2",
+      "features.parquet": "57e559254c670f937522293ed22d8a5595c8826eeb9734d12c1ef133daa192e6",
+      "requests.parquet": "b456617d6970608089ff3927a516b6283f4cbde70a2ea182c7c04e4d256f35e3"
+    },
+    "fit_train_benign_only": false,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "limitations": [
+      "Group splits on public data have no invented timestamps or temporal independence",
+      "Full-profile v5 actors/flows/roles remain a different task",
+      "Mirror labels are publisher annotations, not independent human realism/visibility review",
+      "Exact view collisions are reported; no held-out hard cases removed",
+      "Scale admission and production acceptance are separate and not granted"
+    ],
+    "profile": "request-structure-v1",
+    "provenance": {
+      "no_exposed_test_admission": true,
+      "raw70_input_unchanged": true,
+      "source_request_manifest_sha256": "481c92168de01e5477eab35e5154a7c85f52f7741bfbcc398d6dfb65cbe6bd46"
+    },
+    "rows": {
+      "calibration": 12303,
+      "train": 86275,
+      "val": 17402
+    },
+    "source_partition_labels": [
+      {
+        "label": "0",
+        "rows": 3804,
+        "source": "csic-published-normal-training",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 27684,
+        "source": "csic-published-normal-training",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 4512,
+        "source": "csic-published-normal-training",
+        "split": "val"
+      },
+      {
+        "label": "0",
+        "rows": 3876,
+        "source": "pkdd-mirror-training",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 16984,
+        "source": "pkdd-mirror-training",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 3644,
+        "source": "pkdd-mirror-training",
+        "split": "val"
+      },
+      {
+        "label": "0",
+        "rows": 3279,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "1",
+        "rows": 768,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "None",
+        "rows": 576,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 29511,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "1",
+        "rows": 6912,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "None",
+        "rows": 5184,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 6558,
+        "source": "student-lab",
+        "split": "val"
+      },
+      {
+        "label": "1",
+        "rows": 1536,
+        "source": "student-lab",
+        "split": "val"
+      },
+      {
+        "label": "None",
+        "rows": 1152,
+        "source": "student-lab",
+        "split": "val"
+      }
+    ],
+    "unique_training_views": 19740
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/security-corpus/manifest.json",
+  "original_sha256": "550b8f7d3955c6b1482b7d47a22f19835d7b3ab68aaae7c995963b25475630a2",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

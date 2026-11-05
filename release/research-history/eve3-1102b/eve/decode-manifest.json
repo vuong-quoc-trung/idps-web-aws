@@ -1,0 +1,37 @@
+{
+  "content": {
+    "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "checksum_validation": "disabled only for loopback capture/offload checksums",
+    "config_sha256": "5d94a9ae9e21913bb7b30b40dca5d0fcab51a1ed48b5301d696b35fadebd29e6",
+    "eve_sha256": "c36937f2fe3b1957d2a22614cc36dd38732b0ea57aecf949a8f1cac109da5e1a",
+    "event_counts": {
+      "alert": 18,
+      "flow": 54,
+      "http": 54,
+      "stats": 1
+    },
+    "format_version": 1,
+    "http_headers": "response headers transiently through private Unix socket; only X-Request-Id persisted; query/UA redacted before disk; no body dump",
+    "input_profile": "safe_query_numeric_v2",
+    "limits": [
+      "Real TCP over loopback, not a production network benchmark",
+      "Closed flow totals are available only after flow close; pipeline uses past completed client flow context"
+    ],
+    "pcap_sha256": "b9c4d623fb12c8c513cdaaa729c03466d9c135187caf737e8d41acd6c535a384",
+    "repository_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+    "request_ids": 54,
+    "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "signature_counts": {
+      "1000001": 3,
+      "1000002": 5,
+      "1000003": 6,
+      "1000004": 4
+    },
+    "source": "offline real packet capture",
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/eve3-1102b/eve/decode-manifest.json",
+  "original_sha256": "97271a9040b863005203fa4731d55cf06911da20d56fc96bfc7380c94c8656e3",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

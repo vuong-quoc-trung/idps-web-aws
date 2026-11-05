@@ -1,0 +1,530 @@
+{
+  "content": {
+    "checks": [
+      {
+        "detail": "Real lab pilot requires a bound capture/observer provenance file; synthetic/demo cannot certify readiness",
+        "id": "provenance",
+        "pass": true
+      },
+      {
+        "detail": "Provenance references this immutable dataset",
+        "id": "provenance_binding",
+        "pass": true
+      },
+      {
+        "detail": {
+          "actual": 19275,
+          "minimum": 15000
+        },
+        "id": "volume",
+        "pass": true
+      },
+      {
+        "detail": {
+          "coverage": 1.0,
+          "known": 19275,
+          "unknown": 0
+        },
+        "id": "reviewed_labels",
+        "pass": true
+      },
+      {
+        "detail": "No ambiguous or ungrouped observation can be approved",
+        "id": "approved_identity",
+        "pass": true
+      },
+      {
+        "detail": "Trusted source/request identity coverage; this does not prove topology attribution acceptance",
+        "id": "identity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "ADMIN": 3688,
+          "STAFF": 7384,
+          "STUDENT": 7384,
+          "UNKNOWN": 819
+        },
+        "id": "roles",
+        "pass": true
+      },
+      {
+        "detail": {
+          "NGINX": 19275,
+          "STUDENT_AUDIT": 19275,
+          "SURICATA": 42006
+        },
+        "id": "sources",
+        "pass": true
+      },
+      {
+        "detail": "Reviewed benign reads, mutations and hard-negative HTTP errors must all exist",
+        "id": "http_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "accepted": 80556,
+          "duplicates": 0
+        },
+        "id": "parser_quality",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cutoffs": [
+            1793158031.0849135,
+            1793159071.4455955
+          ],
+          "embargo_seconds": 300,
+          "group_columns": [
+            "campaign_key",
+            "client_key",
+            "user_key",
+            "session_key"
+          ],
+          "groups": 15,
+          "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+          "reviewed_rows": {
+            "test": 3855,
+            "train": 11565,
+            "val": 3855
+          }
+        },
+        "id": "temporal_split",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 288,
+          "benign": 9549,
+          "brute_force": 288,
+          "cmd_injection": 288,
+          "path_traversal": 288,
+          "scanner_recon": 288,
+          "sqli": 288,
+          "xss": 288
+        },
+        "id": "train_classes",
+        "pass": true
+      },
+      {
+        "detail": 9,
+        "id": "train_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 96,
+          "benign": 3183,
+          "brute_force": 96,
+          "cmd_injection": 96,
+          "path_traversal": 96,
+          "scanner_recon": 96,
+          "sqli": 96,
+          "xss": 96
+        },
+        "id": "val_classes",
+        "pass": true
+      },
+      {
+        "detail": 3,
+        "id": "val_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "behavioral_anomaly": 96,
+          "benign": 3183,
+          "brute_force": 96,
+          "cmd_injection": 96,
+          "path_traversal": 96,
+          "scanner_recon": 96,
+          "sqli": 96,
+          "xss": 96
+        },
+        "id": "test_classes",
+        "pass": true
+      },
+      {
+        "detail": 3,
+        "id": "test_groups",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_identities": 0
+        },
+        "id": "identity_disjoint",
+        "pass": true
+      },
+      {
+        "detail": {
+          "cross_partition_variant_rows": 0,
+          "distinct_scripted_views": 84,
+          "missing_variant_rows": 0
+        },
+        "id": "heldout_variants",
+        "pass": true
+      },
+      {
+        "detail": "safe_query_numeric_v1",
+        "id": "input_availability_profile",
+        "pass": true
+      },
+      {
+        "detail": {
+          "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+          "checksum_validation": "disabled only for loopback capture/offload checksums",
+          "config_sha256": "0d52743cd149d580c9afc0deb80b92757a0cb7cc986ee09ebb420aba5554afcc",
+          "eve_sha256": "48efeeda0e4781fb63ad88937c20b09bcb60616a7eb482a8156b60fa7fde325a",
+          "event_counts": {
+            "alert": 3456,
+            "flow": 19275,
+            "http": 19274,
+            "stats": 1
+          },
+          "format_version": 1,
+          "http_headers": "response headers transiently through private Unix socket; only X-Request-Id persisted; query/UA redacted before disk; no body dump",
+          "input_profile": "safe_query_numeric_v1",
+          "limits": [
+            "Real TCP over loopback, not a production network benchmark",
+            "Closed flow totals are available only after flow close; pipeline uses past completed client flow context"
+          ],
+          "pcap_sha256": "a98320cec297376522bbcb12c43bb73323382f07841fa98b0ad30a749196b07e",
+          "repository_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+          "request_ids": 19274,
+          "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+          "signature_counts": {
+            "1000001": 1200,
+            "1000002": 201,
+            "1000003": 480,
+            "1000004": 228,
+            "1000005": 480,
+            "1000006": 228,
+            "1000007": 480,
+            "1000008": 138,
+            "1000009": 21
+          },
+          "source": "offline real packet capture",
+          "status": "PASS"
+        },
+        "id": "real_eve_evidence",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 11564,
+          "total": 11565
+        },
+        "id": "train_query_projection",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 11564,
+          "total": 11565
+        },
+        "id": "train_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 9804,
+          "reserved_delay_seconds": 65,
+          "total": 11565
+        },
+        "id": "train_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 9,
+          "minimum_seconds": 420.58282709121704
+        },
+        "id": "train_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 3855,
+          "total": 3855
+        },
+        "id": "val_query_projection",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 3855,
+          "total": 3855
+        },
+        "id": "val_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 3213,
+          "reserved_delay_seconds": 65,
+          "total": 3855
+        },
+        "id": "val_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 3,
+          "minimum_seconds": 420.23167610168457
+        },
+        "id": "val_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 3855,
+          "total": 3855
+        },
+        "id": "test_query_projection",
+        "pass": true
+      },
+      {
+        "detail": {
+          "matched": 3855,
+          "total": 3855
+        },
+        "id": "test_three_source_correlation",
+        "pass": true
+      },
+      {
+        "detail": {
+          "available": 3255,
+          "reserved_delay_seconds": 65,
+          "total": 3855
+        },
+        "id": "test_past_flow_coverage",
+        "pass": true
+      },
+      {
+        "detail": {
+          "campaigns": 3,
+          "minimum_seconds": 420.1364288330078
+        },
+        "id": "test_long_campaigns",
+        "pass": true
+      },
+      {
+        "detail": "Rule facts and identities are not model inputs",
+        "id": "rule_free_features",
+        "pass": true
+      },
+      {
+        "detail": "Feature order and implementation fingerprint match the current source",
+        "id": "feature_contract",
+        "pass": true
+      },
+      {
+        "detail": {
+          "nonfinite": 0,
+          "vectors": 19275
+        },
+        "id": "finite_vectors",
+        "pass": true
+      },
+      {
+        "detail": {
+          "mismatched_vectors": 0
+        },
+        "id": "offline_replay_parity",
+        "pass": true
+      },
+      {
+        "detail": {
+          "complete_rows": 6213,
+          "total": 19275
+        },
+        "id": "window_300s_depth",
+        "pass": true
+      }
+    ],
+    "constant_feature_columns": [
+      "object_identity_available",
+      "query_original_available",
+      "query_original_length",
+      "query_original_operator_count",
+      "query_original_parameter_count",
+      "query_original_percent_count",
+      "query_original_quote_count",
+      "quote_double",
+      "uri_lexical_available",
+      "method_PUT",
+      "method_PATCH",
+      "method_DELETE",
+      "method_CONNECT",
+      "method_TRACE",
+      "method_OTHER",
+      "role_ANONYMOUS",
+      "ua_Chrome",
+      "ua_Chromium",
+      "ua_Safari",
+      "ua_Edge",
+      "ua_curl",
+      "ua_wget",
+      "ua_python-requests",
+      "ua_PostmanRuntime",
+      "ua_Go-http-client",
+      "user_agent_missing",
+      "user_agent_unknown",
+      "status_3xx",
+      "status_5xx",
+      "status_missing",
+      "latency_ms_missing",
+      "request_bytes_missing",
+      "response_bytes_missing",
+      "ip_10s_error5_ratio",
+      "ip_10s_api_ratio",
+      "ip_60s_error5_ratio",
+      "ip_60s_api_ratio",
+      "ip_300s_error5_ratio",
+      "ip_300s_api_ratio",
+      "user_10s_error5_ratio",
+      "user_10s_auth_failure_streak",
+      "user_60s_error5_ratio",
+      "user_60s_auth_failure_streak",
+      "user_300s_error5_ratio",
+      "user_300s_auth_failure_streak"
+    ],
+    "data_kind": "lab_capture",
+    "dataset_sha256": "63ebf481f4665963b59f3e4f6b66d776357359051033244f79b7a3083ab1f26d",
+    "feature_count": 148,
+    "format_version": 1,
+    "groups_per_partition": {
+      "test": 3,
+      "train": 9,
+      "val": 3
+    },
+    "implementation_sha256": "12eb2ef5960f26be60701f64d243e68f1f439b34229f82aa32a470edf42a8a9d",
+    "label_distributions": {
+      "test": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      },
+      "train": {
+        "behavioral_anomaly": 288,
+        "benign": 9549,
+        "brute_force": 288,
+        "cmd_injection": 288,
+        "path_traversal": 288,
+        "scanner_recon": 288,
+        "sqli": 288,
+        "xss": 288
+      },
+      "val": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      }
+    },
+    "limits": [
+      "This gate checks offline pilot data readiness, not detection quality or production acceptance",
+      "No training is executed; rule comparison, quality metrics and held-out performance follow training",
+      "Rust preprocessing/inference parity and target-machine endurance remain separate acceptance tasks",
+      "Diagnostic re-projection of OLD 15 campaigns, not the new 30-campaign corpus",
+      "Only query representation differs; no new requests or independent campaigns are claimed",
+      "Scripted intent, no exploit-success or independent human realism review",
+      "Test labels remain sealed; not approved for another formal session under the new diverse-corpus gate"
+    ],
+    "offline_pilot_training_permitted": true,
+    "partition_time_ranges": {
+      "test": [
+        1793159381.482227,
+        1793159801.648574
+      ],
+      "train": [
+        1793157300.284087,
+        1793157721.004716
+      ],
+      "val": [
+        1793158341.165111,
+        1793158761.408964
+      ]
+    },
+    "policy_sha256": "cd64624aff023534fd8e244464c1c6ac83db914d20c375157e1cbec85280b869",
+    "provenance_sha256": "4c3f55da8de267fa25c67ef6f0d3b4492d410e7619394e75da599018ea61a93f",
+    "purpose": "diagnostic_old_pcap_reprojection_only",
+    "quality_feature_counts": {
+      "flow_bytes_to_client_missing": 3003,
+      "flow_bytes_to_server_missing": 3003,
+      "flow_duration_seconds_missing": 3003,
+      "flow_packets_to_client_missing": 3003,
+      "flow_packets_to_server_missing": 3003,
+      "ip_10s_context_incomplete": 489,
+      "ip_300s_context_incomplete": 13062,
+      "ip_60s_context_incomplete": 2685,
+      "latency_ms_missing": 0,
+      "request_bytes_missing": 0,
+      "response_bytes_missing": 0,
+      "status_missing": 0,
+      "user_10s_context_incomplete": 1284,
+      "user_300s_context_incomplete": 13650,
+      "user_60s_context_incomplete": 3441,
+      "user_agent_missing": 0
+    },
+    "report_sha256": "602a2bb5f21018d86c54dbdda39b305a9598a8841954cbca4399be6b67e0193b",
+    "rows": 19275,
+    "source_files_sha256": {
+      "src/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+      "src/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+      "src/idps_ai/cli.py": "eb61310dc8bb713c22808d48d38fc6e515d283536b7e712fa5c89383e2f3246c",
+      "src/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+      "src/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+      "src/idps_ai/data/baseline.py": "da29d8572a798def34d5285b76ad63780c94e6efe7cf15e73de4acae295d00e9",
+      "src/idps_ai/data/campaigns.py": "f82430005f97da31683b080ccf5e64cde3356c9c763607c79b4dd34af28b9636",
+      "src/idps_ai/data/capacity.py": "c8bc3a37374fcac56dfcca05d562403f8d820380d0d71df5f434b6030f7cc524",
+      "src/idps_ai/data/dataset.py": "176a6807371ca840f01a8cb192a0b9b69615aa239a0b2811f5363cceeacff2c1",
+      "src/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+      "src/idps_ai/data/lab_runtime.py": "abdf94dff5d186e951a1bde0518ab0816666d0d167784309af52f9e9d968078a",
+      "src/idps_ai/data/pretrain.py": "913c3f576a522faa27bb873c636724ce425f0fb8e4c720994a0543b9634e0979",
+      "src/idps_ai/data/privacy.py": "dfcccab19a0a335872aa1bedbb5bb5b53877cc513578e98f5d09a6f9bd80c1c8",
+      "src/idps_ai/data/provenance.py": "c6213c080f09111f5feaf800b77c60aa1c4a3428c55d94b71be45ba2b3e5d436",
+      "src/idps_ai/data/query_numeric.py": "426a8e6a4df005ba80edcc685353db6010ceacf06cb8b415919a3a30aced5f4b",
+      "src/idps_ai/data/readers.py": "cfb8e2b0b8bbc60b7782594b231ee317552b97711161461abc7a6309bb699cef",
+      "src/idps_ai/data/readiness.py": "23cc1f69211598ffec2beec67a1dd7eb9a3849baad52387b7d806b010e15b0c6",
+      "src/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+      "src/idps_ai/data/sensor_decode.py": "61d4a9cf37047798e6ea919e19e9b52957d46f3acbadf45b72170f18f50fe9a0",
+      "src/idps_ai/data/sensor_lab.py": "3ec23f5b422936ea9d963bfd036e4149b7c47e548c686a665be4edb3bbf867c3",
+      "src/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+      "src/idps_ai/data/split.py": "4317ce4ffec68d0f0b2037060970332f13b8bc04aa5c9a828cf3083e67003681",
+      "src/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+      "src/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+      "src/idps_ai/export/onnx.py": "78edad3711a2e5fc0913b1cb1357881bbe6c7d75e04cc5147c2f2a10e75c7f42",
+      "src/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+      "src/idps_ai/features/pipeline.py": "576daa4d273dfef049f3cb1da063cc07d2a8d86741bcac6b64ca5958637d87be",
+      "src/idps_ai/inference.py": "6b0fe80369c01c9b875555f1aac330263f21bcf4e0747dc142404d6c664eb296",
+      "src/idps_ai/pilot.py": "c89f5c4b3983cf6ab96a66e2d45ee036db39fe60ce516f8bf9bf373ee92d9cb4",
+      "src/idps_ai/smoke.py": "3884b68240fb17a65a40727da5f7280c789efce45fbf24726edd9b62de1a17bf",
+      "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+      "src/idps_ai/training/models.py": "5cafffd32591b0fb9eaa161f2ed5d8b9d7797c4461bca051b25dda9abbb238a4",
+      "src/idps_ai/training/resources.py": "7e05d80429833eac5abde5526498d8760744bc49281abe86484ac2a0dbcb8c90",
+      "src/idps_ai/training/runner.py": "79b5ee9fd9025b5e731a913a00b03eba2ed3cdccd6f27f0b149ac23a84d3bea2",
+      "src/idps_ai/training/session.py": "18be6a659e90743a80cc1e508615a0002097356159a78e205314a26084a56dc4"
+    },
+    "status": "READY_FOR_OFFLINE_PILOT",
+    "training_executed": false
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261029_query/replay-data/readiness/readiness.json",
+  "original_sha256": "a70fbcd8f56038df3fd285e6ed0389d9eb26a4a2ae004304137f7ff0bce59f8e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

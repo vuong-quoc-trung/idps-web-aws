@@ -1,0 +1,32 @@
+{
+  "content": {
+    "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "binding": "X-Request-Id request header on EVE HTTP transaction; flow_id+tx_id for HTTP alerts",
+    "capture_plan_sha256": "f52e43de1684e9f8a7a3d365456950c12a42120c01fba02600f185ea2454e556",
+    "config_sha256": "d96bbe72ae6b15084ddd39babd57227eec6e4cc0386451971318c5fc0fc1dd03",
+    "excluded_from_http_baseline": {
+      "1000001": "SYN-rate signature; not request semantic classifier; all alerts still reported"
+    },
+    "included_sids": [
+      1000002,
+      1000003,
+      1000004,
+      1000005,
+      1000006,
+      1000007,
+      1000008,
+      1000009
+    ],
+    "original_config_sha256": "e73fcf0970930c6c0b38cb20968882529c9fa38bfadc85874f99a87db1895cb0",
+    "pcap_sha256": "dedee4e51beb1341beff52aead614cd93b60834c281fedc713609b9d7a5008b0",
+    "plan_sha256": "355c99b41a75fb0b2dba64ae03af4045c36da9713ed759257f28effd32bf6b2e",
+    "rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "scope": "offline real packet HTTP-signature baseline; not Rust stateful rules, app rules, production or independent Ground Truth",
+    "script_sha256": "48a84701767c27a57c553402ff548404aaa874cd5a3295775cfaf06bd376d1ca",
+    "tuning": false
+  },
+  "original_relative_path": "ai-training/.artifacts/p0_dvwa_20261105_1520/suricata/comparison-plan.json",
+  "original_sha256": "5551c205c68da9ee7e890a174251566c3ccb185f2e989382944a91c803ec44d3",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

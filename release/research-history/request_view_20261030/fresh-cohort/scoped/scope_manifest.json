@@ -1,0 +1,38 @@
+{
+  "content": {
+    "format_version": 1,
+    "inputs": [
+      {
+        "excluded_outside_declared_capture": 1,
+        "file": "00-student.jsonl",
+        "kept": 1935,
+        "sha256": "92d4a3013a7fa83359a6da007d94d7825aa6c02ff37637266f4f92a07437bf20",
+        "source": "student",
+        "source_sha256": "acea7e76026eb958078a7d80706867b9c65632efe062c6d7fff8cf93606a4910"
+      },
+      {
+        "excluded_outside_declared_capture": 1,
+        "file": "01-nginx.jsonl",
+        "kept": 1935,
+        "sha256": "b1f808fe286080fd8a7a30f3825aca9647e668ec62095898f6f8afc994f6a829",
+        "source": "nginx",
+        "source_sha256": "a4e4d7676796671b3841b74b350151adf279558f488221b308de13c60af99f08"
+      },
+      {
+        "excluded_outside_declared_capture": 0,
+        "file": "02-suricata.jsonl",
+        "kept": 4235,
+        "sha256": "70d4a17d9d7f01e7b58dc22c1d61a6cb2aeee9be66be60115eb9f80ba0379268",
+        "source": "suricata",
+        "source_sha256": "70d4a17d9d7f01e7b58dc22c1d61a6cb2aeee9be66be60115eb9f80ba0379268"
+      }
+    ],
+    "observer_sha256": "60c7ddacc21b62bb228d1ed9115142d1b52b71930435010175aaadb68f9acbc5",
+    "policy": "Student/Nginx: exact observer IDs including pending; Suricata: every record from the private bounded PCAP, including benign HTTP/flow/stats; never filter by label/status/rule",
+    "requests": 1935
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/fresh-cohort/scoped/scope_manifest.json",
+  "original_sha256": "44b6866ceeab0a1a16295cedf3cee1bff9954a1ba4be35ded667186d37f6593d",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

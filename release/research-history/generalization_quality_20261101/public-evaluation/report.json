@@ -1,0 +1,351 @@
+{
+  "content": {
+    "champion_selected": false,
+    "models": {
+      "glu1024": {
+        "inference_rows": 13290,
+        "model_only_latency_ms": {
+          "p50": 4.1468799999999995,
+          "p95": 4.48936925,
+          "p99": 4.67183633
+        },
+        "novel_view_sensitivity_not_primary": {
+          "bootstrap_replicates": 200,
+          "cluster_bootstrap_95pct": {
+            "fpr": [
+              0.00010452454000606531,
+              0.0009300424237502755
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "iid_wilson_FPR_95pct": [
+            0.0002112434230933734,
+            0.0011571872020474305
+          ],
+          "independent_label_review": false,
+          "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+          "metrics": {
+            "attack": 0,
+            "benign": 10111,
+            "confusion_matrix": [
+              [
+                10106,
+                5
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": null,
+            "fpr": 0.000494510928691524,
+            "pr_auc_average_precision": null,
+            "precision": null,
+            "recall": null,
+            "rows": 10111,
+            "threshold": 0.9984238147735596
+          },
+          "observed_groups": 160,
+          "threshold": 0.9984238147735596,
+          "threshold_fitted": false
+        },
+        "primary_all_sampled_validation": {
+          "bootstrap_replicates": 200,
+          "cluster_bootstrap_95pct": {
+            "fpr": [
+              7.99646337491485e-05,
+              0.0007162950448057164
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "iid_wilson_FPR_95pct": [
+            0.00016071022738447805,
+            0.0008804830848398132
+          ],
+          "independent_label_review": false,
+          "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+          "metrics": {
+            "attack": 0,
+            "benign": 13290,
+            "confusion_matrix": [
+              [
+                13285,
+                5
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": null,
+            "fpr": 0.0003762227238525207,
+            "pr_auc_average_precision": null,
+            "precision": null,
+            "recall": null,
+            "rows": 13290,
+            "threshold": 0.9984238147735596
+          },
+          "observed_groups": 160,
+          "threshold": 0.9984238147735596,
+          "threshold_fitted": false
+        },
+        "publisher_benign_syntax_subset": {
+          "bootstrap_replicates": 200,
+          "cluster_bootstrap_95pct": {
+            "fpr": [
+              0.0,
+              0.034264536833029983
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "iid_wilson_FPR_95pct": [
+            0.003954752436952022,
+            0.050941486270168326
+          ],
+          "independent_label_review": false,
+          "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+          "metrics": {
+            "attack": 0,
+            "benign": 139,
+            "confusion_matrix": [
+              [
+                137,
+                2
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": null,
+            "fpr": 0.014388489208633094,
+            "pr_auc_average_precision": null,
+            "precision": null,
+            "recall": null,
+            "rows": 139,
+            "threshold": 0.9984238147735596
+          },
+          "observed_groups": 60,
+          "threshold": 0.9984238147735596,
+          "threshold_fitted": false
+        },
+        "score_quantiles": {
+          "max": 0.9993667602539062,
+          "median": 0.020117342472076416,
+          "min": 0.00010824203491210938,
+          "p90": 0.6767003118991853,
+          "p99": 0.9962501251697541
+        },
+        "threshold_changed": false
+      },
+      "mlp256": {
+        "inference_rows": 13290,
+        "model_only_latency_ms": {
+          "p50": 0.119242,
+          "p95": 0.14461929999999998,
+          "p99": 0.15881431
+        },
+        "novel_view_sensitivity_not_primary": {
+          "bootstrap_replicates": 200,
+          "cluster_bootstrap_95pct": {
+            "fpr": [
+              0.010935880142860123,
+              0.024701647805618128
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "iid_wilson_FPR_95pct": [
+            0.014851303788683429,
+            0.019933369827121898
+          ],
+          "independent_label_review": false,
+          "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+          "metrics": {
+            "attack": 0,
+            "benign": 10111,
+            "confusion_matrix": [
+              [
+                9937,
+                174
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": null,
+            "fpr": 0.017208980318465038,
+            "pr_auc_average_precision": null,
+            "precision": null,
+            "recall": null,
+            "rows": 10111,
+            "threshold": 0.9999801516532898
+          },
+          "observed_groups": 160,
+          "threshold": 0.9999801516532898,
+          "threshold_fitted": false
+        },
+        "primary_all_sampled_validation": {
+          "bootstrap_replicates": 200,
+          "cluster_bootstrap_95pct": {
+            "fpr": [
+              0.008377477033928655,
+              0.01884900916930605
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "iid_wilson_FPR_95pct": [
+            0.011295840493149812,
+            0.015170659796519369
+          ],
+          "independent_label_review": false,
+          "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+          "metrics": {
+            "attack": 0,
+            "benign": 13290,
+            "confusion_matrix": [
+              [
+                13116,
+                174
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": null,
+            "fpr": 0.01309255079006772,
+            "pr_auc_average_precision": null,
+            "precision": null,
+            "recall": null,
+            "rows": 13290,
+            "threshold": 0.9999801516532898
+          },
+          "observed_groups": 160,
+          "threshold": 0.9999801516532898,
+          "threshold_fitted": false
+        },
+        "publisher_benign_syntax_subset": {
+          "bootstrap_replicates": 200,
+          "cluster_bootstrap_95pct": {
+            "fpr": [
+              0.1496004679382956,
+              0.3579023152372263
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "iid_wilson_FPR_95pct": [
+            0.1806468242590869,
+            0.32229860498688007
+          ],
+          "independent_label_review": false,
+          "limits": "Intervals conditional on publisher/runner labels and group definition. Wilson assumes IID; group bootstrap assumes independent clusters. Neither proves these assumptions, coverage on new domains, or safety of zero observed FPs. Fewer than8groups: cluster interval intentionally unavailable.",
+          "metrics": {
+            "attack": 0,
+            "benign": 139,
+            "confusion_matrix": [
+              [
+                105,
+                34
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "f1": null,
+            "fpr": 0.2446043165467626,
+            "pr_auc_average_precision": null,
+            "precision": null,
+            "recall": null,
+            "rows": 139,
+            "threshold": 0.9999801516532898
+          },
+          "observed_groups": 60,
+          "threshold": 0.9999801516532898,
+          "threshold_fitted": false
+        },
+        "score_quantiles": {
+          "max": 0.9999999403953552,
+          "median": 0.029478877782821655,
+          "min": 8.296966552734375e-05,
+          "p90": 0.6995493054389958,
+          "p99": 0.9999912512302399
+        },
+        "threshold_changed": false
+      }
+    },
+    "new_training_or_threshold_fitting": false,
+    "registry_sha256": "a0ac0da9a243e5b6288e713d2e99f8f651072452f8c59e1f9d6ecfbea7e26da6",
+    "reserved_members_opened": false,
+    "resources": {
+      "address_space_limit_effective": 17179869184,
+      "affinity_effective": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cgroup_v2": {
+        "cpu.max": "400000 100000",
+        "cpu.stat": "usage_usec 2830832\nuser_usec 2655843\nsystem_usec 174989\nnice_usec 2654000\ncore_sched.force_idle_usec 0\nnr_periods 24\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "346038272",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "346038272",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-wcp-eval-20261101.service"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 4,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 17179869184,
+      "peak_cpu_temperature_celsius": 60.0,
+      "peak_rss_bytes": 556773376,
+      "peak_tree_rss_bytes": 556773376,
+      "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "temperature_monitoring": "hardware_critical_limit_available",
+      "thermal_limit_reached": false,
+      "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+      "thermal_stop_threshold_celsius": 100.0,
+      "total_host_memory_bytes": 32440913920
+    },
+    "rows": 13290,
+    "scope": "Benign-only external development stress test; publisher annotations, not independent human review or recall acceptance",
+    "source_manifest_sha256": "409abcb4a979bba15e1a1a681e1236a0e871c4db02395aee67dcdbce05328cf9",
+    "status": "PASS_FROZEN_BENIGN_STRESS_ONLY",
+    "website_case_groups": 160
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/public-evaluation/report.json",
+  "original_sha256": "80d23d477d14049c6312d368f5778ab544a93ee5830bb1d72bebc20b8efea954",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

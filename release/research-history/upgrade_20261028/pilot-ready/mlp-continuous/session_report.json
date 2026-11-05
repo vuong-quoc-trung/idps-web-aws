@@ -1,0 +1,86 @@
+{
+  "content": {
+    "best_metric": 0.7613331102785559,
+    "checkpoint": "checkpoints/step-000000000905-02e293aab8d5",
+    "checkpoint_manifest_sha256": "998d7dfe24e230c1e0d222be40f589b1ebf8c52cfc6832fc266c244aba7ce95f",
+    "config_sha256": "7db3a01006ae51df6a4efc43848cf063614f78d4c8765fb38298d18c509a785c",
+    "cumulative_optimizer_seconds": 0.1508280489970275,
+    "cumulative_wall_seconds": 2.9712721490004697,
+    "cursor": 0,
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "ended_at_unix": 1793160594.359098,
+    "epoch": 5,
+    "global_step": 905,
+    "process_id": 53164,
+    "resources": {
+      "address_space_limit_effective": 12884901888,
+      "affinity_effective": [
+        0,
+        1
+      ],
+      "cgroup_v2": {
+        "cpu.max": "200000 100000",
+        "cpu.stat": "usage_usec 5830873\nuser_usec 4305598\nsystem_usec 1525274\nnice_usec 4301000\ncore_sched.force_idle_usec 0\nnr_periods 55\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "180330496",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "10737418240",
+        "memory.max": "12884901888",
+        "memory.peak": "203001856",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+      },
+      "cgroup_v2_final": {
+        "cpu.max": "200000 100000",
+        "cpu.stat": "usage_usec 8819257\nuser_usec 6052490\nsystem_usec 2766766\nnice_usec 6052000\ncore_sched.force_idle_usec 0\nnr_periods 85\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "214695936",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "10737418240",
+        "memory.max": "12884901888",
+        "memory.peak": "214958080",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-upgrade-pilot-final-20261028.service"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 2,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 12884901888,
+      "peak_rss_bytes": 188588032,
+      "peak_tree_rss_bytes": 188588032,
+      "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+      "total_host_memory_bytes": 32440909824
+    },
+    "run_id": "85d50e8e004040878dfa1c2722c241cb",
+    "session_id": "ee0d6301d05c44809f77b82fae98414a",
+    "session_optimizer_seconds": 0.1508280489970275,
+    "session_wall_seconds": 3.0192735250002443,
+    "started_at_unix": 1793160591.3398383,
+    "stop_reason": "epochs_complete",
+    "used_previous_checkpoint": false
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-continuous/session_report.json",
+  "original_sha256": "4ff1ff49d3f890dd68e9bf46229d3620c5d44d739bc9fb7f2cfa340ba6c9d26c",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

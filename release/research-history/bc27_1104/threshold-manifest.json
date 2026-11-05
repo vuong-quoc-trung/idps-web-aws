@@ -1,0 +1,27 @@
+{
+  "content": {
+    "algorithm": "For 27 oracle-verified benign scores, take the maximum float32 score and the next greater representable float32 value; alert iff score >= threshold. This yields zero in-sample alerts by construction and no 1% guarantee.",
+    "automatic_blocking": false,
+    "calibration_benign_lab": 27,
+    "calibration_campaign_id": "benign-calibration-20261104-01",
+    "calibration_max_score": 0.5396779775619507,
+    "calibration_plan_sha256": "830fafa6a9791d5ab4b686f9f6cb96e51d0492350754cf2c2bf43a4e7f820fbd",
+    "calibration_report_sha256": "05c91c34f9dc9c74fc7d60edaa11927727ccc491cd5bfb8e42181ff3c4fc4615",
+    "calibration_unique_views": 27,
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "formal_admitted": 0,
+    "format_version": 1,
+    "fpr_budget": 0.01,
+    "in_sample_false_positives_by_construction": 0,
+    "model_checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+    "score_direction": "higher_is_more_attack_like; alert_if_score_greater_or_equal",
+    "statistical_limit": "27 correlated benign requests from one lab cannot certify 1% FPR or attack recall; threshold is research-only.",
+    "status": "PROVISIONAL_BENIGN_ONLY",
+    "threshold": 0.5396780371665955
+  },
+  "original_relative_path": "ai-training/.artifacts/bc27_1104/threshold-manifest.json",
+  "original_sha256": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

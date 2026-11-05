@@ -1,0 +1,64 @@
+{
+  "content": {
+    "attack_visibility": "Binary anomalous requests can have body/header-only attacks invisible to this URI view; never infer families with rules",
+    "cross_partition_duplicate_rows": 53398,
+    "cross_partition_or_label_vector_collision_rows": 90261,
+    "evaluation_policy": "Full original test is the primary challenge. Curated deduplicated subset is a sensitivity diagnostic, never a substitute for ambiguous/body-only attacks.",
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "full_three_source_eligible": false,
+    "identity_key_sha256": "3f2c8569be989e35c1db3bb301366ac3ba9952014a683ccf67c4fc4b8d1cf716",
+    "independent_human_review": false,
+    "missing_fields": [
+      "timestamp",
+      "client",
+      "session",
+      "role",
+      "status",
+      "latency",
+      "flow"
+    ],
+    "near_template_cross_partition_groups": 34,
+    "original_requests_sha256": "73aa6c7f0d4f53d8a4a667e1d44351704da1375a5daab0a03d95d50a7cb7c097",
+    "partitions": {
+      "test": 2114
+    },
+    "profile": "http-request-numeric-v1",
+    "provenance": {
+      "attribution": "Biardo, Deborah; Gonzalez Guzman; Lanzotti, Sabrina (2024), WebRequests, Repositorio ANII, V1; underlying CSIC 2010 HTTP benchmark",
+      "doi": "10.60895/redata/RWUUSV",
+      "license": "CC BY 4.0",
+      "original_source": "CSIC HTTP 2010, e-commerce generated traffic; replay transcripts, not new lab captures",
+      "source_url": "https://redata.anii.org.uy/dataset.xhtml?persistentId=doi:10.60895/redata/RWUUSV",
+      "terms_scope": "Repository publisher CC BY 4.0; original source license lineage not independently recovered; keep raw private; not human-reviewed live traffic"
+    },
+    "raw_requests": 97065,
+    "raw_source_sha256_verified": true,
+    "requests_sha256": "29c2110ddeabc8a95f83838fd262598f9b0e055b3ed0f3a99760f601a69ba844",
+    "retained_unique_requests": 2114,
+    "source_files": [
+      {
+        "label": 1,
+        "partition": "test",
+        "sha256": "ec77d784966896330869c5b596ede6a716101c14b5f139144915bb10822a03e1",
+        "source_id": "csic_2010_anomalousTrafficTest"
+      },
+      {
+        "label": 0,
+        "partition": "test",
+        "sha256": "89600eea871cd0770544a96f6580da14874c4a5211372ad56d23002e1c572603",
+        "source_id": "csic_2010_normalTrafficTest"
+      },
+      {
+        "label": 0,
+        "partition": "train",
+        "sha256": "d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000",
+        "source_id": "csic_2010_normalTrafficTraining"
+      }
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/public-http/manifest.json",
+  "original_sha256": "dbf751d47b8cac670bda9598befc5e0062e6f7cf8c86ee708b89a8fcf4275dd5",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

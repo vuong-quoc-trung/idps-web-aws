@@ -1,0 +1,86 @@
+{
+  "content": {
+    "body_present_by_label": {
+      "0": 3085,
+      "1": 23658
+    },
+    "dates": {
+      "2020-07-17": 194244,
+      "2020-07-18": 298768,
+      "2020-07-19": 52767,
+      "2020-07-20": 8087,
+      "2020-07-21": 10519,
+      "2020-07-22": 10398,
+      "2020-07-23": 10520,
+      "2020-07-24": 11229,
+      "2020-07-25": 11268,
+      "2020-07-26": 11227,
+      "2020-07-27": 2412,
+      "2020-07-28": 1931,
+      "2020-07-29": 279777,
+      "2020-11-01": 4666,
+      "MISSING": 2
+    },
+    "duplicate_observation_records": 2772,
+    "files": {
+      "sample.parquet": "25b94904acc94ccbb7073bea4b440cbdaada47ed172957357deb306449a14d41"
+    },
+    "format_version": 1,
+    "full_source_count_matches_publisher": false,
+    "identity_key_fingerprint": "f6a7d2545dcbbbc50031bea3f072446c54a6be1bdd0defe5b889e6532d8d07bb",
+    "independent_human_review": false,
+    "label_states": {
+      "consistent_publisher_annotation": 907815
+    },
+    "labels": {
+      "0": 525195,
+      "1": 382620
+    },
+    "license": "CC0 1.0",
+    "limits": [
+      "Single WordPress environment with real Internettraffic; no Student/flow/context invented",
+      "Publisher labels use ModSecurity plus manual/semi-automatic review; not our independent adjudication",
+      "Codeinjection242 is not guessed XSS; mixed/unmapped family staysunknown",
+      "URI-only view misses body/header attacks; full sampled cohort primary, no selective easy subset",
+      "Original source private; output contains no rawquery/body/cookie/host/IP/header strings",
+      "No training/calibration/selection uses this new source in the current frozen study"
+    ],
+    "natural_observation_identities": 905043,
+    "projection_sha256": "e1c3df19f511be2773e56af61828ebe201bdbe8eae7cd8475de3b290fab4522b",
+    "published_capec_counts": {
+      "126": 20992,
+      "153": 2272,
+      "16": 1847,
+      "194": 56145,
+      "242": 15827,
+      "248": 1,
+      "272": 9153,
+      "274": 5437,
+      "310": 2718,
+      "33": 1059,
+      "34": 19738,
+      "66": 250311,
+      "88": 7482
+    },
+    "publisher_records": 907815,
+    "same_observation_cross_label_groups": 26,
+    "sample_fraction": 0.1,
+    "sample_projection": {
+      "available": 90531
+    },
+    "sample_records": 90531,
+    "sampling": "HMAC of physicalrecord identity; not label- or prediction-selected",
+    "source": "SR-BH2020",
+    "source_doi": "10.7910/DVN/OGOIXX",
+    "source_sha256": "9c73c90ce6564ae48b14f7179cd864d037a6a130ef69c68c1626ec5d7ce4a910",
+    "time_range": [
+      1594985014.0,
+      1604267991.0
+    ],
+    "training_admitted": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/srbh-audit-v2/manifest.json",
+  "original_sha256": "446293832a65dd1b45dce2dd1521eba257089be35fa20cece9af6e270659ef40",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

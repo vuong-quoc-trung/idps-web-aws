@@ -1,0 +1,46 @@
+{
+  "content": {
+    "ablation": "For duration/bytes/packets/all_flow groups, set each raw value log1p=0 and its explicit missing flag=1, then apply frozen train spec; preserve all other normalized features.",
+    "candidate_root": ".artifacts/research_glu207_bounded_final_20261104",
+    "checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "format_version": 1,
+    "fpr": null,
+    "interpretation": "No quality, robustness certification, generalization or threshold claim from train-only synthetic ablation.",
+    "metric_scope": [
+      "score delta",
+      "absolute score delta",
+      "eight-class argmax changes",
+      "group zero/missingness/availability",
+      "causal flow timing",
+      "train feature replay parity"
+    ],
+    "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+    "per_class": 512,
+    "purpose": "TRAIN_ONLY_SYNTHETIC_FLOW_MISSINGNESS_DIAGNOSTIC",
+    "recall": null,
+    "resource_cap": {
+      "cpu_quota_cores": 4,
+      "memory_max_gib": 16
+    },
+    "sample_rule": "For each train development binary stratum with observed prior flow, sort by SHA256(seed:event_key), take first 512; never inspect model scores to select.",
+    "script_sha256": "7bf7d410718beab86478ec858fa46b1bf0939117e1d3107d3d9f43972371955e",
+    "seed": 31,
+    "selected_event_keys_sha256": "99cb07bdfbae4afae7167cb0ec33a8ef7e0b160cf549709cb38a725dee32dee7",
+    "shadow_dataset": ".artifacts/glu207_shadow_20261103/collected-54-plus-setup",
+    "shadow_manifest_sha256": "39ee707a9be49e966ea98bef8c2fbc956de5160e0fbc50821799333e08e25762",
+    "shadow_observations_sha256": "45c1032956a963b7e26d16bf4e2361b0c077db4d83fcfec61b6565472adf62d0",
+    "shadow_requests_sha256": "e32a652524a4caaf37f341fd4cf60e60bc0fdcda18b13db195c7882c275895cb",
+    "threshold": null,
+    "train_dataset": ".artifacts/scale_upgrade_20261030/prepared-v5",
+    "train_feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "train_features_sha256": "7e02bbbc66621560a23beb3c80c1d8c1bf790aba0e012df93c1d3c9ec7edfb5e",
+    "train_manifest_sha256": "0c1a5ca3523c8ff769148766cee152d0a47c62c012a08200f0586f2349ee221e",
+    "train_requests_sha256": "d04633aaea53bd34490faafd94d446701c7b8cf80a69d50d763e949516f93784",
+    "validation_or_test_access": false
+  },
+  "original_relative_path": "ai-training/.artifacts/glu207_flow_robustness_20261104/plan.json",
+  "original_sha256": "a023e99bd8124cb3db22c25b8607516987b819540a44da1cf18c38d28bb49b0a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

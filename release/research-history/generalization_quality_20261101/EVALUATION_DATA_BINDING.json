@@ -1,0 +1,17 @@
+{
+  "content": {
+    "evaluation_script_sha256": "e33c1e1d80e6e12557446c5dbb3b001f4626bf4295b64119164c68efe7090cdd",
+    "frozen_registry_sha256": "a0ac0da9a243e5b6288e713d2e99f8f651072452f8c59e1f9d6ecfbea7e26da6",
+    "reserved_members_unopened": true,
+    "source_archive_sha256": "58faee18c54229759287a574f6f8cb1e3b951fa135e403ea9a679d2b18efd778",
+    "source_manifest_sha256": "409abcb4a979bba15e1a1a681e1236a0e871c4db02395aee67dcdbce05328cf9",
+    "source_protocol_sha256": "c3da7d80bcb1732134c408b02e6a448644b2e1d2bc02388eb59a5f1ac228ee04",
+    "source_provenance_sha256": "4853d1abd5f84e658080735ccf2eee8efe6009ac1d5d832caf22eb404759856f",
+    "source_scores_previously_opened": false,
+    "weights_or_thresholds_changed": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/EVALUATION_DATA_BINDING.json",
+  "original_sha256": "715224a9f4ebe7c72925413620ffba39764a28dd6e9a02349b60b6281e5e27a8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

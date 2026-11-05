@@ -1,0 +1,121 @@
+{
+  "content": {
+    "input_records": 907815,
+    "interpretation": "Post-July20 supported/visible/consistent positives do not survive conservative curation. Newtemporalpositivevalidation is absent; changingboundaries merely toobtain scores is not authorizedmethodology.",
+    "labels_changed": false,
+    "per_actual_UTC_day": {
+      "2020-07-17": {
+        "accepted_label_0": 29080,
+        "accepted_label_1": 69849,
+        "accepted_research": 98929,
+        "duplicate": 96,
+        "input": 194244,
+        "original_label_0": 49199,
+        "original_label_1": 145045,
+        "quarantine": 95219
+      },
+      "2020-07-18": {
+        "accepted_label_0": 26881,
+        "accepted_label_1": 152514,
+        "accepted_research": 179395,
+        "duplicate": 100,
+        "input": 298768,
+        "original_label_0": 92227,
+        "original_label_1": 206541,
+        "quarantine": 119273
+      },
+      "2020-07-19": {
+        "accepted_label_0": 11328,
+        "accepted_label_1": 18723,
+        "accepted_research": 30051,
+        "duplicate": 38,
+        "input": 52767,
+        "original_label_0": 21734,
+        "original_label_1": 31033,
+        "quarantine": 22678
+      },
+      "2020-07-20": {
+        "accepted_label_0": 183,
+        "accepted_research": 183,
+        "input": 8087,
+        "original_label_0": 8087,
+        "quarantine": 7904
+      },
+      "2020-07-21": {
+        "accepted_label_0": 297,
+        "accepted_research": 297,
+        "input": 10519,
+        "original_label_0": 10519,
+        "quarantine": 10222
+      },
+      "2020-07-22": {
+        "accepted_label_0": 305,
+        "accepted_research": 305,
+        "input": 10398,
+        "original_label_0": 10398,
+        "quarantine": 10093
+      },
+      "2020-07-23": {
+        "accepted_label_0": 254,
+        "accepted_research": 254,
+        "input": 10520,
+        "original_label_0": 10520,
+        "quarantine": 10266
+      },
+      "2020-07-24": {
+        "accepted_label_0": 278,
+        "accepted_research": 278,
+        "input": 11229,
+        "original_label_0": 11229,
+        "quarantine": 10951
+      },
+      "2020-07-25": {
+        "accepted_label_0": 302,
+        "accepted_research": 302,
+        "input": 11268,
+        "original_label_0": 11268,
+        "quarantine": 10966
+      },
+      "2020-07-26": {
+        "accepted_label_0": 301,
+        "accepted_research": 301,
+        "input": 11227,
+        "original_label_0": 11227,
+        "quarantine": 10926
+      },
+      "2020-07-27": {
+        "accepted_label_0": 19,
+        "accepted_research": 19,
+        "input": 2412,
+        "original_label_0": 2412,
+        "quarantine": 2393
+      },
+      "2020-07-28": {
+        "input": 1931,
+        "original_label_0": 1931,
+        "quarantine": 1931
+      },
+      "2020-07-29": {
+        "input": 279777,
+        "original_label_0": 279777,
+        "quarantine": 279777
+      },
+      "2020-11-01": {
+        "input": 4666,
+        "original_label_0": 4665,
+        "original_label_1": 1,
+        "quarantine": 4666
+      },
+      "MISSING": {
+        "input": 2,
+        "original_label_0": 2,
+        "quarantine": 2
+      }
+    },
+    "source_role": "development_exposed"
+  },
+  "original_relative_path": "ai-training/.artifacts/data_quality_20261031/daily-quality-audit.json",
+  "original_sha256": "5a181a7a4c89d894bb3dfc97594a427d34536323d46cd73941f7ffcc69041b3f",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

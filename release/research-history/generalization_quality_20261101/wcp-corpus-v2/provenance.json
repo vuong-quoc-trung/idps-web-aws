@@ -1,0 +1,15 @@
+{
+  "content": {
+    "identity_key_fingerprint": "99df24deae4da96b7b923a243b87e31ce29a8f8017d0316021fbe1dab780061a",
+    "label_scope": "Publisher recorded legitimate browsing intent; no independent semantic review, no new labels generated",
+    "license": "Apache-2.0 for legitimate dataset only; do not infer malicious collection license",
+    "original_holdouts_unchanged": true,
+    "protocol_sha256": "c3da7d80bcb1732134c408b02e6a448644b2e1d2bc02388eb59a5f1ac228ee04",
+    "publisher_url": "https://github.com/openappsec/waf-comparison-project",
+    "source_download_manifest_sha256": "f157c52a7945e50fd7a15c12d9ebec73c644704c8566cd0d1c35110c301f6662"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/wcp-corpus-v2/provenance.json",
+  "original_sha256": "4853d1abd5f84e658080735ccf2eee8efe6009ac1d5d832caf22eb404759856f",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

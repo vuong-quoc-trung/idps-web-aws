@@ -1,0 +1,287 @@
+{
+  "content": {
+    "admission": {
+      "benign_training_sources": [
+        "srbh2020",
+        "student-lab"
+      ],
+      "corpus_role": "development_exposed",
+      "cross_partition_groups": 0,
+      "cross_partition_model_vectors": 0,
+      "decisions": {
+        "accepted_research": 328117,
+        "quarantine": 11390
+      },
+      "embargo_seconds": 300,
+      "failed_gates": [],
+      "formal_training_permitted": false,
+      "full_curated_rows": {
+        "calibration": 172572,
+        "train": 132845,
+        "val": 22700
+      },
+      "full_source_role_labels": [
+        {
+          "label": 0,
+          "rows": 26271,
+          "source": "srbh2020",
+          "split": "calibration"
+        },
+        {
+          "label": 1,
+          "rows": 144988,
+          "source": "srbh2020",
+          "split": "calibration"
+        },
+        {
+          "label": 0,
+          "rows": 28958,
+          "source": "srbh2020",
+          "split": "train"
+        },
+        {
+          "label": 1,
+          "rows": 67464,
+          "source": "srbh2020",
+          "split": "train"
+        },
+        {
+          "label": 0,
+          "rows": 10402,
+          "source": "srbh2020",
+          "split": "val"
+        },
+        {
+          "label": 1,
+          "rows": 11274,
+          "source": "srbh2020",
+          "split": "val"
+        },
+        {
+          "label": 0,
+          "rows": 1025,
+          "source": "student-lab",
+          "split": "calibration"
+        },
+        {
+          "label": 1,
+          "rows": 288,
+          "source": "student-lab",
+          "split": "calibration"
+        },
+        {
+          "label": 0,
+          "rows": 29511,
+          "source": "student-lab",
+          "split": "train"
+        },
+        {
+          "label": 1,
+          "rows": 6912,
+          "source": "student-lab",
+          "split": "train"
+        },
+        {
+          "label": 0,
+          "rows": 736,
+          "source": "student-lab",
+          "split": "val"
+        },
+        {
+          "label": 1,
+          "rows": 288,
+          "source": "student-lab",
+          "split": "val"
+        }
+      ],
+      "input_records": 339507,
+      "label_basis": "Original publisher/runner annotations after structural gates, not independent humanreview",
+      "minimum_records_per_source_role_class": 32,
+      "new_final_holdout_used": false,
+      "per_source_temporal_gaps_seconds": {
+        "srbh2020": {
+          "calibration->val": 604.0,
+          "train->calibration": 631.0
+        },
+        "student-lab": {
+          "calibration->val": 34167.88901615143,
+          "train->calibration": 43480.38240289688
+        }
+      },
+      "pilot_cap_per_source_role": {
+        "calibration": 10000,
+        "train": 60000,
+        "val": 10000
+      },
+      "policy_version": "curated-development-1",
+      "positive_training_sources": [
+        "srbh2020",
+        "student-lab"
+      ],
+      "production_admitted": false,
+      "reason_counts_overlapping": {
+        "model_view_cross_partition": 11090,
+        "related_group_cross_partition": 11020
+      },
+      "research_training_permitted": true,
+      "selection": "Lexical HMACeventid order within each source/role; independent of label/prediction; not newHTTP",
+      "source_day_sessions_not_persistent_client_holdout": true
+    },
+    "champion_selected": false,
+    "cross_partition_vector_collision_groups": 0,
+    "dataset_sha256": "7c99cecbc1c6f0c1892c71d6ca9a19b46f6d8b9fbfba2c1acf77d8ac1b5f1f0d",
+    "encoding": "bounded-request-v1",
+    "feature_count": 76,
+    "files": {
+      "admission.json": "8ce2d2bf9d771d89d522be763d4e6c0efd49a99a10290ffccb0a12b40a8ed11d",
+      "feature_spec.json": "30e15bfaf8c6dc4ddecdb199d44d12d68b8ba79f28d1f5b10110ca2120c018e4",
+      "features.parquet": "6a986acedb8989cf0b8b7187438357f2a7bd6a8caf749f4d57c0825ec1c0ff83",
+      "full-curated.parquet": "09e34f1ab68a24ce49e64a7c2c63b3d4805e8475d3b348e4bcfb82a3ef00d5d0",
+      "requests.parquet": "8835429d7810b0222b2ffffd4d873a44e3013fab89b67b492524e6dd4b778ff4",
+      "split-decisions.parquet": "687730936f8bb8a5f25c18330b2eff42126e9ebd2f92b77fca3aa273bfab1d29"
+    },
+    "fit_train_benign_only": false,
+    "formal_training_permitted": false,
+    "format_version": 1,
+    "limitations": [
+      "Group splits on public data have no invented timestamps or temporal independence",
+      "Full-profile v5 actors/flows/roles remain a different task",
+      "Mirror labels are publisher annotations, not independent human realism/visibility review",
+      "Exact view collisions are reported; no held-out hard cases removed",
+      "Scale admission and production acceptance are separate and not granted"
+    ],
+    "profile": "request-structure-v1",
+    "provenance": {
+      "admission_file": "admission.json",
+      "curated_admission_sha256": "8ce2d2bf9d771d89d522be763d4e6c0efd49a99a10290ffccb0a12b40a8ed11d",
+      "label_policy": "noinference_or_relabel",
+      "new_HTTP_requests": 0,
+      "source_role": "development_exposed",
+      "sources": {
+        "embargo_seconds": 300,
+        "exposed_cohort_declassification": {
+          "SRBH": "Previouslyscored90k source nowdevelopmentonly; nofinaltestclaim",
+          "calibration": "request_view_20261030 generation1 previously scored challenge nowexplicitdevelopmentcalibration",
+          "val": "generalization_20261031 generation2 previously scored challenge nowexplicitdevelopmentvalidation"
+        },
+        "new_final_holdouts_used": false,
+        "old_final_lab_test_quality_used": false,
+        "registry_sha256": "c1e21825d67e6c0baadd55f24278c77f922048795c59fe4adde314b9f3114bee",
+        "role": "development_exposed",
+        "source_files": {
+          "/home/trung/projects/idps-web-aws/ai-training/.artifacts/generalization_20261031/fresh-eve/eve.json": {
+            "decoder_sha256": "eedb5515b99b54b63c291e83a408a72f820b6a0919416058c7d33d0b50e38b74",
+            "pcap_sha256": "af0b564014f2a51e37ed7f441b42a2fa47c3324fa4e1a73b293310f2bf578e4f",
+            "sha256": "b921e33efe80c2d0be6554e935a340f70af9a6da7307a070f541bf433c817fa0"
+          },
+          "/home/trung/projects/idps-web-aws/ai-training/.artifacts/generalization_20261031/lab/observer.jsonl": {
+            "sha256": "0fc52e1adc4b53530dd974cb6ececf11e754332ed4d6666439e30ba587916d3f"
+          },
+          "/home/trung/projects/idps-web-aws/ai-training/.artifacts/request_view_20261030/lab/observer.jsonl": {
+            "sha256": "60c7ddacc21b62bb228d1ed9115142d1b52b71930435010175aaadb68f9acbc5"
+          },
+          "/home/trung/projects/idps-web-aws/ai-training/.artifacts/request_view_20261030/new-final/eve.json": {
+            "decoder_sha256": "54133f6eb6f1dc190717d664c9e35640271908ebb06319d35ce3b9b99779c75c",
+            "pcap_sha256": "edfaba826345dac1238014e8495b41ba4bd528cfe0eb50eec768ed7a08452589",
+            "sha256": "70d4a17d9d7f01e7b58dc22c1d61a6cb2aeee9be66be60115eb9f80ba0379268"
+          },
+          "/home/trung/projects/idps-web-aws/ai-training/.artifacts/request_view_20261030/old-final/eve.json": {
+            "decoder_sha256": "74801b28e01c11d48881b73a0cccc2367c7726284c3de4e4bf9dc192811b6a31",
+            "pcap_sha256": "a224671b8759c8f3e2bc1fd5057f585e3a8b94ee195be1bc5cc0723f21dbfc26",
+            "sha256": "9b5351104ea9344ede5e29d1b41a145b2c3820f8b6044b64930f37e87c9b6299"
+          }
+        },
+        "srbh_boundaries": {
+          "calibration_to_val": 1595116800.0,
+          "train_to_calibration": 1595030400.0
+        },
+        "srbh_curation_sha256": "ed80d18a87a326ac98b49ca658a05775ad437ceecf1087397311d80237078e87",
+        "srbh_source_sha256": "9c73c90ce6564ae48b14f7179cd864d037a6a130ef69c68c1626ec5d7ce4a910"
+      }
+    },
+    "rows": {
+      "calibration": 11313,
+      "train": 96423,
+      "val": 11024
+    },
+    "source_partition_labels": [
+      {
+        "label": "0",
+        "rows": 1536,
+        "source": "srbh2020",
+        "split": "calibration"
+      },
+      {
+        "label": "1",
+        "rows": 8464,
+        "source": "srbh2020",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 17906,
+        "source": "srbh2020",
+        "split": "train"
+      },
+      {
+        "label": "1",
+        "rows": 42094,
+        "source": "srbh2020",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 4845,
+        "source": "srbh2020",
+        "split": "val"
+      },
+      {
+        "label": "1",
+        "rows": 5155,
+        "source": "srbh2020",
+        "split": "val"
+      },
+      {
+        "label": "0",
+        "rows": 1025,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "1",
+        "rows": 288,
+        "source": "student-lab",
+        "split": "calibration"
+      },
+      {
+        "label": "0",
+        "rows": 29511,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "1",
+        "rows": 6912,
+        "source": "student-lab",
+        "split": "train"
+      },
+      {
+        "label": "0",
+        "rows": 736,
+        "source": "student-lab",
+        "split": "val"
+      },
+      {
+        "label": "1",
+        "rows": 288,
+        "source": "student-lab",
+        "split": "val"
+      }
+    ],
+    "unique_training_views": 27142
+  },
+  "original_relative_path": "ai-training/.artifacts/partition_recovery_20261031/forward-development/manifest.json",
+  "original_sha256": "3a5a4830249d8b770ba3e2c2e05c5d58d172fdd7239d5a8bf17da7a8481dad11",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

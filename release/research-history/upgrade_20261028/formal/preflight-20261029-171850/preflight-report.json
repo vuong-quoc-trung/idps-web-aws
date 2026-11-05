@@ -1,0 +1,26 @@
+{
+  "content": {
+    "capacity_report": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/formal/preflight-20261029-171850/capacity.json",
+    "checks_passed": 35,
+    "created_at": "2026-10-29T17:20:06.306179+07:00",
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "feature_count": 148,
+    "formal_training_executed": false,
+    "preflight_note": "Initial audit wrapper used a directory as a JSON file; corrected the generated report path. No dataset/source edits or optimization.",
+    "protected_files_unchanged": 172,
+    "readiness_report": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/formal/preflight-20261029-171850/readiness/readiness.json",
+    "rows": {
+      "test": 3855,
+      "train": 11565,
+      "val": 3855
+    },
+    "source_commit": "8171289400453d41c3a095af040c6a85e2880b77",
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/formal/preflight-20261029-171850/preflight-report.json",
+  "original_sha256": "3b26d8f55cb9268f2b90b64c16543bb473c994b1ef468b64a710dc59917408f7",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

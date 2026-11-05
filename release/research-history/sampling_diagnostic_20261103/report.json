@@ -1,0 +1,943 @@
+{
+  "content": {
+    "dataset_sha256": "514db12d3826a8015fa9d8e5561e4e33ccbd16828f58e3824689aed01dc14b2d",
+    "exposure": {
+      "baseline": {
+        "by_source_class": {
+          "srbh2020/attack": {
+            "draws": 9373,
+            "max_repeat": 6,
+            "pool_views": 15850,
+            "unique_exposed": 6630
+          },
+          "srbh2020/benign": {
+            "draws": 9675,
+            "max_repeat": 7,
+            "pool_views": 10059,
+            "unique_exposed": 6197
+          },
+          "student-lab/attack": {
+            "draws": 9546,
+            "max_repeat": 20,
+            "pool_views": 1027,
+            "unique_exposed": 1027
+          },
+          "student-lab/benign": {
+            "draws": 9684,
+            "max_repeat": 69,
+            "pool_views": 206,
+            "unique_exposed": 206
+          }
+        },
+        "draws": 38278,
+        "max_exposure_per_view": 69,
+        "unique_views_exposed": 14060
+      },
+      "treatment": {
+        "by_source_class": {
+          "srbh2020/attack": {
+            "draws": 22318,
+            "max_repeat": 2,
+            "pool_views": 15850,
+            "unique_exposed": 15850
+          },
+          "srbh2020/benign": {
+            "draws": 14226,
+            "max_repeat": 2,
+            "pool_views": 10059,
+            "unique_exposed": 10059
+          },
+          "student-lab/attack": {
+            "draws": 1424,
+            "max_repeat": 2,
+            "pool_views": 1027,
+            "unique_exposed": 1027
+          },
+          "student-lab/benign": {
+            "draws": 310,
+            "max_repeat": 2,
+            "pool_views": 206,
+            "unique_exposed": 206
+          }
+        },
+        "draws": 38278,
+        "max_exposure_per_view": 2,
+        "unique_views_exposed": 27142
+      }
+    },
+    "formal_admitted_added": 0,
+    "implementation_sha256": "dfc33ae62645263a4d7180271c369b25e9fc3f9828540b33cffcc84d965b9ea6",
+    "independent_evaluation": false,
+    "limits": [
+      "Student lab and SRBH labels are not independently reviewed",
+      "Development validation has been repeatedly exposed",
+      "Uniform sampler changes source/class/family exposure together; no single-cause attribution",
+      "No new independent environment"
+    ],
+    "models": {
+      "glu1024-baseline": {
+        "bundle_manifest_sha256": "e8cd745d9a32f1c41936bae2b41442ac4fe7bb57a7518af99c6954bf04b100dc",
+        "by_family_attack_recall": {
+          "srbh2020/cmd_injection": {
+            "recall": 0.0,
+            "rows": 39
+          },
+          "srbh2020/path_traversal": {
+            "recall": 0.0,
+            "rows": 180
+          },
+          "srbh2020/sqli": {
+            "recall": 0.32759319286871963,
+            "rows": 4936
+          },
+          "student-lab/cmd_injection": {
+            "recall": 0.2916666666666667,
+            "rows": 72
+          },
+          "student-lab/path_traversal": {
+            "recall": 0.4305555555555556,
+            "rows": 72
+          },
+          "student-lab/sqli": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/xss": {
+            "recall": 0.0,
+            "rows": 72
+          }
+        },
+        "by_source_rows": {
+          "srbh2020": {
+            "attack": 5155,
+            "benign": 4845,
+            "confusion_matrix": [
+              [
+                4831,
+                14
+              ],
+              [
+                3538,
+                1617
+              ]
+            ],
+            "f1": 0.4765694076038903,
+            "fpr": 0.002889576883384933,
+            "pr_auc_average_precision": 0.8370173520874067,
+            "precision": 0.9914163090128756,
+            "recall": 0.3136760426770126,
+            "rows": 10000,
+            "threshold": 0.9984238147735596
+          },
+          "student-lab": {
+            "attack": 288,
+            "benign": 736,
+            "confusion_matrix": [
+              [
+                657,
+                79
+              ],
+              [
+                236,
+                52
+              ]
+            ],
+            "f1": 0.24821002386634844,
+            "fpr": 0.10733695652173914,
+            "pr_auc_average_precision": 0.5145685771742765,
+            "precision": 0.3969465648854962,
+            "recall": 0.18055555555555555,
+            "rows": 1024,
+            "threshold": 0.9984238147735596
+          }
+        },
+        "by_source_views": {
+          "srbh2020": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 3675,
+              "benign": 3164,
+              "confusion_matrix": [
+                [
+                  3153,
+                  11
+                ],
+                [
+                  2873,
+                  802
+                ]
+              ],
+              "f1": 0.35739750445632795,
+              "fpr": 0.00347661188369153,
+              "pr_auc_average_precision": 0.8253382529312157,
+              "precision": 0.986469864698647,
+              "recall": 0.2182312925170068,
+              "rows": 6839,
+              "threshold": 0.9984238147735596
+            },
+            "repeated_view_rows": 3161,
+            "rows": 10000,
+            "unique_views": 6839,
+            "view_definition": "exact float32 model input bytes"
+          },
+          "student-lab": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 153,
+              "benign": 137,
+              "confusion_matrix": [
+                [
+                  123,
+                  14
+                ],
+                [
+                  130,
+                  23
+                ]
+              ],
+              "f1": 0.2421052631578947,
+              "fpr": 0.10218978102189781,
+              "pr_auc_average_precision": 0.7257080678286998,
+              "precision": 0.6216216216216216,
+              "recall": 0.1503267973856209,
+              "rows": 290,
+              "threshold": 0.9984238147735596
+            },
+            "repeated_view_rows": 734,
+            "rows": 1024,
+            "unique_views": 290,
+            "view_definition": "exact float32 model input bytes"
+          }
+        },
+        "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+        "checkpoint_latest_sha256": "2192898a99e42b29d63a0ed094805717aa1cf78307dfeaf390b7cb7cbeb499d0",
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 1.7881393432617188e-07,
+          "rows": 118760,
+          "rtol": 1e-05
+        },
+        "parameters": 9541640,
+        "resources": {
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "memory_limit_bytes": 17179869184,
+          "peak_rss_bytes": 543244288
+        },
+        "steps": 300,
+        "threshold": 0.9984238147735596,
+        "training_views": 27142,
+        "validation_rows": {
+          "attack": 5443,
+          "benign": 5581,
+          "confusion_matrix": [
+            [
+              5488,
+              93
+            ],
+            [
+              3774,
+              1669
+            ]
+          ],
+          "f1": 0.4632893823733518,
+          "fpr": 0.016663680344024368,
+          "pr_auc_average_precision": 0.811325439909184,
+          "precision": 0.9472190692395006,
+          "recall": 0.30663237185375714,
+          "rows": 11024,
+          "threshold": 0.9984238147735596
+        },
+        "validation_views": {
+          "conflicting_label_rows": 0,
+          "conflicting_label_views": 0,
+          "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+          "metrics": {
+            "attack": 3828,
+            "benign": 3301,
+            "confusion_matrix": [
+              [
+                3276,
+                25
+              ],
+              [
+                3003,
+                825
+              ]
+            ],
+            "f1": 0.35271483539974346,
+            "fpr": 0.007573462587094819,
+            "pr_auc_average_precision": 0.8204349314969528,
+            "precision": 0.9705882352941176,
+            "recall": 0.21551724137931033,
+            "rows": 7129,
+            "threshold": 0.9984238147735596
+          },
+          "repeated_view_rows": 3895,
+          "rows": 11024,
+          "unique_views": 7129,
+          "view_definition": "exact float32 model input bytes"
+        }
+      },
+      "glu1024-treatment": {
+        "bundle_manifest_sha256": "b5f198925276786431961143aff304314d9e3ba70c99e778671a8916339f4464",
+        "by_family_attack_recall": {
+          "srbh2020/cmd_injection": {
+            "recall": 0.0,
+            "rows": 39
+          },
+          "srbh2020/path_traversal": {
+            "recall": 0.0,
+            "rows": 180
+          },
+          "srbh2020/sqli": {
+            "recall": 0.05814424635332253,
+            "rows": 4936
+          },
+          "student-lab/cmd_injection": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/path_traversal": {
+            "recall": 0.4305555555555556,
+            "rows": 72
+          },
+          "student-lab/sqli": {
+            "recall": 0.4861111111111111,
+            "rows": 72
+          },
+          "student-lab/xss": {
+            "recall": 1.0,
+            "rows": 72
+          }
+        },
+        "by_source_rows": {
+          "srbh2020": {
+            "attack": 5155,
+            "benign": 4845,
+            "confusion_matrix": [
+              [
+                4707,
+                138
+              ],
+              [
+                4868,
+                287
+              ]
+            ],
+            "f1": 0.1028673835125448,
+            "fpr": 0.02848297213622291,
+            "pr_auc_average_precision": 0.6901889022543402,
+            "precision": 0.6752941176470588,
+            "recall": 0.055674102812803106,
+            "rows": 10000,
+            "threshold": 0.9981819987297058
+          },
+          "student-lab": {
+            "attack": 288,
+            "benign": 736,
+            "confusion_matrix": [
+              [
+                736,
+                0
+              ],
+              [
+                150,
+                138
+              ]
+            ],
+            "f1": 0.647887323943662,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.7665826691684451,
+            "precision": 1.0,
+            "recall": 0.4791666666666667,
+            "rows": 1024,
+            "threshold": 0.9981819987297058
+          }
+        },
+        "by_source_views": {
+          "srbh2020": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 3675,
+              "benign": 3164,
+              "confusion_matrix": [
+                [
+                  3085,
+                  79
+                ],
+                [
+                  3558,
+                  117
+                ]
+              ],
+              "f1": 0.060449496254197876,
+              "fpr": 0.024968394437420986,
+              "pr_auc_average_precision": 0.6754431097758349,
+              "precision": 0.5969387755102041,
+              "recall": 0.03183673469387755,
+              "rows": 6839,
+              "threshold": 0.9981819987297058
+            },
+            "repeated_view_rows": 3161,
+            "rows": 10000,
+            "unique_views": 6839,
+            "view_definition": "exact float32 model input bytes"
+          },
+          "student-lab": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 153,
+              "benign": 137,
+              "confusion_matrix": [
+                [
+                  137,
+                  0
+                ],
+                [
+                  70,
+                  83
+                ]
+              ],
+              "f1": 0.7033898305084746,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.8869661308997289,
+              "precision": 1.0,
+              "recall": 0.5424836601307189,
+              "rows": 290,
+              "threshold": 0.9981819987297058
+            },
+            "repeated_view_rows": 734,
+            "rows": 1024,
+            "unique_views": 290,
+            "view_definition": "exact float32 model input bytes"
+          }
+        },
+        "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+        "checkpoint_latest_sha256": "8d60014b68ab73b75ee39b04eb7f913538d56b3cc766d6a9ce05c41484056717",
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 2.384185791015625e-07,
+          "rows": 118760,
+          "rtol": 1e-05
+        },
+        "parameters": 9541640,
+        "resources": {
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "memory_limit_bytes": 17179869184,
+          "peak_rss_bytes": 532377600
+        },
+        "steps": 300,
+        "threshold": 0.9981819987297058,
+        "training_views": 27142,
+        "validation_rows": {
+          "attack": 5443,
+          "benign": 5581,
+          "confusion_matrix": [
+            [
+              5443,
+              138
+            ],
+            [
+              5018,
+              425
+            ]
+          ],
+          "f1": 0.14152514152514153,
+          "fpr": 0.024726751478229708,
+          "pr_auc_average_precision": 0.7075390068169953,
+          "precision": 0.7548845470692718,
+          "recall": 0.07808194010655889,
+          "rows": 11024,
+          "threshold": 0.9981819987297058
+        },
+        "validation_views": {
+          "conflicting_label_rows": 0,
+          "conflicting_label_views": 0,
+          "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+          "metrics": {
+            "attack": 3828,
+            "benign": 3301,
+            "confusion_matrix": [
+              [
+                3222,
+                79
+              ],
+              [
+                3628,
+                200
+              ]
+            ],
+            "f1": 0.09739469198928657,
+            "fpr": 0.023932141775219632,
+            "pr_auc_average_precision": 0.6985303705842125,
+            "precision": 0.7168458781362007,
+            "recall": 0.0522466039707419,
+            "rows": 7129,
+            "threshold": 0.9981819987297058
+          },
+          "repeated_view_rows": 3895,
+          "rows": 11024,
+          "unique_views": 7129,
+          "view_definition": "exact float32 model input bytes"
+        }
+      },
+      "mlp256-baseline": {
+        "bundle_manifest_sha256": "3aa850a48ab63c5689e0405ece73f0182bc9ee3e211ba5d70453bce916f53fb3",
+        "by_family_attack_recall": {
+          "srbh2020/cmd_injection": {
+            "recall": 0.0,
+            "rows": 39
+          },
+          "srbh2020/path_traversal": {
+            "recall": 0.0,
+            "rows": 180
+          },
+          "srbh2020/sqli": {
+            "recall": 0.238452188006483,
+            "rows": 4936
+          },
+          "student-lab/cmd_injection": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/path_traversal": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/sqli": {
+            "recall": 0.5,
+            "rows": 72
+          },
+          "student-lab/xss": {
+            "recall": 0.0,
+            "rows": 72
+          }
+        },
+        "by_source_rows": {
+          "srbh2020": {
+            "attack": 5155,
+            "benign": 4845,
+            "confusion_matrix": [
+              [
+                4845,
+                0
+              ],
+              [
+                3978,
+                1177
+              ]
+            ],
+            "f1": 0.3717624763108023,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.8536516326780083,
+            "precision": 1.0,
+            "recall": 0.2283220174587779,
+            "rows": 10000,
+            "threshold": 0.9999801516532898
+          },
+          "student-lab": {
+            "attack": 288,
+            "benign": 736,
+            "confusion_matrix": [
+              [
+                736,
+                0
+              ],
+              [
+                252,
+                36
+              ]
+            ],
+            "f1": 0.2222222222222222,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.5773743074074799,
+            "precision": 1.0,
+            "recall": 0.125,
+            "rows": 1024,
+            "threshold": 0.9999801516532898
+          }
+        },
+        "by_source_views": {
+          "srbh2020": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 3675,
+              "benign": 3164,
+              "confusion_matrix": [
+                [
+                  3164,
+                  0
+                ],
+                [
+                  2503,
+                  1172
+                ]
+              ],
+              "f1": 0.48359810191871255,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.8563813214250773,
+              "precision": 1.0,
+              "recall": 0.31891156462585035,
+              "rows": 6839,
+              "threshold": 0.9999801516532898
+            },
+            "repeated_view_rows": 3161,
+            "rows": 10000,
+            "unique_views": 6839,
+            "view_definition": "exact float32 model input bytes"
+          },
+          "student-lab": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 153,
+              "benign": 137,
+              "confusion_matrix": [
+                [
+                  137,
+                  0
+                ],
+                [
+                  126,
+                  27
+                ]
+              ],
+              "f1": 0.3,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.7966562187751777,
+              "precision": 1.0,
+              "recall": 0.17647058823529413,
+              "rows": 290,
+              "threshold": 0.9999801516532898
+            },
+            "repeated_view_rows": 734,
+            "rows": 1024,
+            "unique_views": 290,
+            "view_definition": "exact float32 model input bytes"
+          }
+        },
+        "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+        "checkpoint_latest_sha256": "9b8190ea2b1ed09ce7f5a8d51b6e35dee6ead51e26bcbb2a69aa480ec2caf531",
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 2.384185791015625e-07,
+          "rows": 118760,
+          "rtol": 1e-05
+        },
+        "parameters": 219144,
+        "resources": {
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "memory_limit_bytes": 17179869184,
+          "peak_rss_bytes": 432254976
+        },
+        "steps": 300,
+        "threshold": 0.9999801516532898,
+        "training_views": 27142,
+        "validation_rows": {
+          "attack": 5443,
+          "benign": 5581,
+          "confusion_matrix": [
+            [
+              5581,
+              0
+            ],
+            [
+              4230,
+              1213
+            ]
+          ],
+          "f1": 0.3644831730769231,
+          "fpr": 0.0,
+          "pr_auc_average_precision": 0.8335904179483642,
+          "precision": 1.0,
+          "recall": 0.22285504317471982,
+          "rows": 11024,
+          "threshold": 0.9999801516532898
+        },
+        "validation_views": {
+          "conflicting_label_rows": 0,
+          "conflicting_label_views": 0,
+          "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+          "metrics": {
+            "attack": 3828,
+            "benign": 3301,
+            "confusion_matrix": [
+              [
+                3301,
+                0
+              ],
+              [
+                2629,
+                1199
+              ]
+            ],
+            "f1": 0.47702407002188185,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.8548629019777212,
+            "precision": 1.0,
+            "recall": 0.3132183908045977,
+            "rows": 7129,
+            "threshold": 0.9999801516532898
+          },
+          "repeated_view_rows": 3895,
+          "rows": 11024,
+          "unique_views": 7129,
+          "view_definition": "exact float32 model input bytes"
+        }
+      },
+      "mlp256-treatment": {
+        "bundle_manifest_sha256": "75a4c76fdb072fab0e6cb629d33cf1a7f70a106efdca45e0909a267b2e8f415e",
+        "by_family_attack_recall": {
+          "srbh2020/cmd_injection": {
+            "recall": 0.0,
+            "rows": 39
+          },
+          "srbh2020/path_traversal": {
+            "recall": 0.0,
+            "rows": 180
+          },
+          "srbh2020/sqli": {
+            "recall": 0.22548622366288493,
+            "rows": 4936
+          },
+          "student-lab/cmd_injection": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/path_traversal": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/sqli": {
+            "recall": 0.0,
+            "rows": 72
+          },
+          "student-lab/xss": {
+            "recall": 0.0,
+            "rows": 72
+          }
+        },
+        "by_source_rows": {
+          "srbh2020": {
+            "attack": 5155,
+            "benign": 4845,
+            "confusion_matrix": [
+              [
+                4841,
+                4
+              ],
+              [
+                4042,
+                1113
+              ]
+            ],
+            "f1": 0.3549107142857143,
+            "fpr": 0.000825593395252838,
+            "pr_auc_average_precision": 0.8327189936480883,
+            "precision": 0.9964189794091316,
+            "recall": 0.21590688651794374,
+            "rows": 10000,
+            "threshold": 0.9999911785125732
+          },
+          "student-lab": {
+            "attack": 288,
+            "benign": 736,
+            "confusion_matrix": [
+              [
+                736,
+                0
+              ],
+              [
+                288,
+                0
+              ]
+            ],
+            "f1": 0.0,
+            "fpr": 0.0,
+            "pr_auc_average_precision": 0.5388935868313154,
+            "precision": 0.0,
+            "recall": 0.0,
+            "rows": 1024,
+            "threshold": 0.9999911785125732
+          }
+        },
+        "by_source_views": {
+          "srbh2020": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 3675,
+              "benign": 3164,
+              "confusion_matrix": [
+                [
+                  3162,
+                  2
+                ],
+                [
+                  2569,
+                  1106
+                ]
+              ],
+              "f1": 0.46247125235208036,
+              "fpr": 0.0006321112515802782,
+              "pr_auc_average_precision": 0.8385278020185252,
+              "precision": 0.9981949458483754,
+              "recall": 0.30095238095238097,
+              "rows": 6839,
+              "threshold": 0.9999911785125732
+            },
+            "repeated_view_rows": 3161,
+            "rows": 10000,
+            "unique_views": 6839,
+            "view_definition": "exact float32 model input bytes"
+          },
+          "student-lab": {
+            "conflicting_label_rows": 0,
+            "conflicting_label_views": 0,
+            "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+            "metrics": {
+              "attack": 153,
+              "benign": 137,
+              "confusion_matrix": [
+                [
+                  137,
+                  0
+                ],
+                [
+                  153,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.7658041110905676,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 290,
+              "threshold": 0.9999911785125732
+            },
+            "repeated_view_rows": 734,
+            "rows": 1024,
+            "unique_views": 290,
+            "view_definition": "exact float32 model input bytes"
+          }
+        },
+        "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+        "checkpoint_latest_sha256": "db87592027478700ace7d3f5b6557c15355c672ab1bc64b43b4dc7e369abd704",
+        "onnx_parity": {
+          "all_rows_match": true,
+          "atol": 1e-06,
+          "max_absolute_error": 2.384185791015625e-07,
+          "rows": 118760,
+          "rtol": 1e-05
+        },
+        "parameters": 219144,
+        "resources": {
+          "affinity_effective": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "memory_limit_bytes": 17179869184,
+          "peak_rss_bytes": 429391872
+        },
+        "steps": 300,
+        "threshold": 0.9999911785125732,
+        "training_views": 27142,
+        "validation_rows": {
+          "attack": 5443,
+          "benign": 5581,
+          "confusion_matrix": [
+            [
+              5577,
+              4
+            ],
+            [
+              4330,
+              1113
+            ]
+          ],
+          "f1": 0.33932926829268295,
+          "fpr": 0.0007167174341515857,
+          "pr_auc_average_precision": 0.8184435183042645,
+          "precision": 0.9964189794091316,
+          "recall": 0.20448282197317655,
+          "rows": 11024,
+          "threshold": 0.9999911785125732
+        },
+        "validation_views": {
+          "conflicting_label_rows": 0,
+          "conflicting_label_views": 0,
+          "limitation": "Development diagnostic; one view is not one physical request or an independent campaign",
+          "metrics": {
+            "attack": 3828,
+            "benign": 3301,
+            "confusion_matrix": [
+              [
+                3299,
+                2
+              ],
+              [
+                2722,
+                1106
+              ]
+            ],
+            "f1": 0.4481361426256078,
+            "fpr": 0.0006058770069675856,
+            "pr_auc_average_precision": 0.8371995665455623,
+            "precision": 0.9981949458483754,
+            "recall": 0.2889237199582027,
+            "rows": 7129,
+            "threshold": 0.9999911785125732
+          },
+          "repeated_view_rows": 3895,
+          "rows": 11024,
+          "unique_views": 7129,
+          "view_definition": "exact float32 model input bytes"
+        }
+      }
+    },
+    "new_physical_requests": 0,
+    "no_promotion": true,
+    "plan_sha256": "74d51551878fa3ce5e9959f7fccbdd534f5fe5b300c1d996cdee5945b8ec0e47",
+    "scope": "EXPOSED_RETROSPECTIVE_DEVELOPMENT_ONLY",
+    "selected_train_rows_and_exact_views": 27142,
+    "status": "PASS_DEVELOPMENT_DIAGNOSTIC_ONLY",
+    "validation_rows": 11024
+  },
+  "original_relative_path": "ai-training/.artifacts/sampling_diagnostic_20261103/report.json",
+  "original_sha256": "c044f63b0235a5d17f786828d49e2bc1e6932bbbb89dae9248ce91587e1cae60",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

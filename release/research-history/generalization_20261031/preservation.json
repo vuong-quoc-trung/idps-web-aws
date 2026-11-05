@@ -1,0 +1,15 @@
+{
+  "content": {
+    "HEAD": "6c20b27ace91b0cb112dbdea5ca6720adbfc7941",
+    "mismatches": [],
+    "original_Web_contract_docker_diff_HEAD": 0,
+    "prior_reports_unchanged": true,
+    "producer_copies_in_frozen_AI_replay_context_are_readonly_evidence_not_original_service_edits": true,
+    "protected_paths": 1479,
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/preservation.json",
+  "original_sha256": "e6a7f40e4202e86108d0fe4076594be087b3727ae9eab410d6588e886ba97c06",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

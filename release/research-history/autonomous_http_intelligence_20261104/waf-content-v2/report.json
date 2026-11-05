@@ -1,0 +1,57 @@
+{
+  "content": {
+    "code_sha256": "d916383253cc74192fc3a85ae6de17988a3d1d57eb1c75341945c3b9c6b18652",
+    "counts": {
+      "body_nonempty_rows": 4772,
+      "body_redacted_rows": 1622,
+      "exact_conflicting_representations": 192,
+      "exact_unique_representations": 1612017,
+      "raw_rows": 1924461,
+      "redacted_query_fields": 1500,
+      "unknown_or_invalid_label_rows": 1
+    },
+    "data_file_sha256": "57884ac25780c95d71c24d9cd8b1c5fc3572b4eabb3b5234da3b81d075d56f97",
+    "evaluation_scope": "internal publisher-label study only; no source/campaign/time independence or label verification",
+    "formal_admitted": 0,
+    "format_version": 1,
+    "input_sha256": {
+      "readme": "86278f3ec7f420fb40a9318e3dec59ec58e0af1dfb3f52133e1cada5112691bb",
+      "train": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6"
+    },
+    "label_task": "publisher NORMAL versus ANOMALOUS, not confirmed attack intent",
+    "machine_verified_intent": 0,
+    "near_duplicate_limit": "symbolic template groups catch normalization collisions; residual cross-template similarity unmeasured",
+    "numeric_spec_sha256": "16066e231ff269508efefffcc0c3e28ea831c1e351cb7d9c10abb6c5fce8bb53",
+    "physical_requests_verified": 0,
+    "quarantined_mixed_feature_views": 245,
+    "quarantined_rows_on_mixed_views": 43171,
+    "report_sha256": "0b73633a19c2642b173595e413cdca865a139b89d8004039aec68a40eaa03d53",
+    "role_class_coverage": {
+      "calibration": {
+        "anomalous": 2448,
+        "normal": 1080
+      },
+      "train": {
+        "anomalous": 14663,
+        "normal": 6584
+      },
+      "validation": {
+        "anomalous": 2384,
+        "normal": 1177
+      }
+    },
+    "safe_content_code_sha256": "8a9c58c97aa627608eb4a8bb4209cbe3d72ca7928c345fbbe06471ae1b89a00a",
+    "selected_exact_representations": 101098,
+    "selected_projectable_representations": 101098,
+    "selected_unique_numeric_content_views": 28336,
+    "selection": "SHA256 complete-request modulo 16; exact conflicting requests excluded",
+    "source": "puyang2025/waf_data_v2 pinned train split; MIT publisher claim",
+    "symbolic_template_cross_role_overlap": 0,
+    "symbolic_template_groups": 25803,
+    "test_or_heldout_opened": false
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/waf-content-v2/report.json",
+  "original_sha256": "82ac932add8984adecd116839f99c1735408cde8dd5c23ebc8076efa743c5b03",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

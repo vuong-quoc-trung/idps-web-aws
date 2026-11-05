@@ -1,0 +1,40 @@
+{
+  "content": {
+    "cpu_temperature_max": 72,
+    "cpu_temperature_mean": 60.30769230769231,
+    "cpu_temperature_min": 60,
+    "events": [
+      {
+        "action": "FREEZE_AND_REDUCE",
+        "elapsed": 0.9724172029999636,
+        "temperature": 72
+      },
+      {
+        "action": "THAW",
+        "elapsed": 6.3520034539999415,
+        "temperature": 60
+      }
+    ],
+    "failure": null,
+    "kernel_cpu_quota_percent": 25,
+    "peak_cgroup_memory_bytes": 9371648,
+    "peak_system_used_bytes": 8383217664,
+    "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee",
+    "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+    "status": "PASS",
+    "systemd_result": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "108740000",
+      "ExecMainStatus": "0",
+      "MemoryPeak": "9371648",
+      "Result": "success",
+      "SubState": "exited"
+    },
+    "unit": "idps-integration-15188-48106300.service",
+    "wall_seconds": 8.907510572999968
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/proof-freeze_thaw/resource-report.json",
+  "original_sha256": "a7b79ffc833704048988b0a5971991abbc0a04eb3ea59ba84d3f821784b436a5",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

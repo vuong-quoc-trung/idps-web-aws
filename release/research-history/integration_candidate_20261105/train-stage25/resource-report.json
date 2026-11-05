@@ -1,0 +1,29 @@
+{
+  "content": {
+    "cpu_temperature_max": 47.0,
+    "cpu_temperature_mean": 46.28125,
+    "cpu_temperature_min": 46.0,
+    "events": [],
+    "failure": null,
+    "kernel_cpu_quota_percent": 25,
+    "peak_cgroup_memory_bytes": 31309824,
+    "peak_system_used_bytes": 8399360000,
+    "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee",
+    "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+    "status": "PASS",
+    "systemd_result": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "1755843000",
+      "ExecMainStatus": "0",
+      "MemoryPeak": "31313920",
+      "Result": "success",
+      "SubState": "exited"
+    },
+    "unit": "idps-integration-15566-49132320.service",
+    "wall_seconds": 7.414156397999932
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/train-stage25/resource-report.json",
+  "original_sha256": "b60213bb496e0d31097d5d8c1f225d1f7e8d2a5eda630460edc9f3ccf2ded0aa",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,48 @@
+{
+  "format_version": 1,
+  "release_tag": "ai-research-team-20261105",
+  "storage": "GitHub Releases; no LFS, no paid storage",
+  "default_groups": [
+    "inference"
+  ],
+  "assets": [
+    {
+      "name": "models-core.tar.gz",
+      "group": "inference",
+      "bytes": 158265099,
+      "sha256": "89666610a3078fcb93703794b651dc7b4ebe09d1a873366ab1d6ae3cf75483dc",
+      "url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/ai-research-team-20261105/models-core.tar.gz",
+      "restore_files": 102,
+      "unique_objects": 98,
+      "objects_bytes": 158129978
+    },
+    {
+      "name": "request-training-recovery.tar.gz",
+      "group": "request_training",
+      "bytes": 419514083,
+      "sha256": "4b9ab5ca0e67255e9f827070b42fc5c87c629fd6c4ca2b751cdb6849381b4d61",
+      "url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/ai-research-team-20261105/request-training-recovery.tar.gz",
+      "restore_files": 138,
+      "unique_objects": 125,
+      "objects_bytes": 419314901
+    },
+    {
+      "name": "historical-baselines.tar.gz",
+      "group": "historical_models",
+      "bytes": 398550668,
+      "sha256": "af493ef31e29de2a4f22c88af0b1149a3e4e8eb6a86d71333dff4265a72e3773",
+      "url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/ai-research-team-20261105/historical-baselines.tar.gz",
+      "restore_files": 54,
+      "unique_objects": 46,
+      "objects_bytes": 398442587
+    }
+  ],
+  "restriction": "PCAP, HTTP session/credential material, original private evidence and sealed datasets remain local. No private store configured.",
+  "dataset_notice": "Optional numeric WAF derivatives only; publisher card declares MIT; no raw HTTP is redistributed.",
+  "training_continuity": {
+    "integration_candidate": "RESUME_EXACT verified in pinned environment; terminal3072 target",
+    "request_v2_frozen": "INFERENCE_ONLY verified; no interruption resume claim",
+    "GLU207": "inference restored; historical resume requires source revision3a67d15 and restricted full prepared-v5 dataset; current release does not waive hashes"
+  },
+  "all_originals_preserved": true
+}

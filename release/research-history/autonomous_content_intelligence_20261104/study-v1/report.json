@@ -1,0 +1,129 @@
+{
+  "content": {
+    "arms": {
+      "content_mlp": {
+        "calibration": {
+          "publisher_anomalous_pr_auc": 0.9906238802695351,
+          "publisher_anomalous_recall": 0.7595380223202699,
+          "publisher_anomalous_rows": 7706,
+          "publisher_label_precision": 0.9950697041822509,
+          "publisher_normal_false_positives_per_10000": 97.02241552358649,
+          "publisher_normal_fpr": 0.009702241552358649,
+          "publisher_normal_rows": 2989,
+          "rows": 10695
+        },
+        "checkpoint": ".artifacts/autonomous_content_intelligence_20261104/study-v1/content_mlp",
+        "checkpoint_manifest_sha256": "43c32a47970dcd26879124328e933fbaed2d96afb31959e73a5d66a7b6583676",
+        "first_20_train_batch_loss_mean": 0.5970204991848085,
+        "fit_seconds": 0.21432852599991747,
+        "input_features": 588,
+        "internal_validation": {
+          "publisher_anomalous_pr_auc": 0.9892572772136954,
+          "publisher_anomalous_recall": 0.7504355984452487,
+          "publisher_anomalous_rows": 7461,
+          "publisher_label_precision": 0.9943171727934648,
+          "publisher_normal_false_positives_per_10000": 108.58500169664065,
+          "publisher_normal_fpr": 0.010858500169664066,
+          "publisher_normal_rows": 2947,
+          "rows": 10408
+        },
+        "last_20_train_batch_loss_mean": 0.23063990611672797,
+        "model_only_ms_per_row_p95_batch1024": 0.001157611718838325,
+        "name": "content_mlp",
+        "parameters": 50696,
+        "threshold": 0.9416964650154114,
+        "threshold_source": "calibration publisher-normal 99th percentile, strict greater than",
+        "updates": 300
+      },
+      "method_only_logistic": {
+        "calibration": {
+          "publisher_anomalous_pr_auc": 0.731472128771692,
+          "publisher_anomalous_recall": 0.008305216714248637,
+          "publisher_anomalous_rows": 7706,
+          "publisher_label_precision": 1.0,
+          "publisher_normal_false_positives_per_10000": 0.0,
+          "publisher_normal_fpr": 0.0,
+          "publisher_normal_rows": 2989,
+          "rows": 10695
+        },
+        "input_features": 10,
+        "internal_validation": {
+          "publisher_anomalous_pr_auc": 0.7249072789167047,
+          "publisher_anomalous_recall": 0.00710360541482375,
+          "publisher_anomalous_rows": 7461,
+          "publisher_label_precision": 1.0,
+          "publisher_normal_false_positives_per_10000": 0.0,
+          "publisher_normal_fpr": 0.0,
+          "publisher_normal_rows": 2947,
+          "rows": 10408
+        },
+        "parameters": 11,
+        "threshold": 0.7997453212738037
+      },
+      "numeric_mlp": {
+        "calibration": {
+          "publisher_anomalous_pr_auc": 0.9695320555254752,
+          "publisher_anomalous_recall": 0.6984168180638464,
+          "publisher_anomalous_rows": 7706,
+          "publisher_label_precision": 0.99464054703382,
+          "publisher_normal_false_positives_per_10000": 97.02241552358649,
+          "publisher_normal_fpr": 0.009702241552358649,
+          "publisher_normal_rows": 2989,
+          "rows": 10695
+        },
+        "checkpoint": ".artifacts/autonomous_content_intelligence_20261104/study-v1/numeric_mlp",
+        "checkpoint_manifest_sha256": "e787fd766f4f53c1cd430d577bfc6b1905b096b9554103d23a7eab5fdbf36e6f",
+        "first_20_train_batch_loss_mean": 0.6230147618556715,
+        "fit_seconds": 0.16110702300011326,
+        "input_features": 76,
+        "internal_validation": {
+          "publisher_anomalous_pr_auc": 0.9675334331239065,
+          "publisher_anomalous_recall": 0.6924004825090471,
+          "publisher_anomalous_rows": 7461,
+          "publisher_label_precision": 0.9932705248990579,
+          "publisher_normal_false_positives_per_10000": 118.76484560570071,
+          "publisher_normal_fpr": 0.011876484560570071,
+          "publisher_normal_rows": 2947,
+          "rows": 10408
+        },
+        "last_20_train_batch_loss_mean": 0.32055722701024103,
+        "model_only_ms_per_row_p95_batch1024": 0.0006928419919560724,
+        "name": "numeric_mlp",
+        "parameters": 17928,
+        "threshold": 0.917833685874939,
+        "threshold_source": "calibration publisher-normal 99th percentile, strict greater than",
+        "updates": 300
+      }
+    },
+    "formal_admitted": 0,
+    "format_version": 1,
+    "interpretation": "Fresh train-split hash cohort with prior development safe-template exclusion; internal grouped-template publisher-label comparison only. Source/campaign/time independence and malicious intent unverified; no formal admission or champion.",
+    "labels": "publisher normal/anomalous; anomalous not independently confirmed malicious",
+    "plan_sha256": "9b23b3c788c7e783cf2bb96e141b77ed6c1d4cd6ab5533434c61577e6a7f4650",
+    "prior_safe_symbolic_template_overlap": 0,
+    "process_peak_rss_kib": 586816,
+    "report_sha256": "4641025db7a7b2a721519e2efdb0864208b12cb6da94e493b4338dc3158c0f76",
+    "role_class_coverage": {
+      "calibration": {
+        "anomalous": 7706,
+        "normal": 2989
+      },
+      "train": {
+        "anomalous": 45011,
+        "normal": 18079
+      },
+      "validation": {
+        "anomalous": 7461,
+        "normal": 2947
+      }
+    },
+    "rows": 84193,
+    "scope": "fresh_internal_publisher_normal_vs_anomalous",
+    "test_or_heldout_opened": false,
+    "validation_reused_for_tuning": false
+  },
+  "original_relative_path": "ai-training/.artifacts/autonomous_content_intelligence_20261104/study-v1/report.json",
+  "original_sha256": "18ef4823b8918ada4502767be229ff005398ada9befcb84aa3f09896fd6a4c81",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

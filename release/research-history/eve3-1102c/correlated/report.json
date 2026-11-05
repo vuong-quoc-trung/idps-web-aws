@@ -1,0 +1,24 @@
+{
+  "content": {
+    "capture_report_sha256": "1d197358afe8123bf1887f923474447bdf4fc978b228b9fef3be4ffcff3ef1ea",
+    "eve_sha256": "0cb5fd45b0fa1b3e846a3d40b51815690db9aa4a37cde173a1f8aa015aa6784a",
+    "feature_visibility": "Private lab Nginx query and sensor numeric projection differ from masked production edge; not certified as a formal 207-feature training profile.",
+    "flow_causality": "Flow records are evidence only; their values are unavailable to per-request inference until the sensor actually emits them.",
+    "format_version": 1,
+    "independently_reviewed_attack": 0,
+    "independently_reviewed_benign": 0,
+    "lab_nginx_eve_numeric_projection_mismatches": 0,
+    "max_client_to_eve_http_delta_seconds": 0.617652,
+    "max_eve_http_to_flow_emission_seconds": 11.340471,
+    "pcap_sha256": "80efea9c0803722a28df75705b18b76feffb63002c75888aefea80641f27309e",
+    "request_count": 54,
+    "source_count_per_request": 3,
+    "status": "THREE_SOURCE_CORRELATED_DEVELOPMENT_ONLY",
+    "three_source_evidence_sha256": "9b3be4417ab75f03660674044baa7f3ba3ccaa7e2fbc70d9ba47d414b690ccb0",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/eve3-1102c/correlated/report.json",
+  "original_sha256": "d25c8f94c81c3ab34657925add341b3cf457350ab8a8e13d21c03f6b9dd61c06",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

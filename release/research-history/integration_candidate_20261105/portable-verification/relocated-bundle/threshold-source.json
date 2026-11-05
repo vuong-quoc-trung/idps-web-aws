@@ -1,0 +1,24 @@
+{
+  "content": {
+    "calibration_normal_empirical_fraction": 0.009921671018276762,
+    "calibration_normal_flagged": 57,
+    "dataset_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049",
+    "encoder_version": "rich_content_v2",
+    "final_checkpoint_manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "fit_report_file_sha256": "43b5428c3aa91bcc4eb436d679d49eed23a37df0943a05a2543e165f4a1dfa1e",
+    "formal_admitted": 0,
+    "format_version": 1,
+    "manifest_sha256": "98c975a1b4aa78bb184a621d31584aec1ff6327daceb020d14aa0024e750f451",
+    "no_juice_or_development_scores_used": true,
+    "normal_calibration_views": 5745,
+    "plan_sha256": "35fd38748b3bc18d567c08157d0f432f527ad02bea3899bc8ac5299fa2979b9b",
+    "scope": "research publisher-NORMAL calibration only; not real benign FPR",
+    "selection": "role1 publisher-NORMAL score p99 higher; alert strictly score > threshold",
+    "threshold": 0.8826237916946411,
+    "uncertainty": "Threshold selected on these publisher labels; source/template dependence and sampled cross-role near duplicates prevent an independent real-world FPR confidence interval."
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/portable-verification/relocated-bundle/threshold-source.json",
+  "original_sha256": "6d0fd376d0777f97fb61688b898556a4a9b9b94656738723e7b74e1d33061f6a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

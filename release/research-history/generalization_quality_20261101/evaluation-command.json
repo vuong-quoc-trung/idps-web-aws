@@ -1,0 +1,22 @@
+{
+  "content": {
+    "command": "systemd-run --user --collect --unit=idps-wcp-eval-20261101 -p CPUQuota=400% -p AllowedCPUs=0-3 -p MemoryMax=16G -p MemoryHigh=15G -p MemorySwapMax=0 -p Nice=10 -p RuntimeMaxSec=900 ... python ai-training/scripts/evaluate-wcp-http.py --dataset <root>/wcp-corpus-v2 --registry <root>/FROZEN_PUBLIC_EVALUATION.json --output <root>/public-evaluation --cpus 4",
+    "environment": {
+      "MKL_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "optimizer_updates": 0,
+    "reserved_members_opened": false,
+    "root": "<PROJECT_ROOT>/ai-training/.artifacts/generalization_quality_20261101",
+    "source_sha256": "e33c1e1d80e6e12557446c5dbb3b001f4626bf4295b64119164c68efe7090cdd",
+    "thresholds_fitted": false
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_quality_20261101/evaluation-command.json",
+  "original_sha256": "500f6b516112cc201761f8e1eeed1af8708746094d0e0bed8a566aecd67cc274",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

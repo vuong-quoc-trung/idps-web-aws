@@ -1,0 +1,95 @@
+{
+  "content": {
+    "baseline": "frozen rich-v1 Juice scores only; no Juice-based model/threshold selection",
+    "batch_size": 256,
+    "calibration": "role1 publisher-NORMAL score p99 higher; alert strictly score > threshold",
+    "checkpoint_at": 1536,
+    "code_sha256": {
+      "scripts/curate-waf-rich-v2.py": "607de6f99250b0f456dd0d220ca1a2a38650604bc57dfa2d3081250f281025b4",
+      "scripts/juice-gt-factory.py": "4385db187493da4516e0480dc382d9494afffd2c00c463bb44ac2ac357ef3740",
+      "src/idps_ai/features/request_encoding.py": "97eabb716b947d59d0fec359513f55677f9bd4a9d63e23aafffd150a2e87abfc",
+      "src/idps_ai/features/request_preprocessing.py": "740813e7ab15a2cd27cd13e6471331970a6c1ff2bf0f8799853d432abc991312",
+      "src/idps_ai/features/request_view.py": "00cde620943f7f353f13c26b1978ec06f64bbe5a6c189afe8d21ec03e6b2451b",
+      "src/idps_ai/features/rich_content.py": "4031f4898c8510221630eed00ccec95cb4706186aed2f99e184fd97ee3f63d27",
+      "src/idps_ai/features/rich_content_v2.py": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+      "src/idps_ai/features/safe_content.py": "8a9c58c97aa627608eb4a8bb4209cbe3d72ca7928c345fbbe06471ae1b89a00a",
+      "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+      "src/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+      "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+      "src/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3"
+    },
+    "curation_near_duplicate_probe": {
+      "0-1": {
+        "content_cosine_ge_0_995_pairs": 81,
+        "opposite_publisher_label_pairs": 4,
+        "sample_left": 512,
+        "sample_right": 512
+      },
+      "0-2": {
+        "content_cosine_ge_0_995_pairs": 90,
+        "opposite_publisher_label_pairs": 2,
+        "sample_left": 512,
+        "sample_right": 512
+      },
+      "1-2": {
+        "content_cosine_ge_0_995_pairs": 90,
+        "opposite_publisher_label_pairs": 1,
+        "sample_left": 512,
+        "sample_right": 512
+      }
+    },
+    "curation_report": "<PROJECT_ROOT>/ai-training/.artifacts/request_intelligence_v2_20261104/waf-rich-v2/report.json",
+    "curation_report_sha256": "623f1bf97bdf6fdc8bc356732dd10a5c7ae6f4c4183dbe2e1b6a1e9148e44752",
+    "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/request_intelligence_v2_20261104/waf-rich-v2/rich-content.npz",
+    "dataset_sha256": "279dca7d03b38bb2092bf775762bfe68904eea131e0d1145a564de0f98441049",
+    "development_evaluation": "role2 once after threshold freeze; publisher labels only",
+    "encoder_version": "rich_content_v2",
+    "feature_contract": "bounded-request-v1 numeric76 + HashingVectorizer char 3-5 512 nonnegative L2 float32",
+    "feature_count": 588,
+    "formal_admitted": 0,
+    "format_version": 1,
+    "juice_files_sha256": {
+      "curation": "eed5d24e572e2a632e3b1bef51abc00f07dcf754a29a5822cf0cfa72d34600a4",
+      "plan": "36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d",
+      "run": "e7fd267a9a4a3d1650ab4bdb052314756304c764435ee035301ec3a9f613efc0",
+      "tensor": "32c9afb63188a9e77428512426d3e1cf0d6364a8ab96364d9dee5383e9b39d23"
+    },
+    "juice_labeled_unique_v2_views": 21,
+    "juice_views_overlapping_waf_train": 0,
+    "learning_rate": 0.001,
+    "max_cpus": 4,
+    "max_memory_gib": 16,
+    "model": "deep_mlp hidden64 partial_binary_v1 smoothing0.005 family_weight0",
+    "no_sealed_holdout": true,
+    "optimizer": "adamw-v1; existing Model.train_batch contract",
+    "parameters": 50696,
+    "plan_sha256": "35fd38748b3bc18d567c08157d0f432f527ad02bea3899bc8ac5299fa2979b9b",
+    "publisher_label_coverage": {
+      "calibration": {
+        "anomalous": 14533,
+        "normal": 5745
+      },
+      "development_evaluation": {
+        "anomalous": 14481,
+        "normal": 5602
+      },
+      "train": {
+        "anomalous": 86153,
+        "normal": 34282
+      }
+    },
+    "run_dir": "<PROJECT_ROOT>/ai-training/.artifacts/request_intelligence_v2_20261104/run",
+    "scope": "one WAF train-split publisher-label v2 research fit; Juice historical regression only",
+    "script_sha256": "5ccc3aaeab22cc2860299ef42b20bb41bb1204b56c746e951de29d66ba9a8a05",
+    "seed": 31,
+    "unique_views": 160796,
+    "updates": 3072,
+    "v1_report_sha256": "a5fcd20ac21b37fee44d5bf1eea91eea7c537b8f3a37a41f7911c2506acf00bd"
+  },
+  "original_relative_path": "ai-training/.artifacts/request_intelligence_v2_20261104/frozen-plan.json",
+  "original_sha256": "68e6d63311500064f1fd4cf3e5a09cda8b38bbf43d9a04542c898613dc246ad5",
+  "redactions": {
+    "strings_changed": 3
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,17 @@
+{
+  "content": {
+    "approved_automated_intent_contracts": 1875,
+    "capture_sha256": "2bf2e92be317274931c22e5eb129e5c9f45addef5b3d2729dca0cdf869d9843a",
+    "dataset_sha256": "180b9052180c5ccd7ea9acb740a86f043d69a62d955e50044b43248c8672476d",
+    "human_review": false,
+    "no_training_partition_created": true,
+    "observer_sha256": "0fc52e1adc4b53530dd974cb6ececf11e754332ed4d6666439e30ba587916d3f",
+    "pending": 60,
+    "scope_manifest_sha256": "f46b44ea4c22273653f41f276de987a5f84e4baafbf28e69c517bf54e69047ea",
+    "status": "COLLECTED_HELD_OUT_ONLY"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/fresh-cohort/manifest.json",
+  "original_sha256": "ba1ff12e4878ad046680904333bfbc266492fdae817d9071c13909ae9839012e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

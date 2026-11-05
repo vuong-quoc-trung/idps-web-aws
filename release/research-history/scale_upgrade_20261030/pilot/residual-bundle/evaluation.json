@@ -1,0 +1,262 @@
+{
+  "content": {
+    "confusion_matrix": [
+      [
+        6508,
+        50
+      ],
+      [
+        54,
+        2634
+      ]
+    ],
+    "f1": 0.9806403574087863,
+    "families": {
+      "behavioral_anomaly": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            3,
+            381
+          ]
+        ],
+        "count": 384,
+        "detected": 381,
+        "f1_vs_benign": 0.9349693251533743,
+        "precision_vs_benign": 0.8839907192575406,
+        "recall": 0.9921875
+      },
+      "benign": {
+        "count": 6558,
+        "false_positives": 50
+      },
+      "brute_force": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            6,
+            378
+          ]
+        ],
+        "count": 384,
+        "detected": 378,
+        "f1_vs_benign": 0.9310344827586207,
+        "precision_vs_benign": 0.883177570093458,
+        "recall": 0.984375
+      },
+      "cmd_injection": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            37,
+            347
+          ]
+        ],
+        "count": 384,
+        "detected": 347,
+        "f1_vs_benign": 0.8886043533930857,
+        "precision_vs_benign": 0.8740554156171285,
+        "recall": 0.9036458333333334
+      },
+      "path_traversal": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            0,
+            384
+          ]
+        ],
+        "count": 384,
+        "detected": 384,
+        "f1_vs_benign": 0.9388753056234719,
+        "precision_vs_benign": 0.8847926267281107,
+        "recall": 1.0
+      },
+      "scanner_recon": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            3,
+            381
+          ]
+        ],
+        "count": 384,
+        "detected": 381,
+        "f1_vs_benign": 0.9349693251533743,
+        "precision_vs_benign": 0.8839907192575406,
+        "recall": 0.9921875
+      },
+      "sqli": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            3,
+            381
+          ]
+        ],
+        "count": 384,
+        "detected": 381,
+        "f1_vs_benign": 0.9349693251533743,
+        "precision_vs_benign": 0.8839907192575406,
+        "recall": 0.9921875
+      },
+      "xss": {
+        "confusion_matrix_vs_benign": [
+          [
+            6508,
+            50
+          ],
+          [
+            2,
+            382
+          ]
+        ],
+        "count": 384,
+        "detected": 382,
+        "f1_vs_benign": 0.9362745098039216,
+        "precision_vs_benign": 0.8842592592592593,
+        "recall": 0.9947916666666666
+      }
+    },
+    "final_test_metrics_computed": false,
+    "fpr": 0.007624275693809088,
+    "latency_ms": {
+      "native": {
+        "p50": 0.017845,
+        "p95": 0.01870275,
+        "p99": 0.020683120000000003
+      },
+      "onnxruntime": {
+        "p50": 0.0123815,
+        "p95": 0.0138028,
+        "p99": 0.014528870000000003
+      },
+      "sample_partition": "val",
+      "scope": "warm batch1 model inference; preprocessing excluded"
+    },
+    "multiclass_confusion_matrix": [
+      [
+        6508,
+        5,
+        5,
+        0,
+        2,
+        1,
+        7,
+        30
+      ],
+      [
+        3,
+        255,
+        0,
+        0,
+        125,
+        1,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        374,
+        0,
+        8,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        381,
+        3,
+        0,
+        0,
+        0
+      ],
+      [
+        37,
+        0,
+        0,
+        0,
+        342,
+        3,
+        0,
+        2
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        378,
+        0,
+        3
+      ],
+      [
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        378,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        381
+      ]
+    ],
+    "multiclass_labels": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "partition": "val_selection_groups",
+    "pr_auc_average_precision": 0.9977584956804554,
+    "pr_auc_trapezoidal": 0.997758057112774,
+    "precision": 0.981371087928465,
+    "recall": 0.9799107142857143,
+    "recall_at_fpr_le_1pct": 0.9828869047619048,
+    "recall_at_fpr_note": "ROC diagnostic only; deployed threshold remains validation-fitted and is not retuned on test",
+    "roc_auc": 0.9990915539363046,
+    "rows": 9246,
+    "threshold": 0.3317907452583313
+  },
+  "original_relative_path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual-bundle/evaluation.json",
+  "original_sha256": "d8d504f86d1fb77ac2cc40d8bed784483edfa1b41b50a985b88e29ce25f07623",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

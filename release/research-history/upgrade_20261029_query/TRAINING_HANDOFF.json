@@ -1,0 +1,63 @@
+{
+  "content": {
+    "capture_source_commit": "8171289400453d41c3a095af040c6a85e2880b77",
+    "champion_selected": false,
+    "cleanup": {
+      "lab": {
+        "database": "stopped",
+        "sensor_namespace": "already_stopped",
+        "student": "stopped"
+      },
+      "owned_lab_processes_remaining": [],
+      "regression_containers_remaining": ""
+    },
+    "config": "<PROJECT_ROOT>/ai-training/configs/formal_residual_config.yaml",
+    "config_sha256": "7963ab2ff607b1a82309cf50f309f7bac0e1b18d61b242e14554b5cf3b68cb42",
+    "cpus": 8,
+    "current_repository_head": "fd0fea47dbc30a56dc8a9bed819b15cf3dc66d11",
+    "dataset": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261029_query/dataset-ready/prepared",
+    "dataset_sha256": "b6608d0204781c5c71a9892913ba9ad521be74ff355f737c10a5cc8c4c6465ad",
+    "deployed": false,
+    "do_not_resume": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261028/formal/residual-seed17",
+    "early_completion": "Expected for small tabular networks; do not repeat epochs only to fill time",
+    "formal_training_started": false,
+    "format_version": 1,
+    "launch_command": "bash <PROJECT_ROOT>/ai-training/scripts/train-query-session.sh",
+    "launcher_sha256": "7607b5130451d5f8306c0dca948636f8a2a0e71b66d00533a11cc71b1537a7f9",
+    "limits": [
+      "Scripted intent and expected HTTP outcome, not exploit success; fictional records and one loopback topology, no independent human realism review",
+      "Validation shares calibration/selection; final test quality remains sealed",
+      "Fixed numeric lexical projection is not a raw text/body semantic model; hidden credentials are not reconstructed",
+      "Wider benign devices/agents, unauthenticated workflows, independent campaigns and real cloud traffic are still needed for production generalization",
+      "Same Python bridge before redaction is required at inference; Rust serving, TLS vantage, receipt-time and missing-source fallback are not accepted here",
+      "Missing actor/flow may cause severe false positives; inspect sensitivity FPR as well as recall",
+      "Rule baseline/OR fusion diagnostics do not execute the full Rust engine and may exceed the false-alert budget",
+      "Short CPU pilot does not establish150minute thermal/endurance behavior or50percent RAM usage;16GiB is the explicit ceiling, about52.96percent of OS-visible RAM",
+      "Raw PCAP contains fictional lab credentials/session packets and stays private0600; no raw/key/weights/PCAP in Git"
+    ],
+    "max_epochs": 100,
+    "maximum_minutes": 150,
+    "memory_limit_gib": 16,
+    "new_run_directory": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261029_query/formal/residual-seed17",
+    "optimizer_steps_in_probe": 0,
+    "patience": 8,
+    "pilot": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261029_query/pilot/pilot-report.json",
+    "pilot_sha256": "e36ffeaf143d051dd4fd353f1069ef720eb393b458a2cb0095c75147dbe75597",
+    "public_report": "<PROJECT_ROOT>/ai-training/reports/PRETRAIN_UPGRADE_20261029.json",
+    "public_report_file_sha256": "bc271a4e9632a0e751a67e8e0e689838127b3b1a7ccb99d58c78517238ac89ec",
+    "readiness": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261029_query/dataset-ready/readiness/readiness.json",
+    "readiness_sha256": "a5ff10fa1eec7e58895c8657d9603904e931a05d08d15457386b9e9fa71ad825",
+    "resource_probe": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261029_query/resource-probe.json",
+    "source_snapshot": "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261029_query/processing-source",
+    "source_snapshot_sha256": "15ef4b5e43b167308c85d789ef3da0c1af2f35c2bb8f8934b808eaf645acdda9",
+    "status": "READY_FOR_NEXT_OFFLINE_TRAINING_EXPERIMENT",
+    "test_quality_metrics_sealed": true,
+    "updated_at": "2026-10-29T20:40:45.568672+07:00"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261029_query/TRAINING_HANDOFF.json",
+  "original_sha256": "fb9e9b8cfd5e54445790537af258af9fbb8c9b5f476af36ed15d45de0d4e1a39",
+  "redactions": {
+    "strings_changed": 10
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,37 @@
+{
+  "content": {
+    "doi": "10.60895/redata/RWUUSV",
+    "files": [
+      {
+        "bytes": 16090299,
+        "file": "csic_2010_anomalousTrafficTest.txt",
+        "md5": "d03503ed45d198b4cebdefec1f540131",
+        "sha256": "ec77d784966896330869c5b596ede6a716101c14b5f139144915bb10822a03e1",
+        "source_id": 383
+      },
+      {
+        "bytes": 20643204,
+        "file": "csic_2010_normalTrafficTest.txt",
+        "md5": "475d761acdb349a5d2e5404e9f3a4ebb",
+        "sha256": "89600eea871cd0770544a96f6580da14874c4a5211372ad56d23002e1c572603",
+        "source_id": 390
+      },
+      {
+        "bytes": 20640988,
+        "file": "csic_2010_normalTrafficTraining.txt",
+        "md5": "80dc393c73afd08df28351e1470e3bbf",
+        "sha256": "d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000",
+        "source_id": 389
+      }
+    ],
+    "license": {
+      "iconUri": "https://licensebuttons.net/l/by/4.0/88x31.png",
+      "name": "CC BY 4.0",
+      "uri": "http://creativecommons.org/licenses/by/4.0"
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/public-sources/download-manifest.json",
+  "original_sha256": "061cc65d3cfc11c6610a87ce47078fdd1a1b2404cbc510dbb89b11de75085c8a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

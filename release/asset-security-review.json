@@ -1,0 +1,25 @@
+{
+  "scope": "Selected archives only, metadata/source high-confidence secret scan plus builder allowlists and numeric tensor dtype/finite checks. Heuristic scan is not a general guarantee of absence of sensitive information. No raw/private HTTP is intended for distribution.",
+  "assets": [
+    {
+      "asset": "models-core.tar.gz",
+      "metadata_or_source_files_scanned": 97,
+      "high_confidence_auth_findings": 0,
+      "sha256": "89666610a3078fcb93703794b651dc7b4ebe09d1a873366ab1d6ae3cf75483dc"
+    },
+    {
+      "asset": "request-training-recovery.tar.gz",
+      "metadata_or_source_files_scanned": 123,
+      "high_confidence_auth_findings": 0,
+      "sha256": "4b9ab5ca0e67255e9f827070b42fc5c87c629fd6c4ca2b751cdb6849381b4d61"
+    },
+    {
+      "asset": "historical-baselines.tar.gz",
+      "metadata_or_source_files_scanned": 41,
+      "high_confidence_auth_findings": 0,
+      "sha256": "af493ef31e29de2a4f22c88af0b1149a3e4e8eb6a86d71333dff4265a72e3773"
+    }
+  ],
+  "raw_evidence_published": false,
+  "independent_review_implied": false
+}

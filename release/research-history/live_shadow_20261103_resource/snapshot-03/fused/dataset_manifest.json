@@ -1,0 +1,65 @@
+{
+  "content": {
+    "correlation_window_seconds": 2.0,
+    "dataset_sha256": "066d07ee5a2992642c73026195d574ce6fa51dad492a982af219a46a760a6129",
+    "files": {
+      "observations.parquet": {
+        "bytes": 15340,
+        "sha256": "c4fc20b18d8b8068ed84782f9ab8b938f4d76ab6fce73fc4a914708dc95f49cc"
+      },
+      "requests.parquet": {
+        "bytes": 18539,
+        "sha256": "ccd2635c1ada40fd972d566fb4343ff6d0c99f9bf08acb4d768830ee45daf0ec"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "safe_query_numeric_v2",
+    "input_semantics": "finite immutable snapshots; raw input files never written",
+    "inputs": [
+      {
+        "bytes": 3971,
+        "sha256": "ab696ed5ddde0acc17a8e3821e8a702f5d340258bffff4b824df87412b0c1f79",
+        "source": "student"
+      },
+      {
+        "bytes": 2073,
+        "sha256": "21637c05e01cb661133b55b38cfd5d304cf924945d8e7d5ebe9b1db4ef6108eb",
+        "source": "nginx"
+      },
+      {
+        "bytes": 8710,
+        "sha256": "8df57351bb4b3ff61c2eab691e4c5a594c8a37b1b0d59298c7c23971cedcb1ec",
+        "source": "suricata"
+      }
+    ],
+    "label_manifest_sha256": null,
+    "labels": "explicit_review_only",
+    "normalizer_version": "ai-normalizer-4.1",
+    "quality": {
+      "accepted": 14,
+      "duplicates": 0
+    },
+    "redaction_key_fingerprint": "fb99761ff695f9be2745866118cd01a5e631df5f6252cedcae333f47c117bd8b",
+    "rows": {
+      "observations": 14,
+      "requests": 5
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "sources": {
+      "NGINX": 5,
+      "STUDENT_AUDIT": 5,
+      "SURICATA": 4
+    },
+    "stage": "collected",
+    "time_range": [
+      1793697689.0,
+      1793697693.307304
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/live_shadow_20261103_resource/snapshot-03/fused/dataset_manifest.json",
+  "original_sha256": "6fbfd300cf9002c3b32c51503cab2829f7ba3c33bd518633777dfe3b4f80c6af",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

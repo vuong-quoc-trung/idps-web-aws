@@ -1,0 +1,29 @@
+{
+  "content": {
+    "cpu_temperature_max": 62.0,
+    "cpu_temperature_mean": 53.833333333333336,
+    "cpu_temperature_min": 48.0,
+    "events": [],
+    "failure": null,
+    "kernel_cpu_quota_percent": 50,
+    "peak_cgroup_memory_bytes": 22392832,
+    "peak_system_used_bytes": 8107155456,
+    "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee",
+    "source_sha256": "8d111eeb7adbf61d03bea554b01b323761fff7f2492433357f6c3299fd42de84",
+    "status": "PASS",
+    "systemd_result": {
+      "ActiveState": "active",
+      "CPUUsageNSec": "1263107000",
+      "ExecMainStatus": "0",
+      "MemoryPeak": "23179264",
+      "Result": "success",
+      "SubState": "exited"
+    },
+    "unit": "idps-integration-17214-40256166.service",
+    "wall_seconds": 2.7703417299999273
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/handoff-resources/resource-report.json",
+  "original_sha256": "6d4f6126598b29d66fdd57d8f0fd8d4f37aeb94468e2f4b7f0938fcf3d672960",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

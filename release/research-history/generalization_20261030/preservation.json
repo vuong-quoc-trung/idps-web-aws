@@ -1,0 +1,19 @@
+{
+  "content": {
+    "artifacts": {
+      "changed_or_missing": [],
+      "checked": 4233
+    },
+    "experimental_source_unchanged": true,
+    "git_head_unchanged": true,
+    "prior_report_sha256": "a386d11de947af0afad1def6f965d75a356bfb5cf19ce63a162974ea35da9a58",
+    "services": {
+      "changed_or_missing": [],
+      "checked": 366
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261030/preservation.json",
+  "original_sha256": "5f543e028bcf7c3ecb222e3b20ba6139b2ae91a430b9d1c32b2d86b8e54ea26d",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

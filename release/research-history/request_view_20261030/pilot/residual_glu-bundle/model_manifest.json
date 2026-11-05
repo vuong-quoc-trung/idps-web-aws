@@ -1,0 +1,160 @@
+{
+  "content": {
+    "calibration": {
+      "csic-published-normal-training": {
+        "benign_count": 3804,
+        "calibration_fpr": 0.009726603575184017,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.9854527115821838
+      },
+      "pkdd-mirror-training": {
+        "benign_count": 3876,
+        "calibration_fpr": 0.008771929824561403,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 1.0
+      },
+      "student-lab": {
+        "benign_count": 3279,
+        "calibration_fpr": 0.009454101860323269,
+        "limitation": "Empirical correlated request/view sample, not a production exchangeability guarantee",
+        "target_fpr": 0.01,
+        "threshold": 0.9998330473899841
+      }
+    },
+    "calibration_policy": "max of independently source-fitted benign quantiles; no attack scores choose threshold",
+    "champion_selected": false,
+    "checkpoint_manifest_sha256": "848d7c45aa11042347894e909d67335cae2b1dc2b79118c5fcecf8ae5c896b58",
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "dataset_sha256": "1e020f364268a2cee318ae7ee7033c46f5a7cfaba7b1c5d23daf9cdd80998731",
+    "deployment_status": "offline research candidate only",
+    "family_output": "disabled; conditional family heads lack independent validation",
+    "feature_version": "request-structure-v1",
+    "files": {
+      "feature_spec.json": "b816d19d8d4b8906786c385bd61426a7bb3156de51a49717f8306964282de1fa",
+      "model.onnx": "8c870af650decf8c275f465086293789f52ef9deba14ab8747ddf28b13c3f801"
+    },
+    "format_version": 1,
+    "input_dtype": "float32",
+    "input_shape": [
+      null,
+      70
+    ],
+    "model_kind": "residual_glu",
+    "objective": {
+      "family_weight": 0.2,
+      "kind": "partial_binary_v1",
+      "smoothing": 0.005
+    },
+    "parity": {
+      "all_rows_match": true,
+      "atol": 1e-06,
+      "max_absolute_error": 1.7881393432617188e-07,
+      "rows": 115980,
+      "rtol": 1e-05
+    },
+    "profile": "request-structure-v1",
+    "score_semantics": "1-P(benign); public unknown family never imputed",
+    "threshold": 1.0,
+    "validation": {
+      "attack": 1536,
+      "benign": 14714,
+      "confusion_matrix": [
+        [
+          14683,
+          31
+        ],
+        [
+          1477,
+          59
+        ]
+      ],
+      "f1": 0.07257072570725707,
+      "fpr": 0.0021068370259616693,
+      "pr_auc_average_precision": 0.6996832513409459,
+      "precision": 0.6555555555555556,
+      "recall": 0.038411458333333336,
+      "rows": 16250,
+      "threshold": 1.0
+    },
+    "validation_by_source": {
+      "csic-published-normal-training": {
+        "attack": 0,
+        "benign": 4512,
+        "confusion_matrix": [
+          [
+            4512,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.0,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 4512,
+        "threshold": 1.0
+      },
+      "pkdd-mirror-training": {
+        "attack": 0,
+        "benign": 3644,
+        "confusion_matrix": [
+          [
+            3613,
+            31
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "f1": 0.0,
+        "fpr": 0.008507135016465422,
+        "pr_auc_average_precision": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "rows": 3644,
+        "threshold": 1.0
+      },
+      "student-lab": {
+        "attack": 1536,
+        "benign": 6558,
+        "confusion_matrix": [
+          [
+            6558,
+            0
+          ],
+          [
+            1477,
+            59
+          ]
+        ],
+        "f1": 0.07398119122257055,
+        "fpr": 0.0,
+        "pr_auc_average_precision": 0.9233135637185573,
+        "precision": 1.0,
+        "recall": 0.038411458333333336,
+        "rows": 8094,
+        "threshold": 1.0
+      }
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/pilot/residual_glu-bundle/model_manifest.json",
+  "original_sha256": "b8386fd9562eea54276fb8419763e8369f00b235465586d1b22f67bb315d085b",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,63 @@
+{
+  "content": {
+    "correlation_window_seconds": 2.0,
+    "dataset_sha256": "44e9afe9c2383800c256345df641464ddda451fb2a8be225d0f7cf1fd8e5d53a",
+    "files": {
+      "observations.parquet": {
+        "bytes": 292621,
+        "sha256": "471ec6f46d34d188d1260efa82892a67851f2d3d8a82addc665052efe0eaba5c"
+      },
+      "requests.parquet": {
+        "bytes": 143628,
+        "sha256": "01af83b62a7766ed98285894847276016a545513efb1353e7331ac157f8436f5"
+      }
+    },
+    "format_version": 1,
+    "input_semantics": "finite immutable snapshots; raw input files never written",
+    "inputs": [
+      {
+        "bytes": 960793,
+        "sha256": "99e160da2735ed11ae1cad4a689db616de9d369c22fcdcb4ab95a724ca77f45b",
+        "source": "student"
+      },
+      {
+        "bytes": 431551,
+        "sha256": "a72a37ce5513efdc6b68af9518a7e8540d7251b3b65d2e4542e312337abe75e0",
+        "source": "nginx"
+      },
+      {
+        "bytes": 557059,
+        "sha256": "2bd8404afcb55df6f6e9951b6e9f46b75dc7050e09e32f26e8920282f75a6ba1",
+        "source": "suricata"
+      }
+    ],
+    "label_manifest_sha256": "23f390e58bf50fe94d0789d2e81eb34e4d168a108e29bc725705adb792659eb3",
+    "labels": "explicit_review_only",
+    "normalizer_version": "ai-normalizer-1",
+    "quality": {
+      "accepted": 3403,
+      "duplicates": 0
+    },
+    "redaction_key_fingerprint": "59c18cb443bb77a20c3fc7d1692886654e1734657f7f81fd1da4802d1d2728af",
+    "rows": {
+      "observations": 3403,
+      "requests": 960
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "sources": {
+      "NGINX": 960,
+      "STUDENT_AUDIT": 960,
+      "SURICATA": 1483
+    },
+    "stage": "collected",
+    "time_range": [
+      1767225600.135739,
+      1767242494.557519
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/synthetic_s0_20261027_final/collected/dataset_manifest.json",
+  "original_sha256": "3dbf7a9aee0c104c5e6cd09692c8bdfe06842b89cd1923c75337091566a1a5e8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

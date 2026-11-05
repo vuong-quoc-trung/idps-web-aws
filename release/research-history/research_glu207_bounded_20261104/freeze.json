@@ -1,0 +1,75 @@
+{
+  "content": {
+    "checkpoint_dir": ".artifacts/research_glu207_bounded_20261104/run",
+    "conflicting_views": 0,
+    "dataset": ".artifacts/scale_upgrade_20261030/prepared-v5",
+    "dataset_sha256": "45ca178b494446451bfeec8e30b655044df02460ef5aa9273a93143d54cd9b08",
+    "decision": "TRACK_A_PRIMARY_GLU207",
+    "environment": {
+      "dependencies": {
+        "numpy": "2.5.4",
+        "onnx": "1.23.2",
+        "onnxruntime": "1.31.1",
+        "pyarrow": "26.0.0",
+        "scikit-learn": "1.9.1"
+      },
+      "python": "3.12.14",
+      "requirements_sha256": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5"
+    },
+    "evaluation_limits": "train-only optimization diagnostics. Development validation repeatedly exposed; no new quality, generalization, FPR, recall, or champion claim. Sealed holdout untouched.",
+    "family_counts": {
+      "behavioral_anomaly": 1728,
+      "benign": 29511,
+      "brute_force": 1728,
+      "cmd_injection": 1728,
+      "path_traversal": 1728,
+      "scanner_recon": 1728,
+      "sqli": 1728,
+      "xss": 1728
+    },
+    "feature_count": 207,
+    "features_sha256": "7e02bbbc66621560a23beb3c80c1d8c1bf790aba0e012df93c1d3c9ec7edfb5e",
+    "formal_ready": false,
+    "format_version": 1,
+    "implementation_sha256": "d3d257931fa698105710ad61f76feb8a9e3154304b18c7be0a2c8196e1ba8ba0",
+    "label_semantics": "development lab runner/publisher labels; benign and seven scenario families; intent/outcome not independently verified; supervised research fitting only",
+    "manifest_sha256": "0c1a5ca3523c8ff769148766cee152d0a47c62c012a08200f0586f2349ee221e",
+    "model": {
+      "hidden_dim": 1024,
+      "kind": "residual_glu",
+      "parameters": 9675784,
+      "regularization": "existing defaults: dropout 0.1, label smoothing 0.02, weight decay 1e-4"
+    },
+    "preprocessing": "ai-normalizer-5; ai-features-5; safe_query_numeric_v2; frozen feature_spec order",
+    "research_eval_ready": false,
+    "research_fit_ready": true,
+    "resource_budget": {
+      "cpu_quota_cores": 4,
+      "memory_high_bytes": 16106127360,
+      "memory_max_bytes": 17179869184,
+      "swap_max_bytes": 0
+    },
+    "script_sha256": "7c956a57d291aaef3bc0964512f076f58f01824e653ea93cc34f632b7e350344",
+    "spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "train_partition": "split=train only from prepared-v5; row group 81 boundary filtered per row; validation/test not used for fitting, selection, or diagnostics",
+    "train_rows": 41607,
+    "training": {
+      "batch_size": 128,
+      "checkpoint_every_epochs": 1,
+      "class_weighting": "none",
+      "epochs": 2,
+      "learning_rate": 0.0003,
+      "max_seconds_per_invocation": 600,
+      "min_lr_ratio": 0.05,
+      "scheduler": "warmup_cosine",
+      "seed": 17,
+      "total_steps": 652,
+      "warmup_steps": 30
+    },
+    "unique_views": 41585
+  },
+  "original_relative_path": "ai-training/.artifacts/research_glu207_bounded_20261104/freeze.json",
+  "original_sha256": "82ba7aca8260c9a4d453506f56d26b020d390bb72e85eb529bec346f3e1f1d53",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

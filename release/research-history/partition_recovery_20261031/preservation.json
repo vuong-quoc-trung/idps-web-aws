@@ -1,0 +1,13 @@
+{
+  "content": {
+    "changed_or_missing": [],
+    "original_Web_contract_Docker_unchanged": true,
+    "prior_raw_checkpoint_report_and_sealed_source_bytes_unchanged": true,
+    "protected_files": 2284,
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/partition_recovery_20261031/preservation.json",
+  "original_sha256": "b6571751bf03ca30af2205ee18192594ba39449bba1a1a50896465a4dfee3b57",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

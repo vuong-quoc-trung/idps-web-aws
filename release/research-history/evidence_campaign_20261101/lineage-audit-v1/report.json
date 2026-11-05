@@ -1,0 +1,32 @@
+{
+  "content": {
+    "captures": [
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "0f007b12d627cf465933d69efd485be07fd0a53e83c9351c6d9321c5fa8236b0",
+        "pending_evidence_sha256": "c51addad62ab83c6f6e35e775794b65718b36443a406e4e2d173181c507a4b6b",
+        "request_ids": 48
+      },
+      {
+        "campaign_ids": 3,
+        "capture_report_sha256": "3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b",
+        "pending_evidence_sha256": "658d3e55875201e51138e153c851041b56be4a6002f283b0d475ee7fe757fc8b",
+        "request_ids": 54
+      }
+    ],
+    "distinct_campaign_ids": 6,
+    "distinct_target_hashes": 36,
+    "format_version": 1,
+    "independently_reviewed_attack": 0,
+    "independently_reviewed_benign": 0,
+    "limits": "Only supplied development captures are compared. Repeated targets are real separate HTTP requests, not new behavior templates. Historical 75,150-request corpus and sealed holdouts are not globally deduplicated by this audit; semantic labels and physical request provenance still need independent review.",
+    "physical_request_ids_observed": 102,
+    "repeated_target_observations": 66,
+    "status": "DEVELOPMENT_CAPTURE_IDS_DISTINCT_NO_TRAINING_ADMISSION",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261101/lineage-audit-v1/report.json",
+  "original_sha256": "5aa8b55d555f3c1654b90fce3f18bffac6881aeed8e72d5babd20940905fd080",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

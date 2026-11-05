@@ -1,0 +1,65 @@
+{
+  "content": {
+    "correlation_window_seconds": 2.0,
+    "dataset_sha256": "0003c4332d5626ebc5727d091e35f92798a5b74e31883af534e119e04ad83355",
+    "files": {
+      "observations.parquet": {
+        "bytes": 34131,
+        "sha256": "45c1032956a963b7e26d16bf4e2361b0c077db4d83fcfec61b6565472adf62d0"
+      },
+      "requests.parquet": {
+        "bytes": 28392,
+        "sha256": "e32a652524a4caaf37f341fd4cf60e60bc0fdcda18b13db195c7882c275895cb"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "safe_query_numeric_v2",
+    "input_semantics": "finite immutable snapshots; raw input files never written",
+    "inputs": [
+      {
+        "bytes": 52106,
+        "sha256": "795248415c08e716e91330cbefdb79af39dd92e1e7add90d2b0319956b1c8808",
+        "source": "student"
+      },
+      {
+        "bytes": 22771,
+        "sha256": "a85d67e5da7f7213d0fb59daf3fe8a3dad0f11e2f9c7bd77675311a725d6fe41",
+        "source": "nginx"
+      },
+      {
+        "bytes": 149991,
+        "sha256": "0cb5fd45b0fa1b3e846a3d40b51815690db9aa4a37cde173a1f8aa015aa6784a",
+        "source": "suricata"
+      }
+    ],
+    "label_manifest_sha256": null,
+    "labels": "explicit_review_only",
+    "normalizer_version": "ai-normalizer-4.1",
+    "quality": {
+      "accepted": 237,
+      "duplicates": 0
+    },
+    "redaction_key_fingerprint": "516b9a3454b913d48704a8a7f891cdf3d67bded7c77a12f05b2b5ab20ddcd69b",
+    "rows": {
+      "observations": 237,
+      "requests": 55
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "sources": {
+      "NGINX": 55,
+      "STUDENT_AUDIT": 55,
+      "SURICATA": 127
+    },
+    "stage": "collected",
+    "time_range": [
+      1793584155.0,
+      1793584166.943677
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/glu207_shadow_20261103/collected-54-plus-setup/dataset_manifest.json",
+  "original_sha256": "39ee707a9be49e966ea98bef8c2fbc956de5160e0fbc50821799333e08e25762",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,112 @@
+[
+  {
+    "schema_version": "research-mvp-1",
+    "record_id": "team-http-smoke",
+    "http_request": {
+      "method": "GET",
+      "url": "/api/health",
+      "headers": "Accept: application/json",
+      "body": ""
+    }
+  },
+  {
+    "schema_version": "research-mvp-1",
+    "record_id": "team-glu-smoke-1",
+    "fused_request": {
+      "attack_family": null,
+      "available_at": 1793803163.92468,
+      "campaign_key": null,
+      "client_key": "team-smoke-client_key-1",
+      "correlation": "request_id",
+      "event_key": "5680794f12b7903ed88ecb6a6e0da62e87f18fc169fd6fafe8bcf8eb83983948",
+      "event_type": "http_request",
+      "flow_json": "{\"bytes_to_client\": null, \"bytes_to_server\": null, \"duration_seconds\": null, \"packets_to_client\": null, \"packets_to_server\": null}",
+      "flow_key": "bb813074fffa62770e6b375b2a430c0b31cf314e3dcb97d3a3faf85d3eb5a81e",
+      "group_key": null,
+      "http_method": "GET",
+      "ip_time_ambiguous": false,
+      "ip_time_context_count": 0,
+      "label": null,
+      "label_confidence": null,
+      "label_source": "unknown",
+      "latency_ms": 1.0,
+      "numeric_json": "{\"backslash_count\": 0.0, \"backtick_count\": 0.0, \"boolean_operator_count\": 0.0, \"comma_count\": 0.0, \"comparison_operator_count\": 0.0, \"decoded_query_length\": 0.0, \"decoded_uri_length\": 15.0, \"digit_ratio\": 0.0, \"dollar\": 0.0, \"dot_count\": 0.0, \"duplicate_parameter_count\": 0.0, \"empty_parameter_count\": 0.0, \"encoding_contraction_ratio\": 0.0, \"encoding_rounds\": 0.0, \"event_assignment_count\": 0.0, \"gt\": 0.0, \"html_entity_count\": 0.0, \"html_tag_close_count\": 0.0, \"html_tag_open_count\": 0.0, \"invalid_escape_count\": 0.0, \"lt\": 0.0, \"max_parameter_length\": 0.0, \"mean_parameter_length\": 0.0, \"newline_count\": 0.0, \"non_ascii_ratio\": 0.0, \"null_byte_count\": 0.0, \"numeric_parameter_ratio\": 0.0, \"object_identity_available\": 0.0, \"parameter_count\": 0.0, \"parameter_length_std\": 0.0, \"parenthesis_close_count\": 0.0, \"parenthesis_max_depth\": 0.0, \"parenthesis_open_count\": 0.0, \"path_depth\": 3.0, \"path_dot_segment_count\": 0.0, \"path_parent_segment_count\": 0.0, \"percent\": 0.0, \"percent_escape_count\": 0.0, \"pipe\": 0.0, \"query_entropy\": 0.0, \"query_length\": 0.0, \"query_lexical_available\": 1.0, \"query_original_available\": 0.0, \"query_original_length\": 0.0, \"query_original_operator_count\": 0.0, \"query_original_parameter_count\": 0.0, \"query_original_percent_count\": 0.0, \"query_original_quote_count\": 0.0, \"quote_double\": 0.0, \"quote_single\": 0.0, \"semicolon\": 0.0, \"shell_and_count\": 0.0, \"shell_or_count\": 0.0, \"shell_substitution_count\": 0.0, \"slash_count\": 3.0, \"special_ratio\": 0.26666666666666666, \"sql_comment_close_count\": 0.0, \"sql_comment_open_count\": 0.0, \"sql_line_comment_count\": 0.0, \"sqli_keywords\": 0.0, \"structure_available\": 1.0, \"traversal_tokens\": 0.0, \"uppercase_ratio\": 0.0, \"uri_entropy\": 3.3248629576173565, \"uri_length\": 20.0, \"uri_lexical_available\": 1.0, \"uri_scheme_count\": 0.0, \"whitespace_ratio\": 0.0, \"xss_tokens\": 0.0}",
+      "observation_count": 3,
+      "provenance": "canonical",
+      "redacted": true,
+      "request_bytes": 129.0,
+      "request_key": "team-smoke-request_key-1",
+      "response_bytes": 136.0,
+      "role": "UNKNOWN",
+      "session_key": "2df0527b1e93028263c161321ca073204a02adfe90c479a1dcc9582738567dae",
+      "source": "STUDENT_AUDIT",
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "split": "unassigned",
+      "status_code": 200,
+      "suricata_alert_counts": [
+        0,
+        0,
+        0
+      ],
+      "timestamp": 1793803163.939186,
+      "truncated": false,
+      "uri_path": "/api/auth/[redacted]",
+      "user_agent": "Mozilla Firefox",
+      "user_key": null
+    }
+  },
+  {
+    "schema_version": "research-mvp-1",
+    "record_id": "team-glu-smoke-2",
+    "fused_request": {
+      "attack_family": null,
+      "available_at": 1793803166.240275,
+      "campaign_key": null,
+      "client_key": "team-smoke-client_key-1",
+      "correlation": "request_id",
+      "event_key": "42be3ac8a2f663701b672cdfe3b1ed892c997310148d12f4ae0fb49523df2081",
+      "event_type": "http_request",
+      "flow_json": "{\"bytes_to_client\": null, \"bytes_to_server\": null, \"duration_seconds\": null, \"packets_to_client\": null, \"packets_to_server\": null}",
+      "flow_key": "28d6f032b2e87c313a025493d7b09ddf2753be9c62302ee266b0c9885275e212",
+      "group_key": null,
+      "http_method": "POST",
+      "ip_time_ambiguous": false,
+      "ip_time_context_count": 0,
+      "label": null,
+      "label_confidence": null,
+      "label_source": "unknown",
+      "latency_ms": 317.0,
+      "numeric_json": "{\"backslash_count\": 0.0, \"backtick_count\": 0.0, \"boolean_operator_count\": 0.0, \"comma_count\": 0.0, \"comparison_operator_count\": 0.0, \"decoded_query_length\": 0.0, \"decoded_uri_length\": 16.0, \"digit_ratio\": 0.0, \"dollar\": 0.0, \"dot_count\": 0.0, \"duplicate_parameter_count\": 0.0, \"empty_parameter_count\": 0.0, \"encoding_contraction_ratio\": 0.0, \"encoding_rounds\": 0.0, \"event_assignment_count\": 0.0, \"gt\": 0.0, \"html_entity_count\": 0.0, \"html_tag_close_count\": 0.0, \"html_tag_open_count\": 0.0, \"invalid_escape_count\": 0.0, \"lt\": 0.0, \"max_parameter_length\": 0.0, \"mean_parameter_length\": 0.0, \"newline_count\": 0.0, \"non_ascii_ratio\": 0.0, \"null_byte_count\": 0.0, \"numeric_parameter_ratio\": 0.0, \"object_identity_available\": 0.0, \"parameter_count\": 0.0, \"parameter_length_std\": 0.0, \"parenthesis_close_count\": 0.0, \"parenthesis_max_depth\": 0.0, \"parenthesis_open_count\": 0.0, \"path_depth\": 3.0, \"path_dot_segment_count\": 0.0, \"path_parent_segment_count\": 0.0, \"percent\": 0.0, \"percent_escape_count\": 0.0, \"pipe\": 0.0, \"query_entropy\": 0.0, \"query_length\": 0.0, \"query_lexical_available\": 1.0, \"query_original_available\": 0.0, \"query_original_length\": 0.0, \"query_original_operator_count\": 0.0, \"query_original_parameter_count\": 0.0, \"query_original_percent_count\": 0.0, \"query_original_quote_count\": 0.0, \"quote_double\": 0.0, \"quote_single\": 0.0, \"semicolon\": 0.0, \"shell_and_count\": 0.0, \"shell_or_count\": 0.0, \"shell_substitution_count\": 0.0, \"slash_count\": 3.0, \"special_ratio\": 0.25, \"sql_comment_close_count\": 0.0, \"sql_comment_open_count\": 0.0, \"sql_line_comment_count\": 0.0, \"sqli_keywords\": 0.0, \"structure_available\": 1.0, \"traversal_tokens\": 0.0, \"uppercase_ratio\": 0.0, \"uri_entropy\": 3.323231428797621, \"uri_length\": 15.0, \"uri_lexical_available\": 1.0, \"uri_scheme_count\": 0.0, \"whitespace_ratio\": 0.0, \"xss_tokens\": 0.0}",
+      "observation_count": 3,
+      "provenance": "canonical",
+      "redacted": true,
+      "request_bytes": 425.0,
+      "request_key": "team-smoke-request_key-2",
+      "response_bytes": 0.0,
+      "role": "ADMIN",
+      "session_key": "216ac62d339477225edfc7d9e4cd8aa39473bd372403313f3d08d58d5a2aa9c0",
+      "source": "STUDENT_AUDIT",
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "split": "unassigned",
+      "status_code": 204,
+      "suricata_alert_counts": [
+        0,
+        0,
+        0
+      ],
+      "timestamp": 1793803166.256297,
+      "truncated": false,
+      "uri_path": "/api/auth/login",
+      "user_agent": "Mozilla Firefox",
+      "user_key": "team-smoke-user_key-1"
+    }
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "content": {
+    "files": {
+      "arrays.npz": "d2d6130d7e7e8a5b3d411bab1ac1739257c933adfbaa956184719937c34e8820",
+      "state.json": "6f628a4541b0980e46d4eb47f89d72bb92cc9f7e8d0e655de8bd428cf1c961e7"
+    },
+    "format_version": 1
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/checkpoint/manifest.json",
+  "original_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

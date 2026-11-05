@@ -1,0 +1,45 @@
+{
+  "content": {
+    "abort_after_hard_stops": 1,
+    "containers_left_paused_on_error": [],
+    "cpu_sensor_sources": {
+      "INJECTED_NOT_HARDWARE": {
+        "celsius": 60,
+        "label": "injected"
+      }
+    },
+    "cpu_temperature_max": 60,
+    "cpu_temperature_mean": 60.0,
+    "cpu_temperature_min": 60,
+    "events": [],
+    "exit_reason": "supervisor_error_or_interruption",
+    "hard_pause_celsius": 80,
+    "initial_ai_headroom_bytes_after_reserve": 16686155776,
+    "initial_cpu_affinity_count": 1,
+    "limits": "Reactive sensor sampling; spikes cannot be absolutely excluded; tree RSS excludes detached container processes; system RAM covers all workloads",
+    "minimum_continuously_cool_seconds": 3,
+    "peak_process_tree_rss_bytes": 13213696,
+    "peak_system_used_bytes": 11320004608,
+    "proactive_pause_celsius": 74,
+    "rapid_rise_pause": {
+      "minimum_celsius": 68,
+      "minimum_celsius_per_second": 5
+    },
+    "reduce_load_celsius": 72,
+    "reserve_bytes": 2000000000,
+    "resume_below_celsius": 70,
+    "returncode": -15,
+    "sample_seconds": 0.2,
+    "samples": 3,
+    "shared_system_budget_bytes": 30000000000,
+    "supervisor_source_sha256": "5f6cc79639cd800276b8b1e17960bc19f4173ff5cd140f9e6511fc795fb9e854",
+    "system_cpu_percent_max": 8.9,
+    "system_cpu_percent_mean": 5.3999999999999995,
+    "wall_seconds": 0.4991154250001273,
+    "warning_celsius": 75
+  },
+  "original_relative_path": "ai-training/.artifacts/p05_consolidation_20261105/control-supervisor_sigterm/resource-report.json",
+  "original_sha256": "3d9d829e2695ab5f8f0890d9f0540bc0fd461091608f3763f32b66f8d8976866",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

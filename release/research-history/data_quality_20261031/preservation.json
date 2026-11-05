@@ -1,0 +1,17 @@
+{
+  "content": {
+    "changed_or_missing": [],
+    "curation_manifest_verified": "ed80d18a87a326ac98b49ca658a05775ad437ceecf1087397311d80237078e87",
+    "mixed_v2_manifest_verified": "07d67edfa2f05b1ace98e299a2dbdec4866188d4aa1116068b5e577b0dc3610d",
+    "new_sealed_markers_reject_development": true,
+    "protected_files": 1599,
+    "raw_original_SHA_verified": true,
+    "sealed_archive_unextracted_checksum_verified": true,
+    "status": "PASS",
+    "verified_at": "2026-10-31T03:04:19.299303+00:00"
+  },
+  "original_relative_path": "ai-training/.artifacts/data_quality_20261031/preservation.json",
+  "original_sha256": "fb750e46a976cf058197ff69e77856ebb01efae7343e58136638fc0ba22d2a65",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

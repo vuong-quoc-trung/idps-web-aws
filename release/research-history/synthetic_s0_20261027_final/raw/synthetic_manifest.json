@@ -1,0 +1,29 @@
+{
+  "content": {
+    "campaigns": 15,
+    "classes": [
+      "benign",
+      "sqli",
+      "xss",
+      "path_traversal",
+      "cmd_injection",
+      "scanner_recon",
+      "brute_force",
+      "behavioral_anomaly"
+    ],
+    "files": {
+      "access.log": "a72a37ce5513efdc6b68af9518a7e8540d7251b3b65d2e4542e312337abe75e0",
+      "eve.json": "2bd8404afcb55df6f6e9951b6e9f46b75dc7050e09e32f26e8920282f75a6ba1",
+      "labels.jsonl": "23f390e58bf50fe94d0789d2e81eb34e4d168a108e29bc725705adb792659eb3",
+      "student-audit.log": "99e160da2735ed11ae1cad4a689db616de9d369c22fcdcb4ab95a724ca77f45b"
+    },
+    "purpose": "S0 pipeline/resume verification only; not model quality evidence",
+    "requests": 960,
+    "seed": 17,
+    "synthetic": true
+  },
+  "original_relative_path": "ai-training/.artifacts/synthetic_s0_20261027_final/raw/synthetic_manifest.json",
+  "original_sha256": "da249caa7d44e12b973c8255ac25f9cd27aa463d3cbc25da7a84bb6c97d1f28c",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

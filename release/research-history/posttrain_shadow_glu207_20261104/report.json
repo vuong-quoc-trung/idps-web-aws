@@ -1,0 +1,137 @@
+{
+  "content": {
+    "checkpoint_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "collected_dataset_sha256": "0003c4332d5626ebc5727d091e35f92798a5b74e31883af534e119e04ad83355",
+    "collected_requests": 55,
+    "columns_nonzero_at_least_once": 143,
+    "columns_varying": 122,
+    "cross_capture_request_identity_comparable": false,
+    "event_key_string_overlap_train": 0,
+    "exact_float32_view_overlap_train": 3,
+    "feature_columns": 207,
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "fpr": null,
+    "fpr_budget_policy": 0.01,
+    "independently_verified_attack": 0,
+    "independently_verified_benign": 0,
+    "inferred_three_source_requests": 54,
+    "limitations": [
+      "Same Student lab as training; no environment independence",
+      "No reviewed request-level intent labels; score distribution is not detection quality",
+      "Prior completed EVE flow absent on these 54 despite train availability on most rows",
+      "Offline captured PCAP replay; this run is not live edge serving or Rust parity",
+      "ONNX latency excludes feature extraction, correlation, IO, and model loading",
+      "Cosine proximity is feature similarity, not proof of physical duplicate or label leakage",
+      "Different HMAC redaction-key namespaces prevent cross-capture request-ID overlap verification"
+    ],
+    "nearest_train_cosine": {
+      "max": 0.9999998807907104,
+      "min": 0.7730783820152283,
+      "p05": 0.8532041430473327,
+      "p50": 0.9260708093643188,
+      "p95": 0.993047535419464
+    },
+    "nearest_train_cosine_ge_0_995": 3,
+    "new_http_requests_sent": 0,
+    "onnx_latency_ms_forward_only": {
+      "max": 16.258684,
+      "min": 4.395019,
+      "p05": 5.3627796,
+      "p50": 7.379931,
+      "p95": 15.104069849999998
+    },
+    "onnx_probability_max_abs_error": 1.1920928955078125e-07,
+    "plan_sha256": "90da2c8b4eb2120f6b2b240b1830de363dab402ab7f5d61bc17d8b37afe824b6",
+    "pr_auc": null,
+    "raw_presence": {
+      "latency_ms": 54,
+      "prior_flow": 0,
+      "query_original": 0,
+      "request_bytes": 54,
+      "response_bytes": 54,
+      "status_code": 54
+    },
+    "recall": null,
+    "redaction_key_fingerprints": {
+      "shadow": "516b9a3454b913d48704a8a7f891cdf3d67bded7c77a12f05b2b5ab20ddcd69b",
+      "train": "fc0103d51c1ccb0e6a22d00b78ce7c280d4f674d20c0e00f055e3a013042e3bb"
+    },
+    "release_ready": false,
+    "request_id_overlap_train": null,
+    "resource_envelope": {
+      "address_space_limit_effective": 17179869184,
+      "affinity_effective": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cgroup_v2": {
+        "cpu.max": "400000 100000",
+        "cpu.stat": "usage_usec 2419997\nuser_usec 2116630\nsystem_usec 303367\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 19\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "417075200",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "449343488",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/run-p43865-i32648.scope"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 4,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 17179869184,
+      "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "sample CPU sensors at most every5seconds; clean stop within5C of sensor-reported critical limit; unavailable sensors explicitly recorded",
+      "total_host_memory_bytes": 32440901632
+    },
+    "resource_guard": {
+      "peak_cpu_temperature_celsius": 66.0,
+      "peak_rss_bytes": 628719616,
+      "peak_tree_rss_bytes": 628719616,
+      "temperature_monitoring": "hardware_critical_limit_available",
+      "thermal_limit_reached": false,
+      "thermal_stop_threshold_celsius": 100.0
+    },
+    "score_distribution_unlabeled": {
+      "max": 0.9987100958824158,
+      "min": 0.006102144718170166,
+      "p05": 0.009078970551490784,
+      "p50": 0.19162794947624207,
+      "p95": 0.9951334446668625
+    },
+    "status": "TECHNICAL_DIAGNOSTIC_ONLY",
+    "threshold": null,
+    "train_prior_flow_available": {
+      "prior_flow": 36443,
+      "rows": 41607
+    },
+    "train_rows_reference": 41607,
+    "unlabeled_requests": 54
+  },
+  "original_relative_path": "ai-training/.artifacts/posttrain_shadow_glu207_20261104/report.json",
+  "original_sha256": "21a6a62a9cffa462288e9682d2a68faaf5602c2a6905c8bcc92901486ef5b6fb",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,24 @@
+{
+  "content": {
+    "assist_sha256": "05cb55438b06a28b2a05f7d6ef85b78d0c49984d39871e5d51ad225a79a3ed22",
+    "automatic_verified_labels": 0,
+    "blind_queue_sha256": "85c433dc4bcdf90bcbd9a0d01091a41fa3a50804d9d5eb1d880fde652e4dbf3d",
+    "capture_report_sha256": "3e79796c29ad3375e13dedc33ea7f0c2f99fc8a54bccd8a480f8c85d934b030b",
+    "counts": {
+      "query_visible_private": 30,
+      "requests": 54,
+      "syntax_cue_overlap": 0,
+      "three_source": 0
+    },
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "limits": "Syntax cues and collector claims are review aids only. This file contains no independent semantic decision and must never be imported as training ground truth.",
+    "status": "AUTOMATED_EVIDENCE_CHECKED_SEMANTIC_REVIEW_PENDING",
+    "three_source_report_sha256": null,
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/assist-old54/report.json",
+  "original_sha256": "0d40d304a40ceacd72bbbf606afffb7feccf8bde791dc65dd2e3254c8325d4a0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

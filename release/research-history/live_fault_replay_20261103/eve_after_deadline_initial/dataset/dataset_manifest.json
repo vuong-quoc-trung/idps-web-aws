@@ -1,0 +1,65 @@
+{
+  "content": {
+    "correlation_window_seconds": 2.0,
+    "dataset_sha256": "fc08c74b28cc0ac58ed1b01a04e347961b1d2e94b843690de372306459261245",
+    "files": {
+      "observations.parquet": {
+        "bytes": 19082,
+        "sha256": "f43646e300bcb6103c8152ffd454376823a7cf79fba760b849f4836eab244816"
+      },
+      "requests.parquet": {
+        "bytes": 18586,
+        "sha256": "ee8e63912e07361cd15bd1464981db1fbe491fedbc58531a0ea6023f671c301d"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "safe_query_numeric_v2",
+    "input_semantics": "finite immutable snapshots; raw input files never written",
+    "inputs": [
+      {
+        "bytes": 3971,
+        "sha256": "1726eb3445f629b11a74e35b96ef1827be528d75f2cff90f4cf4fdab09e21a68",
+        "source": "student"
+      },
+      {
+        "bytes": 2073,
+        "sha256": "4103159c0d3c564bdc1de7a571026a9a561581a26a63344dd2a990632b093366",
+        "source": "nginx"
+      },
+      {
+        "bytes": 20883,
+        "sha256": "a82a5d6ee3e66b83e3166fbb34f4e359d88595b0bda51db6a2ea6228d9208e48",
+        "source": "suricata"
+      }
+    ],
+    "label_manifest_sha256": null,
+    "labels": "explicit_review_only",
+    "normalizer_version": "ai-normalizer-4.1",
+    "quality": {
+      "accepted": 59,
+      "duplicates": 0
+    },
+    "redaction_key_fingerprint": "794879ea0acfe6ce33a891d4daac962bbbed441e1835943c583e77ff3580f506",
+    "rows": {
+      "observations": 59,
+      "requests": 5
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "sources": {
+      "NGINX": 5,
+      "STUDENT_AUDIT": 5,
+      "SURICATA": 49
+    },
+    "stage": "collected",
+    "time_range": [
+      1793697322.587919,
+      1793697393.940929
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/live_fault_replay_20261103/eve_after_deadline_initial/dataset/dataset_manifest.json",
+  "original_sha256": "818287431b9bbde732da7b0be865df0d941fde8634d725391eb32df0a279f58e",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

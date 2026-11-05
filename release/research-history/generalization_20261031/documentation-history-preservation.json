@@ -1,0 +1,21 @@
+{
+  "content": {
+    "current_sections_only_changed": true,
+    "preserved_historical_suffix_or_ledger_prefix_SHA": {
+      "ai-training/PRETRAINING.md": "e0d5447f1f5f875fdde0380a74d40b56741953fd934e9f4ff1293f0e7ad12549",
+      "ai-training/README.md": "7c3f0ab5c4b4047e240daefb24289be2401ccf72889358719960b3d3f18e93dd",
+      "docs/00_PROJECT_OVERVIEW_AND_PROGRESS.md": "42e6d61881ad9d760a811c2cceddb08fbae3e311482d30367a7306fdd441fec0",
+      "docs/01_SYSTEM_AUDIT_AND_ARCHITECTURE.md": "c68019e12d4dbfb1d5cc0e115f5e5fb3c3aea6209e777862ce48224684f0ae5c",
+      "docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md": "191498cbb97cffe056ab3b02e4c13725b838c208d81ddfeb77a889e9107491eb",
+      "docs/03_AI_MODEL_AND_TRAINING_PLAN.md": "b8d5a36e394f5ce6dce5d9a3b24b7688009e1a8f43ac6dc465faf269eec21201",
+      "docs/04_ROADMAP_AND_TEAM_TASKS.md": "694ec3a2f029821021735828967342db6a9c1230f5fd96675e66da27f305550a",
+      "docs/05_DISCOVERY_EVIDENCE_AND_INVENTORY.md": "ebdb0bedc5fe57e2c998f792cf4cbe6d075c6a1793f23bb843e78a3f11e5e64d",
+      "docs/06_AI_HANDOFF_AND_RUN_LEDGER.md": "3b302275db411ac01483d9c31fc09c5722199deb289e174033990eed5bc7b1e3"
+    },
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/documentation-history-preservation.json",
+  "original_sha256": "f80c7148d254e5b483c2abb86080bf8861febba4d1efa2ce34f3b24dcc747057",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,22 @@
+{
+  "content": {
+    "distinct_views_after_quarantine": 21,
+    "encoder_v2_sha256": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+    "formal_admitted": 0,
+    "format_version": 1,
+    "labeled_rows": 32,
+    "mixed_case_ids": [],
+    "mixed_label_views": 0,
+    "plaintext_request_output": false,
+    "plan_sha256": "36a3ce43f69e2a131cdb7f090d17961d23a8f890892f3dee70ac078fbb241a2d",
+    "report_sha256": "691154a0fbbca30891813af88608df4a49e461f2bce134a9cb1b5c788b2720cb",
+    "rows_on_mixed_views": 0,
+    "run_report_sha256": "e7fd267a9a4a3d1650ab4bdb052314756304c764435ee035301ec3a9f613efc0",
+    "scope": "same 32 lab-labeled rows, v2 JSON-body syntax diagnostic only; no model training/evaluation",
+    "unique_views": 21
+  },
+  "original_relative_path": "ai-training/.artifacts/juice_gt_factory_20261104/encoder-v2-diagnostic.json",
+  "original_sha256": "aec9f12a424f1539a1f861886eafcdab804bb4a2bfa0528b069942b81f28d6a7",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

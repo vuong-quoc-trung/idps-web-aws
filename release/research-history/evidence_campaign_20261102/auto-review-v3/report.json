@@ -1,0 +1,41 @@
+{
+  "content": {
+    "ai_proposed_labels": 0,
+    "automatically_reviewed_requests": 162,
+    "by_source": {
+      "eve_first": 54,
+      "eve_novel": 54,
+      "two_source": 54
+    },
+    "cross_campaign_reused_target_views": 36,
+    "distinct_observed_target_views": 78,
+    "expected_requests": 162,
+    "format_version": 1,
+    "independently_reviewed_labels": 0,
+    "method_file_sha256": "75f76ed03cb45b945d4df911aa2a52778d45af2159bcf70dead861c52009b734",
+    "newly_processed_this_run": 97,
+    "objective_oracle_verified_labels": 0,
+    "post_bodies_observed_in_pcap": 12,
+    "post_bodies_unobserved": 6,
+    "private_nginx_query_visible": 102,
+    "proposal_limit": "Syntax triage is a deterministic hint, not an AI model label, oracle, human attestation or ground truth. All intent/outcome labels remain unknown.",
+    "provenance_limit": "Dedup is request-ID scoped to this registry; repeated target views are not new behavior. Historical sealed data untouched.",
+    "recovered_unsealed_checkpoint": false,
+    "registry_sha256": "28b6d001387679aece34f9be856d8fd343a8bd37f298815e0fcf2728672bdac0",
+    "repeated_target_view_requests": 84,
+    "report_sha256": "922497e5ee6c03221fdc955687db13a08ce37b7c2a9bd47fcf25c7fc9e29c261",
+    "sqlite_sha256": "2baaec01a44a2e72e4bfc7d3f99255abc8fc0b13a0fc5ec2ec5636904681cf81",
+    "status": "COMPLETE_OBJECTIVE_REVIEW_LABELS_UNKNOWN",
+    "syntax_triage": {
+      "no_cue": 123,
+      "single_cue": 39
+    },
+    "training_admission": 0,
+    "unknown_intent_labels": 162,
+    "verified_physical_request_ids_in_this_registry": 162
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3/report.json",
+  "original_sha256": "1985ffeeaeb511bc29cd785a6316e3710f695fdc6ec6bd21936db55bec6cffc2",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

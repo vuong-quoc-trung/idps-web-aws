@@ -1,0 +1,48 @@
+{
+  "content": {
+    "arrays_equal": {
+      "m_W0": true,
+      "m_W1": true,
+      "m_W2": true,
+      "m_W3": true,
+      "m_W4": true,
+      "m_b0": true,
+      "m_b1": true,
+      "m_b2": true,
+      "m_b3": true,
+      "m_b4": true,
+      "p_W0": true,
+      "p_W1": true,
+      "p_W2": true,
+      "p_W3": true,
+      "p_W4": true,
+      "p_b0": true,
+      "p_b1": true,
+      "p_b2": true,
+      "p_b3": true,
+      "p_b4": true,
+      "v_W0": true,
+      "v_W1": true,
+      "v_W2": true,
+      "v_W3": true,
+      "v_W4": true,
+      "v_b0": true,
+      "v_b1": true,
+      "v_b2": true,
+      "v_b3": true,
+      "v_b4": true
+    },
+    "sampler_equal": true,
+    "scope": "fresh OS process invocations; exact arrays including parameters/Adam m/v, RNG/permutation/cursor and loss history",
+    "state_rng_history_equal": true,
+    "status": "RESUME_EXACT",
+    "steps": [
+      3072,
+      3072
+    ]
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/resume-restored-final-report.json",
+  "original_sha256": "0369aeabbda0365bb3db55df23214654c87a3694ab9f6d2baec3bf5646538fa8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

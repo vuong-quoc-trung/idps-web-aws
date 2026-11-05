@@ -1,0 +1,55 @@
+{
+  "content": {
+    "available_cpus_before_cap": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "available_memory_bytes": 20974116864,
+    "current_affinity": [
+      0,
+      1
+    ],
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "disk_free_bytes": 175498731520,
+    "feature_cache_estimate_bytes": 11565000,
+    "feature_count": 148,
+    "feature_rows": 19275,
+    "format_version": 1,
+    "host_total_memory_bytes": 32440909824,
+    "limits": [
+      "Read-only I/O/capacity estimate, not a training-speed/thermal/endurance benchmark",
+      "No cgroup controller or machine power profile changed",
+      "This host is not assumed to be the target Zenbook",
+      "Actual epoch duration must be measured by a later authorized pilot training run"
+    ],
+    "platform": "Linux",
+    "proposed_memory_limit_gib": 12,
+    "python": "3.12.14",
+    "report_sha256": "11b6f0d1d29169b13bea4b24b908c249ce137d163b4c007a465cf24c439527c3",
+    "requested_max_threads": 2,
+    "requirements_sha256": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5",
+    "sampled_process_rss_bytes": 216449024,
+    "status": "CAPACITY_ESTIMATE_PASS",
+    "stream_read_wall_seconds": 0.08878578999974707,
+    "stream_rows_per_second": 217095.55098912687,
+    "training_executed": false
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/dataset-ready/capacity.json",
+  "original_sha256": "93038aaf673bf0484383c798d843bc8a4d8f5ce74cd3931b407e0f2b5b2a2736",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

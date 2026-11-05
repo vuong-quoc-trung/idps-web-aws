@@ -1,0 +1,92 @@
+{
+  "content": {
+    "best_metric": 0.9991360360331878,
+    "checkpoint": "checkpoints/step-000000001630-591b77caa7b1",
+    "checkpoint_manifest_sha256": "40153092913fe1d799b8d74bc55d48838cd5355b5cdd8dce4a766a4125421424",
+    "config_sha256": "77354e99de8074ab5524cfc3a999b938387e846e1e4c194541a3924935a04494",
+    "cumulative_optimizer_seconds": 6.953463648008437,
+    "cumulative_wall_seconds": 19.85688572000072,
+    "cursor": 0,
+    "dataset_sha256": "f143742a7dd5c130a3adcbc40b611f14938a4759a50816efada9b59308b18f50",
+    "ended_at_unix": 1793325826.2898107,
+    "epoch": 5,
+    "global_step": 1630,
+    "process_id": 112473,
+    "resources": {
+      "address_space_limit_effective": 17179869184,
+      "affinity_effective": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "cgroup_v2": {
+        "cpu.max": "800000 100000",
+        "cpu.stat": "usage_usec 269990393\nuser_usec 245603990\nsystem_usec 24386403\nnice_usec 245608000\ncore_sched.force_idle_usec 0\nnr_periods 1124\nnr_throttled 102\nthrottled_usec 110997\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "482578432",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "530358272",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-deep-pilot-20261030.service"
+      },
+      "cgroup_v2_final": {
+        "cpu.max": "800000 100000",
+        "cpu.stat": "usage_usec 418145450\nuser_usec 383740210\nsystem_usec 34405239\nnice_usec 383769000\ncore_sched.force_idle_usec 0\nnr_periods 1323\nnr_throttled 220\nthrottled_usec 221605\nnr_bursts 0\nburst_usec 0",
+        "memory.current": "587366400",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.high": "16106127360",
+        "memory.max": "17179869184",
+        "memory.peak": "592814080",
+        "memory.swap.max": "0",
+        "path": "/user.slice/user-1000.slice/[REDACTED_EMAIL]/app.slice/idps-ai-deep-pilot-20261030.service"
+      },
+      "effective_cpus_before_cap": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "hard_allocation_limit": "RLIMIT_AS soft ceiling, inherited by children; this trainer spawns none",
+      "max_threads": 8,
+      "memory_guard": "process-tree RSS at optimizer boundaries",
+      "memory_limit_bytes": 17179869184,
+      "peak_rss_bytes": 248590336,
+      "peak_tree_rss_bytes": 248590336,
+      "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+      "python": "3.12.14",
+      "thermal_policy": "record sensors when available; no unverified universal temperature threshold",
+      "total_host_memory_bytes": 32440897536
+    },
+    "run_id": "0367b6fb99914defab92aeea7b4e1f08",
+    "session_id": "16142694295a4fa990c1e012e1f5a723",
+    "session_optimizer_seconds": 6.953463648008437,
+    "session_wall_seconds": 19.935095208000348,
+    "started_at_unix": 1793325806.3547454,
+    "stop_reason": "epochs_complete",
+    "used_previous_checkpoint": false
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-continuous/session_report.json",
+  "original_sha256": "adde1050aaac2c033390a7eb333f4cc8957e1f62dddfc3ef788b3513ba14a0cc",
+  "redactions": {
+    "strings_changed": 2
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

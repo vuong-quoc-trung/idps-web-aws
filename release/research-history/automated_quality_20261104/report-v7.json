@@ -1,0 +1,220 @@
+{
+  "content": {
+    "FORMAL_READY": false,
+    "RESEARCH_EVAL_READY": false,
+    "RESEARCH_FIT_READY": true,
+    "automatic_improvement": {
+      "evidence_minority_label_rows": 15872,
+      "experiment_started": false,
+      "hypothesis": "76 request-only features collapse distinct HTTP content into conflicting views",
+      "reason": "A bounded train-only fit is permissible; no independent quality evaluation exists"
+    },
+    "catalog_sha256": "169060e61d623a66741ebf17690a357862e10ebf7aec348da8db8449766b9472",
+    "data_accounting": {
+      "formal_admitted_requests": 0,
+      "numeric_views_after_quarantine_and_exposed_overlap": 43287,
+      "raw_publisher_rows": 704665,
+      "unique_http_text_representations": 312241,
+      "unique_numeric_views_before_quarantine": 67620,
+      "verified_new_physical_requests": 0
+    },
+    "enforcement_actions": 0,
+    "evidence_file_sha256": {
+      "audit": "3fd155f90e475e844ea03b7e8330a1e77a22c85f2b99ee8b699c13706f5056df",
+      "bundle_manifest": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+      "live_shadow": "12db7446e1a892569718b8b5b5c3a7d1dd6fc72b68ce742e283ca02cf79f713b",
+      "oracle": "c8e45c1530229eb5f7e4365e8f0e1f4df8498c5714fb255084f47bb9b1b48793",
+      "overlap": "adf6b46d7eea7730bf019a1cd7f1968c26b741be0512e8ffa09eec38d45d77c8",
+      "research_training": "e8d811cc4450b909771335f247e9cf1bb3fe84c098f328afea9330d13ab22639"
+    },
+    "formal_gate_status": "FAIL",
+    "formal_scale_policy_sha256": "1a0446f18a1349e8fcb8ca4f7ffbdb010e7e5bf2284e141920c83794201a994b",
+    "format_version": 2,
+    "gate_count": 17,
+    "gate_status_counts": {
+      "FAIL": 4,
+      "INCONCLUSIVE": 7,
+      "PASS": 6
+    },
+    "gates": {
+      "GLU207_artifact_integrity": {
+        "evidence": {
+          "checkpoint_integrity": "PASS",
+          "historical_onnx_parity_rows": 69345,
+          "lab_shadow": {
+            "end_to_end_p95_ms": 218.06234121322632,
+            "inferred": 4,
+            "requests_sent": 4,
+            "scope": "Python collector + Python inference; Rust/production not measured",
+            "sensor_drops": 0,
+            "three_source": 4
+          },
+          "manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+          "onnx_cpu_smoke_p95_ms": 6.041588350126403,
+          "onnx_cpu_smoke_scope": "one zero vector, excludes preprocessing and session construction; not HTTP inference latency",
+          "research_updates_previous_run": 100
+        },
+        "status": "PASS"
+      },
+      "GLU207_independent_quality": {
+        "evidence": {
+          "eligible_independent_balanced_cohorts": 0,
+          "fpr": null,
+          "pr_auc": null,
+          "precision": null,
+          "reason": "No new source/campaign with independent request-level intent labels",
+          "recall": null
+        },
+        "status": "INCONCLUSIVE"
+      },
+      "GLU207_public_input_coverage": {
+        "evidence": {
+          "nonempty_body_rows_not_encoded": 12555,
+          "observed_request_only_features": 76,
+          "required_fused_features": 207
+        },
+        "status": "FAIL"
+      },
+      "campaign_partition": {
+        "evidence": {
+          "campaign_metadata_available": false
+        },
+        "status": "INCONCLUSIVE"
+      },
+      "curated_vector_integrity": {
+        "evidence": {
+          "publisher_attack_views": 29045,
+          "publisher_benign_views": 14242,
+          "unique_numeric_views": 43287
+        },
+        "status": "PASS"
+      },
+      "dual_class_source_coverage": {
+        "evidence": {
+          "audited_two_class_sources": 1,
+          "minimum": 2
+        },
+        "status": "INCONCLUSIVE"
+      },
+      "exposed_development_overlap": {
+        "evidence": {
+          "remaining_exact_overlap_views": 0
+        },
+        "status": "PASS"
+      },
+      "formal_admission": {
+        "evidence": {
+          "admitted": 0,
+          "minimum": 2000000
+        },
+        "status": "FAIL"
+      },
+      "independent_source_lineage": {
+        "evidence": {
+          "declared_parent": "SR-BH2020"
+        },
+        "status": "FAIL"
+      },
+      "oracle_intent_ground_truth": {
+        "evidence": {
+          "intent_unknown": 8,
+          "machine_verified_attack": 0,
+          "machine_verified_benign": 0
+        },
+        "status": "INCONCLUSIVE"
+      },
+      "oracle_observation": {
+        "evidence": {
+          "application_mutations": 1,
+          "physical_requests": 8,
+          "three_source": 8
+        },
+        "status": "PASS"
+      },
+      "production_edge_parity": {
+        "evidence": {
+          "lab_shadow": {
+            "end_to_end_p95_ms": 218.06234121322632,
+            "inferred": 4,
+            "requests_sent": 4,
+            "scope": "Python collector + Python inference; Rust/production not measured",
+            "sensor_drops": 0,
+            "three_source": 4
+          },
+          "rust_edge_207_verified": false
+        },
+        "status": "INCONCLUSIVE"
+      },
+      "publisher_class_balance": {
+        "evidence": {
+          "majority_fraction_on_unique_views": 0.6709866703629265
+        },
+        "status": "PASS"
+      },
+      "publisher_http_parsing": {
+        "evidence": {
+          "fraction": 2.2705824753606322e-05,
+          "invalid_or_unusable": 16
+        },
+        "status": "PASS"
+      },
+      "raw_vector_label_consistency": {
+        "evidence": {
+          "minority_label_rows": 15872,
+          "mixed_views": 757
+        },
+        "status": "FAIL"
+      },
+      "related_template_and_temporal_leakage": {
+        "evidence": {
+          "exact_view_overlap_checked": true,
+          "per_row_timestamps_available": false,
+          "related_template_groups_available": false
+        },
+        "status": "INCONCLUSIVE"
+      },
+      "source_label_shortcut": {
+        "evidence": {
+          "audited_two_class_sources": 1,
+          "reason": "A single source cannot test whether source identity predicts the label"
+        },
+        "status": "INCONCLUSIVE"
+      }
+    },
+    "handoff_sha256": "b9d83c3e21f0afeec0be6e3675c60f7e9a535b0da8dc5b4a8f6509a7f525ef08",
+    "label_tiers": {
+      "MACHINE_VERIFIED_intent": 0,
+      "PUBLISHER_LABELED_parseable_rows": 704649,
+      "PUBLISHER_LABELED_raw_rows": 704665,
+      "UNKNOWN_independent_intent_on_parseable_publisher_rows": 704649,
+      "UNKNOWN_lab_oracle_intent": 8,
+      "UNKNOWN_publisher_label_rows": 0,
+      "WEAK_LABEL_promoted": 0,
+      "publisher_intent_independently_verified": 0
+    },
+    "model_quality_metrics": {
+      "attack_family_recall": null,
+      "false_positives_per_10000_benign": null,
+      "fpr": null,
+      "pr_auc": null,
+      "precision": null,
+      "reason": "No eligible independent balanced cohort for GLU207",
+      "recall": null
+    },
+    "model_quality_status": "INCONCLUSIVE",
+    "model_technical_status": "PASS",
+    "new_checkpoint": false,
+    "new_onnx": false,
+    "new_optimizer_updates": 0,
+    "next_action": "Run a bounded train-only fitting diagnostic on quarantined WAMM views; separately acquire a distinct dual-class source with request-level provenance and campaign/time groups for evaluation.",
+    "policy_sha256": "a26530696bfe6cbb036bf78497d08dd3a7ec9ed9e40e9b49b177fc79ab682058",
+    "process_peak_rss_kib": 451856,
+    "report_sha256": "19fe60029141e6c3d737b5973ddb8535df0de4ad1def21edfb974c74dc8ad1e5",
+    "research_eval_gate_status": "FAIL",
+    "research_fit_gate_status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/automated_quality_20261104/report-v7.json",
+  "original_sha256": "253cbad3207ca0789f2376cf15c3461f1f550edf4f8e1c700a792673287468a9",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

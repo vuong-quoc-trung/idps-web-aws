@@ -1,0 +1,12 @@
+{
+  "content": {
+    "all_previous_sources_weights_reports_and_holds_unchanged": true,
+    "changed_or_missing": [],
+    "protected_files": 2941,
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_evidence_20261101/preservation.json",
+  "original_sha256": "02b3e4d1e9867f4f781a1d0b9c6da7bcf4dbcdf6ba48562fff25d8418a7e23b0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

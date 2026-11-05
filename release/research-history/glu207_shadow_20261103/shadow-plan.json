@@ -1,0 +1,32 @@
+{
+  "content": {
+    "bundle": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-bundle",
+    "bundle_manifest_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+    "collected_dataset": "ai-training/.artifacts/glu207_shadow_20261103/collected-54-plus-setup",
+    "collected_manifest_sha256": "39ee707a9be49e966ea98bef8c2fbc956de5160e0fbc50821799333e08e25762",
+    "created_at": "2026-11-03T09:01:00+07:00",
+    "feature_implementation_sha256": "5e23ddf1d6190cfd38f9b7cdb279886e58c0d9332936b3e6111c24e45c296311",
+    "feature_spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "limits": {
+      "cpus": 4,
+      "max_scored_requests": 54,
+      "memory_gib": 16
+    },
+    "outputs": "aggregates only; no raw URI/IP/body/user, no per-request scores or labels, no threshold tuning",
+    "purpose": "Read-only 207-feature shadow/replay on already captured 54-request AI lab three-source PCAP; no quality scoring or deployment claim.",
+    "raw_capture": "ai-training/.artifacts/eve3-1102c",
+    "raw_source_sha256": {
+      "eve/eve.json": "0cb5fd45b0fa1b3e846a3d40b51815690db9aa4a37cde173a1f8aa015aa6784a",
+      "lab/access.log": "a85d67e5da7f7213d0fb59daf3fe8a3dad0f11e2f9c7bd77675311a725d6fe41",
+      "lab/student-audit.log": "795248415c08e716e91330cbefdb79af39dd92e1e7add90d2b0319956b1c8808",
+      "lab/traffic.pcap": "80efea9c0803722a28df75705b18b76feffb63002c75888aefea80641f27309e"
+    },
+    "scope": "development capture, Suricata offline PCAP decode, post-response shadow only",
+    "sealed": "Do not read test, 148 WCP files, or locked holdouts",
+    "source_policy": "score only exact Student+Nginx+Suricata request-id correlated rows; incomplete setup row may update causal context but is not scored"
+  },
+  "original_relative_path": "ai-training/.artifacts/glu207_shadow_20261103/shadow-plan.json",
+  "original_sha256": "73f64465e882f688a51541c65e00c40c6256870a4c891707cc6cd39e270eecd0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

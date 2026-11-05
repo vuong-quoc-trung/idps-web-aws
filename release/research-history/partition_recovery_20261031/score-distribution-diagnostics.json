@@ -1,0 +1,1853 @@
+{
+  "content": {
+    "fresh_test_quality_opened": false,
+    "models": {
+      "glu1024": {
+        "eligible_empirical_1pct_each_source": false,
+        "family_vs_same_source_benign_validation": [
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 39,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4831,
+                  14
+                ],
+                [
+                  39,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.002889576883384933,
+              "pr_auc_average_precision": 0.008896474422655471,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4884,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 180,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4831,
+                  14
+                ],
+                [
+                  180,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.002889576883384933,
+              "pr_auc_average_precision": 0.05227076547532431,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 5025,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 4936,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4831,
+                  14
+                ],
+                [
+                  3319,
+                  1617
+                ]
+              ],
+              "f1": 0.49246231155778897,
+              "fpr": 0.002889576883384933,
+              "pr_auc_average_precision": 0.8392853350637997,
+              "precision": 0.9914163090128756,
+              "recall": 0.32759319286871963,
+              "rows": 9781,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  657,
+                  79
+                ],
+                [
+                  51,
+                  21
+                ]
+              ],
+              "f1": 0.2441860465116279,
+              "fpr": 0.10733695652173914,
+              "pr_auc_average_precision": 0.22024595347828757,
+              "precision": 0.21,
+              "recall": 0.2916666666666667,
+              "rows": 808,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  657,
+                  79
+                ],
+                [
+                  41,
+                  31
+                ]
+              ],
+              "f1": 0.34065934065934067,
+              "fpr": 0.10733695652173914,
+              "pr_auc_average_precision": 0.5568938836706934,
+              "precision": 0.2818181818181818,
+              "recall": 0.4305555555555556,
+              "rows": 808,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  657,
+                  79
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.10733695652173914,
+              "pr_auc_average_precision": 0.13279569761998866,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "xss",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  657,
+                  79
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.10733695652173914,
+              "pr_auc_average_precision": 0.20922304278947737,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9984238147735596
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          }
+        ],
+        "score_distribution": [
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.009114583333333334,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9985288381576538,
+              "min": 0.00027436017990112305,
+              "p50": 0.15337613224983215,
+              "p90": 0.9979578852653503,
+              "p99": 0.9984139412641525
+            },
+            "rows": 1536,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9946776628494263,
+              "min": 0.6433869004249573,
+              "p50": 0.9874411821365356,
+              "p90": 0.9936295032501221,
+              "p99": 0.9945373743772506
+            },
+            "rows": 72,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.43844640254974365,
+              "min": 0.43844640254974365,
+              "p50": 0.43844640254974365,
+              "p90": 0.43844640254974365,
+              "p99": 0.43844640254974365
+            },
+            "rows": 1,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.42497914432129663,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9996707439422607,
+              "min": 0.002777576446533203,
+              "p50": 0.9983534216880798,
+              "p90": 0.9988135695457458,
+              "p99": 0.9991163015365601
+            },
+            "rows": 8391,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.002889576883384933,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9987735152244568,
+              "min": 0.00048744678497314453,
+              "p50": 0.3056459426879883,
+              "p90": 0.9954369783401489,
+              "p99": 0.998181004524231
+            },
+            "rows": 4845,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9662691950798035,
+              "min": 0.002027451992034912,
+              "p50": 0.45884501934051514,
+              "p90": 0.5354353070259095,
+              "p99": 0.9456882369518279
+            },
+            "rows": 39,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.998129665851593,
+              "min": 0.0330013632774353,
+              "p50": 0.6508999764919281,
+              "p90": 0.8190376877784729,
+              "p99": 0.9959158045053482
+            },
+            "rows": 180,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.32759319286871963,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9996538162231445,
+              "min": 0.00018411874771118164,
+              "p50": 0.9980310797691345,
+              "p90": 0.9987868666648865,
+              "p99": 0.9990128874778748
+            },
+            "rows": 4936,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9977852702140808,
+              "min": 0.0005467534065246582,
+              "p50": 0.002078235149383545,
+              "p90": 0.9872623682022095,
+              "p99": 0.9977844953536987
+            },
+            "rows": 1025,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9976430535316467,
+              "min": 0.0006445050239562988,
+              "p50": 0.7802609801292419,
+              "p90": 0.9976102352142334,
+              "p99": 0.9976424187421798
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.5,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9986550211906433,
+              "min": 0.9888677597045898,
+              "p50": 0.9981086254119873,
+              "p90": 0.998654019832611,
+              "p99": 0.9986548519134522
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9976903200149536,
+              "min": 0.9900882840156555,
+              "p50": 0.9972220957279205,
+              "p90": 0.9976896524429322,
+              "p99": 0.9976901084184646
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9982147216796875,
+              "min": 0.9937459230422974,
+              "p50": 0.9979718625545502,
+              "p90": 0.9982140898704529,
+              "p99": 0.9982147216796875
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.10733695652173914,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9986142516136169,
+              "min": 0.0005330443382263184,
+              "p50": 0.03228220343589783,
+              "p90": 0.9985771775245667,
+              "p99": 0.9986142516136169
+            },
+            "rows": 736,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.2916666666666667,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9986288547515869,
+              "min": 0.003746628761291504,
+              "p50": 0.6628545522689819,
+              "p90": 0.9986152470111846,
+              "p99": 0.9986279660463333
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.4305555555555556,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9988294839859009,
+              "min": 0.0611722469329834,
+              "p50": 0.9970048666000366,
+              "p90": 0.9988276362419128,
+              "p99": 0.9988294839859009
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9977567791938782,
+              "min": 0.015909969806671143,
+              "p50": 0.9962678849697113,
+              "p90": 0.997749137878418,
+              "p99": 0.9977567368745803
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.998423159122467,
+              "min": 0.9976122379302979,
+              "p50": 0.9979021549224854,
+              "p90": 0.9983810722827912,
+              "p99": 0.998423159122467
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          }
+        ],
+        "threshold": 0.9984238147735596
+      },
+      "glu256": {
+        "eligible_empirical_1pct_each_source": true,
+        "family_vs_same_source_benign_validation": [
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 39,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4845,
+                  0
+                ],
+                [
+                  39,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.007740995230606026,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4884,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 180,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4845,
+                  0
+                ],
+                [
+                  180,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.05583840145000404,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 5025,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 4936,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4845,
+                  0
+                ],
+                [
+                  4883,
+                  53
+                ]
+              ],
+              "f1": 0.02124674283423532,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.7836847168453625,
+              "precision": 1.0,
+              "recall": 0.01073743922204214,
+              "rows": 9781,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.35733756740923783,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.5182957891926724,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.767939723327744,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "xss",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.4901364252811055,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999186992645264
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          }
+        ],
+        "score_distribution": [
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.008463541666666666,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999316930770874,
+              "min": 0.0006923675537109375,
+              "p50": 0.13507160544395447,
+              "p90": 0.999876081943512,
+              "p99": 0.9999186187982559
+            },
+            "rows": 1536,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9997909069061279,
+              "min": 0.005854010581970215,
+              "p50": 0.9682604670524597,
+              "p90": 0.9995212495326996,
+              "p99": 0.9996861666440964
+            },
+            "rows": 72,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.6702113747596741,
+              "min": 0.6702113747596741,
+              "p50": 0.6702113747596741,
+              "p90": 0.6702113747596741,
+              "p99": 0.6702113747596741
+            },
+            "rows": 1,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.025026814444047193,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999697208404541,
+              "min": 0.002526700496673584,
+              "p50": 0.9993855953216553,
+              "p90": 0.9998520612716675,
+              "p99": 0.9999510943889618
+            },
+            "rows": 8391,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9998772144317627,
+              "min": 0.0004825592041015625,
+              "p50": 0.22479701042175293,
+              "p90": 0.998951256275177,
+              "p99": 0.9997713637351989
+            },
+            "rows": 4845,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.983667254447937,
+              "min": 0.00581049919128418,
+              "p50": 0.2721523642539978,
+              "p90": 0.35520638227462775,
+              "p99": 0.968424868583679
+            },
+            "rows": 39,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9981667995452881,
+              "min": 0.018940627574920654,
+              "p50": 0.8991580307483673,
+              "p90": 0.9769170105457305,
+              "p99": 0.997800987958908
+            },
+            "rows": 180,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.01073743922204214,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999613165855408,
+              "min": 0.0003762245178222656,
+              "p50": 0.9982817471027374,
+              "p90": 0.999842494726181,
+              "p99": 0.999919879436493
+            },
+            "rows": 4936,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.999190628528595,
+              "min": 0.0004093050956726074,
+              "p50": 0.002644062042236328,
+              "p90": 0.9938126802444458,
+              "p99": 0.9991903901100159
+            },
+            "rows": 1025,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.999345064163208,
+              "min": 0.00024455785751342773,
+              "p50": 0.9121797680854797,
+              "p90": 0.9993435740470886,
+              "p99": 0.9993448948860169
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9995718002319336,
+              "min": 0.9795539379119873,
+              "p50": 0.9940330982208252,
+              "p90": 0.9995524287223816,
+              "p99": 0.9995708268880844
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9993972182273865,
+              "min": 0.46777135133743286,
+              "p50": 0.9985111057758331,
+              "p90": 0.9993971586227417,
+              "p99": 0.9993972182273865
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9989153146743774,
+              "min": 0.9974808096885681,
+              "p50": 0.9986063838005066,
+              "p90": 0.9988065958023071,
+              "p99": 0.9989146375656128
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9987163543701172,
+              "min": 0.0004158616065979004,
+              "p50": 0.6407266855239868,
+              "p90": 0.9980281591415405,
+              "p99": 0.9987162947654724
+            },
+            "rows": 736,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9996152520179749,
+              "min": 0.0005087852478027344,
+              "p50": 0.8728772401809692,
+              "p90": 0.9996141791343689,
+              "p99": 0.9996152520179749
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9996978640556335,
+              "min": 0.03392130136489868,
+              "p50": 0.9780328273773193,
+              "p90": 0.9996951460838318,
+              "p99": 0.9996978640556335
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9994276762008667,
+              "min": 0.06283539533615112,
+              "p50": 0.9992777109146118,
+              "p90": 0.9994262397289276,
+              "p99": 0.9994276338815689
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9994367361068726,
+              "min": 0.9978106021881104,
+              "p50": 0.9980829954147339,
+              "p90": 0.9994035243988038,
+              "p99": 0.9994362282752991
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          }
+        ],
+        "threshold": 0.9999186992645264
+      },
+      "logistic": {
+        "eligible_empirical_1pct_each_source": false,
+        "family_vs_same_source_benign_validation": [
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 39,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4836,
+                  9
+                ],
+                [
+                  39,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0018575851393188853,
+              "pr_auc_average_precision": 0.0086336628241083,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4884,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 180,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4836,
+                  9
+                ],
+                [
+                  180,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0018575851393188853,
+              "pr_auc_average_precision": 0.052111631209753456,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 5025,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 4936,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4836,
+                  9
+                ],
+                [
+                  2379,
+                  2557
+                ]
+              ],
+              "f1": 0.6816848840309251,
+              "fpr": 0.0018575851393188853,
+              "pr_auc_average_precision": 0.8688112148804763,
+              "precision": 0.9964925954793453,
+              "recall": 0.518030794165316,
+              "rows": 9781,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  611,
+                  125
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.16983695652173914,
+              "pr_auc_average_precision": 0.1357835952994223,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  611,
+                  125
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.16983695652173914,
+              "pr_auc_average_precision": 0.15833726118839794,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  611,
+                  125
+                ],
+                [
+                  36,
+                  36
+                ]
+              ],
+              "f1": 0.3090128755364807,
+              "fpr": 0.16983695652173914,
+              "pr_auc_average_precision": 0.45143818431887195,
+              "precision": 0.2236024844720497,
+              "recall": 0.5,
+              "rows": 808,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "xss",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  611,
+                  125
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.16983695652173914,
+              "pr_auc_average_precision": 0.21734474302310586,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999579787254333
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          }
+        ],
+        "score_distribution": [
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.009114583333333334,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999967813491821,
+              "min": 0.00025751441717147827,
+              "p50": 0.3969871699810028,
+              "p90": 0.9994480013847351,
+              "p99": 0.9999565243721008
+            },
+            "rows": 1536,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999121427536011,
+              "min": 0.06673658639192581,
+              "p50": 0.8614416122436523,
+              "p90": 0.9994275212287903,
+              "p99": 0.9998830270767212
+            },
+            "rows": 72,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.2535858154296875,
+              "min": 0.2535858154296875,
+              "p50": 0.2535858154296875,
+              "p90": 0.2535858154296875,
+              "p99": 0.2535858154296875
+            },
+            "rows": 1,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.5606006435466572,
+            "label": 1,
+            "quantiles": {
+              "max": 1.0,
+              "min": 0.003510488662868738,
+              "p50": 0.99997878074646,
+              "p90": 0.9999997615814209,
+              "p99": 1.0
+            },
+            "rows": 8391,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0018575851393188853,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999994039535522,
+              "min": 3.844312595902011e-05,
+              "p50": 0.18443210422992706,
+              "p90": 0.9213483929634094,
+              "p99": 0.9893532276153565
+            },
+            "rows": 4845,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.8217958807945251,
+              "min": 0.007342780940234661,
+              "p50": 0.22612810134887695,
+              "p90": 0.28238355517387403,
+              "p99": 0.8017804193496703
+            },
+            "rows": 39,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.998007595539093,
+              "min": 0.07975932955741882,
+              "p50": 0.264574259519577,
+              "p90": 0.32809452414512635,
+              "p99": 0.8686720550060285
+            },
+            "rows": 180,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.518030794165316,
+            "label": 1,
+            "quantiles": {
+              "max": 1.0,
+              "min": 6.751081673428416e-05,
+              "p50": 0.9999685287475586,
+              "p90": 0.9999998807907104,
+              "p99": 1.0
+            },
+            "rows": 4936,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9938820600509644,
+              "min": 0.0032021438237279654,
+              "p50": 0.12353259325027466,
+              "p90": 0.956089198589325,
+              "p99": 0.9938797950744629
+            },
+            "rows": 1025,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.995987594127655,
+              "min": 0.15898607671260834,
+              "p50": 0.9504575133323669,
+              "p90": 0.9958922863006592,
+              "p99": 0.995987594127655
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.8511149883270264,
+              "min": 0.20718489587306976,
+              "p50": 0.7908751368522644,
+              "p90": 0.8507471263408661,
+              "p99": 0.8510681408643722
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.2916666666666667,
+            "label": 1,
+            "quantiles": {
+              "max": 1.0,
+              "min": 0.9946489930152893,
+              "p50": 0.9981046319007874,
+              "p90": 1.0,
+              "p99": 1.0
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.2777777777777778,
+            "label": 1,
+            "quantiles": {
+              "max": 1.0,
+              "min": 0.9925109148025513,
+              "p50": 0.9978353381156921,
+              "p90": 1.0,
+              "p99": 1.0
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.16983695652173914,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999995231628418,
+              "min": 0.002702795434743166,
+              "p50": 0.2905235290527344,
+              "p90": 0.9999946355819702,
+              "p99": 0.9999995231628418
+            },
+            "rows": 736,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9773014187812805,
+              "min": 0.14288955926895142,
+              "p50": 0.953170120716095,
+              "p90": 0.9772701263427734,
+              "p99": 0.9773014187812805
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9533126354217529,
+              "min": 0.08643143624067307,
+              "p50": 0.8550307154655457,
+              "p90": 0.952572101354599,
+              "p99": 0.9533126354217529
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.5,
+            "label": 1,
+            "quantiles": {
+              "max": 1.0,
+              "min": 0.9996384382247925,
+              "p50": 0.9999516606330872,
+              "p90": 1.0,
+              "p99": 1.0
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9991362690925598,
+              "min": 0.9928896427154541,
+              "p50": 0.9987845420837402,
+              "p90": 0.9991347193717957,
+              "p99": 0.9991360998153687
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          }
+        ],
+        "threshold": 0.9999579787254333
+      },
+      "mlp256": {
+        "eligible_empirical_1pct_each_source": true,
+        "family_vs_same_source_benign_validation": [
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 39,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4845,
+                  0
+                ],
+                [
+                  39,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.030493444714049908,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 4884,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 180,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4845,
+                  0
+                ],
+                [
+                  180,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.04993001771333925,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 5025,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 4936,
+              "benign": 4845,
+              "confusion_matrix": [
+                [
+                  4845,
+                  0
+                ],
+                [
+                  3759,
+                  1177
+                ]
+              ],
+              "f1": 0.3850809749713725,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.8554153316746764,
+              "precision": 1.0,
+              "recall": 0.238452188006483,
+              "rows": 9781,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "srbh2020"
+          },
+          {
+            "family": "cmd_injection",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.11433601090010215,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "path_traversal",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.18904222198747456,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "sqli",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  36,
+                  36
+                ]
+              ],
+              "f1": 0.6666666666666666,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.6301099435178743,
+              "precision": 1.0,
+              "recall": 0.5,
+              "rows": 808,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          },
+          {
+            "family": "xss",
+            "metrics": {
+              "attack": 72,
+              "benign": 736,
+              "confusion_matrix": [
+                [
+                  736,
+                  0
+                ],
+                [
+                  72,
+                  0
+                ]
+              ],
+              "f1": 0.0,
+              "fpr": 0.0,
+              "pr_auc_average_precision": 0.34564561979635655,
+              "precision": 0.0,
+              "recall": 0.0,
+              "rows": 808,
+              "threshold": 0.9999801516532898
+            },
+            "scope": "Binary family-vs-benign slice with same source negatives; not a multiclass family classifier or extra physical observations",
+            "source": "student-lab"
+          }
+        ],
+        "score_distribution": [
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.009114583333333334,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999964237213135,
+              "min": 0.0012121796607971191,
+              "p50": 0.41365036368370056,
+              "p90": 0.99993896484375,
+              "p99": 0.9999800711870194
+            },
+            "rows": 1536,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.06944444444444445,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999874234199524,
+              "min": 0.27381688356399536,
+              "p50": 0.9876393377780914,
+              "p90": 0.999731719493866,
+              "p99": 0.999986492395401
+            },
+            "rows": 72,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.43677276372909546,
+              "min": 0.43677276372909546,
+              "p50": 0.43677276372909546,
+              "p90": 0.43677276372909546,
+              "p99": 0.43677276372909546
+            },
+            "rows": 1,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.2493147419854606,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999994039535522,
+              "min": 0.00293809175491333,
+              "p50": 0.9997825622558594,
+              "p90": 0.9999939799308777,
+              "p99": 0.9999986290931702
+            },
+            "rows": 8391,
+            "source": "srbh2020",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.999980092048645,
+              "min": 0.00018852949142456055,
+              "p50": 0.36521804332733154,
+              "p90": 0.9970106840133667,
+              "p99": 0.9988222432136535
+            },
+            "rows": 4845,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.998172402381897,
+              "min": 0.06879496574401855,
+              "p50": 0.8323134779930115,
+              "p90": 0.8968246579170227,
+              "p99": 0.9973946321010589
+            },
+            "rows": 39,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9971992373466492,
+              "min": 0.07551199197769165,
+              "p50": 0.5611785054206848,
+              "p90": 0.5984942436218261,
+              "p99": 0.9579330939054493
+            },
+            "rows": 180,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.238452188006483,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999993443489075,
+              "min": 0.006046473979949951,
+              "p50": 0.9996309280395508,
+              "p90": 0.9999958872795105,
+              "p99": 0.9999987483024597
+            },
+            "rows": 4936,
+            "source": "srbh2020",
+            "split": "val"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999781847000122,
+              "min": 0.0006534457206726074,
+              "p50": 0.4466555118560791,
+              "p90": 0.9975188374519348,
+              "p99": 0.9999781847000122
+            },
+            "rows": 1025,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.2916666666666667,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999887943267822,
+              "min": 0.042915940284729004,
+              "p50": 0.99560546875,
+              "p90": 0.9999887645244598,
+              "p99": 0.9999887943267822
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.99610435962677,
+              "min": 0.8656318187713623,
+              "p50": 0.9778155088424683,
+              "p90": 0.9960052967071533,
+              "p99": 0.9961004662513733
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.2916666666666667,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999994039535522,
+              "min": 0.987733006477356,
+              "p50": 0.9999346733093262,
+              "p90": 0.9999994039535522,
+              "p99": 0.9999994039535522
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.2777777777777778,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999856352806091,
+              "min": 0.997946560382843,
+              "p50": 0.9995794296264648,
+              "p90": 0.99998539686203,
+              "p99": 0.9999856352806091
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "calibration"
+          },
+          {
+            "family": "benign",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 0,
+            "quantiles": {
+              "max": 0.9999721050262451,
+              "min": 0.000922083854675293,
+              "p50": 0.8507447242736816,
+              "p90": 0.9934972524642944,
+              "p99": 0.9999721050262451
+            },
+            "rows": 736,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "cmd_injection",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9962252378463745,
+              "min": 0.02265065908432007,
+              "p50": 0.9824178218841553,
+              "p90": 0.9960899949073792,
+              "p99": 0.9962252378463745
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "path_traversal",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9949589967727661,
+              "min": 0.5911868810653687,
+              "p50": 0.990630030632019,
+              "p90": 0.9946142435073853,
+              "p99": 0.9949554842710495
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "sqli",
+            "fraction_at_or_above_threshold": 0.5,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9999979138374329,
+              "min": 0.3442872166633606,
+              "p50": 0.9999391138553619,
+              "p90": 0.9999979138374329,
+              "p99": 0.9999979138374329
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          },
+          {
+            "family": "xss",
+            "fraction_at_or_above_threshold": 0.0,
+            "label": 1,
+            "quantiles": {
+              "max": 0.9997786283493042,
+              "min": 0.9974803924560547,
+              "p50": 0.9996419548988342,
+              "p90": 0.9997740983963013,
+              "p99": 0.9997786283493042
+            },
+            "rows": 72,
+            "source": "student-lab",
+            "split": "val"
+          }
+        ],
+        "threshold": 0.9999801516532898
+      }
+    },
+    "scope": "exposed development diagnostics, no HPO or promotion",
+    "thresholds_modified": false
+  },
+  "original_relative_path": "ai-training/.artifacts/partition_recovery_20261031/score-distribution-diagnostics.json",
+  "original_sha256": "0441c20243f91b418b96f8213cda8fba73879ed752a8b8f48410ce8a63829a54",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

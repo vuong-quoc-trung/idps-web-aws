@@ -1,0 +1,97 @@
+{
+  "content": {
+    "dataset_sha256": "eb494a87534b156b3a4f6b1f5746bf798c2f8971ff266f645a603725b840b5c5",
+    "feature_count": 148,
+    "feature_rows": 19275,
+    "files": {
+      "feature_spec.json": {
+        "bytes": 8216,
+        "sha256": "ac2f812ae2d4d1036a51e5b31275ed71c93c7f877017869caf40ef7ab6e953a6"
+      },
+      "features.parquet": {
+        "bytes": 1416031,
+        "sha256": "ac2257dc371fb75e7150a26b4cb8809a58882fd3e38434cb5839fc7f6484e6e6"
+      },
+      "observations.parquet": {
+        "bytes": 7688086,
+        "sha256": "29187d857520f4f5678b970c3db978bedd1e5bcc13b0f6a84ef3464c5a67c3ae"
+      },
+      "requests.parquet": {
+        "bytes": 2920256,
+        "sha256": "8b7dfd04dbff41fcaf177f2ce9b9c0559400fa85f098ebcc281a77ad639a5600"
+      }
+    },
+    "flow_semantics": "most recent available completed client flow; available_at=max(EVE timestamp, flow.end+65s), original timestamps unchanged; live receipt acceptance separate",
+    "format_version": 1,
+    "input_profile": "edge_masked_v1",
+    "label_distribution": {
+      "test": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      },
+      "train": {
+        "behavioral_anomaly": 288,
+        "benign": 9549,
+        "brute_force": 288,
+        "cmd_injection": 288,
+        "path_traversal": 288,
+        "scanner_recon": 288,
+        "sqli": 288,
+        "xss": 288
+      },
+      "val": {
+        "behavioral_anomaly": 96,
+        "benign": 3183,
+        "brute_force": 96,
+        "cmd_injection": 96,
+        "path_traversal": 96,
+        "scanner_recon": 96,
+        "sqli": 96,
+        "xss": 96
+      }
+    },
+    "label_manifest_sha256": "510d488e4154fee477134f4506303f14ee6554eb1ac0b6c09e43c3bce0093c55",
+    "normalizer_version": "ai-normalizer-3",
+    "note": "Synthetic metrics verify plumbing only when the capture is synthetic; unknown/weak labels never trained",
+    "parent_dataset_sha256": "d6a6329c2b9521824645885a8d1bffc0544c00b8c3f103012caacfcda0b303eb",
+    "redaction_key_fingerprint": "4d7e69ccf384879353242f30f1153a02be560a88424b01849e35e34658f928cc",
+    "rows": {
+      "test": 3855,
+      "train": 11565,
+      "val": 3855
+    },
+    "schema_sha256": "7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4",
+    "schema_version": "1.0",
+    "split": {
+      "cutoffs": [
+        1793158031.0849135,
+        1793159071.4455955
+      ],
+      "embargo_seconds": 300,
+      "group_columns": [
+        "campaign_key",
+        "client_key",
+        "user_key",
+        "session_key"
+      ],
+      "groups": 15,
+      "policy": "connected groups never cross partitions; spanning/boundary groups purged; no random fallback",
+      "reviewed_rows": {
+        "test": 3855,
+        "train": 11565,
+        "val": 3855
+      }
+    },
+    "stage": "prepared"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261028/dataset-ready/prepared/dataset_manifest.json",
+  "original_sha256": "e88e1dafbbb743338d4b7c2a0e87c93b2ece9e1b72c5a515a35ac47df9af1382",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

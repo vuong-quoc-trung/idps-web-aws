@@ -1,0 +1,29 @@
+{
+  "content": {
+    "deep_mlp": {
+      "kind": "deep_mlp",
+      "learning_rate": 0.0003,
+      "total_steps": 20,
+      "unique_training_views": 1233,
+      "width": 256
+    },
+    "denoising_autoencoder": {
+      "kind": "denoising_autoencoder",
+      "learning_rate": 0.0003,
+      "total_steps": 294,
+      "unique_training_views": 18713,
+      "width": 256
+    },
+    "residual_glu": {
+      "kind": "residual_glu",
+      "learning_rate": 0.0003,
+      "total_steps": 20,
+      "unique_training_views": 1233,
+      "width": 1024
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/request_view_20261030/pilot/preregistered-plan.json",
+  "original_sha256": "54fbef2d7ba8dcc1116980f614f6b9064e52899c120a46f0eac807498e08769a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

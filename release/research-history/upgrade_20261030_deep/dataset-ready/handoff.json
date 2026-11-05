@@ -1,0 +1,159 @@
+{
+  "content": {
+    "approved_label_rows": 69345,
+    "capacity_status": "CAPACITY_ESTIMATE_PASS",
+    "collected_dataset_sha256": "3cbfab3d631a83fa53af9535947fbe13c4db3a131ab7ac7494c7a0193e61ea14",
+    "experiment_plan_sha256": "d023faa8d52a26ecdddb3c83cfeb80865aae53644465a206682299a45fc889cd",
+    "feature_count": 189,
+    "format_version": 1,
+    "heldout_overlap_excluded_rows": 0,
+    "input_profile": "safe_query_numeric_v2",
+    "limits": [
+      "Actual HTTP and PCAP/EVE on isolated loopback fixture; not representative production traffic",
+      "safe_query_numeric_v2 requires the identical pre-redaction AI EVE bridge at inference; current Rust serving path has not accepted this new profile. No raw query is persisted",
+      "Completed-client-flow context reserves 65s after packet end; event-time replay is not acceptance of live sensor receipt delays",
+      "Independent campaign plans, real 620s gaps and disjoint identities across three temporal bands; one host/topology and scripted workload still limit generalization",
+      "Scenario labels describe intent/expected outcomes; no exploit success or independent human realism review",
+      "No Rust inference, production champion, shadow or firewall enforcement accepted",
+      "Decoded payloads repeated in earlier temporal bands remain context only in later bands; label evidence records each holdout exclusion"
+    ],
+    "next_training_commands": {
+      "deep_mlp": [
+        "<PROJECT_ROOT>/ai-training/.venv/bin/idps-ai",
+        "train",
+        "--dataset",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/prepared",
+        "--config",
+        "<PROJECT_ROOT>/ai-training/configs/deep_mlp_config.yaml",
+        "--run-dir",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/runs/deep_mlp",
+        "--readiness-report",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/readiness/readiness.json",
+        "--epochs",
+        "5",
+        "--cpus",
+        "8",
+        "--memory-limit-gib",
+        "16",
+        "--max-duration-minutes",
+        "150"
+      ],
+      "denoising_autoencoder": [
+        "<PROJECT_ROOT>/ai-training/.venv/bin/idps-ai",
+        "train",
+        "--dataset",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/prepared",
+        "--config",
+        "<PROJECT_ROOT>/ai-training/configs/denoising_config.yaml",
+        "--run-dir",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/runs/denoising_autoencoder",
+        "--readiness-report",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/readiness/readiness.json",
+        "--epochs",
+        "5",
+        "--cpus",
+        "8",
+        "--memory-limit-gib",
+        "16",
+        "--max-duration-minutes",
+        "150"
+      ],
+      "gated_residual": [
+        "<PROJECT_ROOT>/ai-training/.venv/bin/idps-ai",
+        "train",
+        "--dataset",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/prepared",
+        "--config",
+        "<PROJECT_ROOT>/ai-training/configs/gated_residual_config.yaml",
+        "--run-dir",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/runs/gated_residual",
+        "--readiness-report",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/readiness/readiness.json",
+        "--epochs",
+        "5",
+        "--cpus",
+        "8",
+        "--memory-limit-gib",
+        "16",
+        "--max-duration-minutes",
+        "150"
+      ],
+      "residual": [
+        "<PROJECT_ROOT>/ai-training/.venv/bin/idps-ai",
+        "train",
+        "--dataset",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/prepared",
+        "--config",
+        "<PROJECT_ROOT>/ai-training/configs/residual_config.yaml",
+        "--run-dir",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/runs/residual",
+        "--readiness-report",
+        "<PROJECT_ROOT>/ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/readiness/readiness.json",
+        "--epochs",
+        "5",
+        "--cpus",
+        "8",
+        "--memory-limit-gib",
+        "16",
+        "--max-duration-minutes",
+        "150"
+      ]
+    },
+    "nginx_rule_baseline": {
+      "matched_rows": 13869,
+      "partition": "val",
+      "scope": "Nginx four-map flags only, not the full Rust/Suricata rule ensemble"
+    },
+    "planned_initial_total_epochs": 5,
+    "prepared_dataset_sha256": "f143742a7dd5c130a3adcbc40b611f14938a4759a50816efada9b59308b18f50",
+    "readiness_report_sha256": "012ed55f63440388ef154d1bec5f402bbaf92f1c5e6c4cbfe1b38734199c22cc",
+    "real_training_hours": 0,
+    "rows": {
+      "test": 13869,
+      "train": 41607,
+      "val": 13869
+    },
+    "scope": {
+      "format_version": 1,
+      "inputs": [
+        {
+          "excluded_outside_declared_capture": 1,
+          "file": "00-student.jsonl",
+          "kept": 69345,
+          "sha256": "56403c95ff24fe5e5614b1894dc0d481c048ad6cbbff61597d076493abb992f3",
+          "source": "student",
+          "source_sha256": "cc01fe85979112cc02d4273ba8feea679aa0abf92e2c1d86d5d230e8cabbbc33"
+        },
+        {
+          "excluded_outside_declared_capture": 1,
+          "file": "01-nginx.jsonl",
+          "kept": 69345,
+          "sha256": "c2a554f965de5c531e1226c80c66fb92308fde7117611df6f00261fbd9acec92",
+          "source": "nginx",
+          "source_sha256": "f95295d8a3e465f669f6e16df2a4f74ac08f74c12beaff923730d0e443c55f25"
+        },
+        {
+          "excluded_outside_declared_capture": 0,
+          "file": "02-suricata.jsonl",
+          "kept": 158995,
+          "sha256": "7875e21bed6e18798d742734b2f7db49c53d6a216541bc0d474373a2a808ffee",
+          "source": "suricata",
+          "source_sha256": "7875e21bed6e18798d742734b2f7db49c53d6a216541bc0d474373a2a808ffee"
+        }
+      ],
+      "observer_sha256": "392fc98265bc5ec46c3c010c3ff0334d88ec757a0e5b634be07368fdf83c66ad",
+      "policy": "Student/Nginx: exact observer IDs including pending; Suricata: every record from the private bounded PCAP, including benign HTTP/flow/stats; never filter by label/status/rule",
+      "requests": 69345
+    },
+    "scope_manifest_sha256": "959bc5662f876d47ee673282f56b4931ce9a5e6507443644660c95a663c208b2",
+    "status": "READY_FOR_OFFLINE_PILOT",
+    "training_executed": false,
+    "unknown_label_rows": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/handoff.json",
+  "original_sha256": "08c32a8c86e66f1b7f1c4679da809d85327203606f782ecb93b0f3bfca161e3c",
+  "redactions": {
+    "strings_changed": 20
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

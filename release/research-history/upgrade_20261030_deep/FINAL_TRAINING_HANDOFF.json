@@ -1,0 +1,77 @@
+{
+  "content": {
+    "alternative_commands": {
+      "deep_mlp": "bash ai-training/scripts/train-expanded-session.sh deep_mlp",
+      "denoising_autoencoder": "bash ai-training/scripts/train-expanded-session.sh denoising_autoencoder",
+      "gated_residual": "bash ai-training/scripts/train-expanded-session.sh gated_residual",
+      "residual": "bash ai-training/scripts/train-expanded-session.sh residual"
+    },
+    "arithmetic_contract": "FP32 params/activations/gradients/Adam; affine reductions FP64 then roundFP32; gated sigmoid FP64 then FP32",
+    "artifact_availability": "Local ignored files on this machine only; teammates must transfer approved private artifacts or re-collect; do not assume Git contains data/models",
+    "best_supervised_validation_ap": "residual",
+    "branch": "feat/ai-model-training",
+    "candidate_parameters": {
+      "deep_mlp": 248072,
+      "denoising_autoencoder": 294717,
+      "gated_residual": 445448,
+      "residual": 16840
+    },
+    "canonical_schema": "1.0",
+    "capture_source_commit": "fd0fea47dbc30a56dc8a9bed819b15cf3dc66d11",
+    "champion_selected": false,
+    "dataset": "ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/prepared",
+    "dataset_sha256": "f143742a7dd5c130a3adcbc40b611f14938a4759a50816efada9b59308b18f50",
+    "feature_count": 189,
+    "feature_version": "ai-features-4.1",
+    "formal_training_started": false,
+    "format_version": 2,
+    "handoff_sha256": "554ad32e2a76656ec26d8b4a02be119cd4f72763318b57892d4220d7b3a81165",
+    "historical_handoff_policy": "Preserved byte-for-byte; use this current manifest for the new189-column experiment",
+    "historical_handoffs": [
+      "ai-training/.artifacts/upgrade_20261028/FINAL_TRAINING_HANDOFF.json",
+      "ai-training/.artifacts/upgrade_20261029_query/TRAINING_HANDOFF.json"
+    ],
+    "input_profile": "safe_query_numeric_v2",
+    "limits": [
+      "Fictional accounts, scripted HTTP intent, one host/topology; no independent human label/realism review or real production benchmark",
+      "Payload identities/views are disjoint; related exploit grammars still share structure, not proof of all near-duplicate or unseen-family generalization",
+      "Hard negatives are deliberately ambiguous numeric/text structures; numeric projection cannot reconstruct full semantic intent or removed credentials",
+      "Validation shares threshold calibration and candidate comparison; final test quality remains sealed",
+      "Deep models increase capacity, do not guarantee better validation, zero-day detection or a150minute run; stop early when appropriate",
+      "Denoising corruption is applied only during benign fitting; not equivalent to source outages, score is MSE not attack probability",
+      "No attention/sequence architecture claimed; gated residual uses per-feature hidden gates and existing causal10/60/300s aggregates",
+      "Rust serving, receipt-time, TLS vantage, source outage fallback, shadow and enforcement are separate acceptance tasks",
+      "PCAP kernel-drop counter is 4; flow counters reflect captured packets, not certified lossless wire measurement; transaction/source completeness is checked separately",
+      "Raw PCAP contains fake lab credentials/cookies and stays private0600; raw/key/weights not committed; shared artifact store not provisioned",
+      "8CPU/16GiB is a job ceiling;16GiB is about52.96percent of OS-visible RAM; short pilot does not certify thermal/endurance150minutes"
+    ],
+    "next_large_candidate": "gated_residual",
+    "onnx_tolerance": {
+      "atol": 1e-06,
+      "rtol": 1e-05
+    },
+    "pilot": "ai-training/.artifacts/upgrade_20261030_deep/pilot/pilot-report.json",
+    "pilot_sha256": "e1b55c380b6336c3f0fbd4c4abfa6417e95aa6ce6cd95f1ea3610455623ce6f2",
+    "pretrain_report": "ai-training/reports/PRETRAIN_EXPANDED_20261030.json",
+    "pretrain_report_file_sha256": "2431d367e95a2c48340f78f96243cf6eb50c82fefb5f1d65a8b7313ba75b24ef",
+    "readiness": "ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/readiness/readiness.json",
+    "readiness_sha256": "012ed55f63440388ef154d1bec5f402bbaf92f1c5e6c4cbfe1b38734199c22cc",
+    "recommended_command": "bash ai-training/scripts/train-expanded-session.sh gated_residual",
+    "resource_policy": {
+      "checkpoint_seconds": 300,
+      "cpus": 8,
+      "max_epochs": 150,
+      "max_minutes": 150,
+      "memory_high_gib": 15,
+      "memory_limit_gib": 16,
+      "swap": 0
+    },
+    "status": "READY_FOR_EXPANDED_OFFLINE_EXPERIMENT",
+    "test_quality_metrics_sealed": true,
+    "updated_at": "2026-10-30T09:08:20.576539+07:00"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261030_deep/FINAL_TRAINING_HANDOFF.json",
+  "original_sha256": "a3f2c940a23b3857ac0a16615509421e6ec2ec0c3e5e88becbf35cadd9a1bf42",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

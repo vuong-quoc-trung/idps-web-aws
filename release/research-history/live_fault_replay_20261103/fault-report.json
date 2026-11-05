@@ -1,0 +1,34 @@
+{
+  "content": {
+    "baseline_target_requests": 4,
+    "bundle_sha256": "1748b7e0f356ff5a085e7bb59a9030d3173c2617b74784479bc2069adf6fe858",
+    "enforcement_actions": 0,
+    "exact_duplicate_source_deduplicated": true,
+    "exact_duplicate_vector_parity": true,
+    "late_eve_in_final_snapshot": true,
+    "limitations": [
+      "Late EVE receipt is injected by snapshot staging, not observed as a naturally delayed sensor event",
+      "The replay driver performs no second score after timeout; a general live scheduler is not deployed",
+      "Same Python feature path; no Rust 207-vector implementation"
+    ],
+    "logical_duplicate_ambiguous": true,
+    "logical_duplicate_rejected": true,
+    "missing_eve_at_deadline_rejected": true,
+    "mode": "fault_replay_existing_live_capture_no_new_http",
+    "no_retroactive_score_in_replay": true,
+    "out_of_order_event_rejected": true,
+    "prior_flow_missing_before_wait": 2,
+    "prior_flow_present_after_wait": 2,
+    "reordered_lines_vector_parity": true,
+    "same_fused_request_second_delivery_rejected": false,
+    "source_sha256": {
+      "nginx": "4103159c0d3c564bdc1de7a571026a9a561581a26a63344dd2a990632b093366",
+      "student": "1726eb3445f629b11a74e35b96ef1827be528d75f2cff90f4cf4fdab09e21a68",
+      "suricata": "517a3a90199c4a591f43345efc5be1221db8bda01dd0c49ffff273e910ac1ae8"
+    }
+  },
+  "original_relative_path": "ai-training/.artifacts/live_fault_replay_20261103/fault-report.json",
+  "original_sha256": "64265d3a413f116f07e657e2171808c5edf6e8bdd989522f48850f664af31c2a",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

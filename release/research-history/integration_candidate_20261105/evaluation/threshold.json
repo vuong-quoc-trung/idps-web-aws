@@ -1,0 +1,17 @@
+{
+  "content": {
+    "checkpoint_sha256": "09ae4a6900806c87b5f277c97e9b0b30403700d4c185e112455b000a2761f2d3",
+    "created_at_unix": 1793887423.4958518,
+    "evaluation_scores_used": false,
+    "manifest_sha256": "b4d4de574f7527eeac69fd9ff08f17b3740dd3581abd0bc6ef004b045c278cd8",
+    "normal_flagged": 57,
+    "normal_views": 5745,
+    "plan_sha256": "811fbcb7712cffcb69aaa2792a5ec602b601ad2ec4a5af18731e945ece43a351",
+    "scope": "WAF role1 publisher-NORMAL p99 higher; strict greater than",
+    "threshold": 0.9068083763122559
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/evaluation/threshold.json",
+  "original_sha256": "4791d5e08415dd1133f6fa9a2587b2cb324405e6cc43d8ec9ff556c71eb23d85",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

@@ -1,0 +1,27 @@
+{
+  "content": {
+    "blind_report_file_sha256": "1985ffeeaeb511bc29cd785a6316e3710f695fdc6ec6bd21936db55bec6cffc2",
+    "blind_sqlite_sha256": "2baaec01a44a2e72e4bfc7d3f99255abc8fc0b13a0fc5ec2ec5636904681cf81",
+    "collector_proposal_file_sha256": {
+      "eve_first": "d1eee29967417a48fd242f9c0c220242484af5d89cccff46ccf6ef714e47fb91",
+      "eve_novel": "ed3ea6dd21bf6332ac998103ba75afc5ee3e66b0527c9bc3dc916c8fd1dc683f",
+      "two_source": "27cbe8557c4ade8f36ecf4a5e2c50654471d9f20214a6875dc49a53e9566f938"
+    },
+    "comparison_sha256": "18c96f3523ca8d169a80a0202792ed1e44b445113d678f8b476b0cd4f03e12bb",
+    "counts": {
+      "no_syntax_cue_on_collector_attack_claim": 22,
+      "requests_compared": 162,
+      "syntax_cue_on_collector_benign_claim": 7
+    },
+    "format_version": 1,
+    "limits": "Collector claims and syntax hints disagree or agree without proving semantic intent. This comparison cannot approve labels or change the blind record.",
+    "oracle_verified_labels": 0,
+    "report_sha256": "bb6af1d821884bc86429dfd692b14e4bfd37908f5afeda464d5703238be56133",
+    "status": "UNBLINDED_TRIAGE_DISAGREEMENTS_NOT_LABELS",
+    "training_admission": 0
+  },
+  "original_relative_path": "ai-training/.artifacts/evidence_campaign_20261102/auto-review-v3-unblind/report.json",
+  "original_sha256": "24e3d62eab1b9975d5725b3d2dfe153145ccc6192ec6ffeee6f66f42e3824ea8",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

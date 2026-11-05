@@ -1,0 +1,11 @@
+{
+  "content": {
+    "changed": [],
+    "files": 159,
+    "status": "PASS"
+  },
+  "original_relative_path": "ai-training/.artifacts/attack_evidence_20261101/source-freeze-verification.json",
+  "original_sha256": "bff72ad0f0da1a8f020f5d88dc63e3c95e78df3a22a51bae54bdc661a51bcb7d",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

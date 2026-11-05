@@ -1,0 +1,31 @@
+{
+  "content": {
+    "champion_selected": false,
+    "enforcement_actions": 0,
+    "formal_training": false,
+    "format_version": 1,
+    "lab_group_files": [
+      "lab-group0.json",
+      "lab-group1.json",
+      "lab-group2.json"
+    ],
+    "limits": [
+      "Selected on originalvalidation only, never choose winner from these exposedcohorts",
+      "Newlab is one later time/samefixture and runnerintent labels, not independent humanreview",
+      "SRBH is one WordPress Internetenvironment with publisher signature-assisted annotations, duplicate/conflicting identities and metadata anomalies;0formaladmission",
+      "URI-only model cannot observe body/header/sequence attacks; do not infer XSS from generic CAPEC242",
+      "Full source sample primary keeps provenance anomalies; sensitivity subsets are supplemental",
+      "No rawquery, body, header, clientIP, familylabel or CAPEC/SID enters model tensors"
+    ],
+    "original_final_lab_test_opened": false,
+    "public_results": "public-results.json",
+    "registry_sha256": "7e8390b9fa6686ced14612fcb467cabf4a7d751299e2ee431da9f9656893fdce",
+    "selected_research_candidate_before_test": "bounded76-glu17",
+    "status": "EXECUTED_NOT_PRODUCTION_ACCEPTANCE",
+    "test_quality_exposed_now": true
+  },
+  "original_relative_path": "ai-training/.artifacts/generalization_20261031/evaluation/report.json",
+  "original_sha256": "80ca1a8703767e9b711d743898ef75baad55ea462cebbdf1577fee57d9b3dda0",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

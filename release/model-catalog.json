@@ -1,0 +1,2427 @@
+{
+  "scope": "Nonsealed model content metadata at inventory time; no original weights removed",
+  "models": [
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-treatment-bundle/model.onnx",
+      "bytes": 38174064,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "fd0d1ad528063f2efe2f98b7870bf6878c28f4f630c2fa82dd9f8377d7582797",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-treatment-run/checkpoints/step-000000000300-d9d4decc5a16/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2fad9f0a8d8e3f33098296cc882a7983c8fe9d3319caf4a416d61cfa87cef7f3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-treatment-run/checkpoints/step-000000000213-74945e132119/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c2dc968e920d8fd13d2ca1b1ab3320e7b9be602466c0c54cb404e1d422512e23",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-treatment-run/checkpoints/step-000000000107-8cf6b81057b8/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "88c55bf75417035f34d49ddb9bb49768431748a437a2f1879e64447abe4eb9b0",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/mlp256-baseline-bundle/model.onnx",
+      "bytes": 878466,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "a60e976d1f2b6924a40fb1e9f63b584ef4bba407a633ca4c95cdbe086a0b2dd3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/mlp256-treatment-bundle/model.onnx",
+      "bytes": 878466,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "f6e29e397fb3c6ac4675e327eeb05c87bede62813555d21d01580656ad9b8b09",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-baseline-run/checkpoints/step-000000000213-d1ef14b4677a/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "62eb17997ecb2bfb2995151920ca9b07928cdeedb6fa92b7c58cf5bd48d0263b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-baseline-run/checkpoints/step-000000000300-c28b6b595d67/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "69b99d77aefc3958e0a56cbf19713d3e4f9eacd89b646324fb389a4b2316a91b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-baseline-run/checkpoints/step-000000000107-d4dea3f21182/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c9c2e0804ec570b1c070efdd1c650c1985b7032a0bb3a3f222792d4649f1555f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/glu1024-baseline-bundle/model.onnx",
+      "bytes": 38174064,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "fc6c65eeabccf1092bcec4df84cc43021936ebef7fa107aa3b46ecb92c87b69b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/mlp256-baseline-run/checkpoints/step-000000000300-7a5b4b3b885a/arrays.npz",
+      "bytes": 2854340,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8e3755381ec40b69fdb3ba010daab2c53a54f1670017ef9460ce633e9bcc87ed",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/sampling_diagnostic_20261103/mlp256-treatment-run/checkpoints/step-000000000300-04760f29ef43/arrays.npz",
+      "bytes": 2854340,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "60b42b675cbfebc9e5cfef2283bbfc483800f90ed9009d8ebd9592f3719ac2ee",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_research_20261104/wamm_fit/run-v1/publisher/checkpoints/step-000000000200-f3484a699f1c/arrays.npz",
+      "bytes": 568908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7fb0e42eae293d71716f63f448f34c42f82a37e01a7e7a7f5a03c6b09d1ecc82",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_research_20261104/wamm_fit/run-v1/shuffled_control/checkpoints/step-000000000200-fa374853dd88/arrays.npz",
+      "bytes": 568908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "99acb189a0f0fecf64bc374b3abac4f8c050e2b014b817a97dcd7da682f67c93",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v2/numeric_mlp/checkpoints/step-000000000300-e8cc35049dda/arrays.npz",
+      "bytes": 392588,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8589ce31be29656da9cffacbe7420a30194db4fa29d47a2e75c0e1069043b56f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v2/content_mlp/checkpoints/step-000000000300-23fa5621253f/arrays.npz",
+      "bytes": 785804,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "83dc9d5c0057ff71ffb06828ccca2b1e614bc27939a0c29fd70461255e8ded79",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v1/numeric_mlp/checkpoints/step-000000000300-a7b4726887be/arrays.npz",
+      "bytes": 392652,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6f041f964feb8ce70280b560695aee26f73319aae6ad9810c8e49f1d787a0ef7",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_http_intelligence_20261104/study-v1/content_mlp/checkpoints/step-000000000300-44e6ec7f8e07/arrays.npz",
+      "bytes": 785868,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e4b89955535ca901a492b4d9209b1ba722444446872f7c003bd9e42f933581dd",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-bundle/model.onnx",
+      "bytes": 58299,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "eeee1f9cdc01cb2afd0c194f7c9f718ed77cca24ea494a7fd99df3e757a8d6ba",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/mlp-continuous/checkpoints/step-000000000905-e479d923f9a9/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "1e1605ac319b61bd769ec52a906951d19b8288b32256ea2f7834b72f653a1530",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/mlp-continuous/checkpoints/step-000000000905-f1b855752093/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "1e1605ac319b61bd769ec52a906951d19b8288b32256ea2f7834b72f653a1530",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/autoencoder-continuous/checkpoints/step-000000000750-bb7ec8ba5e71/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e27009d859a538121805cbcc794a7db13f32210735af57c76d110b948d56b5d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/autoencoder-continuous/checkpoints/step-000000000750-034730760b33/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e27009d859a538121805cbcc794a7db13f32210735af57c76d110b948d56b5d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/residual-bundle/model.onnx",
+      "bytes": 58299,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "2117ce40ab27d4244213bb047e4450b81b08bc697ebb0e244c742fd01b154ba6",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/residual-resumed/checkpoints/step-000000000905-4e10b884e368/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "bad5c6ca7047617f5c1935741c1d2c2a06382e35a0e4ad95f5f2d113dd56d3eb",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/residual-resumed/checkpoints/step-000000000905-79c8b4507ec3/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "bad5c6ca7047617f5c1935741c1d2c2a06382e35a0e4ad95f5f2d113dd56d3eb",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/mlp-resumed/checkpoints/step-000000000905-0979cc7b7bf0/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "1e1605ac319b61bd769ec52a906951d19b8288b32256ea2f7834b72f653a1530",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/mlp-resumed/checkpoints/step-000000000905-806dc47dcafd/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "1e1605ac319b61bd769ec52a906951d19b8288b32256ea2f7834b72f653a1530",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-resumed/checkpoints/step-000000000905-7e98fc53e3a0/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "02f60d90da167b409385398b2b81f10507750cddb578764ada82584818e09a93",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-resumed/checkpoints/step-000000000905-c26b35d93ef3/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "02f60d90da167b409385398b2b81f10507750cddb578764ada82584818e09a93",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-resumed/checkpoints/step-000000000724-d5bc7b7f3eda/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6fcfd9e91a75aca68c2b57ab5f4f8c17035361fc8899a701e3b7eefc3be6eba3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/mlp-bundle/model.onnx",
+      "bytes": 21128,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "0fa240c4c51d76aea3c3cade74feea1d0d2528582be1a2d1438955216a2325a6",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-continuous/checkpoints/step-000000000724-93bcbfa7dd87/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6fcfd9e91a75aca68c2b57ab5f4f8c17035361fc8899a701e3b7eefc3be6eba3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-continuous/checkpoints/step-000000000905-82e243d463ed/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "02f60d90da167b409385398b2b81f10507750cddb578764ada82584818e09a93",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/weighted_residual-continuous/checkpoints/step-000000000905-cfa0ab2de28d/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "02f60d90da167b409385398b2b81f10507750cddb578764ada82584818e09a93",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/autoencoder-resumed/checkpoints/step-000000000750-1813c617176c/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e27009d859a538121805cbcc794a7db13f32210735af57c76d110b948d56b5d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/autoencoder-resumed/checkpoints/step-000000000750-4ca27763cbf4/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e27009d859a538121805cbcc794a7db13f32210735af57c76d110b948d56b5d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/residual-continuous/checkpoints/step-000000000905-7fef076cecf4/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "bad5c6ca7047617f5c1935741c1d2c2a06382e35a0e4ad95f5f2d113dd56d3eb",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/residual-continuous/checkpoints/step-000000000905-aff82bbed4c5/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "bad5c6ca7047617f5c1935741c1d2c2a06382e35a0e4ad95f5f2d113dd56d3eb",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/replay-pilot/autoencoder-bundle/model.onnx",
+      "bytes": 39627,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "796682d5a7512e146d0fd7f2eea467fa27fbb21f999605d2cb294a8cb85f84ae",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/weighted_residual-bundle/model.onnx",
+      "bytes": 58299,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "b09dc35fbf8eedd5aae472dd376add9f6e369470578e0ec3a556c7ec353d06f4",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/mlp-continuous/checkpoints/step-000000002170-166b3a818853/arrays.npz",
+      "bytes": 285444,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3a5cf094b292a0dbce9369a08e7d930eae74f767d6638053efa96137c4f6f728",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/mlp-continuous/checkpoints/step-000000002170-b233e589c0cd/arrays.npz",
+      "bytes": 285444,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3a5cf094b292a0dbce9369a08e7d930eae74f767d6638053efa96137c4f6f728",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/autoencoder-continuous/checkpoints/step-000000001540-843ac9656aa5/arrays.npz",
+      "bytes": 276372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f8f7722a7f22f17d00cb1f21a508006e5608179d284150b3483344b2adb4e40e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/autoencoder-continuous/checkpoints/step-000000001540-4c981c99a7c0/arrays.npz",
+      "bytes": 276372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f8f7722a7f22f17d00cb1f21a508006e5608179d284150b3483344b2adb4e40e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/residual-bundle/model.onnx",
+      "bytes": 58299,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "26854238ca99e2f8435f2c58dcdefefe6395a635caee7d67a74e0424812f98ba",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/residual-resumed/checkpoints/step-000000002170-79917b0b9860/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "9a1899ab14100634033c34153bd1877ee3ce8bace25fa51e887227c21f796935",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/residual-resumed/checkpoints/step-000000002170-84d378a7f948/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "9a1899ab14100634033c34153bd1877ee3ce8bace25fa51e887227c21f796935",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/mlp-resumed/checkpoints/step-000000002170-a8a86cbacdad/arrays.npz",
+      "bytes": 285444,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3a5cf094b292a0dbce9369a08e7d930eae74f767d6638053efa96137c4f6f728",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/mlp-resumed/checkpoints/step-000000002170-1daf0c28129f/arrays.npz",
+      "bytes": 285444,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3a5cf094b292a0dbce9369a08e7d930eae74f767d6638053efa96137c4f6f728",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/weighted_residual-resumed/checkpoints/step-000000002170-834a153b0d72/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4591d0cb47c09aa484df5ebd8a6f98b0c2ecca3ba7ad9a84d02f49485ff8aef",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/weighted_residual-resumed/checkpoints/step-000000002170-26db13cb6c6d/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4591d0cb47c09aa484df5ebd8a6f98b0c2ecca3ba7ad9a84d02f49485ff8aef",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/mlp-bundle/model.onnx",
+      "bytes": 21128,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "5f39d58017dc3e5a4f8b835fb130a15132ccb82b5ee35d372942efe324fcebab",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/weighted_residual-continuous/checkpoints/step-000000002170-97e1f9ef52fe/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4591d0cb47c09aa484df5ebd8a6f98b0c2ecca3ba7ad9a84d02f49485ff8aef",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/weighted_residual-continuous/checkpoints/step-000000002170-1a78340da0b0/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4591d0cb47c09aa484df5ebd8a6f98b0c2ecca3ba7ad9a84d02f49485ff8aef",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/autoencoder-resumed/checkpoints/step-000000001540-5c03bf9ad7cd/arrays.npz",
+      "bytes": 276372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f8f7722a7f22f17d00cb1f21a508006e5608179d284150b3483344b2adb4e40e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/autoencoder-resumed/checkpoints/step-000000001540-4e9b565c11db/arrays.npz",
+      "bytes": 276372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f8f7722a7f22f17d00cb1f21a508006e5608179d284150b3483344b2adb4e40e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/residual-continuous/checkpoints/step-000000002170-5897255ba4f4/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "9a1899ab14100634033c34153bd1877ee3ce8bace25fa51e887227c21f796935",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/residual-continuous/checkpoints/step-000000002170-f2c3ed9db7ff/arrays.npz",
+      "bytes": 397092,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "9a1899ab14100634033c34153bd1877ee3ce8bace25fa51e887227c21f796935",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261029_query/pilot/autoencoder-bundle/model.onnx",
+      "bytes": 39627,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "3600d8a6a0ad6c69cb49f08c7c946061e211d0b9a68a6d168bfb0917fdec0730",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_bounded_20261104/research-final.onnx",
+      "bytes": 38710642,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_bounded_20261104/run/checkpoints/step-000000000326-e3208de04714/arrays.npz",
+      "bytes": 116797692,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3c5c3e393599ef966adc9a860186df2dbfd8e57d00b1db5a29c9a3380cff906a",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_bounded_20261104/run/checkpoints/step-000000000652-7609ffb359e8/arrays.npz",
+      "bytes": 116797692,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "649d7f8c6e798894ee4efb51819bd93a73f819f0bce668324b7c9107c10317d6",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/mlp256-resumed/checkpoints/step-000000000300-7ce2d1e4e6de/arrays.npz",
+      "bytes": 2854340,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8e3755381ec40b69fdb3ba010daab2c53a54f1670017ef9460ce633e9bcc87ed",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/mlp256-resumed/checkpoints/step-000000000100-2f8e3665700e/arrays.npz",
+      "bytes": 2854340,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "77c8ef4ca498b3d2c1e00581ade4d3c04d0a4f1706da3868c0763d13c7ec4b31",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/mlp256-bundle/model.onnx",
+      "bytes": 878466,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "a60e976d1f2b6924a40fb1e9f63b584ef4bba407a633ca4c95cdbe086a0b2dd3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-continuous/checkpoints/step-000000000256-c34319c0473c/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "195d213e69b0b1d712350136ab7815853889d07326627f62021236bb08721a26",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-continuous/checkpoints/step-000000000300-8a137c3bc6cb/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "69b99d77aefc3958e0a56cbf19713d3e4f9eacd89b646324fb389a4b2316a91b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-continuous/checkpoints/step-000000000129-3bd475e7580e/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4c9842582027863603d27d36fed0fb01a1a7ce9cc1dd6edf682c81cb00f98b0",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu256-continuous/checkpoints/step-000000000300-e1d79eb196aa/arrays.npz",
+      "bytes": 7631036,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f33366714bc523a685e890b81ff6252acc0e772637836829a0a4dae2851e7598",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/mlp256-continuous/checkpoints/step-000000000300-ce93da18ddb8/arrays.npz",
+      "bytes": 2854340,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8e3755381ec40b69fdb3ba010daab2c53a54f1670017ef9460ce633e9bcc87ed",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu256-bundle/model.onnx",
+      "bytes": 2471260,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "61f6a68e8c6c12ffe1406ae14875ceefe1de8966ba2cbeb2d61e7c1aac836d41",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-bundle/model.onnx",
+      "bytes": 38174064,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "fc6c65eeabccf1092bcec4df84cc43021936ebef7fa107aa3b46ecb92c87b69b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu256-resumed/checkpoints/step-000000000100-e1310a90b9d3/arrays.npz",
+      "bytes": 7631036,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "05062bcb8114ba6c9f219ccde875477e77793177917fee6d14c4c18f11f4be5d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu256-resumed/checkpoints/step-000000000300-8aa747de3c48/arrays.npz",
+      "bytes": 7631036,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f33366714bc523a685e890b81ff6252acc0e772637836829a0a4dae2851e7598",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-resumed/checkpoints/step-000000000100-e8a7afa09874/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "af3da291dca92e18f3989db817faff05e1442eb020c043c45eda8fa44e1d4538",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-resumed/checkpoints/step-000000000291-3429d1d25e16/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "db5fbaba97bbcb9b7b668426a8cff5146cedfd3feafa274b713d1d065247b8da",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/partition_recovery_20261031/study/glu1024-resumed/checkpoints/step-000000000300-34c0a4348a2b/arrays.npz",
+      "bytes": 114739388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "69b99d77aefc3958e0a56cbf19713d3e4f9eacd89b646324fb389a4b2316a91b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-continuous/checkpoints/step-000000000240-837f1358aeea/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "67e0a3f8d4e3c608ec51ec91564ab6c16574ac0ac9f653811bae31504f5d9d70",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-continuous/checkpoints/step-000000000119-918b1b2ef684/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "1e066e8db4bd5e1bb18374fdce8c7993c59f5f0fed3d56c833e473612f0f314d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-continuous/checkpoints/step-000000000300-a680778833c9/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "9a121dc13df79262e47529e2306022a8d8173a98a2689143661af0c18bef7b34",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-bundle/model.onnx",
+      "bytes": 38149488,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "688845aad4b8fc1817fd9f7631d8fec0698ae5b4952a238d4e68b75c7b9d1e97",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu256-17-bundle/model.onnx",
+      "bytes": 2471260,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "edf82d4a05ebfc3748c80aa77fc6e0443bc6269f51aa08a88c51b8eb8a7c9819",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu256-17-resumed/checkpoints/step-000000000100-c12c21651308/arrays.npz",
+      "bytes": 7571836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "57f6f60127e41ee08470e8984e8d3fe1f0549fcf3070f45a6fa67430dba511db",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu256-17-resumed/checkpoints/step-000000000300-7b3fd9207da1/arrays.npz",
+      "bytes": 7571836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "4e27a37063e043bcc4be8e364ce18c9eaa97cdee7c87039976799027d76ef905",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-resumed/checkpoints/step-000000000287-7f869d2897ce/arrays.npz",
+      "bytes": 114680188,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ab64714cf5f48c2f30abc9ad6bdfed32154598189992c9f08c81b9813071c042",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-resumed/checkpoints/step-000000000300-c117e53f0646/arrays.npz",
+      "bytes": 114680188,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "636d24118749739e3b7a048a518398c4b8eb58cfec0d3eb83b2465fd76d54ecf",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-resumed/checkpoints/step-000000000100-1fa3fbf2a4d1/arrays.npz",
+      "bytes": 114680188,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ae1c9eb752722c6f6571e322cc34a606065c868ee4b65ad48e1d093ea74d525c",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-mlp17-resumed/checkpoints/step-000000000300-f609c4f375d5/arrays.npz",
+      "bytes": 2795140,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8a52b267ffd3730f120f09598222a82690e0a626dd729b650248ce8de4415153",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-mlp17-resumed/checkpoints/step-000000000100-2ffae74bbd8e/arrays.npz",
+      "bytes": 2795140,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "19416aee25f1f63a170e5e60b34ae65f5b33207159ee3da60f3503e4c74db4e5",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-mlp17-continuous/checkpoints/step-000000000300-11cc63169eaa/arrays.npz",
+      "bytes": 2795140,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8a52b267ffd3730f120f09598222a82690e0a626dd729b650248ce8de4415153",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-bundle/model.onnx",
+      "bytes": 38174064,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "1eac0434ebad398b28686f9fdf175a0638bed44789fbbd4619969a49079c5c16",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-continuous/checkpoints/step-000000000125-4345c371e689/arrays.npz",
+      "bytes": 114680188,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "563c138769f2ba30486a19cfa9e86c85d3b4ca5cb2dd69a02aa9a1378faad20f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-continuous/checkpoints/step-000000000250-b28405a15b9d/arrays.npz",
+      "bytes": 114680188,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6d56171c97cbf316101084bcfb47e648f84adf16d16d627533a420ebfdc5f8dc",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu17-continuous/checkpoints/step-000000000300-3e87b251c532/arrays.npz",
+      "bytes": 114680188,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "636d24118749739e3b7a048a518398c4b8eb58cfec0d3eb83b2465fd76d54ecf",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-mlp17-bundle/model.onnx",
+      "bytes": 878466,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "47a809b9da0fff4a04a208184a40ad738950c4bdfbf9ca8a2d1d1714dc2120d6",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-resumed/checkpoints/step-000000000300-db3fdd385226/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "9a121dc13df79262e47529e2306022a8d8173a98a2689143661af0c18bef7b34",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-resumed/checkpoints/step-000000000283-392c46d11a9d/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "adf5c91709685494a1ca93dcba9eb3f657ec7e576e295e29096b4ec31a254976",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/affine70-glu-binary-only-resumed/checkpoints/step-000000000100-e8e3941573e4/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2d34637951d3480f3a8b84cde528a937c30db6dc9b790a5ec2aaa80807272909",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study-phase2/bounded76-glu256-17-continuous/checkpoints/step-000000000300-28e60facf73b/arrays.npz",
+      "bytes": 7571836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "4e27a37063e043bcc4be8e364ce18c9eaa97cdee7c87039976799027d76ef905",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed29-resumed/checkpoints/step-000000000100-2bcb7e8e1267/arrays.npz",
+      "bytes": 2699908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7b99080f8b0daaf177ed7b0385667a8df3ef3e147eabebf32b6a133d0561256c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed29-resumed/checkpoints/step-000000000300-f63f34b496e0/arrays.npz",
+      "bytes": 2699908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "4ec1f47f2e17cebdcbd60c1ee15f91adc7f410234ffdb4a1660b8dc0906ea064",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-bundle/model.onnx",
+      "bytes": 38047088,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "57b3488eff07d829f99cf6aeb3cbec797a1074fa766a6bb5ea5c5eff95db24c5",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-bundle/model.onnx",
+      "bytes": 2439516,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "03f6425d58d63e06090b9cd3e0eb74d7119235478067f9b58616b4cb39a57e80",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-deep_mlp-seed17-continuous/checkpoints/step-000000000300-ea2253bd82f7/arrays.npz",
+      "bytes": 2776708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f6ece9e3a1adce9b6e3d8647a779d6c2899423a37b043a71a409a51ba51f96d8",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-deep_mlp-seed17-bundle/model.onnx",
+      "bytes": 872322,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "d66a6801c7dbbdeac0bfb4f1c383ed37ec5437df3f43cacf0f996c9032c483e4",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-resumed/checkpoints/step-000000000300-90992a72198c/arrays.npz",
+      "bytes": 7476604,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "754dc80feda0ced7743bfdde0cb1f7f5944de2041ed80dc046d334bd06fb5a90",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-resumed/checkpoints/step-000000000100-34ee62abed75/arrays.npz",
+      "bytes": 7476604,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "56950d83914b510c84ca58a496a0f6dea124113d800752b73d54e7326fa37301",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed29-continuous/checkpoints/step-000000000300-a58d8a99acd5/arrays.npz",
+      "bytes": 2699908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "4ec1f47f2e17cebdcbd60c1ee15f91adc7f410234ffdb4a1660b8dc0906ea064",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-continuous/checkpoints/step-000000000300-63a8fab02bab/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "719c3360058d583416bdef9a1851eefda37ac2f60de7c9874a29d860275f04d3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-continuous/checkpoints/step-000000000251-eba3215d6a18/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ff6d432fca124cad910acdf7882744b351a0e958af41b926aac1efff01e650c6",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-continuous/checkpoints/step-000000000126-5992a793ecc0/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "25b0b4133351b4a7fbddc7a6f3b596eec8ad351f11a73f7fe6e9ad16d9796ed3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-resumed/checkpoints/step-000000000300-4d207cb8d43b/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6321f556ae1afec59c0f61788075c977b4e36b1453db0e44a50df800e1e0adfe",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-resumed/checkpoints/step-000000000288-b18373306527/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "bbebae361ef903d5ca90dc47b227c838a9668a3b9dd616b968ad85e9cff1c9a2",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-resumed/checkpoints/step-000000000100-a4f32d449e05/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "94f153f85e84c7e3e73c988946a369c18f79bc246c78bbc5644a8f6d709115f1",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed17-bundle/model.onnx",
+      "bytes": 846722,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "5fefc35494eac0c6c58b59502b8d2854f39a0dcc2c19de261201d2bddd194107",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-deep_mlp-seed17-resumed/checkpoints/step-000000000300-93e71c6a1065/arrays.npz",
+      "bytes": 2776708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f6ece9e3a1adce9b6e3d8647a779d6c2899423a37b043a71a409a51ba51f96d8",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-deep_mlp-seed17-resumed/checkpoints/step-000000000100-e8b86ed7a62e/arrays.npz",
+      "bytes": 2776708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3fa2c658eb512c7a58436bbc023824989873f5b9b89f0bab8af88bbea20fe3d3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed29-bundle/model.onnx",
+      "bytes": 846722,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "e5db61758adc08112d2e680a0511f3f7ef55b4883dd28a139a18a513168e5565",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-continuous/checkpoints/step-000000000125-f2d121ff737d/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "a2141e21f7a690c971bdf43630abba067b7f2cd37dce57eb2a0dac2846720062",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-continuous/checkpoints/step-000000000254-348b334c8537/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7e19f5b529a3761f720df62db3d419ebfd4ab59ad67de5cb978ce32e8c52d0e6",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-continuous/checkpoints/step-000000000300-e13dabd02431/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6321f556ae1afec59c0f61788075c977b4e36b1453db0e44a50df800e1e0adfe",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu256-seed17-continuous/checkpoints/step-000000000300-4b5c2fbf684f/arrays.npz",
+      "bytes": 7476604,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "754dc80feda0ced7743bfdde0cb1f7f5944de2041ed80dc046d334bd06fb5a90",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-bundle/model.onnx",
+      "bytes": 38149488,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "3ebed24e77ef338541c20c038d286e1df5610c4105a4e771567faec2ec4b8a23",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-resumed/checkpoints/step-000000000285-d881a5365886/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f7b9ca2942962841035deb59767581542f9f7262bfdc9f72c0b1ad3106ec9df9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-resumed/checkpoints/step-000000000100-48d19a330be1/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "61923e78027394bec55536f32fa30820d5473cce016241b5675056d446ff100b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed17-resumed/checkpoints/step-000000000300-0811bc34db95/arrays.npz",
+      "bytes": 114299260,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "719c3360058d583416bdef9a1851eefda37ac2f60de7c9874a29d860275f04d3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-continuous/checkpoints/step-000000000255-56c9a432f086/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "bbebd8cd4c492efc93fd3324fc24c5fe8b15693dee9cb759506008d7d4495711",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-continuous/checkpoints/step-000000000300-80a364922e53/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "a59716449dbc8bbd9380b63ad78e4b5c2e5f3f69bf50e18ec0ce6b6757eef7d7",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-continuous/checkpoints/step-000000000127-7901415105ea/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "025d2352b86e65b0bb29f147d5a4f87d2870f0adf254d8a30957993bdd4b6b7d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed17-continuous/checkpoints/step-000000000300-e38facc8fb92/arrays.npz",
+      "bytes": 2699908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2bd400b6dfd6050aee34cbb40a3adc2cff437df8dde9b9e988fc18ee084f2226",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-resumed/checkpoints/step-000000000100-fcb1b1d39b56/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e3f6fc2fc3eab580b195e22ba7df54784f052a61d8e28048bd869018e957e0ca",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-resumed/checkpoints/step-000000000300-3e16e498862d/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "a59716449dbc8bbd9380b63ad78e4b5c2e5f3f69bf50e18ec0ce6b6757eef7d7",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/affine70-residual_glu-seed17-resumed/checkpoints/step-000000000286-d6ac50abba62/arrays.npz",
+      "bytes": 114606460,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "940779d08d69085462cd498fe39103a9b2cc35b7348f80d58a02882a2f59f331",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-residual_glu-seed29-bundle/model.onnx",
+      "bytes": 38047088,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "0248d0880929b65b60b3141ccf641aed2c19f2f535af2b5344a2de07b94e4378",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed17-resumed/checkpoints/step-000000000300-ff69ef20bc34/arrays.npz",
+      "bytes": 2699908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2bd400b6dfd6050aee34cbb40a3adc2cff437df8dde9b9e988fc18ee084f2226",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261031/study/security45-deep_mlp-seed17-resumed/checkpoints/step-000000000100-b0154bc4f319/arrays.npz",
+      "bytes": 2699908,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2e91b35a2f3a82e9566168b62ff99e66b19c4f8878341d7bf7d43782dabf7616",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/gated_residual-bundle/model.onnx",
+      "bytes": 1804476,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "71a87a2e1930f8721eb88028d0d24dac3e88ac74826b832370510dd450dae8af",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/gated_residual-continuous/checkpoints/step-000000000652-3fa7be3cff03/arrays.npz",
+      "bytes": 5745684,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "096d43493388fc59916a7b0f29488f2b21c61923429f1d72e5cb9bc94e9f177e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/gated_residual-continuous/checkpoints/step-000000000652-d1235b4289db/arrays.npz",
+      "bytes": 5745684,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "096d43493388fc59916a7b0f29488f2b21c61923429f1d72e5cb9bc94e9f177e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/deep_mlp-continuous/checkpoints/step-000000000652-2ae413bfba2a/arrays.npz",
+      "bytes": 3372492,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3b67c2de8b6e6c9b1fe73ddad858075c139ead7c297372734cfa0123210d48cd",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/deep_mlp-continuous/checkpoints/step-000000000652-0720cbd1d8a6/arrays.npz",
+      "bytes": 3372492,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3b67c2de8b6e6c9b1fe73ddad858075c139ead7c297372734cfa0123210d48cd",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/deep_mlp-bundle/model.onnx",
+      "bytes": 1012612,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "5478aa037d116bf115a36fee0ac19b6f0651cb2ec064834f011c04b795466c91",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual-bundle/model.onnx",
+      "bytes": 73403,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "3b6c449795b964e28bea280aede4ba44fae8b00f5a8644b7e090a2c111e6c6e7",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual-resumed/checkpoints/step-000000000652-de07fb27baa4/arrays.npz",
+      "bytes": 553356,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e67d06ea46153880cf6a669b2faf71644f926e472aa136785f40371a28de40ee",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual-resumed/checkpoints/step-000000000652-09c3a3244a64/arrays.npz",
+      "bytes": 553356,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e67d06ea46153880cf6a669b2faf71644f926e472aa136785f40371a28de40ee",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-bundle/model.onnx",
+      "bytes": 38710642,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "5656abfc5e83da98fae0bf7315fc184b554ff9ff0f63aee8358ffe8417166c99",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual-continuous/checkpoints/step-000000000652-6c198c199e53/arrays.npz",
+      "bytes": 553356,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e67d06ea46153880cf6a669b2faf71644f926e472aa136785f40371a28de40ee",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual-continuous/checkpoints/step-000000000652-52a978a10402/arrays.npz",
+      "bytes": 553356,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e67d06ea46153880cf6a669b2faf71644f926e472aa136785f40371a28de40ee",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-continuous/checkpoints/step-000000000652-b23914308e27/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "5d71852e47d9f749c11bbff620ba945ff2850261078ef1b510d4285fce67a1f4",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-continuous/checkpoints/step-000000000652-cd69f1daed41/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "5d71852e47d9f749c11bbff620ba945ff2850261078ef1b510d4285fce67a1f4",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/deep_mlp-resumed/checkpoints/step-000000000652-67aa82e6ee80/arrays.npz",
+      "bytes": 3372492,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3b67c2de8b6e6c9b1fe73ddad858075c139ead7c297372734cfa0123210d48cd",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/deep_mlp-resumed/checkpoints/step-000000000652-45ea14c194ac/arrays.npz",
+      "bytes": 3372492,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3b67c2de8b6e6c9b1fe73ddad858075c139ead7c297372734cfa0123210d48cd",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-resumed/checkpoints/step-000000000652-363b28e14735/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "5d71852e47d9f749c11bbff620ba945ff2850261078ef1b510d4285fce67a1f4",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/residual_glu-resumed/checkpoints/step-000000000652-12575a0b5824/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "5d71852e47d9f749c11bbff620ba945ff2850261078ef1b510d4285fce67a1f4",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/gated_residual-resumed/checkpoints/step-000000000652-c7ba25014c5c/arrays.npz",
+      "bytes": 5745684,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "096d43493388fc59916a7b0f29488f2b21c61923429f1d72e5cb9bc94e9f177e",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/scale_upgrade_20261030/pilot/gated_residual-resumed/checkpoints/step-000000000652-335e38b71428/arrays.npz",
+      "bytes": 5745684,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "096d43493388fc59916a7b0f29488f2b21c61923429f1d72e5cb9bc94e9f177e",
+      "distribution": "historical-baselines.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_bounded_final_20261104/research-final.onnx",
+      "bytes": 38710642,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+      "distribution": "models-core.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/arrays.npz",
+      "bytes": 116797692,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "649d7f8c6e798894ee4efb51819bd93a73f819f0bce668324b7c9107c10317d6",
+      "distribution": "models-core.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000326-fae256de25ed/arrays.npz",
+      "bytes": 116797692,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "3c5c3e393599ef966adc9a860186df2dbfd8e57d00b1db5a29c9a3380cff906a",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/resume-reference/checkpoints/step-000000000128-2ad3533dffc3/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c1eb83149977f273ce8253afe46816971e16ea5e7128b032e27cd5568657f235",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/candidate-run/checkpoints/step-000000002816-9c8bdc34dc3c/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "daf28afae3f17abea7619df3bfb9ded912ac60378964d26009ae4e5c077552cb",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/candidate-run/checkpoints/step-000000003072-ce01c352a9df/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "10c011eaf6ebb3a4b298c89b05fa373982a17030e95bbf0cdfb45448aacb0a22",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/candidate-run/checkpoints/step-000000000256-d95aaa0989cd/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f4d1210a1203002e1dd133b723484a19150d1966fd24bd7454bf918a4b7848a2",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/portable-verification/relocated-bundle/model.onnx",
+      "bytes": 204664,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "10e07e0c597ce335d615add98f5db47da864beba6f0b5063575d8463e87396eb",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/model.onnx",
+      "bytes": 204664,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "10e07e0c597ce335d615add98f5db47da864beba6f0b5063575d8463e87396eb",
+      "distribution": "models-core.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/training-recovery/resume-from2816/checkpoints/step-000000003072-01741c232ead/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "10c011eaf6ebb3a4b298c89b05fa373982a17030e95bbf0cdfb45448aacb0a22",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/training-recovery/resume-from2816/checkpoints/step-000000002816-9c8bdc34dc3c/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "daf28afae3f17abea7619df3bfb9ded912ac60378964d26009ae4e5c077552cb",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/resume-split/checkpoints/step-000000000128-c3874ebe4d35/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c1eb83149977f273ce8253afe46816971e16ea5e7128b032e27cd5568657f235",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/resume-split/checkpoints/step-000000000064-f3f10c4866b4/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "0910d45b97b5c50c8dd1b3eda0e0cfe04727d5ed86588c5333da476dc0ff2df0",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/integration_candidate_20261105/research-candidate-bundle/model.onnx",
+      "bytes": 204664,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "7c34e77e47a497d0baef7b3f95521d6c0369afa6aaf7ceb420e0436b4f562149",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_content_intelligence_20261104/study-v1/numeric_mlp/checkpoints/step-000000000300-340dfb01c9e3/arrays.npz",
+      "bytes": 727332,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b3eb80e761dd297c01980f6108e6ff290e7dfdb2de82adc41d98d00a3151b405",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_content_intelligence_20261104/study-v1/content_mlp/checkpoints/step-000000000300-1e058414d327/arrays.npz",
+      "bytes": 1120548,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "a55875b2e65066fef251440c888b0cc9264d53f2755642cfaf514be4112df9bc",
+      "distribution": "request-training-recovery.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-continuous/checkpoints/step-000000000905-02e293aab8d5/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8b83d5d7508344ea098cb568376eae730dcf5b554eaa9c06e75b00ddbf11d539",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-continuous/checkpoints/step-000000000724-4b5319e2f061/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4f0a7e52a3a9a10874df3faf453894c69070592c3f59224a8eb2b75f0972604",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-continuous/checkpoints/step-000000000905-83535500e94c/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8b83d5d7508344ea098cb568376eae730dcf5b554eaa9c06e75b00ddbf11d539",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/autoencoder-continuous/checkpoints/step-000000000750-fd5dd2acd5f8/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "826dc7a7363bb067db0f6255a3a4dc3c8b5bb02027725d6e3dbb804295fbb6d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/autoencoder-continuous/checkpoints/step-000000000750-cdd97be26efc/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "826dc7a7363bb067db0f6255a3a4dc3c8b5bb02027725d6e3dbb804295fbb6d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-bundle/model.onnx",
+      "bytes": 58299,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "4b043896dd4c09957d8b3ef1fff5984c6a6bdbd2c2638d7d1b1e370710441472",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-resumed/checkpoints/step-000000000905-87f3ee5338d3/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "170769727e50019467bc0a5c7b1f75795ae8458fe352cd22fc1a48942e13d39e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-resumed/checkpoints/step-000000000905-2142289f5660/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "170769727e50019467bc0a5c7b1f75795ae8458fe352cd22fc1a48942e13d39e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-resumed/checkpoints/step-000000000543-cd7c1ecf6963/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "49edb1ae4c2d2b46a10f5106e26856a1d6a219258b475bed4262819405768917",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-resumed/checkpoints/step-000000000905-4edd315e956b/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8b83d5d7508344ea098cb568376eae730dcf5b554eaa9c06e75b00ddbf11d539",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-resumed/checkpoints/step-000000000905-79d6544473de/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8b83d5d7508344ea098cb568376eae730dcf5b554eaa9c06e75b00ddbf11d539",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-resumed/checkpoints/step-000000000724-d498f2309e03/arrays.npz",
+      "bytes": 156060,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b4f0a7e52a3a9a10874df3faf453894c69070592c3f59224a8eb2b75f0972604",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/mlp-bundle/model.onnx",
+      "bytes": 21128,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "4908b61a0895b53445976ba377a00c70100abd872172018b9730eb9409c18159",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/autoencoder-resumed/checkpoints/step-000000000750-b330f2eac527/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "826dc7a7363bb067db0f6255a3a4dc3c8b5bb02027725d6e3dbb804295fbb6d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/autoencoder-resumed/checkpoints/step-000000000750-df104dd5de88/arrays.npz",
+      "bytes": 195372,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "826dc7a7363bb067db0f6255a3a4dc3c8b5bb02027725d6e3dbb804295fbb6d9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-continuous/checkpoints/step-000000000543-0a9ea098fc8b/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "49edb1ae4c2d2b46a10f5106e26856a1d6a219258b475bed4262819405768917",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-continuous/checkpoints/step-000000000905-be29c8701076/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "170769727e50019467bc0a5c7b1f75795ae8458fe352cd22fc1a48942e13d39e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/residual-continuous/checkpoints/step-000000000905-eb4386d20258/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "170769727e50019467bc0a5c7b1f75795ae8458fe352cd22fc1a48942e13d39e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/pilot-ready/autoencoder-bundle/model.onnx",
+      "bytes": 39627,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "7d0dfe9434e7511c3fd6bce9ca181786ff611017d91ca2ba4216cce306100e99",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/formal/residual-seed17/checkpoints/step-000000001086-cf71f146d74f/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "5fe6b4b615fc6ff06b9bfd66359c694e42d43dbeae7f33a74cb080b29d9eb05f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/formal/residual-seed17/checkpoints/step-000000002534-82502ec01f09/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "fd0d896840d8e5f16745f52a67f09f409247c511099e32cfc83394bc691e1671",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/formal/residual-seed17/checkpoints/step-000000002534-4cae1aed7618/arrays.npz",
+      "bytes": 267708,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "fd0d896840d8e5f16745f52a67f09f409247c511099e32cfc83394bc691e1671",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261028/formal/residual-seed17/onnx-best/model.onnx",
+      "bytes": 58299,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "0cc25e41ffd038c57d8a6104e728fb7797b952c2dc32ba323bb69c5f6d2dcffe",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000001536-dcd8a39e496e/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "aa44e8e3f300d0ccabe13b8ad792f02906e50f5e6d887fa1d9951902a3eea16d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/arrays.npz",
+      "bytes": 1579308,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "d2d6130d7e7e8a5b3d411bab1ac1739257c933adfbaa956184719937c34e8820",
+      "distribution": "models-core.tar.gz",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_faster_start-resumed/checkpoints/step-000000000652-6af74b1b28a6/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c99ce60097376750aceeeb5ce24d404f514941aec925c3050dac8d1d83645dc7",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_faster_start-resumed/checkpoints/step-000000000652-52e4d8cdd20d/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c99ce60097376750aceeeb5ce24d404f514941aec925c3050dac8d1d83645dc7",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-resumed/checkpoints/step-000000000652-b0b6c46cb651/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "cbde6f96fff642355854e0993100c33e1faf9f677b9ecc43b9ca875def5ad11c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-resumed/checkpoints/step-000000000652-e21d5f6e93cc/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "cbde6f96fff642355854e0993100c33e1faf9f677b9ecc43b9ca875def5ad11c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_faster_start-bundle/model.onnx",
+      "bytes": 38710642,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "6c5bc7fe1eaf5c952b08fe6b3885bdf7e891adab7cb9e7cc82134e8cf666ca51",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-continuous/checkpoints/step-000000000652-9d6862bd675c/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "cbde6f96fff642355854e0993100c33e1faf9f677b9ecc43b9ca875def5ad11c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-continuous/checkpoints/step-000000000652-2ae0299ed2e5/arrays.npz",
+      "bytes": 116464836,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "cbde6f96fff642355854e0993100c33e1faf9f677b9ecc43b9ca875def5ad11c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/generalization_20261030/development-pilot/glu_low_smoothing-bundle/model.onnx",
+      "bytes": 38710642,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "fe8ca6d2d27b52df63eaa9c154ccfe20384687bfab425e67745f0b0c3f6d2007",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/research_glu207_stability_20261103/run/checkpoints/step-000000000100-583dca5fde26/arrays.npz",
+      "bytes": 116463756,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f45ad4585ad70fdf0ad677e1d8f7517e45a76ae1c95a2007c70d55aabefafe79",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/denoising_autoencoder-resumed/checkpoints/step-000000000300-9d25ff21186d/arrays.npz",
+      "bytes": 2962660,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "80bf280d37396776c71fc6957e93495c67a764030425a486ffd0118f108318b0",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/denoising_autoencoder-resumed/checkpoints/step-000000000100-47314e6a76f1/arrays.npz",
+      "bytes": 2962660,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8ec98e375e51c9553dc0d5aee20f5b54f29bab611e9b036a02d920ec0c97662d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-continuous/checkpoints/step-000000000300-cc214c64efd7/arrays.npz",
+      "bytes": 2628636,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e643fc19112fb9cbb8617fe511e5260c8d73c1f3785c54f5ebb23bc6acb36cba",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-bundle/model.onnx",
+      "bytes": 872322,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "5580aff9566d24c9f7d97521094718f7af1f53eb41363ec9186022eb3d3fa45a",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/denoising_autoencoder-bundle/model.onnx",
+      "bytes": 936901,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "d1445b56265ee3c6123421aa5f13a56f4e410430537df06c79fbad97b326cb03",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-bundle/model.onnx",
+      "bytes": 38149488,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "72a682ab0c9ee7a957440c94ede769b802c2fee1e3a654e433e838f99c87cd3d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/denoising_autoencoder-continuous/checkpoints/step-000000000300-adf479c9ca14/arrays.npz",
+      "bytes": 2962660,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "80bf280d37396776c71fc6957e93495c67a764030425a486ffd0118f108318b0",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-continuous/checkpoints/step-000000000167-157951e932bb/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2c740ab989c7e7eeb31ae765e9a020048fdc20403874b64723f82c353356be74",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-continuous/checkpoints/step-000000000300-36ecddaa08d0/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e8f2354b545462410a1985418eaddad2894c67672f8e59ee77b990fe047b9f8c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-resumed/checkpoints/step-000000000300-b353b15fa639/arrays.npz",
+      "bytes": 2628636,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e643fc19112fb9cbb8617fe511e5260c8d73c1f3785c54f5ebb23bc6acb36cba",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/deep_mlp-resumed/checkpoints/step-000000000100-3eadfb8aae64/arrays.npz",
+      "bytes": 2628636,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "8b418dfdf4d1257c1fc6c5a5729623f52d56f885c5a56024ad22183a84bfa98b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-resumed/checkpoints/step-000000000300-8bd1cdeba131/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e8f2354b545462410a1985418eaddad2894c67672f8e59ee77b990fe047b9f8c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-resumed/checkpoints/step-000000000100-cd28c98c62aa/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "684d7b78e56291a719cdd7957180d98aed19904460dbe51eb168b16ab51e3021",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/diagnostic/residual_glu-resumed/checkpoints/step-000000000297-42eac9e00603/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "b54eb1962cb42cf99d2b5289e585063998cfb5566d09eff9fb48faea3a54c45b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/denoising_autoencoder-resumed/checkpoints/step-000000000147-830075edcd12/arrays.npz",
+      "bytes": 2962660,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "c6e09a5ef56e54f4c6482282440e60587ba3aa689b608d9a3eabc3fb588bfb1f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/denoising_autoencoder-resumed/checkpoints/step-000000000294-1790a53c461b/arrays.npz",
+      "bytes": 2962660,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "718f5c18dfda7d911109fd7313f317c66e98e03250d7d751b02393f9cb23230c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/deep_mlp-continuous/checkpoints/step-000000000020-0141dc1a8fa1/arrays.npz",
+      "bytes": 2628636,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "29d9a7844c061ad3321da61ad8592198126fb2745d866444f6b3be2d57beb0ef",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/deep_mlp-bundle/model.onnx",
+      "bytes": 872322,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "58a43c8b48b001d41090d89bffe033f6d0a15731b4e574f22f390ade60c70d9d",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/denoising_autoencoder-bundle/model.onnx",
+      "bytes": 936901,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "048668678374219e0404815220b9724ca457a8e6c92622bcf64207f51683375f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/residual_glu-bundle/model.onnx",
+      "bytes": 38149488,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "8c870af650decf8c275f465086293789f52ef9deba14ab8747ddf28b13c3f801",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/denoising_autoencoder-continuous/checkpoints/step-000000000294-d8448bf1a59a/arrays.npz",
+      "bytes": 2962660,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "718f5c18dfda7d911109fd7313f317c66e98e03250d7d751b02393f9cb23230c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/residual_glu-continuous/checkpoints/step-000000000020-c7d1f0585d37/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ab721daf5388eddabd1921dec06b8e90fb4742bb9ddfe49ef8562168f928ee34",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/deep_mlp-resumed/checkpoints/step-000000000010-368724dfbf3b/arrays.npz",
+      "bytes": 2628636,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "2cc09765b544a1feaa401733af563e6f53064664c139338b655828c8ae18e6ac",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/deep_mlp-resumed/checkpoints/step-000000000020-aa4d376019e4/arrays.npz",
+      "bytes": 2628636,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "29d9a7844c061ad3321da61ad8592198126fb2745d866444f6b3be2d57beb0ef",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/residual_glu-resumed/checkpoints/step-000000000010-44badd148cac/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "eb9c1a4a02008d7b16aae5cf84d4242bf499612b7b38213865afa0f6bbf82fe3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/request_view_20261030/pilot/residual_glu-resumed/checkpoints/step-000000000020-790b141e9b36/arrays.npz",
+      "bytes": 114458388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ab721daf5388eddabd1921dec06b8e90fb4742bb9ddfe49ef8562168f928ee34",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-continuous/checkpoints/step-000000000036-ee381ac2e8fa/arrays.npz",
+      "bytes": 59316,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ca45cccbd9b5b36bb22e9f8b002be10956c9efc86517612af97e856d9f48899b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-continuous/checkpoints/step-000000000036-23efcaed29c0/arrays.npz",
+      "bytes": 59316,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ca45cccbd9b5b36bb22e9f8b002be10956c9efc86517612af97e856d9f48899b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/autoencoder-continuous/checkpoints/step-000000000008-7defb412cf96/arrays.npz",
+      "bytes": 101616,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e0c12c8b0aae010762ae70ff8cfcb98a77d9853f995b8956eb2075abfb5eb468",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/autoencoder-continuous/checkpoints/step-000000000008-36b6e35b415c/arrays.npz",
+      "bytes": 101616,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e0c12c8b0aae010762ae70ff8cfcb98a77d9853f995b8956eb2075abfb5eb468",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-resumed/checkpoints/step-000000000036-51ee8b739f5c/arrays.npz",
+      "bytes": 59316,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ca45cccbd9b5b36bb22e9f8b002be10956c9efc86517612af97e856d9f48899b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-resumed/checkpoints/step-000000000036-95af02628246/arrays.npz",
+      "bytes": 59316,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ca45cccbd9b5b36bb22e9f8b002be10956c9efc86517612af97e856d9f48899b",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/mlp-bundle/model.onnx",
+      "bytes": 17678,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "83de614dbf185817c38653013e27311bd6e5a5295930d930c96936462eabae87",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/autoencoder-resumed/checkpoints/step-000000000008-829b52957e56/arrays.npz",
+      "bytes": 101616,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e0c12c8b0aae010762ae70ff8cfcb98a77d9853f995b8956eb2075abfb5eb468",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/autoencoder-resumed/checkpoints/step-000000000008-9ef5315b540f/arrays.npz",
+      "bytes": 101616,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "e0c12c8b0aae010762ae70ff8cfcb98a77d9853f995b8956eb2075abfb5eb468",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/synthetic_s0_20261027_final/autoencoder-bundle/model.onnx",
+      "bytes": 33136,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "24ce67057c7616abc9d68a38596ce1d601455bd2679194d5ac0c91bb1548dc18",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-bundle/model.onnx",
+      "bytes": 1786044,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "244973b579b3ada3405b7b11b5bb09e5b9764143821dc05e100fb0f1d3228d7e",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/denoising_autoencoder-resumed/checkpoints/step-000000001155-58c5334bdfd7/arrays.npz",
+      "bytes": 3781608,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7ca324f83fe6dd65958acd91e9e7a19dda78d5dc0e0970f15401db5b6b30f5aa",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/denoising_autoencoder-resumed/checkpoints/step-000000001155-ebc841b4de31/arrays.npz",
+      "bytes": 3781608,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7ca324f83fe6dd65958acd91e9e7a19dda78d5dc0e0970f15401db5b6b30f5aa",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-continuous/checkpoints/step-000000001630-ff65972fb71d/arrays.npz",
+      "bytes": 5690388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "19b601a65b058f6d399b596471e05082150b2337701b044cda20eba45cea439c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-continuous/checkpoints/step-000000001630-83f26b094102/arrays.npz",
+      "bytes": 5690388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "19b601a65b058f6d399b596471e05082150b2337701b044cda20eba45cea439c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-continuous/checkpoints/step-000000000978-8b57577beb63/arrays.npz",
+      "bytes": 5690388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6e6b1e05d522cf10b1e9f915b1227a693ba81146023eef925617fd7dfd214222",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-continuous/checkpoints/step-000000000978-8843055c41c5/arrays.npz",
+      "bytes": 3317196,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "39f2501b068d74c9b37d71d1eb65df09f43257527a22ca782bcc8e0cafb250d1",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-continuous/checkpoints/step-000000001630-591b77caa7b1/arrays.npz",
+      "bytes": 3317196,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f9d8aab8aa4ac968368a89fceb278362e45ecd33c50074c7b4405d35b6dff07f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-continuous/checkpoints/step-000000001630-11381bbd1b91/arrays.npz",
+      "bytes": 3317196,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f9d8aab8aa4ac968368a89fceb278362e45ecd33c50074c7b4405d35b6dff07f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-bundle/model.onnx",
+      "bytes": 994180,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "c90151a3c74f50a628539ad4dc6dfadc94cdefab2f40c739ef125738712241a8",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-bundle/model.onnx",
+      "bytes": 68795,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "3bc7799aac1194c3251f519d4ab88528bb21c4e82fd2165be38244d1d508520f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-resumed/checkpoints/step-000000003255-c97eae76775c/arrays.npz",
+      "bytes": 539532,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "629fec8f3c5eceb8d3dbbfd7ab921a1f40af5a39309c8df07d20a424d8cb0ec9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-resumed/checkpoints/step-000000003255-485e517a33ce/arrays.npz",
+      "bytes": 539532,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "629fec8f3c5eceb8d3dbbfd7ab921a1f40af5a39309c8df07d20a424d8cb0ec9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-resumed/checkpoints/step-000000001953-8501a3965d9e/arrays.npz",
+      "bytes": 539532,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ce33a14487f4097a684c0e05920b7f1e60c6b5350f860a5be6962ed2d0719a5c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/denoising_autoencoder-bundle/model.onnx",
+      "bytes": 1181094,
+      "git": "ignored",
+      "classification": "MODEL_ONNX_CANDIDATE",
+      "sha256": "b5255d1b20db307c7dd9bf93e9d0412025a6d9497506a63f16ddcbc19fc251f3",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/denoising_autoencoder-continuous/checkpoints/step-000000001155-8258a8966aca/arrays.npz",
+      "bytes": 3781608,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7ca324f83fe6dd65958acd91e9e7a19dda78d5dc0e0970f15401db5b6b30f5aa",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/denoising_autoencoder-continuous/checkpoints/step-000000001155-41063e9f229c/arrays.npz",
+      "bytes": 3781608,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "7ca324f83fe6dd65958acd91e9e7a19dda78d5dc0e0970f15401db5b6b30f5aa",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-continuous/checkpoints/step-000000003255-6ca66591157e/arrays.npz",
+      "bytes": 539532,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "629fec8f3c5eceb8d3dbbfd7ab921a1f40af5a39309c8df07d20a424d8cb0ec9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-continuous/checkpoints/step-000000003255-b7c51263883e/arrays.npz",
+      "bytes": 539532,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "629fec8f3c5eceb8d3dbbfd7ab921a1f40af5a39309c8df07d20a424d8cb0ec9",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/residual-continuous/checkpoints/step-000000001953-710eb4ca4524/arrays.npz",
+      "bytes": 539532,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "ce33a14487f4097a684c0e05920b7f1e60c6b5350f860a5be6962ed2d0719a5c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-resumed/checkpoints/step-000000001630-b0ad6d3acc10/arrays.npz",
+      "bytes": 3317196,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f9d8aab8aa4ac968368a89fceb278362e45ecd33c50074c7b4405d35b6dff07f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-resumed/checkpoints/step-000000001630-013202b99b8a/arrays.npz",
+      "bytes": 3317196,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "f9d8aab8aa4ac968368a89fceb278362e45ecd33c50074c7b4405d35b6dff07f",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/deep_mlp-resumed/checkpoints/step-000000000978-c06e2979948a/arrays.npz",
+      "bytes": 3317196,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "39f2501b068d74c9b37d71d1eb65df09f43257527a22ca782bcc8e0cafb250d1",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-resumed/checkpoints/step-000000001630-70514b32c431/arrays.npz",
+      "bytes": 5690388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "19b601a65b058f6d399b596471e05082150b2337701b044cda20eba45cea439c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-resumed/checkpoints/step-000000000978-cca0e1c30788/arrays.npz",
+      "bytes": 5690388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "6e6b1e05d522cf10b1e9f915b1227a693ba81146023eef925617fd7dfd214222",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    },
+    {
+      "path": "ai-training/.artifacts/upgrade_20261030_deep/pilot/gated_residual-resumed/checkpoints/step-000000001630-2713f0d7a7ae/arrays.npz",
+      "bytes": 5690388,
+      "git": "ignored",
+      "classification": "MODEL_CHECKPOINT_CANDIDATE",
+      "sha256": "19b601a65b058f6d399b596471e05082150b2337701b044cda20eba45cea439c",
+      "distribution": "LOCAL_RETAINED_NOT_DISTRIBUTED",
+      "note": "Published selection keeps frozen endpoints, useful historical baselines and candidate/recovery states; duplicates, superseded pilots and unreviewed states stay local."
+    }
+  ],
+  "inventory_sha256": "5e4794d8512f77b9d6b4db46a1bab025229f3ac3ed63509762b1f5f8aad60cce"
+}

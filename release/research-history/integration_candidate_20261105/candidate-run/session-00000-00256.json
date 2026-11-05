@@ -1,0 +1,59 @@
+{
+  "content": {
+    "calibration_development_DVWA_rows_used_for_fitting": 0,
+    "checkpoint": "<PROJECT_ROOT>/ai-training/.artifacts/integration_candidate_20261105/candidate-run/checkpoints/step-000000000256-d95aaa0989cd",
+    "effective_epochs": 0.5441607506123635,
+    "final_checkpoint_manifest_sha256": "332743612e04910acb49977df9084f5ace0757dcb803a721932b2f245703ac85",
+    "first100_loss_mean": 0.4133768672128755,
+    "from_step": 0,
+    "last100_loss_mean": 0.22707757229339023,
+    "loss_max": 0.7696891772135906,
+    "loss_min": 0.15692178047267583,
+    "masked_row_exposures": 16458,
+    "parameters": 50696,
+    "plan_sha256": "811fbcb7712cffcb69aaa2792a5ec602b601ad2ec4a5af18731e945ece43a351",
+    "sample_exposures": 65536,
+    "signal_checkpointed": false,
+    "step": 256,
+    "threads": {
+      "15568": [
+        0
+      ]
+    },
+    "through_target": 256,
+    "train_unique_views": 120435,
+    "training_identity": {
+      "dependencies": {
+        "numpy": "2.5.4",
+        "scikit-learn": "1.9.1",
+        "threadpoolctl": "3.7.0"
+      },
+      "python": "3.12.14",
+      "study_script_sha256": "5c2d6fa22cfbc758d5de2f71f7ab6604190f0982c5f7ddb39cb8766228a4b5a3",
+      "training_modules": {
+        "src/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+        "src/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+        "src/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+        "src/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+        "src/idps_ai/training/generalization.py": "4a394753bf32581776e38362c8e8d45013ffd6f9d92a8c62b5579b9ca7e7c989",
+        "src/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+        "src/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3",
+        "src/idps_ai/training/protocol.py": "e2130e244d468be8272798c1222705762a646e5f7baac211559db3f5633f801b",
+        "src/idps_ai/training/request_training.py": "90c13fb84e574c911dc71d05654f431e3a9f57e364d39b87709d3eeb3858ed7a",
+        "src/idps_ai/training/resources.py": "c8c718162cd07b22b2fdbff1c6bbaf8da841cb95da2eee34a7f21c58fa55bcf4",
+        "src/idps_ai/training/runner.py": "bd36c0db6f37b00bebec7cae1e04f6b15a0b236fd1e3bc497730b3f998943305",
+        "src/idps_ai/training/schedule.py": "023f0f7eaeda189c66898c6628dd94be137933a915114e01d0ce185e66fc0e37",
+        "src/idps_ai/training/session.py": "61e0f351f006bd67cee44e00ffee7f4897cb014811fa659a92203a7b76dbe1dd",
+        "src/idps_ai/training/tabular.py": "e98f17e4743b93d2442e2c413d01c371f7dffd1737ba97cbc176ea22140d1adb",
+        "src/idps_ai/training/tree_baseline.py": "3b4345ac014069a4cc924c71fea4c68da369dba4c58ac785a936e8b6d2837cbb"
+      }
+    },
+    "wall_seconds_this_process": 5.168286011999953
+  },
+  "original_relative_path": "ai-training/.artifacts/integration_candidate_20261105/candidate-run/session-00000-00256.json",
+  "original_sha256": "87d0ac593cea44c859c97cbd6a6a3e9d70873b140a9339e732f0becbbadbb471",
+  "redactions": {
+    "strings_changed": 1
+  },
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}

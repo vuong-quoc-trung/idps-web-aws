@@ -1,0 +1,16 @@
+{
+  "content": {
+    "bytes": 119837834,
+    "capture_filter": "tcp port 18881",
+    "network_namespace": "net:[4026534619]",
+    "nginx_template_sha256": "3b704126461de711f33e4e10803bcebfc6fdc2697fd4cf111492820ac239986b",
+    "pcap_sha256": "ae920478081282f635fb647fdda61178c09b65cfd5191d82c41b0f0bbb1d13c1",
+    "query_profile": "safe_query_numeric_v1",
+    "source": "real Linux TCP, no packet synthesis",
+    "tcpdump_log_sha256": "8c3e812532ae1d7bb53491c663cf6a3b655c3a2643827ceff9f70e24e6dd9691"
+  },
+  "original_relative_path": "ai-training/.artifacts/upgrade_20261029_query/lab-v2/pcap-manifest.json",
+  "original_sha256": "caf19403a6aa0509d6d2added2269c12838116a18ff8e075ac161e6e2fe83d6b",
+  "redactions": {},
+  "view_kind": "PUBLIC_REDACTED_DERIVATIVE_NOT_ORIGINAL_EVIDENCE"
+}
