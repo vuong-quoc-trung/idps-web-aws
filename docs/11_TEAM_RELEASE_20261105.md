@@ -7,9 +7,20 @@ tiếp tục training có giới hạn được công bố riêng. Frozen Baseli
 Không bật IPS, không khởi động Web, không sửa Student Web/Security Web, không tự
 train và không mở sealed holdout.
 
-**Publication và remote clean-clone chưa được xác nhận.** Các URL trong
-`release/assets.json` là địa chỉ đích dự kiến cho tới khi có kiểm chứng remote.
-Xem `release/team-verification.json` để biết trạng thái cuối của lần bàn giao.
+**Publication và remote clean-clone đã PASS.** Release
+[`ai-research-team-20261105`](https://github.com/vuong-quoc-trung/idps-web-aws/releases/tag/ai-research-team-20261105)
+trỏ source `adfce1b14852a8b3678648b165e070e36ad30b7f`. Tải cả ba archive qua URL
+public, phục hồi 102 + 138 + 54 files, chạy hai model với golden scores và
+19 contract/safety tests đều PASS. SHA256/size do GitHub API trả về khớp manifest;
+bootstrap còn kiểm lại nội dung tải xuống. Xem `release/published-assets.json`
+và `release/team-verification.json` cho bằng chứng và trạng thái nhánh integration.
+
+Kiểm chứng dùng clone HTTPS cùng máy, không có source overlay hay `--asset-dir`.
+Python/dependencies mới được tải trong clone này trong lúc chờ upload; final
+bootstrap dùng lại riêng môi trường mới đó. Không dùng cache/venv/model/data cũ
+cho inference. Monitor tài nguyên ở ngoài clone chỉ là test harness. Chưa kiểm
+trên máy đồng nghiệp. Runtime source đã kiểm là revision trên; các commit tiếp
+theo chỉ ghi báo cáo và xác nhận nhánh, không đổi code đã kiểm.
 
 ## Clone → setup → verify → run
 
@@ -55,7 +66,7 @@ request-only data thành GLU evaluation.
 
 ## Phân phối qua GitHub Releases
 
-Không dùng Git LFS, không tạo dịch vụ trả phí. Release tag dự kiến
+Không dùng Git LFS, không tạo dịch vụ trả phí. Release tag
 `ai-research-team-20261105`. Checksum, URL, file count nằm trong
 [`release/assets.json`](../release/assets.json). Mỗi archive có manifest riêng,
 original path/SHA/size và content objects; file restore giữ nguyên bytes.
@@ -133,7 +144,12 @@ không bảo đảm tuyệt đối không overshoot 80°C.
 
 Các lần thử đóng gói nén/native GLU đã bị watchdog dừng, có lần ghi nhận 81°C.
 Không bỏ những lần thất bại khỏi báo cáo. Đóng gói không nén sau đó đạt tối đa
-51°C; smoke ORT đạt tối đa56°C. Không thay thermal protection OS/firmware.
+51°C; smoke ORT đạt tối đa56°C. Public bootstrap 821.72 giây, max77°C,
+peak cgroup memory khoảng1.72GB, peak system used khoảng10.73GB và19tests PASS.
+Một quét metadata archive trong phiên prepublication đã chạy ngoài cgroup;
+watcher vẫn đo cảm biến toàn máy, nhưng số đo phiên đó không quy riêng cho
+bootstrap. Bản quét đã hoàn tất trước khi thao tác dừng được thực hiện.
+Không thay thermal protection OS/firmware.
 Trước workload mới phải kiểm tra sensor/watchdog và giới hạn tải phù hợp;
 bootstrap tự nó không chứng nhận thermal safety trên máy đồng nghiệp.
 

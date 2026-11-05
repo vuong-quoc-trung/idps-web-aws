@@ -16,9 +16,9 @@ Trên Linux x86_64 có Python 3 và kết nối Internet:
 ```
 
 Bootstrap tải môi trường và model bundle có SHA256, không train hoặc khởi động
-dịch vụ. Chỉ chạy thành công sau khi các assets của release
-`ai-research-team-20261105` đã được publish. Xem trạng thái kiểm chứng trong tài liệu
-bàn giao; không coi URL dự kiến là artifact đã upload.
+dịch vụ. Các assets của release `ai-research-team-20261105` đã được publish và
+kiểm chứng bằng clean clone cùng máy: hai model inference và 19 tests PASS.
+Training handoff là PARTIAL; xem tài liệu bàn giao về dữ liệu giữ private.
 
 Không dùng lại cấu hình CPU 800% trong các báo cáo lịch sử. Máy nghiên cứu đã có
 thermal stops; các công việc bàn giao hiện dùng quota bảo thủ 10% của một CPU,
