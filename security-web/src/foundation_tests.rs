@@ -720,3 +720,116 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
         "BLOCK"
     );
 }
+
+#[sqlx::test(migrations = "./migrations")]
+async fn app_new_behavior_rules_thresholds_and_sources(pool: PgPool) {
+    let s = state(pool, false);
+    let logs = Logs::new();
+    let p = logs.path("new-app.log");
+    let at = Utc::now() - chrono::Duration::seconds(150);
+    // All fixtures are canonical records, never requests to the live Student server.
+    let make = |id: String, ip: &str, path: &str, method: &str, status: u16, seconds: i64| {
+        let mut v: serde_json::Value = serde_json::from_str(&app_line(
+            &id,
+            Some(ip),
+            path,
+            status,
+            at + chrono::Duration::seconds(seconds),
+        ))
+        .unwrap();
+        v["http_method"] = json!(method);
+        v.to_string() + "\n"
+    };
+    for (code, ip, path, method, status, threshold) in [
+        ("APP-1007", "192.168.1.71", "/api/students", "GET", 500, 5),
+        ("APP-1008", "192.168.1.72", "/api/users", "GET", 200, 40),
+        (
+            "APP-1009",
+            "192.168.1.73",
+            "/api/students/[id]",
+            "PATCH",
+            200,
+            20,
+        ),
+        ("APP-1010", "192.168.1.74", "/api/students", "POST", 405, 5),
+    ] {
+        for i in 0..threshold - 1 {
+            append(
+                &s,
+                "STUDENT_AUDIT",
+                &p,
+                &make(format!("{code}-{i}"), ip, path, method, status, 10),
+            )
+            .await;
+        }
+        assert!(app_alerts(&s.pool, code).await.is_empty());
+        // Method probing needs diversity as well as count.
+        let last_method = if code == "APP-1010" { "DELETE" } else { method };
+        let last = make(format!("{code}-last"), ip, path, last_method, status, 11);
+        append(&s, "STUDENT_AUDIT", &p, &last).await;
+        append(&s, "STUDENT_AUDIT", &p, &last).await;
+        let alerts = app_alerts(&s.pool, code).await;
+        assert_eq!(alerts.len(), 1);
+        assert_eq!(alerts[0].0, if code == "APP-1010" { 3 } else { 2 });
+        let evidence: serde_json::Value = serde_json::from_str(&alerts[0].1).unwrap();
+        assert_eq!(evidence["event_count"], threshold);
+        assert_eq!(evidence["recommended_action"], "ALERT_ONLY");
+    }
+    // Login success must follow failures, POST /login only, across >60s window.
+    for i in 0..5 {
+        append(
+            &s,
+            "STUDENT_AUDIT",
+            &p,
+            &make(
+                format!("login-{i}"),
+                "192.168.1.75",
+                "/api/auth/login",
+                "POST",
+                401,
+                i,
+            ),
+        )
+        .await;
+    }
+    assert!(app_alerts(&s.pool, "APP-1006").await.is_empty());
+    append(
+        &s,
+        "STUDENT_AUDIT",
+        &p,
+        &make(
+            "me-success".into(),
+            "192.168.1.75",
+            "/api/auth/me",
+            "GET",
+            200,
+            80,
+        ),
+    )
+    .await;
+    assert!(app_alerts(&s.pool, "APP-1006").await.is_empty());
+    append(
+        &s,
+        "STUDENT_AUDIT",
+        &p,
+        &make(
+            "login-success".into(),
+            "192.168.1.75",
+            "/api/auth/login",
+            "POST",
+            200,
+            90,
+        ),
+    )
+    .await;
+    let alerts = app_alerts(&s.pool, "APP-1006").await;
+    assert_eq!(alerts.len(), 1);
+    let evidence: serde_json::Value = serde_json::from_str(&alerts[0].1).unwrap();
+    assert_eq!(evidence["failure_count"], 5);
+    assert_eq!(evidence["event_count"], 6);
+    let actions: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions")
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(actions, 0);
+}
