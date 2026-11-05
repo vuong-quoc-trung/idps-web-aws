@@ -176,17 +176,16 @@ aside {
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 42px;
+  width: 46px;
   height: 46px;
-  border: 1px solid #548e7f;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #24453d, #152c29);
-  color: #9de9d0;
-  box-shadow: 0 0 24px #73d6b909;
+  flex-shrink: 0;
 }
-.brand-mark .icon {
-  width: 27px;
-  height: 27px;
+.brand-mark img,
+.login-emblem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .brand-wordmark > span {
   display: block;
@@ -727,19 +726,9 @@ details > ul {
   background: linear-gradient(90deg, transparent, #8ae5c6, transparent);
 }
 .login-emblem {
-  display: grid;
-  place-items: center;
-  width: 54px;
-  height: 58px;
-  border: 1px solid #4a7867;
-  border-radius: 14px;
-  background: #26463b;
-  color: #97e5c7;
+  width: 64px;
+  height: 64px;
   margin-bottom: 26px;
-}
-.login-emblem .icon {
-  width: 31px;
-  height: 31px;
 }
 .login h1 {
   font-size: 1.85rem;

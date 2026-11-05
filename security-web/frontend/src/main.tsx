@@ -15,6 +15,9 @@ import { AlertDetail } from "./AlertDetail";
 import { ApplicationAudit } from "./ApplicationAudit";
 import { Icon } from "./Icon";
 
+const securityLogo = new URL("./assets/logo-security.png", import.meta.url)
+  .href;
+
 type User = { username: string; role: "admin" | "viewer" };
 type Alert = {
   id: number;
@@ -388,7 +391,7 @@ function App() {
       <main className="login">
         <form onSubmit={login}>
           <div className="login-emblem">
-            <Icon name="blocked" />
+            <img src={securityLogo} alt="" width="64" height="64" />
           </div>
           <p className="eyebrow">PBL4 / SECURITY PLATFORM</p>
           <h1>Đăng nhập giám sát</h1>
@@ -449,7 +452,7 @@ function App() {
           }}
         >
           <span className="brand-mark">
-            <Icon name="blocked" />
+            <img src={securityLogo} alt="" width="46" height="46" />
           </span>
           <span className="brand-wordmark">
             PBL4 <span>SECURITY</span>
