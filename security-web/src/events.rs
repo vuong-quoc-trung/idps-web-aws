@@ -600,6 +600,10 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                         "Shellshock Style HTTP Header Injection",
                         "Web Application Attack",
                     ),
+                    Some(1000025) => (
+                        "SQL Injection Boolean or Union Request Body Attempt",
+                        "Web Application Attack",
+                    ),
                     _ => ("Suricata Alert", "Sensor Alert"),
                 };
                 native_alert = Some(NativeAlert {

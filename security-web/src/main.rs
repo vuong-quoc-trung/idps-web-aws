@@ -667,6 +667,14 @@ fn suricata_rule_catalog(policy: &PolicyEngine) -> Vec<RuleInfo> {
             auto_block_eligible: policy.evaluate_suricata(Some(1000024))
                 == EventPolicyDecision::EligibleForAutoBlock,
         },
+        RuleInfo {
+            sid: 1000025,
+            name: "SQL Injection Boolean or Union Request Body Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000025))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
     ]
 }
 
@@ -745,7 +753,7 @@ mod parser_tests {
     fn extended_rules_require_explicit_response_opt_in() {
         let sids = vec![
             1000008, 1000010, 1000011, 1000012, 1000013, 1000014, 1000015, 1000016, 1000017,
-            1000018, 1000019, 1000020, 1000021, 1000022, 1000023, 1000024,
+            1000018, 1000019, 1000020, 1000021, 1000022, 1000023, 1000024, 1000025,
         ];
         let off = PolicyEngine::new(false, sids.clone(), false);
         let original = PolicyEngine::new(true, vec![1000002], false);
@@ -785,6 +793,7 @@ mod parser_tests {
             (1000022, 2),
             (1000023, 1),
             (1000024, 1),
+            (1000025, 1),
         ] {
             let parsed = events::parse("SURICATA", &serde_json::json!({
                 "timestamp":"2026-10-29T10:00:00Z", "event_type":"alert",
