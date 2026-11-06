@@ -51,7 +51,19 @@ def control_action(temp, rate, paused, cool_seconds, pressure=False):
     return "WAIT"
 
 
-def watchdog(unit, root):
+def reduced_quota(quota):
+    """A thermal reduction must never raise a conservative caller's quota."""
+    return max(1, min(10, quota / 2))
+
+
+def watchdog_override(action, build_pause, paused, watchdog_paused):
+    # A prior early-freeze marker must never override a current hard stop.
+    if action != "KILL" and build_pause and watchdog_paused and not paused:
+        return "FREEZE"
+    return action
+
+
+def watchdog(unit, root, build_pause=False):
     root = Path(root)
     samples = []
     reason = "monitor_completed"
@@ -67,6 +79,9 @@ def watchdog(unit, root):
                     "heartbeat_age_seconds": age,
                 }
             )
+            if build_pause and temp >= 70 and age <= 3:
+                ctl("freeze", unit)
+                (root / "watchdog-paused").touch()
             if temp >= 79 or age > 3:
                 reason = "temperature_79" if temp >= 79 else "monitor_heartbeat_stale"
                 kill_unit(unit)
@@ -95,12 +110,29 @@ def watchdog(unit, root):
                 stream.write(json.dumps(row) + "\n")
 
 
-def run(command, output, quota=25, max_seconds=180, sensor=None):
+def build_control_action(temp, rate, paused, cool_seconds, pressure=False):
+    """Suspend build processes early, retaining compiler state, never used by AI."""
+    if temp >= 80:
+        return "KILL"
+    if pressure or temp >= 65 or (temp >= 60 and rate >= 5):
+        return "FREEZE" if not paused else "WAIT"
+    if paused and temp < 60 and cool_seconds >= 5:
+        return "THAW"
+    return "WAIT"
+
+
+def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=False, scope=False):
     sensor = sensor or cpu_reading
     root = Path(output).resolve()
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
     os.umask(0o077)
-    unit = "idps-integration-" + str(os.getpid()) + "-" + str(time.time_ns())[-8:] + ".service"
+    unit = (
+        "idps-integration-"
+        + str(os.getpid())
+        + "-"
+        + str(time.time_ns())[-8:]
+        + (".scope" if scope else ".service")
+    )
     temperature, readings = cpu_reading()
     memory = psutil.virtual_memory()
     safe_ram = min(
@@ -123,6 +155,7 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
     failure = None
     group = None
     result = None
+    scope_process = None
     unit_start = [
         "systemd-run",
         "--user",
@@ -174,9 +207,46 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
 
     old = {s: signal.signal(s, interrupted) for s in [signal.SIGTERM, signal.SIGINT]}
     try:
-        subprocess.run(
-            [*unit_start, *command], check=True, capture_output=True, text=True, timeout=15
-        )
+        if scope:
+            # A scope inherits the caller's user-namespace permissions/AppArmor
+            # domain. A service starts under the user manager's domain instead.
+            # Keep the same kernel memory/CPU limits and independent watchdog.
+            scope_command = ["systemd-run", "--user", "--scope", "--quiet", "--unit", unit]
+            for setting in [
+                f"CPUQuota={quota}%",
+                "CPUQuotaPeriodSec=10ms",
+                f"MemoryMax={int(safe_ram)}",
+                f"MemoryHigh={int(safe_ram * 0.8)}",
+                "MemorySwapMax=0",
+                "TasksMax=64",
+            ]:
+                scope_command += ["-p", setting]
+            environment = os.environ | {
+                name: "1"
+                for name in [
+                    "OMP_NUM_THREADS",
+                    "OPENBLAS_NUM_THREADS",
+                    "MKL_NUM_THREADS",
+                    "PYTHONDONTWRITEBYTECODE",
+                ]
+            }
+            scope_process = subprocess.Popen(
+                [*scope_command, "nice", "-n", "10", "taskset", "-c", "0", *command],
+                env=environment,
+                stdout=(root / "stdout.log").open("ab"),
+                stderr=(root / "stderr.log").open("ab"),
+            )
+            deadline = time.monotonic() + 10
+            while not ctl(
+                "show", unit, "-p", "ControlGroup", "--value", check=False
+            ).stdout.strip():
+                if scope_process.poll() is not None or time.monotonic() > deadline:
+                    raise RuntimeError("Guarded scope did not start")
+                time.sleep(0.05)
+        else:
+            subprocess.run(
+                [*unit_start, *command], check=True, capture_output=True, text=True, timeout=15
+            )
         group = ctl("show", unit, "-p", "ControlGroup", "--value").stdout.strip()
         cgroup = Path("/sys/fs/cgroup") / group.lstrip("/")
         readback = {
@@ -189,22 +259,33 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
         (root / "kernel-readback.json").write_text(
             json.dumps({"unit": unit, "cgroup": group, "limits": readback}, indent=2) + "\n"
         )
+        monitor_command = [
+            sys.executable,
+            "-B",
+            str(Path(__file__).resolve()),
+            "--action",
+            "watchdog",
+            "--unit",
+            unit,
+            "--output",
+            str(root),
+        ]
+        if build_pause:
+            monitor_command.append("--build-pause")
         monitor = subprocess.Popen(
-            [
-                sys.executable,
-                "-B",
-                str(Path(__file__).resolve()),
-                "--action",
-                "watchdog",
-                "--unit",
-                unit,
-                "--output",
-                str(root),
-            ],
+            monitor_command,
             start_new_session=True,
         )
         while True:
             (root / "heartbeat").touch()
+            if scope_process is not None and scope_process.poll() is not None:
+                code = scope_process.wait()
+                result = {
+                    "ExecMainStatus": str(code),
+                    "Result": "success" if code == 0 else "exit-code",
+                    "scope": True,
+                }
+                break
             temp, values = sensor()
             now = time.monotonic()
             elapsed = now - start
@@ -214,11 +295,11 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
             rate = (temp - previous) / max(now - previous_at, 0.1)
             previous = temp
             previous_at = now
-            if paused and temp < 68 and not pressure:
+            if paused and temp < (60 if build_pause else 68) and not pressure:
                 cool_since = now if cool_since is None else cool_since
             else:
                 cool_since = None
-            action = control_action(
+            action = (build_control_action if build_pause else control_action)(
                 temp, rate, paused, 0 if cool_since is None else now - cool_since, pressure
             )
             threads = []
@@ -250,16 +331,25 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
                 samples.append(sample)
             if (root / "watchdog-tripped").exists():
                 raise RuntimeError((root / "watchdog-tripped").read_text())
+            action = watchdog_override(
+                action, build_pause, paused, (root / "watchdog-paused").exists()
+            )
             if action == "KILL":
                 raise RuntimeError("80C hard stop")
             if action == "FREEZE":
                 ctl("freeze", unit)
-                ctl("set-property", "--runtime", unit, "CPUQuota=10%")
+                ctl("set-property", "--runtime", unit, f"CPUQuota={reduced_quota(quota)}%")
                 paused = True
                 events.append(
-                    {"elapsed": elapsed, "action": "FREEZE_AND_REDUCE", "temperature": temp}
+                    {
+                        "elapsed": elapsed,
+                        "action": "FREEZE_AND_REDUCE",
+                        "temperature": temp,
+                        "cpu_quota_percent": reduced_quota(quota),
+                    }
                 )
             elif action == "THAW":
+                (root / "watchdog-paused").unlink(missing_ok=True)
                 ctl("thaw", unit)
                 paused = False
                 events.append({"elapsed": elapsed, "action": "THAW", "temperature": temp})
@@ -280,8 +370,12 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
                 "CPUUsageNSec",
                 "-p",
                 "MemoryPeak",
+                check=not scope,
             ).stdout
             state = dict(line.split("=", 1) for line in status.splitlines() if "=" in line)
+            if scope:
+                time.sleep(0.2)
+                continue
             if (
                 state.get("ActiveState") in ["inactive", "failed"]
                 or state.get("SubState") == "exited"
@@ -336,7 +430,13 @@ def run(command, output, quota=25, max_seconds=180, sensor=None):
             "events": events,
             "systemd_result": result,
             "source_sha256": __import__("hashlib").sha256(Path(__file__).read_bytes()).hexdigest(),
-            "safety_scope": "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee",
+            "safety_scope": (
+                "build: freeze>=65C, independent freeze>=70C AND kill>=79C; resume<60C stable5s; sensor/heartbeat failure kills; no control of external host heat"
+                if build_pause
+                else "all tasks in named cgroup; independent watchdog>=79C or heartbeat>3s; runtime deadline; no absolute spike guarantee"
+            ),
+            "build_pause_only": build_pause,
+            "scope_mode": scope,
         }
         (root / "resource-report.json").write_text(json.dumps(report, indent=2) + "\n")
         with (root / "samples.jsonl").open("w") as stream:
@@ -356,14 +456,26 @@ if __name__ == "__main__":
     parser.add_argument("--unit")
     parser.add_argument("--quota", type=int, default=25)
     parser.add_argument("--max-seconds", type=int, default=180)
+    parser.add_argument(
+        "--scope",
+        action="store_true",
+        help="Retain caller user-namespace permissions in a guarded scope; same safety thresholds",
+    )
+    parser.add_argument(
+        "--build-pause",
+        action="store_true",
+        help="Build tools only: freeze from65C, resume below60C stable5s; no compiler restart. Never use for AI inference/training.",
+    )
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     if args.action == "watchdog":
-        watchdog(args.unit, args.output)
+        watchdog(args.unit, args.output, args.build_pause)
     else:
         run(
             args.command[1:] if args.command[:1] == ["--"] else args.command,
             args.output,
             args.quota,
             args.max_seconds,
+            build_pause=args.build_pause,
+            scope=args.scope,
         )
