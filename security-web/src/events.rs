@@ -414,6 +414,25 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                         .context("Missing EVE timestamp")?,
                 )?,
             );
+            if value["adapter_version"].as_str() == Some("suricata-shadow-1") {
+                let instance = value["sensor_instance"]
+                    .as_str()
+                    .context("Missing sensor generation")?;
+                let id = value["sensor_event_id"]
+                    .as_str()
+                    .context("Missing sensor event identity")?;
+                anyhow::ensure!(
+                    instance.len() == 32
+                        && id.len() == 64
+                        && instance
+                            .bytes()
+                            .chain(id.bytes())
+                            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
+                    "Invalid sensor identity"
+                );
+                event.source_instance = format!("suricata-{}", instance);
+                event.event_id = id.into();
+            }
             event.event_type = match value["event_type"]
                 .as_str()
                 .context("Missing EVE event_type")?
@@ -647,5 +666,15 @@ mod contract_tests {
             .collect();
         assert_eq!(actual, expected);
         assert_eq!(schema["additionalProperties"], false);
+    }
+    #[test]
+    fn opt_in_sensor_generation_and_event_identity_survive_replay() {
+        let raw=serde_json::json!({"timestamp":"2026-11-06T12:00:00+00:00","event_type":"http","src_ip":"127.0.0.1","dest_ip":"127.0.0.1","adapter_version":"suricata-shadow-1","sensor_instance":"a".repeat(32),"sensor_event_id":"b".repeat(64),"flow_id":1,"http":{"http_method":"GET","url":"/api/faculties","status":200,"request_id":"c".repeat(32)}}).to_string();
+        let a = parse("SURICATA", &raw).unwrap().canonical;
+        let b = parse("SURICATA", &raw).unwrap().canonical;
+        assert_eq!(a.source_instance, b.source_instance);
+        assert_eq!(a.event_id, b.event_id);
+        assert_eq!(a.event_id, "b".repeat(64));
+        assert_eq!(a.request_id, Some("c".repeat(32)));
     }
 }
