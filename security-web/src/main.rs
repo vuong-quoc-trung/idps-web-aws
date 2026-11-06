@@ -1,3 +1,4 @@
+mod ai_shadow;
 mod application_audit;
 mod auth;
 mod detection;
@@ -6,6 +7,7 @@ mod firewall;
 mod ingest;
 mod metrics;
 mod network;
+mod three_source;
 use anyhow::{Context, Result, bail};
 use axum::{
     Extension, Json, Router,
@@ -233,6 +235,21 @@ async fn main() -> Result<()> {
     {
         sources.push(("STUDENT_AUDIT", path));
     }
+    if let Ok(path) = env::var("AI_SHADOW_RESULTS_PATH")
+        && !path.trim().is_empty()
+    {
+        sources.push(("AI_SHADOW", path));
+    }
+    if let Ok(path) = env::var("THREE_SOURCE_RESULTS_PATH")
+        && !path.trim().is_empty()
+    {
+        sources.push(("THREE_SOURCE", path));
+    }
+    if let Ok(path) = env::var("GLU207_RESULTS_PATH")
+        && !path.trim().is_empty()
+    {
+        sources.push(("GLU207_SHADOW", path));
+    }
     for (name, path) in sources {
         state
             .watchers
@@ -272,6 +289,7 @@ fn router(state: AppState) -> Router {
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))
         .route("/api/audit", get(firewall::audit))
         .route("/api/application-audit", get(application_audit::list))
+        .route("/api/ai-shadow", get(ai_shadow::list))
         .route(
             "/api/application-audit/{id}",
             get(application_audit::detail),

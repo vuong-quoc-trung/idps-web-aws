@@ -302,6 +302,12 @@ async fn ingest_line(
     physical_key: &str,
     raw: &[u8],
 ) -> Result<()> {
+    if source == "AI_SHADOW" {
+        return ai_shadow::ingest(tx, physical_key, raw).await;
+    }
+    if source == "THREE_SOURCE" || source == "GLU207_SHADOW" {
+        return three_source::ingest(tx, physical_key, raw).await;
+    }
     let parsed = std::str::from_utf8(raw)
         .map_err(anyhow::Error::from)
         .and_then(|line| events::parse(source, line.trim_end()));
@@ -464,6 +470,7 @@ pub async fn process_file(state: &AppState, source: &str, path: &FsPath) -> Resu
 }
 
 pub async fn prune(state: &AppState) -> Result<()> {
+    ai_shadow::prune(state).await?;
     sqlx::query(
         "UPDATE blocked_ips SET active=false,unblocked_at=now() WHERE active AND expires_at<=now()",
     )
