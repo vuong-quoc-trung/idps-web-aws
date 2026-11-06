@@ -1,0 +1,683 @@
+{
+  "milestone": "LOCAL_DEMO_STABILIZATION",
+  "date": "2026-11-06",
+  "branch": "feature/ai-idps-shadow-integration",
+  "HEAD": "2f756a727293cf0d5e2266bca049cb797b6b8510",
+  "changes_uncommitted": true,
+  "scope": "Local shadow integration; no detection-quality benchmark, AWS deployment, training, admission or enforcement",
+  "primary_acceptance": {
+    "status": "PASS",
+    "evidence": ".local-dev/foundation/ai/acceptance-1793952097781967066.json",
+    "small_batch": {
+      "requests": 6,
+      "observed_completion_seconds": 1.9996720359999927,
+      "end_to_end_observed_requests_per_second": 3.0004920266835304,
+      "inference_latency_ms_min": 120.38659599988932,
+      "inference_latency_ms_max": 180.03492399998322,
+      "inference_latency_ms_mean": 149.04333900002106
+    },
+    "traffic": [
+      {
+        "case": "benign",
+        "request_id": "c004e231350101693406371956daca57",
+        "http_status": 200,
+        "score": 0.007610976696014404,
+        "above_threshold": false,
+        "latency_ms": 139.5639620000111,
+        "correlated_sources": [
+          "NGINX",
+          "STUDENT_AUDIT"
+        ]
+      },
+      {
+        "case": "benign-search",
+        "request_id": "d77725fbdf9fcc7f433edba68fb6e3a3",
+        "http_status": 200,
+        "score": 0.03486001491546631,
+        "above_threshold": false,
+        "latency_ms": 133.84317000009105,
+        "correlated_sources": [
+          "NGINX",
+          "STUDENT_AUDIT"
+        ]
+      },
+      {
+        "case": "SQLi-shaped-query",
+        "request_id": "66f53010c4c21ed8c2cbec28c49d3549",
+        "http_status": 200,
+        "score": 0.998342990875244,
+        "above_threshold": true,
+        "latency_ms": 160.21381800010204,
+        "correlated_sources": [
+          "NGINX",
+          "STUDENT_AUDIT"
+        ]
+      },
+      {
+        "case": "XSS-shaped-query",
+        "request_id": "f5012fdb98d815cdfab6830efd8126dd",
+        "http_status": 200,
+        "score": 0.9985913038253784,
+        "above_threshold": true,
+        "latency_ms": 160.2175640000496,
+        "correlated_sources": [
+          "NGINX",
+          "STUDENT_AUDIT"
+        ]
+      },
+      {
+        "case": "command-shaped-query",
+        "request_id": "eafba08497400ae79f62eb94cb02b818",
+        "http_status": 200,
+        "score": 0.028560519218444824,
+        "above_threshold": false,
+        "latency_ms": 180.03492399998322,
+        "correlated_sources": [
+          "NGINX",
+          "STUDENT_AUDIT"
+        ]
+      },
+      {
+        "case": "private-field-canary",
+        "request_id": "26ff7b4b269442d0bbc4a78604eff8a6",
+        "http_status": 200,
+        "score": 0.007678806781768799,
+        "above_threshold": false,
+        "latency_ms": 120.38659599988932,
+        "correlated_sources": [
+          "NGINX",
+          "STUDENT_AUDIT"
+        ]
+      }
+    ],
+    "worker_crash_isolation": {
+      "status": "PASS",
+      "request": {
+        "request_id": "0c1b7c7e6ee2b761370a8c926c143e31",
+        "http_status": 200,
+        "http_latency_ms": 81.17069899981288
+      },
+      "stale_heartbeat_visible": true,
+      "lost_requests_replayed": false
+    },
+    "worker_restart": {
+      "status": "PASS",
+      "request": {
+        "request_id": "5806dbbcdfd4623e42f05e6e4929f078",
+        "http_status": 200,
+        "http_latency_ms": 75.34808800005521
+      },
+      "probe_requests": 1,
+      "first_probe_scored": true,
+      "startup_connection_check": {
+        "status": "PASS",
+        "worker_id": "37633e87150c4007874a9625963dcb00",
+        "verified_at": "2026-11-06T15:01:21.368264+07:00",
+        "probe_ids": [
+          "055f6469d46518af2d1a6c4b51a1c50a"
+        ],
+        "probe_count": 1,
+        "unscored_probe_ids": [],
+        "transport": "LOSSY_UNIX_DATAGRAM",
+        "scope": "Startup delivery check; not a lossless guarantee"
+      }
+    },
+    "observed_delivery": {
+      "collection_enabled": true,
+      "grace_seconds": 15,
+      "inference_errors": 0,
+      "nginx_observed_requests": 8,
+      "scope": "Observed Nginx API request IDs only; unresolved can mean loss, rejection, worker outage or processing/ingestion delay. Not a measured end-to-end packet loss rate.",
+      "scored": 7,
+      "unresolved_after_grace": 1,
+      "window_seconds": 300
+    },
+    "model_faults": [
+      {
+        "case": "missing",
+        "status": "MODEL_UNAVAILABLE",
+        "Student_HTTP": 200
+      },
+      {
+        "case": "invalid",
+        "status": "MODEL_UNAVAILABLE",
+        "Student_HTTP": 200
+      }
+    ],
+    "Rust_restart_persistence": {
+      "status": "PASS",
+      "AI_rows_before": 51,
+      "AI_rows_after": 51,
+      "Student_HTTP": 200,
+      "unauthenticated_AI_HTTP": 401
+    },
+    "graceful_shutdown": {
+      "status": "PASS",
+      "owned_processes_stopped": true,
+      "all_configured_ports_free": true,
+      "database_volumes_preserved": true
+    },
+    "AI_enforcement_actions": 0,
+    "private_canary_in_AI_journal": false
+  },
+  "tests": {
+    "launcher_unit": {
+      "passed": 7
+    },
+    "worker_unit": {
+      "passed": 4
+    },
+    "candidate_guard": {
+      "passed": 7,
+      "scope": "Decision logic, mocked watchdog threshold79C in AI/build modes, sensor failure; no deliberate heating"
+    },
+    "security_frontend": {
+      "passed": 3
+    },
+    "rust_targeted": {
+      "status": "PASS",
+      "passed": 3,
+      "filtered_out": 50,
+      "evidence": ".local-dev/stabilization/rust-tests-3/stdout.log",
+      "resource_report": {
+        "status": "PASS",
+        "failure": null,
+        "unit": "idps-integration-27419-04954939.service",
+        "wall_seconds": 156.69462071199996,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_min": 50.0,
+        "cpu_temperature_mean": 51.8380187416332,
+        "cpu_temperature_max": 74.0,
+        "peak_cgroup_memory_bytes": 1038946304,
+        "peak_system_used_bytes": 9184931840,
+        "events": [
+          {
+            "elapsed": 93.96777914799986,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 99.82984184599991,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 127.8579028879999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 64.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 133.9552617669999,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 141.07069524099984,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 147.1511830139998,
+            "action": "THAW",
+            "temperature": 52.0
+          }
+        ],
+        "systemd_result": {
+          "ActiveState": "active",
+          "SubState": "exited",
+          "Result": "success",
+          "ExecMainStatus": "0",
+          "MemoryPeak": "1039454208",
+          "CPUUsageNSec": "11500892000"
+        },
+        "source_sha256": "0654a1c91204eaa5637fe9783adaafcbdae7bf1c9e254c094fd4e12a6c4959ed",
+        "safety_scope": "build: freeze>=65C, independent freeze>=70C AND kill>=79C; resume<60C stable5s; sensor/heartbeat failure kills; no control of external host heat",
+        "build_pause_only": true
+      }
+    },
+    "prior_rust_regression": {
+      "passed": 52,
+      "scope": "Prior integration snapshot, not rerun wholesale after delivery SQL change"
+    },
+    "student_regression": "Real HTTP CSRF/login/me + audit correlation PASS; Student source unchanged",
+    "security_regression": "Real authentication401/admin login, dashboard, AI ingestion, alerts/no enforcement, restart persistence PASS"
+  },
+  "builds": {
+    "rust-build-1": {
+      "evidence": ".local-dev/stabilization/rust-build-1/resource-report.json",
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-74452-04654681.service",
+      "wall_seconds": 34.07758933000059,
+      "kernel_cpu_quota_percent": 10,
+      "cpu_temperature_min": 48.0,
+      "cpu_temperature_mean": 50.65432098765432,
+      "cpu_temperature_max": 58.0,
+      "peak_cgroup_memory_bytes": 488886272,
+      "peak_system_used_bytes": 11973685248,
+      "events": [],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "489017344",
+        "CPUUsageNSec": "3401467000"
+      },
+      "source_sha256": "0654a1c91204eaa5637fe9783adaafcbdae7bf1c9e254c094fd4e12a6c4959ed",
+      "safety_scope": "build: freeze>=65C, independent freeze>=70C AND kill>=79C; resume<60C stable5s; sensor/heartbeat failure kills; no control of external host heat",
+      "build_pause_only": true
+    },
+    "ui-build-1": {
+      "evidence": ".local-dev/stabilization/ui-build-1/resource-report.json",
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-74451-06564783.service",
+      "wall_seconds": 146.9792065820002,
+      "kernel_cpu_quota_percent": 10,
+      "cpu_temperature_min": 48.0,
+      "cpu_temperature_mean": 56.05128205128205,
+      "cpu_temperature_max": 76.0,
+      "peak_cgroup_memory_bytes": 249937920,
+      "peak_system_used_bytes": 12150788096,
+      "events": [
+        {
+          "elapsed": 48.02227893899999,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 62.0,
+          "cpu_quota_percent": 5.0
+        },
+        {
+          "elapsed": 60.34190851299991,
+          "action": "THAW",
+          "temperature": 56.0
+        },
+        {
+          "elapsed": 61.18710293000004,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 60.0,
+          "cpu_quota_percent": 5.0
+        },
+        {
+          "elapsed": 72.26950449200012,
+          "action": "THAW",
+          "temperature": 57.0
+        },
+        {
+          "elapsed": 98.82128299899978,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 60.0,
+          "cpu_quota_percent": 5.0
+        },
+        {
+          "elapsed": 104.68624930500027,
+          "action": "THAW",
+          "temperature": 57.0
+        },
+        {
+          "elapsed": 111.99685539599977,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 60.0,
+          "cpu_quota_percent": 5.0
+        },
+        {
+          "elapsed": 119.11472154799958,
+          "action": "THAW",
+          "temperature": 57.0
+        },
+        {
+          "elapsed": 119.97864553599993,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 60.0,
+          "cpu_quota_percent": 5.0
+        },
+        {
+          "elapsed": 143.58909016599955,
+          "action": "THAW",
+          "temperature": 57.0
+        }
+      ],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "249937920",
+        "CPUUsageNSec": "6757657000"
+      },
+      "source_sha256": "0654a1c91204eaa5637fe9783adaafcbdae7bf1c9e254c094fd4e12a6c4959ed",
+      "safety_scope": "build: freeze>=65C, independent freeze>=70C AND kill>=79C; resume<60C stable5s; sensor/heartbeat failure kills; no control of external host heat",
+      "build_pause_only": true
+    }
+  },
+  "clean_runtime": {
+    "status": "PASS",
+    "initial_attempt": {
+      "runtime": ".local-dev/demo-clean",
+      "Student_HTTP_startup": true,
+      "login_smoke": "HTTP401; Tomcat ready before CommandLineRunner committed bootstrap admin",
+      "AI": "Guard refused start at CPU>=65C/headroom condition; apps stayed available",
+      "shutdown": "PASS; named scopes and owned containers stopped"
+    },
+    "fix": "Launcher now waits for committed foundation-admin row before AI startup and login; unit simulates delayed bootstrap transaction",
+    "retest_runtime": ".local-dev/demo-clean-2",
+    "scope": "New private runtime, generated credentials and fresh PostgreSQL volumes; existing checkout build/dependency/model cache reused, not a clean clone or full clean build",
+    "foundation_smoke_evidence": ".local-dev/demo-clean-2/smoke-report.json",
+    "acceptance_evidence": ".local-dev/demo-clean-2/ai/acceptance-1793953385832071187.json",
+    "Student_auth_DB_and_correlation": "PASS from new credentials and volumes after bootstrap-readiness fix",
+    "AI_initial_startup": "NOT_READY; inspect private ai.log/resource reports",
+    "AI_recovery": "Explicit --ai-worker start after5s preflight max56C,last54C; same guard and unchanged quota",
+    "small_batch": {
+      "requests": 6,
+      "observed_completion_seconds": 2.3257979879999766,
+      "end_to_end_observed_requests_per_second": 2.5797597344899157,
+      "inference_latency_ms_min": 108.1451720001496,
+      "inference_latency_ms_max": 220.3139910002392,
+      "inference_latency_ms_mean": 147.63877116668786
+    },
+    "worker_crash_isolation": {
+      "status": "PASS",
+      "request": {
+        "request_id": "0875f94e6bdea839da22d79aa959689b",
+        "http_status": 200,
+        "http_latency_ms": 92.61443200011854
+      },
+      "stale_heartbeat_visible": true,
+      "lost_requests_replayed": false,
+      "canonical_NGINX_observed_without_AI_result": 1
+    },
+    "worker_restart": {
+      "status": "PASS",
+      "request": {
+        "request_id": "54cdddeec53f7bf1c97f5cf1e7820768",
+        "http_status": 200,
+        "http_latency_ms": 63.66984499982209
+      },
+      "probe_requests": 1,
+      "first_probe_scored": true,
+      "startup_connection_check": {
+        "status": "PASS",
+        "worker_id": "21a8cf4f2f174e739e7a025b38ac312c",
+        "verified_at": "2026-11-06T15:22:51.208259+07:00",
+        "probe_ids": [
+          "f3723cbdd4d91446db357b667dba6b97"
+        ],
+        "probe_count": 1,
+        "unscored_probe_ids": [],
+        "transport": "LOSSY_UNIX_DATAGRAM",
+        "scope": "Startup delivery check; not a lossless guarantee"
+      }
+    },
+    "observed_delivery": {
+      "collection_enabled": true,
+      "grace_seconds": 15,
+      "inference_errors": 0,
+      "nginx_observed_requests": 12,
+      "scope": "Observed Nginx API request IDs only; unresolved can mean loss, rejection, worker outage or processing/ingestion delay. Not a measured end-to-end packet loss rate.",
+      "scored": 8,
+      "unresolved_after_grace": 4,
+      "window_seconds": 300
+    },
+    "model_faults": [
+      {
+        "case": "missing",
+        "status": "MODEL_UNAVAILABLE",
+        "Student_HTTP": 200
+      },
+      {
+        "case": "invalid",
+        "status": "MODEL_UNAVAILABLE",
+        "Student_HTTP": 200
+      }
+    ],
+    "Rust_restart_persistence": {
+      "status": "PASS",
+      "AI_rows_before": 11,
+      "AI_rows_after": 11,
+      "Student_HTTP": 200,
+      "unauthenticated_AI_HTTP": 401
+    },
+    "graceful_shutdown": {
+      "status": "PASS",
+      "owned_processes_stopped": true,
+      "all_configured_ports_free": true,
+      "database_volumes_preserved": true
+    },
+    "first_scored_probe": {
+      "request_id": "adfd5d00a58a154763301047feb1489f",
+      "latency_ms": 5337.927531999867,
+      "scope": "Cold first inference wall time; startup/probe, excluded from six warm cases; no latency SLA"
+    }
+  },
+  "thermal": {
+    "policy": "preflight max<65C/5s; build freeze65C or rapid rise60C; independent kill79C all modes; AI pause72C/hard stop80C; stable cool resume; system RAM30GB",
+    "system_temperature_guaranteed": false,
+    "historical_94C_evidence_preserved": true,
+    "stopped_test_build": ".local-dev/stabilization/rust-tests-2/resource-report.json",
+    "prestart_refusal": ".local-dev/stabilization/rust-tests-1 (no workload started; CPU>=65C/headroom condition)",
+    "latest_targeted_test_pending": false,
+    "current_completed_builds_max_C": 76.0,
+    "completed_builds_system_RAM_peak_bytes": 12150788096,
+    "failed_attempts_preserved": [
+      ".local-dev/stabilization/rust-tests-1 (guard refused before launch)",
+      ".local-dev/stabilization/rust-tests-2/resource-report.json (wall limit300s while mostly frozen; max72C)"
+    ],
+    "live_acceptance_resource_reports": [
+      {
+        "evidence": ".local-dev/foundation/ai/missing-guard-1793952084311559180/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '2', 'MemoryPeak': '9404416', 'CPUUsageNSec': '121833000'}",
+        "wall_seconds": 4.240706133000003,
+        "kernel_cpu_quota_percent": 3,
+        "cpu_temperature_max": 54.0,
+        "peak_system_used_bytes": 9323995136,
+        "peak_cgroup_memory_bytes": 9404416
+      },
+      {
+        "evidence": ".local-dev/foundation/ai/invalid-guard-1793952088709219460/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '2', 'MemoryPeak': '9420800', 'CPUUsageNSec': '113455000'}",
+        "wall_seconds": 3.867182992999915,
+        "kernel_cpu_quota_percent": 3,
+        "cpu_temperature_max": 54.0,
+        "peak_system_used_bytes": 9342119936,
+        "peak_cgroup_memory_bytes": 9420800
+      },
+      {
+        "evidence": ".local-dev/foundation/ai/resources-1793952060151343808/resource-report.json",
+        "status": "STOPPED",
+        "failure": "monitor signal 15",
+        "wall_seconds": 35.77898398599996,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_max": 60.0,
+        "peak_system_used_bytes": 9452896256,
+        "peak_cgroup_memory_bytes": 100450304
+      },
+      {
+        "evidence": ".local-dev/foundation/ai/resources-1793951610108740493/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'signal', 'ExecMainStatus': '9', 'MemoryPeak': '180670464', 'CPUUsageNSec': '6191049000'}",
+        "wall_seconds": 439.8701373,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_max": 72.0,
+        "peak_system_used_bytes": 10865152000,
+        "peak_cgroup_memory_bytes": 180670464
+      },
+      {
+        "evidence": ".local-dev/demo-clean-2/ai/missing-guard-1793953373672352371/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '2', 'MemoryPeak': '9265152', 'CPUUsageNSec': '104240000'}",
+        "wall_seconds": 3.6837070999999924,
+        "kernel_cpu_quota_percent": 3,
+        "cpu_temperature_max": 54.0,
+        "peak_system_used_bytes": 9698856960,
+        "peak_cgroup_memory_bytes": 9265152
+      },
+      {
+        "evidence": ".local-dev/demo-clean-2/ai/resources-1793953351084294806/resource-report.json",
+        "status": "STOPPED",
+        "failure": "monitor signal 15",
+        "wall_seconds": 33.15926829900036,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_max": 64.0,
+        "peak_system_used_bytes": 9698705408,
+        "peak_cgroup_memory_bytes": 101191680
+      },
+      {
+        "evidence": ".local-dev/demo-clean-2/ai/invalid-guard-1793953377534384284/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '2', 'MemoryPeak': '9469952', 'CPUUsageNSec': '105574000'}",
+        "wall_seconds": 3.6915701759999138,
+        "kernel_cpu_quota_percent": 3,
+        "cpu_temperature_max": 64.0,
+        "peak_system_used_bytes": 9688498176,
+        "peak_cgroup_memory_bytes": 9457664
+      },
+      {
+        "evidence": ".local-dev/demo-clean-2/ai/resources-1793953240546376949/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'signal', 'ExecMainStatus': '9', 'MemoryPeak': '101113856', 'CPUUsageNSec': '3144120000'}",
+        "wall_seconds": 101.47420474599994,
+        "kernel_cpu_quota_percent": 10,
+        "cpu_temperature_max": 68.0,
+        "peak_system_used_bytes": 9678901248,
+        "peak_cgroup_memory_bytes": 100851712
+      }
+    ],
+    "scope": "Monitored build/test/AI intervals only; cold Student startup was quota-limited. No claim of continuous host-wide temperature coverage or control of other apps."
+  },
+  "privacy": {
+    "profile": "selected_headers_no_body",
+    "transient_headers": [
+      "User-Agent",
+      "Accept",
+      "Content-Type"
+    ],
+    "cookies_authorization_body_collected": false,
+    "raw_HTTP_replay": false,
+    "raw_research_required_for_inference": false
+  },
+  "component_status": {
+    "Request_v2": "CURRENTLY_WORKING",
+    "Suricata": "AVAILABLE_NOT_INTEGRATED",
+    "GLU207": "BLOCKED_BY_FEATURE_CONTRACT"
+  },
+  "Suricata_blocker": "No live capture; extracted binary ldd missing libevent, hiredis, xdp, netfilter and DPDK dependencies; no host/capability changes",
+  "GLU207_blocker": "Missing causal full207 flow/response/history feature bridge with frozen semantics and parity; no invented features",
+  "protected_sources": {
+    "files_checked": 378,
+    "changed": [],
+    "status": "PASS",
+    "scope": "378 pre-recorded source/config files. Bundle integrity additionally checked by pinned worker manifest/file hashes; no claim to rehash all raw research/checkpoints."
+  },
+  "AWS": {
+    "architecture": "one EC2 t3a.large8GiB,40GB encrypted gp3, private loopback DB/API, HTTPS Nginx, SSM admin, CPU credits Standard",
+    "region_assumption": "us-east-1",
+    "base_monthly_730h_USD": 61.746,
+    "base_monthly_40h_USD": 6.408,
+    "excludes": [
+      "backup",
+      "logs/alarms",
+      "DNS/domain",
+      "egress",
+      "taxes"
+    ],
+    "pricing_sources": [
+      "https://aws.amazon.com/ec2/instance-types/t3/",
+      "https://aws.amazon.com/ebs/volume-types/",
+      "https://aws.amazon.com/vpc/pricing/"
+    ],
+    "deployment_blockers": [
+      "Guest hwmon may be absent: cloud CPU/RSS/time-budget policy not implemented/tested; no bypass of physical-host safety",
+      "Service identities/socket/journal permissions",
+      "TLS/CIDR/IAM/secrets/deployment units",
+      "Target-host smoke/resource/load checks and backup restore"
+    ],
+    "resources_created": 0
+  },
+  "commit_readiness": "READY_FOR_REVIEW_AND_COMMIT of verified integration candidate; no commit/push/merge performed; new integration is not published on remote yet",
+  "flags": {
+    "LOCAL_DEMO_STABLE": true,
+    "TEAM_DEMO_READY": true,
+    "AWS_ARCHITECTURE_READY": true,
+    "AWS_DEPLOYMENT_READY": false,
+    "GLU207_LIVE": "NOT_READY",
+    "SURICATA_LIVE": "NOT_READY"
+  },
+  "precommit_checks": {
+    "diff_check": "PASS",
+    "recognizable_and_exact_runtime_secret_scan": {
+      "status": "PASS",
+      "files": 21,
+      "findings": [],
+      "scope": "Recognizable secret formats and exact credentials from all three local runtimes; not an exhaustive secret detector"
+    },
+    "ruff": "PASS for worker, acceptance, guard and guard tests",
+    "py_compile": "PASS launcher and acceptance",
+    "no_commit_push_merge": true,
+    "HEAD_unchanged": true
+  },
+  "model": {
+    "name": "request-intelligence-v2-frozen-step3072",
+    "parameters": 50696,
+    "threshold": 0.8826237916946411,
+    "comparator": ">",
+    "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+    "verification": "Worker validates pinned manifest and file hashes; repeated six-case scores match prior integration values; no weights/encoder/threshold changes"
+  },
+  "changed_files": [
+    "ai-training/reports/LOCAL_INTEGRATION_20261106.json",
+    "ai-training/reports/LOCAL_STABILIZATION_20261106.json",
+    "docs/12_LOCAL_AI_SHADOW_INTEGRATION.md",
+    "docs/13_LOCAL_DEMO_STABILIZATION.md",
+    "docs/14_AWS_SHADOW_DEMO_PLAN.md",
+    "scripts/ai-shadow-worker.py",
+    "scripts/test-ai-shadow.py",
+    "scripts/verify-ai-local.py",
+    "security-web/frontend/src/AiShadow.tsx",
+    "security-web/migrations/0005_ai_shadow.sql",
+    "security-web/src/ai_delivery.sql",
+    "security-web/src/ai_shadow.rs",
+    "ai-training/scripts/integration-guard.py",
+    "ai-training/tests/test_integration_candidate.py",
+    "scripts/dev-up-and-verify.py",
+    "scripts/test-dev-launcher.py",
+    "security-web/.env.example",
+    "security-web/frontend/src/Icon.tsx",
+    "security-web/frontend/src/main.tsx",
+    "security-web/src/ingest.rs",
+    "security-web/src/main.rs"
+  ],
+  "reliability_fixes": [
+    "Fresh-generation heartbeat readiness and bounded real HTTP startup delivery check",
+    "Observed Nginx vs AI coverage window, not lossless claim",
+    "Owned scopes and PID token identity; missing token cannot claim liveness",
+    "Wait for committed bootstrap admin: public HTTP readiness precedes CommandLineRunner",
+    "Unique fault-test output per attempt prevents reusing stale MODEL_UNAVAILABLE evidence",
+    "Launcher mutation lock and owned container label checks",
+    "Build watchdog hard stop at79C even when frozen"
+  ],
+  "dashboard": {
+    "status": "PASS",
+    "primary_request_id": "79b32bb81df9f230d613cc3beeb66efa",
+    "primary_ready_screenshot": ".local-dev/stabilization/dashboard-current.png",
+    "fresh_UI": "Authenticated fresh admin; AI READY, score and two correlated sources verified in AX state",
+    "fresh_screenshot": ".local-dev/stabilization/dashboard-fresh-runtime.png",
+    "fresh_screenshot_scope": "Expected login expiry after intentional Rust restart; not a READY screenshot",
+    "session_recovery": "Rust restart invalidates in-memory Security sessions: sign in again; do not persist tokens to bypass auth"
+  },
+  "readiness_scope": "Local Linux demo and prepared team candidate with documented prerequisites; not production, detection quality, guaranteed lossless transport or a remote-published integration release",
+  "remaining_limitations": [
+    "Lossy Unix datagrams, bounded startup probes; no raw replay; observed-Nginx denominator misses jointly unobserved traffic",
+    "Only UA/Accept/Content-Type; body absent; no claim of full request features",
+    "Thermal safety can refuse/pause/stop AI; operator starts again only after cool/stable. External host heat uncontrolled",
+    "Cold Spring startup about5min at conservative quota; cold first inference can be seconds",
+    "Security sessions expire when Rust process restarts; login again",
+    "No independent detection-quality evaluation added; command-shaped sample still below frozen threshold",
+    "Fresh-runtime test reused checkout builds/dependencies/models; not a fresh clean clone/build of uncommitted integration",
+    "AWS guest resource policy, service identity/TLS/secrets/deploy and backup-restore checks still required"
+  ]
+}

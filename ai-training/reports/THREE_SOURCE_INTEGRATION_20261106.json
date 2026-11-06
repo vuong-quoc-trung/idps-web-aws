@@ -1,0 +1,447 @@
+{
+  "schema_version": "three-source-milestone-1",
+  "date": "2026-11-06",
+  "scope": "Verified bounded plaintext local gateway and post-response shadow consumer; not continuous serving, quality certification or production readiness",
+  "git": {
+    "branch": "feature/ai-idps-shadow-integration",
+    "head": "2f756a727293cf0d5e2266bca049cb797b6b8510",
+    "changes": "UNCOMMITTED; no commit/push/merge; prior uncommitted work preserved"
+  },
+  "flags": {
+    "SURICATA_LIVE": true,
+    "THREE_SOURCE_CORRELATION": "VERIFIED",
+    "HISTORICAL_TRAINING_PROVENANCE": "PARTIAL",
+    "GLU207_FEATURE_PARITY": "PASS",
+    "GLU207_LIVE_SHADOW": "READY",
+    "REQUEST_V2_REGRESSION": "PASS",
+    "LOCAL_SYSTEM_STABLE": false,
+    "NEXT_TRAINING_READINESS": "PARTIAL",
+    "TEAM_DOCUMENTATION_UPDATED": true
+  },
+  "flag_limits": [
+    "LIVE/READY means successfully exercised bounded lab path, not process currently running; foundation was intentionally stopped after verification",
+    "Correlation/feature PASS covers actual acceptance, explicit fixtures, historical512 train-prefix and12 live tensors, not every environment",
+    "LOCAL_SYSTEM_STABLE false because observed86C violates80C and full56Rust suite remains incomplete",
+    "Training PARTIAL means experiment can be designed; current small weak/unlabeled cohort is insufficient for sustained training or independent evaluation"
+  ],
+  "suricata": {
+    "version": "8.0.3",
+    "binary_sha256": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27",
+    "unchanged_rules_sha256": "e2d792c7bd17e75b9adece83ce5b6d43efda28d93a23a896b9f178ff65dcb654",
+    "mode": "PASSIVE IDS; private user/net namespace loopback TCP18881, opt-in host gateway18782, real Nginx18780/Student upstream",
+    "restoration": "Correct LD_LIBRARY_PATH; new local extraction34Ubuntu packages, same binary hash, live probe PASS; no sudo/system install/OS security changes",
+    "run4_events": {
+      "http": 12,
+      "flow": 20,
+      "alert": 3
+    },
+    "limits": [
+      "Only plaintext gateway traffic; direct base traffic has no EVE",
+      "Client tuple changed across Unix relays; loopback client group, no multi-client attribution claim",
+      "TLS opaque/missing EVE never benign; no raw PCAP created"
+    ]
+  },
+  "correlation": {
+    "algorithm": "Nginx generated response X-Request-Id + Student ID + EVE response-header ID; sensor generation/flow/tx + method/route HMAC/status consistency; no IP/time-only join",
+    "real_acceptance": "PASS12HTTP receipts including4concurrent,3same-flow tx0/1/2, sensor outage/restart and privacy canary",
+    "rule_links": "SID1000002 tx1 and1000005 tx2 only; SYNthreshold1000001 flow-level only",
+    "states": [
+      "MATCHED",
+      "MISSING_SOURCE",
+      "AMBIGUOUS"
+    ],
+    "late_event": "Separate flag: received-source event delay>2s; not GLU eligible",
+    "unit_fixtures": 11,
+    "migration": "One duplicate alert created at legacy parser identity cutover retained; exact physical receipt reconciliation256records/255newaliases; later genuine metadata replay count4to4 and restart stable; unversioned identity cannot be invented"
+  },
+  "historical": {
+    "train_rows": 41607,
+    "unique_request_keys": 41607,
+    "native_source_coverage": {
+      "STUDENT_AUDIT": 41607,
+      "NGINX": 41607,
+      "SURICATA": 41607
+    },
+    "three_source_rows": 41607,
+    "http_consistent_triplets": 41433,
+    "status_conflicts": 174,
+    "conflict_pattern": "PATCH /api/faculties/[id]: Student405, Nginx403, EVE403; ID/method/route agree; lifecycle cause not reproduced; no demonstrated cross-request mix",
+    "historical_flow_id_rows": 41607,
+    "retained_historical_tx_id_rows": 0,
+    "previous_completed_flow_present": 36443,
+    "explicit_flow_missing": 5164,
+    "reconstructed_prior_flow_matches": 36443,
+    "saved_train_prefix_exact_feature_rows": 512,
+    "max_absolute_error": 0,
+    "limits": [
+      "Original PCAP not redecoded",
+      "Only training partition; sealed holdout not opened",
+      "Native snapshots and normalized observations attested by hashes, not independent human Ground Truth",
+      "174wire/application status conflicts unresolved; frozen dataset unchanged",
+      "Formal admission unchanged; scenario/runner intent labels not confirmed exploit outcomes"
+    ]
+  },
+  "features": {
+    "contract": "Frozen207float32 spec5, numeric collector4.1 + behavior_dynamics; same collect/FeatureExtractor/transform, no refit/padding",
+    "spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "actual_live_ONNX_inputs_exact_replay": 12,
+    "history": "Student Instant.now in finally after chain; fused=max(source times); replay prefix only, target once; reject coarse Nginx-only prefix if second not completed.12existing snapshots had no such uncertain row. Final hardening tested by unit fixtures and snapshot audit, no new physical cohort collected.",
+    "flow": "Prior available completed client flow, available_at=max(EVE timestamp,end+65s), actual received_at<=target; no borrowing future current-flow counters",
+    "privacy": "Transient response headers RAM/Unix socket; persisted generatedRID only, query numeric projection before redaction; no payload/body/Auth/Cookie, no full body claim"
+  },
+  "models": {
+    "GLU207": {
+      "version": "glu207-step652-e663b0979f6f",
+      "parameters": 9675784,
+      "step": 652,
+      "threshold": 0.5396780371665955,
+      "comparator": ">=",
+      "threshold_scope": "PROVISIONAL_BENIGN_ONLY",
+      "manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+      "onnx_sha256": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+      "scores": 12,
+      "score_min": 0.2014026641845703,
+      "score_max": 0.9427191019058228,
+      "above_threshold": 5,
+      "prior_flow_observed": 3,
+      "context_incomplete": 12,
+      "inference_ms": {
+        "min": 279.9242630003391,
+        "mean": 326.179700833336,
+        "max": 357.03218599974207
+      },
+      "event_to_result_seconds": {
+        "min": 158.76140904426575,
+        "mean": 380.89669384558994,
+        "max": 541.9604341983795
+      },
+      "cohort_note": "12scored matched requests include supplementary probes; not identical to12acceptance receipts. Sensor-stopped missing-source request was not scored."
+    },
+    "RIv2": {
+      "version": "request-intelligence-v2-frozen-step3072",
+      "parameters": 50696,
+      "step": 3072,
+      "threshold": 0.8826237916946411,
+      "comparator": ">",
+      "real_acceptance": "PASS6requests, model fault + worker restart; new backend real HTTP score PASS",
+      "acceptance_latency_ms_range": [
+        139.999,
+        260.42
+      ]
+    },
+    "latency_definition": "GLU latency_ms measures frozen predict call (validation/target features/inference), excludes snapshot collect/history replay; event-to-result includes pipeline delay",
+    "independence": "Separate scores, no fusion or AI enforcement.207features have no rule-context columns but include Suricata-derived flow/HTTP metadata"
+  },
+  "quality": {
+    "ordinary_probe": {
+      "GLU207": 0.7421140670776367,
+      "RIv2": 0.04800909758,
+      "claim": "Benign-shaped workflow above frozen GLU threshold, not independent FPR estimate; no attack-rule alert for this transaction in cohort"
+    },
+    "paired_flow_counterfactual": {
+      "actual": 0.7421140670776367,
+      "prior_flow_missing": 0.7767358422279358,
+      "changed_features": 10,
+      "scope": "Exposed post-hoc single counterfactual, not new independent evaluation; missing flow alone does not explain alert"
+    },
+    "verified_added_true_detections": null,
+    "recall_precision_FPR": null,
+    "shortcut_learning": "NOT_PROVEN; calibration/domain/history missingness require labeled comparisons",
+    "independent_review": "PENDING; no AI agent counted as human verifier"
+  },
+  "system": {
+    "authenticated_api_GLU_rows": 12,
+    "unauthenticated_api_HTTP": 401,
+    "persistence": {
+      "status": "PASS",
+      "before_restart": {
+        "request_correlations": 29,
+        "glu207_shadow_results": 12,
+        "security_alerts": 32
+      },
+      "after_restart": {
+        "request_correlations": 29,
+        "glu207_shadow_results": 12,
+        "security_alerts": 32
+      },
+      "authenticated_GLU_rows_preserved": 12,
+      "Student_HTTP": 200,
+      "automatic_firewall_actions": 0,
+      "scope": "Security backend process restart with existing PostgreSQL; not host power-cycle"
+    },
+    "restart_first_probe": "Failed due3second auth timeout/retry causing429 at10%CPU; preserved. Corrected GETreadiness+singlelogin60s passed, no auth policy change",
+    "AI_enforcement_actions": 0,
+    "tests": {
+      "Rust_RIv2_targeted": 3,
+      "Rust_three_source_targeted": 2,
+      "frontend": 3,
+      "launcher": 7,
+      "guard_candidate": 7,
+      "three_source_causal": 11,
+      "full_Rust_56": "INCOMPLETE: thermal stop then600s wall limit; partial results retained",
+      "Rust_build": "PASS",
+      "UI_build": "PASS"
+    },
+    "final_runtime": "STOPPED_BY_TASK; foundation processes/containers stopped, volumes/evidence preserved"
+  },
+  "resources": {
+    "budget_shared_RAM_bytes": 30000000000,
+    "peak_observed_system_used_bytes": 11874418688,
+    "peak_observed_cgroup_memory_bytes": 1463955456,
+    "peak_CPU_C": 86.0,
+    "thermal_policy_C": {
+      "warn_before": 75,
+      "hard_stop": 80,
+      "resume_below": 70
+    },
+    "thermal_result": "VIOLATION86C, watchdog killed own cgroups; KILL/FREEZE precedence fixed. Later runs60-68C; no guarantee against host spikes/external heat",
+    "cooldown": "120samples/60s48-54C before resume",
+    "guard_limits": "Kernel quota5-10% reduced on temperature/rise, affinityCPU0, bounded cgroup RAM, swap0, independent79C watchdog/deadline. No OS firmware thermal protection changes"
+  },
+  "preservation": {
+    "frozen_checkpoint_files_verified": 6,
+    "changed_frozen_checkpoints": [],
+    "prior_protected_files_checked": 378,
+    "changed_prior_protected_files": [],
+    "scope": "Checkpoints plus recorded source/config set; no sealed holdout or all raw research rehash"
+  },
+  "next_training": {
+    "decision": "No sustained training now; do not expand parameters or train on unlabeled probes",
+    "first_work": "New derivative with separate application/wire status, retainedtx/generation/availability, quarantine174conflicts; reviewed benign workflows across>=2environments; incremental parity-preserving feature implementation before continuous serving",
+    "one_experiment": {
+      "hypothesis": "Representative benign behavior + verified positives fine-tuning reduces domain-shift alerts beyond calibration alone without losing family recall",
+      "comparators": [
+        "C0frozenweights+frozenthreshold",
+        "C1frozenweights+newbenign-onlycalibration",
+        "C2oneboundedchallenger+samecalibrationrule"
+      ],
+      "fixed_architecture": "9.675784M same207spec; no new architecture sweep",
+      "splits": "Group by environment/time/workflow identity, dedup, embargo>=300s; separate train/cal/newlocked evaluation; no DVWA/exposed probe threshold selection",
+      "stop": "Oneconfiguration,max1epochor250updates; data/hash/causality/thermal violation stops; no improvement ends experiment",
+      "proposed_promotion": "Newreviewed eval upper95%FPR<=0.1%, group dependence checked; familyrecall drop<=5pp and measurable paired/grouped benefit overC1; freeze criteria before experiment",
+      "readiness_missing": [
+        "Representative benign calibration/evaluation from>=2environments",
+        "Outcome/provenance-reviewed positives esp command injection/XSS, separateattempt/success/unsafe reflection/UNKNOWN",
+        "Independent quality review/evaluation not supplied by rules or same-run AI",
+        "Resolved or quarantined application/wire conflicts and recorded feature availability"
+      ]
+    }
+  },
+  "handoff": {
+    "guide": "docs/TEAM_SETUP_AND_AI_STATUS.md",
+    "engineering_report": "docs/15_THREE_SOURCE_INTELLIGENCE.md",
+    "model_release": "ai-research-team-20261105",
+    "inference_bundle_bytes": 158265099,
+    "raw_artifacts_required_for_inference": false,
+    "private_store": "Not available; sensitive material remains local, not uploaded",
+    "clean_other_host_test": "NOT_TESTED"
+  },
+  "evidence_index": [
+    {
+      "path": ".local-dev/three-source/historical-final.json",
+      "sha256": "d418ae18e6828bebf109d7f20ac0429429ede0a80bbe649481e9ae0857557e7f",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/native-id-audit.json",
+      "sha256": "1cae9dc1c7033b787966a2037f9478281f19d91b0fc3eec35357c5257cb7740a",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/causal-history-audit.json",
+      "sha256": "efa2005b2d5ac3d4b033c70449f2df69ad68271284d369dfbe24c5762ccfc212",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/glu-summary.json",
+      "sha256": "439c58a71df288a519565b86522b10943a46786bb2f9a5ffc78d26e31cac0b93",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/glu-flow-diagnostic.json",
+      "sha256": "3c8426aa602c424965004080fb8ec3c8492c05c0081065239f79900084dfe55f",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/backend-proof.json",
+      "sha256": "f949ce0e040f08d9bbf4e7f161ec0dea49d6dfcb368eece5c3a7bd78cb88d2c2",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/restart-first-attempt.json",
+      "sha256": "dceded71cb2b889a8f291220e00481f815cd3febd28c2eade3fc7cd8a2779f5c",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/restart-proof.json",
+      "sha256": "df73e2527d015092f746cbbabf50f680198f620884eba0d49f7a88d2af1f9490",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/identity-cutover.json",
+      "sha256": "886d0bb495db83ae56ddca359515aba3bcbf6e34211eb7ea17b11b8b08904a72",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/protected-final.json",
+      "sha256": "57fb161b9995f714081d41580529f8fe780de4c7f659979468d21e15c1a9251e",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/fresh-runtime-proof.json",
+      "sha256": "1ae894119c90a62da477e3f9f1b02e13b9f2b357b3c580006f86d7b1efcff082",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/cool-stability.json",
+      "sha256": "3e24b399b77014ed699694a63a6f74ff7ca7d39b754a86b1cdd6bb73e13c78f6",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/dashboard-glu207.png",
+      "sha256": "ac8c761e8496ca4b565121bd796f47bdda12c19efa5bd05b7c616efbbbb13b9e",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/dashboard-glu207-ax.txt",
+      "sha256": "ab204ca8e8e5efe3f6efe7998f8fb3765820bee1b581e56942d9615477f2362f",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/final-python-tests.log",
+      "sha256": "9790ec3640d8cee080813266fcd5f4100ad0da0a59a252e87bc7fc16f9402f41",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/run-4/acceptance-1793969195277530858.json",
+      "sha256": "3c17601d3fa948a8986b936d930497e1fd6b0ccc1dcb96e14eb7d0cbdd3d3bec",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/flow-diagnostic-guard/resource-report.json",
+      "sha256": "c7240ed56c2d6654394110df09e4bb593188869344d8fea2a5805be7570ecfda",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/fresh-runtime-guard/resource-report.json",
+      "sha256": "071f60d25c622a91ecd0d1a9937ba98a05e1c29e96fabcf173b61384e9beb4a8",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/glu-guard/resource-report.json",
+      "sha256": "a9d27c2d6966aad3c63a2f3a2431dbd65b76f78abad06082ba5d8e0563ce0c0a",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/guard-1/resource-report.json",
+      "sha256": "5e17683f4bd9a953c3b46f584d68575c89eadd736e18bb7d6a8468b6c71ecf6d",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/guard-2/resource-report.json",
+      "sha256": "7873c97d29f1b6107a46989f28defd0de554a03446754ec41c8e76b40f238b92",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/guard-3/resource-report.json",
+      "sha256": "6f737dc90abcc48e241ea668d5c4fd2c0f12d9801469f4dc7e74fe30667bfbed",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/guard-4/resource-report.json",
+      "sha256": "65b776b5be667e7891f54050bd276f44e81bfe56ce704df32208a625629e4a0c",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/lineage-diagnosis-guard/resource-report.json",
+      "sha256": "bb038c9cdc140befe54d985dc330b63ef67ca0fa26956a97ba89b777d82b875a",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/lineage-diagnosis-guard-2/resource-report.json",
+      "sha256": "bf1c0bb46965095383e724b2d603a0b6456947cd3bed409b4cd579c83cfea7fb",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/lineage-final-guard/resource-report.json",
+      "sha256": "6cf83e530506286cab9266d61217762905fb96bcf864777ce9e0cc98cefe6a20",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/lineage-guard/resource-report.json",
+      "sha256": "3d35e69e98f6b34d45bb2c5f9e612d61e4dc64bdf318c92c32847d101d1f8e9b",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/lineage-guard-2/resource-report.json",
+      "sha256": "eef76ca8997eba806aad90f719a1b7b2cbd8526cc2b98076837dfa1680f643b2",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/native-id-guard/resource-report.json",
+      "sha256": "834b5838582c2d3f3aa27aa0df79ebf3a48a0402663308ffafadc133670fbfdc",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/native-id-guard-2/resource-report.json",
+      "sha256": "68fe18e2b5c3b5dc27ea624ed4d5596aa8d8b89e27e08977febfbf6056ad25ef",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/rust-build/resource-report.json",
+      "sha256": "e79c1c3fe175e454f61270cf08bac9bb52a8c84a2f320248245b6932f57000c5",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/rust-build-final/resource-report.json",
+      "sha256": "4eb137e40b987a745620596fb7db04a8921dd59ca623d27959463198def4e19d",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/rust-ri-targeted/resource-report.json",
+      "sha256": "46b9a66f12405d6c3c7fb807e4b9f1aa6dc050053c4ecbcf12198f6b90e98513",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/rust-tests/resource-report.json",
+      "sha256": "fe3d35aa33302843e37d43c1cc90a173b5ce7b86c4ddec4cdb501b963a0c8211",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/rust-tests-final/resource-report.json",
+      "sha256": "2cebd240ba2f6e65acf51acaf077aff77cb5be79112523252c64e47805de70d5",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/rust-three-targeted/resource-report.json",
+      "sha256": "517b903d15f40402ade7f02c396e24924edbcc7e938b3ff4e8df4d9d7c8d8690",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/scope-probe/resource-report.json",
+      "sha256": "385bb4430376ac9c327c9daec4fb7bda973aa34b8a1131e66a796b8adef06fe4",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/suricata-bootstrap-guard/resource-report.json",
+      "sha256": "218bc53870cc05c332f351a5000c7c34bc606ab5041395f480f3ecad333f54ad",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    },
+    {
+      "path": ".local-dev/three-source/ui-build/resource-report.json",
+      "sha256": "019fd90f069dc97c3287ba765044e06f3be7f887f03bc57a8eb58a4f4a81f672",
+      "distribution": "LOCAL_ONLY; ignored evidence, not included in public release"
+    }
+  ],
+  "final_verification": {
+    "git_diff_check": "PASS",
+    "new_python_ruff": "PASS",
+    "modified_untracked_files_secret_scanned": 37,
+    "runtime_secret_values_checked": 6,
+    "credential_or_recognized_token_findings": 0,
+    "evidence_hashes_verified": 39,
+    "HEAD_unchanged": true,
+    "owned_integration_demo_systemd_units_running": 0,
+    "notes": "Exact current runtime credential + recognized token/private-key pattern scan, not proof of universal absence of sensitive data; local evidence remains ignored."
+  }
+}

@@ -1,0 +1,1842 @@
+{
+  "status": "FUNCTIONAL_INTEGRATION_VERIFIED",
+  "date": "2026-11-06",
+  "branch": "feature/ai-idps-shadow-integration",
+  "base_revision": "2f756a727293cf0d5e2266bca049cb797b6b8510",
+  "new_commits_or_push": false,
+  "architecture": "Real Student HTTP -> local Nginx post-response Unix syslog -> bounded RAM-only worker -> frozen RIv2 -> metadata journal -> existing Rust ingestion/DB -> existing Security dashboard; AI enforcement disabled",
+  "frozen_model": {
+    "version": "request-intelligence-v2-frozen-step3072",
+    "threshold": 0.8826237916946411,
+    "comparator": ">",
+    "encoder_changed": false,
+    "weights_changed": false
+  },
+  "verified_live_acceptance": {
+    "status": "PASS",
+    "at": "2026-11-06T06:13:20.618988+00:00",
+    "traffic": [
+      {
+        "request_id": "8b30011cffc324bfabc9504fd63f659c",
+        "http_status": 200,
+        "http_latency_ms": 89.61468699999386,
+        "case": "benign",
+        "AI": {
+          "above_threshold": false,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "04eac6821ed04978972c2d1ab15ed482",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 0,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 13,
+          "kind": "inference",
+          "latency_ms": 46.19335300003513,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 58.0,
+            "inference_errors": 0,
+            "processed": 6,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11809542144,
+            "worker_rss_bytes": 178376704
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:55.429393Z",
+          "request_id": "8b30011cffc324bfabc9504fd63f659c",
+          "schema_version": "ai-shadow-1",
+          "score": 0.007610976696014404,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      },
+      {
+        "request_id": "129243f571b4afbb7bf285dd9b515c92",
+        "http_status": 200,
+        "http_latency_ms": 195.696321000014,
+        "case": "benign-search",
+        "AI": {
+          "above_threshold": false,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "287d8dc0b8f84a468cb80e33be7c081e",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 0,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 14,
+          "kind": "inference",
+          "latency_ms": 60.34339200004979,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 58.0,
+            "inference_errors": 0,
+            "processed": 7,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11808632832,
+            "worker_rss_bytes": 178376704
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:55.639324Z",
+          "request_id": "129243f571b4afbb7bf285dd9b515c92",
+          "schema_version": "ai-shadow-1",
+          "score": 0.03486001491546631,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      },
+      {
+        "request_id": "355d95f470a95282f840b9886d58e15c",
+        "http_status": 200,
+        "http_latency_ms": 128.47306599996955,
+        "case": "SQLi-shaped-query",
+        "AI": {
+          "above_threshold": true,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "5a7990bd70cf433983382735dbc5b220",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 0,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 15,
+          "kind": "inference",
+          "latency_ms": 42.820126000151504,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 58.0,
+            "inference_errors": 0,
+            "processed": 8,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11808632832,
+            "worker_rss_bytes": 178384896
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:55.769089Z",
+          "request_id": "355d95f470a95282f840b9886d58e15c",
+          "schema_version": "ai-shadow-1",
+          "score": 0.998342990875244,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      },
+      {
+        "request_id": "c98b42b80ef6fb7745bce320a3877002",
+        "http_status": 200,
+        "http_latency_ms": 255.6549629998699,
+        "case": "XSS-shaped-query",
+        "AI": {
+          "above_threshold": true,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "039cc31fd5fb4c0cbc0686a35eebe5d5",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 0,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 16,
+          "kind": "inference",
+          "latency_ms": 57.11365900015153,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 58.0,
+            "inference_errors": 0,
+            "processed": 9,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11810533376,
+            "worker_rss_bytes": 178388992
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:56.029203Z",
+          "request_id": "c98b42b80ef6fb7745bce320a3877002",
+          "schema_version": "ai-shadow-1",
+          "score": 0.9985913038253784,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      },
+      {
+        "request_id": "24812c0c0e7e7e63de975cc7068d5680",
+        "http_status": 200,
+        "http_latency_ms": 170.76745500025936,
+        "case": "command-shaped-query",
+        "AI": {
+          "above_threshold": false,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "a16ca8d46dcf460d9d3dec610f553c77",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 0,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 17,
+          "kind": "inference",
+          "latency_ms": 55.50224799981152,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 58.0,
+            "inference_errors": 0,
+            "processed": 10,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11811483648,
+            "worker_rss_bytes": 178393088
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:56.189197Z",
+          "request_id": "24812c0c0e7e7e63de975cc7068d5680",
+          "schema_version": "ai-shadow-1",
+          "score": 0.028560519218444824,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      },
+      {
+        "request_id": "f824596e13bdc7e3e643259baea0f578",
+        "http_status": 200,
+        "http_latency_ms": 149.64460700002746,
+        "case": "private-field-canary",
+        "AI": {
+          "above_threshold": false,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "392f98952daa40eab36bfbdfd58d1bac",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 1,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 18,
+          "kind": "inference",
+          "latency_ms": 56.206941999789706,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 52.0,
+            "inference_errors": 0,
+            "processed": 11,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11813007360,
+            "worker_rss_bytes": 178409472
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:56.339549Z",
+          "request_id": "f824596e13bdc7e3e643259baea0f578",
+          "schema_version": "ai-shadow-1",
+          "score": 0.007678806781768799,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      }
+    ],
+    "small_batch": {
+      "requests": 6,
+      "observed_completion_seconds": 1.5513199140000324,
+      "end_to_end_observed_requests_per_second": 3.867674195278766,
+      "inference_latency_ms_min": 42.820126000151504,
+      "inference_latency_ms_max": 60.34339200004979,
+      "inference_latency_ms_mean": 53.02995333333153
+    },
+    "initial_delivery_probe_requests": 1,
+    "worker_crash_isolation": {
+      "status": "PASS",
+      "request": {
+        "request_id": "f9823cad7a8919689a76c71524c0058b",
+        "http_status": 200,
+        "http_latency_ms": 237.90984500010381
+      },
+      "stale_heartbeat_visible": true,
+      "lost_requests_replayed": false
+    },
+    "worker_restart": {
+      "status": "PASS",
+      "request": {
+        "request_id": "1f15b574b06389c144bc291438292f32",
+        "http_status": 200,
+        "http_latency_ms": 119.77311600003304
+      },
+      "probe_requests": 11,
+      "first_probe_scored": true
+    },
+    "model_faults": [
+      {
+        "case": "missing",
+        "status": "MODEL_UNAVAILABLE",
+        "Student_HTTP": 200
+      },
+      {
+        "case": "invalid",
+        "status": "MODEL_UNAVAILABLE",
+        "Student_HTTP": 200
+      }
+    ],
+    "private_canary_in_AI_journal": false,
+    "AI_enforcement_actions": 0,
+    "Student_auth_DB_workflow": "See foundation smoke-report.json: CSRF/login/me + paired Nginx/Student audit",
+    "Suricata_live": false,
+    "GLU207": "AVAILABLE_BUT_NOT_LIVE",
+    "new_training_updates": 0,
+    "limitations": [
+      "Same-host local small sample, not a quality/throughput benchmark",
+      "Missing body and partial headers",
+      "Local lossy bounded datagrams; no durable raw HTTP replay",
+      "No live Suricata capture started"
+    ]
+  },
+  "foundation_smoke": {
+    "status": "PASS",
+    "scope": "FOUNDATION_HTTP_AUTH_AND_AUDIT; AI requires separate acceptance",
+    "ai_shadow_startup": "READY",
+    "ports": {
+      "student_db": 55433,
+      "security_db": 55434,
+      "api": 8080,
+      "frontend": 5173,
+      "security": 3001,
+      "edge": 18780
+    },
+    "request_id": "dd6783034f0dab5816dd36f5adda9b90",
+    "correlated_sources": 2,
+    "student_audit_lines": 224,
+    "enforcement": "OFF",
+    "suricata": "fixture source only; no live capture launched",
+    "edge": "http://127.0.0.1:18780",
+    "edge_bind": "127.0.0.1",
+    "security": "http://127.0.0.1:3001",
+    "student_username": "foundation-admin",
+    "security_username": "admin",
+    "credentials_file": "/home/trung/projects/idps-web-aws/.local-dev/foundation/credentials.json",
+    "runtime": "/home/trung/projects/idps-web-aws/.local-dev/foundation"
+  },
+  "protected_originals": {
+    "files_checked": 378,
+    "changed": [],
+    "Student_code_changed": false,
+    "frozen_AI_source_changed": false,
+    "production_Nginx_Suricata_config_changed": false
+  },
+  "quality_limits": [
+    "Six safe real HTTP queries to CSRF endpoint, not exploit successes or independent evaluation. No Recall/FPR/precision claim.",
+    "URI and selected header text only, body missing, fixed header serialization may shift representations.",
+    "Command-shaped query remained below frozen threshold; no threshold tuning.",
+    "An initial integration run wrote six INFERENCE_ERROR events due to dict/string header mismatch; retained and fixed in adapter.",
+    "A separate early run lost its first datagram after socket replacement; retained as evidence of lossy transport.",
+    "Observed cold first score in early corrected run was2240.21ms; reported final small batch is warmed.",
+    "No live Suricata packet capture or GLU207 flow bridge."
+  ],
+  "thermal": {
+    "host_max_C": 94.0,
+    "status": "AI_HARD_STOP_AND_PAUSE_VERIFIED_HOST_TEMPERATURE_NOT_CONTROLLED",
+    "note": "Build-only pause mode preserves compiler state; global host temperature can exceed80 while own cgroup frozen. AI mode still kills at threshold; control errors fail closed. All stopped/error runs are retained.",
+    "runs": [
+      {
+        "evidence_path": ".local-dev/shadow-integration/python-tests/resource-report.json",
+        "status": "PASS",
+        "failure": null,
+        "build_pause_only": false,
+        "seconds": 23.468301535000137,
+        "max_cpu_C_primary": 64.0,
+        "max_cpu_C_watchdog": 64.0,
+        "peak_cgroup_memory_bytes": 129302528,
+        "peak_system_used_bytes": 11251912704,
+        "events": []
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-build-1/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 47.147825148999914,
+        "max_cpu_C_primary": 80.0,
+        "max_cpu_C_watchdog": 80.0,
+        "peak_cgroup_memory_bytes": 713760768,
+        "peak_system_used_bytes": 9867874304,
+        "events": [
+          {
+            "elapsed": 17.410286585999984,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0
+          },
+          {
+            "elapsed": 23.683357370999943,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 42.97880675199997,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-build-2/resource-report.json",
+        "status": "STOPPED",
+        "failure": "monitor signal 15",
+        "build_pause_only": false,
+        "seconds": 109.162447563,
+        "max_cpu_C_primary": 78.0,
+        "max_cpu_C_watchdog": 78.0,
+        "peak_cgroup_memory_bytes": 469925888,
+        "peak_system_used_bytes": 10414825472,
+        "events": [
+          {
+            "elapsed": 0.3562649270000975,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0
+          },
+          {
+            "elapsed": 12.517391029999999,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 103.18960753800002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 78.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-build-3/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 83.44462384699989,
+        "max_cpu_C_primary": 81.0,
+        "max_cpu_C_watchdog": 81.0,
+        "peak_cgroup_memory_bytes": 230621184,
+        "peak_system_used_bytes": 11164426240,
+        "events": [
+          {
+            "elapsed": 64.16590560599991,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 73.0,
+            "cpu_quota_percent": 1.5
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-build-4/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 131.33124191799993,
+        "max_cpu_C_primary": 82.0,
+        "max_cpu_C_watchdog": 82.0,
+        "peak_cgroup_memory_bytes": 228655104,
+        "peak_system_used_bytes": 11104600064,
+        "events": [
+          {
+            "elapsed": 26.578649363000068,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 1.5
+          },
+          {
+            "elapsed": 32.464709973000026,
+            "action": "THAW",
+            "temperature": 53.0
+          },
+          {
+            "elapsed": 94.61442656700001,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 1.5
+          },
+          {
+            "elapsed": 100.4863404140001,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 117.82623807200002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 66.0,
+            "cpu_quota_percent": 1.5
+          },
+          {
+            "elapsed": 123.12409114899992,
+            "action": "THAW",
+            "temperature": 56.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-build-5/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 84.6845434029999,
+        "max_cpu_C_primary": 80.0,
+        "max_cpu_C_watchdog": 76.0,
+        "peak_cgroup_memory_bytes": 40210432,
+        "peak_system_used_bytes": 11427201024,
+        "events": [
+          {
+            "elapsed": 43.25202483499993,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 49.30287704700004,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 57.26901940499988,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 68.55095928800006,
+            "action": "THAW",
+            "temperature": 60.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-build-retained/resource-report.json",
+        "status": "PASS",
+        "failure": null,
+        "build_pause_only": true,
+        "seconds": 373.3913604459997,
+        "max_cpu_C_primary": 94.0,
+        "max_cpu_C_watchdog": 94.0,
+        "peak_cgroup_memory_bytes": 817348608,
+        "peak_system_used_bytes": 11387510784,
+        "events": [
+          {
+            "elapsed": 18.4378071189999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 64.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 24.501702310999917,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 53.08128661899991,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 65.22029927899985,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 72.3408793609999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 61.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 78.43215981599997,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 81.58867366899995,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 91.63205160799998,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 93.73570143499978,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 119.0825948979998,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 134.6051816329998,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 140.66889559499987,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 144.642778593,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 73.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 151.92153697499998,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 157.97743617899982,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 86.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 172.24974951699983,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 173.30953720599996,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 183.40139195200004,
+            "action": "THAW",
+            "temperature": 55.0
+          },
+          {
+            "elapsed": 184.458816652,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 80.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 190.51218883299975,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 199.93950972800008,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 63.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 205.801471214,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 246.5551028389998,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 80.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 259.76874949299986,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 285.2902609519999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 295.35780203699983,
+            "action": "THAW",
+            "temperature": 55.0
+          },
+          {
+            "elapsed": 295.5738923299998,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 66.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 308.54625761400007,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 360.4803111049998,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 366.5720107149998,
+            "action": "THAW",
+            "temperature": 51.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-final-ai-tests/resource-report.json",
+        "status": "PASS",
+        "failure": null,
+        "build_pause_only": true,
+        "seconds": 53.576890795000054,
+        "max_cpu_C_primary": 58.0,
+        "max_cpu_C_watchdog": 58.0,
+        "peak_cgroup_memory_bytes": 617177088,
+        "peak_system_used_bytes": 12018999296,
+        "events": []
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-final-build/resource-report.json",
+        "status": "PASS",
+        "failure": null,
+        "build_pause_only": true,
+        "seconds": 77.06214355400016,
+        "max_cpu_C_primary": 70.0,
+        "max_cpu_C_watchdog": 70.0,
+        "peak_cgroup_memory_bytes": 472113152,
+        "peak_system_used_bytes": 11826278400,
+        "events": [
+          {
+            "elapsed": 7.550916574999974,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 24.82292593000011,
+            "action": "THAW",
+            "temperature": 53.0
+          },
+          {
+            "elapsed": 25.87235796599998,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 36.13564021100001,
+            "action": "THAW",
+            "temperature": 54.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-tests-1/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 242.08951508899986,
+        "max_cpu_C_primary": 80.0,
+        "max_cpu_C_watchdog": 80.0,
+        "peak_cgroup_memory_bytes": 570499072,
+        "peak_system_used_bytes": 11427446784,
+        "events": [
+          {
+            "elapsed": 127.88158534900003,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 2.5
+          },
+          {
+            "elapsed": 133.974155635,
+            "action": "THAW",
+            "temperature": 50.0
+          },
+          {
+            "elapsed": 199.19420031799996,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0,
+            "cpu_quota_percent": 2.5
+          },
+          {
+            "elapsed": 205.2591697559999,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 213.41475211099987,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 2.5
+          },
+          {
+            "elapsed": 224.31343138499983,
+            "action": "THAW",
+            "temperature": 57.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-tests-retained/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Command '['systemctl', '--user', 'freeze', 'idps-integration-37952-52028413.service']' returned non-zero exit status 1.",
+        "build_pause_only": true,
+        "seconds": 183.55038493200004,
+        "max_cpu_C_primary": 94.0,
+        "max_cpu_C_watchdog": 94.0,
+        "peak_cgroup_memory_bytes": 45768704,
+        "peak_system_used_bytes": 10823573504,
+        "events": [
+          {
+            "elapsed": 17.205230965999817,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 64.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 23.273310263999974,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 51.923040765999986,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 64.0657218209999,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 71.18413981399999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 61.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 77.27509269699999,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 80.431687345,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 90.47762928099996,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 92.5827450459999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 117.924114121,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 133.4443615759999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 139.69416402399997,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 143.65661513399982,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 73.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 150.54371365299994,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 156.817766741,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 86.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 171.09710662600014,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 172.15152361000014,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 182.24167034900006,
+            "action": "THAW",
+            "temperature": 55.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/rust-tests-retained-2/resource-report.json",
+        "status": "PASS",
+        "failure": null,
+        "build_pause_only": true,
+        "seconds": 1165.378158683,
+        "max_cpu_C_primary": 94.0,
+        "max_cpu_C_watchdog": 94.0,
+        "peak_cgroup_memory_bytes": 789344256,
+        "peak_system_used_bytes": 12201779200,
+        "events": [
+          {
+            "elapsed": 7.381863809000151,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 61.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 22.37931868600026,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 34.729765821,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 70.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 43.952532907000204,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 50.038844215000154,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 75.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 56.1301660160002,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 65.35932519300013,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 71.22925473299983,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 80.45556969100016,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 91.58033574000001,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 94.71350882900015,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 108.74840900000027,
+            "action": "THAW",
+            "temperature": 58.0
+          },
+          {
+            "elapsed": 112.1276167330002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 118.20145189599998,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 123.2381043700002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 129.32947460800006,
+            "action": "THAW",
+            "temperature": 53.0
+          },
+          {
+            "elapsed": 225.8797068560002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 241.14816084699987,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 242.19557012999985,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 248.25683891300014,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 272.73867555800007,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 278.6133897640002,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 279.87297651400013,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 72.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 289.92491019299996,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 303.141012135,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 309.42167845999984,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 314.22561077,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 320.33492374000025,
+            "action": "THAW",
+            "temperature": 58.0
+          },
+          {
+            "elapsed": 341.63311337100004,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 352.6964191390002,
+            "action": "THAW",
+            "temperature": 57.0
+          },
+          {
+            "elapsed": 354.79579821100015,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 374.21532262300025,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 376.100418732,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 84.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 382.21845759200005,
+            "action": "THAW",
+            "temperature": 55.0
+          },
+          {
+            "elapsed": 393.5794354210002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 399.466160728,
+            "action": "THAW",
+            "temperature": 52.0
+          },
+          {
+            "elapsed": 405.75240176499983,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 70.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 419.1255212619999,
+            "action": "THAW",
+            "temperature": 57.0
+          },
+          {
+            "elapsed": 421.01580719000003,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 439.26239977000023,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 476.1067232539999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 86.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 482.1742029000002,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 578.0750558230002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 81.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 584.149406,
+            "action": "THAW",
+            "temperature": 50.0
+          },
+          {
+            "elapsed": 587.3117157689999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 593.3769074420002,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 613.6806559360002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 84.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 619.7744630050001,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 648.4399807740001,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 665.5867769860001,
+            "action": "THAW",
+            "temperature": 53.0
+          },
+          {
+            "elapsed": 666.636144046,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 60.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 676.8817329140002,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 729.7858720250001,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 735.8574698699999,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 871.2356855590001,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 62.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 877.3178094949999,
+            "action": "THAW",
+            "temperature": 51.0
+          },
+          {
+            "elapsed": 939.2546788949999,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 94.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 949.4857258729999,
+            "action": "THAW",
+            "temperature": 56.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/ui-build-1/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '127', 'MemoryPeak': '2097152', 'CPUUsageNSec': '7586000'}",
+        "build_pause_only": false,
+        "seconds": 0.2808446809999623,
+        "max_cpu_C_primary": 58.0,
+        "max_cpu_C_watchdog": 61.0,
+        "peak_cgroup_memory_bytes": 466944,
+        "peak_system_used_bytes": 9729830912,
+        "events": []
+      },
+      {
+        "evidence_path": ".local-dev/shadow-integration/ui-build-2/resource-report.json",
+        "status": "PASS",
+        "failure": null,
+        "build_pause_only": false,
+        "seconds": 92.17685308800003,
+        "max_cpu_C_primary": 78.0,
+        "max_cpu_C_watchdog": 78.0,
+        "peak_cgroup_memory_bytes": 270995456,
+        "peak_system_used_bytes": 10416009216,
+        "events": [
+          {
+            "elapsed": 3.2062641300000223,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 78.0
+          },
+          {
+            "elapsed": 11.561233441000013,
+            "action": "THAW",
+            "temperature": 57.0
+          },
+          {
+            "elapsed": 12.396523723000087,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0
+          },
+          {
+            "elapsed": 24.58660881600008,
+            "action": "THAW",
+            "temperature": 56.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/invalid-guard-1793945596663343706/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '2', 'MemoryPeak': '9457664', 'CPUUsageNSec': '107518000'}",
+        "build_pause_only": false,
+        "seconds": 3.8622398110001086,
+        "max_cpu_C_primary": 56.0,
+        "max_cpu_C_watchdog": 56.0,
+        "peak_cgroup_memory_bytes": 9437184,
+        "peak_system_used_bytes": 11929219072,
+        "events": []
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/missing-guard-1793945592506818599/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '2', 'MemoryPeak': '9469952', 'CPUUsageNSec': '110262000'}",
+        "build_pause_only": false,
+        "seconds": 3.937347330999728,
+        "max_cpu_C_primary": 56.0,
+        "max_cpu_C_watchdog": 56.0,
+        "peak_cgroup_memory_bytes": 9449472,
+        "peak_system_used_bytes": 11950551040,
+        "events": []
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/resources-1793944378890251993/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 99.96263464200001,
+        "max_cpu_C_primary": 82.0,
+        "max_cpu_C_watchdog": 82.0,
+        "peak_cgroup_memory_bytes": 137527296,
+        "peak_system_used_bytes": 11041591296,
+        "events": [
+          {
+            "elapsed": 63.57181857699993,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 69.43534344900013,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 86.77660116300012,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 66.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 92.01052827500007,
+            "action": "THAW",
+            "temperature": 56.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/resources-1793944703533275281/resource-report.json",
+        "status": "STOPPED",
+        "failure": "temperature_79",
+        "build_pause_only": false,
+        "seconds": 37.05966258400008,
+        "max_cpu_C_primary": 76.0,
+        "max_cpu_C_watchdog": 80.0,
+        "peak_cgroup_memory_bytes": 79806464,
+        "peak_system_used_bytes": 11427446784,
+        "events": [
+          {
+            "elapsed": 9.653675509000095,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 20.92294540900002,
+            "action": "THAW",
+            "temperature": 60.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/resources-1793945305659148514/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 95.49990983999987,
+        "max_cpu_C_primary": 86.0,
+        "max_cpu_C_watchdog": 86.0,
+        "peak_cgroup_memory_bytes": 101068800,
+        "peak_system_used_bytes": 12111626240,
+        "events": [
+          {
+            "elapsed": 8.224767020999934,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 15.125100986000234,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 27.473900832000254,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 70.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 33.56024987599994,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 42.78939027600018,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 75.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 48.87761434699996,
+            "action": "THAW",
+            "temperature": 54.0
+          },
+          {
+            "elapsed": 58.105908233000264,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 74.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 64.1541421070001,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 87.54201916200009,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/resources-1793945450821419888/resource-report.json",
+        "status": "STOPPED",
+        "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'signal', 'ExecMainStatus': '9', 'MemoryPeak': '100966400', 'CPUUsageNSec': '2485678000'}",
+        "build_pause_only": false,
+        "seconds": 66.37525298900027,
+        "max_cpu_C_primary": 58.0,
+        "max_cpu_C_watchdog": 58.0,
+        "peak_cgroup_memory_bytes": 100925440,
+        "peak_system_used_bytes": 11849261056,
+        "events": []
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/resources-1793945526874800518/resource-report.json",
+        "status": "STOPPED",
+        "failure": "80C hard stop",
+        "build_pause_only": false,
+        "seconds": 147.67264580500023,
+        "max_cpu_C_primary": 84.0,
+        "max_cpu_C_watchdog": 84.0,
+        "peak_cgroup_memory_bytes": 100323328,
+        "peak_system_used_bytes": 12201779200,
+        "events": [
+          {
+            "elapsed": 1.5336683620002987,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 75.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 9.707637104000241,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 44.25570066700038,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 50.52540022500034,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 51.370513829000174,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 72.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 61.460848247000285,
+            "action": "THAW",
+            "temperature": 56.0
+          },
+          {
+            "elapsed": 85.84208918700006,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 76.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 92.09155901000031,
+            "action": "THAW",
+            "temperature": 58.0
+          },
+          {
+            "elapsed": 128.4026051750002,
+            "action": "FREEZE_AND_REDUCE",
+            "temperature": 68.0,
+            "cpu_quota_percent": 5.0
+          },
+          {
+            "elapsed": 134.4661519690003,
+            "action": "THAW",
+            "temperature": 56.0
+          }
+        ]
+      },
+      {
+        "evidence_path": ".local-dev/foundation/ai/resources-1793946056660050583/resource-report.json",
+        "status": "STOPPED",
+        "failure": "temperature_79",
+        "build_pause_only": false,
+        "seconds": 181.01495717800026,
+        "max_cpu_C_primary": 62.0,
+        "max_cpu_C_watchdog": 94.0,
+        "peak_cgroup_memory_bytes": 101122048,
+        "peak_system_used_bytes": 12018941952,
+        "events": []
+      }
+    ],
+    "peak_system_used_bytes_observed": 12201779200
+  },
+  "checks": {
+    "Python_targeted_tests": 21,
+    "worker_tests": 4,
+    "launcher_tests": 3,
+    "frontend_existing_tests": 3,
+    "frontend_build": "PASS",
+    "Rust_full_tests": 52,
+    "browser_AI_dashboard": "VERIFIED_REAL_SCORES_AND_ERROR_STATES",
+    "Rust_final_AI_tests": 2,
+    "Rust_failures": 0,
+    "Rust_skipped": 0,
+    "final_api": "PASS",
+    "final_launcher": "PASS_FOUNDATION_AI_READY_AT_STARTUP"
+  },
+  "GLU207": "AVAILABLE_BUT_NOT_LIVE",
+  "GLU_blockers": [
+    "Missing live correlated Suricata flow/bytes/history bridge with full frozen207-feature semantics and parity; no zero padding"
+  ],
+  "AWS_PREPARATION_READY": false,
+  "AWS_remaining": [
+    "Stable target thermal/resource environment and service supervision",
+    "Authorized post-TLS telemetry vantage/feature availability policy",
+    "Transport loss accounting and durable bounded metadata delivery/retention sizing",
+    "Service identity, permissions, secrets and target load/latency tests",
+    "Live Suricata/GLU contract bridge if required",
+    "Independent model detection validation belongs to a separate milestone"
+  ],
+  "private_HTTP_persisted_by_AI": false,
+  "AI_enforcement_actions": 0,
+  "new_training_updates": 0,
+  "sealed_holdout_opened": false,
+  "latency_all_retained_scores": {
+    "count": 30,
+    "min_ms": 42.820126000151504,
+    "max_ms": 21424.994073000107,
+    "over_1000ms": [
+      2148.3050530000583,
+      2240.2063859999544,
+      21424.994073000107
+    ],
+    "scope": "Wall around predictor.predict includes cgroup suspension/throttling/cold imports; excludes queue wait and DB/UI transit. Not a pure compute benchmark."
+  },
+  "final_api_check": {
+    "status": "PASS",
+    "filtered_AI_results": {
+      "GLU207": "AVAILABLE_BUT_NOT_LIVE",
+      "enforcement": "DISABLED",
+      "items": [
+        {
+          "above_threshold": true,
+          "correlated_sources": [
+            "NGINX",
+            "STUDENT_AUDIT"
+          ],
+          "enforcement_actions": 0,
+          "event_id": "5a7990bd70cf433983382735dbc5b220",
+          "feature_availability": {
+            "body_observed": false,
+            "headers_complete": false,
+            "headers_observed": true,
+            "numeric_dropped_query_fields": 0,
+            "uri_observed": true
+          },
+          "feature_profile": "selected_headers_no_body",
+          "id": 15,
+          "kind": "inference",
+          "latency_ms": 42.820126000151504,
+          "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+          "metrics": {
+            "cpu_temperature_c": 58.0,
+            "inference_errors": 0,
+            "processed": 8,
+            "queue_depth": 0,
+            "queue_dropped": 0,
+            "rejected": 0,
+            "system_used_bytes": 11808632832,
+            "worker_rss_bytes": 178384896
+          },
+          "mode": "shadow",
+          "model_version": "request-intelligence-v2-frozen-step3072",
+          "observed_at": "2026-11-06T06:11:55.769089Z",
+          "request_id": "355d95f470a95282f840b9886d58e15c",
+          "schema_version": "ai-shadow-1",
+          "score": 0.998342990875244,
+          "status": "SCORED",
+          "telemetry_source": "NGINX_UNIX_SYSLOG",
+          "threshold": 0.8826237916946411,
+          "worker_id": "a4d01ebe96de4b9bbea51d72608026ec"
+        }
+      ],
+      "mode": "shadow",
+      "quality_scope": "Research score, not attack probability or Ground Truth",
+      "worker": {
+        "above_threshold": null,
+        "enforcement_actions": 0,
+        "event_id": "f78de96798e84757944feea370bc2494",
+        "feature_availability": null,
+        "feature_profile": "selected_headers_no_body",
+        "kind": "heartbeat",
+        "latency_ms": null,
+        "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+        "metrics": {
+          "cpu_temperature_c": 50.0,
+          "inference_errors": 0,
+          "processed": 5,
+          "queue_depth": 0,
+          "queue_dropped": 0,
+          "rejected": 0,
+          "system_used_bytes": 11322548224,
+          "worker_rss_bytes": 179048448
+        },
+        "mode": "shadow",
+        "model_version": "request-intelligence-v2-frozen-step3072",
+        "observed_at": "2026-11-06T06:22:33.643263Z",
+        "received_at": "2026-11-06T06:22:33.792659+00:00",
+        "request_id": null,
+        "schema_version": "ai-shadow-1",
+        "score": null,
+        "stale": false,
+        "status": "READY",
+        "telemetry_source": "NGINX_UNIX_SYSLOG",
+        "threshold": 0.8826237916946411,
+        "worker_id": "d9583d6014fc4e6abb576abb2e508e40"
+      }
+    },
+    "existing_alert_search": {
+      "AI_alert_count": 4,
+      "actions": [
+        "ALERT"
+      ]
+    },
+    "worker_status": "READY",
+    "worker_stale": false,
+    "no_sensitive_auth_material_saved": true
+  },
+  "changed_files": [
+    "ai-training/reports/LOCAL_INTEGRATION_20261106.json",
+    "docs/12_LOCAL_AI_SHADOW_INTEGRATION.md",
+    "scripts/ai-shadow-worker.py",
+    "scripts/test-ai-shadow.py",
+    "scripts/verify-ai-local.py",
+    "security-web/frontend/src/AiShadow.tsx",
+    "security-web/migrations/0005_ai_shadow.sql",
+    "security-web/src/ai_shadow.rs",
+    "ai-training/scripts/integration-guard.py",
+    "ai-training/tests/test_integration_candidate.py",
+    "scripts/dev-up-and-verify.py",
+    "scripts/test-dev-launcher.py",
+    "security-web/.env.example",
+    "security-web/frontend/src/Icon.tsx",
+    "security-web/frontend/src/main.tsx",
+    "security-web/src/ingest.rs",
+    "security-web/src/main.rs"
+  ],
+  "evidence": {
+    "acceptance": ".local-dev/foundation/ai/acceptance-1793945600619017735.json",
+    "functional_screenshot": ".local-dev/shadow-integration/ai-request-correlation-final.png",
+    "Rust_regression": ".local-dev/shadow-integration/rust-tests-retained-2",
+    "Rust_final_AI_tests": ".local-dev/shadow-integration/rust-final-ai-tests",
+    "API": ".local-dev/shadow-integration/final-api-check.json"
+  },
+  "runtime_supervision_note": "Host may overheat from external load; worker may be paused, stopped or stale after a functional PASS. Read final_runtime_snapshot, do not infer current availability from previous scores.",
+  "final_runtime_snapshot": {
+    "status": "PASS",
+    "final_live_scored": {
+      "above_threshold": false,
+      "correlated_sources": [
+        "NGINX",
+        "STUDENT_AUDIT"
+      ],
+      "enforcement_actions": 0,
+      "event_id": "9686128e0eef45b585ce934ea0a93483",
+      "feature_availability": {
+        "body_observed": false,
+        "headers_complete": false,
+        "headers_observed": true,
+        "numeric_dropped_query_fields": 0,
+        "uri_observed": true
+      },
+      "feature_profile": "selected_headers_no_body",
+      "id": 37,
+      "kind": "inference",
+      "latency_ms": 2390.407958999731,
+      "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+      "metrics": {
+        "cpu_temperature_c": 51.0,
+        "inference_errors": 0,
+        "processed": 0,
+        "queue_depth": 0,
+        "queue_dropped": 0,
+        "rejected": 0,
+        "system_used_bytes": 11200851968,
+        "worker_rss_bytes": 176148480
+      },
+      "mode": "shadow",
+      "model_version": "request-intelligence-v2-frozen-step3072",
+      "observed_at": "2026-11-06T06:29:39.835069Z",
+      "request_id": "22d055c034a27d3559d64ed43dc35532",
+      "schema_version": "ai-shadow-1",
+      "score": 0.1370177865028381,
+      "status": "SCORED",
+      "telemetry_source": "NGINX_UNIX_SYSLOG",
+      "threshold": 0.8826237916946411,
+      "worker_id": "fba729e08e384e08a39d465444ecb374"
+    },
+    "delivery_probe_request_ids": [
+      "5f74869ef7742ff38883f0c1c22c48fa",
+      "22d055c034a27d3559d64ed43dc35532"
+    ],
+    "worker": {
+      "above_threshold": null,
+      "enforcement_actions": 0,
+      "event_id": "31abad18916849b8b80ecf2cda2bdb3f",
+      "feature_availability": null,
+      "feature_profile": "selected_headers_no_body",
+      "kind": "heartbeat",
+      "latency_ms": null,
+      "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+      "metrics": {
+        "cpu_temperature_c": 51.0,
+        "inference_errors": 0,
+        "processed": 0,
+        "queue_depth": 0,
+        "queue_dropped": 0,
+        "rejected": 0,
+        "system_used_bytes": 11200851968,
+        "worker_rss_bytes": 176005120
+      },
+      "mode": "shadow",
+      "model_version": "request-intelligence-v2-frozen-step3072",
+      "observed_at": "2026-11-06T06:29:39.725018Z",
+      "received_at": "2026-11-06T06:29:39.944197+00:00",
+      "request_id": null,
+      "schema_version": "ai-shadow-1",
+      "score": null,
+      "stale": false,
+      "status": "READY",
+      "telemetry_source": "NGINX_UNIX_SYSLOG",
+      "threshold": 0.8826237916946411,
+      "worker_id": "fba729e08e384e08a39d465444ecb374"
+    },
+    "Student_HTTP": 200,
+    "AI_enforcement": "DISABLED"
+  },
+  "LOCAL_INTEGRATION_READY": true,
+  "STUDENT_WEB_REGRESSION": "PASS",
+  "SECURITY_WEB_REGRESSION": "PASS",
+  "AI_SHADOW_INFERENCE": "PASS",
+  "LIVE_REQUEST_CORRELATION": "PASS",
+  "DASHBOARD_INTEGRATION": "PASS",
+  "GLU207_LIVE": "NOT_READY",
+  "security_check": {
+    "changed_text_files_scanned": 17,
+    "high_confidence_auth_signature_findings": 0,
+    "scope": "Heuristic scan of changed public-intended text, not a general absence-of-secrets guarantee. Private runtime/credentials/evidence remain ignored."
+  },
+  "readiness_scope": "Small local shadow demo functionally verified; not continuous availability under externally induced host overheating, production detection quality or AWS readiness.",
+  "runtime_left_running": [
+    "local Student API/frontend",
+    "local Security API/dashboard",
+    "local Nginx",
+    "two existing local PostgreSQL dev containers",
+    "bounded AI worker with active independent watchdog and2h deadline"
+  ],
+  "final_checks": {
+    "diff_check": "PASS",
+    "new_or_modified_public_text_secret_signature_scan": "PASS_HEURISTIC_17_FILES",
+    "training_updates": 0,
+    "commit_push": "NOT_PERFORMED",
+    "protected_original_files_unchanged": 378
+  }
+}
