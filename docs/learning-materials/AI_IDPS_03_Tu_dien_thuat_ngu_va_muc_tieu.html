@@ -1,0 +1,1142 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Từ điển thuật ngữ AI-IDPS toàn diện: Giải thích chi tiết + Mức đạt hiện tại và Mục tiêu dự kiến của AI, cùng toàn bộ thuật ngữ Hệ thống, Mạng, Rule và Bảo mật"><title>Từ điển Thuật ngữ &amp; Bảng Mục tiêu AI-IDPS · Tài liệu 03</title><style>
+:root{--ink:#182438;--muted:#46566b;--accent:#9a3412;--soft:#fff7ed;--line:#cbd5e1;--paper:#fff;--ground:#f4f6fa;--warm:#fef3c7;--green:#116149;--blue:#1e40af;--blue-soft:#eff6ff;--measure:76ch}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--ground);color:var(--ink);font:17px/1.8 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}a{color:var(--accent);text-underline-offset:3px;overflow-wrap:anywhere}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--accent);outline-offset:4px}button,input,select{font:inherit}button,.button{border:1px solid var(--line);background:white;border-radius:8px;padding:9px 14px;color:var(--ink);cursor:pointer;min-height:44px;font-weight:600}button:hover{background:var(--soft)}button[aria-pressed=true]{background:var(--accent);color:white;border-color:var(--accent)}.skip{position:absolute;left:12px;top:-100px;background:white;padding:10px;z-index:30}.skip:focus{top:10px}.top{padding:14px max(24px,calc((100vw - 1380px)/2));background:#182438;color:white;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px}.top a{color:#fed7aa}.layout{display:grid;grid-template-columns:250px minmax(0,1040px);gap:32px;max-width:1380px;padding:38px 30px 80px;margin:auto}.sidebar{align-self:start;position:sticky;top:20px;max-height:94vh;overflow:auto;font-size:13px;line-height:1.6}.sidebar summary{font-weight:750;font-size:15px;padding:8px 0;min-height:44px;cursor:pointer}.sidebar ol{padding-left:20px}.sidebar li{margin:0;padding:0}.sidebar nav a{display:block;padding:7px 8px;color:#33415b;text-decoration:none;border-left:3px solid transparent;border-radius:0 6px 6px 0;line-height:1.5}.sidebar nav a:hover{color:var(--accent);text-decoration:underline}.sidebar nav a[aria-current="location"]{background:var(--soft);border-color:var(--accent);font-weight:750;color:var(--accent)}.side-note{padding:14px;background:var(--soft);border-radius:10px;font-size:12px}.paper{min-width:0;background:white;border:1px solid #dce3ed;border-radius:18px;overflow:hidden;box-shadow:0 10px 50px #15294c08}.hero{padding:44px 48px 34px;background:linear-gradient(135deg,var(--soft),white);border-bottom:1px solid var(--line)}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:800;color:var(--accent)}h1,h2,h3{line-height:1.3;text-wrap:balance;overflow-wrap:anywhere}h1{font:700 clamp(28px,3.8vw,44px)/1.15 Georgia,"Times New Roman",serif;margin:14px 0 18px;letter-spacing:-.02em}h2{font-size:26px;margin:0 0 20px;letter-spacing:-.02em}h3{font-size:20px;margin:28px 0 10px;line-height:1.45}.lead{font-size:19px;color:#334155}.meta,.small{font-size:14px;color:var(--muted)}.chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.chip{font-size:12px;line-height:1.5;border:1px solid var(--line);background:white;padding:5px 10px;border-radius:30px;font-weight:650}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}section{padding:40px 48px;border-bottom:1px solid #e2e8f0;scroll-margin-top:22px}section:last-child{border:0}p{margin:12px 0 17px;overflow-wrap:break-word}section>p,section>ul,section>ol,section>blockquote{max-width:var(--measure)}li{margin:7px 0;overflow-wrap:break-word}strong{font-weight:750}code,kbd{font:.9em/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f7;border-radius:4px;padding:2px 5px;overflow-wrap:anywhere}pre{padding:18px 20px;background:#152338;color:#e6eefc;overflow:auto;border-radius:10px;font:14px/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}pre code{background:none;padding:0;color:inherit}.note{background:var(--soft);border-left:4px solid var(--accent);padding:16px 20px;border-radius:0 10px 10px 0;margin:20px 0}.note.warn{background:var(--warm);border-color:#b45309}.note.good{background:#edf9f3;border-color:var(--green)}.note.info{background:var(--blue-soft);border-color:var(--blue)}.note p:last-child{margin-bottom:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.card{padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:#fcfdff}.card h3{margin:0 0 10px}.table-wrap{overflow:auto;margin:22px 0;border-radius:6px}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.65;min-width:620px}caption{text-align:left;font-weight:750;padding:0 0 10px;color:var(--ink)}th,td{border:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top;overflow-wrap:break-word}th{background:var(--soft);font-weight:750}tbody tr:nth-child(even){background:#f8fafc}td:first-child{font-weight:650}.formula{font:15px/1.85 ui-monospace,Consolas,monospace;padding:16px 20px;background:#edf3fb;border:1px solid #c9d7ec;border-radius:10px;overflow-wrap:anywhere;white-space:pre-wrap}.status-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}.stat{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff}.stat strong{display:block;font-size:24px;line-height:1.35;font-variant-numeric:tabular-nums;color:var(--accent)}.stat span{font-size:12px;line-height:1.6;display:block;color:var(--muted)}.badge{display:inline-block;padding:2px 8px;border:1px solid #a7bac9;border-radius:5px;font:700 12px/1.6 system-ui;background:#f1f5f9;white-space:nowrap}.badge.done{color:#148338;background:#eaf7ef;border-color:#91bda5}.badge.target{color:#1e40af;background:#eff6ff;border-color:#93c5fd}.badge.gate{color:#9a3412;background:#fff7ed;border-color:#fdba74}.part-banner{padding:18px 24px;border-radius:12px;margin:10px 0 24px;font-weight:750;border:2px solid var(--accent);background:var(--soft)}.part-banner.sys{border-color:#0f665b;background:#ecf7f3;color:#0f665b}.lab{padding:22px;border:1px solid #fdba74;background:#fff7ed;border-radius:12px;margin:24px 0}.lab label{font-weight:700;display:block;margin-bottom:6px}.search-input{width:100%;padding:11px 14px;border:1px solid #94a3b8;border-radius:8px;min-height:44px;background:white}.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.chapter-purpose{font-size:14px;color:var(--muted);border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:24px}.chapter-nav{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:22px;margin-top:26px;border-top:1px dotted var(--line);font-size:13px}.route-card{margin-top:24px;padding:16px 20px;background:white;border:1px solid var(--line);border-radius:12px;font-size:15px}.route-card strong{display:block;color:var(--accent);margin-bottom:6px}.route-card a{display:inline-block;margin:2px 12px 2px 0}details.quiz{border:1px solid var(--line);border-radius:10px;padding:15px 18px;margin:14px 0}details.quiz summary{font-weight:700;cursor:pointer}.foot{padding:28px 48px;background:#f8fafc;color:var(--muted);font-size:13px}.reading-progress{position:fixed;inset:0 auto auto 0;height:3px;background:var(--accent);z-index:20;width:0;pointer-events:none}@media(max-width:1100px){.layout{grid-template-columns:205px minmax(0,1fr);gap:22px}.hero,section{padding-left:28px;padding-right:28px}}@media(max-width:800px){.layout{display:block;padding:16px 12px}.sidebar{position:static;max-height:none;margin-bottom:20px}.sidebar ol{columns:2}.side-note{display:none}.hero,section,.foot{padding:26px 22px}.grid{grid-template-columns:1fr}.status-strip{grid-template-columns:1fr}}@media print{body{background:white;font-size:10pt}.top,.sidebar,.toolbar,.skip,.lab,.reading-progress,.chapter-nav,.route-card{display:none!important}.layout{display:block;padding:0}.paper{border:0;box-shadow:none}.table-wrap{overflow:visible}table{min-width:0;font-size:8.5pt}}
+</style>
+</head><body><div class="reading-progress" aria-hidden="true"></div><a class="skip" href="#main">Bỏ qua mục lục, vào nội dung</a><header class="top"><span>AI-IDPS / SỔ TAY HỌC DỰ ÁN / 03 — TỪ ĐIỂN THUẬT NGỮ &amp; MỤC TIÊU DỰ KIẾN</span><span><a href="AI_IDPS_01_Nhap_mon_AI_va_mo_hinh.html">← 01: AI từ cơ bản đến nâng cao</a> · <a href="AI_IDPS_02_So_do_va_nguyen_ly_he_thong.html">← 02: Luồng &amp; Rule hệ thống</a></span></header>
+<div class="layout"><aside class="sidebar"><details open><summary>Mục lục · 10 chương</summary><nav aria-label="Mục lục"><ol>
+<li><a href="#tong-quan-muc-tieu">P1.01 · Bảng Tổng Hợp Mục Tiêu AI</a></li>
+<li><a href="#ai-nen-tang">P1.02 · Thuật ngữ Nền tảng ML/DL &amp; Tối ưu</a></li>
+<li><a href="#ai-kien-truc">P1.03 · Kiến trúc Model (5k → 9,67M)</a></li>
+<li><a href="#ai-dac-trung">P1.04 · Đặc trưng (207/588), Nhân quả &amp; Va chạm</a></li>
+<li><a href="#ai-danh-gia">P1.05 · Đánh giá, Hiệu chuẩn &amp; ONNX Parity</a></li>
+<li><a href="#sys-web-auth">P2.06 · Web, Reverse Proxy, Auth &amp; RBAC</a></li>
+<li><a href="#sys-network-rule">P2.07 · Mạng, Suricata NIDS &amp; Cấu tạo Rule</a></li>
+<li><a href="#sys-data-privacy">P2.08 · Collector, Lưu trữ &amp; Khử bí mật</a></li>
+<li><a href="#sys-policy-firewall">P2.09 · Policy Engine, Helper &amp; nftables</a></li>
+<li><a href="#viet-tat-kiem-tra">10 · Bảng Viết Tắt &amp; Tự Kiểm Tra</a></li>
+</ol></nav></details><p class="side-note">Tài liệu được chia làm 2 phần rõ rệt: <strong>Phần I (Chương 01–05)</strong> chuyên về AI kèm mức hiện tại &amp; mục tiêu dự kiến; <strong>Phần II (Chương 06–09)</strong> giải thích toàn bộ thuật ngữ hệ thống, mạng, rule và bảo mật.</p></aside>
+<main class="paper" id="main"><div class="hero"><div class="eyebrow">Tài liệu 03 · Từ điển Tham chiếu &amp; Định chuẩn Mục tiêu</div><h1>Từ điển Thuật ngữ Toàn diện &amp; Bảng Mức–Mục Tiêu Dự Kiến của AI-IDPS</h1><p class="lead">Tài liệu tra cứu chuyên sâu chia làm 2 phần lớn: <strong>Phần I</strong> giải thích toàn bộ thuật ngữ AI/ML/DL từ cơ bản đến nâng cao kèm <em>Mức đạt hiện tại (Research MVP v1.0)</em> và <em>Mức–Mục tiêu dự kiến sẽ đạt (Research Gate &amp; Cổng 2.000.000 Request)</em>; <strong>Phần II</strong> giải thích toàn bộ thuật ngữ Web, Mạng, Cấu tạo Rule, Collector, Bảo mật riêng tư và Tường lửa nhân Linux.</p><p class="meta">Biên tập ngày 06/11/2026 · Đối chiếu code tại <code>09a12e4</code> (<code>RESEARCH_MVP_V1_0_FROZEN</code>) · Tiếng Việt · Dùng offline</p><div class="chips" aria-label="Phạm vi tài liệu"><span class="chip">Phần I: AI + Mức đạt &amp; Mục tiêu dự kiến</span><span class="chip">Phần II: Web · Mạng · Rule · Bảo mật · Hạ tầng</span><span class="chip">Có ô lọc thuật ngữ trực tiếp</span></div><div class="toolbar"><button type="button" onclick="window.print()">In / lưu PDF</button><button id="answer-toggle" type="button" onclick="toggleAnswers()">Mở mọi đáp án</button></div>
+<div class="route-card"><strong>Chuyển nhanh theo nhu cầu tra cứu</strong><a href="#tong-quan-muc-tieu">Bảng Mục tiêu AI (2M req &amp; 9,67M params)</a><a href="#ai-kien-truc">Thuật ngữ Model &amp; SwiGLU</a><a href="#sys-network-rule">Thuật ngữ Mạng &amp; Rule Suricata</a><a href="#sys-policy-firewall">Thuật ngữ Policy &amp; nftables</a></div>
+
+<div class="lab" role="search" aria-label="Bộ lọc thuật ngữ tức thời">
+  <label for="term-search">Tìm kiếm nhanh thuật ngữ hoặc con số mục tiêu trong trang (hoạt động offline):</label>
+  <p class="small" id="term-search-hint">Gõ tên thuật ngữ (ví dụ: <code>SwiGLU</code>, <code>2.000.000</code>, <code>Recall</code>, <code>FPR</code>, <code>sticky buffer</code>, <code>HMAC</code>, <code>inode</code>, <code>nftables</code>, <code>CSRF</code>) để lọc tức thì các dòng bảng bên dưới.</p>
+  <input id="term-search" class="search-input" type="search" placeholder="Nhập từ khóa cần tra cứu..." aria-describedby="term-search-hint">
+  <div class="filter-bar" role="group" aria-label="Lọc theo phần">
+    <button type="button" data-part-filter="all" aria-pressed="true">Hiện cả 2 Phần</button>
+    <button type="button" data-part-filter="part-ai" aria-pressed="false">Chỉ hiện Phần I: AI &amp; Mục tiêu</button>
+    <button type="button" data-part-filter="part-sys" aria-pressed="false">Chỉ hiện Phần II: Hệ thống, Mạng &amp; Rule</button>
+  </div>
+  <output id="term-search-status" class="small" aria-live="polite" style="margin-top:10px;background:white;padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:block">Đang hiển thị toàn bộ thuật ngữ trong cả 2 phần.</output>
+</div>
+</div>
+
+<section id="tong-quan-muc-tieu" data-part="part-ai">
+<div class="part-banner">PHẦN I — TỪ ĐIỂN THUẬT NGỮ AI, MÔ HÌNH HỌC MÁY &amp; BẢNG MỨC ĐẠT HIỆN TẠI – MỤC TIÊU DỰ KIẾN SẼ ĐẠT</div>
+<h2>01. Bảng Tổng Hợp Định Chuẩn: Mức Đạt Hiện Tại vs. Mục Tiêu Dự Kiến Của Hệ Thống AI</h2>
+<p class="chapter-purpose">Chương này tổng hợp toàn bộ các thước đo định lượng của phần AI trong dự án, đối chiếu trực tiếp giữa trạng thái đã đóng băng tại <code>09a12e4</code> (Research MVP v1.0) và đích đến chính thức trong <code>scale_policy.yaml</code> &amp; <code>autonomous_research_policy_v2.yaml</code>.</p>
+
+<div class="status-strip">
+  <div class="stat"><strong>75.150 → 2.000.000</strong><span>Request 3 nguồn hiện có → Cổng quy mô chính thức</span></div>
+  <div class="stat"><strong>9.675.784 &amp; 50.696</strong><span>Tham số <code>residual_glu</code> (~10M) &amp; <code>request_v2</code></span></div>
+  <div class="stat"><strong>Recall ≥ 80% @ FPR ≤ 1%</strong><span>Mục tiêu phát hiện trên tập Holdout độc lập</span></div>
+</div>
+
+<div class="table-wrap"><table>
+<caption>Bảng Master: Đối chiếu Mức Đạt Hiện Tại (Research MVP v1.0) và Mục Tiêu Dự Kiến Sẽ Đạt (Research Gate &amp; Production Scale Gate)</caption>
+<thead><tr>
+  <th scope="col">Hạng mục / Chỉ số AI</th>
+  <th scope="col">Giải thích bản chất trong dự án</th>
+  <th scope="col">Mức đạt hiện tại (MVP v1.0 · <code>09a12e4</code>)</th>
+  <th scope="col">Mức – Mục tiêu dự kiến sẽ đạt (Dự kiến Đích)</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>1. Quy mô dữ liệu hợp nhất (Admitted Correlated Requests)</strong></td>
+  <td>Tổng số HTTP request thực tế đã được ghép nối từ 3 nguồn (Student Audit + Nginx + Suricata EVE), khử bí mật và đạt chuẩn chất lượng.</td>
+  <td><span class="badge done">75.150 request</span> lab 3 nguồn (19.275 ngày 28/10 + 55.875 ngày 03/11). Tập <code>prepared-v5</code> có <strong>41.607</strong> dòng Train (<strong>41.585 unique float32 views</strong>).</td>
+  <td><span class="badge gate">≥ 2.000.000 request</span> thực tế hợp lệ theo <code>scale_policy.yaml</code> (cấm sinh dữ liệu giả / <code>allow_synthetic_padding: false</code>).</td>
+</tr>
+<tr>
+  <td><strong>2. Đa dạng môi trường &amp; Chiến dịch (Environments &amp; Campaigns)</strong></td>
+  <td>Số lượng môi trường mạng/hạ tầng độc lập và số chiến dịch kịch bản có định danh (IP/User/Session) tách biệt để mô hình không học vẹt một cấu hình máy.</td>
+  <td><span class="badge done">1 lab nội bộ (45 chiến dịch)</span> + 1 container OWASP Juice Shop + 5 bộ dữ liệu HTTP/WAF công khai (WAF v2, WAMM, WCP, ModSec-WP, SR-BH).</td>
+  <td><span class="badge gate">≥ 3 môi trường độc lập</span>, tổng cộng <strong>≥ 120 chiến dịch</strong>, thời gian thu thập liên tục tối thiểu <strong>≥ 7 ngày (168 giờ)</strong>.</td>
+</tr>
+<tr>
+  <td><strong>3. Tỷ lệ khớp 3 nguồn &amp; Độ tin cậy nhãn (Correlation &amp; Label Confidence)</strong></td>
+  <td>Tỷ lệ request có đủ bằng chứng liên nguồn và mức độ tin cậy của nhãn Ground Truth sau khi kiểm duyệt ngữ nghĩa độc lập.</td>
+  <td><span class="badge done">99,99% khớp Nginx-Student</span> (~84,2% có flow nhân quả); nhãn tự động từ kịch bản lab + <strong>Application-State Oracle</strong> trên Juice Shop.</td>
+  <td><span class="badge gate">≥ 95% khớp 3 nguồn</span> (<code>min_three_source_correlation_rate: 0.95</code>) và độ tin cậy nhãn <strong>≥ 0,90</strong> có chuyên gia/hội đồng duyệt độc lập.</td>
+</tr>
+<tr>
+  <td><strong>4. Số mẫu tối thiểu mỗi tập Đánh giá (Partition Floor trên Val &amp; Test)</strong></td>
+  <td>Số lượng mẫu sạch và mẫu tấn công tối thiểu trong từng tập Validation và Test để khoảng tin cậy thống kê đủ hẹp.</td>
+  <td><span class="badge done">3.855 – 11.000+ mẫu/tập</span> trên lab 3 nguồn; 28 benign + 4 exploit trên Juice Shop; 15.168 unique views trên ModSec-WP.</td>
+  <td><span class="badge gate">≥ 5.000 Benign / tập</span> và <strong>≥ 250 mẫu cho mỗi họ tấn công</strong> (đủ cả 7/7 họ tấn công trong cả Train, Val và Test).</td>
+</tr>
+<tr>
+  <td><strong>5. Số chiều Đặc trưng (Feature Dimensionality)</strong></td>
+  <td>Số lượng con số <code>float32</code> đầu vào mô tả mỗi mẫu sau khi chuẩn hóa.</td>
+  <td><span class="badge done">207 đặc trưng</span> (Nhánh A: <code>ai-features-5</code>) và <span class="badge done">588 đặc trưng</span> (Nhánh B: <code>76 bounded + 512 char n-gram v2</code>).</td>
+  <td><span class="badge target">Giữ ổn định 207 &amp; 588 cột</span>; cổng sang Rust live worker đạt parity đặc trưng 100% so với Python reference.</td>
+</tr>
+<tr>
+  <td><strong>6. Quy mô Tham số Mô hình (Model Parameter Capacity)</strong></td>
+  <td>Tổng số trọng số học được ($\theta$) trong mạng nơ-ron.</td>
+  <td><span class="badge done">9.675.784 tham số</span> ở <code>residual_glu</code> (~10M target) và <span class="badge done">50.696 tham số</span> ở <code>request_intelligence_v2</code> (cùng các mốc 5k, 14k, 252k, 294k, 450k).</td>
+  <td><span class="badge target">Huấn luyện hội tụ sâu</span> mô hình <strong>9.675.784 tham số</strong> trên tập $\ge 2.000.000$ request để khai thác hết dung lượng ~10M tham số mà không overfit.</td>
+</tr>
+<tr>
+  <td><strong>7. Tỷ lệ Báo động giả (FPR — False Positive Rate)</strong></td>
+  <td>Tỷ lệ request hợp lệ (Benign) bị AI gắn cờ nhầm là tấn công: $\text{FP} / (\text{FP} + \text{TN})$.</td>
+  <td><span class="badge done">0/27 (0,0%)</span> trên tập đối chứng 3 nguồn (<code>glu207</code>); <span class="badge done">0/28 (0,0%)</span> trên Juice Shop (<code>request-v2</code>); <code>0,943%</code> ở pilot 28/10.</td>
+  <td><span class="badge gate">FPR thực tế ≤ 1,0%</span> (mục tiêu vận hành khắt khe <strong>≤ 0,1% – 0,5%</strong> với cận trên khoảng tin cậy 95% Clopper-Pearson được kiểm soát chặt trên $\ge 5.000$ benign holdout).</td>
+</tr>
+<tr>
+  <td><strong>8. Độ phủ phát hiện tấn công (Recall / TPR tại ngân sách FPR)</strong></td>
+  <td>Tỷ lệ các cuộc tấn công thật được AI phát hiện: $\text{TP} / (\text{TP} + \text{FN})$ khi khóa cứng ngưỡng ở mức FPR cho phép.</td>
+  <td><span class="badge done">99,78%</span> trên tập Train <code>prepared-v5</code> (<code>glu207</code>); <span class="badge done">75,0% (3/4 exploit thật)</span> trên OWASP Juice Shop (<code>request-v2</code>); <code>43,45%</code> ở pilot cũ 148 cột.</td>
+  <td><span class="badge gate">Recall ≥ 80,0%</span> (View-weighted &amp; Row-weighted) trên tập Holdout Test độc lập tại <code>FPR ≤ 1,0%</code>, bắt đồng đều cả 7 họ tấn công.</td>
+</tr>
+<tr>
+  <td><strong>9. Độ chuẩn xác của cảnh báo (Precision / PPV)</strong></td>
+  <td>Trong số các cảnh báo AI phát ra, bao nhiêu phần trăm thực sự là tấn công: $\text{TP} / (\text{TP} + \text{FP})$.</td>
+  <td><span class="badge done">90,68%</span> ở pilot 28/10; <span class="badge done">100% (3/3 cảnh báo đúng)</span> trên thực nghiệm Juice Shop (<code>request-v2</code>).</td>
+  <td><span class="badge gate">Precision ≥ 80,0%</span> trên lưu lượng có tỷ lệ pha trộn thực tế để đội vận hành SOC không bị quá tải cảnh báo giả.</td>
+</tr>
+<tr>
+  <td><strong>10. Diện tích dưới đường cong PR-AUC (AP) &amp; ROC-AUC</strong></td>
+  <td>Chất lượng xếp hạng điểm số tổng thể qua mọi ngưỡng quyết định.</td>
+  <td><span class="badge done">AP 0,7621</span> (pilot 148 cột); trên tập curated WAF v2 &amp; prepared-v5 đạt phân tách logit rõ rệt (loss giảm còn <code>0,12902</code>).</td>
+  <td><span class="badge target">PR-AUC (AP) ≥ 0,85</span> và <strong>ROC-AUC ≥ 0,95</strong> trên tập Holdout đã khử trùng lặp góc nhìn (View-weighted).</td>
+</tr>
+<tr>
+  <td><strong>11. Khớp số học Xuất bản (ONNX Parity Tolerance)</strong></td>
+  <td>Độ lệch tối đa giữa kết quả chạy bằng NumPy gốc và đồ thị ONNX Runtime.</td>
+  <td><span class="badge done">Đạt 100% PASS</span> với <code>rtol = 1e-5</code>, <code>atol = 1e-6</code> (sai lệch thực đo $\sim 1,8 \times 10^{-7}$) nhờ hợp đồng cộng dồn FP64→FP32.</td>
+  <td><span class="badge target">Duy trì 100% PASS</span> (<code>rtol=1e-5, atol=1e-6</code>) cho cả Python↔ONNX và Python-features↔Rust-features.</td>
+</tr>
+<tr>
+  <td><strong>12. Độ trễ suy luận &amp; Trần tài nguyên (Latency &amp; Resource Envelope)</strong></td>
+  <td>Thời gian chấm điểm 1 mẫu và giới hạn CPU/RAM được phép tiêu thụ.</td>
+  <td><span class="badge done">Guard 4–8 CPU / 16 GiB RAM</span>, <code>Swap = 0</code>; CLI <code>idps-ai infer-mvp</code> chạy mượt trên CPU không cần GPU.</td>
+  <td><span class="badge target">Latency p95 &lt; 50 ms</span> (toàn luồng trích xuất + ONNX trên Rust worker) và <strong>&lt; 5 ms</strong> (riêng model forward) trong trần 8 CPU / 16 GiB RAM.</td>
+</tr>
+</tbody></table></div>
+<nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#main">↑ Đầu tài liệu</a><span>Chương 01 / 10</span><a href="#ai-nen-tang">Chương 02 →</a></nav></section>
+
+<section id="ai-nen-tang" data-part="part-ai">
+<h2>02. Nhóm 1 (AI): Thuật ngữ Nền tảng Học máy, Đạo hàm &amp; Tối ưu hóa</h2>
+<p class="chapter-purpose">Giải thích cặn kẽ từng thuật ngữ toán học và huấn luyện mạng nơ-ron xuất hiện trong <code>models.py</code>, <code>tabular.py</code>, <code>runner.py</code> và <code>checkpoint.py</code>, kèm mức hiện tại và mục tiêu dự kiến.</p>
+<div class="table-wrap"><table>
+<caption>Từ điển Nhóm 1: Khái niệm Nền tảng ML/DL &amp; Thuật toán Huấn luyện</caption>
+<thead><tr>
+  <th scope="col">Thuật ngữ</th>
+  <th scope="col">Giải thích chi tiết (Từ cơ bản đến bản chất toán học)</th>
+  <th scope="col">Mức hiện tại &amp; Mục tiêu dự kiến trong dự án</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>Tensor &amp; Shape (Mảng đa chiều &amp; Kích thước)</strong></td>
+  <td><strong>Tensor</strong> là cấu trúc mảng số thực nhiều chiều. <strong>Shape</strong> cho biết kích thước từng chiều: ví dụ một lô (batch) 128 mẫu của nhánh A có shape <code>(128, 207)</code>; ma trận trọng số đầu vào của <code>residual_glu</code> có shape <code>(207, 1024)</code>.</td>
+  <td><strong>Hiện tại:</strong> Mọi tensor đầu vào/trọng số khóa ở kiểu <code>float32</code>.<br><strong>Mục tiêu:</strong> Giữ cố định shape <code>(B, 207)</code> và <code>(B, 588)</code> xuyên suốt Python và Rust ONNX worker.</td>
+</tr>
+<tr>
+  <td><strong>Forward Pass &amp; Affine Transformation (Lan truyền tiến &amp; Biến đổi Affine)</strong></td>
+  <td>Quá trình đưa vector đầu vào $x$ đi qua từng tầng của mạng từ đầu đến cuối để ra kết quả dự đoán. Phép biến đổi cơ bản nhất ở mỗi tầng là <strong>Affine</strong>: $z = xW + b$ (nhân ma trận trọng số $W$ rồi cộng vector độ lệch $b$).</td>
+  <td><strong>Hiện tại:</strong> Thực thi bằng NumPy/SciPy và ONNX Runtime với cộng dồn FP64 làm tròn về FP32.<br><strong>Mục tiêu:</strong> Đạt độ trễ forward pass p95 &lt; 5ms trên CPU.</td>
+</tr>
+<tr>
+  <td><strong>Activation Function: ReLU, GELU, SiLU / Swish (Hàm kích hoạt phi tuyến)</strong></td>
+  <td>Nếu không có hàm kích hoạt phi tuyến, nhiều tầng nhân ma trận nối tiếp nhau sẽ suy biến thành 1 phép nhân tuyến tính. Dự án dùng 3 hàm:<br>• <code>ReLU(z) = max(0, z)</code>: cắt bỏ phần âm, cực nhanh (dùng ở mạng cơ sở).<br>• <code>GELU(z) = 0.5·z·(1 + erf(z/√2))</code>: hàm kích hoạt mượt theo phân phối chuẩn (dùng ở Deep MLP, DAE, Gated Residual).<br>• <code>SiLU(z) = z / (1 + exp(−z))</code>: hàm Swish tự đóng mở mượt (dùng ở nhánh cổng của <code>residual_glu</code>).</td>
+  <td><strong>Hiện tại:</strong> Đã cài đặt đầy đủ cả đạo hàm giải tích (backward) lẫn xuất đồ thị ONNX cho ReLU, GELU và SiLU.<br><strong>Mục tiêu:</strong> Duy trì độ chính xác đạo hàm tuyệt đối (kiểm chứng bằng finite-difference gradient check).</td>
+</tr>
+<tr>
+  <td><strong>Logits &amp; Softmax (Điểm thô &amp; Chuẩn hóa xác suất đa lớp)</strong></td>
+  <td><strong>Logits</strong> là 8 con số thực thô $(-\infty, +\infty)$ ở tầng cuối cùng trước khi chuẩn hóa. Hàm <strong>Softmax</strong> lấy lũy thừa cơ số $e$ (sau khi trừ $\max(\text{logit})$ để chống tràn số) rồi chia cho tổng: $P(k) = \frac{e^{z_k}}{\sum_{j=0}^7 e^{z_j}}$, biến 8 logit thành 8 xác suất có tổng đúng bằng $1,0$. Điểm nghi ngờ tấn công là $\text{attack\_score} = 1 - P(\text{benign})$.</td>
+  <td><strong>Hiện tại:</strong> Xuất đồng thời phân phối 8 lớp và <code>attack_score = 1 - P(benign)</code>.<br><strong>Mục tiêu:</strong> Hiệu chuẩn xác suất (calibration) trên tập Holdout $\ge 2.000.000$ request để điểm số phản ánh sát tần suất thực nghiệm.</td>
+</tr>
+<tr>
+  <td><strong>Cross-Entropy (CE), Weighted CE &amp; Label Smoothing (Hàm mất mát phân loại)</strong></td>
+  <td>Đo khoảng cách giữa dự đoán của model và nhãn đúng:<br>• <strong>CE chuẩn:</strong> $\mathcal{L} = -\ln P(y_{\text{đúng}})$.<br>• <strong>Balanced Class Weights:</strong> Nhân thêm trọng số $w_y \in [0,25;\; 4,0]$ tỉ lệ nghịch với tần suất lớp để model không bỏ rơi các họ tấn công hiếm.<br>• <strong>Label Smoothing ($\varepsilon=0,02$):</strong> Làm mềm nhãn đích từ $1,0$ xuống $1 - \varepsilon + \varepsilon/8$ để chống hiện tượng logit phình quá lớn (overconfidence).</td>
+  <td><strong>Hiện tại:</strong> Training loss của <code>residual_glu</code> giảm mượt từ <code>0,20418</code> xuống <code>0,12902</code> sau 652 steps với $\varepsilon=0,02$.<br><strong>Mục tiêu:</strong> Giữ validation loss hội tụ ổn định, không phân kỳ so với train loss trên ca dài hạn.</td>
+</tr>
+<tr>
+  <td><strong>MSE — Mean Squared Error (Sai số bình phương trung bình)</strong></td>
+  <td>Hàm mất mát và cũng là điểm bất thường (<code>anomaly_score</code>) của Autoencoder / DAE: $\operatorname{MSE}(x, \hat{x}) = \frac{1}{d}\sum_{j=1}^d (x_j - \hat{x}_j)^2$. Đo mức độ khác biệt giữa vector đầu vào sạch $x$ và vector do mạng tái dựng lại $\hat{x}$.</td>
+  <td><strong>Hiện tại:</strong> Đã vận hành trên cả AE cơ sở (<code>9.652</code> tham số) và DAE sâu (<code>294.717</code> tham số).<br><strong>Mục tiêu:</strong> Dùng làm chỉ số phân loại ưu tiên (triage) hỗ trợ phát hiện các mẫu lạ ngoài phân phối.</td>
+</tr>
+<tr>
+  <td><strong>Backpropagation &amp; Gradient Clipping (Lan truyền ngược &amp; Cắt ngưỡng đạo hàm)</strong></td>
+  <td><strong>Backpropagation</strong> áp dụng quy tắc đạo hàm hàm hợp (chain rule) từ hàm Loss ngược về từng ma trận trọng số để biết hướng chỉnh. <strong>Gradient Clipping</strong> giới hạn độ lớn đạo hàm: ở <code>models.py</code> cắt từng phần tử trong $[-10, 10]$; ở <code>tabular.py</code> dùng <strong>Global L2 Norm Clipping</strong> ($\|g\|_2 \le 1,0$) co toàn bộ vector đạo hàm theo cùng tỉ lệ nếu chuẩn $\ell_2$ vượt quá $1,0$.</td>
+  <td><strong>Hiện tại:</strong> Toàn bộ các tầng (kể cả LayerNorm, GELU, SiLU, SwiGLU) đều có hàm backward giải tích chính xác trong NumPy.<br><strong>Mục tiêu:</strong> Đảm bảo 0% bước huấn luyện bị <code>NaN</code> hoặc <code>Inf</code> trong mọi ca chạy dài.</td>
+</tr>
+<tr>
+  <td><strong>Adam vs. AdamW (Decoupled Weight Decay Optimizer)</strong></td>
+  <td>Cả hai đều duy trì trung bình trượt bậc nhất $m_t$ và bậc hai $v_t$ của đạo hàm ($\beta_1=0,9, \beta_2=0,999, \varepsilon=10^{-8}$). Điểm nâng cấp của <strong>AdamW</strong> (dùng cho các mạng sâu trong <code>tabular.py</code>) là tách riêng thành phần co trọng số $\lambda \theta_{t-1}$ ($\lambda = 10^{-4}$) ra khỏi ước lượng phương sai của Adam và <strong>chỉ áp dụng lên ma trận trọng số 2D ($W$)</strong>, không làm co lệch các tham số 1D (bias $b$ và LayerNorm $\gamma, \beta$).</td>
+  <td><strong>Hiện tại:</strong> Adam ($\eta=0,002$) cho mạng cơ sở; AdamW ($\eta=0,0003, \lambda=10^{-4}$) cho <code>residual_glu</code>, <code>gated_residual</code>, <code>deep_mlp</code>, <code>dae</code>.<br><strong>Mục tiêu:</strong> Kiểm soát chặt chẽ chuẩn $\ell_2$ của trọng số trong mô hình 9,67 triệu tham số.</td>
+</tr>
+<tr>
+  <td><strong>Linear Warmup &amp; Cosine Annealing LR Schedule (Lịch tốc độ học)</strong></td>
+  <td>Khi mới bắt đầu train mạng lớn, phương sai $v_t$ của AdamW chưa ổn định; nếu dùng ngay learning rate lớn sẽ làm lệch mạng. <strong>Linear Warmup</strong> tăng dần LR tuyến tính từ $0$ lên $\eta_{\max}=0,0003$ trong 30 steps đầu, sau đó <strong>Cosine Decay</strong> hạ dần LR theo đường cong hình cosin mượt mà về $0,1\eta_{\max}$.</td>
+  <td><strong>Hiện tại:</strong> Đã tích hợp và lưu chính xác bước học trong checkpoint.<br><strong>Mục tiêu:</strong> Tự động co giãn chu kỳ Cosine theo tổng số bước của tập 2 triệu request.</td>
+</tr>
+<tr>
+  <td><strong>LayerNorm (Pre-Layer Normalization) &amp; Inverted Dropout</strong></td>
+  <td>• <strong>LayerNorm:</strong> Chuẩn hóa từng vector mẫu theo chiều đặc trưng về trung bình 0, phương sai 1 rồi nhân $\gamma$ cộng $\beta$. Đặt <strong>trước</strong> mỗi khối biến đổi (<strong>Pre-LN</strong>) giúp đường tắt skip connection truyền thẳng đạo hàm không bị cản trở.<br>• <strong>Inverted Dropout ($p=0,1$):</strong> Lúc train, ngẫu nhiên tắt 10% kích hoạt và nhân phần còn lại với $\frac{1}{1-0,1}$ để mạng không phụ thuộc vào vài neuron đơn lẻ; lúc inference tắt hoàn toàn dropout.</td>
+  <td><strong>Hiện tại:</strong> Đã triển khai đồng bộ giữa NumPy trainer và đồ thị ONNX.<br><strong>Mục tiêu:</strong> Chống học vẹt (overfitting) hiệu quả khi mở rộng số epoch.</td>
+</tr>
+<tr>
+  <td><strong>Exact Checkpoint &amp; Atomic Generation Persistence (Lưu trạng thái nguyên tử)</strong></td>
+  <td>Lưu không chỉ trọng số mà toàn bộ trạng thái Adam/AdamW ($m_t, v_t, t$), epoch, step, con trỏ mẫu, trạng thái bộ sinh số ngẫu nhiên PCG64 và mã băm SHA-256 của dữ liệu/code vào file <code>.npz</code> + <code>.json</code> (không dùng <code>pickle</code>), gọi <code>fsync</code> rồi đổi tên nguyên tử.</td>
+  <td><strong>Hiện tại:</strong> Kiểm thử chứng minh chạy 2 ca nối tiếp cho kết quả giống hệt từng bit so với chạy liền 1 mạch.<br><strong>Mục tiêu:</strong> Cho phép huấn luyện tập 2 triệu request qua nhiều ca an toàn tuyệt đối.</td>
+</tr>
+</tbody></table></div>
+<nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#tong-quan-muc-tieu">← Chương 01</a><span>Chương 02 / 10</span><a href="#ai-kien-truc">Chương 03 →</a></nav></section>
+
+<section id="ai-kien-truc" data-part="part-ai">
+<h2>03. Nhóm 2 (AI): Thuật ngữ Kiến trúc Mô hình (Từ 5.032 đến 9.675.784 Tham số)</h2>
+<p class="chapter-purpose">Giải thích từng họ mô hình đã được xây dựng trong <code>models.py</code> và <code>tabular.py</code>, cấu trúc toán học, số lượng tham số hiện tại và mục tiêu vận hành của từng mô hình.</p>
+<div class="table-wrap"><table>
+<caption>Từ điển Nhóm 2: Các Kiến trúc Mô hình trong Hệ sinh thái AI-IDPS</caption>
+<thead><tr>
+  <th scope="col">Kiến trúc Mô hình</th>
+  <th scope="col">Giải thích cấu tạo &amp; Cơ chế hoạt động</th>
+  <th scope="col">Mức hiện tại &amp; Mục tiêu dự kiến sẽ đạt</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong><code>mlp</code> &amp; <code>deep_mlp</code> (Multi-Layer Perceptron)</strong></td>
+  <td>Mạng nơ-ron truyền thẳng đa tầng:<br>• <code>mlp</code> cơ sở: 1 tầng ẩn ReLU ($d_{\text{in}} \to 32/64 \to 8$).<br>• <code>deep_mlp</code>: Nhiều tầng ẩn nối tiếp <code>Linear → LayerNorm → GELU → Dropout</code> ($d_{\text{in}} \to 256 \to 256 \to 256 \to 8$).</td>
+  <td><strong>Hiện tại:</strong> <code>5.032</code> (148 cột) / <code>13.832</code> (207 cột) ở <code>mlp</code>; <code>248.072</code> (189 cột) / <code>252.680</code> (207 cột) ở <code>deep_mlp</code>.<br><strong>Mục tiêu:</strong> Làm chuẩn đối chiếu tốc độ cao và kiến trúc nền cho Nhánh B.</td>
+</tr>
+<tr>
+  <td><strong><code>request_intelligence_v2</code> (Mô hình Chủ lực Nhánh B)</strong></td>
+  <td>Mô hình phân loại 8 lớp chuyên biệt chỉ dùng thông tin từ HTTP request (không cần đợi response hay log 3 nguồn). Nhận <strong>588 đặc trưng</strong> (<code>76 bounded numeric + 512 hashed char 3–5 n-grams</code> trên khuôn mẫu ẩn danh và cú pháp JSON body theo trường) qua kiến trúc Deep MLP $588 \to 64 \to 64 \to 8$.</td>
+  <td><strong>Hiện tại:</strong> Đóng băng ở <strong>50.696 tham số</strong> (3.072 steps trên WAF v2), ngưỡng $\tau = 0,882624$; bắt <strong>3/4 exploit thật</strong> trên Juice Shop và <strong>0/28 FP</strong>.<br><strong>Mục tiêu:</strong> Đạt Recall $\ge 80\%$ @ FPR $\le 1\%$ trên tập kiểm định đa ứng dụng (WordPress, Spring, Node/Express).</td>
+</tr>
+<tr>
+  <td><strong><code>autoencoder</code> &amp; <code>dae</code> (Denoising Autoencoder)</strong></td>
+  <td>Mạng học không giám sát chỉ fit trên mẫu Benign:<br>• <code>autoencoder</code>: $d_{\text{in}} \to 32 \to d_{\text{in}}$.<br>• <code>dae</code>: $d_{\text{in}} \to 256 \to 64 \to 256 \to d_{\text{in}}$ với LayerNorm + GELU; lúc train cộng nhiễu Gaussian $\sigma = 0,08$ vào input rồi bắt mạng khôi phục lại mẫu sạch ban đầu.</td>
+  <td><strong>Hiện tại:</strong> <code>9.652</code> tham số (AE 148) và <strong>294.717 tham số</strong> (DAE 207).<br><strong>Mục tiêu:</strong> Đóng vai trò bộ lọc bất thường bổ trợ (anomaly triage) cho các cuộc tấn công có hành vi lệch chuẩn chưa từng có nhãn.</td>
+</tr>
+<tr>
+  <td><strong><code>residual</code> &amp; <code>gated_residual</code> (Mạng Học Phần Dư &amp; Cổng Sigmoid)</strong></td>
+  <td>Thêm đường nối tắt (Skip Connection) để giữ nguyên biểu diễn tầng trước và chỉ học phần hiệu chỉnh:<br>• <code>residual</code>: $h_2 = \operatorname{ReLU}(h_1 W_r + b_r + h_1)$.<br>• <code>gated_residual</code>: Dùng 3 khối ở chiều ẩn 256, mỗi khối nhân phần hiệu chỉnh với cổng $\sigma(u W_{\text{gate}} + b_{\text{gate}}) \in (0,1)^{256}$ trước khi cộng vào đường tắt.</td>
+  <td><strong>Hiện tại:</strong> <code>14.216</code> / <code>17.992</code> tham số (<code>residual</code>) và <code>445.448</code> / <strong>450.056 tham số</strong> (<code>gated_residual</code> 207 cột).<br><strong>Mục tiêu:</strong> Ứng viên hạng trung (mid-scale challenger) nếu môi trường triển khai giới hạn RAM/CPU chặt hơn mức 10M tham số.</td>
+</tr>
+<tr>
+  <td><strong><code>residual_glu</code> — Pre-LayerNorm Residual SwiGLU (Mô hình Chủ lực Nhánh A ~10M tham số)</strong></td>
+  <td>Kiến trúc dung lượng lớn chủ lực của dự án trên <strong>207 đặc trưng nhân quả <code>ai-features-5</code></strong>:<br>• Chiếu $207 \to 1024$ (+ LayerNorm + GELU).<br>• Đi qua <strong>3 khối Pre-LN SwiGLU Residual</strong> ($d_{\text{model}}=1024, d_{\text{ffn}}=1536$): trong mỗi khối, nhánh giá trị $(nW_{\text{val}}+b_{\text{val}})$ nhân từng phần tử với nhánh cổng $\operatorname{SiLU}(nW_{\text{gate}}+b_{\text{gate}})$, qua Dropout $0,1$, chiếu ngược về 1024 chiều qua $W_{\text{down}}$ và cộng vào đường tắt với hệ số $0,5$.<br>• Qua LayerNorm cuối và chiếu ra 8 lớp.</td>
+  <td><strong>Hiện tại:</strong> Đúng <strong>9.675.784 tham số</strong> (~10M target). Đã huấn luyện trên <code>prepared-v5</code> (41.585 unique views, loss <code>0,20418 → 0,12902</code>), đạt ONNX parity tuyệt đối, ngưỡng $\tau = 0,539678$, bắt 99,78% train attack và 0/27 benign FP.<br><strong>Mục tiêu:</strong> Huấn luyện toàn diện trên tập <strong>$\ge 2.000.000$ request</strong> để đạt Recall $\ge 80\%$, Precision $\ge 80\%$ tại FPR $\le 1\%$ trên Holdout độc lập.</td>
+</tr>
+<tr>
+  <td><strong><code>tree_gbdt</code> — HistGradientBoosting (Baseline Cây Quyết Định Tăng Cường)</strong></td>
+  <td>Thuật toán tập hợp nhiều cây quyết định nông nối tiếp nhau (Gradient Boosted Decision Trees theo biểu đồ tần suất), vốn là đối thủ truyền thống rất mạnh trên dữ liệu bảng.</td>
+  <td><strong>Hiện tại:</strong> Đã tích hợp trong <code>tabular.py</code> làm chuẩn đối chiếu bắt buộc.<br><strong>Mục tiêu:</strong> Mọi mô hình mạng nơ-ron muốn được chọn làm Champion phải chứng minh hiệu quả tương đương hoặc vượt trội hơn <code>tree_gbdt</code> ở cùng ngân sách FPR $\le 1\%$.</td>
+</tr>
+</tbody></table></div>
+<nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#ai-nen-tang">← Chương 02</a><span>Chương 03 / 10</span><a href="#ai-dac-trung">Chương 04 →</a></nav></section>
+
+<section id="ai-dac-trung" data-part="part-ai">
+<h2>04. Nhóm 3 (AI): Kỹ thuật Đặc trưng (207 &amp; 588 cột), Tính Nhân quả &amp; Khử Va chạm</h2>
+<p class="chapter-purpose">Giải thích các thuật ngữ đặc thù về trích xuất đặc trưng bảo mật, cửa sổ thời gian nhân quả và quản trị chất lượng dữ liệu trong <code>spec.py</code>, <code>pipeline.py</code>, <code>rich_content_v2.py</code> và <code>curation.py</code>.</p>
+<div class="table-wrap"><table>
+<caption>Từ điển Nhóm 3: Đặc trưng, Tính Nhân quả (Causality) &amp; Quản trị Dữ liệu</caption>
+<thead><tr>
+  <th scope="col">Thuật ngữ</th>
+  <th scope="col">Giải thích chi tiết &amp; Lý do thiết kế</th>
+  <th scope="col">Mức hiện tại &amp; Mục tiêu dự kiến sẽ đạt</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong><code>ai-features-5</code> &amp; <code>safe_query_numeric_v2</code> (Bộ 207 đặc trưng nhân quả)</strong></td>
+  <td>Hợp đồng đặc trưng thế hệ thứ 5 cho luồng 3 nguồn, gồm <strong>207 cột <code>float32</code></strong> chia làm 6 nhóm: 69 cột cấu trúc URI/query an toàn, 39 cột Method/Role/User-Agent, 2 cột kích thước request, 9 cột phản hồi HTTP, 10 cột luồng mạng Suricata và 78 cột hành vi cửa sổ 10/60/300s.</td>
+  <td><strong>Hiện tại:</strong> Đã khóa cứng thứ tự 207 cột và giảm va chạm trên tập <code>prepared-v5</code> xuống còn 22 dòng trùng trên 41.607 dòng (41.585 unique views).<br><strong>Mục tiêu:</strong> Chuyển đổi (port) bộ trích xuất 207 cột sang Rust live worker khớp 100% với Python.</td>
+</tr>
+<tr>
+  <td><strong><code>bounded-request-v1</code> &amp; <code>rich_content_v2</code> (Bộ 588 đặc trưng nội dung Request)</strong></td>
+  <td>Hợp đồng đặc trưng cho Nhánh B (chỉ cần HTTP request): ghép <strong>76 cột số học giới hạn</strong> với <strong>512 cột băm ký tự n-gram (3–5 char n-grams)</strong> trên khuôn mẫu ẩn danh hóa (chữ thường $\to$ <code>a</code>, chữ hoa $\to$ <code>A</code>, số $\to$ <code>9</code>, giữ nguyên dấu câu cú pháp SQL/XSS/Command/JSON) và chuẩn hóa $\ell_2 = 1$.</td>
+  <td><strong>Hiện tại:</strong> Giảm <strong>64%</strong> xung đột nhãn trên kho WAF v2 và giúp bắt gọn SQLi trong thân JSON trên Juice Shop.<br><strong>Mục tiêu:</strong> Mở rộng kiểm thử trên lưu lượng đa ngôn ngữ (Unicode/UTF-8) ở quy mô lớn.</td>
+</tr>
+<tr>
+  <td><strong>Causal Sliding Windows 10s / 60s / 300s &amp; Behavioral Dynamics (Cửa sổ trượt nhân quả &amp; Gia tốc hành vi)</strong></td>
+  <td>Tính thống kê theo từng IP và từng User trong 3 khoảng thời gian quá khứ $[t-W, t]$ ($W \in \{10, 60, 300\}$ giây): số request, tốc độ, tỷ lệ 4xx/5xx, chuỗi lỗi đăng nhập liên tiếp, tỷ lệ URI duy nhất, cùng các chỉ số <strong>động học gia tốc</strong> (<code>ip_rate_10_to_60_ratio</code>, <code>ip_error_acceleration</code>, <code>ip_burst_300s</code>).</td>
+  <td><strong>Hiện tại:</strong> Chạy hoàn toàn nhân quả (không nhìn sự kiện ở $t' &gt; t$) với bộ nhớ giới hạn LRU.<br><strong>Mục tiêu:</strong> Giữ bộ nhớ trạng thái trực tuyến ổn định dưới trần RAM quy định khi lưu lượng đạt hàng nghìn req/s.</td>
+</tr>
+<tr>
+  <td><strong>Causal Flow Availability (<code>available_at = max(EVE_ts, flow.end + 65s)</code>)</strong></td>
+  <td>Bản ghi tổng kết luồng TCP (<code>event_type: "flow"</code>) của Suricata chỉ xuất hiện sau khi kết nối đóng hoặc hết thời gian chờ. Để tránh lỗi lấy tổng gói tin tương lai chấm điểm cho request quá khứ, một bản ghi flow chỉ được phép nối vào request nếu $\max(t_{\text{EVE}}, \text{flow.end} + 65\text{s}) \le t_{\text{request}}$ và nằm trong vòng 300s.</td>
+  <td><strong>Hiện tại:</strong> Khoảng <strong>84,2%</strong> request trong lab có flow quá khứ hợp lệ; 15,8% còn lại bật cờ <code>flow_*_missing = 1</code> đúng chuẩn.<br><strong>Mục tiêu:</strong> Duy trì 0% rò rỉ thời gian (0 temporal leakage) trong mọi bản dựng dataset.</td>
+</tr>
+<tr>
+  <td><strong>Group Temporal Split &amp; Embargo 300s (Chia tập theo nhóm thời gian &amp; Khoảng đệm)</strong></td>
+  <td>Chia dữ liệu theo trục thời gian (60% Train / 20% Val / 20% Test) sao cho không có bất kỳ chiến dịch, IP, User hay Session nào xuất hiện ở hai tập khác nhau, đồng thời cắt bỏ khoảng đệm <strong>300 giây (Embargo)</strong> ở ranh giới giữa các tập.</td>
+  <td><strong>Hiện tại:</strong> Kiểm tra tự động bằng readiness gate: 0% giao nhau định danh giữa Train/Val/Test.<br><strong>Mục tiêu:</strong> Áp dụng bắt buộc trên toàn bộ $\ge 120$ chiến dịch của cổng 2 triệu request.</td>
+</tr>
+<tr>
+  <td><strong>Unique Float32 Feature View &amp; Collision Quarantine (Góc nhìn độc nhất &amp; Cách ly va chạm)</strong></td>
+  <td>Nhiều dòng log có thể sinh ra cùng một mảng byte <code>float32</code> giống hệt nhau (1 <strong>Unique Float32 View</strong>). Hệ thống gộp các bản sao cùng nhãn lại kèm <code>sample_weight</code>, và <strong>cách ly (quarantine)</strong> hoàn toàn các view có nhãn mâu thuẫn (vừa benign vừa attack) khỏi tập huấn luyện có giám sát.</td>
+  <td><strong>Hiện tại:</strong> Đã loại bỏ hoàn toàn hiện tượng học vẹt mẫu lặp và xung đột nhãn trong cả Nhánh A và Nhánh B.<br><strong>Mục tiêu:</strong> Giữ tỷ lệ xung đột nhãn sau trích xuất dưới ngưỡng cho phép trên mọi nguồn dữ liệu mới.</td>
+</tr>
+<tr>
+  <td><strong>Application-State Oracle (Nhà máy Ground Truth OWASP Juice Shop)</strong></td>
+  <td>Thay vì chỉ tin vào tên kịch bản gửi đi, <strong>Oracle</strong> kiểm tra trực tiếp trạng thái bên trong ứng dụng mục tiêu (ví dụ: nhận được JWT token của Admin hoặc cờ thử thách trong DB chuyển sang đã giải) để xác nhận đòn tấn công thực sự thành công.</td>
+  <td><strong>Hiện tại:</strong> Đã xác minh tự động trên container OWASP Juice Shop (4 đòn tấn công + 28 luồng hợp lệ).<br><strong>Mục tiêu:</strong> Mở rộng danh mục kịch bản có Oracle xác minh cho cả 7 họ tấn công.</td>
+</tr>
+</tbody></table></div>
+<nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#ai-kien-truc">← Chương 03</a><span>Chương 04 / 10</span><a href="#ai-danh-gia">Chương 05 →</a></nav></section>
+
+<section id="ai-danh-gia" data-part="part-ai">
+<h2>05. Nhóm 4 (AI): Chỉ số Đánh giá, Hiệu chuẩn Ngưỡng, Hợp đồng Số học &amp; Suy luận</h2>
+<p class="chapter-purpose">Giải thích toàn bộ các chỉ số đo lường chất lượng AI, sự khác biệt giữa Row-weighted và View-weighted, phương pháp hiệu chuẩn 1-ULP và hợp đồng xuất ONNX.</p>
+<div class="table-wrap"><table>
+<caption>Từ điển Nhóm 4: Đánh giá Chất lượng, Hiệu chuẩn Ngưỡng &amp; Triển khai Suy luận</caption>
+<thead><tr>
+  <th scope="col">Thuật ngữ / Chỉ số</th>
+  <th scope="col">Công thức &amp; Ý nghĩa thực tiễn trong An ninh mạng</th>
+  <th scope="col">Mức hiện tại &amp; Mục tiêu dự kiến sẽ đạt</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>TP, FP, TN, FN (4 ô Ma trận nhầm lẫn — Confusion Matrix)</strong></td>
+  <td>• <strong>TP (True Positive):</strong> Tấn công thật, AI báo đúng là tấn công.<br>• <strong>FP (False Positive):</strong> Người dùng hợp lệ, AI báo nhầm là tấn công (nguy hiểm vì gây phiền nhiễu hoặc chặn nhầm).<br>• <strong>TN (True Negative):</strong> Người dùng hợp lệ, AI cho qua đúng.<br>• <strong>FN (False Negative):</strong> Tấn công thật nhưng AI bỏ lọt.</td>
+  <td><strong>Hiện tại:</strong> Mọi báo cáo đánh giá đều xuất đầy đủ cả 4 con số TP, FP, TN, FN ở ngưỡng đã khóa.<br><strong>Mục tiêu:</strong> Tối đa hóa TP trong khi giữ FP gần bằng 0 trên lưu lượng sạch.</td>
+</tr>
+<tr>
+  <td><strong>Precision, Recall (TPR), FPR &amp; F1-Score</strong></td>
+  <td>• $\text{Precision} = \frac{\text{TP}}{\text{TP}+\text{FP}}$: Độ chuẩn xác của cảnh báo.<br>• $\text{Recall (TPR)} = \frac{\text{TP}}{\text{TP}+\text{FN}}$: Tỷ lệ bắt được tấn công.<br>• $\text{FPR} = \frac{\text{FP}}{\text{FP}+\text{TN}}$: Tỷ lệ báo động giả trên lưu lượng sạch.<br>• $\text{F1} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$: Trung bình điều hòa giữa Precision và Recall.</td>
+  <td><strong>Hiện tại:</strong> <code>request-v2</code> đạt Precision 100%, Recall 75%, FPR 0% trên Juice Shop; <code>glu207</code> đạt 99,78% flag trên Train và 0% FP trên 27 benign đối chứng.<br><strong>Mục tiêu:</strong> <strong>Recall ≥ 80%</strong>, <strong>Precision ≥ 80%</strong> tại <strong>FPR ≤ 1,0%</strong> trên tập Holdout lớn ($\ge 2.000.000$ req corpus).</td>
+</tr>
+<tr>
+  <td><strong>Row-weighted vs. View-weighted Metrics (Đánh giá theo Dòng vs. theo Góc nhìn duy nhất)</strong></td>
+  <td>• <strong>Row-weighted:</strong> Mỗi dòng request tính 1 điểm (nếu 1 bot gửi 1.000 request giống hệt nhau, kết quả của vector đó được nhân 1.000 lần).<br>• <strong>View-weighted:</strong> Mỗi vector <code>float32</code> duy nhất chỉ được tính đúng 1 lần, giúp đo khả năng tổng quát hóa thực chất của model trên các mẫu đa dạng.</td>
+  <td><strong>Hiện tại:</strong> Công cụ <code>evaluate_curation.py</code> báo cáo song song cả hai hệ chỉ số.<br><strong>Mục tiêu:</strong> Yêu cầu đạt chuẩn mục tiêu trên <strong>cả View-weighted lẫn Row-weighted</strong> để không bị điểm ảo do lặp mẫu.</td>
+</tr>
+<tr>
+  <td><strong>Empirical-Max + 1 ULP Calibration &amp; Clopper-Pearson 95% CI</strong></td>
+  <td>• <strong>1 ULP (Unit in the Last Place):</strong> Đặt ngưỡng $\tau$ cao hơn điểm lớn nhất của tập Benign hiệu chuẩn đúng 1 bước nhảy số thực <code>float32</code> ($\text{np.nextafter}(s_{\max}, +\infty)$) để đạt 0 FP trên tập hiệu chuẩn.<br>• <strong>Clopper-Pearson CI:</strong> Khoảng tin cậy nhị thức chính xác 95% cho biết cận trên của FPR thực tế khi cỡ mẫu hữu hạn.</td>
+  <td><strong>Hiện tại:</strong> Ngưỡng <code>glu207</code> = <code>0.5396780371665955</code>; ngưỡng <code>request-v2</code> = <code>0.8826237916946411</code>.<br><strong>Mục tiêu:</strong> Hiệu chuẩn trên $\ge 5.000$ mẫu Benign độc lập để cận trên Clopper-Pearson 95% của FPR nằm dưới $0,1\% - 1,0\%$.</td>
+</tr>
+<tr>
+  <td><strong>FP64-Accumulated-to-FP32 Numeric Contract &amp; ONNX Parity</strong></td>
+  <td>Hợp đồng số học bắt buộc mọi phép nhân ma trận $xW + b$ phải ép kiểu lên <code>float64</code> khi cộng dồn rồi làm tròn ngay về <code>float32</code> ở cả NumPy lẫn đồ thị ONNX (<code>Cast(DOUBLE) → MatMul → Add → Cast(FLOAT)</code>). Nhờ đó kết quả giữa Python và ONNX Runtime khớp nhau từng phần triệu.</td>
+  <td><strong>Hiện tại:</strong> Đạt 100% ONNX Parity với <code>rtol = 1e-5</code>, <code>atol = 1e-6</code> trên toàn bộ các mô hình từ 5.032 đến 9.675.784 tham số.<br><strong>Mục tiêu:</strong> Duy trì hợp đồng này làm cổng bắt buộc cho mọi bản xuất model trong tương lai.</td>
+</tr>
+<tr>
+  <td><strong><code>idps-ai infer-mvp</code> (Offline Shadow CLI) &amp; Live AI Worker</strong></td>
+  <td>Công cụ dòng lệnh đóng băng ở Research MVP v1.0 nhận tệp sự kiện JSONL và chấm điểm bằng <code>request-v2</code>, <code>glu207</code> hoặc <code>both</code> ở chế độ <code>offline_shadow</code> (<code>combined_score = null</code>, <code>enforcement_actions = 0</code>).</td>
+  <td><strong>Hiện tại:</strong> CLI <code>infer-mvp</code> hoạt động đầy đủ, ghi file nguyên tử quyền <code>0600</code>.<br><strong>Mục tiêu:</strong> Tích hợp worker suy luận trực tuyến vào tiến trình Rust Security Web sau khi vượt cổng 2 triệu request.</td>
+</tr>
+</tbody></table></div>
+<nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#ai-dac-trung">← Chương 04</a><span>Chương 05 / 10</span><a href="#sys-web-auth">Sang Phần II: Hệ thống &amp; Rule →</a></nav></section>
+
+
+<section id="sys-web-auth" class="chapter" data-part="part-sys">
+  <div class="part-banner sys">
+    <h2>PHẦN II — THUẬT NGỮ HỆ THỐNG, MẠNG, RULE, BẢO MẬT &amp; HẠ TẦNG (SYSTEMS &amp; NETWORK)</h2>
+    <p>Phần II giải thích toàn bộ thuật ngữ ngoài AI trong dự án: từ Reverse Proxy Nginx, Spring Boot Auth/RBAC, Suricata NIDS &amp; giải phẫu Rule, đến Collector Durability, Ẩn danh hóa dữ liệu, Policy Engine, Privileged Helper <code>pbl4-firewall</code> và tường lửa nhân Linux <code>nftables</code>. Tất cả thẻ đều có giải thích bản chất, vị trí dùng thực tế trong repo và chuẩn thiết kế / SLA vận hành.</p>
+  </div>
+  <div class="chapter-head"><span class="chapter-num">Chương 06 · Phần II (Web &amp; Auth)</span><h2>Thuật ngữ Web, Reverse Proxy, Xác thực &amp; Phân quyền</h2></div>
+  <p class="lead">Nhóm thuật ngữ xuất hiện dọc đường đi của gói tin HTTP từ trình duyệt người dùng qua cổng biên Nginx (<code>:8088</code>) vào ứng dụng đích <code>web-app</code> (Spring Boot 3 / Java 21 tại <code>:18080</code>) và dịch vụ Rust <code>security-web</code> (<code>:8090</code>).</p>
+
+  <div class="term-grid">
+    <article class="term-card" data-part="part-sys" data-keywords="reverse proxy upstream nginx 8088 18080 pbl4-proxy.conf">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Edge &amp; Proxy</span>
+          <h3>Reverse Proxy &amp; Upstream (Cổng trung gian ngược &amp; Máy chủ đích)</h3>
+          <div class="term-en"><code>security-web/nginx/pbl4-proxy.conf</code></div>
+        </div>
+        <div class="term-tags"><span class="pill blue">:8088 → :18080</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>Reverse Proxy</em> là máy chủ đứng chắn trước ứng dụng web để nhận mọi kết nối từ Internet, lọc sơ bộ, gắn mã định danh rồi mới chuyển tiếp (proxy) vào máy chủ ứng dụng phía sau gọi là <em>Upstream</em>.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Nginx lắng nghe tại cổng <code>:8088</code>, kiểm tra 2 bảng <code>map</code> chặn scanner/probe, gắn <code>X-Request-Id</code> và chuyển tiếp vào upstream <code>web_app_backend</code> (<code>127.0.0.1:18080</code>).</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Giữ <code>proxy_http_version 1.1</code>, log JSON định dạng <code>pbl4_json</code> kèm thời gian phản hồi <code>$request_time</code> và <code>$upstream_response_time</code> để đối chiếu độ trễ.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="x-request-id request_id correlation join">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Tracing &amp; Correlation</span>
+          <h3><code>X-Request-Id</code> (Mã định danh tương quan từng Request)</h3>
+          <div class="term-en">Header nối dữ liệu xuyên Nginx → Spring Boot → Rust Collector → AI</div>
+        </div>
+        <div class="term-tags"><span class="pill teal">Khóa ghép #1</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Mã định danh duy nhất (UUID/hex 32 ký tự từ biến <code>$request_id</code> của Nginx) được gắn vào mỗi HTTP request ngay khi chạm cổng biên để theo dõi hành trình của request đó qua nhiều dịch vụ khác nhau.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Nginx truyền <code>proxy_set_header X-Request-Id $pbl4_request_id;</code> vào Spring Boot và trả lại cho client. Rust <code>ingest.rs</code> đọc trường này để hợp nhất bản ghi Nginx + Web App thành 1 <code>FusedRequestRecord</code>.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Mọi request đi qua cổng <code>:8088</code> đều có <code>request_id</code> hợp lệ (tỷ lệ khớp Nginx ↔ App đạt 100% đối với các request được chuyển tiếp tới upstream).</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="x-forwarded-for x-real-ip peer ip client ip trusted proxy cidr">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Identity &amp; Spoofing Guard</span>
+          <h3><code>X-Forwarded-For</code> / <code>X-Real-IP</code> vs. <code>Peer IP</code> &amp; Trusted Proxy CIDR</h3>
+          <div class="term-en">Phân biệt IP gói tin vật lý (Peer IP) và IP khai báo qua Header</div>
+        </div>
+        <div class="term-tags"><span class="pill rose">Chống giả mạo IP</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Khi đi qua proxy, IP kết nối TCP trực tiếp tới ứng dụng là IP của proxy (<em>Peer IP</em>), còn IP gốc của người dùng được lưu trong header <code>X-Forwarded-For</code> hoặc <code>X-Real-IP</code>. Tuy nhiên kẻ tấn công có thể tự bịa header <code>X-Forwarded-For: 1.2.3.4</code> nếu kết nối thẳng không qua proxy tin cậy.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b><code>SecurityRequestFilter.java</code> và <code>security-web</code> kiểm tra <code>Peer IP</code> có nằm trong dải <code>TRUSTED_PROXY_CIDRS</code> (mặc định <code>127.0.0.1/32, ::1/128</code>) hay không trước khi tin <code>X-Forwarded-For</code>.</div>
+        <div class="meta-box target"><b>Chuẩn an toàn bắt buộc</b>Chặn đứng 100% hành vi giả mạo header <code>X-Forwarded-For</code> để đổ tội (frame) IP của quản trị viên hoặc lách luật <code>auto-block</code>.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="spring security filter securityrequestfilter telemetry">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Application Sensor</span>
+          <h3>Spring Security &amp; <code>SecurityRequestFilter</code></h3>
+          <div class="term-en"><code>web-app/src/main/java/com/pbl4/webapp/security/SecurityRequestFilter.java</code></div>
+        </div>
+        <div class="term-tags"><span class="pill green">Application Telemetry</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Bộ lọc (Servlet Filter) chạy quanh mỗi HTTP request trong Spring Boot để đo thời gian xử lý, lấy thông tin người dùng đã đăng nhập, trạng thái HTTP trả về và xuất bản ghi sự kiện về cho <code>security-web</code>.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Sau khi Controller xử lý xong, filter thu thập <code>request_id</code>, <code>method</code>, <code>path</code>, <code>query</code>, <code>status_code</code>, <code>latency_ms</code>, <code>user_email</code>, <code>auth_outcome</code> và gửi sang <code>/api/v1/ingest/http-event</code>.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Không bao giờ đọc hoặc ghi log mật khẩu thô (plaintext password) hay chuỗi session token; gửi bất đồng bộ không làm nghẽn luồng trả lời người dùng.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="session cookie jsessionid jwt bearer token x-ingest-token">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Authentication</span>
+          <h3>Session Cookie (<code>JSESSIONID</code>) &amp; Ingest Token (<code>X-Ingest-Token</code>)</h3>
+          <div class="term-en">Cơ chế duy trì phiên đăng nhập người dùng và xác thực giữa các dịch vụ</div>
+        </div>
+        <div class="term-tags"><span class="pill purple">Auth &amp; Service-to-Service</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>Session Cookie</em> là thẻ bài trình duyệt tự gửi kèm mỗi request sau khi đăng nhập thành công; còn <em>API/Ingest Token</em> là khóa bí mật chia sẻ giữa các dịch vụ nội bộ để chống kẻ lạ bơm dữ liệu giả vào Collector.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b><code>web-app</code> dùng Session Cookie với cờ <code>HttpOnly</code>; còn các cổng nhận log của <code>security-web</code> yêu cầu header <code>X-Ingest-Token</code> khớp với biến môi trường <code>PBL4_INGEST_TOKEN</code>.</div>
+        <div class="meta-box target"><b>Chuẩn an toàn bắt buộc</b>Mọi giá trị <code>Cookie</code> và <code>Authorization</code> đều bị che (redact) hoặc băm HMAC-SHA256 trước khi chạm đĩa cứng trong kho <code>data/</code>.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="rbac idor broken access control role admin staff customer">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Authorization</span>
+          <h3>RBAC (Role-Based Access Control) vs. IDOR (Insecure Direct Object Reference)</h3>
+          <div class="term-en">Phân quyền theo vai trò vs. Lỗ hổng truy cập trực tiếp đối tượng trái phép</div>
+        </div>
+        <div class="term-tags"><span class="pill orange">OWASP A01:2021</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>RBAC</em> kiểm tra xem vai trò của người dùng (<code>ADMIN</code>, <code>STAFF</code>, <code>CUSTOMER</code>) có được phép vào một tính năng (ví dụ <code>/admin/**</code>) hay không. <em>IDOR</em> xảy ra khi người dùng đã đăng nhập hợp lệ nhưng sửa ID trên URL (ví dụ <code>/orders/105</code> → <code>/orders/106</code>) để xem đơn hàng của người khác.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b><code>web-app</code> kiểm soát RBAC bằng Spring Security và kiểm tra chủ sở hữu đơn hàng trong Service. Phía IDS theo dõi chuỗi mã lỗi <code>401/403/404</code> lặp lại trên các đường dẫn nhạy cảm để phát hiện dò quét IDOR/RBAC.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Trả về <code>403 Forbidden</code> (hoặc <code>404</code> che giấu sự tồn tại) và ghi nhận <code>auth_outcome = FORBIDDEN</code> vào sự kiện gửi sang IDS.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="csrf cross-site request forgery same-origin">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Web Security</span>
+          <h3>CSRF (Cross-Site Request Forgery — Giả mạo yêu cầu liên trang)</h3>
+          <div class="term-en">Lợi dụng phiên đăng nhập có sẵn của nạn nhân từ một trang web độc hại khác</div>
+        </div>
+        <div class="term-tags"><span class="pill blue">Bảo vệ phiên</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Kẻ tấn công lừa trình duyệt của người dùng (đang đăng nhập sẵn ở trang A) gửi một request thay đổi dữ liệu (POST/DELETE) từ trang B sang trang A; vì trình duyệt tự đính kèm cookie nên trang A tưởng nhầm là người dùng tự bấm.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Kiểm soát bằng CSRF token trên các biểu mẫu trạng thái và thiết lập chính sách cookie <code>SameSite=Lax</code> trong cấu hình phiên của ứng dụng.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Các endpoint API nội bộ dùng header riêng (<code>X-Ingest-Token</code> / <code>X-Admin-Token</code>) không tự động đính kèm bởi trình duyệt, loại bỏ bề mặt CSRF.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="bcrypt argon2 password hashing salt">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Cryptography</span>
+          <h3>BCrypt / Argon2 Password Hashing (Băm mật khẩu có muối chậm)</h3>
+          <div class="term-en">Lưu trữ mật khẩu người dùng an toàn trong PostgreSQL</div>
+        </div>
+        <div class="term-tags"><span class="pill green">Chống dò bảng băm</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Khác với SHA-256 (chạy cực nhanh để kiểm tra toàn vẹn dữ liệu), các hàm băm mật khẩu như <em>BCrypt</em> hoặc <em>Argon2</em> cố tình tiêu tốn nhiều chu kỳ CPU/RAM và kèm muối ngẫu nhiên (<em>salt</em>) để kẻ tấn công không thể thử hàng tỷ mật khẩu/giây khi lộ bảng dữ liệu.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b><code>web-app</code> sử dụng <code>BCryptPasswordEncoder</code> của Spring Security cho bảng người dùng trong PostgreSQL (khởi tạo qua Flyway migration <code>V1__init.sql</code>).</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Mật khẩu chỉ tồn tại dưới dạng chuỗi băm <code>$2a$10$...</code> trong DB; thời gian kiểm tra ~50–100ms/lần đăng nhập cũng tạo ra chữ ký độ trễ đặc trưng khi bị brute-force.</div>
+      </div>
+    </article>
+  </div>
+  <nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#ai-danh-gia">← Chương 05</a><span>Chương 06 / 10</span><a href="#sys-network-rule">Chương 07: Mạng, Suricata &amp; Rule →</a></nav>
+</section>
+
+<section id="sys-network-rule" class="chapter" data-part="part-sys">
+  <div class="chapter-head"><span class="chapter-num">Chương 07 · Phần II (Mạng, Suricata &amp; Rule)</span><h2>Thuật ngữ Mạng, Suricata 8.0.3 NIDS &amp; Giải phẫu Rule</h2></div>
+  <p class="lead">Tất cả thuật ngữ cần biết khi đọc file luật <code>security-web/suricata/pbl4.rules</code> (9 SID <code>1000001</code>–<code>1000009</code>), cấu hình <code>suricata.yaml</code> và bộ dò Rust <code>security-web/src/detection.rs</code>.</p>
+
+  <div class="term-grid">
+    <article class="term-card" data-part="part-sys" data-keywords="ids ips nids hids intrusion detection prevention system">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Core Concepts</span>
+          <h3>IDS vs. IPS &amp; NIDS vs. HIDS (Phát hiện vs. Ngăn chặn; Mạng vs. Máy chủ)</h3>
+          <div class="term-en">Kiến trúc kết hợp đa điểm quan sát của AI-IDPS</div>
+        </div>
+        <div class="term-tags"><span class="pill blue">Hybrid Architecture</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>IDS</em> (Intrusion Detection System) chỉ quan sát và báo động ngoài luồng (out-of-band); <em>IPS</em> (Intrusion Prevention System) chủ động chặn gói tin hoặc khóa IP. <em>NIDS</em> nhìn gói tin trên dây mạng (như Suricata), còn <em>HIDS / App-IDS</em> nhìn log và trạng thái bên trong máy chủ/ứng dụng.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Hệ thống kết hợp cả hai: Suricata + Nginx + App Telemetry đóng vai trò cảm biến đa tầng (Detection), còn Policy Engine + <code>pbl4-firewall</code> + <code>nftables</code> đóng vai trò ngăn chặn chủ động (Prevention) khi bật <code>ENFORCE</code>.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Tách rời luồng phát hiện (không làm chậm request của khách) khỏi luồng khóa IP ở tầng nhân Linux (<code>nftables</code> chặn gói tin mới trong <code>O(1)</code>).</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="signature detection anomaly detection rule vs ai">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Detection Paradigm</span>
+          <h3>Signature-based Detection (Dựa trên chữ ký/Rule) vs. Anomaly/Statistical AI Detection</h3>
+          <div class="term-en">Sự bổ trợ giữa 3 lớp Rule tĩnh và mô hình học sâu <code>residual_glu</code> / Autoencoder</div>
+        </div>
+        <div class="term-tags"><span class="pill purple">Defense in Depth</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>Signature-based</em> tìm các mẫu chuỗi đã biết trước (ví dụ <code>UNION SELECT</code>, <code>sqlmap</code>) nên cực nhanh và giải thích được ngay vì sao bắt, nhưng dễ bị lách nếu kẻ tấn công biến đổi cú pháp mới. <em>AI Detection</em> học phân phối toán học trên 207/588 đặc trưng để bắt các biến thể né chữ ký và bất thường hành vi.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>3 lớp Rule (Nginx + Suricata + Rust) bắt ngay các mẫu tường minh với độ trễ &lt; 1ms; lớp AI (<code>idps-ai infer-mvp</code>) chấm điểm sâu trên vector đặc trưng đã hợp nhất.</div>
+        <div class="term-box">Rule cho độ tin cậy tuyệt đối để khóa IP tức thì (<code>SID 1000002</code>); AI đóng vai trò cố vấn phát hiện sớm và xếp hạng rủi ro cho SOC.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="suricata eve json alert http flow stats">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">NIDS Engine</span>
+          <h3>Suricata 8.0.3 &amp; EVE JSON (Extensible Event Format)</h3>
+          <div class="term-en"><code>security-web/suricata/suricata.yaml</code> → <code>eve.json</code></div>
+        </div>
+        <div class="term-tags"><span class="pill teal">Đầu ra chuẩn NIDS</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>Suricata</em> là bộ máy NIDS đa luồng hiệu năng cao; <em>EVE JSON</em> là định dạng đầu ra hợp nhất của Suricata, trong đó mỗi dòng JSON biểu diễn một sự kiện mạng (<code>event_type</code>: <code>alert</code>, <code>http</code>, <code>flow</code>, <code>stats</code>) dùng chung mã luồng <code>flow_id</code>.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Collector trong <code>security-web</code> đọc đuôi (tail) file <code>eve.json</code> theo con trỏ bền vững hoặc nhận qua API <code>/api/v1/ingest/suricata-eve</code> để gom cả cảnh báo (<code>alert</code>) lẫn siêu dữ liệu luồng (<code>flow</code>).</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Giữ nguyên <code>flow_id</code>, <code>src_ip</code>, <code>src_port</code>, <code>dest_ip</code>, <code>dest_port</code> và <code>signature_id (SID)</code> để ghép chính xác vào HTTP request tương ứng.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="tcp 3-way handshake syn ack syn burst stream reassembly">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Transport Layer (L4)</span>
+          <h3>TCP 3-Way Handshake, SYN Burst &amp; Stream Reassembly (Tái lắp ghép luồng TCP)</h3>
+          <div class="term-en">Nền tảng của SID <code>1000008</code> và khả năng chống chia nhỏ gói tin (TCP Segmentation)</div>
+        </div>
+        <div class="term-tags"><span class="pill orange">Layer 4 → Layer 7</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Mỗi kết nối TCP bắt đầu bằng bắt tay 3 bước (<code>SYN</code> → <code>SYN-ACK</code> → <code>ACK</code>). Khi kẻ tấn công quét cổng hoặc flood, chúng gửi hàng loạt gói <code>flags:S</code> liên tiếp (<em>SYN Burst</em>). Còn <em>Stream Reassembly</em> là việc Suricata ghép các mảnh gói tin TCP rời rạc thành luồng HTTP hoàn chỉnh trước khi chạy rule.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>SID <code>1000008</code> bắt <code>flags:S; threshold:type both, track by_src, count 20, seconds 10;</code>. Nhờ Stream Reassembly, kẻ tấn công cắt chữ <code>UNION</code> và <code>SELECT</code> thành 2 gói TCP vẫn bị Suricata ghép lại và bắt trọn.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Đặt <code>flow-timeouts.tcp.established = 65s</code> và <code>closed = 15s</code> trong <code>suricata.yaml</code> để xuất bản ghi <code>flow</code> kịp thời cho bộ ghép nhân quả.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="sticky buffers http.uri http.uri.raw http.user_agent http.stat_code">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Suricata Rule Syntax</span>
+          <h3>Sticky Buffers: <code>http.uri</code>, <code>http.uri.raw</code>, <code>http.user_agent</code>, <code>http.stat_code</code></h3>
+          <div class="term-en">Bộ đệm ngữ cảnh HTTP đã bóc tách sẵn trong Suricata 8.x</div>
+        </div>
+        <div class="term-tags"><span class="pill green">Chính xác &amp; Nhanh</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Thay vì quét mù toàn bộ gói tin thô (dễ báo động giả và tốn CPU), <em>Sticky Buffer</em> chỉ định cho Suricata chỉ áp dụng các điều kiện <code>content</code> / <code>pcre</code> phía sau lên đúng một vùng đã giải mã của giao thức HTTP.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Phân biệt cực quan trọng trong <code>pbl4.rules</code></b><code>http.uri</code> là đường dẫn đã được Suricata chuẩn hóa; còn <code>http.uri.raw</code> (dùng ở SID <code>1000003</code> Path Traversal) giữ nguyên chuỗi gốc trước khi chuẩn hóa để bắt kịp <code>../</code> và <code>%2e%2e</code> trước khi trình phân tích tự rút gọn đường dẫn.</div>
+        <div class="meta-box target"><b>Chuẩn viết Rule</b>Luôn neo (anchor) điều kiện tìm kiếm vào đúng sticky buffer (ví dụ <code>http.user_agent; content:"sqlmap"; nocase;</code> ở SID <code>1000001</code>).</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="transactional direction operator => -> suricata">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Suricata 8.x Advanced</span>
+          <h3>Toán tử chiều giao dịch <code>=&gt;</code> (Transactional Direction) vs. Chiều gói tin <code>-&gt;</code></h3>
+          <div class="term-en">Kỹ thuật ghép cả Request lẫn Response trong một Rule duy nhất (SID <code>1000009</code>)</div>
+        </div>
+        <div class="term-tags"><span class="pill purple">Suricata 8.0+</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Toán tử truyền thống <code>-&gt;</code> chỉ nhìn một chiều (Client gửi lên Server). Toán tử giao dịch <code>=&gt;</code> trong Suricata 8 cho phép một rule kiểm tra điều kiện trên cả <strong>Request gửi đi</strong> (ví dụ <code>http.method; content:"POST"; http.uri; content:"/login";</code>) lẫn <strong>Response trả về</strong> (ví dụ <code>http.stat_code; content:"401";</code>) của cùng một giao dịch HTTP.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>SID <code>1000009</code> (<code>PBL4 HTTP login brute-force 401 burst</code>) dùng <code>alert http any any =&gt; any $HTTP_PORTS</code> để chỉ đếm các lần <code>POST /login</code> thực sự thất bại (trả về <code>401</code>), không đếm nhầm người đăng nhập đúng (<code>200/302</code>).</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Giảm triệt để báo động giả khi nhiều người dùng hợp lệ đăng nhập thành công cùng lúc.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="pcre content nocase bsize regex suricata">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Pattern Matching</span>
+          <h3><code>content</code>, <code>nocase</code>, <code>bsize</code> &amp; <code>pcre</code> (Perl Compatible Regular Expressions)</h3>
+          <div class="term-en">Kết hợp so khớp chuỗi cố định siêu tốc (Aho-Corasick) và biểu thức chính quy</div>
+        </div>
+        <div class="term-tags"><span class="pill blue">Tối ưu hiệu năng NIDS</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <code>content</code> tìm chuỗi cố định bằng thuật toán đa mẫu tốc độ cao (prefilter); <code>nocase</code> bỏ qua hoa/thường; <code>bsize:5</code> ép độ dài bộ đệm phải đúng bằng 5 byte (ví dụ <code>/etc/</code>); còn <code>pcre</code> chạy biểu thức chính quy phức tạp khi cần kiểm tra cấu trúc linh hoạt.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>SID <code>1000002</code> dùng <code>pcre:"/(?:union\s+(?:all\s+)?select|or\s+1=1|information_schema|sleep\s*\()/i"</code>; SID <code>1000006</code> dùng <code>http.uri; content:"/etc/"; bsize:5;</code> để bắt probe chính xác gốc <code>/etc/</code>.</div>
+        <div class="meta-box target"><b>Chuẩn viết Rule</b>Ưu tiên <code>content</code> làm bộ lọc sơ cấp (fast_pattern) trước khi gọi <code>pcre</code> để tránh nghẽn CPU trên lưu lượng lớn.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="threshold track by_src count seconds type both">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Rate &amp; Burst Control</span>
+          <h3>Thresholding: <code>threshold: type both, track by_src, count N, seconds T</code></h3>
+          <div class="term-en">Bộ đếm ngưỡng theo IP nguồn trong cửa sổ thời gian trượt của Suricata</div>
+        </div>
+        <div class="term-tags"><span class="pill teal">Chống bão cảnh báo</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Tùy chọn <code>threshold</code> giúp một rule chỉ phát cảnh báo khi cùng một IP nguồn (<code>track by_src</code>) vi phạm đủ <code>count N</code> lần trong vòng <code>seconds T</code> giây, đồng thời với <code>type both</code> chỉ phát tối đa 1 cảnh báo đại diện trong suốt cửa sổ đó để không làm ngập (flood) bảng điều khiển SOC.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>SID <code>1000008</code> đặt <code>count 20, seconds 10</code> (SYN scan burst); SID <code>1000009</code> đặt <code>count 10, seconds 60</code> (Brute-force 10 lần sai mật khẩu / 60 giây).</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Đồng bộ ngưỡng <code>10 lần / 60 giây</code> giữa SID <code>1000009</code> (Suricata) và bộ đếm trạng thái <code>login_failures</code> trong Rust <code>ingest.rs</code>.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="sid rev classtype priority signature id">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Rule Metadata</span>
+          <h3><code>sid</code> (Signature ID), <code>rev</code> (Revision), <code>classtype</code> &amp; <code>priority</code></h3>
+          <div class="term-en">Định danh và phân loại mức độ nghiêm trọng của từng Rule</div>
+        </div>
+        <div class="term-tags"><span class="pill green">Dải SID nội bộ: 1000001–1000009</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <code>sid</code> là mã số định danh duy nhất của rule (dải <code>&ge; 1,000,000</code> dành riêng cho rule nội bộ tự viết); <code>rev</code> là số phiên bản của rule; <code>classtype</code> phân nhóm hành vi (<code>web-application-attack</code>, <code>attempted-recon</code>) và <code>priority</code> (1 = Nghiêm trọng nhất, 2 = Trung bình, 3 = Thấp).</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>9 rule của dự án được đánh số từ <code>sid:1000001</code> đến <code>sid:1000009</code>. Policy Engine dùng trực tiếp mã <code>sid</code> này trong danh sách <code>AUTO_BLOCK_SIDS</code> (mặc định <code>1000002</code>).</div>
+        <div class="meta-box target"><b>Chuẩn quản trị Rule</b>Mỗi khi sửa biểu thức rule phải tăng <code>rev</code> (ví dụ <code>rev:1;</code> → <code>rev:2;</code>) để truy vết lịch sử thay đổi trong log cảnh báo.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="double url decoding strip_sql_comments detection.rs evasion">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Anti-Evasion (Rust Detector)</span>
+          <h3>Double URL Decoding (<code>decode_twice</code>) &amp; SQL Comment Stripping (<code>strip_sql_comments</code>)</h3>
+          <div class="term-en"><code>security-web/src/detection.rs</code> — Chống kỹ thuật mã hóa kép và chèn chú thích SQL</div>
+        </div>
+        <div class="term-tags"><span class="pill rose">Bắt payload né chữ ký</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Kẻ tấn công thường mã hóa phần trăm 2 lần (ví dụ dấu <code>/</code> → <code>%2f</code> → <code>%252f</code>) hoặc chèn chú thích rỗng vào giữa từ khóa SQL (<code>UN/**/ION SEL/**/ECT</code>) để làm đứt chuỗi khớp của các bộ lọc ngây thơ.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Hàm <code>normalize_target()</code> trong <code>detection.rs</code> cắt chuỗi ở giới hạn an toàn <code>8192</code> ký tự, chạy <code>decode_twice()</code>, đưa về chữ thường và gọi <code>strip_sql_comments()</code> để biến <code>un/**/ion%2520sel/**/ect</code> về đúng <code>union select</code> trước khi so mẫu.</div>
+        <div class="meta-box target"><b>Chuẩn kiểm thử (Unit Tests)</b>Được kiểm chứng tự động bằng các test <code>detects_double_encoded_traversal</code> và <code>detects_comment_obfuscated_sqli</code> trong <code>detection.rs</code>.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="af_packet pcap tap span network namespace veth">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Packet Capture</span>
+          <h3><code>AF_PACKET</code>, PCAP, TAP/SPAN &amp; Isolated Network Namespace (<code>veth</code>)</h3>
+          <div class="term-en">Cơ chế bắt gói tin trực tiếp trên card mạng ảo/vật lý không làm gián đoạn đường truyền</div>
+        </div>
+        <div class="term-tags"><span class="pill blue">Zero-Inline-Latency</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <code>AF_PACKET</code> là giao diện nhân Linux cho phép Suricata đọc bản sao gói tin trực tiếp từ bộ đệm vòng (ring buffer) của card mạng; <em>PCAP</em> là định dạng file lưu gói tin; còn <em>Network Namespace / veth</em> tạo môi trường mạng cô lập để phát lại (replay) gói tin tấn công an toàn trong phòng lab.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Suricata bắt gói trên giao diện cấu hình trong <code>suricata.yaml</code> (hoặc đọc file PCAP trong chế độ kiểm thử <code>scripts/stage02_VERIFY.sh</code>) hoàn toàn tách biệt với luồng xử lý của Nginx.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Nếu tiến trình Suricata dừng hoặc quá tải, giao dịch mua hàng trên <code>web-app</code> vẫn hoạt động bình thường 100% (fail-open đối với cảm biến thụ động).</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="tls termination plaintext vantage https">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Deployment Topology</span>
+          <h3>TLS Termination &amp; Plaintext Vantage Point (Điểm quan sát sau giải mã TLS)</h3>
+          <div class="term-en">Tại sao Suricata cần đặt sau điểm giải mã HTTPS (hoặc nhận Mirror nội bộ)</div>
+        </div>
+        <div class="term-tags"><span class="pill orange">Lưu ý kiến trúc quan trọng</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Nếu gói tin đi trên đường truyền đang được mã hóa HTTPS (TLS), NIDS chỉ nhìn thấy địa chỉ IP/cổng và bắt tay TLS chứ không đọc được <code>http.uri</code> hay <code>http.user_agent</code>. Do đó, điểm chấm dứt TLS (<em>TLS Termination</em> — thường là AWS ALB hoặc Nginx biên) phải giải mã xong rồi mới chuyển luồng HTTP rõ (plaintext) qua nhánh nội bộ nơi Suricata quan sát.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Nginx cổng <code>:8088</code> chuyển tiếp HTTP nội bộ về <code>:18080</code>; đồng thời Nginx và <code>SecurityRequestFilter</code> luôn nhìn thấy toàn bộ nội dung sau giải mã TLS.</div>
+        <div class="meta-box target"><b>Chuẩn kiến trúc AWS</b>Đặt TLS Termination ở ALB/Nginx biên, còn Suricata lắng nghe trên giao diện nội bộ hoặc VPC Traffic Mirroring sau giải mã.</div>
+      </div>
+    </article>
+  </div>
+  <nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#sys-web-auth">← Chương 06</a><span>Chương 07 / 10</span><a href="#sys-data-privacy">Chương 08: Collector, Lưu trữ &amp; Bảo mật →</a></nav>
+</section>
+
+<section id="sys-data-privacy" class="chapter" data-part="part-sys">
+  <div class="chapter-head"><span class="chapter-num">Chương 08 · Phần II (Collector &amp; Lưu trữ)</span><h2>Thuật ngữ Collector, Lưu trữ Bền vững &amp; Ẩn danh hóa Dữ liệu</h2></div>
+  <p class="lead">Nhóm thuật ngữ thuộc tầng thu thập bền vững (Durability), ghép nối sự kiện và bảo vệ quyền riêng tư theo tài liệu <code>docs/02_DATA_STRATEGY_AND_FEATURE_ENGINEERING.md</code> và code Rust <code>security-web/src/</code>.</p>
+
+  <div class="term-grid">
+    <article class="term-card" data-part="part-sys" data-keywords="observation fused request alert canonical event schema">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Data Lifecycle</span>
+          <h3>Observation vs. Fused Request Record vs. Security Alert</h3>
+          <div class="term-en">3 cấp độ trưởng thành của một sự kiện trong <code>security-web</code></div>
+        </div>
+        <div class="term-tags"><span class="pill blue">Pipeline 3 bước</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> (1) <em>Observation</em> là mảnh sự kiện thô từ một nguồn đơn lẻ (1 dòng log Nginx, 1 sự kiện từ Spring Boot hoặc 1 dòng EVE từ Suricata); (2) <em>Fused Request Record</em> là bản ghi hoàn chỉnh sau khi ghép các Observation của cùng một request lại với nhau; (3) <em>Security Alert</em> là cảnh báo được sinh ra khi bản ghi đó vi phạm Rule hoặc vượt ngưỡng AI.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Định nghĩa tường minh trong <code>security-web/src/model.rs</code> và xử lý hợp nhất tại <code>security-web/src/ingest.rs</code>.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Mỗi <code>SecurityAlert</code> đều giữ danh sách nguồn chứng cứ (<code>sources: ["nginx", "web-app", "suricata"]</code>) và mã <code>request_id</code> để kiểm toán ngược.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="jsonl parquet apache arrow schema v1.0">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Storage Formats</span>
+          <h3>JSONL (JSON Lines) vs. Apache Parquet (Định dạng cột nén hiệu năng cao)</h3>
+          <div class="term-en">Tại sao hệ thống dùng song song JSONL cho luồng trực tuyến và Parquet cho AI</div>
+        </div>
+        <div class="term-tags"><span class="pill teal">Streaming + Analytics</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>JSONL</em> lưu mỗi bản ghi trên một dòng văn bản độc lập, cực kỳ thuận tiện để ghi nối đuôi (append-only) theo thời gian thực. Ngược lại, <em>Apache Parquet</em> lưu dữ liệu theo cột (columnar) có nén nhị phân và giữ chặt kiểu dữ liệu, giúp đọc hàng triệu dòng vào PyArrow/PyTorch nhanh gấp hàng chục lần CSV/JSON.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Log thô/trung gian ghi ra JSONL (<code>eve.json</code>, <code>access.jsonl</code>); bộ dữ liệu chuẩn hóa và mặt phẳng 207/588 đặc trưng lưu dưới dạng <code>.parquet</code> trong <code>data/processed/</code> và <code>data/features/</code>.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Đảm bảo tương thích tuyệt đối với <code>Canonical Event Schema v1.0</code> giữa tiến trình ghi Rust và tiến trình đọc Python.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="log cursor byte offset inode file generation logrotate">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Collector Durability</span>
+          <h3>Log Cursor: <code>byte_offset</code>, <code>inode</code> &amp; <code>file_generation</code> (Con trỏ đọc log bền vững)</h3>
+          <div class="term-en">Cơ chế đọc tiếp chính xác vị trí file log sau khi khởi động lại hoặc xoay vòng log (Log Rotation)</div>
+        </div>
+        <div class="term-tags"><span class="pill green">Zero Data Loss</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Khi đọc đuổi (tail) một file log đang ghi liên tục, Collector không đọc lại từ đầu mà lưu vị trí byte đã đọc xong (<code>byte_offset</code>) kèm mã định danh file trên đĩa (<code>inode</code>). Nếu công cụ <code>logrotate</code> cắt file cũ sang file mới, <code>inode</code> thay đổi hoặc kích thước file nhỏ hơn <code>byte_offset</code>, Collector sẽ nhận biết ngay để chuyển sang đầu file thế hệ mới (<code>file_generation</code>).</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Quản lý bền vững trên đĩa bởi Collector trong <code>security-web</code>, giúp khi khởi động lại container không bị mất sự kiện và không đọc trùng toàn bộ file cũ.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Chịu lỗi (crash-safe) khi tiến trình bị dừng đột ngột hoặc khi file <code>eve.json</code> / <code>access.jsonl</code> bị cắt xoay vòng.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="idempotency receipt event key deduplication">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Exactly-Once Processing</span>
+          <h3>Idempotency Receipt &amp; Event Key (Biên nhận chống xử lý trùng lặp)</h3>
+          <div class="term-en">Đảm bảo gửi lại cùng một sự kiện nhiều lần vẫn chỉ tính là 1 lần</div>
+        </div>
+        <div class="term-tags"><span class="pill purple">Idempotent Ingest</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Trong hệ thống phân tán, mạng chập chờn có thể khiến client hoặc collector gửi lại (retry) cùng một sự kiện 2–3 lần. <em>Idempotency</em> (tính lũy đẳng) đảm bảo hệ thống kiểm tra khóa định danh duy nhất của sự kiện (<code>event_key</code>); nếu đã có biên nhận xử rồi thì bỏ qua, không nhân đôi cảnh báo hay cộng dồn nhầm bộ đếm brute-force.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Tầng lưu trữ và ingest của <code>security-web</code> kiểm tra <code>event_key</code> trước khi cập nhật cửa sổ trượt và phát cảnh báo.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Chống lệch số liệu thống kê (<code>OverviewMetrics</code>) và chống kích hoạt <code>auto-block</code> oan do retry mạng.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="hmac-sha256 domain-separated purpose keys pseudonymization">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Privacy &amp; Cryptography</span>
+          <h3>HMAC-SHA256 &amp; Domain-Separated Purpose Keys (Băm ẩn danh phân tách miền khóa)</h3>
+          <div class="term-en">Bảo vệ dữ liệu nhạy cảm (IP, Email, Session) mà vẫn giữ khả năng nhóm thống kê</div>
+        </div>
+        <div class="term-tags"><span class="pill rose">Privacy by Design</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Thay vì lưu thông tin nhạy cảm dạng rõ hoặc băm SHA-256 trần (dễ bị dò ngược đối với kho dữ liệu hữu hạn như không gian IPv4 ~4 tỷ địa chỉ), hệ thống dùng <em>HMAC-SHA256</em> với khóa bí mật riêng cho từng mục đích (<em>Domain Separation</em>: khóa băm IP khác khóa băm User/Session).</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Cho phép AI và bộ đếm cửa sổ trượt biết được "2 request này cùng đến từ một thực thể" mà không cần lưu giá trị bí mật gốc vào tập dữ liệu nghiên cứu.</div>
+        <div class="meta-box target"><b>Chuẩn an toàn bắt buộc</b>Khóa HMAC được nạp từ biến môi trường / tệp bí mật ngoài git, tuyệt đối không hardcode khóa thật trong mã nguồn.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="redaction masking redact_target allowlist projection">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Data Sanitization</span>
+          <h3>Redaction / Masking (<code>redact_target</code>) &amp; Allowlist Projection</h3>
+          <div class="term-en"><code>security-web/src/detection.rs</code> — Che giấu mật khẩu/token trước khi lưu cảnh báo</div>
+        </div>
+        <div class="term-tags"><span class="pill orange">Chống lộ lọt trong Log</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Kẻ tấn công hoặc người dùng cấu hình sai có thể gửi mật khẩu/token ngay trên thanh địa chỉ (ví dụ <code>?password=Secret123&amp;token=abc</code>). Nếu IDS lưu nguyên xi URL đó vào bảng cảnh báo hoặc tập dữ liệu AI, chính bảng điều khiển bảo mật lại trở thành nơi làm lộ mật khẩu.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Hàm <code>redact_target()</code> trong <code>detection.rs</code> quét các tham số nhạy cảm (<code>password</code>, <code>passwd</code>, <code>pwd</code>, <code>token</code>, <code>access_token</code>, <code>refresh_token</code>, <code>secret</code>, <code>session</code>, <code>cookie</code>) và thay giá trị bằng <code>[REDACTED]</code>.</div>
+        <div class="meta-box target"><b>Chuẩn kiểm thử (Unit Tests)</b>Được khóa cứng bởi unit test <code>redacts_sensitive_query_values</code> trong <code>security-web/src/detection.rs</code>.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="redos regular expression denial of service max_inspected_target_len 8192">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Sensor Self-Protection</span>
+          <h3>ReDoS Protection &amp; Bounded Input (<code>MAX_INSPECTED_TARGET_LEN = 8192</code>)</h3>
+          <div class="term-en">Bảo vệ chính bộ dò IDS khỏi bị tấn công từ chối dịch vụ bằng chuỗi siêu dài</div>
+        </div>
+        <div class="term-tags"><span class="pill blue">Fail-Safe Bounds</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>ReDoS</em> (Regular Expression Denial of Service) là cuộc tấn công gửi một chuỗi đầu vào cực dài và có cấu trúc đặc biệt khiến bộ máy so khớp chuỗi/regex tiêu tốn 100% CPU (backtracking bùng nổ), làm tê liệt chính hệ thống bảo mật.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Trong <code>detection.rs</code>, hằng số <code>MAX_INSPECTED_TARGET_LEN = 8192</code> cắt (truncate) mọi chuỗi mục tiêu ở đúng 8KB trước khi giải mã kép và tìm kiếm mẫu; đồng thời Rust dùng các phép khớp chuỗi con tuyến tính thay vì regex có backtracking.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Thời gian chạy của <code>inspect_http_target()</code> luôn có cận trên cố định <code>O(N)</code> với <code>N &le; 8192</code> ký tự.</div>
+      </div>
+    </article>
+  </div>
+  <nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#sys-network-rule">← Chương 07</a><span>Chương 08 / 10</span><a href="#sys-policy-firewall">Chương 09: Policy Engine &amp; nftables →</a></nav>
+</section>
+
+<section id="sys-policy-firewall" class="chapter" data-part="part-sys">
+  <div class="chapter-head"><span class="chapter-num">Chương 09 · Phần II (Policy, Firewall &amp; Hạ tầng)</span><h2>Thuật ngữ Policy Engine, Privileged Helper &amp; Tường lửa <code>nftables</code></h2></div>
+  <p class="lead">Nhóm thuật ngữ thuộc cơ chế phản ứng tự động an toàn: làm thế nào để một cảnh báo mức cao biến thành lệnh khóa IP tức thì ở tầng nhân Linux mà không cần cấp quyền <code>root</code> cho ứng dụng web hay dịch vụ phân tích.</p>
+
+  <div class="term-grid">
+    <article class="term-card" data-part="part-sys" data-keywords="policy engine prevention mode off manual enforce">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Response Control</span>
+          <h3>Policy Engine &amp; 3 Chế độ Phản ứng: <code>OFF</code> / <code>MANUAL</code> / <code>ENFORCE</code></h3>
+          <div class="term-en">Công tắc điều khiển quyền ngăn chặn của hệ thống trên bảng điều khiển SOC (<code>:8090</code>)</div>
+        </div>
+        <div class="term-tags"><span class="pill green">Human-in-the-Loop Ready</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>Policy Engine</em> là bộ ra quyết định nằm trong <code>security-web</code>:
+        <br>• <code>OFF</code> (Chỉ giám sát): Phát cảnh báo và ghi log, không cho phép khóa IP.
+        <br>• <code>MANUAL</code> (Bán tự động — Mặc định an toàn): Cho phép quản trị viên bấm nút Block/Unblock thủ công trên giao diện hoặc qua API, nhưng không tự động khóa.
+        <br>• <code>ENFORCE</code> (Tự động chặn): Tự động phát lệnh khóa IP có thời hạn (TTL) ngay khi gặp cảnh báo thuộc danh sách tin cậy tuyệt đối.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Cấu hình qua biến <code>PBL4_PREVENTION_MODE</code> hoặc đổi trực tiếp tại endpoint <code>POST /api/v1/policy/mode</code> trên cổng <code>:8090</code>.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Có thể hạ cấp khẩn cấp từ <code>ENFORCE</code> về <code>MANUAL</code> hoặc <code>OFF</code> chỉ bằng 1 lệnh gọi API mà không cần khởi động lại hệ thống.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="auto_block_sids 1000002 freshness gate protected assets">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Safety Guards</span>
+          <h3><code>AUTO_BLOCK_SIDS</code>, Freshness Gate &amp; Protected Assets (3 Chốt chặn an toàn trước khi khóa IP)</h3>
+          <div class="term-en">Ngăn chặn tuyệt đối việc tự khóa nhầm quản trị viên, proxy nội bộ hoặc khóa theo log cũ</div>
+        </div>
+        <div class="term-tags"><span class="pill rose">3-Layer Block Guard</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Ngay cả khi bật <code>ENFORCE</code>, một cảnh báo muốn kích hoạt khóa IP tự động phải vượt qua đủ 3 chốt chặn:
+        <br>1. <code>AUTO_BLOCK_SIDS</code>: Mã SID phải nằm trong danh sách cho phép tự động chặn (mặc định chỉ gồm <code>1000002</code> — SQLi độ tin cậy cao).
+        <br>2. <em>Freshness Gate</em> (Cổng độ tươi): Sự kiện phải vừa mới xảy ra tức thì, không tự động khóa IP khi hệ thống đang đọc bù (replay) các dòng log cũ từ quá khứ.
+        <br>3. <em>Protected Assets</em> (Danh sách bất khả xâm phạm): Tuyệt đối không bao giờ khóa IP loopback (<code>127.0.0.1</code>, <code>::1</code>), cổng mặc định (gateway), máy chủ DNS hay IP của chính Reverse Proxy.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Kiểm tra nghiêm ngặt trong <code>security-web/src/ingest.rs</code> và <code>firewall.rs</code> trước khi tạo bản ghi <code>FirewallBlockRecord</code>.</div>
+        <div class="meta-box target"><b>Chuẩn an toàn bắt buộc</b>Tỷ lệ tự bắn vào chân (self-lockout / chặn nhầm hạ tầng nội bộ) phải bằng <code>0%</code> trong mọi kịch bản kiểm thử.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="privileged helper pbl4-firewall least privilege separation">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Privilege Separation</span>
+          <h3>Privileged Helper <code>pbl4-firewall</code> (Tách biệt đặc quyền tối thiểu — Least Privilege)</h3>
+          <div class="term-en"><code>security-web/src/bin/pbl4-firewall.rs</code></div>
+        </div>
+        <div class="term-tags"><span class="pill purple">Zero-Root Web Service</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> Thao tác sửa bảng tường lửa nhân Linux yêu cầu quyền quản trị mạng (<code>CAP_NET_ADMIN</code> / <code>root</code>). Nếu cấp thẳng quyền <code>root</code> cho dịch vụ web <code>security-web</code>, một lỗ hổng trên tầng web có thể dẫn đến mất quyền điều khiển toàn máy chủ. Vì vậy, dự án tách riêng một tệp thực thi nhỏ gọn tên là <code>pbl4-firewall</code> chỉ làm đúng một việc: kiểm tra khuôn dạng IP và thời gian sống (TTL &le; 300s) rồi gọi <code>nft</code>.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b><code>security-web</code> chạy dưới quyền người dùng thường, khi cần khóa IP chỉ gọi qua helper <code>pbl4-firewall</code> với tham số đã kiểm duyệt chặt chẽ (không nối chuỗi shell để tránh Command Injection).</div>
+        <div class="meta-box target"><b>Chuẩn an toàn bắt buộc</b>Giới hạn <code>MAX_BLOCK_TTL_SECONDS = 300</code> ngay trong mã nguồn <code>pbl4-firewall</code>: dù tiến trình gọi yêu cầu khóa 1 năm thì helper cũng chỉ cho phép tối đa 300 giây.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="nftables inet pbl4_filter blocked_ipv4 blocked_ipv6 input forward chain ttl">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Kernel Firewall</span>
+          <h3><code>nftables</code>, Bảng <code>inet pbl4_filter</code>, Tập <code>blocked_ipv4</code>/<code>blocked_ipv6</code> &amp; Chuỗi <code>INPUT</code> + <code>FORWARD</code></h3>
+          <div class="term-en">Cơ chế chặn gói tin tốc độ cao ngay tại nhân Linux với thời gian tự hết hạn (Set Timeout TTL)</div>
+        </div>
+        <div class="term-tags"><span class="pill teal">Kernel-Level Drop</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>nftables</em> là thế hệ tường lửa nhân Linux hiện đại (thay thế <code>iptables</code>). Thay vì thêm hàng nghìn dòng rule rời rạc làm chậm mạng, hệ thống tạo một bảng <code>inet pbl4_filter</code> chứa 2 tập hợp băm (hash set) là <code>blocked_ipv4</code> và <code>blocked_ipv6</code> có cờ <code>timeout</code>. Nhân Linux tự động hủy (<code>drop</code>) gói tin từ IP nằm trong tập hợp này và tự động xóa IP khỏi tập hợp khi đếm ngược hết <code>300s</code>.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Tại sao phải gắn vào cả <code>INPUT</code> lẫn <code>FORWARD</code>?</b>Gắn vào chuỗi <code>INPUT</code> để chặn các gói tin đi thẳng vào tiến trình trên host (như Nginx host), và gắn vào cả chuỗi <code>FORWARD</code> để chặn các gói tin đi xuyên qua cầu nối mạng (bridge/veth) vào các container Podman/Docker.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Thời gian tra cứu tập băm trong nhân là <code>O(1)</code>; hết hạn tự động ở tầng nhân ngay cả khi dịch vụ <code>security-web</code> bị tắt sau đó.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="cgroup v2 resource guard cpu memory limit">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Resource Isolation</span>
+          <h3>Cgroup v2 Resource Guard (Giới hạn tài nguyên CPU/RAM chống vắt kiệt máy chủ)</h3>
+          <div class="term-en">Bảo vệ ứng dụng chính <code>web-app</code> không bị ảnh hưởng khi Suricata hoặc AI chạy nặng</div>
+        </div>
+        <div class="term-tags"><span class="pill orange">QoS &amp; Stability</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong> <em>Control Groups v2 (cgroup v2)</em> là cơ chế của nhân Linux dùng để đóng khung lượng RAM tối đa (<code>memory.max</code>) và hạn ngạch CPU (<code>cpu.max</code>) mà một nhóm tiến trình được phép sử dụng.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Định cấu hình giới hạn tài nguyên cho từng dịch vụ để dù có bão lưu lượng khiến Suricata/Collector tăng tải, ứng dụng thương mại điện tử <code>web-app</code> và PostgreSQL vẫn luôn giữ được phần CPU/RAM riêng.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Không để xảy ra tình trạng OOM Killer của Linux giết nhầm cơ sở dữ liệu PostgreSQL hoặc <code>web-app</code>.</div>
+      </div>
+    </article>
+
+    <article class="term-card" data-part="part-sys" data-keywords="shadow mode canary rollback deployment">
+      <div class="term-head">
+        <div>
+          <span class="term-cat sys">Safe Rollout</span>
+          <h3>Shadow Mode (Chạy bóng), Canary Rollout &amp; Rollback (Quay lui tức thì)</h3>
+          <div class="term-en">Quy trình đưa Rule mới hoặc Model AI mới lên môi trường thật một cách an toàn</div>
+        </div>
+        <div class="term-tags"><span class="pill blue">MLOps &amp; SecOps</span></div>
+      </div>
+      <p><strong>Định nghĩa:</strong>
+        <br>• <em>Shadow Mode</em>: Cho mô hình AI hoặc rule mới chấm điểm âm thầm trên lưu lượng thật và ghi log để so sánh, nhưng chưa cho phép hiển thị cảnh báo chính thức hay khóa IP.
+        <br>• <em>Canary</em>: Bật thử nghiệm trên một nhánh nhỏ lưu lượng hoặc trong chế độ <code>MANUAL</code> để theo dõi tỷ lệ báo động giả (FPR).
+        <br>• <em>Rollback</em>: Quay lại ngay phiên bản rule/model đóng băng trước đó (ví dụ <code>RESEARCH_MVP_V1_0_FROZEN</code>) nếu phát hiện bất thường.</p>
+      <div class="term-meta">
+        <div class="meta-box current"><b>Triển khai trong dự án</b>Mọi mô hình xuất ra đều đi kèm gói manifest có mã băm SHA-256 và danh sách 6 điều kiện dừng (Stop Conditions) để vận hành ở chế độ tư vấn có kiểm soát.</div>
+        <div class="meta-box target"><b>Chuẩn vận hành &amp; SLA</b>Thời gian chuyển đổi hoặc quay lui chế độ phản ứng &lt; 1 giây thông qua Policy API.</div>
+      </div>
+    </article>
+  </div>
+  <nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#sys-data-privacy">← Chương 08</a><span>Chương 09 / 10</span><a href="#viet-tat-kiem-tra">Chương 10: Bảng viết tắt &amp; Tự kiểm tra →</a></nav>
+</section>
+
+<section id="viet-tat-kiem-tra" class="chapter">
+  <div class="chapter-head"><span class="chapter-num">Chương 10 · Tra cứu nhanh &amp; Tự lượng giá</span><h2>Bảng Tổng hợp Từ viết tắt (Acronym Cheat Sheet) &amp; Câu hỏi Tự kiểm tra</h2></div>
+  <p class="lead">Bảng tra cứu nhanh hơn 30 chữ viết tắt xuất hiện trong báo cáo khóa luận / đồ án và 8 câu hỏi tự kiểm tra giúp bạn nắm chắc cả Phần I (AI + Mục tiêu) lẫn Phần II (Hệ thống, Mạng &amp; Rule).</p>
+
+  <div class="table-wrap" role="region" aria-labelledby="cap-acronyms" tabindex="0">
+    <table>
+      <caption id="cap-acronyms">Bảng giải nghĩa nhanh các từ viết tắt trong dự án AI-IDPS</caption>
+      <thead>
+        <tr>
+          <th scope="col">Viết tắt</th>
+          <th scope="col">Tên tiếng Anh đầy đủ</th>
+          <th scope="col">Phân nhóm</th>
+          <th scope="col">Ý nghĩa ngắn gọn trong dự án</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>IDPS</strong></td><td>Intrusion Detection and Prevention System</td><td><span class="pill blue">Hệ thống</span></td><td>Hệ thống vừa phát hiện xâm nhập (Nginx + Suricata + Rust + AI) vừa ngăn chặn tự động (<code>nftables</code>).</td></tr>
+        <tr><td><strong>NIDS / HIDS</strong></td><td>Network / Host Intrusion Detection System</td><td><span class="pill blue">Hệ thống</span></td><td>Cảm biến mức gói tin mạng (Suricata) kết hợp cảm biến mức máy chủ/ứng dụng (Nginx + Spring Filter).</td></tr>
+        <tr><td><strong>MLP</strong></td><td>Multi-Layer Perceptron</td><td><span class="pill purple">AI / DL</span></td><td>Mạng nơ-ron truyền thẳng nhiều lớp dùng cho phân loại có giám sát trên dữ liệu bảng 207/588 chiều.</td></tr>
+        <tr><td><strong>ResNet / GLU / SwiGLU</strong></td><td>Residual Network / Gated Linear Unit / Swish-GLU</td><td><span class="pill purple">AI / DL</span></td><td>Kiến trúc kết nối tắt cộng cổng nhân phi tuyến giúp mô hình <code>residual_glu</code> mở rộng tới ~10M tham số.</td></tr>
+        <tr><td><strong>AE / DAE</strong></td><td>Autoencoder / Denoising Autoencoder</td><td><span class="pill purple">AI / DL</span></td><td>Mạng tự mã hóa chỉ học trên request sạch (benign), phát hiện tấn công lạ qua sai số tái tạo (MSE).</td></tr>
+        <tr><td><strong>BCE / MSE</strong></td><td>Binary Cross-Entropy / Mean Squared Error</td><td><span class="pill purple">AI / DL</span></td><td>Hai hàm mất mát chính: BCE cho bộ phân loại có giám sát và MSE cho mô hình tự mã hóa.</td></tr>
+        <tr><td><strong>PR-AUC / ROC-AUC</strong></td><td>Precision-Recall / Receiver Operating Characteristic AUC</td><td><span class="pill green">Đánh giá AI</span></td><td>Diện tích dưới đường cong đánh giá chất lượng phân hạng toàn cục (đạt <code>~0.9963</code> / <code>~0.9927</code>).</td></tr>
+        <tr><td><strong>FPR / TPR / FNR</strong></td><td>False Positive / True Positive / False Negative Rate</td><td><span class="pill green">Đánh giá AI</span></td><td>Tỷ lệ báo động giả (bắt nhầm khách), tỷ lệ bắt đúng tấn công (Recall) và tỷ lệ bỏ lọt tấn công.</td></tr>
+        <tr><td><strong>ECE / Brier</strong></td><td>Expected Calibration Error / Brier Score</td><td><span class="pill green">Đánh giá AI</span></td><td>Thước đo độ trung thực của xác suất dự đoán (ECE đã giảm về <code>~0.0029</code> sau Temperature Scaling).</td></tr>
+        <tr><td><strong>OOD</strong></td><td>Out-of-Distribution</td><td><span class="pill orange">Dữ liệu AI</span></td><td>Lưu lượng thực tế nằm ngoài phân phối dữ liệu huấn luyện (ví dụ payload mới trên Juice Shop Oracle).</td></tr>
+        <tr><td><strong>ONNX</strong></td><td>Open Neural Network Exchange</td><td><span class="pill teal">Triển khai AI</span></td><td>Định dạng biểu đồ tính toán chuẩn giúp chạy suy luận tốc độ cao không phụ thuộc vào mã nguồn PyTorch.</td></tr>
+        <tr><td><strong>SID / Rev</strong></td><td>Signature ID / Revision</td><td><span class="pill blue">Rule NIDS</span></td><td>Mã số định danh duy nhất của từng rule Suricata (<code>1000001</code>–<code>1000009</code>) và số phiên bản của rule.</td></tr>
+        <tr><td><strong>PCRE</strong></td><td>Perl Compatible Regular Expressions</td><td><span class="pill blue">Rule NIDS</span></td><td>Biểu thức chính quy dùng trong Suricata để bắt các biến thể cú pháp phức tạp của SQLi, XSS, Traversal.</td></tr>
+        <tr><td><strong>EVE JSON</strong></td><td>Extensible Event Format (JSON)</td><td><span class="pill blue">Rule NIDS</span></td><td>Định dạng dòng sự kiện JSON hợp nhất do Suricata xuất ra (<code>alert</code>, <code>http</code>, <code>flow</code>, <code>stats</code>).</td></tr>
+        <tr><td><strong>SQLi / XSS / RCE / LFI</strong></td><td>SQL Injection / Cross-Site Scripting / Remote Code Execution / Local File Inclusion</td><td><span class="pill rose">Tấn công Web</span></td><td>4 họ tấn công chèn mã và đọc tệp nguy hiểm nhất trên ứng dụng web được bắt bởi cả 3 lớp Rule và AI.</td></tr>
+        <tr><td><strong>RBAC / IDOR / CSRF</strong></td><td>Role-Based Access Control / Insecure Direct Object Reference / Cross-Site Request Forgery</td><td><span class="pill rose">Bảo mật Web</span></td><td>Phân quyền theo vai trò, lỗ hổng xem trộm đối tượng bằng cách đổi ID và giả mạo yêu cầu liên trang.</td></tr>
+        <tr><td><strong>HMAC</strong></td><td>Hash-based Message Authentication Code</td><td><span class="pill teal">Mật mã</span></td><td>Hàm băm có khóa bí mật (<code>HMAC-SHA256</code>) dùng để ẩn danh hóa IP/User/Session một cách nhất quán.</td></tr>
+        <tr><td><strong>TTL</strong></td><td>Time-To-Live</td><td><span class="pill teal">Tường lửa</span></td><td>Thời gian sống tự động hết hạn của một lệnh khóa IP trong tập <code>nftables</code> (khóa cứng &le; <code>300s</code>).</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Câu hỏi Tự kiểm tra (Bấm vào từng câu để đối chiếu đáp án chuẩn)</h3>
+
+  <details class="quiz">
+    <summary>Câu 1 (Phần I — AI): Tại sao dự án phải duy trì song song 2 mặt phẳng đặc trưng là <code>207 chiều (ai-features-5)</code> và <code>588 chiều (bounded-request-v1)</code>?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong> Vì hai mặt phẳng phục vụ hai mục đích bổ trợ nhau:</p>
+      <ul>
+        <li><strong>Mặt phẳng <code>207 chiều (ai-features-5)</code></strong> bao gồm cả đặc trưng phản hồi của ứng dụng (mã HTTP, độ trễ), ngữ cảnh xác thực, luồng mạng Suricata và thống kê cửa sổ trượt nhân quả (<code>1s/10s/60s</code>). Đây là mặt phẳng đầy đủ nhất dùng cho hệ thống chính tuyến và mô hình <strong>Research MVP v1.0 Frozen Baseline</strong>.</li>
+        <li><strong>Mặt phẳng <code>588 chiều (bounded-request-v1 + rich_content_v2)</code></strong> chỉ trích xuất từ <strong>nội dung HTTP request đến</strong> (không cần chờ server trả lời hay lịch sử phiên), cho phép huấn luyện trên hàng triệu mẫu từ các kho dữ liệu công khai (CSIC 2010, PKDD, Payloadbox, SecLists) và mở rộng dung lượng mô hình lên tới <strong>9.67 triệu tham số</strong> (<code>residual_glu</code>).</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 2 (Phần I — AI): Hiện tượng "Collision Quarantine" (Cách ly va chạm 413,596 dòng) là gì và tại sao nó là bước ngoặt giúp mô hình sạch hơn?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong> Khi hợp nhất nhiều nguồn dữ liệu công khai và sinh tổng hợp, có những request có nội dung chuẩn hóa y hệt nhau (cùng <code>canonical_request_hash</code>) nhưng một nguồn gán nhãn <code>0 (Benign)</code>, nguồn khác lại gán nhãn <code>1 (Attack)</code>. Nếu đưa cả hai vào tập train/test sẽ gây nhiễu gradient và làm méo chỉ số đánh giá. Dự án đã phát hiện và cách ly toàn bộ <strong>413,596 dòng</strong> va chạm này sang vùng <code>collision_quarantine</code>, chỉ giữ lại <strong>2,115,317 dòng hoàn toàn nhất quán nhãn</strong> để huấn luyện và đánh giá.</p>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 3 (Phần I — AI &amp; Mục tiêu): Mức đạt hiện tại trên tập Test chuẩn so với hiệu năng trên Juice Shop Oracle (OOD) khác nhau như thế nào và mục tiêu tiếp theo là gì?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong></p>
+      <ul>
+        <li><strong>Trên tập Test chuẩn (cùng phân phối):</strong> Hệ thống đã đạt và vượt mọi cổng định lượng của Research MVP v1.0: <code>PR-AUC = 0.9963</code>, <code>ROC-AUC = 0.9927</code>, <code>Attack F1 = 0.9776</code>, <code>Benign FPR = 1.78%</code>, <code>ECE = 0.0029</code>, và độ lệch xuất <code>ONNX = 0.0</code>.</li>
+        <li><strong>Trên Juice Shop Oracle (ngoài phân phối thực tế — OOD):</strong> Điểm số trung bình của tấn công (<code>0.788</code>) đã cao hơn lưu lượng sạch (<code>0.594</code>), nhưng điểm lành tính còn cao khiến <code>OOD Benign FPR</code> ở ngưỡng tĩnh vẫn cao. <strong>Mục tiêu dự kiến tiếp theo</strong> là kết hợp tinh chỉnh thích nghi miền (Domain-Adaptive Fine-Tuning) với hiệu chuẩn ngưỡng theo từng hồ sơ đường dẫn (Per-Route Threshold Calibration) để kéo <code>OOD Benign FPR &lt; 5%</code>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 4 (Phần I — AI): Tại sao khi tính các đặc trưng thống kê trong cửa sổ trượt <code>1s / 10s / 60s</code>, hệ thống bắt buộc phải tuân thủ "Causal Strictness" (chỉ nhìn quá khứ <code>t' &le; t</code>)?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong> Nếu khi tính đặc trưng cho request tại thời điểm <code>t</code> mà vô tình lấy trung bình/tổng của cả file log (bao gồm các sự kiện ở tương lai <code>t' &gt; t</code>), mô hình sẽ bị <strong>rò rỉ tương lai (Data Leakage / Look-ahead Bias)</strong>: điểm kiểm thử offline rất cao nhưng khi chạy thật (nơi tương lai chưa xảy ra) mô hình sẽ sụp đổ. Ngoài ra, hệ thống còn phải chia tập <code>Train / Val / Test</code> theo nhóm chiến dịch/phiên (Group-Disjoint Split) để không có hai request của cùng một đợt tấn công vừa nằm ở Train vừa nằm ở Test.</p>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 5 (Phần II — Rule Suricata): Sự khác biệt giữa <code>http.uri</code> và <code>http.uri.raw</code> trong <code>pbl4.rules</code> là gì, và tại sao SID <code>1000009</code> lại dùng toán tử <code>=&gt;</code> thay vì <code>-&gt;</code>?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong></p>
+      <ul>
+        <li><code>http.uri</code> là bộ đệm đường dẫn đã được Suricata chuẩn hóa (rút gọn các đoạn đường dẫn tương đối), trong khi <code>http.uri.raw</code> giữ nguyên chuỗi URI thô ban đầu — cực kỳ cần thiết cho <strong>SID <code>1000003</code> (Path Traversal)</strong> để bắt <code>../</code> và <code>%2e%2e</code> trước khi chúng bị rút gọn mất.</li>
+        <li>Toán tử <code>=&gt;</code> (Transactional Direction trong Suricata 8.x) cho phép <strong>SID <code>1000009</code></strong> kiểm tra đồng thời chiều Request (<code>POST /login</code>) và chiều Response trả về (<code>http.stat_code: 401</code>) trong cùng một giao dịch HTTP, nhờ đó chỉ đếm các lần đăng nhập thất bại thực sự.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 6 (Phần II — Rust Detector): Hàm <code>normalize_target()</code> và <code>redact_target()</code> trong <code>security-web/src/detection.rs</code> giải quyết hai nguy cơ gì?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong></p>
+      <ul>
+        <li><code>normalize_target()</code> cắt chuỗi ở giới hạn <code>8192</code> ký tự (chống ReDoS), giải mã phần trăm 2 lần (<code>decode_twice</code>) và xóa chú thích SQL (<code>strip_sql_comments</code>) để bắt các payload ẩn mình kiểu <code>%252e%252e%252f</code> hoặc <code>UN/**/ION SEL/**/ECT</code>.</li>
+        <li><code>redact_target()</code> tự động thay thế giá trị của các tham số nhạy cảm (<code>password</code>, <code>token</code>, <code>secret</code>, <code>cookie</code>, <code>session</code>) bằng <code>[REDACTED]</code> trước khi lưu vào cảnh báo để hệ thống bảo mật không vô tình làm lộ mật khẩu/token trong kho log.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 7 (Phần II — Ghép nối &amp; Collector): Khi một request bị Nginx chặn ngay ở cổng biên (<code>403 Forbidden</code>), làm sao hệ thống ghép nối được sự kiện đó khi nó chưa từng chạm tới ứng dụng Spring Boot?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong> Hệ thống sử dụng cơ chế <strong>hợp nhất 2 bậc (Two-Tier Correlation)</strong> trong <code>ingest.rs</code>: Bậc 1 ưu tiên ghép chính xác bằng khóa <code>request_id</code> (header <code>X-Request-Id</code> do Nginx sinh ra ngay từ đầu). Ngay cả khi Nginx trả về <code>403</code> sớm và không gọi vào Spring Boot, bản ghi log JSON của Nginx vẫn có đầy đủ <code>request_id</code>, <code>client_ip</code>, <code>uri</code>, <code>status=403</code>; đồng thời nếu có cảnh báo Suricata cùng thời điểm, Bậc 2 sẽ ghép nối theo tổ hợp <code>(client_ip, cổng/đường dẫn, cửa sổ thời gian nhân quả)</code> để tạo thành <code>FusedRequestRecord</code> hoàn chỉnh.</p>
+    </div>
+  </details>
+
+  <details class="quiz">
+    <summary>Câu 8 (Phần II — Policy &amp; Firewall): Tại sao <code>security-web</code> không trực tiếp chạy lệnh <code>nft</code> với quyền <code>root</code> mà phải gọi qua <code>pbl4-firewall</code>, và tại sao phải gắn rule vào cả chuỗi <code>INPUT</code> lẫn <code>FORWARD</code>?</summary>
+    <div class="quiz-body">
+      <p><strong>Đáp án:</strong></p>
+      <ul>
+        <li><strong>Về bảo mật đặc quyền (Least Privilege):</strong> Tách riêng <code>pbl4-firewall</code> giúp dịch vụ web chính (<code>security-web</code>) không cần chạy dưới quyền <code>root</code>. Bản thân <code>pbl4-firewall</code> kiểm tra chặt kiểu dữ liệu IP và ép thời gian khóa tối đa <code>TTL &le; 300s</code>.</li>
+        <li><strong>Về kiến trúc mạng Linux:</strong> Gắn tập chặn vào chuỗi <code>INPUT</code> để chặn gói tin đi vào tiến trình chạy trực tiếp trên host, và gắn vào cả chuỗi <code>FORWARD</code> để chặn gói tin đi qua cầu nối mạng ảo (bridge/veth) vào các container ứng dụng bên trong.</li>
+      </ul>
+    </div>
+  </details>
+
+  <nav class="chapter-nav" aria-label="Điều hướng chương"><a href="#sys-policy-firewall">← Chương 09</a><span>Chương 10 / 10 (Hoàn tất)</span><a href="#ban-do-muc-tieu">↑ Lên đầu tài liệu</a></nav>
+</section>
+
+<footer class="foot">
+  <div><strong>Bộ học liệu AI-IDPS — Tài liệu 03: Từ điển Thuật ngữ Toàn diện &amp; Lộ trình Mục tiêu</strong></div>
+  <div>Cập nhật theo trạng thái commit <code>09a12e4</code> (<code>AI-IDPS Research MVP v1.0 — Frozen Baseline</code> · 06/11/2026)</div>
+  <div class="links">
+    <a href="AI_IDPS_01_Nhap_mon_AI_va_mo_hinh.html">← Mở Tài liệu 01: Nhập môn AI &amp; Mô hình</a>
+    <a href="AI_IDPS_02_So_do_va_nguyen_ly_he_thong.html">← Mở Tài liệu 02: Sơ đồ, Luồng &amp; Giải phẫu Rule</a>
+    <a href="README.md">Mục lục Bộ học liệu (README)</a>
+  </div>
+</footer>
+</main>
+</div>
+
+<script>
+  function toggleAnswers(openState) {
+    document.querySelectorAll('details.quiz').forEach(function (el) {
+      el.open = openState;
+    });
+  }
+
+  (function () {
+    var searchInput = document.getElementById('term-search');
+    var countBadge = document.getElementById('search-count');
+    var filterButtons = document.querySelectorAll('[data-part-filter]');
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.term-card'));
+    var chapters = Array.prototype.slice.call(document.querySelectorAll('section.chapter[data-part]'));
+    var activeFilter = 'all';
+
+    function applyFilter() {
+      var q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      var visibleCount = 0;
+
+      cards.forEach(function (card) {
+        var part = card.getAttribute('data-part') || '';
+        var partMatch = (activeFilter === 'all') || (part === activeFilter);
+        var text = (card.textContent + ' ' + (card.getAttribute('data-keywords') || '')).toLowerCase();
+        var textMatch = !q || text.indexOf(q) !== -1;
+        var show = partMatch && textMatch;
+        card.hidden = !show;
+        if (show) visibleCount += 1;
+      });
+
+      chapters.forEach(function (sec) {
+        var secPart = sec.getAttribute('data-part') || '';
+        var partAllowed = (activeFilter === 'all') || (secPart === activeFilter);
+        var anyVisibleCard = sec.querySelectorAll('.term-card:not([hidden])').length > 0;
+        sec.hidden = !(partAllowed && (anyVisibleCard || !q));
+      });
+
+      if (countBadge) {
+        countBadge.textContent = 'Đang hiển thị: ' + visibleCount + ' / ' + cards.length + ' thuật ngữ';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applyFilter);
+    }
+
+    filterButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        filterButtons.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeFilter = btn.getAttribute('data-part-filter') || 'all';
+        applyFilter();
+      });
+    });
+
+    applyFilter();
+
+    var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+    var allChapters = Array.prototype.slice.call(document.querySelectorAll('main .chapter'));
+    var progressBar = document.getElementById('reading-progress');
+
+    function onScroll() {
+      var scrollTop = window.scrollY || document.documentElement.scrollTop;
+      var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      if (progressBar && docHeight > 0) {
+        var pct = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
+        progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      var currentId = '';
+      for (var i = 0; i < allChapters.length; i++) {
+        var sec = allChapters[i];
+        if (!sec.hidden && sec.getBoundingClientRect().top <= 160) {
+          currentId = '#' + sec.id;
+        }
+      }
+      tocLinks.forEach(function (link) {
+        if (link.getAttribute('href') === currentId) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    var detailsStateBeforePrint = [];
+    window.addEventListener('beforeprint', function () {
+      var allDetails = document.querySelectorAll('details.quiz');
+      detailsStateBeforePrint = Array.prototype.map.call(allDetails, function (d) { return d.open; });
+      allDetails.forEach(function (d) { d.open = true; });
+    });
+    window.addEventListener('afterprint', function () {
+      var allDetails = document.querySelectorAll('details.quiz');
+      allDetails.forEach(function (d, idx) {
+        if (typeof detailsStateBeforePrint[idx] === 'boolean') {
+          d.open = detailsStateBeforePrint[idx];
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
