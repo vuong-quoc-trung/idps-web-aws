@@ -1,6 +1,7 @@
 import { startAuditPolling } from "./auditPolling";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Icon } from "./Icon";
+import { EmptyState } from "./UiState";
 import {
   auditQuery,
   auditPageSize as pageSize,
@@ -186,9 +187,9 @@ export function ApplicationAudit({
             {sources.map((source) => {
               const watcher = collection.watchers[source];
               return (
-                <li key={source}>
-                  <strong>{sourceName(source)}</strong>:{" "}
-                  {watcher?.state ?? "chưa cấu hình"}
+                <li key={source} className={`source-${source}`}>
+                  <strong className="source-label">{sourceName(source)}</strong>
+                  : {watcher?.state ?? "chưa cấu hình"}
                   {watcher?.error_present && " · đang có lỗi đọc log"}
                   {watcher?.last_data_at && (
                     <span className="muted">
@@ -365,10 +366,10 @@ export function ApplicationAudit({
             : "Chưa tải được dữ liệu."}
       </div>
       {data && data.items.length === 0 && (
-        <p className="notice">
-          Không có sự kiện khớp bộ lọc. Hãy kiểm tra khoảng thời gian, nguồn và
-          trạng thái thu thập ở trên.
-        </p>
+        <EmptyState
+          title="Không có sự kiện khớp bộ lọc."
+          description="Hãy kiểm tra khoảng thời gian, nguồn và trạng thái thu thập ở trên."
+        />
       )}
       {data && data.items.length > 0 && (
         <div
