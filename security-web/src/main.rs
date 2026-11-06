@@ -7,6 +7,7 @@ mod firewall;
 mod ingest;
 mod metrics;
 mod network;
+mod nginx_detection;
 mod security_detection;
 use anyhow::{Context, Result, bail};
 use axum::{
@@ -459,6 +460,9 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>
         }
         rules.push(rule);
     }
+    rules.extend(nginx_detection::RULES.iter().map(|(code,name,threshold,seconds)| serde_json::json!({
+        "sid":null,"code":code,"source":"NGINX","name":name,"category":"Proxy Behavior","severity":2,"auto_block_eligible":false,"action_mode":"ALERT_ONLY","threshold":threshold,"window_seconds":seconds
+    })));
     rules.extend(application_detection::RULES.iter().map(|r| {
         serde_json::json!({
             "sid":null,"code":r.code,"source":"STUDENT_AUDIT","name":r.name,

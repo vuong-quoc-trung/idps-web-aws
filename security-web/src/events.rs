@@ -616,6 +616,15 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
         target.as_deref().unwrap_or_default(),
         event.user_agent.as_deref(),
     );
+    if source == "NGINX" && crate::nginx_detection::unexpected_method(event.http_method.as_deref())
+    {
+        detections.push(Detection {
+            rule_id: "UNEXPECTED_HTTP_METHOD",
+            name: "Unexpected HTTP Method",
+            category: "Proxy Policy",
+            severity: 2,
+        });
+    }
     if let Some(signals) = signals {
         // These are derived by the trusted Nginx log_format/maps, never HTTP headers.
         for (id, name, severity) in [

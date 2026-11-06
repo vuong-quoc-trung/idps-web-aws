@@ -381,7 +381,7 @@ native_suricata:
       not ground truth
 protected_source_hashes:
   student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.java: a1e308178f9307c554089b66820fe69d7c14a9044d3e89e54bcbf4946e515aa4
-  security-web/src/ingest.rs: 2caaf7a34e42239ced5fb821a6ae86749df654dfb7f23b66144fc0eae6ff18d7
+  security-web/src/ingest.rs: e0a5e621d18543c37f81905d528082ff5973fb00661a66b1256eb2e15e33a37a
   security-web/migrations/0001_initial.sql: 61644039add9f1a3dcdc7dc72e4ed1f7132231106cb890fafbb1750143b42e42
   security-web/migrations/0002_reliability.sql: c80dde062540e2dcbfe9704bbf115efda1f33774d0709becb007c0a70d3ea868
   security-web/migrations/0003_shared_foundation.sql: 26b59640f9f416351492f7e901c393c3ece996a0d337d7cda4d9380e454800ba
