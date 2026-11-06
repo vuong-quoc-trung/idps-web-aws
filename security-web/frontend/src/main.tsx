@@ -12,6 +12,7 @@ import { createRoot } from "react-dom/client";
 import "./style.css";
 import { AlertDetail } from "./AlertDetail";
 import { ApplicationAudit } from "./ApplicationAudit";
+import { AiShadow } from "./AiShadow";
 import { Icon } from "./Icon";
 
 type User = { username: string; role: "admin" | "viewer" };
@@ -423,6 +424,7 @@ function App() {
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
     ["application-audit", "Audit ứng dụng"],
+    ["ai-shadow", "AI shadow"],
     ["blocked", "IP bị chặn"],
     ["audit", "Nhật ký thao tác"],
     ["rules", "Luật phát hiện"],
@@ -530,6 +532,7 @@ function App() {
         {tab === "application-audit" && (
           <ApplicationAudit api={api} refreshSignal={applicationAuditRefresh} />
         )}
+        {tab === "ai-shadow" && <AiShadow api={api} />}
         {tab === "overview" && (
           <>
             <section className="panel overview-toolbar">
@@ -886,6 +889,7 @@ function App() {
                   <option value="">Tất cả</option>
                   <option>NGINX</option>
                   <option>SURICATA</option>
+                  <option>AI_SHADOW</option>
                 </select>
               </label>
               <label>

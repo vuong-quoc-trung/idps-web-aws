@@ -8,6 +8,8 @@ const paths: Record<string, string> = {
     "M4 3h12v6 M4 3v18h8 M8 7h4 M8 11h3 M20 16a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z M19 20l3 3",
   rules: "M4 6h16 M4 12h16 M4 18h16 M8 3v6 M16 9v6 M10 15v6",
   status: "M2 12h4l3-8 6 16 3-8h4",
+  "ai-shadow":
+    "M8 8h8v8H8z M12 2v6 M12 16v6 M2 12h6 M16 12h6 M5 5l3 3 M16 16l3 3 M19 5l-3 3 M8 16l-3 3",
   refresh:
     "M20 7a8 8 0 0 0-14-1L3 9 M3 3v6h6 M4 17a8 8 0 0 0 14 1l3-3 M21 21v-6h-6",
   logout: "M9 4H4v16h5 M9 12h12 M17 8l4 4-4 4",
