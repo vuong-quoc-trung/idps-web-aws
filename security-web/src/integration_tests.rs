@@ -798,11 +798,12 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
         .execute(&pool).await.unwrap();
     sqlx::query("INSERT INTO firewall_actions (ip,action,source,reason,status,created_at) VALUES ('192.0.2.1','BLOCK','AUTO','test','PENDING',now()-interval '5 minutes'), ('192.0.2.1','UNBLOCK','MANUAL','test','SUCCESS',now()-interval '5 minutes'), ('192.0.2.1','BLOCK','AUTO','old','ERROR',now()-interval '8 days')")
         .execute(&pool).await.unwrap();
-    for (seconds, buckets, expected) in [(3600_i64, 12_i64, 2_i64), (86400, 24, 2), (604800, 28, 3)]
+    for (seconds, buckets, expected) in [(3600_i64, 12_i64, 2_i64), (86400, 24, 2), (604800, 7, 3)]
     {
         let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
             .bind(seconds)
             .bind(buckets)
+            .bind(None::<i64>)
             .fetch_one(&pool)
             .await
             .unwrap();
@@ -820,6 +821,16 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
             result["recent"].as_array().unwrap().len(),
             expected as usize
         );
+        for point in result["trend"].as_array().unwrap() {
+            let sum: i64 = point["sources"]
+                .as_object()
+                .unwrap()
+                .values()
+                .map(|v| v.as_i64().unwrap())
+                .sum();
+            assert_eq!(sum, point["count"].as_i64().unwrap());
+        }
+        assert_eq!(result["alert_updates"]["count"], 0);
         assert_eq!(result["source_ips"][0]["severity"], 1);
         assert_eq!(result["source_ips"][0]["count"], 2);
         assert_eq!(result["destination_ips"].as_array().unwrap().len(), 1);
@@ -836,6 +847,7 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
     let empty = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
         .bind(3600_i64)
         .bind(12_i64)
+        .bind(None::<i64>)
         .fetch_one(&pool)
         .await
         .unwrap();
@@ -988,4 +1000,42 @@ async fn collection_status_empty_partial_error_and_recovery(pool: PgPool) {
     ingest::scan(&s, "SURICATA", path).await.unwrap();
     assert_eq!(s.watchers.read().await["SURICATA"].state, "watching");
     assert!(s.watchers.read().await["SURICATA"].error.is_none());
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
+    for source in ["SURICATA", "NGINX", "STUDENT_AUDIT"] {
+        sqlx::query("INSERT INTO security_alerts (occurred_at,source,event_type,rule_name,severity,action,evidence) VALUES (now()-interval '2 minutes',$1,'alert','fixture',2,'ALERT','{}')")
+            .bind(source).execute(&pool).await.unwrap();
+    }
+    let report = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
+        .bind(3600_i64)
+        .bind(12_i64)
+        .bind(0_i64)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(report["alert_updates"]["count"], 3);
+    assert_eq!(report["alert_updates"]["severity"], 2);
+    let points = report["trend"].as_array().unwrap();
+    assert_eq!(points.iter().filter(|p| p["count"] == 0).count(), 11);
+    for source in ["SURICATA", "NGINX", "STUDENT_AUDIT"] {
+        assert_eq!(
+            points
+                .iter()
+                .map(|p| p["sources"][source].as_i64().unwrap())
+                .sum::<i64>(),
+            1
+        );
+    }
+    let cursor = report["alert_updates"]["watermark"].as_i64().unwrap();
+    let again = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
+        .bind(604800_i64)
+        .bind(7_i64)
+        .bind(cursor)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(again["alert_updates"]["count"], 0);
+    assert_eq!(again["trend"].as_array().unwrap().len(), 7);
 }

@@ -7,7 +7,13 @@ WITH bounds AS (
 ), buckets AS (
     SELECT h FROM bounds b, LATERAL generate_series(b.since, b.until - b.step, b.step) h
 ), trend AS (
-    SELECT h AS hour, count(e.id) AS count FROM buckets CROSS JOIN bounds b
+    SELECT h AS hour, count(e.id) AS count,
+        jsonb_build_object(
+          'SURICATA', count(e.id) FILTER (WHERE e.source = 'SURICATA'),
+          'NGINX', count(e.id) FILTER (WHERE e.source = 'NGINX'),
+          'STUDENT_AUDIT', count(e.id) FILTER (WHERE e.source IN ('STUDENT_AUDIT', 'APPLICATION')),
+          'OTHER', count(e.id) FILTER (WHERE e.source NOT IN ('SURICATA', 'NGINX', 'STUDENT_AUDIT', 'APPLICATION'))
+        ) AS sources FROM buckets CROSS JOIN bounds b
     LEFT JOIN events e ON e.occurred_at >= h AND e.occurred_at < h + b.step
     GROUP BY h ORDER BY h
 ), types AS (
@@ -31,6 +37,14 @@ WITH bounds AS (
     WHERE action = 'BLOCK' AND created_at >= b.since AND created_at < b.until GROUP BY status
 )
 SELECT jsonb_build_object(
+    'alert_updates', jsonb_build_object(
+      'watermark', (SELECT COALESCE(max(id), 0) FROM security_alerts),
+      'count', (SELECT count(*) FROM security_alerts WHERE id > $3::bigint),
+      'severity', (SELECT min(severity) FROM security_alerts WHERE id > $3::bigint),
+      'items', COALESCE((SELECT jsonb_agg(to_jsonb(n)) FROM (
+        SELECT id, severity FROM security_alerts WHERE id > $3::bigint ORDER BY id DESC LIMIT 100
+      ) n), '[]'::jsonb)
+    ),
     'from', (SELECT since FROM bounds), 'to', (SELECT until FROM bounds),
     'total_alerts', (SELECT count(*) FROM events),
     'critical_alerts', (SELECT count(*) FROM events WHERE severity = 1),

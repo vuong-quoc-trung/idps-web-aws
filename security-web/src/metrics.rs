@@ -97,6 +97,7 @@ fn connections() -> Option<usize> {
 #[derive(Deserialize)]
 pub struct StatsQuery {
     range: Option<String>,
+    after_alert_id: Option<i64>,
 }
 pub async fn stats(
     State(state): State<AppState>,
@@ -106,12 +107,16 @@ pub async fn stats(
     let (seconds, buckets) = match range {
         "1h" => (3600_i64, 12_i64),
         "24h" => (86400, 24),
-        "7d" => (604800, 28),
+        "7d" => (604800, 7),
         _ => return Err(bad_request("range must be 1h, 24h or 7d")),
     };
+    if query.after_alert_id.is_some_and(|id| id < 0) {
+        return Err(bad_request("after_alert_id must be non-negative"));
+    }
     let mut report = sqlx::query_scalar::<_, Value>(include_str!("overview.sql"))
         .bind(seconds)
         .bind(buckets)
+        .bind(query.after_alert_id)
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
