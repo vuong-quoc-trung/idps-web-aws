@@ -44,7 +44,8 @@ const sourceName = (source: string) =>
   ({ STUDENT_AUDIT: "Student audit", NGINX: "Nginx", SURICATA: "Suricata" })[
     source
   ] ?? source;
-const time = (value: string) => new Date(value).toLocaleString("vi-VN");
+const time = (value: string) =>
+  new Date(value).toLocaleString("vi-VN", { hour12: false });
 
 export function ApplicationAudit({
   api,
@@ -249,54 +250,62 @@ export function ApplicationAudit({
             onChange={(e) => setDraft({ ...draft, uri_path: e.target.value })}
           />
         </label>
-        <label>
-          Mã HTTP (chính xác)
-          <input
-            type="number"
-            min="100"
-            max="599"
-            step="1"
-            value={draft.status_code}
-            placeholder="200, 401…"
-            onChange={(e) =>
-              setDraft({ ...draft, status_code: e.target.value })
-            }
-          />
-        </label>
-        <label>
-          Method
-          <select
-            value={draft.http_method}
-            onChange={(e) =>
-              setDraft({ ...draft, http_method: e.target.value })
-            }
-          >
-            <option value="">Tất cả method</option>
-            {[
-              "GET",
-              "HEAD",
-              "OPTIONS",
-              "POST",
-              "PUT",
-              "PATCH",
-              "DELETE",
-              "CONNECT",
-              "TRACE",
-              "OTHER",
-            ].map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Request ID (chính xác)
-          <input
-            value={draft.request_id}
-            maxLength={128}
-            placeholder="X-Request-Id"
-            onChange={(e) => setDraft({ ...draft, request_id: e.target.value })}
-          />
-        </label>
+        <details className="advanced-filters">
+          <summary>Bộ lọc nâng cao</summary>
+          <div className="advanced-fields">
+            {" "}
+            <label>
+              Mã HTTP (chính xác)
+              <input
+                type="number"
+                min="100"
+                max="599"
+                step="1"
+                value={draft.status_code}
+                placeholder="200, 401…"
+                onChange={(e) =>
+                  setDraft({ ...draft, status_code: e.target.value })
+                }
+              />
+            </label>
+            <label>
+              Method
+              <select
+                value={draft.http_method}
+                onChange={(e) =>
+                  setDraft({ ...draft, http_method: e.target.value })
+                }
+              >
+                <option value="">Tất cả method</option>
+                {[
+                  "GET",
+                  "HEAD",
+                  "OPTIONS",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "DELETE",
+                  "CONNECT",
+                  "TRACE",
+                  "OTHER",
+                ].map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Request ID (chính xác)
+              <input
+                value={draft.request_id}
+                maxLength={128}
+                placeholder="X-Request-Id"
+                onChange={(e) =>
+                  setDraft({ ...draft, request_id: e.target.value })
+                }
+              />
+            </label>
+          </div>
+        </details>
         <div className="audit-filter-actions">
           <button type="submit">Áp dụng bộ lọc</button>
           <button type="button" onClick={reset}>
@@ -304,6 +313,36 @@ export function ApplicationAudit({
           </button>
         </div>
       </form>
+      <div className="active-filters" aria-label="Bộ lọc đã áp dụng">
+        {Object.entries(filters)
+          .filter(([, v]) => v !== "")
+          .map(([key, value]) => (
+            <button
+              type="button"
+              key={key}
+              onClick={() => {
+                setFilters({ ...filters, [key]: "" });
+                setDraft({ ...draft, [key]: "" });
+                setOffset(0);
+              }}
+              aria-label={`Bỏ bộ lọc ${key}`}
+            >
+              {(
+                {
+                  from: "Từ",
+                  to: "Đến",
+                  source: "Nguồn",
+                  client_ip: "IP",
+                  uri_path: "Endpoint",
+                  status_code: "HTTP",
+                  http_method: "Method",
+                  request_id: "Request ID",
+                } as Record<string, string>
+              )[key] ?? key}
+              : {String(value)} ×
+            </button>
+          ))}
+      </div>
       {filterError && (
         <p className="error" role="alert">
           {filterError}
@@ -367,7 +406,9 @@ export function ApplicationAudit({
                     <time dateTime={e.occurred_at}>{time(e.occurred_at)}</time>
                   </td>
                   <td>
-                    {sourceName(e.source)}
+                    <span className={`source-label source-${e.source}`}>
+                      {sourceName(e.source)}
+                    </span>
                     <small>{e.event_type}</small>
                   </td>
                   <td className="mono">{e.client_ip ?? "—"}</td>
@@ -382,7 +423,10 @@ export function ApplicationAudit({
                       : `${e.latency_ms.toLocaleString("vi-VN", { maximumFractionDigits: 2 })} ms`}
                   </td>
                   <td className="audit-request-id mono">
-                    {e.request_id ?? "—"}
+                    <span title={e.request_id ?? undefined}>
+                      {e.request_id ? `${e.request_id.slice(0, 12)}…` : "—"}
+                    </span>
+                    {e.request_id && <CopyRequestId value={e.request_id} />}
                   </td>
                   <td>
                     <button
@@ -565,5 +609,28 @@ function AuditDetail({
         </>
       )}
     </dialog>
+  );
+}
+
+function CopyRequestId({ value }: { value: string }) {
+  const [message, setMessage] = useState("");
+  return (
+    <>
+      <button
+        className="copy-id"
+        aria-label="Sao chép Request ID"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(value);
+            setMessage("Đã sao chép");
+          } catch {
+            setMessage("Không sao chép được; mở chi tiết để chọn mã.");
+          }
+        }}
+      >
+        Sao chép
+      </button>
+      <small role="status">{message}</small>
+    </>
   );
 }

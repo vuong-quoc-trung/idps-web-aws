@@ -193,6 +193,9 @@ function App() {
   const [audit, setAudit] = useState<Audit[]>([]);
   const [applicationAuditRefresh, setApplicationAuditRefresh] = useState(0);
   const [rules, setRules] = useState<Rule[]>([]);
+  const [ruleSearch, setRuleSearch] = useState("");
+  const [ruleSeverity, setRuleSeverity] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [ruleSource, setRuleSource] = useState("SURICATA");
   const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(false);
@@ -256,7 +259,7 @@ function App() {
       setAudit(results[3]);
       setRules(results[4]);
       setHealth(results[5]);
-      setUpdated(new Date().toLocaleTimeString());
+      setUpdated(new Date().toLocaleTimeString("vi-VN", { hour12: false }));
       setError("");
     } catch (e) {
       setError((e as Error).message);
@@ -439,7 +442,7 @@ function App() {
     ["status", "Trạng thái hệ thống"],
   ];
   const fmt = (v: number | null | undefined, suffix = "") =>
-    v == null ? "Chưa có dữ liệu" : `${v.toLocaleString()}${suffix}`;
+    v == null ? "Chưa có dữ liệu" : `${v.toLocaleString("vi-VN")}${suffix}`;
   return (
     <div className="shell">
       <aside>
@@ -455,16 +458,31 @@ function App() {
             <img src={securityLogo} alt="" width="46" height="46" />
           </span>
           <span className="brand-wordmark">
-            PBL4 <span>SECURITY</span>
+            WebSentinel <span>Security Operations</span>
           </span>
         </a>
         <p className="eyebrow">ĐIỀU HÀNH BẢO MẬT</p>
-        <nav aria-label="Điều hướng">
+        <button
+          className="mobile-menu"
+          aria-expanded={menuOpen}
+          aria-controls="dashboard-navigation"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <Icon name="overview" /> Điều hướng
+        </button>
+        <nav
+          id="dashboard-navigation"
+          className={menuOpen ? "menu-open" : ""}
+          aria-label="Điều hướng"
+        >
           {tabs.map(([id, label]) => (
             <button
               key={id}
               aria-current={tab === id ? "page" : undefined}
-              onClick={() => setTab(id)}
+              onClick={() => {
+                setTab(id);
+                setMenuOpen(false);
+              }}
             >
               <Icon name={id} />
               <span>{label}</span>
@@ -541,7 +559,7 @@ function App() {
           <ApplicationAudit api={api} refreshSignal={applicationAuditRefresh} />
         )}
         {tab === "overview" && (
-          <>
+          <div className="overview-layout">
             <section className="panel overview-toolbar">
               <label>
                 Khoảng thời gian
@@ -562,8 +580,14 @@ function App() {
                 nhiều nguồn phát hiện.
                 {stats && (
                   <small>
-                    {new Date(stats.from).toLocaleString()} →{" "}
-                    {new Date(stats.to).toLocaleString()} · giờ địa phương
+                    {new Date(stats.from).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })}{" "}
+                    →{" "}
+                    {new Date(stats.to).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })}{" "}
+                    · giờ địa phương
                   </small>
                 )}
                 {!stats && (
@@ -593,10 +617,48 @@ function App() {
                     </span>
                   </div>
                   <strong>{fmt(value as number | undefined)}</strong>
+                  <button
+                    className="metric-link"
+                    onClick={() => {
+                      if (index === 2) {
+                        setTab("audit");
+                        return;
+                      }
+                      setSearch("");
+                      setFilter("");
+                      setSeverity(index === 1 ? "1" : "");
+                      setAlertFilters({
+                        from: stats?.from
+                          ? new Date(
+                              new Date(stats.from).getTime() -
+                                new Date(stats.from).getTimezoneOffset() *
+                                  60000,
+                            )
+                              .toISOString()
+                              .slice(0, 16)
+                          : "",
+                        to: stats?.to
+                          ? new Date(
+                              new Date(stats.to).getTime() -
+                                new Date(stats.to).getTimezoneOffset() * 60000,
+                            )
+                              .toISOString()
+                              .slice(0, 16)
+                          : "",
+                        source: "",
+                        action: "",
+                        dest_ip: "",
+                      });
+                      setPage(0);
+                      setTab("alerts");
+                    }}
+                  >
+                    {index === 2 ? "Xem nhật ký thao tác →" : "Xem cảnh báo →"}
+                  </button>
                 </article>
               ))}
             </section>
-            <section className="panel">
+            <section className="panel overview-trend">
               <h2>
                 <Icon name="status" />
                 Diễn biến cảnh báo
@@ -614,7 +676,7 @@ function App() {
                   <div
                     className="bar-column"
                     key={point.hour}
-                    title={`${new Date(point.hour).toLocaleString()}: ${point.count} cảnh báo`}
+                    title={`${new Date(point.hour).toLocaleString("vi-VN", { hour12: false })}: ${point.count} cảnh báo`}
                   >
                     <span>{point.count}</span>
                     <div
@@ -642,11 +704,80 @@ function App() {
                 <ul>
                   {stats?.trend.map((p) => (
                     <li key={p.hour}>
-                      {new Date(p.hour).toLocaleString()}: {p.count}
+                      {new Date(p.hour).toLocaleString("vi-VN", {
+                        hour12: false,
+                      })}
+                      : {p.count}
                     </li>
                   ))}
                 </ul>
               </details>
+            </section>
+            <section className="panel overview-sources">
+              <h2>Nguồn dữ liệu</h2>
+              {["SURICATA", "NGINX", "STUDENT_AUDIT"].map((source) => {
+                const w = health?.watchers[source];
+                return (
+                  <div className="source-summary" key={source}>
+                    <strong className={`source-label source-${source}`}>
+                      {source === "STUDENT_AUDIT" ? "Student Audit" : source}
+                    </strong>
+                    <span
+                      className={`badge ${w?.state === "error" ? "danger" : ""}`}
+                    >
+                      {w?.state === "watching"
+                        ? "Đọc được file"
+                        : w?.state === "error"
+                          ? "Lỗi đọc log"
+                          : "Chưa xác định"}
+                    </span>
+                    <small>
+                      Dữ liệu gần nhất:{" "}
+                      {w?.last_data_at
+                        ? new Date(w.last_data_at).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })
+                        : "Chưa ghi nhận"}
+                    </small>
+                  </div>
+                );
+              })}
+              <button onClick={() => setTab("status")}>
+                Xem trạng thái hệ thống
+              </button>
+            </section>
+            <section className="panel overview-recent">
+              <h2>10 cảnh báo mới nhất trong khoảng đã chọn</h2>
+              <p className="muted">
+                Mở từng cảnh báo để xem IP, hành động và bằng chứng gốc.
+              </p>
+              {stats?.recent.map((a) => (
+                <details className="overview-alert" key={a.id}>
+                  <summary>
+                    #{a.id} ·{" "}
+                    {new Date(a.occurred_at).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })}{" "}
+                    · {a.rule_name} ·{" "}
+                    {a.severity === 1
+                      ? "Cao · S1"
+                      : a.severity === 2
+                        ? "Trung bình · S2"
+                        : `Thấp · S${a.severity}`}
+                  </summary>
+                  <p>
+                    Nguồn: {a.source} · IP: {a.src_ip ?? "Không có"} →{" "}
+                    {a.dest_ip ?? "Không có"} · Hành động: {a.action}
+                  </p>
+                  <button onClick={() => setSelectedAlert(a.id)}>
+                    Mở chi tiết điều tra
+                  </button>
+                  <pre>{a.evidence}</pre>
+                </details>
+              ))}
+              {stats?.recent.length === 0 && (
+                <p>Chưa có cảnh báo trong khoảng này.</p>
+              )}
             </section>
             <section className="panel">
               <h2>
@@ -694,7 +825,9 @@ function App() {
                         <strong>{row.ip}</strong>
                         <small>
                           Severity {row.severity} · Gần nhất:{" "}
-                          {new Date(row.last_seen).toLocaleString()}
+                          {new Date(row.last_seen).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })}
                         </small>
                       </div>
                       <span className="count-pill">{row.count}</span>
@@ -794,32 +927,7 @@ function App() {
                 ))}
               </div>
             </section>
-            <section className="panel">
-              <h2>10 cảnh báo mới nhất trong khoảng đã chọn</h2>
-              <p className="muted">
-                Mở từng cảnh báo để xem IP, hành động và bằng chứng gốc.
-              </p>
-              {stats?.recent.map((a) => (
-                <details className="overview-alert" key={a.id}>
-                  <summary>
-                    #{a.id} · {new Date(a.occurred_at).toLocaleString()} ·{" "}
-                    {a.rule_name} · Severity {a.severity}
-                  </summary>
-                  <p>
-                    Nguồn: {a.source} · IP: {a.src_ip ?? "Không có"} →{" "}
-                    {a.dest_ip ?? "Không có"} · Hành động: {a.action}
-                  </p>
-                  <button onClick={() => setSelectedAlert(a.id)}>
-                    Mở chi tiết điều tra
-                  </button>
-                  <pre>{a.evidence}</pre>
-                </details>
-              ))}
-              {stats?.recent.length === 0 && (
-                <p>Chưa có cảnh báo trong khoảng này.</p>
-              )}
-            </section>
-          </>
+          </div>
         )}
         {tab === "alerts" && (
           <section className="panel">
@@ -899,32 +1007,37 @@ function App() {
                   <option value="STUDENT_AUDIT">Student Audit</option>
                 </select>
               </label>
-              <label>
-                Hành động
-                <select
-                  value={alertFilters.action}
-                  onChange={(e) => {
-                    setAlertFilters({
-                      ...alertFilters,
-                      action: e.target.value,
-                    });
-                    setPage(0);
-                  }}
-                >
-                  <option value="">Tất cả</option>
-                  <option>ALERT</option>
-                  <option>AUTO-BLOCK</option>
-                  <option>BLOCK</option>
-                </select>
-              </label>
-              <label>
-                IP đích chính xác
-                <input
-                  name="dest_ip"
-                  defaultValue={alertFilters.dest_ip}
-                  placeholder="192.168.20.10"
-                />
-              </label>
+              <details className="advanced-filters">
+                <summary>Bộ lọc nâng cao</summary>
+                <div className="advanced-fields">
+                  <label>
+                    Hành động
+                    <select
+                      value={alertFilters.action}
+                      onChange={(e) => {
+                        setAlertFilters({
+                          ...alertFilters,
+                          action: e.target.value,
+                        });
+                        setPage(0);
+                      }}
+                    >
+                      <option value="">Tất cả</option>
+                      <option>ALERT</option>
+                      <option>AUTO-BLOCK</option>
+                      <option>BLOCK</option>
+                    </select>
+                  </label>
+                  <label>
+                    IP đích chính xác
+                    <input
+                      name="dest_ip"
+                      defaultValue={alertFilters.dest_ip}
+                      placeholder="192.168.20.10"
+                    />
+                  </label>
+                </div>
+              </details>
               <button>Tìm kiếm</button>
               <button
                 type="button"
@@ -950,10 +1063,16 @@ function App() {
                 <tbody>
                   {alerts.map((a) => (
                     <tr key={a.id}>
-                      <td>{new Date(a.occurred_at).toLocaleString()}</td>
+                      <td>
+                        {new Date(a.occurred_at).toLocaleString("vi-VN", {
+                          hour12: false,
+                        })}
+                      </td>
                       <td>
                         {a.rule_name}
-                        <small>{a.source}</small>
+                        <small className={`source-label source-${a.source}`}>
+                          {a.source}
+                        </small>
                       </td>
                       <td>
                         {a.src_ip ?? "—"} → {a.dest_ip ?? "—"}
@@ -961,10 +1080,18 @@ function App() {
                       <td>
                         <span
                           className={
-                            a.severity === 1 ? "badge danger" : "badge"
+                            a.severity === 1
+                              ? "badge danger"
+                              : a.severity === 2
+                                ? "badge warn"
+                                : "badge"
                           }
                         >
-                          Severity {a.severity}
+                          {a.severity === 1
+                            ? "Cao · S1"
+                            : a.severity === 2
+                              ? "Trung bình · S2"
+                              : `Thấp · S${a.severity}`}
                         </span>
                       </td>
                       <td>
@@ -1101,7 +1228,9 @@ function App() {
                       <small>
                         Thời điểm chặn (DB):{" "}
                         {row
-                          ? new Date(row.blocked_at).toLocaleString()
+                          ? new Date(row.blocked_at).toLocaleString("vi-VN", {
+                              hour12: false,
+                            })
                           : "Không xác định"}
                       </small>
                     </div>
@@ -1158,7 +1287,11 @@ function App() {
                     <tr key={a.id}>
                       <td>
                         #{a.id}
-                        <small>{new Date(a.created_at).toLocaleString()}</small>
+                        <small>
+                          {new Date(a.created_at).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })}
+                        </small>
                       </td>
                       <td>
                         {a.actor}
@@ -1182,7 +1315,9 @@ function App() {
                         <small>
                           Hoàn tất:{" "}
                           {a.completed_at
-                            ? new Date(a.completed_at).toLocaleString()
+                            ? new Date(a.completed_at).toLocaleString("vi-VN", {
+                                hour12: false,
+                              })
                             : a.status === "PENDING"
                               ? "Đang chờ"
                               : "Chưa có dữ liệu"}
@@ -1254,6 +1389,28 @@ function App() {
                 </button>
               ))}
             </div>
+            <div className="rule-tools">
+              <label>
+                Tìm luật
+                <input
+                  value={ruleSearch}
+                  onChange={(e) => setRuleSearch(e.target.value)}
+                  placeholder="Tên luật hoặc mã rule…"
+                />
+              </label>
+              <label>
+                Mức độ
+                <select
+                  value={ruleSeverity}
+                  onChange={(e) => setRuleSeverity(e.target.value)}
+                >
+                  <option value="">Tất cả mức độ</option>
+                  <option value="1">Cao · S1</option>
+                  <option value="2">Trung bình · S2</option>
+                  <option value="3">Thấp · S3</option>
+                </select>
+              </label>
+            </div>
             <div id="rule-source-list">
               <h3>
                 {ruleSource === "SURICATA"
@@ -1272,10 +1429,14 @@ function App() {
               {!rules.some(
                 (r) =>
                   (r.source === "APPLICATION" ? "STUDENT_AUDIT" : r.source) ===
-                  ruleSource,
+                    ruleSource &&
+                  (!ruleSeverity || String(r.severity) === ruleSeverity) &&
+                  `${r.name} ${r.code}`
+                    .toLowerCase()
+                    .includes(ruleSearch.toLowerCase().trim()),
               ) && (
                 <p className="muted">
-                  Chưa có luật từ nguồn này trong dữ liệu API.
+                  Không có luật khớp nguồn, tên và mức độ đã chọn.
                 </p>
               )}
               {rules
@@ -1285,8 +1446,15 @@ function App() {
                       ? "STUDENT_AUDIT"
                       : r.source) === ruleSource,
                 )
+                .filter(
+                  (r) =>
+                    (!ruleSeverity || String(r.severity) === ruleSeverity) &&
+                    `${r.name} ${r.code}`
+                      .toLowerCase()
+                      .includes(ruleSearch.toLowerCase().trim()),
+                )
                 .map((r) => (
-                  <div className="type-row" key={r.code}>
+                  <div className="type-row rule-row" key={r.code}>
                     <div>
                       <strong>{r.name}</strong>
                       <p>
@@ -1326,15 +1494,22 @@ function App() {
                 Nginx/Suricata/Student Web hoặc đường truyền RELP đang hoạt
                 động. Không có cảnh báo mới có thể là bình thường.
               </p>
-              <div className="overview-grid">
+              <div className="source-health-grid">
                 {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
                   const collection = health?.collection?.[name];
                   const time = (value: string | null | undefined) =>
-                    value ? new Date(value).toLocaleString() : "Chưa ghi nhận";
+                    value
+                      ? new Date(value).toLocaleString("vi-VN", {
+                          hour12: false,
+                        })
+                      : "Chưa ghi nhận";
                   return (
-                    <article className="panel" key={name}>
-                      <h3>
+                    <article
+                      className={`panel source-health source-${name}`}
+                      key={name}
+                    >
+                      <h3 className="source-label">
                         {name === "STUDENT_AUDIT"
                           ? "Student Audit — Tầng ứng dụng"
                           : name}
@@ -1440,7 +1615,9 @@ function App() {
               <p className="muted">
                 Mẫu mạng/đĩa:{" "}
                 {stats?.system.sampled_at
-                  ? new Date(stats.system.sampled_at).toLocaleString()
+                  ? new Date(stats.system.sampled_at).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })
                   : "Đang chờ mẫu đầu tiên"}{" "}
                 · Dữ liệu hiện tại, không theo bộ lọc thời gian Tổng quan.
               </p>
@@ -1528,7 +1705,7 @@ function App() {
                 {["NGINX", "SURICATA", "STUDENT_AUDIT"]
                   .map(
                     (name) =>
-                      `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString() : "chưa ghi nhận"}`,
+                      `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString("vi-VN", { hour12: false }) : "chưa ghi nhận"}`,
                   )
                   .join(" · ")}
               </p>
