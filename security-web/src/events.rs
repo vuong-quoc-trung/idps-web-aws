@@ -158,7 +158,7 @@ impl CanonicalEvent {
                     .len()
                     == security.reasons.len()
                     && !security.reasons.is_empty()
-                    && security.reasons.len() <= 7
+                    && security.reasons.len() <= 10
                     && security.reasons.iter().all(|r| matches!(
                         r.as_str(),
                         "LOGIN_FAILED"
@@ -168,6 +168,9 @@ impl CanonicalEvent {
                             | "INVALID_SESSION"
                             | "SESSION_REVOKED"
                             | "WORKFLOW_DENIED"
+                            | "RATE_LIMITED"
+                            | "CSRF_INVALID"
+                            | "RECOVERY_TOKEN_INVALID"
                     )),
                 "Invalid security reason"
             );
@@ -604,6 +607,11 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                         "SQL Injection Boolean or Union Request Body Attempt",
                         "Web Application Attack",
                     ),
+                    Some(1000026) => ("XSS Request Body Attempt", "Web Application Attack"),
+                    Some(1000027) => (
+                        "Command Injection Request Body Attempt",
+                        "Web Application Attack",
+                    ),
                     _ => ("Suricata Alert", "Sensor Alert"),
                 };
                 native_alert = Some(NativeAlert {
@@ -625,6 +633,16 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
         detections.push(Detection {
             rule_id: "UNEXPECTED_HTTP_METHOD",
             name: "Unexpected HTTP Method",
+            category: "Proxy Policy",
+            severity: 2,
+        });
+    }
+    if source == "NGINX"
+        && crate::nginx_detection::sensitive_path(target.as_deref().unwrap_or_default())
+    {
+        detections.push(Detection {
+            rule_id: "SENSITIVE_PATH_PROBE",
+            name: "Sensitive Path Probe",
             category: "Proxy Policy",
             severity: 2,
         });
@@ -668,6 +686,24 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
 mod tests {
     use super::*;
 
+    #[test]
+    fn sensitive_proxy_paths_have_named_alerts() {
+        for path in [
+            "/.env",
+            "/.git/config",
+            "/actuator/env",
+            "/actuator/heapdump",
+        ] {
+            let raw = serde_json::json!({"timestamp":"2026-11-06T00:00:00Z", "client_ip":"192.0.2.1", "http_method":"GET", "uri_path":path, "status":403}).to_string();
+            let parsed = parse("NGINX", &raw).unwrap();
+            assert!(
+                parsed
+                    .detections
+                    .iter()
+                    .any(|d| d.rule_id == "SENSITIVE_PATH_PROBE")
+            );
+        }
+    }
     #[test]
     fn custom_http_methods_never_persist_arbitrary_header_text() {
         let parsed = parse("NGINX", r#"{"timestamp":"2026-10-26T00:00:00Z","http_method":"CANARY_SECRET","uri_path":"/api/faculties","status":405}"#).unwrap();

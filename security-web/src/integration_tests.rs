@@ -1039,3 +1039,140 @@ async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
     assert_eq!(again["alert_updates"]["count"], 0);
     assert_eq!(again["trend"].as_array().unwrap().len(), 7);
 }
+
+#[sqlx::test(migrations = "./migrations")]
+async fn triage_permissions_conflicts_history_and_rule_evidence(pool: PgPool) {
+    let id:i64=sqlx::query_scalar("INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,signature,severity,action,evidence) VALUES(now(),'STUDENT_AUDIT','alert','APP-1017: test','APP-1017',2,'ALERT','{}') RETURNING id").fetch_one(&pool).await.unwrap();
+    insert_application_event(
+        &pool,
+        application_event("STUDENT_AUDIT", "2026-11-07T00:00:00Z", None),
+    )
+    .await;
+    let app = router(state(pool.clone()));
+    let admin = login(app.clone(), "admin").await;
+    let viewer = login(app.clone(), "viewer").await;
+    let path = format!("/api/alerts/{id}/triage");
+    let body =
+        serde_json::json!({"status":"INVESTIGATING","version":0,"note":"Investigating fixture"});
+    assert_eq!(
+        request(app.clone(), "POST", &path, None, body.clone())
+            .await
+            .0,
+        StatusCode::UNAUTHORIZED
+    );
+    assert_eq!(
+        request(app.clone(), "POST", &path, Some(&viewer), body.clone())
+            .await
+            .0,
+        StatusCode::FORBIDDEN
+    );
+    assert_eq!(
+        request(app.clone(), "POST", &path, Some(&admin), body.clone())
+            .await
+            .0,
+        StatusCode::OK
+    );
+    assert_eq!(
+        request(app.clone(), "POST", &path, Some(&admin), body)
+            .await
+            .0,
+        StatusCode::CONFLICT
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            &path,
+            Some(&admin),
+            serde_json::json!({"status":"WRONG","version":1,"note":"invalid"})
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            &path,
+            Some(&admin),
+            serde_json::json!({"status":"RESOLVED","version":1,"note":" "})
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    let (_, detail) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/alerts/{id}"),
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(detail["triage_history"].as_array().unwrap().len(), 1);
+    assert_eq!(detail["alert"]["triage_version"], 1);
+    assert_eq!(detail["alert"]["action"], "ALERT");
+    assert_eq!(detail["triage_history"][0]["actor"], "admin");
+    let (_, list) = request(
+        app.clone(),
+        "GET",
+        "/api/alerts/search?triage_status=INVESTIGATING",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(list["total"], 1);
+    let (_, list) = request(
+        app.clone(),
+        "GET",
+        "/api/alerts/search?triage_status=NEW",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(list["total"], 0);
+    let (_, rules) = request(
+        app.clone(),
+        "GET",
+        "/api/rules",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    let rule = rules
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["code"] == "APP-1017")
+        .unwrap();
+    assert_eq!(rule["verification"]["last_alert"]["alert_id"], id);
+    assert_eq!(rule["verification"]["deployment"], "BUILT_IN");
+    assert_eq!(rule["verification"]["tested_current_deployment"], false);
+    let (_, health) = request(
+        app.clone(),
+        "GET",
+        "/api/status",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert!(health["collection"]["STUDENT_AUDIT"]["last_ingested_at"].is_string());
+    assert!(health["collection"]["STUDENT_AUDIT"]["last_ingested_event_at"].is_string());
+    assert_eq!(health["dataset_collection"], false);
+    assert!(health["checked_at"].is_string());
+    let sensor = rules
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["source"] == "SURICATA")
+        .unwrap();
+    assert_eq!(sensor["verification"]["deployment"], "UNVERIFIED");
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT count(*) FROM firewall_actions")
+            .fetch_one(&pool)
+            .await
+            .unwrap(),
+        0
+    );
+}

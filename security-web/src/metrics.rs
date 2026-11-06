@@ -147,11 +147,14 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
         .ok();
     let collection = sqlx::query_scalar::<_, Value>(r#"
         SELECT jsonb_object_agg(source, jsonb_build_object(
+          'last_ingested_at', (SELECT observed_at FROM normalized_events n WHERE n.source=s.source ORDER BY observed_at DESC,id DESC LIMIT 1),
+          'last_ingested_event_at', (SELECT occurred_at FROM normalized_events n WHERE n.source=s.source ORDER BY observed_at DESC,id DESC LIMIT 1),
           'last_alert_at', (SELECT max(created_at) FROM security_alerts a WHERE a.source=s.source),
           'error_count', (SELECT count(*) FROM ingestion_errors e WHERE e.source=s.source),
           'last_error', (SELECT jsonb_build_object('at',created_at,'reason',reason) FROM ingestion_errors e WHERE e.source=s.source ORDER BY created_at DESC,event_key DESC LIMIT 1)
         )) FROM (VALUES ('NGINX'),('SURICATA'),('STUDENT_AUDIT')) s(source)
     "#).fetch_one(&state.pool).await.ok();
+    let operations = operations::snapshot().await;
     let desired = sqlx::query_scalar::<_, String>("SELECT host(ip) FROM blocked_ips WHERE active")
         .fetch_all(&state.pool)
         .await
@@ -172,7 +175,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
             StatusCode::SERVICE_UNAVAILABLE
         },
         Json(
-            json!({"healthy":healthy,"database":database,"firewall":fw.is_ok(),"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
+            json!({"checked_at":Utc::now(),"operations":operations,"healthy":healthy,"database":database,"firewall":fw.is_ok(),"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
         ),
     )
 }

@@ -34,8 +34,11 @@ public class StudentPasswordController {
     }
     @PostMapping("/reset-password")
     public ResponseEntity<Void> reset(@Valid @RequestBody ResetRequest request) {
-        if (!passwords.reset(request.studentCode(), request.code(), request.newPassword()))
+        if (!passwords.reset(request.studentCode(), request.code(), request.newPassword())) {
+            com.pbl4.studentweb.accesslog.service.SecuritySignals.markCurrent(
+                com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RECOVERY_TOKEN_INVALID);
             throw new IllegalArgumentException("Mã xác thực không hợp lệ hoặc đã hết hạn");
+        }
         return ResponseEntity.noContent().build();
     }
     @PostMapping("/change-password")

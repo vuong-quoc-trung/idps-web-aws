@@ -1,7 +1,13 @@
+import {
+  AlertTriage,
+  type TriageAlert,
+  type TriageHistory,
+} from "./AlertTriage";
 import { applicationEvidence } from "./applicationEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
-  alert: {
+  triage_history: TriageHistory[];
+  alert: TriageAlert & {
     id: number;
     occurred_at: string;
     source: string;
@@ -65,9 +71,13 @@ export function AlertDetail({
   onSelect,
   onAudit,
   onBlock,
+  admin,
+  onChanged,
 }: {
   id: number;
-  api: (path: string) => Promise<any>;
+  api: (path: string, options?: RequestInit) => Promise<any>;
+  admin: boolean;
+  onChanged: () => void;
   onClose: () => void;
   onSelect: (id: number) => void;
   onAudit: (id: number) => void;
@@ -141,6 +151,14 @@ export function AlertDetail({
               </div>
             ))}
           </dl>
+          <AlertTriage
+            key={a.id}
+            initial={a}
+            history={data.triage_history ?? []}
+            admin={admin}
+            api={api}
+            onChanged={onChanged}
+          />
           {app && (
             <section aria-label="Phát hiện hành vi ứng dụng">
               <h3>{app.code} · Tổng hợp hành vi</h3>

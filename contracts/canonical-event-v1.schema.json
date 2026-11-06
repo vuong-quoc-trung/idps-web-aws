@@ -330,7 +330,7 @@
         "reasons": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 7,
+          "maxItems": 10,
           "uniqueItems": true,
           "items": {
             "enum": [
@@ -340,7 +340,10 @@
               "PRIVILEGE_DENIED",
               "INVALID_SESSION",
               "SESSION_REVOKED",
-              "WORKFLOW_DENIED"
+              "WORKFLOW_DENIED",
+              "RATE_LIMITED",
+              "CSRF_INVALID",
+              "RECOVERY_TOKEN_INVALID"
             ]
           }
         },

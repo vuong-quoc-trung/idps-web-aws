@@ -33,6 +33,9 @@ test("new application rules render aggregates and reject unknown codes", () => {
     "APP-1008",
     "APP-1009",
     "APP-1010",
+    "APP-1017",
+    "APP-1018",
+    "APP-1019",
   ]) {
     assert.equal(
       applicationEvidence(JSON.stringify({ rule_code: code, event_count: 5 }))
@@ -40,5 +43,5 @@ test("new application rules render aggregates and reject unknown codes", () => {
       code,
     );
   }
-  assert.equal(applicationEvidence('{"rule_code":"APP-1017"}'), null);
+  assert.equal(applicationEvidence('{"rule_code":"APP-1020"}'), null);
 });

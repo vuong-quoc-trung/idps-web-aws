@@ -254,7 +254,7 @@ canonical_json_schema:
         reasons:
           type: array
           minItems: 1
-          maxItems: 7
+          maxItems: 10
           uniqueItems: true
           items:
             enum:
@@ -265,6 +265,9 @@ canonical_json_schema:
             - INVALID_SESSION
             - SESSION_REVOKED
             - WORKFLOW_DENIED
+            - RATE_LIMITED
+            - CSRF_INVALID
+            - RECOVERY_TOKEN_INVALID
         account_hmac:
           type:
           - string
@@ -288,7 +291,7 @@ canonical_json_schema:
             - studentId
             - authorities
             - permissions
-canonical_schema_sha256: 7004a7f8c857c0e620078d19575866d3184f729312878813a56109f7077ab95d
+canonical_schema_sha256: 2a98c3f1b9fc0674a0fa07489e99c9ea33c8530322ed7f44ec9d5754ae58fd8e
 database:
   table: normalized_events
   columns:

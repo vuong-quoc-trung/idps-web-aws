@@ -91,6 +91,15 @@ class ExtendedRuleTests(unittest.TestCase):
             self.assertNotIn("WEB_SHELL_FIXTURE_CANARY", raw, "request body must not be logged to EVE")
             return [event for line in raw.splitlines() if (event := json.loads(line)).get("event_type") == "alert"]
 
+    def test_data_body_xss_command(self):
+        bodies = [b'{"name":"<script>alert(1)</script>"}', b"name=%3Csvg%20onload%3Dalert(1)%3E",
+                  b'{"name":"x; whoami"}', b"name=x%26%26id", b'{"name":"Research and Development"}',
+                  b'{"name":"shell scripting class"}', b'{"name":"<script>alert(1)</script>"}']
+        events = self.inspect([request("/api/auth/login" if i == 6 else "/api/students", method="POST", body=b,
+            content_type="application/x-www-form-urlencoded" if i in (1,3) else "application/json") for i,b in enumerate(bodies)])
+        for sid, expected in [(1000026, {0,1}), (1000027, {2,3})]:
+            self.assertEqual({e["src_port"]-40000 for e in events if e["alert"]["signature_id"]==sid}, expected)
+
     def test_boolean_union_post_body(self):
         bodies = [
             b"username=admin&password=%27+OR+%271%27%3D%271",

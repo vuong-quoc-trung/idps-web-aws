@@ -43,6 +43,8 @@ final class SecurityRequestFilter extends OncePerRequestFilter {
         try {
             if ("POST".equals(method) && LIMITED.contains(path)
                     && !limiter.allow(client.clientIp() + "|" + path, path.endsWith("forgot-password") ? 5 : 20)) {
+                com.pbl4.studentweb.accesslog.service.SecuritySignals.get(request).mark(
+                    com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RATE_LIMITED);
                 response.setHeader("Retry-After", "60");
                 SecurityConfiguration.error(response, 429, "Too many requests; try again later");
                 return;

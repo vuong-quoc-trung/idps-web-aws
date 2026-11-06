@@ -8,7 +8,9 @@ mod ingest;
 mod metrics;
 mod network;
 mod nginx_detection;
+mod operations;
 mod security_detection;
+mod triage;
 use anyhow::{Context, Result, bail};
 use axum::{
     Extension, Json, Router,
@@ -151,6 +153,7 @@ struct AlertQuery {
     source: Option<String>,
     action: Option<String>,
     dest_ip: Option<std::net::IpAddr>,
+    triage_status: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -247,6 +250,7 @@ async fn main() -> Result<()> {
     }
     tokio::spawn(ingest::retention_worker(state.clone()));
     tokio::spawn(metrics::sample_resources());
+    tokio::spawn(operations::monitor());
     tokio::spawn(firewall::worker(state.clone()));
     let addr = env::var("APP_ADDR").unwrap_or("127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(&addr).await?;
@@ -268,6 +272,7 @@ fn router(state: AppState) -> Router {
         .route("/api/alerts", get(list_alerts))
         .route("/api/alerts/search", get(search_alerts))
         .route("/api/alerts/{id}", get(alert_detail))
+        .route("/api/alerts/{id}/triage", post(triage::update))
         .route("/api/stats", get(metrics::stats))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
@@ -302,6 +307,12 @@ async fn search_alerts(
             "Thời gian bắt đầu phải trước thời gian kết thúc",
         ));
     }
+    if q.triage_status
+        .as_deref()
+        .is_some_and(|s| !triage::valid_status(s))
+    {
+        return Err(bad_request("Trạng thái xử lý không hợp lệ"));
+    }
     let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_search.sql"))
         .bind(q.limit.unwrap_or(50).clamp(1, 200))
         .bind(q.offset.unwrap_or(0).max(0))
@@ -312,6 +323,7 @@ async fn search_alerts(
         .bind(q.source)
         .bind(q.action)
         .bind(q.dest_ip.map(|ip| ip.to_string()))
+        .bind(q.triage_status)
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
@@ -470,6 +482,7 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>
             "action_mode":"ALERT_ONLY","threshold":r.threshold,"window_seconds":r.seconds
         })
     }));
+    operations::annotate_rules(&state, &mut rules).await;
     Json(rules)
 }
 
@@ -675,6 +688,22 @@ fn suricata_rule_catalog(policy: &PolicyEngine) -> Vec<RuleInfo> {
             auto_block_eligible: policy.evaluate_suricata(Some(1000025))
                 == EventPolicyDecision::EligibleForAutoBlock,
         },
+        RuleInfo {
+            sid: 1000026,
+            name: "XSS Request Body Attempt",
+            category: "Web Application Attack",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000026))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000027,
+            name: "Command Injection Request Body Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000027))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
     ]
 }
 
@@ -753,7 +782,8 @@ mod parser_tests {
     fn extended_rules_require_explicit_response_opt_in() {
         let sids = vec![
             1000008, 1000010, 1000011, 1000012, 1000013, 1000014, 1000015, 1000016, 1000017,
-            1000018, 1000019, 1000020, 1000021, 1000022, 1000023, 1000024, 1000025,
+            1000018, 1000019, 1000020, 1000021, 1000022, 1000023, 1000024, 1000025, 1000026,
+            1000027,
         ];
         let off = PolicyEngine::new(false, sids.clone(), false);
         let original = PolicyEngine::new(true, vec![1000002], false);
@@ -794,6 +824,8 @@ mod parser_tests {
             (1000023, 1),
             (1000024, 1),
             (1000025, 1),
+            (1000026, 2),
+            (1000027, 1),
         ] {
             let parsed = events::parse("SURICATA", &serde_json::json!({
                 "timestamp":"2026-10-29T10:00:00Z", "event_type":"alert",

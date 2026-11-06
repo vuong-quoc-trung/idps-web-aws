@@ -2,12 +2,19 @@
 use crate::*;
 use events::CanonicalEvent;
 use serde_json::json;
-pub const RULES: [(&str, &str, i64, i64); 5] = [
+pub const RULES: [(&str, &str, i64, i64); 7] = [
     ("HTTP_REQUEST_BURST", "HTTP Request Burst", 120, 30),
     ("HTTP_REJECTION_BURST", "HTTP Rejection Burst", 10, 60),
     ("LARGE_RESPONSE_BURST", "Large API Response Burst", 30, 60),
     ("GATEWAY_ERROR_BURST", "Gateway Error Burst", 10, 60),
     ("UNEXPECTED_HTTP_METHOD", "Unexpected HTTP Method", 1, 0),
+    ("SENSITIVE_PATH_PROBE", "Sensitive Path Probe", 1, 0),
+    (
+        "PATH_ENUMERATION_BURST",
+        "Distinct Path Enumeration Burst",
+        20,
+        60,
+    ),
 ];
 pub fn unexpected_method(method: Option<&str>) -> bool {
     matches!(
@@ -29,6 +36,35 @@ pub fn unexpected_method(method: Option<&str>) -> bool {
                 | "MERGE"
         )
     )
+}
+pub fn sensitive_path(path: &str) -> bool {
+    let path = path
+        .split('?')
+        .next()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    path == "/.env"
+        || path.starts_with("/.env.")
+        || path.starts_with("/.env/")
+        || path.starts_with("/.git/")
+        || matches!(path.as_str(), "/actuator/env" | "/actuator/heapdump")
+        || path.starts_with("/actuator/env/")
+        || path.starts_with("/actuator/heapdump/")
+}
+fn enumeration_path(e: &CanonicalEvent) -> Option<&str> {
+    let p = e.uri_path.as_deref()?;
+    (e.status_code == Some(404)
+        && p.starts_with('/')
+        && !p.contains("[REDACTED")
+        && !["/assets/", "/static/", "/images/"]
+            .iter()
+            .any(|prefix| p.starts_with(prefix))
+        && ![
+            ".css", ".js", ".png", ".jpg", ".ico", ".svg", ".woff2", ".map",
+        ]
+        .iter()
+        .any(|ext| p.ends_with(ext)))
+    .then_some(p)
 }
 fn flags(e: &CanonicalEvent) -> [bool; 4] {
     let path = e.uri_path.as_deref().unwrap_or_default();
@@ -76,14 +112,19 @@ pub async fn observe(
     )
     .execute(&mut **tx)
     .await?;
-    let inserted=sqlx::query("INSERT INTO nginx_behavior_observations(event_key,source_instance,client_ip,occurred_at,burst,rejection,large_response,gateway,response_bytes) VALUES($1,$2,$3::inet,$4,$5,$6,$7,$8,$9) ON CONFLICT DO NOTHING")
-        .bind(key).bind(&e.source_instance).bind(e.client_ip.map(|v|v.to_string())).bind(e.timestamp).bind(f[0]).bind(f[1]).bind(f[2]).bind(f[3]).bind(e.response_bytes.unwrap_or(0).min(i64::MAX as u64) as i64).execute(&mut **tx).await?.rows_affected();
+    let inserted=sqlx::query("INSERT INTO nginx_behavior_observations(event_key,source_instance,client_ip,occurred_at,burst,rejection,large_response,gateway,response_bytes,enumeration_path) VALUES($1,$2,$3::inet,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO NOTHING")
+        .bind(key).bind(&e.source_instance).bind(e.client_ip.map(|v|v.to_string())).bind(e.timestamp).bind(f[0]).bind(f[1]).bind(f[2]).bind(f[3]).bind(e.response_bytes.unwrap_or(0).min(i64::MAX as u64) as i64).bind(enumeration_path(e)).execute(&mut **tx).await?.rows_affected();
     if inserted == 0 {
         return Ok(());
     }
     sqlx::query("DELETE FROM nginx_behavior_observations WHERE event_key IN (SELECT event_key FROM nginx_behavior_observations ORDER BY received_at DESC,event_key DESC OFFSET 100000)").execute(&mut **tx).await?;
-    for (i, (code, name, threshold, seconds)) in RULES.iter().take(4).enumerate() {
-        if !f[i] {
+    for i in [0usize, 1, 2, 3, 6] {
+        let (code, name, threshold, seconds) = &RULES[i];
+        if !(if i == 6 {
+            enumeration_path(e).is_some()
+        } else {
+            f[i]
+        }) {
             continue;
         }
         let global = i == 3;
@@ -96,9 +137,18 @@ pub async fn observe(
             ip.to_string()
         };
         let watermark:DateTime<Utc>=sqlx::query_scalar("SELECT max(occurred_at) FROM nginx_behavior_observations WHERE source_instance=$1 AND ($2 OR host(client_ip)=$3)").bind(&e.source_instance).bind(global).bind(&subject).fetch_one(&mut **tx).await?;
-        let column = ["burst", "rejection", "large_response", "gateway"][i]; // trusted constants only
+        let column = if i == 6 {
+            "enumeration_path IS NOT NULL"
+        } else {
+            ["burst", "rejection", "large_response", "gateway"][i]
+        };
+        let count_expr = if i == 6 {
+            "count(DISTINCT enumeration_path)"
+        } else {
+            "count(*)"
+        }; // trusted constants only
         let query = format!(
-            "SELECT count(*)::bigint,COALESCE(sum(response_bytes),0)::text FROM nginx_behavior_observations WHERE source_instance=$1 AND ($2 OR host(client_ip)=$3) AND occurred_at>$4 AND occurred_at<=$5 AND {column}"
+            "SELECT {count_expr}::bigint,COALESCE(sum(response_bytes),0)::text FROM nginx_behavior_observations WHERE source_instance=$1 AND ($2 OR host(client_ip)=$3) AND occurred_at>$4 AND occurred_at<=$5 AND {column}"
         );
         let (count, bytes): (i64, String) = sqlx::query_as(&query)
             .bind(&e.source_instance)
@@ -126,6 +176,42 @@ pub async fn observe(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[sqlx::test(migrations = "./migrations")]
+    async fn enumeration_counts_distinct_sanitized_paths(pool: PgPool) {
+        let mut tx = pool.begin().await.unwrap();
+        let mut e = CanonicalEvent::new("NGINX", Utc::now());
+        e.client_ip = Some("192.0.2.1".parse().unwrap());
+        e.status_code = Some(404);
+        for i in 0..40 {
+            e.uri_path = Some("/same-path".into());
+            observe(&mut tx, &e, &format!("same-{i}")).await.unwrap();
+        }
+        for i in 0..19 {
+            e.uri_path = Some(format!("/probe-{i}"));
+            observe(&mut tx, &e, &format!("path-{i}")).await.unwrap();
+            observe(&mut tx, &e, &format!("path-{i}")).await.unwrap();
+            let n: i64 = sqlx::query_scalar(
+                "SELECT count(*) FROM security_alerts WHERE signature='PATH_ENUMERATION_BURST'",
+            )
+            .fetch_one(&mut *tx)
+            .await
+            .unwrap();
+            assert_eq!(n, i64::from(i == 18));
+        }
+        e.uri_path = Some("/assets/missing.js".into());
+        assert!(enumeration_path(&e).is_none());
+        for p in [
+            "/.env",
+            "/.git/config",
+            "/actuator/env",
+            "/actuator/heapdump",
+        ] {
+            assert!(sensitive_path(p));
+        }
+        for p in ["/api/students", "/actuator/health", "/.environment"] {
+            assert!(!sensitive_path(p));
+        }
+    }
     #[test]
     fn methods_and_routes_are_precise() {
         assert!(unexpected_method(Some("PROPFIND")));

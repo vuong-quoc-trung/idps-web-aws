@@ -60,6 +60,19 @@ class StudentApiTests {
     User admin;
     StudentClass studentClass;
 
+    @Test void csrfAndRecoverySignalsAreExplicit() throws Exception {
+        var denied = mvc.perform(post("/api/auth/login").param("username", "test").param("password", "secret"))
+            .andExpect(status().isForbidden()).andReturn().getRequest();
+        assertThat(com.pbl4.studentweb.accesslog.service.SecuritySignals.get(denied).reasons())
+            .contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.CSRF_INVALID)
+            .doesNotContain(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.PRIVILEGE_DENIED);
+        var invalid = mvc.perform(post("/api/auth/activate").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"token\":\"unknown-token\",\"password\":\"Valid-password-123\"}"))
+            .andExpect(status().isBadRequest()).andReturn().getRequest();
+        assertThat(com.pbl4.studentweb.accesslog.service.SecuritySignals.get(invalid).reasons())
+            .contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RECOVERY_TOKEN_INVALID);
+    }
+
     @BeforeEach void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         faculty = new com.pbl4.studentweb.faculty.entity.Faculty();
@@ -992,7 +1005,7 @@ class StudentApiTests {
         var denied = send(post("/api/users"), session, "{\"username\":\"test\",\"role\":\"ADMIN\"}", 403);
         assertThat(signals(denied).reasons()).contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.PRIVILEGE_DENIED);
         var csrfDenied = mvc.perform(post("/api/users").session(session)).andExpect(status().isForbidden()).andReturn();
-        assertThat(signals(csrfDenied).reasons()).isEmpty();
+        assertThat(signals(csrfDenied).reasons()).containsExactly(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.CSRF_INVALID);
     }
     @Test void rejectsMassAssignmentButAllowsAdminRoleDto() throws Exception {
         var session=login("admin-test");

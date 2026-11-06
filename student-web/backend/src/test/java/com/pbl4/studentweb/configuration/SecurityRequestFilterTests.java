@@ -20,7 +20,7 @@ class SecurityRequestFilterTests {
             assertThat(response.getStatus()).isEqualTo(i == 20 ? 429 : 401);
             if (i == 20) assertThat(response.getHeader("Retry-After")).isEqualTo("60");
         }
-        verify(audit).record(argThat(e -> e.statusCode() == 429 && "192.0.2.1".equals(e.clientIp()) && e.queryString() == null), any());
+        verify(audit).record(argThat(e -> e.statusCode() == 429 && "192.0.2.1".equals(e.clientIp()) && e.queryString() == null), argThat(s -> s.reasons().contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RATE_LIMITED)));
     }
     @Test void windowExpiresAndClientsAreIndependent() {
         Clock clock = mock(Clock.class);

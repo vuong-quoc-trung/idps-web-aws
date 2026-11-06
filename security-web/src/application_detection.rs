@@ -12,7 +12,7 @@ pub struct Rule {
     pub threshold: i64,
     pub seconds: i64,
 }
-pub const RULES: [Rule; 16] = [
+pub const RULES: [Rule; 19] = [
     Rule {
         code: "APP-1001",
         name: "Repeated Authentication Failures",
@@ -108,6 +108,24 @@ pub const RULES: [Rule; 16] = [
         name: "Business Workflow Abuse",
         threshold: 1,
         seconds: 60,
+    },
+    Rule {
+        code: "APP-1017",
+        name: "Repeated Rate-Limit Violations",
+        threshold: 5,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1018",
+        name: "Repeated CSRF Validation Failures",
+        threshold: 5,
+        seconds: 60,
+    },
+    Rule {
+        code: "APP-1019",
+        name: "Repeated Invalid Recovery Token",
+        threshold: 5,
+        seconds: 600,
     },
 ];
 #[derive(FromRow)]

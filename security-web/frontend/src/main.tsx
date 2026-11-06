@@ -1,3 +1,9 @@
+import {
+  freshness,
+  triageLabels,
+  ruleDeployment,
+  type Verification,
+} from "./operations";
 import { applicationEvidence } from "./applicationEvidence";
 import {
   Component,
@@ -23,6 +29,7 @@ const securityLogo = new URL("./assets/logo-security.png", import.meta.url)
 
 type User = { username: string; role: "admin" | "viewer" };
 type Alert = {
+  triage_status?: string;
   id: number;
   occurred_at: string;
   source: string;
@@ -107,6 +114,7 @@ type Audit = {
   created_at: string;
 };
 type Rule = {
+  verification?: Verification;
   sid: number | null;
   code: string;
   source: string;
@@ -118,6 +126,13 @@ type Rule = {
   auto_block_eligible: boolean;
 };
 type Health = {
+  checked_at?: string;
+  dataset_collection?: boolean;
+  operations?: {
+    sampled_at?: string;
+    receiver?: { active: string; load: string; sub: string };
+    suricata?: { active: string; load: string; sub: string };
+  };
   healthy: boolean;
   database: boolean;
   firewall: boolean;
@@ -135,6 +150,8 @@ type Health = {
   collection: Record<
     string,
     {
+      last_ingested_at?: string | null;
+      last_ingested_event_at?: string | null;
       last_alert_at: string | null;
       error_count: number;
       last_error: { at: string; reason: string } | null;
@@ -178,6 +195,7 @@ function App() {
     source: "",
     action: "",
     dest_ip: "",
+    triage_status: "",
   });
   const filterParams = new URLSearchParams();
   Object.entries(alertFilters).forEach(([key, value]) => {
@@ -409,7 +427,16 @@ function App() {
         .replace(/^[=+@\-\t\r]/, "'$&")
         .replaceAll('"', '""')}"`;
     const csv = [
-      ["ID", "Thời gian", "Nguồn", "IP", "Rule", "Severity", "Hành động"],
+      [
+        "ID",
+        "Thời gian",
+        "Nguồn",
+        "IP",
+        "Rule",
+        "Severity",
+        "Hành động",
+        "Xử lý",
+      ],
       ...alerts.map((a) => [
         a.id,
         a.occurred_at,
@@ -418,6 +445,7 @@ function App() {
         a.rule_name,
         a.severity,
         a.action,
+        triageLabels[a.triage_status ?? "NEW"],
       ]),
     ]
       .map((row) => row.map(cell).join(","))
@@ -731,6 +759,7 @@ function App() {
                         source: "",
                         action: "",
                         dest_ip: "",
+                        triage_status: "",
                       });
                       setPage(0);
                       setTab("alerts");
@@ -1060,6 +1089,26 @@ function App() {
                   <option value="STUDENT_AUDIT">Student Audit</option>
                 </select>
               </label>
+              <label>
+                Trạng thái xử lý
+                <select
+                  value={alertFilters.triage_status}
+                  onChange={(e) => {
+                    setAlertFilters({
+                      ...alertFilters,
+                      triage_status: e.target.value,
+                    });
+                    setPage(0);
+                  }}
+                >
+                  <option value="">Tất cả</option>
+                  {Object.entries(triageLabels).map(([code, label]) => (
+                    <option key={code} value={code}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <details className="advanced-filters">
                 <summary>Bộ lọc nâng cao</summary>
                 <div className="advanced-fields">
@@ -1114,6 +1163,7 @@ function App() {
                     <th scope="col">IP nguồn → đích</th>
                     <th scope="col">Mức độ</th>
                     <th scope="col">Hành động</th>
+                    <th scope="col">Xử lý</th>
                     <th scope="col">Tổng hợp ứng dụng</th>
                     <th scope="col">Bằng chứng</th>
                   </tr>
@@ -1159,6 +1209,12 @@ function App() {
                           className={`badge ${a.action === "AUTO-BLOCK" ? "good" : "warn"}`}
                         >
                           {a.action}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge">
+                          {triageLabels[a.triage_status ?? "NEW"] ??
+                            "Chưa xác định"}
                         </span>
                       </td>
                       <td>
@@ -1534,6 +1590,35 @@ function App() {
                           ? ` · ${r.threshold}/${r.window_seconds}s`
                           : ""}
                       </p>
+                      <p className="muted">{ruleDeployment(r.verification)}</p>
+                      {r.verification?.last_alert ? (
+                        <p>
+                          <button
+                            onClick={() =>
+                              setSelectedAlert(
+                                r.verification!.last_alert!.alert_id,
+                              )
+                            }
+                          >
+                            Xem bằng chứng #{r.verification.last_alert.alert_id}
+                          </button>
+                          <small>
+                            {" "}
+                            Đã lưu lúc{" "}
+                            {new Date(
+                              r.verification.last_alert.ingested_at,
+                            ).toLocaleString("vi-VN")}
+                            . Đây là lịch sử, không xác nhận bản triển khai hiện
+                            tại đã qua kiểm thử.
+                          </small>
+                        </p>
+                      ) : (
+                        <small>
+                          {r.verification?.evidence_available
+                            ? "Chưa có cảnh báo đối chiếu được mã rule trong DB; không đồng nghĩa rule bị lỗi."
+                            : "Chưa tải được bằng chứng từ DB."}
+                        </small>
+                      )}
                     </div>
                     <span className="badge">
                       {r.auto_block_eligible
@@ -1581,6 +1666,63 @@ function App() {
                 Nginx/Suricata/Student Web hoặc đường truyền RELP đang hoạt
                 động. Không có cảnh báo mới có thể là bình thường.
               </p>
+              <article className="panel">
+                <h3>Đường truyền Student Audit</h3>
+                <p>
+                  Web VM → RELP receiver → file local → Rust ingest → DB →
+                  Dashboard
+                </p>
+                <dl className="detail-fields">
+                  <div>
+                    <dt>Sender trên Web VM</dt>
+                    <dd>
+                      Chưa xác minh từ host; kiểm tra pbl4-audit-sender.service
+                      trên VM.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Receiver trên host</dt>
+                    <dd>
+                      {health?.operations?.receiver
+                        ? `${health.operations.receiver.active} / ${health.operations.receiver.sub}`
+                        : "Chưa có mẫu kiểm tra"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Sensor Suricata trên host</dt>
+                    <dd>
+                      {health?.operations?.suricata
+                        ? `${health.operations.suricata.active} / ${health.operations.suricata.sub}`
+                        : "Chưa có mẫu kiểm tra"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Mẫu kiểm tra dịch vụ</dt>
+                    <dd>
+                      {health?.operations?.sampled_at
+                        ? new Date(health.operations.sampled_at).toLocaleString(
+                            "vi-VN",
+                          )
+                        : "Chưa có"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Lưu audit đầy đủ</dt>
+                    <dd>
+                      {health?.dataset_collection == null
+                        ? "Chưa xác định"
+                        : health.dataset_collection
+                          ? "Đang bật"
+                          : "Đang tắt — mốc DB có thể là lịch sử"}
+                    </dd>
+                  </div>
+                </dl>
+                <p className="muted">
+                  Service active không chứng minh kết nối RELP hay dữ liệu đầu
+                  cuối đang hoạt động. Không thực hiện SSH hoặc restart dịch vụ
+                  từ dashboard.
+                </p>
+              </article>
               <div className="source-health-grid">
                 {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
@@ -1622,7 +1764,22 @@ function App() {
                       {watcher?.error && (
                         <p className="error">{watcher.error}</p>
                       )}
+                      <p role="status">
+                        {freshness(watcher?.last_data_at, health?.checked_at)}
+                      </p>
+                      <p className="muted">
+                        Im lặng không đồng nghĩa mất kết nối. Tạo một request
+                        kiểm thử rồi đối chiếu mốc nhận và lưu dữ liệu.
+                      </p>
                       <dl className="detail-fields">
+                        <div>
+                          <dt>Lần lưu sự kiện vào DB</dt>
+                          <dd>{time(collection?.last_ingested_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Thời gian sự kiện vừa lưu</dt>
+                          <dd>{time(collection?.last_ingested_event_at)}</dd>
+                        </div>
                         <div>
                           <dt>Lần đọc thành công</dt>
                           <dd>{time(watcher?.last_success_at)}</dd>
@@ -1806,6 +1963,8 @@ function App() {
         {selectedAlert !== null && (
           <AlertDetail
             id={selectedAlert}
+            admin={admin}
+            onChanged={() => void refresh()}
             api={api}
             onBlock={
               admin

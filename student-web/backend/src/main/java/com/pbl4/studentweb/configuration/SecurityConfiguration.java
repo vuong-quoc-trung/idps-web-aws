@@ -60,6 +60,8 @@ public class SecurityConfiguration {
                     error(response, 401, "Authentication required");
                 })
                 .accessDeniedHandler((request, response, error) -> {
+                    if (error instanceof org.springframework.security.web.csrf.CsrfException)
+                        SecuritySignals.get(request).mark(SecuritySignals.Reason.CSRF_INVALID);
                     // Exclude CSRF failures: they do not establish lack of privilege.
                     String path = request.getRequestURI().substring(request.getContextPath().length());
                     if (!(error instanceof org.springframework.security.web.csrf.CsrfException)

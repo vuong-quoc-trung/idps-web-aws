@@ -22,6 +22,9 @@ fn matches(code: &str, s: &SecuritySignals, status: i32) -> bool {
         "APP-1014" => has(s, "PRIVILEGE_DENIED") && status == 403,
         "APP-1015" => (has(s, "INVALID_SESSION") || has(s, "SESSION_REVOKED")) && status == 401,
         "APP-1016" => has(s, "WORKFLOW_DENIED") && matches!(status, 401 | 403 | 409),
+        "APP-1017" => has(s, "RATE_LIMITED") && status == 429,
+        "APP-1018" => has(s, "CSRF_INVALID") && status == 403,
+        "APP-1019" => has(s, "RECOVERY_TOKEN_INVALID") && status == 400,
         _ => false,
     }
 }
@@ -151,6 +154,9 @@ mod tests {
             ("APP-1014", "PRIVILEGE_DENIED", 1, 403),
             ("APP-1015", "SESSION_REVOKED", 10, 401),
             ("APP-1016", "WORKFLOW_DENIED", 1, 403),
+            ("APP-1017", "RATE_LIMITED", 5, 429),
+            ("APP-1018", "CSRF_INVALID", 5, 403),
+            ("APP-1019", "RECOVERY_TOKEN_INVALID", 5, 400),
         ] {
             let mut tx = pool.begin().await.unwrap();
             for n in 0..threshold {
@@ -182,6 +188,23 @@ mod tests {
                 .await
                 .unwrap();
         assert_eq!(actions, vec!["ALERT"]);
+    }
+    #[test]
+    fn new_rules_require_confirmed_reason_and_status() {
+        for (code, reason, status) in [
+            ("APP-1017", "RATE_LIMITED", 429),
+            ("APP-1018", "CSRF_INVALID", 403),
+            ("APP-1019", "RECOVERY_TOKEN_INVALID", 400),
+        ] {
+            let signal = event(reason, 1, status).security.unwrap();
+            assert!(matches(code, &signal, status as i32));
+            assert!(!matches(code, &signal, 200));
+            assert!(!matches(
+                code,
+                &event("LOGIN_FAILED", 1, status).security.unwrap(),
+                status as i32
+            ));
+        }
     }
     #[sqlx::test(migrations = "./migrations")]
     async fn repeated_one_identity_and_generic_errors_do_not_trigger(pool: PgPool) {
