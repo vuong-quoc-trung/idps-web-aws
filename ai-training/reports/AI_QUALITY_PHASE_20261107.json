@@ -1,0 +1,699 @@
+{
+  "schema_version": "ai-quality-phase-1",
+  "phase": "quality-lab-20261107-v1",
+  "recorded_at_UTC": "2026-11-07T04:19:40.531389+00:00",
+  "milestone_outcome": "CASE_B_TRAINING_BLOCKED",
+  "baseline_git": "8b83102ef565c1e63176a7789e79eba6123448a3",
+  "branch": "feature/ai-idps-shadow-integration",
+  "scope": {
+    "architecture_changed": false,
+    "frozen_weights_encoders_thresholds_changed": false,
+    "sealed_holdout_opened": false,
+    "AI_enforcement": "DISABLED",
+    "AWS_deployed": false,
+    "new_model_published": false,
+    "training_started": false
+  },
+  "inventory": {
+    "source_groups": 13,
+    "report": "ai-training/reports/RESEARCH_DATA_INVENTORY_20261107.json",
+    "historical_counts": "LAST_AUDITED_METADATA; not a fresh scan of all raw corpora",
+    "global_distinct_physical_HTTP_requests": null,
+    "global_count_reason": "Publisher rows, logs, derived representations and feature views are not additive physical request Ground Truth"
+  },
+  "new_cohort": {
+    "physical_receipts": 75,
+    "unique_request_ids": 75,
+    "unique_method_URL_body": 75,
+    "unique_frozen_feature_views": 59,
+    "unique_safe_templates": 45,
+    "intent_counts": {
+      "ATTACK_ATTEMPT": 23,
+      "BENIGN": 47,
+      "UNKNOWN": 5
+    },
+    "per_environment": {
+      "dvwa": {
+        "ATTACK_ATTEMPT": 19,
+        "BENIGN": 22,
+        "UNKNOWN": 5
+      },
+      "juice": {
+        "ATTACK_ATTEMPT": 4,
+        "BENIGN": 25
+      }
+    },
+    "review_pending": 75,
+    "independent_human_verified": 0,
+    "formal_admitted": 0,
+    "GLU207_eligible": 0,
+    "Request_v2_recorded_input_compatible": 75
+  },
+  "ground_truth": {
+    "semantic_oracle_matched_rows": 69,
+    "attack_outcomes_only": {
+      "VERIFIED_EXPLOIT_SUCCESS_INTERNAL_ORACLE": 14,
+      "UNSAFE_REFLECTION": 8,
+      "UNKNOWN": 1,
+      "VERIFIED_FAILED_ATTEMPT": 0
+    },
+    "unknown_intents": 5,
+    "unknown_reason": "Five DVWA intended-benign CALIBRATION lookups lack retained expected DB snapshot",
+    "independent_review": "PENDING_ALL_75",
+    "stored_XSS_execution": "NOT_VERIFIED; persisted unsafe reflection only",
+    "receipt_reverification": {
+      "status": "PASS",
+      "receipts_reverified": 75,
+      "semantic_oracle_matches": 69,
+      "catalog_all_expected_identities_present": "PASS; additional products do not substitute for missing expected identities",
+      "labels_and_outcomes_unchanged": true,
+      "prospective_scores_computed": 0,
+      "assessor_sha256": "41850d558e7fabf4618a4bef05a24ceb4cc364163e2e0ba5957f48703454fd26"
+    }
+  },
+  "traffic_accounting": {
+    "schema_version": "ancillary-traffic-accounting-1",
+    "cohort_fully_receipted": 75,
+    "DVWA_recorded_setup_responses": 14,
+    "Juice_saved_ancillary_API_states": 3,
+    "all_attempts_total_HTTP_including_startup_retries": "UNKNOWN; Juice readiness polling was not individually receipted. Do not report75 as total network traffic.",
+    "cohort_not_duplicated_across_continuation": true,
+    "complete_packet_capture_for_new_cohort": false
+  },
+  "roles": {
+    "eligible": {
+      "CALIBRATION": 9,
+      "DEVELOPMENT": 13,
+      "PROSPECTIVE_EVALUATION": 13,
+      "TRAIN": 35
+    },
+    "UNKNOWN_excluded": 5,
+    "training_connected_groups": 2,
+    "calibration_methods": [
+      "GET"
+    ],
+    "calibration_benign_POST": 0,
+    "calibration_unique_frozen_views": 3,
+    "prospective_positive_families": {
+      "sqli": 7
+    },
+    "prospective_scores_computed": 0,
+    "global_temporal_independence": "NOT_PROVEN"
+  },
+  "leakage": {
+    "exposed_P0_raw_overlaps": 5,
+    "exposed_P0_template_overlaps": 11,
+    "mixed_intent_feature_views": 0,
+    "cross_role_near_pairs": 0,
+    "cross_role_component_rows": 0,
+    "new_raw_representations_relative_to_P0": 70,
+    "exact_full_raw_cross_all_sources": "NOT_VERIFIED",
+    "near_rule": "cosine>=0.995 within same method and endpoint; bounded cohort exhaustively checked, not a global cross-corpus proof"
+  },
+  "fingerprints": {
+    "analysis_protocol_sha256": "e08c7c41e0dee53213c011d28d0e7db5a3d8b1e97ac94b764636d12ebb5bf7f7",
+    "role_ledger_sha256": "e07839914a4357da5832de5a8a6fb68edda2d923d62986e1510d0d43a5f10416",
+    "feature_file_sha256": "830fe016ca11e6c682c0b2182352ea7c5b3954403a0824bdb4afcd647d08ad89",
+    "assessor_at_original_report": "9a68b689835f22acc24c9cf0403f74606ed453c93e66bbc636d4e960bdc6e350",
+    "report_correction": {
+      "parent_report_sha256": "6483ad02f726ae24f889087edff40da7fadc7a07bfc0124db2c18864174e4f9d",
+      "reason": "Physical eligible calibration support is9rows;3is unique frozen feature views, not physical row count. No score/threshold/labels changed."
+    }
+  },
+  "calibration_only": {
+    "decision": "REJECT_FOR_DEPLOYMENT_AND_QUALITY_CLAIM; calibration support lacks benignPOST and cannot establish<=1%FPR; no new weights fit",
+    "frozen_weights_and_threshold_modified": false,
+    "limits": [
+      "TRAIN metrics here are frozen-model diagnostics, not fit/generalization performance",
+      "DEVELOPMENT includes P0-like patterns; never called blind evaluation",
+      "Scores use recorded full offline headers/body; live worker body remains missing",
+      "Internal Oracle labels and collector intent, human review pending; no independent population Recall/FPR"
+    ],
+    "prospective_rows_scored": 0,
+    "protocol_sha256": "e08c7c41e0dee53213c011d28d0e7db5a3d8b1e97ac94b764636d12ebb5bf7f7",
+    "results": {
+      "calibration_only": {
+        "comparator": ">",
+        "counts": {
+          "environment": {
+            "dvwa": {
+              "FN": 1,
+              "FP": 12,
+              "TN": 7,
+              "TP": 14
+            },
+            "juice": {
+              "FP": 6,
+              "TN": 16,
+              "TP": 1
+            }
+          },
+          "family": {
+            "benign": {
+              "FP": 18,
+              "TN": 23
+            },
+            "cmd_injection": {
+              "TP": 4
+            },
+            "path_traversal": {
+              "TP": 3
+            },
+            "sqli": {
+              "TP": 1
+            },
+            "xss": {
+              "FN": 1,
+              "TP": 7
+            }
+          },
+          "method": {
+            "GET": {
+              "FN": 1,
+              "TN": 23,
+              "TP": 4
+            },
+            "POST": {
+              "FP": 18,
+              "TP": 11
+            }
+          },
+          "role": {
+            "CALIBRATION": {
+              "TN": 9
+            },
+            "DEVELOPMENT": {
+              "FN": 1,
+              "TN": 4,
+              "TP": 8
+            },
+            "TRAIN": {
+              "FP": 18,
+              "TN": 10,
+              "TP": 7
+            }
+          }
+        },
+        "threshold": 0.07709759473800659
+      },
+      "frozen": {
+        "comparator": ">",
+        "counts": {
+          "environment": {
+            "dvwa": {
+              "FN": 14,
+              "TN": 19,
+              "TP": 1
+            },
+            "juice": {
+              "FP": 2,
+              "TN": 20,
+              "TP": 1
+            }
+          },
+          "family": {
+            "benign": {
+              "FP": 2,
+              "TN": 39
+            },
+            "cmd_injection": {
+              "FN": 4
+            },
+            "path_traversal": {
+              "FN": 2,
+              "TP": 1
+            },
+            "sqli": {
+              "TP": 1
+            },
+            "xss": {
+              "FN": 8
+            }
+          },
+          "method": {
+            "GET": {
+              "FN": 4,
+              "TN": 23,
+              "TP": 1
+            },
+            "POST": {
+              "FN": 10,
+              "FP": 2,
+              "TN": 16,
+              "TP": 1
+            }
+          },
+          "role": {
+            "CALIBRATION": {
+              "TN": 9
+            },
+            "DEVELOPMENT": {
+              "FN": 8,
+              "TN": 4,
+              "TP": 1
+            },
+            "TRAIN": {
+              "FN": 6,
+              "FP": 2,
+              "TN": 26,
+              "TP": 1
+            }
+          }
+        },
+        "threshold": 0.8826237916946411
+      }
+    },
+    "schema_version": "calibration-comparison-1",
+    "scored_diagnostic_rows": 57,
+    "status": "RESEARCH_DIAGNOSTIC_NOT_ACCEPTANCE",
+    "threshold_selected_from": "Only3unique eligible CALIBRATION benign views,9physicalrows; allGET; poor coverage",
+    "threshold_unchanged_after_diagnostic": true,
+    "training_started": false,
+    "descriptive_two_sided95_upper_FPR_zero_flags_3_views": 0.7075982261787133,
+    "FPR_population_claim": "NOT_ESTABLISHED; dependent workflow groups and no benign POST calibration"
+  },
+  "capture_integrity_limits": {
+    "attempts": {
+      "cohort-v1": "STOPPED: venv interpreter resolution broke watchdog import; zero cohort receipts",
+      "cohort-v2": "STOPPED: legacy default port binding broke DVWA readiness; zero cohort receipts",
+      "cohort-v3": "STOPPED: cleanup subprocess error after 46 DVWA receipts, recovered offline",
+      "cohort-v4-juice": "STOPPED: cleanup subprocess error after 29 Juice receipts, recovered offline; no DVWA recapture",
+      "assessment-v1": "STOPPED: expected capture.json missing; original attempt retained"
+    },
+    "cleanup_failure_original_runtime_cause": "UNKNOWN; original stderr not retained",
+    "collector_fixes_tested": "venv/port source fixes used during capture; final incremental ledger, cleanup diagnostics and stronger catalog identity check covered offline; no replay after final fixes",
+    "report_count_correction": "Original report physical CALIBRATION support was 3, corrected to 9; 3 denotes unique feature views. Original retained, no scores/labels/threshold changed"
+  },
+  "training_gate": {
+    "schema_version": "research-training-gate-1",
+    "overall": "BLOCKED",
+    "receipt_integrity": {
+      "status": "PASS",
+      "receipts": 75
+    },
+    "roles_group_view_checks": {
+      "status": "PASS_WITH_LIMITS",
+      "eligible_train": 35,
+      "eligible_calibration": 9,
+      "eligible_prospective": 13,
+      "new_role_components_disjoint": true,
+      "old_cross_corpus_full_raw_near_identity": "NOT_VERIFIED"
+    },
+    "Oracle_labels": {
+      "status": "PARTIAL",
+      "benign": 47,
+      "attempts": 23,
+      "UNKNOWN": 5,
+      "independent_review": "PENDING",
+      "independent_review_is_not_an_absolute_research_fit_requirement": true
+    },
+    "benign_POST_calibration": {
+      "status": "FAIL",
+      "observed": 0,
+      "unique_GET_calibration_views": 3
+    },
+    "prospective_family_support": {
+      "status": "FAIL",
+      "available": {
+        "sqli": 7
+      },
+      "missing": [
+        "xss",
+        "cmd_injection",
+        "path_traversal"
+      ],
+      "scores_computed": 0
+    },
+    "calibration_only": {
+      "decision": "REJECTED_FOR_DEPLOYMENT",
+      "training_role_diagnostic_FP_frozen": 2,
+      "training_role_diagnostic_FP_calibration_only": 18
+    },
+    "resume_and_persistent_training_supervision": {
+      "status": "NOT_EXERCISED_FOR_NEW_CANDIDATE",
+      "reason": "No training is scheduled while data gates fail; no placeholder supervisor launched"
+    },
+    "one_next_task": "One targeted role-isolated cohort supplying Oracle-supported benignPOST calibration and unexposed XSS/command/traversal prospective workflow groups; exclude this corpus templates/views before sending, do not recollect already documented cases."
+  },
+  "challenger": {
+    "design": "ai-training/configs/research/request-channel-robustness-v3.json",
+    "state": "DESIGN_ONLY_DATA_GATE_BLOCKED",
+    "candidate_limit": 1,
+    "hypothesis": "Separate URI/body/header normalization and coarse field-aware security syntax, plus benign POST hard negatives, may improve family detection while limiting false positives",
+    "initialization": "NEW_INITIALIZATION; changed coordinate semantics are not warm-start compatible with frozen first-layer weights",
+    "new_encoder_implemented": false,
+    "new_training_supervisor_exercised": false,
+    "new_checkpoint": null,
+    "new_exact_resume_verified": false,
+    "budget_if_gates_pass": {
+      "max_epochs": 1,
+      "max_updates": 250,
+      "seed": 17
+    },
+    "per_family_Recall_target": 0.8,
+    "FPR_target": 0.01,
+    "targets_are_results": false
+  },
+  "resources": {
+    "stage_reports": [
+      {
+        "stage": "assessment-guard-v1",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 52.0,
+        "peak_system_used_bytes": 15542128640,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "assessment-guard-v2",
+        "status": "PASS",
+        "cpu_temperature_max_C": 54.0,
+        "peak_system_used_bytes": 15642161152,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "calibration-comparison-guard",
+        "status": "PASS",
+        "cpu_temperature_max_C": 50.0,
+        "peak_system_used_bytes": 15582330880,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "capture-guard-v1",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 50.0,
+        "peak_system_used_bytes": 15158865920,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "capture-guard-v2",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 52.0,
+        "peak_system_used_bytes": 15452704768,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "capture-guard-v3",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 50.0,
+        "peak_system_used_bytes": 15413092352,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "capture-guard-v4-juice",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 52.0,
+        "peak_system_used_bytes": 15663497216,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "cgroup-probe-guard",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 46.0,
+        "peak_system_used_bytes": 15597006848,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "cgroup-probe-guard-2",
+        "status": "STOPPED",
+        "cpu_temperature_max_C": 46.0,
+        "peak_system_used_bytes": 15578226688,
+        "emergency_stops": 0
+      },
+      {
+        "stage": "watchdog-functional-guard",
+        "status": "PASS",
+        "cpu_temperature_max_C": 47.0,
+        "peak_system_used_bytes": 15185096704,
+        "emergency_stops": 0
+      }
+    ],
+    "maximum_recorded_CPU_temperature_C": 54.0,
+    "maximum_recorded_shared_system_used_bytes": 15663497216,
+    "system_budget_GB": 30,
+    "parent_MemAvailable_reserve_GiB": 4,
+    "independent_watchdog_emergency_reserve_GiB": 3,
+    "container_CPU_limit_cores": 0.5,
+    "parent_CPU_quota_one_core_percent": 100,
+    "container_cgroup_parent_containment": "NOT_CLAIMED; per-container caps and separate exact-label watchdog",
+    "instant_cutoff_C": 90,
+    "rolling_active_limit_C": 80,
+    "rolling_window_seconds": 300,
+    "actual_stale_heartbeat_container_stop": {
+      "status": "PASS",
+      "actual_owned_container_stopped": true,
+      "reason": "STALE_COLLECTOR",
+      "no_hardware_stress": true
+    },
+    "sustained_training_thermal_qualification": "NOT_VERIFIED_BY_THIS_BOUNDED_DATA_WORK",
+    "final_cleanup": {
+      "containers": {
+        "returncode": 0,
+        "output": ""
+      },
+      "network": {
+        "returncode": 1,
+        "output": ""
+      },
+      "running_units": {
+        "returncode": 0,
+        "output": ""
+      },
+      "status": "PASS"
+    }
+  },
+  "preservation": {
+    "status": "PASS",
+    "frozen_native_bundle_files": 92,
+    "changed_frozen_files": [],
+    "existing_GLU_derivative_unchanged": true,
+    "sealed_holdout_opened": false
+  },
+  "validation": {
+    "tests_passed": 38,
+    "tests_failed": 0,
+    "suite": "test_p0_research.py, test_mvp_inference.py, test_quality_lab_phase.py, test_rolling_resource_policy.py, test_integration_candidate.py",
+    "Ruff": "PASS",
+    "catalog_identity_check": "All 46 expected public catalog identities present in each injection result; additional identities do not replace required identities",
+    "protected_integration_components_changed": false
+  },
+  "rule_AI_comparison": {
+    "new_cohort_PCAP_EVE_available": false,
+    "new_rule_only_or_AI_added_detection_claim": "NOT_MEASURED",
+    "previous_P0_comparison": "EXPOSED_HISTORICAL_DEVELOPMENT_ONLY"
+  },
+  "distribution": {
+    "public": "Safe source/tests/design config/aggregate reports/docs only",
+    "private": "Raw receipts, sessions, fixture accounts, state/source snapshots, role tensor ledger and blind review package remain ignored local",
+    "training_data_required_for_team_inference": false,
+    "frozen_team_release_changed": false
+  },
+  "one_next_task": "One bounded role/session-isolated gap-filling cohort with diverse new TRAIN workflow groups, Oracle-supported benign POST CALIBRATION and unexposed XSS/command/traversal PROSPECTIVE workflows. Predeclare the coverage matrix and exclude current corpus templates/views before sending. Do not recollect documented cases or reassign existing roles.",
+  "evidence_index": [
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/calibration-comparison.json",
+      "sha256": "574a767b241ff3ea1b13c82860701b306718e83b1c75e2f4d5bccca8e3e68605",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/report.json",
+      "sha256": "6483ad02f726ae24f889087edff40da7fadc7a07bfc0124db2c18864174e4f9d",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/report-corrected.json",
+      "sha256": "5a583d47f89fc863e9ea0cb34fd63775570ba7efda1702caab5cba853f778831",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/analysis-protocol.json",
+      "sha256": "eed8cd493137f0e9fac5d944e766c8ec3c495b3f7e0d02479b6a0469adeffc9d",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/role-audit.jsonl",
+      "sha256": "e07839914a4357da5832de5a8a6fb68edda2d923d62986e1510d0d43a5f10416",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/feature-views.npz",
+      "sha256": "830fe016ca11e6c682c0b2182352ea7c5b3954403a0824bdb4afcd647d08ad89",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/training-gate.json",
+      "sha256": "3abb10a5ae9875c404da743361c0b3c09c4b63fbc7de84a861686cb6393ae6f2",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/review-package.json",
+      "sha256": "e8ce2f54dae8d728adebbfdb7eacb89737655e46c7a4daf27b3975e3a82d744e",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/blind-review-queue.jsonl",
+      "sha256": "5a45b711b9a6bd3daab265b3a9023a259c8700d68ab73777ab975155979520f5",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/ancillary-accounting.json",
+      "sha256": "2ad02d779fc0f2b22c529f120a43cfc3b702e1dae1883d5c590439b35c1d1061",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/assessor-source.py",
+      "sha256": "9a68b689835f22acc24c9cf0403f74606ed453c93e66bbc636d4e960bdc6e350",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v1/plan.json",
+      "sha256": "6184abb8ee14052ce25019f1a1d958c5373b9a9d95acce1ad971da89daad41d4",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v2/plan.json",
+      "sha256": "a8f0c28ff3c07fe29ef1e55195b50a0215d049d3fa5d3574e94c4fe413cde93a",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v2/cleanup.json",
+      "sha256": "c530b97a54d0cba3105d2a67ccd336db03cba7b00f9cb8940727e065fcdf5b32",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v3/plan.json",
+      "sha256": "e64aaf3cd89efc225487d744c76f328bbbf2a0b7a792669be734747ea437cafe",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v3/collector-source.py",
+      "sha256": "f87364ff5fda5dcd7d556ea5391a3e226f80504f3de5a5421403ef9ded810459",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v3/cleanup.json",
+      "sha256": "9b3ba4fa91215b2d8df7d621a1385a1b99d34b0768aeef1e9511eeb54ceef788",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v3/lab-watchdog-result.json",
+      "sha256": "690286625f6625f1ad51fd691badf0cf32d7cea8b4e1ef0900273913f6347f01",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v3/progress.json",
+      "sha256": "27529df330fdee4a5128812557463b575e399da6ba9127d140f8605c15bf5ea0",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v4-juice/plan.json",
+      "sha256": "5b3633a871cec65c53c7901c4d6e615cf4a6d0e36f990640904840cca8d8c1bc",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v4-juice/collector-source.py",
+      "sha256": "9b88bf42264fd137dc3daafb391f59c677a0cb796ce2b420656bd22ea448dc48",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v4-juice/cleanup.json",
+      "sha256": "c7affcc82aae7d821b7f3e151a65588558609ad152892b1d1d5c7b4df1c32124",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v4-juice/lab-watchdog-result.json",
+      "sha256": "690286625f6625f1ad51fd691badf0cf32d7cea8b4e1ef0900273913f6347f01",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/cohort-v4-juice/progress.json",
+      "sha256": "1543cce0a93c8fc0324909a275237c67053fec887bf251d9469e1b471832faaa",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/assessment-guard-v1/resource-report.json",
+      "sha256": "08c9434104fb77022bbf34c43f60c6b163a3ddcb830c863e32e2281bc0af58a3",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/assessment-guard-v2/resource-report.json",
+      "sha256": "55b5040e9aa5f81d6a40d48df894c385e09204a2f4cacc1005c78c0a65608982",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/calibration-comparison-guard/resource-report.json",
+      "sha256": "21f60296dc3e01c0c8581abcbaff8b9842f7ff0680e2bb5d3d498925407c02f4",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/capture-guard-v1/resource-report.json",
+      "sha256": "8ccaac39d8ff1b986bc3439552ae4f8fd5338c06651ee9b923dd163393f5541d",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/capture-guard-v2/resource-report.json",
+      "sha256": "ceec2512d1d26bf2df0aac10c1a5b81e4d46f72184b2a06454c51dd9050f611e",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/capture-guard-v3/resource-report.json",
+      "sha256": "3a6cc904ff5e3622659acf3a9231941de94cb488f92e241285c9376b00832e27",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/capture-guard-v4-juice/resource-report.json",
+      "sha256": "5f0adad9a608927eb2b87a518f48ac0fefabddd48aa9b5bf780b4acacaab01b9",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/cgroup-probe-guard/resource-report.json",
+      "sha256": "40a13f213efeb4b2295ad7772e5762d4f415898f281730c550869025b97fcdbc",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/cgroup-probe-guard-2/resource-report.json",
+      "sha256": "922b9d27b2f31889b65ebd0773ba2d307828c90304a69c9e13a8d6cb14b730cb",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/watchdog-functional-guard/resource-report.json",
+      "sha256": "49e497141c17c29eb40026614b30fd6141d4cdb046e75431e865bd9f630d651d",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/capture-source-proof.json",
+      "sha256": "12e7092f1c2de50d07ac39a7bdec9d0f38bd5dd4de0435cdc119674bdbf4d377",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/final-oracle-proof.json",
+      "sha256": "2ca3c3fff08895213b26a4cc0bed519bf179364c0be33d42b2c43d4c50ff1855",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/final-cleanup.json",
+      "sha256": "34427d566a9609de695c45142ad1da791d3a08734d4b5de2eee5e3b1d26d5b86",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/preservation.json",
+      "sha256": "12442ab8f4248c2fc8ce64bebad1a57ff648e12d337ef59802ffc5d7c93f125d",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/final-tests-v3.log",
+      "sha256": "0622679f22a7f60cfc2b5de03c5200afd6c21340491dda5304284c64f8ac2d01",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/watchdog-probe/proof.json",
+      "sha256": "e03eca60861c8457232e9cdd0beb374c26e80fd61b65ced9bd03ead731a43cdf",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/data-research/inventory-expanded.json",
+      "sha256": "c21dbc97e26d99d9b3b674172061231193ea8f36c38d6b8d068367c87c3d2170",
+      "distribution": "LOCAL_ONLY"
+    }
+  ],
+  "next_task_rationale": "A cohort limited only to CALIBRATION/PROSPECTIVE would leave the two connected TRAIN groups unchanged; the single next cohort must also add distinct TRAIN workflow groups. Lock coverage before capture rather than patching role assignments after scores."
+}

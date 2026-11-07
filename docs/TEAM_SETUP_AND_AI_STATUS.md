@@ -3,7 +3,8 @@
 Cập nhật 2026-11-07. Integration branch chứa các milestone local shadow, three-source
 và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
-Báo cáo hiện tại: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
+Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
+Milestone research hiện tại: [Data quality và Oracle cohort](17_DATA_QUALITY_AND_ORACLE_RESEARCH.md).
 
 ## Repository, model release và dependencies
 
@@ -326,3 +327,65 @@ pinned revision/dataset như release notice; không tuyên bố RESUME_EXACT. Kh
 persistent systemd supervisor + atomic status/checkpoints. Không tạo job giả chỉ để
 có RUNNING; không để Codex polling một training dài. Chi tiết blocker và proposal
 trong báo cáo milestone hiện tại.
+
+## Data quality / Oracle research mới — 2026-11-07
+
+Đã thu **75requests thật** ở DVWA/Juice (46+29),75unique method/URL/body representations,
+59frozen Request-v2 feature views. Hai environment đều có benign và attack attempts.
+47benign có semantic Oracle;23attempts gồm14successes theo Oracle nội bộ,8unsafe
+reflections và1unknown outcome.5intended-benign user-lookups thiếu snapshot expected
+DB vẫn UNKNOWN. Tất cả independent human review PENDING, không formal admission mới.
+
+Vai trò khóa trước:35TRAIN,9eligibleCALIBRATION,13DEVELOPMENT,13PROSPECTIVE EVALUATION,
+5UNKNOWN excluded. Có raw/view/template/near/session checks; chỉ2connectedTRAINgroups.
+9calibrationrequests đềuGET và chỉ3uniqueviews.13prospective rows chưa bị chấm score,
+chỉ có SQLi positives; chưa đủ XSS/command/traversal để trả lời hypothesis.
+
+Calibration-only0.07709759473800659 được thử riêng, **không deploy**: TRAIN diagnostic
+FP2→18 trong khi TP1→7; không thể dùng3GETviews để chứng nhậnFPR≤1%. Frozen threshold
+0.8826237916946411 giữ nguyên. Đây là offline full-body/header research; liveworker
+vẫn không capturebody. GLU207 eligible từ75requests này bằng0, không padding.
+
+Capture artifacts/receipts/catalog/challenge/source snapshots và review queue:
+`ai-training/.artifacts/quality_lab_20261107/` (private,ignored). Assessment active:
+`assessment-v2/report-corrected.json`, `training-gate.json`,
+`calibration-comparison.json` ở root của phase. Có failed attempts/cleanup errors,
+source snapshots và recoveries; không ghi đè hoặc phát lại DVWA để tạo run đẹp.
+Collector đã sửa interpreter/port binding, incremental Oracle ledger và cleanup
+verification cho lần dùng tiếp; không replay75cases để test cleanup.
+
+Source tools (cần môi trường Python bootstrap và pinned cached lab images):
+
+```sh
+ai-training/.venv/bin/python ai-training/scripts/inventory-research-data.py \
+  --output .local-dev/research-inventory-new.json
+# Chỉ dùng output mới; đọc/handoff plan và resource policy trước capture:
+ai-training/.venv/bin/python ai-training/scripts/quality-lab-cohort.py prepare \
+  --output ai-training/.artifacts/NEW_COHORT_DIRECTORY
+```
+
+Lệnhprepare không phát traffic. Collector cố định một finite case set và run-owner;
+không chạy lại chỉ để tăngcount. Capture tiếp theo phải chọn gap-filling cases theo
+manifest mới và exclude các template/views hiện có **trước khi phát**. Không xem
+prepare ở trên như permission tự train hoặc một run tiếp theo đã khóa.
+
+**TRAINING_GATE=BLOCKED, BACKGROUND_TRAINING=NOT_STARTED.** Candidate duy nhất:
+`ai-training/configs/research/request-channel-robustness-v3.json`, design-only,
+không executable config; giữ khoảng50kparameters, riêng URI/body/header normalization
+và coarse non-secret field syntax. Encoder frozen nguyên trạng. Same588width không
+đồng nghĩa warm-start compatibility khi coordinates thay đổi; cần new initialization
+và checkpoint roundtrip. Không có checkpoint/run mới đểresume.
+
+Inventory hiện phân biệt13nhóm nguồn. WAF1.924Mpublisherrows không đồng nghĩa1.924M
+Oracle requests; SR-BH/WAMM có liên hệ upstream, log/transaction/featurecounts không
+được cộng thành total physical groundtruth. Global distinct physical count cònUNKNOWN.
+Dữ liệu held-out/sealed không mở. Xem aggregate reports:
+`ai-training/reports/RESEARCH_DATA_INVENTORY_20261107.json`,
+`ai-training/reports/AI_QUALITY_PHASE_20261107.json`.
+
+**Một việc tiếp theo:** một cohort role-isolated bổ sung workflow groups đa dạng
+choTRAIN, benignPOST choCALIBRATION và
+workflow XSS/command/traversal chưa lộ choPROSPECTIVE EVALUATION; giữ Oracleprovenance,
+không di chuyển currentTRAIN sangcalibration sau khi đã xemscore. Không thêm model,
+policy hoặc dashboard ở bước này. Human review chưa có không chặn mọi research,
+nhưng không được nâng internalOracle thành independent validation.

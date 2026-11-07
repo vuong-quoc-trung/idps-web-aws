@@ -1,0 +1,322 @@
+{
+  "accounting_freshness": "Existing source counts are hash-bound historical audit metadata; only fresh75receipts were directly reverified now. No new all-source raw census or certification.",
+  "datasets": [
+    {
+      "GLU207_compatible": 41607,
+      "Request_v2_compatible": "Not interchangeable with request-text corpus",
+      "application_Oracle_rows": null,
+      "derivative_research_candidates": 41433,
+      "frozen_training_rows": 41607,
+      "independent_verified": 0,
+      "labels": "Scripted scenario/runner research labels; not independent exploit outcomes",
+      "limitations": [
+        "Historical tx_id not retained",
+        "174quarantine retained for history impact",
+        "Frozen train is subset of69345prepared fused rows, not additional raw requests"
+      ],
+      "native_three_source_training_IDs_previously_attested": 41607,
+      "prior_flow_missing": 5164,
+      "prior_flow_present": 36443,
+      "raw_HTTP_count": null,
+      "role": "Frozen TRAIN only; no reserved/evaluation data contents opened",
+      "source": "GLU207 frozen train / derivative",
+      "status_conflict_quarantine": 174,
+      "training_unique_float32_views": 41585
+    },
+    {
+      "GLU207_compatible": 0,
+      "application_Oracle_rows": 0,
+      "duplicate_rows": 312443,
+      "independent_verified": 0,
+      "label_basis": "Publisher NORMAL/ANOMALOUS, not confirmed attack intent",
+      "labeled_publisher_rows": 1924461,
+      "limitations": [
+        "Exact template roles disjoint but sampled near cosine cross-role overlaps exist",
+        "Upstream physical/campaign/time lineage not supplied",
+        "Do not equate publisher anomaly labels to Oracle attack labels"
+      ],
+      "model_calibration_views": 20278,
+      "model_development_views": 20083,
+      "model_train_views": 120435,
+      "raw_label_conflicts": 192,
+      "raw_publisher_HTTP_rows": 1924461,
+      "role": "Publisher train partition only; internally curated role0/1/2; no publisher test opened",
+      "selected_unique_Request_v2_views": 160796,
+      "source": "WAF Data v2 publisher TRAIN",
+      "unique_exact_HTTP_representations": 1612017,
+      "unknown_intent": "All publisher rows lack our independent intent verification",
+      "verified_physical_requests": 0
+    },
+    {
+      "GLU207_compatible": 0,
+      "Request_v2_compatible": "URI-only candidates; body-present excluded from this curation",
+      "application_Oracle_rows": 0,
+      "curated_research_candidates": 310314,
+      "exact_observation_duplicate_rows": 2772,
+      "independent_verified": 0,
+      "label_basis": "Publisher signature-assisted/manual/semi-automatic annotation; not our independent review",
+      "limitations": [
+        "Not an independent source from WAMM derivative",
+        "Curated rows are not full-text or model-view unique counts",
+        "Temporal source/class support limits in existing admission remain"
+      ],
+      "natural_observation_identities": 905043,
+      "quarantine_rows": 597267,
+      "raw_publisher_rows": 907815,
+      "role": "Exposed development; do not repurpose as blind evaluation",
+      "source": "SR-BH2020"
+    },
+    {
+      "GLU207_compatible": 0,
+      "Request_v2_compatible": "76numeric view, not equivalent to588URI/body/header contract",
+      "label_tiers": {
+        "MACHINE_VERIFIED_intent": 0,
+        "PUBLISHER_LABELED_parseable_rows": 704649,
+        "PUBLISHER_LABELED_raw_rows": 704665,
+        "UNKNOWN_independent_intent_on_parseable_publisher_rows": 704649,
+        "UNKNOWN_lab_oracle_intent": 8,
+        "UNKNOWN_publisher_label_rows": 0,
+        "WEAK_LABEL_promoted": 0,
+        "publisher_intent_independently_verified": 0
+      },
+      "limitations": [
+        "SR-BH upstream derivative, do not sum with SRBH as novel requests",
+        "Numeric feature views cannot recover raw payload or full body"
+      ],
+      "numeric_views_after_quarantine_overlap": 43287,
+      "raw_publisher_rows": 704665,
+      "role": "Train-only publisher fitting diagnostic; no independent evaluation",
+      "source": "WAMM numeric research derivative",
+      "unique_HTTP_text_representations": 312241
+    },
+    {
+      "GLU207_compatible": 0,
+      "HTTP_access_records": 408477,
+      "Request_v2_compatible": "Partial Apache fields; no complete body/header/Student contract",
+      "benign_Oracle_labels": 0,
+      "independent_verified": 0,
+      "limitations": [
+        "Positive-only publisher label support; unlabeled is UNKNOWN",
+        "Range/CRC slice verification, not fullZIPSHA"
+      ],
+      "publisher_attack_parseable": 406402,
+      "role": "Single-source/scenario research evidence, not certified benign or cross-domain evaluation",
+      "source": "Kyoushi scenario1 Apache slice",
+      "unique_method_URI_lines": 406692,
+      "unknown_unlabeled_parseable": 2071
+    },
+    {
+      "GLU207_compatible": 0,
+      "Request_v2_compatible": 111,
+      "UNKNOWN": 4,
+      "attempt_receipt_outcome_unknown": 3,
+      "benign_application_Oracle": 59,
+      "exploit_success_internal_Oracle": 33,
+      "independent_verified": 0,
+      "intent_counts": {
+        "attack": 48,
+        "benign": 59,
+        "unknown": 4
+      },
+      "limitations": [
+        "Earlier capture attempt is repeated representation, not111additional novel requests",
+        "No labeled benignPOST; do not use as method-balanced fit"
+      ],
+      "request_receipts": 111,
+      "role": "Exposed DEVELOPMENT; never new blind evaluation",
+      "source": "P0 DVWA primary / P0.5",
+      "unique_frozen_Request_v2_views": 86,
+      "unique_method_URL_body": 111,
+      "unique_request_IDs": 111,
+      "unsafe_reflection_execution_unknown": 12
+    },
+    {
+      "GLU207_compatible": 0,
+      "application_Oracle_rows": 0,
+      "independent_verified": 0,
+      "limits": [
+        "Publisher anomaly is not verified attack intent",
+        "Historical metadata only read now, not raw public test or sealed data",
+        "626request identities cross originaltrain/test; view collisions and body omission documented"
+      ],
+      "raw_transcript_requests_last_audited": 97065,
+      "role": "Only original normal TRAIN may be used for research; public original test remains exposed evaluation, never moved tofit",
+      "source": "CSIC2010 transcript benchmark",
+      "source_records": {
+        "test_anomalous": 25065,
+        "test_normal": 36000,
+        "train_normal": 36000
+      },
+      "unique_observable_HTTP_identities_last_audited": 34561
+    },
+    {
+      "GLU207_compatible": 0,
+      "application_Oracle_rows": 0,
+      "historical_metadata_files": {
+        "xml_test.txt": {
+          "anomalous": 15110,
+          "bytes": 42041312,
+          "file_id": 388,
+          "md5": "3fc21fe82e80a3c6128063804d5eec22",
+          "normal": 10502,
+          "observed_records": 25612,
+          "sha256": "f1b79ffbe51b271a55545fb4caf1f4edd97e3514a835ade64f875245a9bb4116"
+        },
+        "xml_train.txt": {
+          "bytes": 40658137,
+          "file_id": 386,
+          "md5": "73cb4cb647fd94ad99c18f3732cb5e6f",
+          "observed_classes": [
+            "Valid"
+          ],
+          "observed_records": 24504,
+          "sha256": "b4e85e85a315eb522f5175e11ed0d35d0e0aab5cd41c4618102b624772692a86"
+        }
+      },
+      "independent_verified": 0,
+      "limits": [
+        "No context/campaign/time or attack-location fidelity",
+        "Metadata counts not additional captured physical requests"
+      ],
+      "role": "Original train normal only for research; test not reused forfit",
+      "source": "PKDD2007 flattened WebRequests mirror"
+    },
+    {
+      "GLU207_compatible": 0,
+      "application_Oracle_rows": 0,
+      "distinct_complete_log_observations_last_audited": 211178,
+      "independent_verified": 0,
+      "intent": "UNKNOWN",
+      "limits": [
+        "Publisher unmatched-to-normal or pattern labels are not per-request semantic evidence"
+      ],
+      "role": "Unlabeled observability only; not benign bydefault",
+      "source": "OrganizationX access logs"
+    },
+    {
+      "GLU207_compatible": 0,
+      "curated_publisher_rows": 6006,
+      "distinct_complete_log_observations": 193220,
+      "independent_verified": 0,
+      "leakage": {
+        "affected_originaltrain_test_rows": 3066,
+        "shared_attack_instance_ids": 38
+      },
+      "limits": [
+        "Exact log lines and partial method/URI/UA representations are not independently verified physical request identities.",
+        "Publisher curated labels mix temporal attribution and payload-rule fallback; no per-row label-basis trail is supplied. Nonmatches cannot be benign truth.",
+        "Operator timestamps without timezone and missing request IDs cannot be reliably linked by a guessed offset or nearest timestamp.",
+        "Precomputed alert/signature features, future +/-60s context, and complete-session aggregates are not accepted causal model inputs.",
+        "A single scripted external cyber range is a different publisher environment, not broad production diversity. No model training/evaluation, feature projection, replays or final holdout designation here."
+      ],
+      "parseable_HTTP_observations": 198082,
+      "raw_access_lines": 198122,
+      "request_bound_Oracle_labels": 0,
+      "role": "Quarantined pending request-bound intent review",
+      "source": "SOC-MLD",
+      "unique_partial_method_URI_UA": 6856
+    },
+    {
+      "GLU207_compatible": 0,
+      "application_Oracle_rows": 0,
+      "conflicting_transaction_ids": 20,
+      "distinct_HTTP_text_representations": 18474,
+      "distinct_transaction_ids": 27686,
+      "duplicate_rule_rows": 81197,
+      "independent_verified": 0,
+      "limits": [
+        "Publisher labels not independently request-bound; repeated rule rows do not establish distinct physical requests."
+      ],
+      "publisher_rows": 108883,
+      "role": "Publisher/mixed annotation research only; not Oracle groundtruth",
+      "source": "ModSec-WP"
+    },
+    {
+      "GLU207_eligible_for_this_milestone": 0,
+      "Request_v2_eligible_for_this_milestone": 0,
+      "limits": [
+        "No count inferred from file count, row count in flow tables or reserved source title",
+        "Existing release/catalog metadata retained; no sealed content accessed"
+      ],
+      "raw_HTTP_request_count": "UNKNOWN_OR_NOT_APPLICABLE",
+      "role": "NOT_OPENED_OR_NOT_REQUEST_LEVEL",
+      "source": "Reserved/sealed datasets and URL/flow-only sources"
+    },
+    {
+      "GLU207_compatible": 0,
+      "Request_v2_raw_input_eligible": 75,
+      "independent_verified": 0,
+      "intent_counts": {
+        "ATTACK_ATTEMPT": 23,
+        "BENIGN": 47,
+        "UNKNOWN": 5
+      },
+      "label_basis": "Precommitted intent + exact receipts + application semantics; independent review PENDING",
+      "outcome_counts": {
+        "UNKNOWN": 53,
+        "UNSAFE_REFLECTION": 8,
+        "VERIFIED_EXPLOIT_SUCCESS_INTERNAL_ORACLE": 14
+      },
+      "request_receipts": 75,
+      "role": "Predeclared roles; actual leakage-safe eligibility audited separately",
+      "source": "Fresh DVWA + Juice75cohort"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "ai-training/.artifacts/request_intelligence_v2_20261104/waf-rich-v2/report.json",
+      "sha256": "623f1bf97bdf6fdc8bc356732dd10a5c7ae6f4c4183dbe2e1b6a1e9148e44752"
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_research_20261104/waf_v2/audit-train-v2.json",
+      "sha256": "5da2e3a273702c77e367eed3f0cfa005a4477836231a180dc68d3656d605164a"
+    },
+    {
+      "path": "ai-training/reports/DATA_QUALITY_20261031.json",
+      "sha256": "5a52d7c1f4fb4f13ab75e6e80615b24bdc0d075911c87df1c99a6ddaf5f2d928"
+    },
+    {
+      "path": "ai-training/reports/P0_DVWA_20261105.json",
+      "sha256": "6156ced13cac7e695e8766f8a6abdd4a8772253889ac2bf4ac0aac2fdfc20ac5"
+    },
+    {
+      "path": "ai-training/.artifacts/glu207_derivative_20261107/manifest.json",
+      "sha256": "60b9161ee28dfec4a604c5e074a1a734109c9038f64b4e757782b580f09a3d0c"
+    },
+    {
+      "path": "ai-training/.artifacts/autonomous_research_20261104/kyoushi_s1/slice-audit.json",
+      "sha256": "97ce99c060c1f06a79bd4c5bcf9096f56ad6d0b000b5c543585dd679606a381d"
+    },
+    {
+      "path": "ai-training/.artifacts/automated_quality_20261104/report-v7.json",
+      "sha256": "253cbad3207ca0789f2376cf15c3461f1f550edf4f8e1c700a792673287468a9"
+    },
+    {
+      "path": "ai-training/reports/GENERALIZATION_20261030.json",
+      "sha256": "ca7a3f7084584bf86512f69e0b83d009146c51c18d413b9683ac7753aae103cf"
+    },
+    {
+      "path": "ai-training/reports/REQUEST_PROFILE_20261030.json",
+      "sha256": "761b401c9ae8570da63dc2f664c03c75251fe729917135402df031d77fcb6674"
+    },
+    {
+      "path": "ai-training/reports/ATTACK_EVIDENCE_20261101.json",
+      "sha256": "81d29b0d8325f77366978e002bbfcb088331d46fb6430e42fd1bd9d82a2772f3"
+    },
+    {
+      "path": "ai-training/reports/GENERALIZATION_QUALITY_20261101.json",
+      "sha256": "5efeb5d808cf0bd73207c33e64db06faf6b0d1835fd3a548a3348cf2654498cf"
+    },
+    {
+      "path": "ai-training/.artifacts/quality_lab_20261107/assessment-v2/report-corrected.json",
+      "sha256": "5a583d47f89fc863e9ea0cb34fd63775570ba7efda1702caab5cba853f778831"
+    }
+  ],
+  "formal_admitted_count_changed": false,
+  "global_independent_human_verified_labels": 0,
+  "global_raw_physical_HTTP_count": "UNKNOWN; publisher rows, fused views, multiple copied captures and overlapping derivatives cannot be summed",
+  "global_unique_requests": "UNKNOWN without cross-corpus full physical identity lineage",
+  "schema_version": "research-inventory-1",
+  "scope": "Bounded existing evidence ledgers plus new capture; not raw20GB reread or global distinct-request census",
+  "sealed_holdout": "NOT_OPENED; not enumerated or scored"
+}
