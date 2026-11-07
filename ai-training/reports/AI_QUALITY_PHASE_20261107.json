@@ -270,7 +270,9 @@
     "threshold_unchanged_after_diagnostic": true,
     "training_started": false,
     "descriptive_two_sided95_upper_FPR_zero_flags_3_views": 0.7075982261787133,
-    "FPR_population_claim": "NOT_ESTABLISHED; dependent workflow groups and no benign POST calibration"
+    "FPR_population_claim": "NOT_ESTABLISHED; dependent workflow groups and no benign POST calibration",
+    "binomial_calculation_is_valid_population_confidence_bound": false,
+    "interval_limit": "Illustrative binomial calculation only: threshold is selected on the same calibration observations and workflow groups are dependent; no population coverage guarantee."
   },
   "capture_integrity_limits": {
     "attempts": {

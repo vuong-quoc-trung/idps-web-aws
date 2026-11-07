@@ -158,8 +158,9 @@ Candidate giảm misses trong diagnostics nhưng tăng mạnh benign flags. **RE
 cho deployment/quality claim**, không threshold sweep. Đây là frozen-model
 observations trên internal Oracle intent, không phải trained challenger accuracy
 hoặc independent evaluation. Không dùng0/9calibration flags làm FPR chứng nhận;
-0/3uniqueviews có descriptive two-sided95%upper bound≈70.76%, bản thân groups còn
-phụ thuộc. Không có cơ sở kết luận≤1%FPR.
+Phép tính binomial minh họa cho0/3views cho upper bound≈70.76%; đây không phải
+confidence bound hợp lệ cho population FPR vì threshold được chọn ngay trên cùng
+calibration data, các groups còn phụ thuộc. Không có cơ sở kết luận≤1%FPR.
 
 Một report version đầu ghi nhầm3ở physical calibration count thay vì9; original
 được giữ và có `report-corrected.json` với parent hash. Scores, labels và threshold
