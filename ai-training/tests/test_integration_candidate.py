@@ -63,9 +63,9 @@ def test_independent_watchdog_kills_at_79_even_when_build_is_paused(tmp_path, mo
     monkeypatch.setattr(g, "cpu_reading", lambda: (79, {}))
     monkeypatch.setattr(g, "ctl", lambda *a, **kw: None)
     monkeypatch.setattr(g, "kill_unit", killed.append)
-    g.watchdog("test-only.service", tmp_path, build_pause)
+    g.watchdog("test-only.service", tmp_path, build_pause, policy="legacy")
     assert killed == ["test-only.service"]
-    assert (tmp_path / "watchdog-tripped").read_text() == "temperature_79"
+    assert (tmp_path / "watchdog-tripped").read_text() == "emergency_temperature"
 
 
 def test_watchdog_sensor_failure_stops_owned_workload(tmp_path, monkeypatch):

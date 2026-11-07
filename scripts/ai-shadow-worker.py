@@ -203,6 +203,9 @@ def serve(args):
     def monitor():
         previous, previous_at = None, time.monotonic()
         last_heartbeat, cool_since = 0, None
+        heat = module(
+            ROOT / "ai-training/scripts/rolling-resource-policy.py", "rolling_resource"
+        ).HeatWindow()
         while not stop.is_set():
             try:
                 temp = max(v["celsius"] for v in thermal.cpu_sensors().values())
@@ -216,19 +219,30 @@ def serve(args):
                 )
                 previous, previous_at = temp, current
                 state.update(cpu_temperature_c=temp, system_used_bytes=used)
-                if temp >= 80 or used >= 30_000_000_000:
+                heat_metrics = heat.add(
+                    current, temp, state["status"] == "THERMAL_PAUSED"
+                )
+                if temp >= 90 or mem.available < 4 * 1024**3:
                     ready.clear()
-                    state["status"] = "THERMAL_STOP" if temp >= 80 else "RAM_STOP"
+                    state["status"] = "THERMAL_STOP" if temp >= 90 else "RAM_STOP"
                     heartbeat()
                     stop.set()
                     break
-                if temp >= 72 or (temp >= 65 and rate >= 5):
+                if (
+                    heat_metrics["rolling_300s_c"] >= 80
+                    or temp >= 87
+                    or (temp >= 78 and rate >= 3)
+                ):
                     ready.clear()
                     state["status"] = "THERMAL_PAUSED"
                     cool_since = None
                 elif state["status"] == "THERMAL_PAUSED":
-                    cool_since = (cool_since or current) if temp < 65 else None
-                    if cool_since and current - cool_since >= 5:
+                    cool_since = (
+                        (cool_since or current)
+                        if temp < 75 and heat_metrics["rolling_300s_c"] < 77
+                        else None
+                    )
+                    if cool_since and current - cool_since >= 15:
                         state["status"] = (
                             "READY" if model_loaded.is_set() else "STARTING"
                         )
@@ -252,11 +266,7 @@ def serve(args):
     # Prove a sensor reading before importing/loading inference dependencies.
     try:
         temp = max(v["celsius"] for v in thermal.cpu_sensors().values())
-        if (
-            temp >= 65
-            or psutil.virtual_memory().total - psutil.virtual_memory().available
-            >= 28_000_000_000
-        ):
+        if temp >= 75 or psutil.virtual_memory().available < 4 * 1024**3:
             raise RuntimeError("unsafe start")
         state["cpu_temperature_c"] = temp
     except Exception:  # noqa: BLE001 -- sensor validation is a fail-closed boundary

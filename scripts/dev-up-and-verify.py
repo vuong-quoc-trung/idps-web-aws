@@ -73,7 +73,7 @@ def start(name, command, cwd, environment):
     unit = None
     if os.environ.get('DEV_LIMIT_SERVICES') == 'true' and name != 'ai':
         unit = 'idps-demo-'+name+'-'+secrets.token_hex(6)+'.scope'
-        command = ['systemd-run','--user','--scope','--quiet','--unit',unit,'-p','CPUQuota=10%',
+        command = ['systemd-run','--user','--scope','--quiet','--unit',unit,'-p','CPUQuota=100%',
                    '-p','CPUQuotaPeriodSec=10ms','-p','MemoryMax=1G','-p','MemorySwapMax=0',*command]
     with (RUNTIME / f'{name}.log').open('ab') as output:
         process = subprocess.Popen(command, cwd=cwd, env=environment, stdin=subprocess.DEVNULL,
@@ -189,7 +189,7 @@ def start_ai():
     resources = RUNTIME/'ai'/('resources-'+str(time.time_ns()))
     began=time.time()
     spawned=start('ai', [str(python),str(ROOT/'ai-training/scripts/integration-guard.py'),
-        '--output',str(resources),'--quota','10','--max-seconds','7200','--',
+        '--output',str(resources),'--quota','100','--max-seconds','7200','--',
         str(python),str(ROOT/'scripts/ai-shadow-worker.py'),
         '--socket',str(socket_path),'--output',str(RUNTIME/'ai/results.jsonl')], ROOT, os.environ.copy())
     # A spawned supervisor PID is not proof that a model is ready.
@@ -408,7 +408,7 @@ def main():
                     if os.environ.get('JAVA_HOME'):
                         environment.append('JAVA_HOME='+os.environ['JAVA_HOME'])
                     command = [str(guard_python),str(ROOT/'ai-training/scripts/integration-guard.py'),
-                               '--output',str(resources),'--quota','10','--max-seconds','1800','--build-pause','--',
+                               '--output',str(resources),'--quota','100','--max-seconds','1800','--build-pause','--',
                                '/usr/bin/env',*environment,*command]
                 subprocess.run(command,cwd=directory,stdout=output,stderr=output,check=True)
     for name in ['student-audit', 'nginx', 'suricata']:

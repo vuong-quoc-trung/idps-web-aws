@@ -22,6 +22,18 @@ spec = importlib.util.spec_from_file_location(
 )
 thermal = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(thermal)
+rolling_spec = importlib.util.spec_from_file_location(
+    "rolling_policy", Path(__file__).with_name("rolling-resource-policy.py")
+)
+rolling = importlib.util.module_from_spec(rolling_spec)
+rolling_spec.loader.exec_module(rolling)
+
+
+def atomic_status(root, value):
+    value = {"schema_version": "resource-supervisor-1", **value}
+    path = root / "resource-status.tmp"
+    path.write_text(json.dumps(value, indent=2) + "\n")
+    path.replace(root / "resource-status.json")
 
 
 def ctl(*args, check=True):
@@ -63,7 +75,7 @@ def watchdog_override(action, build_pause, paused, watchdog_paused):
     return action
 
 
-def watchdog(unit, root, build_pause=False):
+def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=90):
     root = Path(root)
     samples = []
     reason = "monitor_completed"
@@ -79,11 +91,15 @@ def watchdog(unit, root, build_pause=False):
                     "heartbeat_age_seconds": age,
                 }
             )
-            if build_pause and temp >= 70 and age <= 3:
+            if policy == "legacy" and build_pause and temp >= 70 and age <= 3:
                 ctl("freeze", unit)
                 (root / "watchdog-paused").touch()
-            if temp >= 79 or age > 3:
-                reason = "temperature_79" if temp >= 79 else "monitor_heartbeat_stale"
+            if temp >= (79 if policy == "legacy" else cutoff) or age > 3:
+                reason = (
+                    "emergency_temperature"
+                    if temp >= (79 if policy == "legacy" else cutoff)
+                    else "monitor_heartbeat_stale"
+                )
                 kill_unit(unit)
                 (root / "watchdog-tripped").write_text(reason)
                 break
@@ -121,8 +137,21 @@ def build_control_action(temp, rate, paused, cool_seconds, pressure=False):
     return "WAIT"
 
 
-def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=False, scope=False):
+def run(
+    command,
+    output,
+    quota=100,
+    max_seconds=180,
+    sensor=None,
+    build_pause=False,
+    scope=False,
+    policy="rolling",
+    memory_gib=4,
+    cutoff=90,
+):
     sensor = sensor or cpu_reading
+    if not 80 < cutoff <= 90 or not 0 < memory_gib <= 26:
+        raise ValueError("Cutoff must be >80 and <=90C; memory budget must be <=26GiB")
     root = Path(output).resolve()
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
     os.umask(0o077)
@@ -136,17 +165,27 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
     temperature, readings = cpu_reading()
     memory = psutil.virtual_memory()
     safe_ram = min(
-        2 * 1024**3,
-        memory.available - 2_000_000_000,
-        30_000_000_000 - (memory.total - memory.available) - 2_000_000_000,
+        memory_gib * 1024**3 if policy == "rolling" else 2 * 1024**3,
+        memory.available - (4 * 1024**3 if policy == "rolling" else 2_000_000_000),
+        30_000_000_000
+        - (memory.total - memory.available)
+        - (4 * 1024**3 if policy == "rolling" else 2_000_000_000),
     )
-    if temperature >= 65 or safe_ram < 1024**3:
+    if temperature >= (75 if policy == "rolling" else 65) or safe_ram < 1024**3:
         raise RuntimeError("CPU must be below65C and shared RAM headroom >=1GiB")
-    if not 1 <= quota <= 100:
-        raise RuntimeError("This bounded pilot permits1–100% of one CPU")
+    if not 1 <= quota <= (100 if policy == "legacy" else 50 * (os.cpu_count() or 1)):
+        raise RuntimeError("Quota exceeds soft50% host budget (quota units are percent of one CPU)")
     (root / "heartbeat").touch()
     monitor = None
+    heat = rolling.HeatWindow()
+    last_adjust = 0
+    current_quota = quota
+    previous_cpu_usage = None
+    previous_swap = None
+    emergency = False
+    psutil.cpu_percent()
     samples, events = [], []
+    metrics = None
     paused = False
     cool_since = None
     previous = temperature
@@ -186,7 +225,7 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
         "-p",
         f"RuntimeMaxSec={max_seconds + 5}",
         "-p",
-        "CPUAffinity=0",
+        f"CPUAffinity={'0' if policy == 'legacy' else '0-' + str(max(0, min(7, (os.cpu_count() or 1) - 1)))}",
         "-p",
         "Nice=10",
         "-p",
@@ -201,6 +240,7 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
         "MKL_NUM_THREADS",
     ]:
         unit_start += ["--setenv", name + "=" + ("1")]
+    unit_start += ["--setenv", "PATH=" + os.environ["PATH"]]
 
     def interrupted(signum, frame):
         raise InterruptedError(f"monitor signal {signum}")
@@ -231,7 +271,18 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
                 ]
             }
             scope_process = subprocess.Popen(
-                [*scope_command, "nice", "-n", "10", "taskset", "-c", "0", *command],
+                [
+                    *scope_command,
+                    "nice",
+                    "-n",
+                    "10",
+                    "taskset",
+                    "-c",
+                    "0"
+                    if policy == "legacy"
+                    else "0-" + str(max(0, min(7, (os.cpu_count() or 1) - 1))),
+                    *command,
+                ],
                 env=environment,
                 stdout=(root / "stdout.log").open("ab"),
                 stderr=(root / "stderr.log").open("ab"),
@@ -248,6 +299,8 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
                 [*unit_start, *command], check=True, capture_output=True, text=True, timeout=15
             )
         group = ctl("show", unit, "-p", "ControlGroup", "--value").stdout.strip()
+        if not group or group == "/":
+            raise RuntimeError("Workload exited before cgroup readback; inspect stderr.log")
         cgroup = Path("/sys/fs/cgroup") / group.lstrip("/")
         readback = {
             k: (cgroup / k).read_text().strip()
@@ -270,6 +323,7 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
             "--output",
             str(root),
         ]
+        monitor_command += ["--policy", policy, "--cutoff", str(cutoff)]
         if build_pause:
             monitor_command.append("--build-pause")
         monitor = subprocess.Popen(
@@ -291,17 +345,82 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
             elapsed = now - start
             memory = psutil.virtual_memory()
             used = memory.total - memory.available
-            pressure = used >= 29_000_000_000 or memory.available < 2_000_000_000
+            pressure = (
+                (used >= 29_000_000_000 or memory.available < 2_000_000_000)
+                if policy == "legacy"
+                else memory.available < 4 * 1024**3
+            )
+            metrics = heat.add(now, temp, paused)
+            cpu_percent = psutil.cpu_percent()
+            psi = (
+                Path("/proc/pressure/memory").read_text()
+                if Path("/proc/pressure/memory").exists()
+                else "NOT_AVAILABLE"
+            )
+            swap = psutil.swap_memory()._asdict()
+            if policy == "rolling" and previous_swap:
+                pressure = pressure or rolling.memory_pressure(
+                    psi,
+                    swap["sin"] - previous_swap["sin"],
+                    swap["sout"] - previous_swap["sout"],
+                    now - previous_at,
+                )
+            previous_swap = swap
+            cpu_usage = (
+                int(
+                    dict(
+                        line.split() for line in (cgroup / "cpu.stat").read_text().splitlines()
+                    ).get("usage_usec", 0)
+                )
+                if cgroup.exists()
+                else 0
+            )
+            own_cpu_percent = (
+                0
+                if previous_cpu_usage is None
+                else max(
+                    0, (cpu_usage - previous_cpu_usage) / 1e6 / max(now - previous_at, 0.1) * 100
+                )
+            )
+            previous_cpu_usage = cpu_usage
             rate = (temp - previous) / max(now - previous_at, 0.1)
             previous = temp
             previous_at = now
-            if paused and temp < (60 if build_pause else 68) and not pressure:
+            if (
+                paused
+                and temp < (75 if policy == "rolling" else (60 if build_pause else 68))
+                and not pressure
+            ):
                 cool_since = now if cool_since is None else cool_since
             else:
                 cool_since = None
             action = (build_control_action if build_pause else control_action)(
                 temp, rate, paused, 0 if cool_since is None else now - cool_since, pressure
             )
+            if policy == "rolling":
+                action = rolling.action(
+                    temp,
+                    metrics["rolling_300s_c"],
+                    rate,
+                    paused,
+                    0 if cool_since is None else now - cool_since,
+                    pressure,
+                    cutoff,
+                )
+                if (
+                    metrics["rolling_300s_c"] < 76
+                    and temp < 75
+                    and not paused
+                    and now - last_adjust > 5
+                ):
+                    # Host utilization includes other apps; headroom is a soft budget.
+                    next_quota = rolling.cpu_budget(
+                        current_quota, quota, cpu_percent, own_cpu_percent, os.cpu_count() or 1
+                    )
+                    if next_quota != current_quota:
+                        ctl("set-property", "--runtime", unit, f"CPUQuota={next_quota}%")
+                        current_quota = next_quota
+                    last_adjust = now
             threads = []
             if cgroup.exists():
                 for pid in (cgroup / "cgroup.procs").read_text().split():
@@ -327,25 +446,64 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
                     "threads": threads,
                     "paused": paused,
                     "action": action,
+                    "thermal": metrics,
+                    "host_cpu_utilization_percent": cpu_percent,
+                    "own_cpu_percent_one_cpu": own_cpu_percent,
+                    "memory_pressure": psi,
+                    "swap": swap,
+                    "memory_events": (cgroup / "memory.events").read_text(),
+                    "cpu_quota_percent_one_cpu": current_quota,
                 }
                 samples.append(sample)
             if (root / "watchdog-tripped").exists():
                 raise RuntimeError((root / "watchdog-tripped").read_text())
-            action = watchdog_override(
-                action, build_pause, paused, (root / "watchdog-paused").exists()
+            atomic_status(
+                root,
+                {
+                    "status": "PAUSED" if paused else "RUNNING",
+                    "heartbeat": time.time(),
+                    "unit": unit,
+                    "thermal": metrics,
+                    "host_cpu_utilization_percent": cpu_percent,
+                    "mem_available_bytes": memory.available,
+                    "quota_percent_one_cpu": current_quota,
+                    "policy": policy,
+                },
             )
+            if policy == "legacy":
+                action = watchdog_override(
+                    action, build_pause, paused, (root / "watchdog-paused").exists()
+                )
             if action == "KILL":
-                raise RuntimeError("80C hard stop")
+                emergency = True
+                raise RuntimeError(f"{cutoff if policy == 'rolling' else 80}C emergency stop")
+            if action == "REDUCE" and now - last_adjust >= 2:
+                current_quota = max(1, current_quota / 2)
+                ctl("set-property", "--runtime", unit, f"CPUQuota={current_quota}%")
+                events.append(
+                    {
+                        "elapsed": elapsed,
+                        "action": "REDUCE",
+                        "temperature": temp,
+                        "cpu_quota_percent": current_quota,
+                    }
+                )
+                last_adjust = now
             if action == "FREEZE":
                 ctl("freeze", unit)
-                ctl("set-property", "--runtime", unit, f"CPUQuota={reduced_quota(quota)}%")
+                current_quota = (
+                    reduced_quota(current_quota)
+                    if policy == "legacy"
+                    else max(1, current_quota / 2)
+                )
+                ctl("set-property", "--runtime", unit, f"CPUQuota={current_quota}%")
                 paused = True
                 events.append(
                     {
                         "elapsed": elapsed,
                         "action": "FREEZE_AND_REDUCE",
                         "temperature": temp,
-                        "cpu_quota_percent": reduced_quota(quota),
+                        "cpu_quota_percent": current_quota,
                     }
                 )
             elif action == "THAW":
@@ -353,6 +511,7 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
                 ctl("thaw", unit)
                 paused = False
                 events.append({"elapsed": elapsed, "action": "THAW", "temperature": temp})
+            heat.previous = (now, temp, paused)
             if elapsed > max_seconds:
                 raise RuntimeError("wall-time limit")
             status = ctl(
@@ -414,6 +573,12 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
                 "MemoryPeak",
                 check=False,
             ).stdout
+        watchdog_reason = (
+            (root / "watchdog-tripped").read_text()
+            if (root / "watchdog-tripped").exists()
+            else None
+        )
+        emergency = emergency or watchdog_reason == "emergency_temperature"
         report = {
             "status": "PASS" if failure is None else "STOPPED",
             "failure": failure,
@@ -437,7 +602,38 @@ def run(command, output, quota=25, max_seconds=180, sensor=None, build_pause=Fal
             ),
             "build_pause_only": build_pause,
             "scope_mode": scope,
+            "policy": policy,
+            "instant_cutoff_c": cutoff if policy == "rolling" else 79,
+            "thermal_time_weighted": metrics if samples else None,
+            "emergency_stops": int(emergency),
+            "watchdog_failure": watchdog_reason,
+            "automatic_restarts": 0,
+            "reserve_bytes": 4 * 1024**3 if policy == "rolling" else 2_000_000_000,
         }
+        if policy == "rolling":
+            report["safety_scope"] = (
+                "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat"
+            )
+        atomic_status(
+            root,
+            {
+                "status": "COMPLETED"
+                if failure is None
+                else (
+                    "THERMAL_STOPPED"
+                    if emergency
+                    else (
+                        "INTERRUPTED"
+                        if failure.startswith("monitor signal") or failure == "wall-time limit"
+                        else "FAILED"
+                    )
+                ),
+                "heartbeat": time.time(),
+                "failure": failure,
+                "unit": unit,
+                "thermal": metrics if samples else None,
+            },
+        )
         (root / "resource-report.json").write_text(json.dumps(report, indent=2) + "\n")
         with (root / "samples.jsonl").open("w") as stream:
             for sample in samples:
@@ -454,22 +650,25 @@ if __name__ == "__main__":
     parser.add_argument("--action", choices=["run", "watchdog"], default="run")
     parser.add_argument("--output", required=True)
     parser.add_argument("--unit")
-    parser.add_argument("--quota", type=int, default=25)
+    parser.add_argument("--quota", type=int, default=100)
+    parser.add_argument("--policy", choices=["rolling", "legacy"], default="rolling")
+    parser.add_argument("--memory-gib", type=float, default=4)
+    parser.add_argument("--cutoff", type=float, default=90)
     parser.add_argument("--max-seconds", type=int, default=180)
     parser.add_argument(
         "--scope",
         action="store_true",
-        help="Retain caller user-namespace permissions in a guarded scope; same safety thresholds",
+        help="Retain caller user-namespace permissions in a guarded scope; selected policy still applies",
     )
     parser.add_argument(
         "--build-pause",
         action="store_true",
-        help="Build tools only: freeze from65C, resume below60C stable5s; no compiler restart. Never use for AI inference/training.",
+        help="Legacy policy only: early build freeze65C/resume60C. Rolling policy uses the common adaptive control.",
     )
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     if args.action == "watchdog":
-        watchdog(args.unit, args.output, args.build_pause)
+        watchdog(args.unit, args.output, args.build_pause, args.policy, args.cutoff)
     else:
         run(
             args.command[1:] if args.command[:1] == ["--"] else args.command,
@@ -478,4 +677,7 @@ if __name__ == "__main__":
             args.max_seconds,
             build_pause=args.build_pause,
             scope=args.scope,
+            policy=args.policy,
+            memory_gib=args.memory_gib,
+            cutoff=args.cutoff,
         )
