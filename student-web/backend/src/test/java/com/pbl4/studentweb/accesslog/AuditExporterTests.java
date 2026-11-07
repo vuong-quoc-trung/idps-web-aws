@@ -45,7 +45,7 @@ class AuditExporterTests {
         assertThatThrownBy(()->exporter(link,65536).append(event())).isInstanceOf(java.io.IOException.class);assertThat(Files.readString(target)).isEqualTo("unchanged");
         assertThatThrownBy(()->new AuditJsonlExporter(json,true,target.toString(),"student-web","short",65536)).isInstanceOf(IllegalArgumentException.class);
         var db=mock(AuditDatabaseWriter.class);var file=mock(AuditJsonlExporter.class);doThrow(new IllegalStateException("CANARY_DB_SECRET")).when(db).record(any());
-        var e=event();new SecurityAuditService(db,file).record(e);verify(file).append(e);
+        var e=event();new SecurityAuditService(db,file).record(e);verify(file).append(e, null);
     }
     @Test void suppressesBareSecretsInUnknownAndRecognizedUserAgentsAndCustomMethods() throws Exception {
         Path path = directory.resolve("privacy.log"); var writer = exporter(path, 65536);
@@ -68,4 +68,18 @@ class AuditExporterTests {
             assertThat(e.httpMethod()).isEqualTo("HEAD");
         }
     }
+    @Test void exportsOnlyPseudonymsAndAllowlistedSecurityFields() throws Exception {
+        var signals = new SecuritySignals();
+        signals.loginFailed("CANARY_ACCOUNT");
+        signals.forbiddenField("role");
+        signals.forbiddenField("CANARY_SECRET_FIELD");
+        Path path=directory.resolve("signals.log"); exporter(path,65536).append(event(), signals);
+        String line=Files.readString(path);
+        assertThat(line).doesNotContain("CANARY");
+        var security=json.readTree(line).path("security");
+        assertThat(security.path("account_hmac").asText()).matches("hmac-sha256:[a-f0-9]{64}");
+        assertThat(security.path("forbidden_fields").toString()).isEqualTo("[\"role\"]");
+        assertThat(security.path("reasons").toString()).contains("LOGIN_FAILED", "MASS_ASSIGNMENT");
+    }
+
 }

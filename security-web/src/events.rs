@@ -29,7 +29,18 @@ pub struct QueryFeatures {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct SecuritySignals {
+    pub reasons: Vec<String>,
+    pub account_hmac: Option<String>,
+    pub object_hmac: Option<String>,
+    pub forbidden_fields: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CanonicalEvent {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub security: Option<SecuritySignals>,
     pub schema_version: String,
     pub event_id: String,
     pub source: String,
@@ -77,6 +88,7 @@ pub struct CanonicalEvent {
 impl CanonicalEvent {
     pub fn new(source: &str, timestamp: DateTime<Utc>) -> Self {
         Self {
+            security: None,
             schema_version: SCHEMA_VERSION.into(),
             event_id: String::new(),
             source: source.into(),
@@ -133,9 +145,69 @@ impl CanonicalEvent {
         if let Some(id) = &self.request_id {
             anyhow::ensure!(valid_request_id(id), "Invalid request ID");
         }
-        for value in [&self.user_id, &self.username, &self.session_hmac]
-            .into_iter()
-            .flatten()
+        if let Some(security) = &self.security {
+            anyhow::ensure!(
+                self.source == "STUDENT_AUDIT" && self.event_type == "http_request",
+                "Security signals require Student audit"
+            );
+            anyhow::ensure!(
+                security
+                    .reasons
+                    .iter()
+                    .collect::<std::collections::HashSet<_>>()
+                    .len()
+                    == security.reasons.len()
+                    && !security.reasons.is_empty()
+                    && security.reasons.len() <= 10
+                    && security.reasons.iter().all(|r| matches!(
+                        r.as_str(),
+                        "LOGIN_FAILED"
+                            | "OBJECT_ACCESS_DENIED"
+                            | "MASS_ASSIGNMENT"
+                            | "PRIVILEGE_DENIED"
+                            | "INVALID_SESSION"
+                            | "SESSION_REVOKED"
+                            | "WORKFLOW_DENIED"
+                            | "RATE_LIMITED"
+                            | "CSRF_INVALID"
+                            | "RECOVERY_TOKEN_INVALID"
+                    )),
+                "Invalid security reason"
+            );
+            anyhow::ensure!(
+                security
+                    .forbidden_fields
+                    .iter()
+                    .collect::<std::collections::HashSet<_>>()
+                    .len()
+                    == security.forbidden_fields.len()
+                    && security.forbidden_fields.len() <= 7
+                    && security.forbidden_fields.iter().all(|f| matches!(
+                        f.as_str(),
+                        "role"
+                            | "isAdmin"
+                            | "ownerId"
+                            | "userId"
+                            | "studentId"
+                            | "authorities"
+                            | "permissions"
+                    )),
+                "Invalid forbidden field"
+            );
+        }
+        for value in [
+            self.user_id.as_deref(),
+            self.username.as_deref(),
+            self.session_hmac.as_deref(),
+            self.security
+                .as_ref()
+                .and_then(|s| s.account_hmac.as_deref()),
+            self.security
+                .as_ref()
+                .and_then(|s| s.object_hmac.as_deref()),
+        ]
+        .into_iter()
+        .flatten()
         {
             anyhow::ensure!(
                 value
@@ -501,10 +573,67 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                     Some(1000006) => ("Sensitive File Probe", "Reconnaissance"),
                     Some(1000007) => ("Automated Scanner User-Agent", "Reconnaissance"),
                     Some(1000008) => (
-                        "SQL Injection Time or Error Attempt",
+                        "SQL Injection Time/Blind or Error Attempt",
                         "Web Application Attack",
                     ),
                     Some(1000009) => ("Repeated Authentication Failures", "Authentication Abuse"),
+                    Some(1000010) => ("HTTP Request Flood Threshold", "Denial of Service"),
+                    Some(1000011) => ("Suspicious Web Shell File Upload", "Malicious File Upload"),
+                    Some(1000012) => (
+                        "Possible SSRF to Internal or Metadata Target",
+                        "Server-Side Request Forgery",
+                    ),
+                    Some(1000013) => (
+                        "SQL Injection Time/Blind Request Body",
+                        "Web Application Attack",
+                    ),
+                    Some(1000014) => (
+                        "Possible SSRF Request Body to Internal or Metadata Target",
+                        "Server-Side Request Forgery",
+                    ),
+                    Some(1000015) => (
+                        "Possible HTTP Request Smuggling CL TE",
+                        "HTTP Request Smuggling",
+                    ),
+                    Some(1000016) => (
+                        "Possible XML External Entity Declaration",
+                        "XML External Entity",
+                    ),
+                    Some(1000017) => (
+                        "Possible Host Header Injection Invalid Authority",
+                        "Host Header Injection",
+                    ),
+                    Some(1000018) => (
+                        "Dangerous HTTP Method or WebDAV Observation",
+                        "HTTP Method Policy",
+                    ),
+                    Some(1000019) => ("JNDI Injection Attempt", "JNDI Injection"),
+                    Some(1000020) => (
+                        "CRLF HTTP Header Injection Attempt",
+                        "HTTP Header Injection",
+                    ),
+                    Some(1000021) => (
+                        "Possible Server Side Template Injection",
+                        "Template Injection",
+                    ),
+                    Some(1000022) => ("Possible NoSQL Operator Injection", "NoSQL Injection"),
+                    Some(1000023) => (
+                        "Possible HTTP Request Smuggling Duplicate Content Length",
+                        "HTTP Request Smuggling",
+                    ),
+                    Some(1000024) => (
+                        "Shellshock Style HTTP Header Injection",
+                        "Web Application Attack",
+                    ),
+                    Some(1000025) => (
+                        "SQL Injection Boolean or Union Request Body Attempt",
+                        "Web Application Attack",
+                    ),
+                    Some(1000026) => ("XSS Request Body Attempt", "Web Application Attack"),
+                    Some(1000027) => (
+                        "Command Injection Request Body Attempt",
+                        "Web Application Attack",
+                    ),
                     _ => ("Suricata Alert", "Sensor Alert"),
                 };
                 native_alert = Some(NativeAlert {
@@ -521,6 +650,25 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
         target.as_deref().unwrap_or_default(),
         event.user_agent.as_deref(),
     );
+    if source == "NGINX" && crate::nginx_detection::unexpected_method(event.http_method.as_deref())
+    {
+        detections.push(Detection {
+            rule_id: "UNEXPECTED_HTTP_METHOD",
+            name: "Unexpected HTTP Method",
+            category: "Proxy Policy",
+            severity: 2,
+        });
+    }
+    if source == "NGINX"
+        && crate::nginx_detection::sensitive_path(target.as_deref().unwrap_or_default())
+    {
+        detections.push(Detection {
+            rule_id: "SENSITIVE_PATH_PROBE",
+            name: "Sensitive Path Probe",
+            category: "Proxy Policy",
+            severity: 2,
+        });
+    }
     if let Some(signals) = signals {
         // These are derived by the trusted Nginx log_format/maps, never HTTP headers.
         for (id, name, severity) in [
@@ -561,6 +709,24 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
 mod tests {
     use super::*;
 
+    #[test]
+    fn sensitive_proxy_paths_have_named_alerts() {
+        for path in [
+            "/.env",
+            "/.git/config",
+            "/actuator/env",
+            "/actuator/heapdump",
+        ] {
+            let raw = serde_json::json!({"timestamp":"2026-11-06T00:00:00Z", "client_ip":"192.0.2.1", "http_method":"GET", "uri_path":path, "status":403}).to_string();
+            let parsed = parse("NGINX", &raw).unwrap();
+            assert!(
+                parsed
+                    .detections
+                    .iter()
+                    .any(|d| d.rule_id == "SENSITIVE_PATH_PROBE")
+            );
+        }
+    }
     #[test]
     fn custom_http_methods_never_persist_arbitrary_header_text() {
         let parsed = parse("NGINX", r#"{"timestamp":"2026-10-26T00:00:00Z","http_method":"CANARY_SECRET","uri_path":"/api/faculties","status":405}"#).unwrap();
@@ -653,7 +819,14 @@ mod contract_tests {
     #[test]
     fn canonical_fixture_and_typed_fields_match_the_frozen_contract() {
         let fixture = include_str!("../../contracts/fixtures/student-audit-v1.jsonl");
-        let event: CanonicalEvent = serde_json::from_str(fixture).unwrap();
+        let mut event: CanonicalEvent = serde_json::from_str(fixture).unwrap();
+        event.validate().unwrap();
+        event.security = Some(SecuritySignals {
+            reasons: vec!["LOGIN_FAILED".into()],
+            account_hmac: None,
+            object_hmac: None,
+            forbidden_fields: vec![],
+        });
         event.validate().unwrap();
         let schema: Value = serde_json::from_str(include_str!(
             "../../contracts/canonical-event-v1.schema.json"

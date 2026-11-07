@@ -64,7 +64,11 @@ public class PostGraduationContactService {
     }
     private PostGraduationContact require(Long studentId, Long id) {
         return repository.findByIdAndStudentId(id, studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("PostGraduationContact"));
+                .orElseThrow(() -> {
+                    if (repository.existsById(id))
+                        com.pbl4.studentweb.accesslog.service.SecuritySignals.objectDenied("PostGraduationContact", id);
+                    return new ResourceNotFoundException("PostGraduationContact");
+                });
     }
     private void apply(PostGraduationContact e, PostGraduationContactRequest r) {
         e.setFullName(optional(r.fullName()));

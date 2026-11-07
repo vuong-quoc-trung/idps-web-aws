@@ -1,0 +1,15 @@
+[Unit]
+Description=PBL4 Nginx recovery after VMware host interfaces become ready
+Wants=network-online.target
+After=network-online.target nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/pbl4-wait-nginx
+TimeoutStartSec=140
+RemainAfterExit=yes
+Restart=no
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

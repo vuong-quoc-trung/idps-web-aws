@@ -43,6 +43,8 @@ final class SecurityRequestFilter extends OncePerRequestFilter {
         try {
             if ("POST".equals(method) && LIMITED.contains(path)
                     && !limiter.allow(client.clientIp() + "|" + path, path.endsWith("forgot-password") ? 5 : 20)) {
+                com.pbl4.studentweb.accesslog.service.SecuritySignals.get(request).mark(
+                    com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RATE_LIMITED);
                 response.setHeader("Retry-After", "60");
                 SecurityConfiguration.error(response, 429, "Too many requests; try again later");
                 return;
@@ -60,7 +62,7 @@ final class SecurityRequestFilter extends OncePerRequestFilter {
                 var session = request.getSession(false);
                 audit.record(new AuditEvent(UUID.randomUUID().toString(), Instant.now(), client.requestId(), client.clientIp(), client.peerIp(),
                     userId, username, role, session == null ? null : session.getId(), method, path, request.getQueryString(),
-                    failed ? 500 : response.getStatus(), (System.nanoTime() - start) / 1000000, request.getHeader("User-Agent"), false));
+                    failed ? 500 : response.getStatus(), (System.nanoTime() - start) / 1000000, request.getHeader("User-Agent"), false), com.pbl4.studentweb.accesslog.service.SecuritySignals.get(request));
             }
         }
     }

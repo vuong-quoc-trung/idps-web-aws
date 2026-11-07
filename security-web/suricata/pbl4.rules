@@ -10,7 +10,7 @@ alert tcp any any -> $HOME_NET any (msg:"PBL4 NIDS: TCP SYN Burst Threshold"; fl
 alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Boolean or Union Attempt"; flow:established,to_server; http.uri; pcre:"/(union(?:[+\s]|\/\*.*?\*\/)+(?:all(?:[+\s]|\/\*.*?\*\/)+)?select|(?:\x27|%27|\x22|%22)(?:[+\s]|\/\*.*?\*\/)*(?:or|and)(?:[+\s]|\/\*.*?\*\/)+(?:\d+[+\s]*=[+\s]*\d+|(?:\x27|\x22)\w+(?:\x27|\x22)[+\s]*=[+\s]*(?:\x27|\x22)\w+))/i"; classtype:web-application-attack; priority:1; sid:1000002; rev:4;)
 
 # 3. Time/error-based and statement SQLi indicators. Alert only by default.
-alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Time Error or Statement Attempt"; flow:established,to_server; http.uri; pcre:"/(?:(?:sleep|pg_sleep|benchmark|extractvalue|updatexml)(?:[+\s]|\/\*.*?\*\/)*\(|waitfor(?:[+\s]|\/\*.*?\*\/)+delay|(?:drop|insert)(?:[+\s]|\/\*.*?\*\/)+(?:table|into)|exec[+\s]*\()/i"; classtype:web-application-attack; priority:1; sid:1000008; rev:2;)
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Time Blind Error or Statement Attempt"; flow:established,to_server; http.uri; url_decode; pcre:"/(?:\b(?:sleep|pg_sleep|dbms_lock\.sleep)(?:[+\s]|\/\*[^*]{0,128}\*\/)*\((?:[+\s]|\/\*[^*]{0,128}\*\/)*[0-9]|\bbenchmark(?:[+\s]|\/\*[^*]{0,128}\*\/)*\((?:[+\s]|\/\*[^*]{0,128}\*\/)*[0-9]|\bwaitfor(?:[+\s]|\/\*[^*]{0,128}\*\/)+delay(?:[+\s]|\/\*[^*]{0,128}\*\/)*[\x27\x22][0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}|\bdbms_pipe\.receive_message(?:[+\s]|\/\*[^*]{0,128}\*\/)*\(|\b(?:extractvalue|updatexml)(?:[+\s]|\/\*[^*]{0,128}\*\/)*\(|\b(?:drop|insert)(?:[+\s]|\/\*[^*]{0,128}\*\/)+(?:table|into)\b|\bexec(?:[+\s]|\/\*[^*]{0,128}\*\/)*\()/i"; classtype:web-application-attack; priority:1; sid:1000008; rev:3;)
 
 # 4. Web Attack: Cross-Site Scripting (XSS)
 alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Cross-Site Scripting (XSS) Attempt"; flow:established,to_server; http.uri; pcre:"/(<(?:script|svg|iframe|img)\b|javascript[+\s]*:|(?:onerror|onload|onmouseover)[+\s]*=)/i"; classtype:web-application-attack; priority:2; sid:1000003; rev:3;)
@@ -31,3 +31,64 @@ alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Automated Vulnerability
 # Five failed POST logins per client in 60s; no credentials/body inspection.
 # Keep SID 1000009 outside AUTO_BLOCK_SIDS; 403 may be CSRF/policy failure.
 alert http any any => $HTTP_SERVERS any (msg:"PBL4 NIDS: Repeated Login 401 or 403 Responses"; http.method; content:"POST"; bsize:4; http.uri; pcre:"/^\/api\/auth\/login(?:\?|$)/"; http.stat_code; pcre:"/^40[13]$/"; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-user; priority:2; sid:1000009; rev:1;)
+
+# 10. HTTP request-rate observation: 100 requests / 10s per client, one alert/window.
+# A shared NAT/proxy can aggregate legitimate clients. Keep this SID opt-in for response.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: HTTP Request Flood Threshold (100 requests in 10 seconds)"; flow:established,to_server; http.method; pcre:"/^[A-Z]{1,16}$/"; threshold:type both, track by_src, count 100, seconds 10; classtype:attempted-dos; priority:2; sid:1000010; rev:1;)
+
+# 11. Executable filename AND execution primitive inside the SAME multipart part.
+# Bound inspection and stop at multipart boundaries to avoid cross-file matches.
+# Inspect only; no filestore/payload logging is enabled by these signatures.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Suspicious Web Shell File Upload"; flow:established,to_server; http.method; pcre:"/^(?:POST|PUT|PATCH)$/"; http.content_type; content:"multipart/form-data"; nocase; http.request_body; content:"filename="; nocase; fast_pattern; pcre:"/Content-Disposition:[^\r\n]{0,512}\bfilename\s*=\s*\x22?[^\x22\r\n]{1,128}\.(?:php[0-9]?|phtml|phar|jsp|jspx|asp|aspx|ashx)(?:\.[^\x22\r\n]{0,64})?\x22?[^\r\n]{0,128}\r?\n(?:[A-Za-z0-9-]{1,64}:[^\r\n]{0,256}\r?\n){0,8}\r?\n(?:(?!\r?\n--)[\s\S]){0,512}?(?:<\?(?:php\b|=)(?:(?!\r?\n--)[\s\S]){0,512}?\b(?:eval|assert|system|shell_exec|passthru|exec|popen)\s*\(|<%(?:(?!\r?\n--)[\s\S]){0,512}?(?:Runtime\s*\.\s*getRuntime\s*\(|new\s+ProcessBuilder\s*\(|\b(?:eval|execute|executeglobal)\s*(?:\(|request\b)|Process\s*\.\s*Start\s*\())/i"; classtype:web-application-attack; priority:1; sid:1000011; rev:1;)
+
+# 12. URL-bearing parameter aimed at an internal/loopback/metadata/file target.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible SSRF to Internal or Metadata Target"; flow:established,to_server; http.uri; url_decode; pcre:"/(?:[?&]|^|\x22)(?:url|uri|target|dest|destination|endpoint|callback|webhook|proxy|feed|image_url|avatar_url)(?:=|\x22[+\s]*:[+\s]*\x22)(?:(?:https?|gopher|dict)\x3a\/\/(?:[^\s\/?#@]{1,128}@)?(?:127(?:\.[0-9]{1,3}){3}|10(?:\.[0-9]{1,3}){3}|192\.168(?:\.[0-9]{1,3}){2}|172\.(?:1[6-9]|2[0-9]|3[01])(?:\.[0-9]{1,3}){2}|169\.254\.169\.254|localhost(?:\.localdomain)?|metadata\.google\.internal|\[::1\])(?=[:\/?&#\x22\x27]|$)|file\x3a\/\/\/)/i"; classtype:web-application-attack; priority:2; sid:1000012; rev:1;)
+
+# 13. Time/blind SQLi in form/JSON/plain-text request bodies (bounded by libhtp).
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Time Blind Request Body Attempt"; flow:established,to_server; http.content_type; pcre:"/^(?:application\/(?:x-www-form-urlencoded|json)|text\/plain)(?:[\x3b\s]|$)/i"; http.request_body; url_decode; url_decode; pcre:"/(?:\b(?:sleep|pg_sleep|dbms_lock\.sleep)(?:[+\s]|\/\*[^*]{0,128}\*\/)*\((?:[+\s]|\/\*[^*]{0,128}\*\/)*[0-9]|\bbenchmark(?:[+\s]|\/\*[^*]{0,128}\*\/)*\((?:[+\s]|\/\*[^*]{0,128}\*\/)*[0-9]|\bwaitfor(?:[+\s]|\/\*[^*]{0,128}\*\/)+delay(?:[+\s]|\/\*[^*]{0,128}\*\/)*[\x27\x22][0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}|\bdbms_pipe\.receive_message(?:[+\s]|\/\*[^*]{0,128}\*\/)*\()/i"; classtype:web-application-attack; priority:1; sid:1000013; rev:1;)
+
+# 14. Same SSRF indicators in form/JSON/plain-text request bodies.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible SSRF Request Body to Internal or Metadata Target"; flow:established,to_server; http.content_type; pcre:"/^(?:application\/(?:x-www-form-urlencoded|json)|text\/plain)(?:[\x3b\s]|$)/i"; http.request_body; url_decode; url_decode; pcre:"/(?:[?&]|^|\x22)(?:url|uri|target|dest|destination|endpoint|callback|webhook|proxy|feed|image_url|avatar_url)(?:=|\x22[+\s]*:[+\s]*\x22)(?:(?:https?|gopher|dict)\x3a\/\/(?:[^\s\/?#@]{1,128}@)?(?:127(?:\.[0-9]{1,3}){3}|10(?:\.[0-9]{1,3}){3}|192\.168(?:\.[0-9]{1,3}){2}|172\.(?:1[6-9]|2[0-9]|3[01])(?:\.[0-9]{1,3}){2}|169\.254\.169\.254|localhost(?:\.localdomain)?|metadata\.google\.internal|\[::1\])(?=[:\/?&#\x22\x27]|$)|file\x3a\/\/\/)/i"; classtype:web-application-attack; priority:2; sid:1000014; rev:1;)
+
+# 15. HTTP/1 framing ambiguity: both Content-Length and Transfer-Encoding.
+# Indicator only; does not prove a front/back-end parser disagreement.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible HTTP Request Smuggling CL TE"; flow:established,to_server; http.header.raw; pcre:"/(?:^|\r\n)Content-Length[\x20\t]*:/i"; pcre:"/(?:^|\r\n)Transfer-Encoding[\x20\t]*:/i"; classtype:web-application-attack; priority:1; sid:1000015; rev:1;)
+
+# 16. External XML entity declaration; legitimate XML/DTD may also match.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible XML External Entity Declaration"; flow:established,to_server; http.request_body; content:"<!ENTITY"; fast_pattern; pcre:"/<!ENTITY\s+(?:%\s+)?[A-Za-z_:][A-Za-z0-9_.:-]{0,127}\s+(?:SYSTEM\s+[\x22\x27]|PUBLIC\s+[\x22\x27][^\x22\x27\r\n]{0,256}[\x22\x27]\s+[\x22\x27])/"; classtype:web-application-attack; priority:1; sid:1000016; rev:1;)
+
+# 17. Suspicious Host authority syntax, not a site-specific domain allowlist.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible Host Header Injection Invalid Authority"; flow:established,to_server; http.header.raw; pcre:"/(?:^|\r\n)Host[\x20\t]*:[\x20\t]*[^\r\n]*[@\x2f\x5c\x3f\x23\x2c]/i"; classtype:web-application-attack; priority:2; sid:1000017; rev:1;)
+
+# 18. Methods outside this Student API policy. Not proof of exploitation.
+# Do not include normal REST PUT/PATCH/DELETE or CORS OPTIONS.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Dangerous HTTP Method or WebDAV Observation"; flow:established,to_server; http.method; pcre:"/^(?:TRACE|TRACK|CONNECT|PROPFIND|PROPPATCH|MKCOL|COPY|MOVE|LOCK|UNLOCK)$/"; classtype:web-application-attack; priority:2; sid:1000018; rev:1;)
+
+# 19. Literal JNDI lookup in request headers only; obfuscations/body not covered.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: JNDI Injection Attempt"; flow:established,to_server; http.request_header; pcre:"/\$\{jndi:(?:ldap|ldaps|rmi|dns|iiop):/i"; classtype:web-application-attack; priority:1; sid:1000019; rev:1;)
+
+# 20. Encoded CRLF followed by a header name/colon in raw URI.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: CRLF HTTP Header Injection Attempt"; flow:established,to_server; http.uri.raw; pcre:"/%0d%0a(?:[A-Za-z0-9-]{1,64}%3a|[A-Za-z0-9-]{1,64}:)/i"; classtype:web-application-attack; priority:1; sid:1000020; rev:1;)
+
+# 21. Broad template syntax heuristic; legitimate template text may match.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible Server Side Template Injection"; flow:established,to_server; http.uri; url_decode; pcre:"/(?:\{\{[^{}]{0,128}\}\}|\$\{[^{}]{1,128}\}|<%=[^%]{1,128}%>)/"; classtype:web-application-attack; priority:2; sid:1000021; rev:1;)
+
+# 22. JSON operator key, not proof of a vulnerable Mongo backend. No body logging.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible NoSQL Operator Injection"; flow:established,to_server; http.content_type; pcre:"/^application\/json(?:[\x3b\s]|$)/i"; http.request_body; pcre:"/\x22\$(?:ne|gt|gte|lt|lte|regex|where|exists|nin|in)\x22\s*:/i"; classtype:web-application-attack; priority:2; sid:1000022; rev:1;)
+
+# 23. Duplicate CL (including identical values) is an ambiguity observation.
+# Includes adjacent headers; bounded scan never crosses the blank header terminator.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Possible HTTP Request Smuggling Duplicate Content Length"; flow:established,to_server; http.header.raw; pcre:"/(?:^|\r\n)Content-Length[\x20\t]*:[^\r\n]{0,128}\r\n(?:[^\r\n]{1,256}\r\n){0,8}Content-Length[\x20\t]*:/i"; classtype:web-application-attack; priority:1; sid:1000023; rev:1;)
+
+# 24. Shellshock-style function prefix in headers; does not prove CGI/Bash exists.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Shellshock Style HTTP Header Injection"; flow:established,to_server; http.request_header; pcre:"/\(\)\s*\{\s*:[^}]{0,128}\}\s*\x3b/"; classtype:web-application-attack; priority:1; sid:1000024; rev:1;)
+
+# 25. Boolean/Union SQLi in URL-encoded forms or JSON bodies; URI remains SID 1000002.
+# Heuristic attempt only (including password-like strings), not proof of exploitation.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection Boolean or Union Request Body Attempt"; flow:established,to_server; http.method; content:"POST"; http.content_type; pcre:"/^application\/(?:x-www-form-urlencoded|json)(?:[\x3b\s]|$)/i"; http.request_body; url_decode; url_decode; pcre:"/(?:\bunion(?:[+\s]|\/\*[^*]{0,128}\*\/){1,32}(?:all(?:[+\s]|\/\*[^*]{0,128}\*\/){1,32})?select\b|[\x27\x22](?:[+\s]|\/\*[^*]{0,128}\*\/){0,32}(?:or|and)(?:[+\s]|\/\*[^*]{0,128}\*\/){1,32}[\x27\x22]?[a-z0-9]{1,32}[\x27\x22]?(?:[+\s]){0,16}=(?:[+\s]){0,16}[\x27\x22]?[a-z0-9]{1,32})/i"; classtype:web-application-attack; priority:1; sid:1000025; rev:1;)
+
+# 26. Body heuristic on data APIs only: excludes credential endpoints and multipart.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: XSS Request Body Attempt"; flow:established,to_server; http.method; pcre:"/^(?:POST|PUT|PATCH)$/"; http.uri; pcre:"/^\/api\/(?:students|me|classes|faculties|majors|training-programs)(?:[\/?]|$)/"; http.content_type; pcre:"/^application\/(?:json|x-www-form-urlencoded)(?:[\x3b\s]|$)/i"; http.request_body; url_decode; url_decode; pcre:"/(?:<script\b[^>]{0,128}>|<(?:img|svg)\b[^>]{0,256}\bon(?:error|load)\s*=|javascript\s*:\s*(?:alert|eval|fetch)\s*\()/i"; classtype:web-application-attack; priority:2; sid:1000026; rev:1;)
+
+# 27. Shell operator followed by command in data API bodies; not proof of execution.
+alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: Command Injection Request Body Attempt"; flow:established,to_server; http.method; pcre:"/^(?:POST|PUT|PATCH)$/"; http.uri; pcre:"/^\/api\/(?:students|me|classes|faculties|majors|training-programs)(?:[\/?]|$)/"; http.content_type; pcre:"/^application\/(?:json|x-www-form-urlencoded)(?:[\x3b\s]|$)/i"; http.request_body; url_decode; url_decode; pcre:"/(?:\x3b|\|\||\&\&|\x60|\$\()(?:[+\s]|\$\{IFS\}){0,32}(?:whoami|uname|id|bash|sh|nc)(?=[+\s\x22\x27\x3b|)\x60]|$)/i"; classtype:web-application-attack; priority:1; sid:1000027; rev:1;)

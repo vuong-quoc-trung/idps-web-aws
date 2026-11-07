@@ -240,7 +240,58 @@ canonical_json_schema:
       type: boolean
     truncated:
       type: boolean
-canonical_schema_sha256: 7e3d82c5785cb8073737ed444ef58de72288ec89766bc24d554bbba285bfb3c4
+    security:
+      type:
+      - object
+      - 'null'
+      additionalProperties: false
+      required:
+      - reasons
+      - account_hmac
+      - object_hmac
+      - forbidden_fields
+      properties:
+        reasons:
+          type: array
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+          items:
+            enum:
+            - LOGIN_FAILED
+            - OBJECT_ACCESS_DENIED
+            - MASS_ASSIGNMENT
+            - PRIVILEGE_DENIED
+            - INVALID_SESSION
+            - SESSION_REVOKED
+            - WORKFLOW_DENIED
+            - RATE_LIMITED
+            - CSRF_INVALID
+            - RECOVERY_TOKEN_INVALID
+        account_hmac:
+          type:
+          - string
+          - 'null'
+          pattern: ^hmac-sha256:[0-9a-f]{64}$
+        object_hmac:
+          type:
+          - string
+          - 'null'
+          pattern: ^hmac-sha256:[0-9a-f]{64}$
+        forbidden_fields:
+          type: array
+          maxItems: 7
+          uniqueItems: true
+          items:
+            enum:
+            - role
+            - isAdmin
+            - ownerId
+            - userId
+            - studentId
+            - authorities
+            - permissions
+canonical_schema_sha256: 2a98c3f1b9fc0674a0fa07489e99c9ea33c8530322ed7f44ec9d5754ae58fd8e
 database:
   table: normalized_events
   columns:
@@ -332,8 +383,8 @@ native_suricata:
     alert: optional object(signature_id uint64,severity integer,signature string);
       not ground truth
 protected_source_hashes:
-  student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.java: 8f1cc65f97a475478c7635c83e5b36c9bfcef7da2c94142389b29b3cdb476888
-  security-web/src/ingest.rs: ea0cc113abec6921289d7e77bce203a35fb70f015c9bafc4348d07b04b321848
+  student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.java: a1e308178f9307c554089b66820fe69d7c14a9044d3e89e54bcbf4946e515aa4
+  security-web/src/ingest.rs: ae435baee963e27a16a760b213e1732cdd129ae7b2d5749bb74ae2cda07a6b4c
   security-web/migrations/0001_initial.sql: 61644039add9f1a3dcdc7dc72e4ed1f7132231106cb890fafbb1750143b42e42
   security-web/migrations/0002_reliability.sql: c80dde062540e2dcbfe9704bbf115efda1f33774d0709becb007c0a70d3ea868
   security-web/migrations/0003_shared_foundation.sql: 26b59640f9f416351492f7e901c393c3ece996a0d337d7cda4d9380e454800ba

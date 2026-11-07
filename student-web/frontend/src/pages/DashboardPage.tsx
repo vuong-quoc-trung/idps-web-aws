@@ -203,18 +203,15 @@ export default function DashboardPage() {
                     {new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
                 </div>
-                <h1 className="welcome-title">{ROLE_WELCOME[user.role] ?? 'Chào mừng bạn!'}</h1>
-                <p className="welcome-subtitle">
-                  Xin chào <strong>{user.fullName ?? user.username}</strong>
-                  {user.studentCode && <> · Mã số sinh viên: <code className="mono-code">{user.studentCode}</code></>}
-                  {studentAcademic.className && <> · Lớp: <strong>{studentAcademic.className}</strong></>}
-                  {studentAcademic.majorName && <> · Ngành: <strong>{studentAcademic.majorName}</strong></>}
-                  {studentDetail?.status && (
-                    <span className={`status-pill ${STATUS_CLASSES[studentDetail.status]}`} style={{ marginLeft: 8 }}>
-                      {STATUS_LABELS[studentDetail.status]}
-                    </span>
-                  )}
-                </p>
+                <h1 className="welcome-title">{user.role === 'STUDENT' ? `Xin chào, ${user.fullName || user.username}!` : ROLE_WELCOME[user.role]}</h1>
+                <p className="welcome-subtitle">{user.role === 'STUDENT' ? 'Thông tin học tập và hồ sơ của bạn, ngay tại đây.' : `Xin chào ${user.fullName || user.username}. Chúc bạn một ngày làm việc hiệu quả.`}</p>
+                {user.role === 'STUDENT' && <dl className="welcome-details">
+                  <div><dt>Mã sinh viên</dt><dd>{user.studentCode || studentDetail?.studentCode || user.username}</dd></div>
+                  <div><dt>Lớp</dt><dd>{studentAcademic.className || (loading ? 'Đang tải…' : 'Chưa cập nhật')}</dd></div>
+                  <div><dt>Ngành</dt><dd>{studentAcademic.majorName || (loading ? 'Đang tải…' : 'Chưa cập nhật')}</dd></div>
+                  {studentDetail?.status && <div><dt>Trạng thái</dt><dd><span className={`status-pill ${STATUS_CLASSES[studentDetail.status]}`}>{STATUS_LABELS[studentDetail.status]}</span></dd></div>}
+                </dl>}
+
               </div>
             </div>
           </div>
@@ -450,7 +447,8 @@ export default function DashboardPage() {
                       )}
                     </div>
                     <div>
-                      <h2 className="completion-card-title">Tiến độ hoàn thiện hồ sơ sinh viên</h2>
+                      <p className="completion-eyebrow">VIỆC CẦN LÀM</p>
+                      <h2 className="completion-card-title">Hoàn thiện hồ sơ của bạn</h2>
                       <p className="completion-card-desc">
                         {isComplete
                           ? 'Chúc mừng! Bạn đã hoàn thành 100% việc kê khai thông tin hồ sơ theo quy định của nhà trường.'

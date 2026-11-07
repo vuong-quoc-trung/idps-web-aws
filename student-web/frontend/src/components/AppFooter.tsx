@@ -30,10 +30,10 @@ export default function AppFooter() {
           <span>{FOOTER_CONTACT.address}</span>
         </div>
         <div><span className="dut-footer-contact-label">Điện thoại </span>
-          <span>{FOOTER_CONTACT.phone}</span>
+          <a href="tel:+84774155608">{FOOTER_CONTACT.phone}</a>
         </div>
         <div><span className="dut-footer-contact-label">Email hỗ trợ</span>
-          <span>{FOOTER_CONTACT.email}</span>
+          <a href={`mailto:${FOOTER_CONTACT.email}`}>{FOOTER_CONTACT.email}</a>
         </div>
       </address>
       <div className="dut-footer-bottom">

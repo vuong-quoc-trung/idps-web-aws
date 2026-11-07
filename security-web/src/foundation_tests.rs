@@ -242,7 +242,8 @@ async fn authentication_counter_correlates_two_sources_and_resets_on_success(poo
         ),
     )
     .await;
-    assert_eq!(count(&s.pool, "security_alerts").await, 2);
+    // Student now uses APP-1001 threshold10, not the legacy threshold3.
+    assert_eq!(count(&s.pool, "security_alerts").await, 1);
 }
 #[sqlx::test(migrations = "./migrations")]
 async fn off_switch_blocks_pending_work_and_expired_blocks_are_not_restored(pool: PgPool) {
@@ -278,6 +279,79 @@ async fn off_switch_blocks_pending_work_and_expired_blocks_are_not_restored(pool
 #[test]
 fn nft_timeout_elements_are_understood() {
     assert_eq!(firewall::parse_set(r#"{"nftables":[{"set":{"name":"blocked_ips","elem":[{"elem":{"val":"192.168.1.50","timeout":300000,"expires":250000}}]}}]}"#).unwrap().len(),1);
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn extended_sensor_rules_use_audited_bounded_response_only_when_enabled(pool: PgPool) {
+    let mut s = state(pool, true);
+    let sids = vec![1000008, 1000010, 1000011, 1000012, 1000013, 1000014];
+    let logs = Logs::new();
+    let path = logs.path("eve.json");
+    for sid in &sids {
+        append(
+            &s,
+            "SURICATA",
+            &path,
+            &format!(
+                "{}\n",
+                json!({
+                    "timestamp":Utc::now(), "event_type":"alert", "src_ip":"192.168.1.50",
+                    "alert":{"signature_id":sid,"severity":1}
+                })
+            ),
+        )
+        .await;
+    }
+    assert_eq!(count(&s.pool, "security_alerts").await, 6);
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
+
+    s.policy = PolicyEngine::new(true, sids.clone(), false);
+    Arc::make_mut(&mut s.safety).mode = "OFF".into();
+    for sid in sids {
+        append(
+            &s,
+            "SURICATA",
+            &path,
+            &format!(
+                "{}\n",
+                json!({
+                    "timestamp":Utc::now(), "event_type":"alert", "src_ip":"192.168.1.50",
+                    "alert":{"signature_id":sid,"severity":1}
+                })
+            ),
+        )
+        .await;
+    }
+    assert_eq!(count(&s.pool, "firewall_actions").await, 6);
+    assert!(
+        !firewall::process_one(&s, |_, _, _| async { panic!("OFF must not call a helper") })
+            .await
+            .unwrap()
+    );
+
+    Arc::make_mut(&mut s.safety).mode = "ENFORCE".into();
+    for _ in 0..6 {
+        assert!(
+            firewall::process_one(&s, |_, _, ttl| async move {
+                assert!(ttl.is_some_and(|seconds| (1..=300).contains(&seconds)));
+                Ok(()) // Mock actuator: never invokes the real helper or kernel.
+            })
+            .await
+            .unwrap()
+        );
+    }
+    let successful: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='SUCCESS' AND actor='system' AND event_id IS NOT NULL")
+        .fetch_one(&s.pool).await.unwrap();
+    assert_eq!(successful, 6);
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>(
+            "SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'"
+        )
+        .fetch_one(&s.pool)
+        .await
+        .unwrap(),
+        6
+    );
 }
 
 #[sqlx::test(migrations = "./migrations")]
@@ -333,4 +407,429 @@ async fn restore_preserves_original_deadline_instead_of_renewing_block(pool: PgP
         .await
         .unwrap();
     assert!((applied - expiry).num_milliseconds().abs() < 1);
+}
+
+fn app_line(id: &str, ip: Option<&str>, path: &str, status: u16, at: DateTime<Utc>) -> String {
+    let mut v: serde_json::Value = serde_json::from_str(&audit(id, id, status, at)).unwrap();
+    v["client_ip"] = json!(ip);
+    v["uri_path"] = json!(path);
+    v["http_method"] = json!("GET");
+    v.to_string() + "\n"
+}
+async fn app_alerts(pool: &PgPool, code: &str) -> Vec<(i16, String)> {
+    sqlx::query_as("SELECT severity,evidence FROM security_alerts WHERE signature=$1 ORDER BY id")
+        .bind(code)
+        .fetch_all(pool)
+        .await
+        .unwrap()
+}
+#[sqlx::test(migrations = "./migrations")]
+async fn app_auth_threshold_dedup_escalation_and_no_auto(pool: PgPool) {
+    let mut s = state(pool, false); // Detection must not depend on dataset storage.
+    s.policy = PolicyEngine::new(true, vec![1000009], true);
+    let logs = Logs::new();
+    let p = logs.path("audit.log");
+    let at = Utc::now();
+    let lines = (0..9)
+        .map(|i| {
+            app_line(
+                &format!("a{i}"),
+                Some("192.168.1.50"),
+                "/api/auth/me",
+                401,
+                at,
+            )
+        })
+        .collect::<String>();
+    append(&s, "STUDENT_AUDIT", &p, &lines).await;
+    assert!(app_alerts(&s.pool, "APP-1001").await.is_empty());
+    append(
+        &s,
+        "STUDENT_AUDIT",
+        &p,
+        &app_line("a9", Some("192.168.1.50"), "/api/auth/login", 401, at),
+    )
+    .await;
+    assert_eq!(app_alerts(&s.pool, "APP-1001").await.len(), 1);
+    append(&s, "STUDENT_AUDIT", &p, &lines).await; // repeated transport deliveries
+    let rest = (10..25)
+        .map(|i| {
+            app_line(
+                &format!("a{i}"),
+                Some("192.168.1.50"),
+                "/api/auth/me",
+                401,
+                at,
+            )
+        })
+        .collect::<String>();
+    append(&s, "STUDENT_AUDIT", &p, &rest).await;
+    let rows = app_alerts(&s.pool, "APP-1001").await;
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0].0, 1);
+    let evidence: serde_json::Value = serde_json::from_str(&rows[0].1).unwrap();
+    assert_eq!(evidence["event_count"], 25);
+    assert_eq!(evidence["recommended_action"], "BLOCK");
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
+}
+#[sqlx::test(migrations = "./migrations")]
+async fn app_burst_loopback_null_ipv6_and_sources(pool: PgPool) {
+    let s = state(pool, true);
+    let logs = Logs::new();
+    let p = logs.path("audit.log");
+    let at = Utc::now();
+    let lines = (0..300)
+        .map(|i| {
+            app_line(
+                &format!("b{i}"),
+                Some("127.0.0.1"),
+                "/api/students",
+                200,
+                at,
+            )
+        })
+        .collect::<String>();
+    // Boundary99 must not fire, then100 creates one,300 escalates same episode.
+    let parts: Vec<_> = lines.split_inclusive('\n').collect();
+    append(&s, "STUDENT_AUDIT", &p, &parts[..99].concat()).await;
+    assert!(app_alerts(&s.pool, "APP-1004").await.is_empty());
+    append(&s, "STUDENT_AUDIT", &p, parts[99]).await;
+    assert_eq!(app_alerts(&s.pool, "APP-1004").await.len(), 1);
+    append(&s, "STUDENT_AUDIT", &p, &parts[100..].concat()).await;
+    let rows = app_alerts(&s.pool, "APP-1004").await;
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0].0, 1);
+    let evidence: serde_json::Value = serde_json::from_str(&rows[0].1).unwrap();
+    assert_eq!(evidence["recommended_action"], "ALERT_ONLY");
+    append(
+        &s,
+        "STUDENT_AUDIT",
+        &p,
+        &app_line("null-ip", None, "/api/auth/me", 401, at),
+    )
+    .await;
+    let v6 = (0..20)
+        .map(|i| app_line(&format!("v{i}"), Some("::1"), "/api/auth/me", 401, at))
+        .collect::<String>();
+    append(&s, "STUDENT_AUDIT", &p, &v6).await;
+    assert_eq!(app_alerts(&s.pool, "APP-1001").await.len(), 1);
+    append(&s,"SURICATA",&logs.path("eve.json"),&format!("{}\n",json!({"timestamp":at,"event_type":"alert","src_ip":"127.0.0.1","alert":{"signature_id":1000009,"severity":2}}))).await;
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>(
+            "SELECT count(*) FROM security_alerts WHERE source='SURICATA'"
+        )
+        .fetch_one(&s.pool)
+        .await
+        .unwrap(),
+        1
+    );
+    assert_eq!(app_alerts(&s.pool, "APP-1004").await.len(), 1);
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
+}
+#[sqlx::test(migrations = "./migrations")]
+async fn app_authorization_probing_failures_and_redacted_paths(pool: PgPool) {
+    let s = state(pool, true);
+    let logs = Logs::new();
+    let p = logs.path("audit.log");
+    let at = Utc::now();
+    for i in 0..15 {
+        append(
+            &s,
+            "STUDENT_AUDIT",
+            &p,
+            &app_line(
+                &format!("f{i}"),
+                Some("192.168.1.50"),
+                "/api/users",
+                403,
+                at,
+            ),
+        )
+        .await;
+        if i == 6 {
+            assert!(app_alerts(&s.pool, "APP-1002").await.is_empty());
+        }
+    }
+    assert_eq!(app_alerts(&s.pool, "APP-1002").await.len(), 1);
+    assert_eq!(app_alerts(&s.pool, "APP-1005").await[0].0, 2);
+    for i in 0..8 {
+        append(
+            &s,
+            "STUDENT_AUDIT",
+            &p,
+            &app_line(
+                &format!("red{i}"),
+                Some("192.168.1.51"),
+                "/[redacted]",
+                404,
+                at,
+            ),
+        )
+        .await;
+    }
+    assert!(app_alerts(&s.pool, "APP-1003").await.is_empty());
+    for (i, path) in [
+        "/api/users",
+        "/api/access-logs",
+        "/api/students",
+        "/api/classes",
+        "/api/majors",
+    ]
+    .iter()
+    .enumerate()
+    {
+        append(
+            &s,
+            "STUDENT_AUDIT",
+            &p,
+            &app_line(&format!("probe{i}"), Some("192.168.1.52"), path, 404, at),
+        )
+        .await;
+    }
+    assert_eq!(app_alerts(&s.pool, "APP-1003").await.len(), 1);
+}
+#[sqlx::test(migrations = "./migrations")]
+async fn app_windows_late_events_and_restart(pool: PgPool) {
+    let s = state(pool.clone(), false);
+    let logs = Logs::new();
+    let p = logs.path("audit.log");
+    let at = Utc::now() - chrono::Duration::seconds(120);
+    let rows = (0..10)
+        .map(|i| {
+            app_line(
+                &format!("old{i}"),
+                Some("192.168.1.50"),
+                "/api/auth/me",
+                401,
+                at,
+            )
+        })
+        .collect::<String>();
+    append(&s, "STUDENT_AUDIT", &p, &rows).await;
+    let restarted = state(pool, false);
+    // Gap >60s starts a new episode, not mixed with old observations.
+    let newer = at + chrono::Duration::seconds(61);
+    let rows = (0..9)
+        .map(|i| {
+            app_line(
+                &format!("new{i}"),
+                Some("192.168.1.50"),
+                "/api/auth/me",
+                401,
+                newer,
+            )
+        })
+        .collect::<String>();
+    append(&restarted, "STUDENT_AUDIT", &p, &rows).await;
+    assert_eq!(app_alerts(&s.pool, "APP-1001").await.len(), 1);
+    append(
+        &restarted,
+        "STUDENT_AUDIT",
+        &p,
+        &app_line("late", Some("192.168.1.50"), "/api/auth/me", 401, at),
+    )
+    .await;
+    assert_eq!(app_alerts(&s.pool, "APP-1001").await.len(), 1);
+    append(
+        &restarted,
+        "STUDENT_AUDIT",
+        &p,
+        &app_line("new9", Some("192.168.1.50"), "/api/auth/me", 401, newer),
+    )
+    .await;
+    assert_eq!(app_alerts(&s.pool, "APP-1001").await.len(), 2);
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPool) {
+    let mut s = state(pool, true);
+    Arc::make_mut(&mut s.safety).mode = "MANUAL".into();
+    let logs = Logs::new();
+    let at = Utc::now();
+    let rows = (0..10)
+        .map(|i| {
+            app_line(
+                &format!("m{i}"),
+                Some("192.168.1.50"),
+                "/api/auth/login",
+                401,
+                at,
+            )
+        })
+        .collect::<String>();
+    append(&s, "STUDENT_AUDIT", &logs.path("audit.log"), &rows).await;
+    let id: i64 = sqlx::query_scalar("SELECT id FROM security_alerts WHERE signature='APP-1001'")
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    let actor = auth::Identity {
+        username: "admin".into(),
+        role: "admin".into(),
+    };
+    let result = block_ip(
+        State(s.clone()),
+        Extension(actor.clone()),
+        Json(BlockRequest {
+            ip: "127.0.0.1".into(),
+            reason: "test protected".into(),
+            event_id: Some(id),
+        }),
+    )
+    .await;
+    assert!(result.is_err());
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
+    let result = block_ip(
+        State(s.clone()),
+        Extension(actor.clone()),
+        Json(BlockRequest {
+            ip: "192.168.1.51".into(),
+            reason: "mismatched alert".into(),
+            event_id: Some(id),
+        }),
+    )
+    .await;
+    assert!(result.is_err());
+    let _ = block_ip(
+        State(s.clone()),
+        Extension(actor),
+        Json(BlockRequest {
+            ip: "192.168.1.50".into(),
+            reason: "APP-1001 reviewed manually".into(),
+            event_id: Some(id),
+        }),
+    )
+    .await
+    .unwrap();
+    assert!(
+        firewall::process_one(&s, |_, _, _| async { Ok(()) })
+            .await
+            .unwrap()
+    );
+    let row: (String, String, String, i64) =
+        sqlx::query_as("SELECT actor,source,status,event_id FROM firewall_actions")
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+    assert_eq!(row, ("admin".into(), "API".into(), "SUCCESS".into(), id));
+    assert_eq!(
+        sqlx::query_scalar::<_, String>("SELECT action FROM security_alerts WHERE id=$1")
+            .bind(id)
+            .fetch_one(&s.pool)
+            .await
+            .unwrap(),
+        "BLOCK"
+    );
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn app_new_behavior_rules_thresholds_and_sources(pool: PgPool) {
+    let s = state(pool, false);
+    let logs = Logs::new();
+    let p = logs.path("new-app.log");
+    let at = Utc::now() - chrono::Duration::seconds(150);
+    // All fixtures are canonical records, never requests to the live Student server.
+    let make = |id: String, ip: &str, path: &str, method: &str, status: u16, seconds: i64| {
+        let mut v: serde_json::Value = serde_json::from_str(&app_line(
+            &id,
+            Some(ip),
+            path,
+            status,
+            at + chrono::Duration::seconds(seconds),
+        ))
+        .unwrap();
+        v["http_method"] = json!(method);
+        v.to_string() + "\n"
+    };
+    for (code, ip, path, method, status, threshold) in [
+        ("APP-1007", "192.168.1.71", "/api/students", "GET", 500, 5),
+        ("APP-1008", "192.168.1.72", "/api/users", "GET", 200, 40),
+        (
+            "APP-1009",
+            "192.168.1.73",
+            "/api/students/[id]",
+            "PATCH",
+            200,
+            20,
+        ),
+        ("APP-1010", "192.168.1.74", "/api/students", "POST", 405, 5),
+    ] {
+        for i in 0..threshold - 1 {
+            append(
+                &s,
+                "STUDENT_AUDIT",
+                &p,
+                &make(format!("{code}-{i}"), ip, path, method, status, 10),
+            )
+            .await;
+        }
+        assert!(app_alerts(&s.pool, code).await.is_empty());
+        // Method probing needs diversity as well as count.
+        let last_method = if code == "APP-1010" { "DELETE" } else { method };
+        let last = make(format!("{code}-last"), ip, path, last_method, status, 11);
+        append(&s, "STUDENT_AUDIT", &p, &last).await;
+        append(&s, "STUDENT_AUDIT", &p, &last).await;
+        let alerts = app_alerts(&s.pool, code).await;
+        assert_eq!(alerts.len(), 1);
+        assert_eq!(alerts[0].0, if code == "APP-1010" { 3 } else { 2 });
+        let evidence: serde_json::Value = serde_json::from_str(&alerts[0].1).unwrap();
+        assert_eq!(evidence["event_count"], threshold);
+        assert_eq!(evidence["recommended_action"], "ALERT_ONLY");
+    }
+    // Login success must follow failures, POST /login only, across >60s window.
+    for i in 0..5 {
+        append(
+            &s,
+            "STUDENT_AUDIT",
+            &p,
+            &make(
+                format!("login-{i}"),
+                "192.168.1.75",
+                "/api/auth/login",
+                "POST",
+                401,
+                i,
+            ),
+        )
+        .await;
+    }
+    assert!(app_alerts(&s.pool, "APP-1006").await.is_empty());
+    append(
+        &s,
+        "STUDENT_AUDIT",
+        &p,
+        &make(
+            "me-success".into(),
+            "192.168.1.75",
+            "/api/auth/me",
+            "GET",
+            200,
+            80,
+        ),
+    )
+    .await;
+    assert!(app_alerts(&s.pool, "APP-1006").await.is_empty());
+    append(
+        &s,
+        "STUDENT_AUDIT",
+        &p,
+        &make(
+            "login-success".into(),
+            "192.168.1.75",
+            "/api/auth/login",
+            "POST",
+            200,
+            90,
+        ),
+    )
+    .await;
+    let alerts = app_alerts(&s.pool, "APP-1006").await;
+    assert_eq!(alerts.len(), 1);
+    let evidence: serde_json::Value = serde_json::from_str(&alerts[0].1).unwrap();
+    assert_eq!(evidence["failure_count"], 5);
+    assert_eq!(evidence["event_count"], 6);
+    let actions: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions")
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(actions, 0);
 }

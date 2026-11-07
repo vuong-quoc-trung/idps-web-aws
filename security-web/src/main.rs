@@ -1,5 +1,6 @@
 mod ai_shadow;
 mod application_audit;
+mod application_detection;
 mod auth;
 mod detection;
 mod events;
@@ -7,7 +8,11 @@ mod firewall;
 mod ingest;
 mod metrics;
 mod network;
+mod nginx_detection;
+mod operations;
+mod security_detection;
 mod three_source;
+mod triage;
 use anyhow::{Context, Result, bail};
 use axum::{
     Extension, Json, Router,
@@ -150,12 +155,14 @@ struct AlertQuery {
     source: Option<String>,
     action: Option<String>,
     dest_ip: Option<std::net::IpAddr>,
+    triage_status: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct BlockRequest {
     ip: String,
     reason: String,
+    event_id: Option<i64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -260,6 +267,7 @@ async fn main() -> Result<()> {
     }
     tokio::spawn(ingest::retention_worker(state.clone()));
     tokio::spawn(metrics::sample_resources());
+    tokio::spawn(operations::monitor());
     tokio::spawn(firewall::worker(state.clone()));
     let addr = env::var("APP_ADDR").unwrap_or("127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(&addr).await?;
@@ -281,6 +289,7 @@ fn router(state: AppState) -> Router {
         .route("/api/alerts", get(list_alerts))
         .route("/api/alerts/search", get(search_alerts))
         .route("/api/alerts/{id}", get(alert_detail))
+        .route("/api/alerts/{id}/triage", post(triage::update))
         .route("/api/stats", get(metrics::stats))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
@@ -316,6 +325,12 @@ async fn search_alerts(
             "Thời gian bắt đầu phải trước thời gian kết thúc",
         ));
     }
+    if q.triage_status
+        .as_deref()
+        .is_some_and(|s| !triage::valid_status(s))
+    {
+        return Err(bad_request("Trạng thái xử lý không hợp lệ"));
+    }
     let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_search.sql"))
         .bind(q.limit.unwrap_or(50).clamp(1, 200))
         .bind(q.offset.unwrap_or(0).max(0))
@@ -326,6 +341,7 @@ async fn search_alerts(
         .bind(q.source)
         .bind(q.action)
         .bind(q.dest_ip.map(|ip| ip.to_string()))
+        .bind(q.triage_status)
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
@@ -362,9 +378,29 @@ async fn block_ip(
     if req.reason.trim().is_empty() || req.reason.len() > 500 {
         return Err(bad_request("Reason must contain 1–500 characters"));
     }
-    let id = firewall::enqueue(&state.pool, ip, "BLOCK", &actor.username, &req.reason, None)
+    if let Some(event_id) = req.event_id {
+        let matches: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM security_alerts WHERE id=$1 AND src_ip=$2::inet)",
+        )
+        .bind(event_id)
+        .bind(ip.to_string())
+        .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
+        if !matches {
+            return Err(bad_request("Source alert does not match IP"));
+        }
+    }
+    let id = firewall::enqueue(
+        &state.pool,
+        ip,
+        "BLOCK",
+        &actor.username,
+        &req.reason,
+        req.event_id,
+    )
+    .await
+    .map_err(api_error)?;
     Ok((
         StatusCode::ACCEPTED,
         Json(serde_json::json!({"id":id,"status":"PENDING"})),
@@ -391,9 +427,85 @@ async fn unblock_ip(
         Json(serde_json::json!({"id":id,"status":"PENDING"})),
     ))
 }
-async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
-    let policy = &state.policy;
-    let rules = vec![
+async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>> {
+    let mut rules: Vec<_> = suricata_rule_catalog(&state.policy)
+        .into_iter()
+        .map(|r| {
+            let mut v = serde_json::to_value(&r).expect("rule metadata");
+            v["code"] = serde_json::json!(format!("SID {}", r.sid));
+            v["source"] = serde_json::json!("SURICATA");
+            v["action_mode"] = serde_json::json!(if r.auto_block_eligible {
+                "POLICY_CONTROLLED"
+            } else {
+                "ALERT_ONLY"
+            });
+            v
+        })
+        .collect();
+    // Existing Nginx detection families (raw access logs and trusted edge signals).
+    // Metadata only: no new detection or response policy is introduced here.
+    for (code, name, category, severity) in [
+        ("SQLI", "SQL Injection Attempt", "Web Application Attack", 1),
+        (
+            "XSS",
+            "Cross-Site Scripting Attempt",
+            "Web Application Attack",
+            2,
+        ),
+        (
+            "PATH_TRAVERSAL",
+            "Path Traversal or Sensitive File Probe",
+            "Web Application Attack",
+            2,
+        ),
+        (
+            "COMMAND_INJECTION",
+            "OS Command Injection Attempt",
+            "Web Application Attack",
+            1,
+        ),
+        (
+            "SCANNER_UA",
+            "Automated Scanner User-Agent",
+            "Reconnaissance",
+            3,
+        ),
+        (
+            "AUTH_BRUTE_FORCE",
+            "Repeated Authentication Failures",
+            "Authentication Abuse",
+            2,
+        ),
+    ] {
+        let eligible = code == "SQLI"
+            && state.policy.evaluate_nginx() == EventPolicyDecision::EligibleForAutoBlock;
+        let mut rule = serde_json::json!({
+            "sid":null,"code":code,"source":"NGINX","name":name,
+            "category":category,"severity":severity,"auto_block_eligible":eligible,
+            "action_mode":if eligible { "POLICY_CONTROLLED" } else { "ALERT_ONLY" }
+        });
+        if code == "AUTH_BRUTE_FORCE" {
+            rule["threshold"] = serde_json::json!(state.ingestion.auth_threshold);
+            rule["window_seconds"] = serde_json::json!(state.ingestion.auth_window_seconds);
+        }
+        rules.push(rule);
+    }
+    rules.extend(nginx_detection::RULES.iter().map(|(code,name,threshold,seconds)| serde_json::json!({
+        "sid":null,"code":code,"source":"NGINX","name":name,"category":"Proxy Behavior","severity":2,"auto_block_eligible":false,"action_mode":"ALERT_ONLY","threshold":threshold,"window_seconds":seconds
+    })));
+    rules.extend(application_detection::RULES.iter().map(|r| {
+        serde_json::json!({
+            "sid":null,"code":r.code,"source":"STUDENT_AUDIT","name":r.name,
+            "category":"Application Behavior","severity":if r.code == "APP-1010" {3} else if matches!(r.code, "APP-1013"|"APP-1014") {1} else {2},"auto_block_eligible":false,
+            "action_mode":"ALERT_ONLY","threshold":r.threshold,"window_seconds":r.seconds
+        })
+    }));
+    operations::annotate_rules(&state, &mut rules).await;
+    Json(rules)
+}
+
+fn suricata_rule_catalog(policy: &PolicyEngine) -> Vec<RuleInfo> {
+    vec![
         RuleInfo {
             sid: 1000001,
             name: "TCP SYN Burst Threshold",
@@ -412,7 +524,7 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
         },
         RuleInfo {
             sid: 1000008,
-            name: "SQL Injection - Generic Keywords Attempt",
+            name: "SQL Injection - Time/Blind, Error or Statement (URI)",
             category: "Web Application Attack",
             severity: 1,
             auto_block_eligible: policy.evaluate_suricata(Some(1000008))
@@ -466,8 +578,151 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<RuleInfo>> {
             auto_block_eligible: policy.evaluate_suricata(Some(1000009))
                 == EventPolicyDecision::EligibleForAutoBlock,
         },
-    ];
-    Json(rules)
+        RuleInfo {
+            sid: 1000010,
+            name: "HTTP Request Flood (100 requests / 10s per source)",
+            category: "Denial of Service",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000010))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000011,
+            name: "Suspicious Web Shell File Upload",
+            category: "Malicious File Upload",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000011))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000012,
+            name: "Possible SSRF to Internal/Metadata Target (URI)",
+            category: "Server-Side Request Forgery",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000012))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000013,
+            name: "SQL Injection - Time/Blind Request Body",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000013))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000014,
+            name: "Possible SSRF to Internal/Metadata Target (Request Body)",
+            category: "Server-Side Request Forgery",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000014))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000015,
+            name: "Possible HTTP Request Smuggling CL TE",
+            category: "HTTP Request Smuggling",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000015))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000016,
+            name: "Possible XML External Entity Declaration",
+            category: "XML External Entity",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000016))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000017,
+            name: "Possible Host Header Injection Invalid Authority",
+            category: "Host Header Injection",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000017))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000018,
+            name: "Dangerous HTTP Method or WebDAV Observation",
+            category: "HTTP Method Policy",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000018))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000019,
+            name: "JNDI Injection Attempt",
+            category: "JNDI Injection",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000019))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000020,
+            name: "CRLF HTTP Header Injection Attempt",
+            category: "HTTP Header Injection",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000020))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000021,
+            name: "Possible Server Side Template Injection",
+            category: "Template Injection",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000021))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000022,
+            name: "Possible NoSQL Operator Injection",
+            category: "NoSQL Injection",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000022))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000023,
+            name: "Possible HTTP Request Smuggling Duplicate Content Length",
+            category: "HTTP Request Smuggling",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000023))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000024,
+            name: "Shellshock Style HTTP Header Injection",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000024))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000025,
+            name: "SQL Injection Boolean or Union Request Body Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000025))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000026,
+            name: "XSS Request Body Attempt",
+            category: "Web Application Attack",
+            severity: 2,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000026))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+        RuleInfo {
+            sid: 1000027,
+            name: "Command Injection Request Body Attempt",
+            category: "Web Application Attack",
+            severity: 1,
+            auto_block_eligible: policy.evaluate_suricata(Some(1000027))
+                == EventPolicyDecision::EligibleForAutoBlock,
+        },
+    ]
 }
 
 #[cfg(test)]
@@ -526,6 +781,89 @@ mod integration_tests;
 #[cfg(test)]
 mod parser_tests {
     use super::*;
+    #[test]
+    fn catalog_sids_and_severity_match_the_installed_rule_source() {
+        let rules = suricata_rule_catalog(&PolicyEngine::new(false, vec![], false));
+        let pattern = Regex::new(r"priority:(\d+); sid:(\d+);").unwrap();
+        let sensor: std::collections::BTreeMap<u32, i16> = pattern
+            .captures_iter(include_str!("../suricata/pbl4.rules"))
+            .map(|m| (m[2].parse().unwrap(), m[1].parse().unwrap()))
+            .collect();
+        assert_eq!(rules.len(), sensor.len());
+        for rule in rules {
+            assert_eq!(sensor.get(&rule.sid), Some(&rule.severity));
+            assert!(!rule.auto_block_eligible);
+        }
+    }
+
+    #[test]
+    fn extended_rules_require_explicit_response_opt_in() {
+        let sids = vec![
+            1000008, 1000010, 1000011, 1000012, 1000013, 1000014, 1000015, 1000016, 1000017,
+            1000018, 1000019, 1000020, 1000021, 1000022, 1000023, 1000024, 1000025, 1000026,
+            1000027,
+        ];
+        let off = PolicyEngine::new(false, sids.clone(), false);
+        let original = PolicyEngine::new(true, vec![1000002], false);
+        let enabled = PolicyEngine::new(true, sids.clone(), false);
+        for sid in sids {
+            assert_eq!(
+                off.evaluate_suricata(Some(sid)),
+                EventPolicyDecision::AlertOnly
+            );
+            assert_eq!(
+                original.evaluate_suricata(Some(sid)),
+                EventPolicyDecision::AlertOnly
+            );
+            assert_eq!(
+                enabled.evaluate_suricata(Some(sid)),
+                EventPolicyDecision::EligibleForAutoBlock
+            );
+        }
+    }
+
+    #[test]
+    fn extended_alerts_have_named_metadata_without_raw_payloads() {
+        for (sid, severity) in [
+            (1000008, 1),
+            (1000010, 2),
+            (1000011, 1),
+            (1000012, 2),
+            (1000013, 1),
+            (1000014, 2),
+            (1000015, 1),
+            (1000016, 1),
+            (1000017, 2),
+            (1000018, 2),
+            (1000019, 1),
+            (1000020, 1),
+            (1000021, 2),
+            (1000022, 2),
+            (1000023, 1),
+            (1000024, 1),
+            (1000025, 1),
+            (1000026, 2),
+            (1000027, 1),
+        ] {
+            let parsed = events::parse("SURICATA", &serde_json::json!({
+                "timestamp":"2026-10-29T10:00:00Z", "event_type":"alert",
+                "src_ip":"192.168.10.10", "dest_ip":"192.168.10.1", "proto":"TCP",
+                "alert":{"signature_id":sid,"severity":severity,"signature":"RAW_CANARY_SECRET"},
+                "payload":"RAW_CANARY_SECRET"
+            }).to_string()).unwrap();
+            let native = parsed.native_alert.unwrap();
+            assert_eq!(native.sid, Some(sid));
+            assert_eq!(native.severity, severity);
+            assert_ne!(native.category.as_deref(), Some("Sensor Alert"));
+            assert!(!native.signature.contains("RAW_CANARY_SECRET"));
+            assert!(
+                !serde_json::to_string(&parsed.canonical)
+                    .unwrap()
+                    .contains("RAW_CANARY_SECRET")
+            );
+        }
+    }
+
     #[test]
     fn validates_lab_hosts_and_rejects_subnets() {
         for ip in ["192.168.10.2", "192.168.10.254", "192.168.10.10/32"] {

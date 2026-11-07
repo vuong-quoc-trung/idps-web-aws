@@ -1,5 +1,10 @@
 # Kiểm tra ghi nhận cảnh báo bằng request lab
 
+Các case mở rộng `time-sqli`, `time-sqli-body`, `upload`, `ssrf`, `ssrf-body` và
+kiểm thử flood offline được mô tả tại [EXTENDED_RULES.md](EXTENDED_RULES.md).
+Lệnh `all` hiện gồm11request, cách nhau2giây; phần danh sách6case cũ dưới đây là
+tập con. Giữ cả ENFORCEMENT_MODE=OFF và AUTO_BLOCK=false trong lần thử ghi nhận.
+
 Các mẫu này kiểm tra signature/pipeline. Có cảnh báo không có nghĩa Student Web có lỗ hổng hoặc khai thác thành công. Script không thử đăng nhập, không gửi form thay đổi dữ liệu và không đọc nội dung response. Các chuỗi XSS/SQLi/traversal chỉ gửi đến đường dẫn kiểm thử; scanner test chỉ đổi User-Agent, không chạy sqlmap.
 
 ## Chạy ở đâu

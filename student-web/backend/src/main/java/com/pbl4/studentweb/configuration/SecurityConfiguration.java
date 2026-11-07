@@ -1,6 +1,7 @@
 package com.pbl4.studentweb.configuration;
 
 import com.pbl4.studentweb.user.repository.UserRepository;
+import com.pbl4.studentweb.accesslog.service.SecuritySignals;
 import com.pbl4.studentweb.user.service.UserAccountService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,13 +46,30 @@ public class SecurityConfiguration {
                     accounts.recordLogin(auth.getName());
                     response.setStatus(204);
                 })
-                .failureHandler((request, response, error) -> error(response, 401, "Invalid credentials")));
+                .failureHandler((request, response, error) -> {
+                    SecuritySignals.get(request).loginFailed(request.getParameter("username"));
+                    error(response, 401, "Invalid credentials");
+                }));
         http.logout(logout -> logout.logoutUrl("/api/auth/logout")
                 .logoutSuccessHandler((request, response, auth) -> response.setStatus(204))
                 .deleteCookies("JSESSIONID"));
         http.exceptionHandling(errors -> errors
-                .authenticationEntryPoint((request, response, error) -> error(response, 401, "Authentication required"))
-                .accessDeniedHandler((request, response, error) -> error(response, 403, "Access denied")));
+                .authenticationEntryPoint((request, response, error) -> {
+                    if (request.getRequestedSessionId() != null && !request.isRequestedSessionIdValid())
+                        SecuritySignals.get(request).mark(SecuritySignals.Reason.INVALID_SESSION);
+                    error(response, 401, "Authentication required");
+                })
+                .accessDeniedHandler((request, response, error) -> {
+                    if (error instanceof org.springframework.security.web.csrf.CsrfException)
+                        SecuritySignals.get(request).mark(SecuritySignals.Reason.CSRF_INVALID);
+                    // Exclude CSRF failures: they do not establish lack of privilege.
+                    String path = request.getRequestURI().substring(request.getContextPath().length());
+                    if (!(error instanceof org.springframework.security.web.csrf.CsrfException)
+                            && !java.util.Set.of("GET", "HEAD", "OPTIONS").contains(request.getMethod())
+                            && (path.equals("/api/users") || path.matches("/api/users/[0-9]+/(enabled|activation-token)")))
+                        SecuritySignals.get(request).mark(SecuritySignals.Reason.PRIVILEGE_DENIED);
+                    error(response, 403, "Access denied");
+                }));
         http.addFilterBefore(new SecurityRequestFilter(limiter, audit, attribution, includeReads), org.springframework.security.web.csrf.CsrfFilter.class);
         http.sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId()));
         http.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'")));

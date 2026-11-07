@@ -1,0 +1,36 @@
+#!/usr/bin/python3
+"""Only manage our transport guard. No existing table is replaced or removed."""
+import argparse, datetime, json, pathlib, subprocess, sys
+RULES = '''table inet pbl4_audit_transport {
+ chain input {
+  type filter hook input priority -110; policy accept;
+  ip daddr 192.168.20.1 tcp dport 2514 iifname != "vmnet3" drop
+  ip daddr 192.168.20.1 tcp dport 2514 ip saddr != 192.168.20.10 drop
+ }
+}
+'''
+def run(*args, **kw):
+    return subprocess.run(['/usr/sbin/nft', *args], check=True, capture_output=True, text=True, **kw)
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--apply',action='store_true');a=p.parse_args()
+    print(RULES, flush=True)
+    listed=json.loads(run('-j','list','tables').stdout)['nftables']
+    exists=any(x.get('table',{}).get('name')=='pbl4_audit_transport' and x['table']['family']=='inet' for x in listed)
+    if exists:
+        obj=json.loads(run('-j','list','table','inet','pbl4_audit_transport').stdout)['nftables']
+        chains=[x['chain'] for x in obj if 'chain' in x]
+        rules=[x['rule']['expr'] for x in obj if 'rule' in x]
+        def match(left,right,op='=='): return {'match':{'op':op,'left':left,'right':right}}
+        base=[match({'payload':{'protocol':'ip','field':'daddr'}},'192.168.20.1'),match({'payload':{'protocol':'tcp','field':'dport'}},2514)]
+        expected=[base+[match({'meta':{'key':'iifname'}},'vmnet3','!='),{'drop':None}],base+[match({'payload':{'protocol':'ip','field':'saddr'}},'192.168.20.10','!='),{'drop':None}]]
+        if len(chains)!=1 or any(chains[0].get(k)!=v for k,v in dict(name='input',type='filter',hook='input',prio=-110,policy='accept').items()) or rules!=expected:
+            sys.exit('Existing transport table differs; refusing changes. Inspect manually.')
+        print('Existing guard matches; preserved.');return
+    run('-c','-f','-',input=RULES)
+    if not a.apply: print('Syntax checked only.');return
+    backup=pathlib.Path('/var/lib/pbl4-audit-guard');backup.mkdir(mode=0o700,exist_ok=True)
+    (backup/('before-'+datetime.datetime.now().strftime('%Y%m%dT%H%M%S%f')+'.json')).write_text(json.dumps(listed))
+    # Atomic create fails on a race instead of appending rules to an existing table.
+    run('-f','-',input='create table inet pbl4_audit_transport\n'+RULES)
+    print('Installed transport guard; other tables unchanged.')
+if __name__=='__main__': main()

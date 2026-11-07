@@ -1,4 +1,11 @@
 import {
+  freshness,
+  triageLabels,
+  ruleDeployment,
+  type Verification,
+} from "./operations";
+import { applicationEvidence } from "./applicationEvidence";
+import {
   Component,
   StrictMode,
   useCallback,
@@ -14,9 +21,16 @@ import { AlertDetail } from "./AlertDetail";
 import { ApplicationAudit } from "./ApplicationAudit";
 import { AiShadow } from "./AiShadow";
 import { Icon } from "./Icon";
+import { EmptyState } from "./UiState";
+import { AlertTrend, type TrendPoint } from "./AlertTrend";
+import { createAlertTracker, type AlertUpdates } from "./alertUpdates";
+
+const securityLogo = new URL("./assets/logo-security.png", import.meta.url)
+  .href;
 
 type User = { username: string; role: "admin" | "viewer" };
 type Alert = {
+  triage_status?: string;
   id: number;
   occurred_at: string;
   source: string;
@@ -34,6 +48,7 @@ type IpSummary = {
   last_seen: string;
 };
 type Stats = {
+  alert_updates?: AlertUpdates;
   range: string;
   from: string;
   to: string;
@@ -48,7 +63,7 @@ type Stats = {
   total_alerts: number;
   critical_alerts: number;
   blocked_attacks: number;
-  trend: { hour: string; count: number }[];
+  trend: TrendPoint[];
   types: { name: string; count: number }[];
   system: {
     hostname?: string | null;
@@ -100,12 +115,25 @@ type Audit = {
   created_at: string;
 };
 type Rule = {
-  sid: number;
+  verification?: Verification;
+  sid: number | null;
+  code: string;
+  source: string;
+  action_mode: string;
+  threshold?: number;
+  window_seconds?: number;
   name: string;
   severity: number;
   auto_block_eligible: boolean;
 };
 type Health = {
+  checked_at?: string;
+  dataset_collection?: boolean;
+  operations?: {
+    sampled_at?: string;
+    receiver?: { active: string; load: string; sub: string };
+    suricata?: { active: string; load: string; sub: string };
+  };
   healthy: boolean;
   database: boolean;
   firewall: boolean;
@@ -123,6 +151,8 @@ type Health = {
   collection: Record<
     string,
     {
+      last_ingested_at?: string | null;
+      last_ingested_event_at?: string | null;
       last_alert_at: string | null;
       error_count: number;
       last_error: { at: string; reason: string } | null;
@@ -166,6 +196,7 @@ function App() {
     source: "",
     action: "",
     dest_ip: "",
+    triage_status: "",
   });
   const filterParams = new URLSearchParams();
   Object.entries(alertFilters).forEach(([key, value]) => {
@@ -185,12 +216,25 @@ function App() {
   const [audit, setAudit] = useState<Audit[]>([]);
   const [applicationAuditRefresh, setApplicationAuditRefresh] = useState(0);
   const [rules, setRules] = useState<Rule[]>([]);
+  const [ruleSearch, setRuleSearch] = useState("");
+  const [ruleSeverity, setRuleSeverity] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [ruleSource, setRuleSource] = useState("SURICATA");
   const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [updated, setUpdated] = useState<string | null>(null);
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
+  const tracker = useRef(createAlertTracker());
+  const [alertFeedback, setAlertFeedback] = useState<AlertUpdates | null>(null);
+  const feedbackCooldown = useRef(0);
+  const [effectsEnabled, setEffectsEnabled] = useState(true);
+  useEffect(() => {
+    if (!alertFeedback) return;
+    const timer = setTimeout(() => setAlertFeedback(null), 6000);
+    return () => clearTimeout(timer);
+  }, [alertFeedback]);
   const refreshing = useRef(false);
   const requestKey = `${session?.token ?? ""}:${page}:${filter}:${severity}:${range}:${extraFilters}:${auditEvent}`;
   const latestKey = useRef(requestKey);
@@ -231,7 +275,9 @@ function App() {
         api(
           `/api/alerts/search?${extraFilters}&limit=25&offset=${page * 25}&search=${encodeURIComponent(filter)}${severity ? `&severity=${severity}` : ""}`,
         ),
-        api(`/api/stats?range=${range}`),
+        api(
+          `/api/stats?range=${range}${tracker.current.cursor() === null ? "" : `&after_alert_id=${tracker.current.cursor()}`}`,
+        ),
         api("/api/blocked-ips"),
         api(
           `/api/audit${auditEvent !== null ? `?event_id=${auditEvent}` : ""}`,
@@ -243,11 +289,32 @@ function App() {
       setAlerts(results[0].items);
       setTotalAlerts(results[0].total);
       setStats(results[1]);
+      const incoming = tracker.current.accept(results[1].alert_updates);
+      if (incoming && effectsEnabled) {
+        if (Date.now() >= feedbackCooldown.current) {
+          setAlertFeedback(incoming);
+          feedbackCooldown.current = Date.now() + 6000;
+        } else {
+          setAlertFeedback((previous) =>
+            previous
+              ? {
+                  ...incoming,
+                  count: previous.count + incoming.count,
+                  severity: Math.min(
+                    previous.severity ?? 5,
+                    incoming.severity ?? 5,
+                  ),
+                  items: [...previous.items, ...incoming.items].slice(-200),
+                }
+              : incoming,
+          );
+        }
+      }
       setBlocked(results[2]);
       setAudit(results[3]);
       setRules(results[4]);
       setHealth(results[5]);
-      setUpdated(new Date().toLocaleTimeString());
+      setUpdated(new Date().toLocaleTimeString("vi-VN", { hour12: false }));
       setError("");
     } catch (e) {
       setError((e as Error).message);
@@ -265,6 +332,7 @@ function App() {
     auditEvent,
     api,
     requestKey,
+    effectsEnabled,
   ]);
   useEffect(() => {
     void refresh();
@@ -292,6 +360,9 @@ function App() {
             : "Tên đăng nhập hoặc mật khẩu không đúng.",
         );
       const responseData = await res.json();
+      tracker.current.reset();
+      setAlertFeedback(null);
+      feedbackCooldown.current = 0;
       setSession(responseData);
       setPage(0);
       setNotice("");
@@ -309,6 +380,8 @@ function App() {
         `Đã xóa phiên trên trình duyệt, nhưng chưa xác nhận thu hồi trên server: ${(e as Error).message}`,
       );
     } finally {
+      tracker.current.reset();
+      setAlertFeedback(null);
       setSession(null);
       setAlerts([]);
       setStats(null);
@@ -355,7 +428,16 @@ function App() {
         .replace(/^[=+@\-\t\r]/, "'$&")
         .replaceAll('"', '""')}"`;
     const csv = [
-      ["ID", "Thời gian", "Nguồn", "IP", "Rule", "Severity", "Hành động"],
+      [
+        "ID",
+        "Thời gian",
+        "Nguồn",
+        "IP",
+        "Rule",
+        "Severity",
+        "Hành động",
+        "Xử lý",
+      ],
       ...alerts.map((a) => [
         a.id,
         a.occurred_at,
@@ -364,6 +446,7 @@ function App() {
         a.rule_name,
         a.severity,
         a.action,
+        triageLabels[a.triage_status ?? "NEW"],
       ]),
     ]
       .map((row) => row.map(cell).join(","))
@@ -382,7 +465,7 @@ function App() {
       <main className="login">
         <form onSubmit={login}>
           <div className="login-emblem">
-            <Icon name="blocked" />
+            <img src={securityLogo} alt="" width="64" height="64" />
           </div>
           <p className="eyebrow">PBL4 / SECURITY PLATFORM</p>
           <h1>Đăng nhập giám sát</h1>
@@ -419,6 +502,12 @@ function App() {
         </form>
       </main>
     );
+  const feedbackClass = (id: number) => {
+    const item = alertFeedback?.items.find((a) => a.id === id);
+    return effectsEnabled && item
+      ? `new-alert new-alert-s${item.severity}`
+      : "";
+  };
   const admin = session.user.role === "admin";
   const tabs = [
     ["overview", "Tổng quan"],
@@ -431,9 +520,12 @@ function App() {
     ["status", "Trạng thái hệ thống"],
   ];
   const fmt = (v: number | null | undefined, suffix = "") =>
-    v == null ? "Chưa có dữ liệu" : `${v.toLocaleString()}${suffix}`;
+    v == null ? "Chưa có dữ liệu" : `${v.toLocaleString("vi-VN")}${suffix}`;
   return (
     <div className="shell">
+      <a className="skip-link" href="#dashboard-content">
+        Đi tới nội dung chính
+      </a>
       <aside>
         <a
           className="brand"
@@ -444,19 +536,34 @@ function App() {
           }}
         >
           <span className="brand-mark">
-            <Icon name="blocked" />
+            <img src={securityLogo} alt="" width="46" height="46" />
           </span>
           <span className="brand-wordmark">
-            PBL4 <span>SECURITY</span>
+            WebSentinel <span>Security Operations</span>
           </span>
         </a>
         <p className="eyebrow">ĐIỀU HÀNH BẢO MẬT</p>
-        <nav aria-label="Điều hướng">
+        <button
+          className="mobile-menu"
+          aria-expanded={menuOpen}
+          aria-controls="dashboard-navigation"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <Icon name="overview" /> Điều hướng
+        </button>
+        <nav
+          id="dashboard-navigation"
+          className={menuOpen ? "menu-open" : ""}
+          aria-label="Điều hướng"
+        >
           {tabs.map(([id, label]) => (
             <button
               key={id}
               aria-current={tab === id ? "page" : undefined}
-              onClick={() => setTab(id)}
+              onClick={() => {
+                setTab(id);
+                setMenuOpen(false);
+              }}
             >
               <Icon name={id} />
               <span>{label}</span>
@@ -479,7 +586,7 @@ function App() {
           </button>
         </div>
       </aside>
-      <main>
+      <main id="dashboard-content" tabIndex={-1}>
         <header>
           <div>
             <p className="eyebrow">SECURITY OPERATIONS</p>
@@ -491,6 +598,17 @@ function App() {
             </h1>
           </div>
           <div className="header-actions">
+            <label className="effects-toggle">
+              <input
+                type="checkbox"
+                checked={effectsEnabled}
+                onChange={(e) => {
+                  setEffectsEnabled(e.target.checked);
+                  setAlertFeedback(null);
+                }}
+              />
+              Hiệu ứng cảnh báo mới
+            </label>
             <span
               className={`badge status-badge ${!error && health?.healthy ? "good" : "warn"}`}
             >
@@ -503,7 +621,7 @@ function App() {
             <p className="muted updated-at">
               <Icon name="clock" />
               {updated
-                ? `Dashboard tải dữ liệu thành công: ${updated}`
+                ? `${tab === "application-audit" ? "Dữ liệu chung (không gồm Audit)" : "Dashboard tải dữ liệu thành công"}: ${updated}`
                 : "Đang tải dữ liệu"}
             </p>
             <button
@@ -519,6 +637,27 @@ function App() {
             </button>
           </div>
         </header>
+        {alertFeedback && effectsEnabled && (
+          <div
+            className={`alert-toast new-alert-s${alertFeedback.severity ?? 3}`}
+            role="status"
+            aria-live="polite"
+          >
+            <strong>
+              {alertFeedback.severity === 1
+                ? "Phát hiện cảnh báo nghiêm trọng"
+                : "Có cảnh báo mới"}
+            </strong>
+            <p>
+              {alertFeedback.count} cảnh báo mới toàn hệ thống · Severity cao
+              nhất: {alertFeedback.severity ?? "—"}. Chưa khẳng định tấn công
+              thành công hoặc IP đã bị chặn.
+            </p>
+            <button onClick={() => setAlertFeedback(null)}>
+              Đóng thông báo
+            </button>
+          </div>
+        )}
         {error && (
           <p role="alert" className="error">
             {error}
@@ -534,7 +673,7 @@ function App() {
         )}
         {tab === "ai-shadow" && <AiShadow api={api} />}
         {tab === "overview" && (
-          <>
+          <div className="overview-layout">
             <section className="panel overview-toolbar">
               <label>
                 Khoảng thời gian
@@ -555,8 +694,14 @@ function App() {
                 nhiều nguồn phát hiện.
                 {stats && (
                   <small>
-                    {new Date(stats.from).toLocaleString()} →{" "}
-                    {new Date(stats.to).toLocaleString()} · giờ địa phương
+                    {new Date(stats.from).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })}{" "}
+                    →{" "}
+                    {new Date(stats.to).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })}{" "}
+                    · giờ địa phương
                   </small>
                 )}
                 {!stats && (
@@ -574,7 +719,7 @@ function App() {
                 ["IP nguồn khác nhau", stats?.unique_sources],
               ].map(([label, value], index) => (
                 <article
-                  className={`metric-card metric-${index}`}
+                  className={`metric-card metric-${index} ${index === 1 && effectsEnabled && alertFeedback?.severity === 1 ? "new-alert new-alert-s1" : ""}`}
                   key={String(label)}
                 >
                   <div className="metric-heading">
@@ -586,10 +731,49 @@ function App() {
                     </span>
                   </div>
                   <strong>{fmt(value as number | undefined)}</strong>
+                  <button
+                    className="metric-link"
+                    onClick={() => {
+                      if (index === 2) {
+                        setTab("audit");
+                        return;
+                      }
+                      setSearch("");
+                      setFilter("");
+                      setSeverity(index === 1 ? "1" : "");
+                      setAlertFilters({
+                        from: stats?.from
+                          ? new Date(
+                              new Date(stats.from).getTime() -
+                                new Date(stats.from).getTimezoneOffset() *
+                                  60000,
+                            )
+                              .toISOString()
+                              .slice(0, 16)
+                          : "",
+                        to: stats?.to
+                          ? new Date(
+                              new Date(stats.to).getTime() -
+                                new Date(stats.to).getTimezoneOffset() * 60000,
+                            )
+                              .toISOString()
+                              .slice(0, 16)
+                          : "",
+                        source: "",
+                        action: "",
+                        dest_ip: "",
+                        triage_status: "",
+                      });
+                      setPage(0);
+                      setTab("alerts");
+                    }}
+                  >
+                    {index === 2 ? "Xem nhật ký thao tác →" : "Xem cảnh báo →"}
+                  </button>
                 </article>
               ))}
             </section>
-            <section className="panel">
+            <section className="panel overview-trend">
               <h2>
                 <Icon name="status" />
                 Diễn biến cảnh báo
@@ -598,50 +782,56 @@ function App() {
                 Trong khoảng thời gian đã chọn · số cảnh báo đã lưu trong
                 database
               </p>
-              <div
-                className="chart"
-                role="img"
-                aria-label="Số cảnh báo theo từng khoảng thời gian"
-              >
-                {stats?.trend.map((point) => (
-                  <div
-                    className="bar-column"
-                    key={point.hour}
-                    title={`${new Date(point.hour).toLocaleString()}: ${point.count} cảnh báo`}
-                  >
-                    <span>{point.count}</span>
-                    <div
-                      className="bar"
-                      style={{
-                        height: `${(point.count / Math.max(1, ...stats.trend.map((p) => p.count))) * 130}px`,
-                      }}
-                    />
-                    <small>
-                      {range === "7d"
-                        ? new Date(point.hour).toLocaleDateString(undefined, {
-                            day: "2-digit",
-                            month: "2-digit",
-                          })
-                        : new Date(point.hour).toLocaleTimeString(undefined, {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                    </small>
-                  </div>
-                ))}
-              </div>
-              <details>
-                <summary>Xem dữ liệu biểu đồ</summary>
-                <ul>
-                  {stats?.trend.map((p) => (
-                    <li key={p.hour}>
-                      {new Date(p.hour).toLocaleString()}: {p.count}
-                    </li>
-                  ))}
-                </ul>
-              </details>
+              <AlertTrend points={stats?.trend} range={range} />
             </section>
-            <section className="panel">
+            <section className="panel overview-recent">
+              <h2>10 cảnh báo mới nhất trong khoảng đã chọn</h2>
+              <p className="muted">
+                Mở từng cảnh báo để xem IP, hành động và bằng chứng gốc.
+              </p>
+              {stats?.recent.map((a) => (
+                <details
+                  className={`overview-alert ${feedbackClass(a.id)}`}
+                  key={a.id}
+                >
+                  <summary>
+                    <span className="recent-alert-title">{a.rule_name}</span>
+                    <span className="recent-alert-meta">
+                      <span>
+                        #{a.id} ·{" "}
+                        {new Date(a.occurred_at).toLocaleString("vi-VN", {
+                          hour12: false,
+                        })}
+                      </span>
+                      <span className={`source-label source-${a.source}`}>
+                        {a.source}
+                      </span>
+                      <span
+                        className={`badge ${a.severity === 1 ? "danger" : a.severity === 2 ? "warn" : ""}`}
+                      >
+                        {a.severity === 1
+                          ? "Cao · S1"
+                          : a.severity === 2
+                            ? "Trung bình · S2"
+                            : `Thấp · S${a.severity}`}
+                      </span>
+                    </span>
+                  </summary>
+                  <p>
+                    Nguồn: {a.source} · IP: {a.src_ip ?? "Không có"} →{" "}
+                    {a.dest_ip ?? "Không có"} · Hành động: {a.action}
+                  </p>
+                  <button onClick={() => setSelectedAlert(a.id)}>
+                    Mở chi tiết điều tra
+                  </button>
+                  <pre>{a.evidence}</pre>
+                </details>
+              ))}
+              {stats?.recent.length === 0 && (
+                <EmptyState title="Chưa có cảnh báo trong khoảng này." />
+              )}
+            </section>
+            <section className="panel overview-types">
               <h2>
                 <Icon name="overview" />
                 Nhóm cảnh báo phổ biến
@@ -669,6 +859,39 @@ function App() {
                 ))
               )}
             </section>
+            <section className="panel overview-sources">
+              <h2>Nguồn dữ liệu</h2>
+              {["SURICATA", "NGINX", "STUDENT_AUDIT"].map((source) => {
+                const w = health?.watchers[source];
+                return (
+                  <div className="source-summary" key={source}>
+                    <strong className={`source-label source-${source}`}>
+                      {source === "STUDENT_AUDIT" ? "Student Audit" : source}
+                    </strong>
+                    <span
+                      className={`badge ${w?.state === "error" ? "danger" : ""}`}
+                    >
+                      {w?.state === "watching"
+                        ? "Đọc được file"
+                        : w?.state === "error"
+                          ? "Lỗi đọc log"
+                          : "Chưa xác định"}
+                    </span>
+                    <small>
+                      Dữ liệu gần nhất:{" "}
+                      {w?.last_data_at
+                        ? new Date(w.last_data_at).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })
+                        : "Chưa ghi nhận"}
+                    </small>
+                  </div>
+                );
+              })}
+              <button onClick={() => setTab("status")}>
+                Xem trạng thái hệ thống
+              </button>
+            </section>
             <div className="overview-grid">
               {(
                 [
@@ -687,7 +910,9 @@ function App() {
                         <strong>{row.ip}</strong>
                         <small>
                           Severity {row.severity} · Gần nhất:{" "}
-                          {new Date(row.last_seen).toLocaleString()}
+                          {new Date(row.last_seen).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })}
                         </small>
                       </div>
                       <span className="count-pill">{row.count}</span>
@@ -787,32 +1012,7 @@ function App() {
                 ))}
               </div>
             </section>
-            <section className="panel">
-              <h2>10 cảnh báo mới nhất trong khoảng đã chọn</h2>
-              <p className="muted">
-                Mở từng cảnh báo để xem IP, hành động và bằng chứng gốc.
-              </p>
-              {stats?.recent.map((a) => (
-                <details className="overview-alert" key={a.id}>
-                  <summary>
-                    #{a.id} · {new Date(a.occurred_at).toLocaleString()} ·{" "}
-                    {a.rule_name} · Severity {a.severity}
-                  </summary>
-                  <p>
-                    Nguồn: {a.source} · IP: {a.src_ip ?? "Không có"} →{" "}
-                    {a.dest_ip ?? "Không có"} · Hành động: {a.action}
-                  </p>
-                  <button onClick={() => setSelectedAlert(a.id)}>
-                    Mở chi tiết điều tra
-                  </button>
-                  <pre>{a.evidence}</pre>
-                </details>
-              ))}
-              {stats?.recent.length === 0 && (
-                <p>Chưa có cảnh báo trong khoảng này.</p>
-              )}
-            </section>
-          </>
+          </div>
         )}
         {tab === "alerts" && (
           <section className="panel">
@@ -890,33 +1090,60 @@ function App() {
                   <option>NGINX</option>
                   <option>SURICATA</option>
                   <option>AI_SHADOW</option>
+                  <option value="STUDENT_AUDIT">Student Audit</option>
                 </select>
               </label>
               <label>
-                Hành động
+                Trạng thái xử lý
                 <select
-                  value={alertFilters.action}
+                  value={alertFilters.triage_status}
                   onChange={(e) => {
                     setAlertFilters({
                       ...alertFilters,
-                      action: e.target.value,
+                      triage_status: e.target.value,
                     });
                     setPage(0);
                   }}
                 >
                   <option value="">Tất cả</option>
-                  <option>ALERT</option>
-                  <option>AUTO-BLOCK</option>
+                  {Object.entries(triageLabels).map(([code, label]) => (
+                    <option key={code} value={code}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
               </label>
-              <label>
-                IP đích chính xác
-                <input
-                  name="dest_ip"
-                  defaultValue={alertFilters.dest_ip}
-                  placeholder="192.168.20.10"
-                />
-              </label>
+              <details className="advanced-filters">
+                <summary>Bộ lọc nâng cao</summary>
+                <div className="advanced-fields">
+                  <label>
+                    Hành động
+                    <select
+                      value={alertFilters.action}
+                      onChange={(e) => {
+                        setAlertFilters({
+                          ...alertFilters,
+                          action: e.target.value,
+                        });
+                        setPage(0);
+                      }}
+                    >
+                      <option value="">Tất cả</option>
+                      <option>ALERT</option>
+                      <option>AUTO-BLOCK</option>
+                      <option>BLOCK</option>
+                    </select>
+                  </label>
+                  <label>
+                    IP đích chính xác
+                    <input
+                      name="dest_ip"
+                      defaultValue={alertFilters.dest_ip}
+                      placeholder="192.168.20.10"
+                    />
+                  </label>
+                </div>
+              </details>
               <button>Tìm kiếm</button>
               <button
                 type="button"
@@ -926,25 +1153,40 @@ function App() {
                 Xuất CSV trang này
               </button>
             </form>
-            <div className="table-wrap">
+            <div
+              className="table-wrap"
+              tabIndex={0}
+              role="region"
+              aria-label="Bảng dữ liệu, có thể cuộn"
+            >
               <table>
                 <thead>
                   <tr>
-                    <th>Thời gian</th>
-                    <th>Nguồn / Rule</th>
-                    <th>IP nguồn → đích</th>
-                    <th>Mức độ</th>
-                    <th>Hành động</th>
-                    <th>Bằng chứng</th>
+                    <th scope="col">Thời gian</th>
+                    <th scope="col">Nguồn / Rule</th>
+                    <th scope="col">IP nguồn → đích</th>
+                    <th scope="col">Mức độ</th>
+                    <th scope="col">Hành động</th>
+                    <th scope="col">Xử lý</th>
+                    <th scope="col">Tổng hợp ứng dụng</th>
+                    <th scope="col">Bằng chứng</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alerts.map((a) => (
-                    <tr key={a.id}>
-                      <td>{new Date(a.occurred_at).toLocaleString()}</td>
+                    <tr key={a.id} className={feedbackClass(a.id)}>
                       <td>
-                        {a.rule_name}
-                        <small>{a.source}</small>
+                        {new Date(a.occurred_at).toLocaleString("vi-VN", {
+                          hour12: false,
+                        })}
+                      </td>
+                      <td>
+                        <strong className="alert-rule-name">
+                          {a.rule_name}
+                        </strong>
+                        <small className={`source-label source-${a.source}`}>
+                          {a.source}
+                        </small>
                       </td>
                       <td>
                         {a.src_ip ?? "—"} → {a.dest_ip ?? "—"}
@@ -952,10 +1194,18 @@ function App() {
                       <td>
                         <span
                           className={
-                            a.severity === 1 ? "badge danger" : "badge"
+                            a.severity === 1
+                              ? "badge danger"
+                              : a.severity === 2
+                                ? "badge warn"
+                                : "badge"
                           }
                         >
-                          Severity {a.severity}
+                          {a.severity === 1
+                            ? "Cao · S1"
+                            : a.severity === 2
+                              ? "Trung bình · S2"
+                              : `Thấp · S${a.severity}`}
                         </span>
                       </td>
                       <td>
@@ -964,6 +1214,29 @@ function App() {
                         >
                           {a.action}
                         </span>
+                      </td>
+                      <td>
+                        <span className="badge">
+                          {triageLabels[a.triage_status ?? "NEW"] ??
+                            "Chưa xác định"}
+                        </span>
+                      </td>
+                      <td>
+                        {(() => {
+                          const app = applicationEvidence(a.evidence);
+                          return app ? (
+                            <>
+                              <strong>{app.count} sự kiện (đỉnh cửa sổ)</strong>
+                              <small>{app.endpoint}</small>
+                              <small>{app.reason}</small>
+                              <small>
+                                Đề xuất: {app.recommendation} · Không tự chặn
+                              </small>
+                            </>
+                          ) : (
+                            "—"
+                          );
+                        })()}
                       </td>
                       <td>
                         <button onClick={() => setSelectedAlert(a.id)}>
@@ -975,7 +1248,12 @@ function App() {
                 </tbody>
               </table>
             </div>
-            {!alerts.length && <p>Không có cảnh báo phù hợp.</p>}
+            {!alerts.length && (
+              <EmptyState
+                title="Không có cảnh báo phù hợp."
+                description="Kiểm tra nguồn, khoảng thời gian và các bộ lọc đã chọn."
+              />
+            )}
             <div className="pagination">
               <button
                 disabled={page === 0 || loading}
@@ -1059,7 +1337,7 @@ function App() {
               ).map((address) => {
                 const row = blocked?.database.find((b) => b.ip === address);
                 return (
-                  <div className="type-row" key={address}>
+                  <div className="type-row blocked-row" key={address}>
                     <div>
                       <strong>{address}</strong>
                       <p>
@@ -1075,7 +1353,9 @@ function App() {
                       <small>
                         Thời điểm chặn (DB):{" "}
                         {row
-                          ? new Date(row.blocked_at).toLocaleString()
+                          ? new Date(row.blocked_at).toLocaleString("vi-VN", {
+                              hour12: false,
+                            })
                           : "Không xác định"}
                       </small>
                     </div>
@@ -1093,7 +1373,7 @@ function App() {
               {blocked?.kernel == null ? (
                 <p>Chưa xác định được trạng thái firewall.</p>
               ) : !blocked.database.length && !blocked.kernel.length ? (
-                <p>Chưa có IP bị chặn trong DB và kernel.</p>
+                <EmptyState title="Chưa có IP bị chặn trong DB và kernel." />
               ) : null}
             </section>
           </>
@@ -1116,15 +1396,20 @@ function App() {
                 Xem tất cả thao tác
               </button>
             )}
-            <div className="table-wrap">
+            <div
+              className="table-wrap"
+              tabIndex={0}
+              role="region"
+              aria-label="Bảng dữ liệu, có thể cuộn"
+            >
               <table>
                 <thead>
                   <tr>
-                    <th>ID / Thời gian</th>
-                    <th>Người thực hiện / Nguồn yêu cầu</th>
-                    <th>Thao tác / IP</th>
-                    <th>Lý do</th>
-                    <th>Kết quả</th>
+                    <th scope="col">ID / Thời gian</th>
+                    <th scope="col">Người thực hiện / Nguồn yêu cầu</th>
+                    <th scope="col">Thao tác / IP</th>
+                    <th scope="col">Lý do</th>
+                    <th scope="col">Kết quả</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1132,7 +1417,11 @@ function App() {
                     <tr key={a.id}>
                       <td>
                         #{a.id}
-                        <small>{new Date(a.created_at).toLocaleString()}</small>
+                        <small>
+                          {new Date(a.created_at).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })}
+                        </small>
                       </td>
                       <td>
                         {a.actor}
@@ -1156,7 +1445,9 @@ function App() {
                         <small>
                           Hoàn tất:{" "}
                           {a.completed_at
-                            ? new Date(a.completed_at).toLocaleString()
+                            ? new Date(a.completed_at).toLocaleString("vi-VN", {
+                                hour12: false,
+                              })
                             : a.status === "PENDING"
                               ? "Đang chờ"
                               : "Chưa có dữ liệu"}
@@ -1168,7 +1459,7 @@ function App() {
                 </tbody>
               </table>
             </div>
-            {!audit.length && <p>Chưa có thao tác.</p>}
+            {!audit.length && <EmptyState title="Chưa có thao tác." />}
           </section>
         )}
         {tab === "rules" && (
@@ -1181,21 +1472,166 @@ function App() {
               Chính sách được cấu hình trên server. Danh mục dưới đây mô tả bộ
               rule đi kèm dự án.
             </p>
-            {rules.map((r) => (
-              <div className="type-row" key={r.sid}>
-                <div>
-                  <strong>{r.name}</strong>
-                  <p>
-                    SID {r.sid} · Severity {r.severity}
-                  </p>
-                </div>
-                <span className="badge">
-                  {r.auto_block_eligible
-                    ? "Cho phép auto-block"
-                    : "Chỉ cảnh báo"}
-                </span>
-              </div>
-            ))}
+            <div
+              className="rule-source-picker"
+              role="group"
+              aria-label="Chọn tầng phát hiện"
+            >
+              {[
+                {
+                  source: "SURICATA",
+                  title: "Mạng",
+                  label: "Suricata · Quan sát lưu lượng mạng",
+                },
+                {
+                  source: "NGINX",
+                  title: "Web/Proxy",
+                  label: "NGINX · Phân tích HTTP/access log",
+                },
+                {
+                  source: "STUDENT_AUDIT",
+                  title: "Ứng dụng",
+                  label: "Student Audit · Phân tích hành vi request",
+                },
+              ].map((group) => (
+                <button
+                  key={group.source}
+                  className={`source-${group.source}`}
+                  type="button"
+                  aria-pressed={ruleSource === group.source}
+                  aria-controls="rule-source-list"
+                  onClick={() => setRuleSource(group.source)}
+                >
+                  <span>
+                    <strong>{group.title}</strong>
+                    <small>{group.label}</small>
+                  </span>
+                  <span className="badge">
+                    {
+                      rules.filter(
+                        (r) =>
+                          (r.source === "APPLICATION"
+                            ? "STUDENT_AUDIT"
+                            : r.source) === group.source,
+                      ).length
+                    }{" "}
+                    luật
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div className="rule-tools">
+              <label>
+                Tìm luật
+                <input
+                  value={ruleSearch}
+                  onChange={(e) => setRuleSearch(e.target.value)}
+                  placeholder="Tên luật hoặc mã rule…"
+                />
+              </label>
+              <label>
+                Mức độ
+                <select
+                  value={ruleSeverity}
+                  onChange={(e) => setRuleSeverity(e.target.value)}
+                >
+                  <option value="">Tất cả mức độ</option>
+                  <option value="1">Cao · S1</option>
+                  <option value="2">Trung bình · S2</option>
+                  <option value="3">Thấp · S3</option>
+                </select>
+              </label>
+            </div>
+            <div id="rule-source-list">
+              <h3>
+                {ruleSource === "SURICATA"
+                  ? "Mạng — Suricata"
+                  : ruleSource === "NGINX"
+                    ? "Web/Proxy — NGINX"
+                    : "Ứng dụng — Student Audit"}
+              </h3>
+              <p className="muted">
+                {ruleSource === "SURICATA"
+                  ? "Phát hiện từ gói tin và giao thức, bao gồm HTTP. Danh mục này không xác nhận Suricata đã nạp các luật trên máy chạy sensor."
+                  : ruleSource === "NGINX"
+                    ? "Phân tích HTTP request/access log đã thực sự tới reverse proxy. Các luật chạy trong Rust trên dữ liệu NGINX, không phải luật Suricata."
+                    : "Phân tích audit do Student Web ghi nhận, tổng hợp nhiều request theo cửa sổ thời gian. Khuyến nghị chặn không đồng nghĩa tự động chặn."}
+              </p>
+              {!rules.some(
+                (r) =>
+                  (r.source === "APPLICATION" ? "STUDENT_AUDIT" : r.source) ===
+                    ruleSource &&
+                  (!ruleSeverity || String(r.severity) === ruleSeverity) &&
+                  `${r.name} ${r.code}`
+                    .toLowerCase()
+                    .includes(ruleSearch.toLowerCase().trim()),
+              ) && (
+                <p className="muted">
+                  Không có luật khớp nguồn, tên và mức độ đã chọn.
+                </p>
+              )}
+              {rules
+                .filter(
+                  (r) =>
+                    (r.source === "APPLICATION"
+                      ? "STUDENT_AUDIT"
+                      : r.source) === ruleSource,
+                )
+                .filter(
+                  (r) =>
+                    (!ruleSeverity || String(r.severity) === ruleSeverity) &&
+                    `${r.name} ${r.code}`
+                      .toLowerCase()
+                      .includes(ruleSearch.toLowerCase().trim()),
+                )
+                .map((r) => (
+                  <div className="type-row rule-row" key={r.code}>
+                    <div>
+                      <strong>{r.name}</strong>
+                      <p>
+                        {r.source} · {r.code} · Severity {r.severity}
+                        {r.threshold
+                          ? ` · ${r.threshold}/${r.window_seconds}s`
+                          : ""}
+                      </p>
+                      <p className="muted">{ruleDeployment(r.verification)}</p>
+                      {r.verification?.last_alert ? (
+                        <p>
+                          <button
+                            onClick={() =>
+                              setSelectedAlert(
+                                r.verification!.last_alert!.alert_id,
+                              )
+                            }
+                          >
+                            Xem bằng chứng #{r.verification.last_alert.alert_id}
+                          </button>
+                          <small>
+                            {" "}
+                            Đã lưu lúc{" "}
+                            {new Date(
+                              r.verification.last_alert.ingested_at,
+                            ).toLocaleString("vi-VN")}
+                            . Đây là lịch sử, không xác nhận bản triển khai hiện
+                            tại đã qua kiểm thử.
+                          </small>
+                        </p>
+                      ) : (
+                        <small>
+                          {r.verification?.evidence_available
+                            ? "Chưa có cảnh báo đối chiếu được mã rule trong DB; không đồng nghĩa rule bị lỗi."
+                            : "Chưa tải được bằng chứng từ DB."}
+                        </small>
+                      )}
+                    </div>
+                    <span className="badge">
+                      {r.auto_block_eligible
+                        ? "Cho phép auto-block"
+                        : "Chỉ cảnh báo"}
+                    </span>
+                  </div>
+                ))}
+            </div>
           </section>
         )}
         {tab === "status" && (
@@ -1205,28 +1641,112 @@ function App() {
                 <Icon name="status" />
                 Dịch vụ
               </h2>
-              <p>
-                Database: {health?.database ? "Kết nối được" : "Chưa sẵn sàng"}
-              </p>
-              <p>Firewall: {health?.firewall ? "Đọc được" : "Chưa sẵn sàng"}</p>
-              <p>
-                DB / firewall:{" "}
-                {health?.firewall_in_sync ? "Đồng bộ" : "Chưa đồng bộ"}
-              </p>
+              <div className="service-summary">
+                {[
+                  [
+                    "Database",
+                    health?.database,
+                    "Kết nối được",
+                    "Chưa sẵn sàng",
+                  ],
+                  ["Firewall", health?.firewall, "Đọc được", "Chưa sẵn sàng"],
+                  [
+                    "DB / firewall",
+                    health?.firewall_in_sync,
+                    "Đồng bộ",
+                    "Chưa đồng bộ",
+                  ],
+                ].map(([label, ready, yes, no]) => (
+                  <div className="service-item" key={String(label)}>
+                    <span>{label}</span>
+                    <span className={`badge ${ready ? "good" : "warn"}`}>
+                      {ready ? yes : no}
+                    </span>
+                  </div>
+                ))}
+              </div>
               <p className="muted">
                 Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến trình
-                Nginx/Suricata đang chạy. Không có cảnh báo mới có thể là bình
-                thường.
+                Nginx/Suricata/Student Web hoặc đường truyền RELP đang hoạt
+                động. Không có cảnh báo mới có thể là bình thường.
               </p>
-              <div className="overview-grid">
-                {["NGINX", "SURICATA"].map((name) => {
+              <article className="panel">
+                <h3>Đường truyền Student Audit</h3>
+                <p>
+                  Web VM → RELP receiver → file local → Rust ingest → DB →
+                  Dashboard
+                </p>
+                <dl className="detail-fields">
+                  <div>
+                    <dt>Sender trên Web VM</dt>
+                    <dd>
+                      Chưa xác minh từ host; kiểm tra pbl4-audit-sender.service
+                      trên VM.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Receiver trên host</dt>
+                    <dd>
+                      {health?.operations?.receiver
+                        ? `${health.operations.receiver.active} / ${health.operations.receiver.sub}`
+                        : "Chưa có mẫu kiểm tra"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Sensor Suricata trên host</dt>
+                    <dd>
+                      {health?.operations?.suricata
+                        ? `${health.operations.suricata.active} / ${health.operations.suricata.sub}`
+                        : "Chưa có mẫu kiểm tra"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Mẫu kiểm tra dịch vụ</dt>
+                    <dd>
+                      {health?.operations?.sampled_at
+                        ? new Date(health.operations.sampled_at).toLocaleString(
+                            "vi-VN",
+                          )
+                        : "Chưa có"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Lưu audit đầy đủ</dt>
+                    <dd>
+                      {health?.dataset_collection == null
+                        ? "Chưa xác định"
+                        : health.dataset_collection
+                          ? "Đang bật"
+                          : "Đang tắt — mốc DB có thể là lịch sử"}
+                    </dd>
+                  </div>
+                </dl>
+                <p className="muted">
+                  Service active không chứng minh kết nối RELP hay dữ liệu đầu
+                  cuối đang hoạt động. Không thực hiện SSH hoặc restart dịch vụ
+                  từ dashboard.
+                </p>
+              </article>
+              <div className="source-health-grid">
+                {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
                   const collection = health?.collection?.[name];
                   const time = (value: string | null | undefined) =>
-                    value ? new Date(value).toLocaleString() : "Chưa ghi nhận";
+                    value
+                      ? new Date(value).toLocaleString("vi-VN", {
+                          hour12: false,
+                        })
+                      : "Chưa ghi nhận";
                   return (
-                    <article className="panel" key={name}>
-                      <h3>{name}</h3>
+                    <article
+                      className={`panel source-health source-${name}`}
+                      key={name}
+                    >
+                      <h3 className="source-label">
+                        {name === "STUDENT_AUDIT"
+                          ? "Student Audit — Tầng ứng dụng"
+                          : name}
+                      </h3>
                       <p
                         className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
                       >
@@ -1234,12 +1754,36 @@ function App() {
                           ? "Lỗi đọc / xử lý nguồn log"
                           : watcher?.state === "watching"
                             ? "Đọc log thành công"
-                            : "Chưa có kết quả kiểm tra"}
+                            : name === "STUDENT_AUDIT" && health && !watcher
+                              ? "Chưa cấu hình nguồn log"
+                              : "Chưa có kết quả kiểm tra"}
                       </p>
+                      {name === "STUDENT_AUDIT" && (
+                        <p className="muted">
+                          {health && !watcher
+                            ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
+                            : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                        </p>
+                      )}
                       {watcher?.error && (
                         <p className="error">{watcher.error}</p>
                       )}
+                      <p role="status">
+                        {freshness(watcher?.last_data_at, health?.checked_at)}
+                      </p>
+                      <p className="muted">
+                        Im lặng không đồng nghĩa mất kết nối. Tạo một request
+                        kiểm thử rồi đối chiếu mốc nhận và lưu dữ liệu.
+                      </p>
                       <dl className="detail-fields">
+                        <div>
+                          <dt>Lần lưu sự kiện vào DB</dt>
+                          <dd>{time(collection?.last_ingested_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Thời gian sự kiện vừa lưu</dt>
+                          <dd>{time(collection?.last_ingested_event_at)}</dd>
+                        </div>
                         <div>
                           <dt>Lần đọc thành công</dt>
                           <dd>{time(watcher?.last_success_at)}</dd>
@@ -1319,7 +1863,9 @@ function App() {
               <p className="muted">
                 Mẫu mạng/đĩa:{" "}
                 {stats?.system.sampled_at
-                  ? new Date(stats.system.sampled_at).toLocaleString()
+                  ? new Date(stats.system.sampled_at).toLocaleString("vi-VN", {
+                      hour12: false,
+                    })
                   : "Đang chờ mẫu đầu tiên"}{" "}
                 · Dữ liệu hiện tại, không theo bộ lọc thời gian Tổng quan.
               </p>
@@ -1404,10 +1950,10 @@ function App() {
               </p>
               <p>
                 Lần thấy log mới:{" "}
-                {["NGINX", "SURICATA"]
+                {["NGINX", "SURICATA", "STUDENT_AUDIT"]
                   .map(
                     (name) =>
-                      `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString() : "chưa ghi nhận"}`,
+                      `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString("vi-VN", { hour12: false }) : "chưa ghi nhận"}`,
                   )
                   .join(" · ")}
               </p>
@@ -1421,7 +1967,33 @@ function App() {
         {selectedAlert !== null && (
           <AlertDetail
             id={selectedAlert}
+            admin={admin}
+            onChanged={() => void refresh()}
             api={api}
+            onBlock={
+              admin
+                ? async (alert) => {
+                    if (!alert.src_ip) return;
+                    const reason = window.prompt(
+                      `Lý do chặn ${alert.src_ip} từ cảnh báo #${alert.id}:`,
+                      alert.rule_name,
+                    );
+                    if (!reason?.trim()) return;
+                    const result = await api("/api/blocked-ips", {
+                      method: "POST",
+                      body: JSON.stringify({
+                        ip: alert.src_ip,
+                        reason,
+                        event_id: alert.id,
+                      }),
+                    });
+                    setNotice(
+                      `Yêu cầu #${result.id} đang chờ xử lý; xem Nhật ký thao tác.`,
+                    );
+                    await refresh();
+                  }
+                : undefined
+            }
             onClose={() => setSelectedAlert(null)}
             onSelect={setSelectedAlert}
             onAudit={(id) => {

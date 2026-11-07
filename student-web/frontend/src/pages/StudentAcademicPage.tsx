@@ -1,3 +1,4 @@
+import ContentSkeleton from '../components/ContentSkeleton';
 import { useEffect, useState } from 'react';
 import Modal from '../components/Modal';
 import AppHeader from '../components/AppHeader';
@@ -52,7 +53,7 @@ export default function StudentAcademicPage() {
         </div>
         {academic && <div className="academic-cohort"><span>KHÓA NHẬP HỌC</span><strong>{academic.cohort ?? '—'}</strong><span>{academic.studentClass.code}</span></div>}
       </header>
-      {loading ? <div className="academic-feedback" role="status"><AcademicIcon kind={2} /><p>Đang tải thông tin học vụ…</p></div> : error ?
+      {loading ? <ContentSkeleton label="Đang tải thông tin học vụ…" /> : error ?
         <div className="academic-feedback" role="alert"><p>{error}</p><button onClick={reload}>Thử lại</button></div> :
         <>
           <section className="student-academic-grid" aria-label="Thông tin học vụ">
@@ -91,7 +92,7 @@ function ClassMembers({ className }: { className: string }) {
     setLoading(true); setError(''); setPage(nextPage); setRetry(value => value + 1);
   }
 
-  if (loading) return <div className="academic-feedback" role="status">Đang tải danh sách thành viên…</div>;
+  if (loading) return <ContentSkeleton label="Đang tải danh sách thành viên…" />;
   if (error) return <div className="academic-feedback" role="alert"><p>{error}</p><button onClick={() => reload(page)}>Thử lại</button></div>;
   return (
           <section className="student-classmates" >
@@ -110,7 +111,7 @@ function ClassMembers({ className }: { className: string }) {
                 <td><div className="classmate-person"><span className="classmate-avatar" aria-hidden="true">{member.fullName.trim().split(/\s+/).slice(-2).map(part => part[0]).join('')}</span><span>{member.fullName}</span> {member.self && <strong className="classmate-self">Bạn</strong>}</div></td>
               </tr>)}</tbody>
             </table></div>
-            {!members?.content.length && <p>Không tìm thấy thành viên phù hợp.</p>}
+            {!members?.content.length && <div className="portal-empty" role="status"><AcademicIcon kind={3} /><h3>Chưa tìm thấy thành viên</h3><p>Thử tên hoặc mã sinh viên khác để tìm trong lớp của bạn.</p>{query && <button type="button" onClick={() => { setSearch(''); setQuery(''); reload(0); }}>Xem toàn bộ lớp</button>}</div>}
             <nav className="student-classmates-pagination" aria-label="Phân trang thành viên">
               <button disabled={page === 0} onClick={() => reload(page - 1)}>Trang trước</button>
               <span>Trang {page + 1} / {Math.max(1, members?.totalPages ?? 0)}</span>
