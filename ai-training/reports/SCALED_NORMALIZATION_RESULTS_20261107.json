@@ -1,0 +1,2576 @@
+{
+  "schema_version": "scaled-normalization-results-1",
+  "date": "2026-11-07",
+  "experiment": "scaled-normalization-20261107-v1",
+  "training_source_commit": "3d932d0ce4af8e057fa6414ea272c31214189b59",
+  "branch": "feature/ai-idps-shadow-integration",
+  "training_state": "COMPLETED",
+  "dataset_fingerprint": "e35dae2dc79f9fa43860ff75d4cb694733c9e42d42a687f0f6b59ffe05a0fba5",
+  "plan_sha256": "c3b92cd2afddf6c4b585bce02b57160ca2c063e0f98e4324379827ba9d0d4bc3",
+  "train_views": 120435,
+  "parameters_each": 50696,
+  "steps_each": 3072,
+  "sample_exposures_each": 786432,
+  "Oracle_fit_exposures": 0,
+  "checkpoint_verification": {
+    "control": {
+      "step": 3072,
+      "path": "/home/trung/projects/idps-web-aws/ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/control/checkpoints/step-000000003072-8e9b465eb0d4",
+      "manifest_sha256": "6092dbe90c665c085f4d806ea81155fbc5adc047b2a09811e56eda14eead6131",
+      "final_loss": 0.09039544145815467
+    },
+    "challenger": {
+      "step": 3072,
+      "path": "/home/trung/projects/idps-web-aws/ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/challenger/checkpoints/step-000000003072-8ea2f2482b41",
+      "manifest_sha256": "14bf04ede2febaf3695ab4f4592db42d009677f4660253bb97edbc02b6dfc697",
+      "final_loss": 0.089564451883587
+    }
+  },
+  "checkpoint_sampler_RNG_scheduler_configuration_match": true,
+  "recovery_scope": {
+    "arms": [
+      "control",
+      "challenger"
+    ],
+    "fresh_processes": true,
+    "no_CAL_DEV_Oracle_or_prospective_used": true,
+    "scope": "First600 TRAIN rows,4updates and epoch-tail wrap; exact loss/weights/Adam/RNG/sampler/scheduler/config; full3072-step continuation not yet tested",
+    "status": "RESUME_EXACT_TRAIN_SUBSET_4_UPDATES_WITH_WRAP"
+  },
+  "research_decision": {
+    "action": "REJECT_THIS_UPGRADE_KEEP_FROZEN",
+    "precommitted_evaluator": {
+      "P0_extra_attempt_flags": 0,
+      "P0_extra_benign_flags": 0,
+      "automatic_promotion": false,
+      "decision": "REJECT_OR_INCONCLUSIVE_KEEP_FROZEN",
+      "group_bootstrap_criteria_pass": false,
+      "point_criteria_pass": false,
+      "production_independent_quality_claim": false
+    },
+    "no_statistical_claim_normalization_always_fails": true,
+    "promotion": false,
+    "new_training_started": false,
+    "prospective_opened": false,
+    "independent_human_review": "PENDING"
+  },
+  "evaluation_lock": {
+    "Oracle_input_report_sha256": "d5b525d89e00c428421136298142e33ec211de9c53d011829aae961d819b5b98",
+    "checkpoint_manifests": {
+      "challenger": "14bf04ede2febaf3695ab4f4592db42d009677f4660253bb97edbc02b6dfc697",
+      "control": "6092dbe90c665c085f4d806ea81155fbc5adc047b2a09811e56eda14eead6131"
+    },
+    "evaluation_source_sha256": "2234492d44958421b3c808fadae7b561eeff29aed387b990f177f72fe56c2d4f",
+    "fingerprint": "06a782462183faf23c81e530167e29d53b8c25dc82058e6847b9e32705f26014",
+    "plan_sha256": "c3b92cd2afddf6c4b585bce02b57160ca2c063e0f98e4324379827ba9d0d4bc3",
+    "protocol": {
+      "FPR_target": 0.01,
+      "Oracle": "Separate stratum: immutable Oracle CAL12(10benign,2attempt) threshold strictly>max benign; exposed P0 and explicit DEVELOPMENT cohorts evaluated separately/dedup IDs, per-family Recall, benign workflow flags and hard negatives; no threshold search",
+      "Oracle_TRAIN49": "Exposed diagnostic only; never independent evaluation",
+      "Rules": "Use existing request-bound P0 Suricata evidence where recoverable, distinguish dependent sources; no WAF PCAP/EVE so no invented rule-only/added-detection metric",
+      "family_targets": {
+        "cmd_injection": 0.8,
+        "path_traversal": 0.8,
+        "sqli": 0.8,
+        "xss": 0.8
+      },
+      "prospective": "12sealed rows NOT accessed by training or automatic completion. Only upon explicit results-review request after final model/threshold fingerprints locked: one opening, no subsequent tuning; no <=1%FPR/cross-domain claim from12samples",
+      "publisher": "Original internal CAL/DEV roles, near-quarantined before fit; no publisher eval/test/heldout. Threshold score>q99(higher) of retained CAL NORMAL, same rule per model; DEV anomaly/normal counts, PR-AUC, group-aware uncertainty; these are publisher labels not independently verified attacks",
+      "runtime": "Same CPU/thread cap, measure encoder/inference latency and RSS on fixed permitted inputs after completion",
+      "selection": "Research retention only if DEV publisher anomaly TPR>=matched+0.02 with NORMAL flag rate<=matched+0.002 AND exposed P0>=4 extra attempt flags with no extra benign flags; INCONCLUSIVE if intervals/groups inadequate. No automatic promotion even on PASS"
+    },
+    "thresholds": {
+      "challenger": {
+        "Oracle": 0.9925589561462402,
+        "publisher": 0.6613619923591614
+      },
+      "control": {
+        "Oracle": 0.997569739818573,
+        "publisher": 0.6618515849113464
+      },
+      "frozen": {
+        "Oracle": 0.8826237916946411,
+        "publisher": 0.8826237916946411
+      }
+    }
+  },
+  "evaluation": {
+    "Oracle_CAL_counts_selected_threshold_not_population_FPR": {
+      "challenger": {
+        "FN": 2,
+        "FP": 0,
+        "TN": 10,
+        "TP": 0,
+        "interval_limit": "Same calibration data selects threshold; no population FPR confidence bound from these counts.",
+        "normal_flag_fraction": 0.0,
+        "recall": 0.0,
+        "unknown_excluded": 0
+      },
+      "control": {
+        "FN": 2,
+        "FP": 0,
+        "TN": 10,
+        "TP": 0,
+        "interval_limit": "Same calibration data selects threshold; no population FPR confidence bound from these counts.",
+        "normal_flag_fraction": 0.0,
+        "recall": 0.0,
+        "unknown_excluded": 0
+      },
+      "frozen": {
+        "FN": 2,
+        "FP": 4,
+        "TN": 6,
+        "TP": 0,
+        "interval_limit": "Same calibration data selects threshold; no population FPR confidence bound from these counts.",
+        "normal_flag_fraction": 0.4,
+        "recall": 0.0,
+        "unknown_excluded": 0
+      }
+    },
+    "evaluation_lock_sha256": "c7d74d7db4434d6ea9041d09ba4a1db1b277a5b4f1d5d12ac35126394a756222",
+    "exposed_P0_sensitivity_no_threshold_retuning": {
+      "body_missing": {
+        "challenger": {
+          "FN": 45,
+          "FP": 0,
+          "TN": 59,
+          "TP": 3,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.0625,
+          "recall_descriptive_iid_interval": [
+            0.013079244409552646,
+            0.17195993079057043
+          ],
+          "unknown_excluded": 4
+        },
+        "control": {
+          "FN": 45,
+          "FP": 0,
+          "TN": 59,
+          "TP": 3,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.0625,
+          "recall_descriptive_iid_interval": [
+            0.013079244409552646,
+            0.17195993079057043
+          ],
+          "unknown_excluded": 4
+        },
+        "frozen": {
+          "FN": 30,
+          "FP": 0,
+          "TN": 59,
+          "TP": 18,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.375,
+          "recall_descriptive_iid_interval": [
+            0.2395224034565858,
+            0.5264942393532239
+          ],
+          "unknown_excluded": 4
+        }
+      },
+      "headers_long_fixed": {
+        "challenger": {
+          "FN": 41,
+          "FP": 0,
+          "TN": 59,
+          "TP": 7,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.14583333333333334,
+          "recall_descriptive_iid_interval": [
+            0.060704469366636926,
+            0.2776383400220281
+          ],
+          "unknown_excluded": 4
+        },
+        "control": {
+          "FN": 46,
+          "FP": 0,
+          "TN": 59,
+          "TP": 2,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.041666666666666664,
+          "recall_descriptive_iid_interval": [
+            0.005086467930032974,
+            0.1425409732013774
+          ],
+          "unknown_excluded": 4
+        },
+        "frozen": {
+          "FN": 32,
+          "FP": 0,
+          "TN": 59,
+          "TP": 16,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.3333333333333333,
+          "recall_descriptive_iid_interval": [
+            0.20395973558099936,
+            0.48410832044617197
+          ],
+          "unknown_excluded": 4
+        }
+      },
+      "headers_missing": {
+        "challenger": {
+          "FN": 41,
+          "FP": 0,
+          "TN": 59,
+          "TP": 7,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.14583333333333334,
+          "recall_descriptive_iid_interval": [
+            0.060704469366636926,
+            0.2776383400220281
+          ],
+          "unknown_excluded": 4
+        },
+        "control": {
+          "FN": 45,
+          "FP": 0,
+          "TN": 59,
+          "TP": 3,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.0625,
+          "recall_descriptive_iid_interval": [
+            0.013079244409552646,
+            0.17195993079057043
+          ],
+          "unknown_excluded": 4
+        },
+        "frozen": {
+          "FN": 21,
+          "FP": 0,
+          "TN": 59,
+          "TP": 27,
+          "normal_flag_fraction": 0.0,
+          "normal_flag_fraction_descriptive_iid_interval": [
+            0,
+            0.060608900950339835
+          ],
+          "recall": 0.5625,
+          "recall_descriptive_iid_interval": [
+            0.4118083588406453,
+            0.7051987586661679
+          ],
+          "unknown_excluded": 4
+        }
+      }
+    },
+    "prospective_opened": false,
+    "publisher_labels_are_not_attack_ground_truth": true,
+    "publisher_paired_effect": {
+      "group_bootstrap_95_percentiles": [
+        [
+          -0.0017211703958691649,
+          -0.0023866348448687343
+        ],
+        [
+          0.017482954545454562,
+          0.008225858851178547
+        ]
+      ],
+      "groups": 1746,
+      "observed_anomaly_TPR_delta": 0.007653061224489832,
+      "observed_normal_flag_delta": 0.0023121387283237,
+      "resamples": 1000,
+      "scope": "Paired observed-template bootstrap; publisher labels and unknown campaign/source independence prevent population quality certification"
+    },
+    "research_decision_before_prospective": {
+      "P0_extra_attempt_flags": 0,
+      "P0_extra_benign_flags": 0,
+      "automatic_promotion": false,
+      "decision": "REJECT_OR_INCONCLUSIVE_KEEP_FROZEN",
+      "group_bootstrap_criteria_pass": false,
+      "point_criteria_pass": false,
+      "production_independent_quality_claim": false
+    },
+    "strata": {
+      "Oracle-TRAIN-exposed": {
+        "challenger": {
+          "benign_workflow_flags": {
+            "12": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 2,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "14": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 1,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.975
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "15": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 1,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.975
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "20000": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "20001": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "4": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 4,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.6023646356164746
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            }
+          },
+          "by_method": {
+            "GET": {
+              "FN": 4,
+              "FP": 0,
+              "TN": 11,
+              "TP": 2,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.28491415291815436
+              ],
+              "recall": 0.3333333333333333,
+              "recall_descriptive_iid_interval": [
+                0.043271868292741676,
+                0.7772219044964879
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 10,
+              "FP": 0,
+              "TN": 21,
+              "TP": 1,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.16109761521907956
+              ],
+              "recall": 0.09090909090909091,
+              "recall_descriptive_iid_interval": [
+                0.002298972213814267,
+                0.4127799169883827
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "counts": {
+            "FN": 14,
+            "FP": 0,
+            "TN": 32,
+            "TP": 3,
+            "normal_flag_fraction": 0.0,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0,
+              0.10888116067935288
+            ],
+            "recall": 0.17647058823529413,
+            "recall_descriptive_iid_interval": [
+              0.037985068070626,
+              0.43431787284428397
+            ],
+            "unknown_excluded": 0
+          },
+          "inference_ms_per_row": 0.17144512250005,
+          "per_family": {
+            "cmd_injection": {
+              "FN": 2,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "unknown_excluded": 0
+            },
+            "path_traversal": {
+              "FN": 2,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 2,
+              "FP": 0,
+              "TN": 0,
+              "TP": 3,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.6,
+              "recall_descriptive_iid_interval": [
+                0.14663279963467313,
+                0.9472550494736831
+              ],
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 8,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.3694166475528192
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 1.0
+        },
+        "control": {
+          "benign_workflow_flags": {
+            "12": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 2,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "14": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 1,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.975
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "15": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 1,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.975
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "20000": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "20001": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "4": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 4,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.6023646356164746
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            }
+          },
+          "by_method": {
+            "GET": {
+              "FN": 5,
+              "FP": 0,
+              "TN": 11,
+              "TP": 1,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.28491415291815436
+              ],
+              "recall": 0.16666666666666666,
+              "recall_descriptive_iid_interval": [
+                0.00421074451448947,
+                0.6412345789976748
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 11,
+              "FP": 0,
+              "TN": 21,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.16109761521907956
+              ],
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.28491415291815436
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "counts": {
+            "FN": 16,
+            "FP": 0,
+            "TN": 32,
+            "TP": 1,
+            "normal_flag_fraction": 0.0,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0,
+              0.10888116067935288
+            ],
+            "recall": 0.058823529411764705,
+            "recall_descriptive_iid_interval": [
+              0.0014881743912666346,
+              0.2868893966672207
+            ],
+            "unknown_excluded": 0
+          },
+          "inference_ms_per_row": 0.0111029387751062,
+          "per_family": {
+            "cmd_injection": {
+              "FN": 2,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "unknown_excluded": 0
+            },
+            "path_traversal": {
+              "FN": 2,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 4,
+              "FP": 0,
+              "TN": 0,
+              "TP": 1,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.2,
+              "recall_descriptive_iid_interval": [
+                0.0050507633794680575,
+                0.7164179361180895
+              ],
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 8,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.3694166475528192
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 1.0
+        },
+        "frozen": {
+          "benign_workflow_flags": {
+            "12": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 2,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "14": {
+              "FN": 0,
+              "FP": 1,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": 1.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.025,
+                1
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "15": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 1,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.975
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "20000": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "20001": {
+              "FN": 0,
+              "FP": 2,
+              "TN": 10,
+              "TP": 0,
+              "normal_flag_fraction": 0.16666666666666666,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.020862525460092384,
+                0.48413774868596704
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "4": {
+              "FN": 0,
+              "FP": 1,
+              "TN": 3,
+              "TP": 0,
+              "normal_flag_fraction": 0.25,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.006309463209709866,
+                0.8058795503167565
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            }
+          },
+          "by_method": {
+            "GET": {
+              "FN": 2,
+              "FP": 1,
+              "TN": 10,
+              "TP": 4,
+              "normal_flag_fraction": 0.09090909090909091,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.002298972213814267,
+                0.4127799169883827
+              ],
+              "recall": 0.6666666666666666,
+              "recall_descriptive_iid_interval": [
+                0.22277809550351213,
+                0.9567281317072583
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 8,
+              "FP": 3,
+              "TN": 18,
+              "TP": 3,
+              "normal_flag_fraction": 0.14285714285714285,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.03048896762151555,
+                0.363423987016981
+              ],
+              "recall": 0.2727272727272727,
+              "recall_descriptive_iid_interval": [
+                0.06021773417290665,
+                0.6097425595724212
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "counts": {
+            "FN": 10,
+            "FP": 4,
+            "TN": 28,
+            "TP": 7,
+            "normal_flag_fraction": 0.125,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.03513065310331141,
+              0.2899484201907557
+            ],
+            "recall": 0.4117647058823529,
+            "recall_descriptive_iid_interval": [
+              0.18443696178394667,
+              0.6707528460532426
+            ],
+            "unknown_excluded": 0
+          },
+          "inference_ms_per_row": 0.011556836695063442,
+          "per_family": {
+            "cmd_injection": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 2,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.15811388300841897,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "path_traversal": {
+              "FN": 2,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.841886116991581
+              ],
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 5,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.4781762498950185,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 8,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.3694166475528192
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 0.6363636363636364
+        }
+      },
+      "P0-DEVELOPMENT-exposed": {
+        "challenger": {
+          "AI_additional_attempt_flags_over_Suricata": 0,
+          "benign_workflow_flags": {
+            "path_traversal": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 3,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.7075982261787133
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 20,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.1684334709830853
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 36,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.09739375591449193
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            }
+          },
+          "by_method": {
+            "GET": {
+              "FN": 33,
+              "FP": 0,
+              "TN": 59,
+              "TP": 3,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.060608900950339835
+              ],
+              "recall": 0.08333333333333333,
+              "recall_descriptive_iid_interval": [
+                0.01752649592393462,
+                0.2246897605569731
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 4
+            }
+          },
+          "counts": {
+            "FN": 45,
+            "FP": 0,
+            "TN": 59,
+            "TP": 3,
+            "normal_flag_fraction": 0.0,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0,
+              0.060608900950339835
+            ],
+            "recall": 0.0625,
+            "recall_descriptive_iid_interval": [
+              0.013079244409552646,
+              0.17195993079057043
+            ],
+            "unknown_excluded": 4
+          },
+          "inference_ms_per_row": 0.008961054059123067,
+          "per_family": {
+            "cmd_injection": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            },
+            "path_traversal": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 9,
+              "FP": 0,
+              "TN": 0,
+              "TP": 3,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.25,
+              "recall_descriptive_iid_interval": [
+                0.05486064452799272,
+                0.5718584618781891
+              ],
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "rule_only": {
+            "FN": 21,
+            "FP": 2,
+            "TN": 57,
+            "TP": 27,
+            "normal_flag_fraction": 0.03389830508474576,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.004131932972365215,
+              0.11714846388839315
+            ],
+            "recall": 0.5625,
+            "recall_descriptive_iid_interval": [
+              0.4118083588406453,
+              0.7051987586661679
+            ],
+            "unknown_excluded": 4
+          },
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 1.0
+        },
+        "control": {
+          "AI_additional_attempt_flags_over_Suricata": 0,
+          "benign_workflow_flags": {
+            "path_traversal": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 3,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.7075982261787133
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 20,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.1684334709830853
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 36,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.09739375591449193
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            }
+          },
+          "by_method": {
+            "GET": {
+              "FN": 33,
+              "FP": 0,
+              "TN": 59,
+              "TP": 3,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.060608900950339835
+              ],
+              "recall": 0.08333333333333333,
+              "recall_descriptive_iid_interval": [
+                0.01752649592393462,
+                0.2246897605569731
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 4
+            }
+          },
+          "counts": {
+            "FN": 45,
+            "FP": 0,
+            "TN": 59,
+            "TP": 3,
+            "normal_flag_fraction": 0.0,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0,
+              0.060608900950339835
+            ],
+            "recall": 0.0625,
+            "recall_descriptive_iid_interval": [
+              0.013079244409552646,
+              0.17195993079057043
+            ],
+            "unknown_excluded": 4
+          },
+          "inference_ms_per_row": 0.00831207207001343,
+          "per_family": {
+            "cmd_injection": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            },
+            "path_traversal": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 9,
+              "FP": 0,
+              "TN": 0,
+              "TP": 3,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.25,
+              "recall_descriptive_iid_interval": [
+                0.05486064452799272,
+                0.5718584618781891
+              ],
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "rule_only": {
+            "FN": 21,
+            "FP": 2,
+            "TN": 57,
+            "TP": 27,
+            "normal_flag_fraction": 0.03389830508474576,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.004131932972365215,
+              0.11714846388839315
+            ],
+            "recall": 0.5625,
+            "recall_descriptive_iid_interval": [
+              0.4118083588406453,
+              0.7051987586661679
+            ],
+            "unknown_excluded": 4
+          },
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 1.0
+        },
+        "frozen": {
+          "AI_additional_attempt_flags_over_Suricata": 4,
+          "benign_workflow_flags": {
+            "path_traversal": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 3,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.7075982261787133
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 20,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.1684334709830853
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 36,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.09739375591449193
+              ],
+              "recall": null,
+              "recall_descriptive_iid_interval": null,
+              "unknown_excluded": 0
+            }
+          },
+          "by_method": {
+            "GET": {
+              "FN": 18,
+              "FP": 0,
+              "TN": 59,
+              "TP": 18,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.060608900950339835
+              ],
+              "recall": 0.5,
+              "recall_descriptive_iid_interval": [
+                0.3292217994577103,
+                0.6707782005422896
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 4
+            }
+          },
+          "counts": {
+            "FN": 30,
+            "FP": 0,
+            "TN": 59,
+            "TP": 18,
+            "normal_flag_fraction": 0.0,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0,
+              0.060608900950339835
+            ],
+            "recall": 0.375,
+            "recall_descriptive_iid_interval": [
+              0.2395224034565858,
+              0.5264942393532239
+            ],
+            "unknown_excluded": 4
+          },
+          "inference_ms_per_row": 0.07919018019304343,
+          "per_family": {
+            "cmd_injection": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            },
+            "path_traversal": {
+              "FN": 6,
+              "FP": 0,
+              "TN": 0,
+              "TP": 6,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.5,
+              "recall_descriptive_iid_interval": [
+                0.21094463823929666,
+                0.7890553617607033
+              ],
+              "unknown_excluded": 0
+            },
+            "sqli": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 12,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.7353515306029488,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "xss": {
+              "FN": 12,
+              "FP": 0,
+              "TN": 0,
+              "TP": 0,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "rule_only": {
+            "FN": 21,
+            "FP": 2,
+            "TN": 57,
+            "TP": 27,
+            "normal_flag_fraction": 0.03389830508474576,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.004131932972365215,
+              0.11714846388839315
+            ],
+            "recall": 0.5625,
+            "recall_descriptive_iid_interval": [
+              0.4118083588406453,
+              0.7051987586661679
+            ],
+            "unknown_excluded": 4
+          },
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 1.0
+        }
+      },
+      "publisher-development": {
+        "challenger": {
+          "by_method": {
+            "GET": {
+              "FN": 62,
+              "FP": 6,
+              "TN": 778,
+              "TP": 925,
+              "normal_flag_fraction": 0.007653061224489796,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.002813566363333494,
+                0.016582591650417446
+              ],
+              "recall": 0.9371833839918946,
+              "recall_descriptive_iid_interval": [
+                0.9201918715097458,
+                0.9515032968831862
+              ],
+              "unknown_excluded": 0
+            },
+            "HEAD": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 15,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.7819806390894659,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "OPTIONS": {
+              "FN": 4,
+              "FP": 3,
+              "TN": 10,
+              "TP": 12,
+              "normal_flag_fraction": 0.23076923076923078,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.05038107349115153,
+                0.5381315392340409
+              ],
+              "recall": 0.75,
+              "recall_descriptive_iid_interval": [
+                0.4762291801038727,
+                0.9273379617471178
+              ],
+              "unknown_excluded": 0
+            },
+            "OTHER": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 18,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8146980318621477,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "PATCH": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 18,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8146980318621477,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 7,
+              "FP": 3,
+              "TN": 53,
+              "TP": 90,
+              "normal_flag_fraction": 0.05357142857142857,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.011186970834174503,
+                0.14867445094719112
+              ],
+              "recall": 0.9278350515463918,
+              "recall_descriptive_iid_interval": [
+                0.856951544231931,
+                0.9704948345426404
+              ],
+              "unknown_excluded": 0
+            },
+            "PUT": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 22,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8456274871844254,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "TRACE": {
+              "FN": 3,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.7075982261787133
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "counts": {
+            "FN": 76,
+            "FP": 12,
+            "TN": 853,
+            "TP": 1100,
+            "normal_flag_fraction": 0.013872832369942197,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.007188291034410001,
+              0.024107545799668485
+            ],
+            "recall": 0.935374149659864,
+            "recall_descriptive_iid_interval": [
+              0.9197757986077453,
+              0.9487477498989683
+            ],
+            "unknown_excluded": 0
+          },
+          "inference_ms_per_row": 0.03300173101412946,
+          "publisher_PR_AUC": 0.995910945878616,
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 0.9892086330935251
+        },
+        "control": {
+          "by_method": {
+            "GET": {
+              "FN": 66,
+              "FP": 6,
+              "TN": 778,
+              "TP": 921,
+              "normal_flag_fraction": 0.007653061224489796,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.002813566363333494,
+                0.016582591650417446
+              ],
+              "recall": 0.9331306990881459,
+              "recall_descriptive_iid_interval": [
+                0.9157083032237197,
+                0.9479093484324108
+              ],
+              "unknown_excluded": 0
+            },
+            "HEAD": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 15,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.7819806390894659,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "OPTIONS": {
+              "FN": 5,
+              "FP": 1,
+              "TN": 12,
+              "TP": 11,
+              "normal_flag_fraction": 0.07692307692307693,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.0019456284973467482,
+                0.3602974352678775
+              ],
+              "recall": 0.6875,
+              "recall_descriptive_iid_interval": [
+                0.41337936354864135,
+                0.8898300452828825
+              ],
+              "unknown_excluded": 0
+            },
+            "OTHER": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 18,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8146980318621477,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "PATCH": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 18,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8146980318621477,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 11,
+              "FP": 3,
+              "TN": 53,
+              "TP": 86,
+              "normal_flag_fraction": 0.05357142857142857,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.011186970834174503,
+                0.14867445094719112
+              ],
+              "recall": 0.8865979381443299,
+              "recall_descriptive_iid_interval": [
+                0.8061461403570753,
+                0.9420113033549623
+              ],
+              "unknown_excluded": 0
+            },
+            "PUT": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 22,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8456274871844254,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "TRACE": {
+              "FN": 3,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.7075982261787133
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "counts": {
+            "FN": 85,
+            "FP": 10,
+            "TN": 855,
+            "TP": 1091,
+            "normal_flag_fraction": 0.011560693641618497,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.005557338495330444,
+              0.02115747378463996
+            ],
+            "recall": 0.9277210884353742,
+            "recall_descriptive_iid_interval": [
+              0.9113992957831001,
+              0.9418613381885983
+            ],
+            "unknown_excluded": 0
+          },
+          "inference_ms_per_row": 0.029113484566976166,
+          "publisher_PR_AUC": 0.995885080189622,
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 0.9909173478655767
+        },
+        "frozen": {
+          "by_method": {
+            "GET": {
+              "FN": 67,
+              "FP": 9,
+              "TN": 775,
+              "TP": 920,
+              "normal_flag_fraction": 0.011479591836734694,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0.005262265673879932,
+                0.021679569290143943
+              ],
+              "recall": 0.9321175278622087,
+              "recall_descriptive_iid_interval": [
+                0.9145899866720857,
+                0.9470082327479744
+              ],
+              "unknown_excluded": 0
+            },
+            "HEAD": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 15,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.7819806390894659,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "OPTIONS": {
+              "FN": 7,
+              "FP": 0,
+              "TN": 13,
+              "TP": 9,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.24705263800047092
+              ],
+              "recall": 0.5625,
+              "recall_descriptive_iid_interval": [
+                0.2987768990831778,
+                0.8024658594673321
+              ],
+              "unknown_excluded": 0
+            },
+            "OTHER": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 18,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8146980318621477,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "PATCH": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 18,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8146980318621477,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "POST": {
+              "FN": 14,
+              "FP": 0,
+              "TN": 56,
+              "TP": 83,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.06375009666236217
+              ],
+              "recall": 0.8556701030927835,
+              "recall_descriptive_iid_interval": [
+                0.7697099112225658,
+                0.9187870592228622
+              ],
+              "unknown_excluded": 0
+            },
+            "PUT": {
+              "FN": 0,
+              "FP": 0,
+              "TN": 0,
+              "TP": 22,
+              "normal_flag_fraction": null,
+              "normal_flag_fraction_descriptive_iid_interval": null,
+              "recall": 1.0,
+              "recall_descriptive_iid_interval": [
+                0.8456274871844254,
+                1
+              ],
+              "unknown_excluded": 0
+            },
+            "TRACE": {
+              "FN": 3,
+              "FP": 0,
+              "TN": 12,
+              "TP": 0,
+              "normal_flag_fraction": 0.0,
+              "normal_flag_fraction_descriptive_iid_interval": [
+                0,
+                0.2646484693970512
+              ],
+              "recall": 0.0,
+              "recall_descriptive_iid_interval": [
+                0,
+                0.7075982261787133
+              ],
+              "unknown_excluded": 0
+            }
+          },
+          "counts": {
+            "FN": 91,
+            "FP": 9,
+            "TN": 856,
+            "TP": 1085,
+            "normal_flag_fraction": 0.010404624277456647,
+            "normal_flag_fraction_descriptive_iid_interval": [
+              0.004768385014289427,
+              0.01965898132708915
+            ],
+            "recall": 0.9226190476190477,
+            "recall_descriptive_iid_interval": [
+              0.9058418449169807,
+              0.9372430839585639
+            ],
+            "unknown_excluded": 0
+          },
+          "inference_ms_per_row": 0.029141709945866307,
+          "publisher_PR_AUC": 0.9958510754971008,
+          "scope": "exposed or publisher research; no independent population claim",
+          "precision_descriptive": 0.9917733089579525
+        }
+      }
+    },
+    "thresholds": {
+      "challenger": {
+        "Oracle": 0.9925589561462402,
+        "publisher": 0.6613619923591614
+      },
+      "control": {
+        "Oracle": 0.997569739818573,
+        "publisher": 0.6618515849113464
+      },
+      "frozen": {
+        "Oracle": 0.8826237916946411,
+        "publisher": 0.8826237916946411
+      }
+    }
+  },
+  "posthoc_exposed_diagnostics": {
+    "scope": "POST_HOC_EXPOSED_DIAGNOSTICS_ONLY; no threshold/model selection; no independent evaluation",
+    "prospective_opened": false,
+    "P0_scores_by_family": {
+      "frozen": {
+        "benign": {
+          "min": 0.06169205904006958,
+          "q25": 0.11032599210739136,
+          "median": 0.1840723156929016,
+          "q75": 0.22679567337036133,
+          "max": 0.2848113775253296
+        },
+        "sqli": {
+          "min": 0.9242255687713623,
+          "q25": 0.9933580756187439,
+          "median": 0.9984921216964722,
+          "q75": 0.9990464448928833,
+          "max": 0.9993959665298462
+        },
+        "xss": {
+          "min": 0.09737187623977661,
+          "q25": 0.178239643573761,
+          "median": 0.23052877187728882,
+          "q75": 0.2814033776521683,
+          "max": 0.31198036670684814
+        },
+        "path_traversal": {
+          "min": 0.3663190007209778,
+          "q25": 0.4315851181745529,
+          "median": 0.7934195697307587,
+          "q75": 0.9388060867786407,
+          "max": 0.9545673727989197
+        },
+        "cmd_injection": {
+          "min": 0.5425728559494019,
+          "q25": 0.6448074579238892,
+          "median": 0.6757493615150452,
+          "q75": 0.7579719722270966,
+          "max": 0.8224620819091797
+        }
+      },
+      "control": {
+        "benign": {
+          "min": 0.029649555683135986,
+          "q25": 0.047408223152160645,
+          "median": 0.07710570096969604,
+          "q75": 0.09702819585800171,
+          "max": 0.1670551300048828
+        },
+        "sqli": {
+          "min": 0.8676945567131042,
+          "q25": 0.9817682504653931,
+          "median": 0.9945590496063232,
+          "q75": 0.9973617345094681,
+          "max": 0.9989209175109863
+        },
+        "xss": {
+          "min": 0.039780378341674805,
+          "q25": 0.06782263517379761,
+          "median": 0.10513710975646973,
+          "q75": 0.1324726790189743,
+          "max": 0.17153418064117432
+        },
+        "path_traversal": {
+          "min": 0.06739318370819092,
+          "q25": 0.12272818386554718,
+          "median": 0.6254318356513977,
+          "q75": 0.9822791069746017,
+          "max": 0.9847018122673035
+        },
+        "cmd_injection": {
+          "min": 0.23951637744903564,
+          "q25": 0.3546065092086792,
+          "median": 0.41170817613601685,
+          "q75": 0.5366493612527847,
+          "max": 0.705864429473877
+        }
+      },
+      "challenger": {
+        "benign": {
+          "min": 0.016892313957214355,
+          "q25": 0.035956889390945435,
+          "median": 0.05826228857040405,
+          "q75": 0.07027864456176758,
+          "max": 0.2242986559867859
+        },
+        "sqli": {
+          "min": 0.5992048978805542,
+          "q25": 0.9709324538707733,
+          "median": 0.9832879304885864,
+          "q75": 0.9905914217233658,
+          "max": 0.996274471282959
+        },
+        "xss": {
+          "min": 0.03510332107543945,
+          "q25": 0.10858874022960663,
+          "median": 0.16698622703552246,
+          "q75": 0.23199787735939026,
+          "max": 0.2961801290512085
+        },
+        "path_traversal": {
+          "min": 0.04457080364227295,
+          "q25": 0.06053832173347473,
+          "median": 0.20354503393173218,
+          "q75": 0.4931041896343231,
+          "max": 0.6059631109237671
+        },
+        "cmd_injection": {
+          "min": 0.20169860124588013,
+          "q25": 0.30111977458000183,
+          "median": 0.5334960222244263,
+          "q75": 0.7258867025375366,
+          "max": 0.9157867431640625
+        }
+      }
+    },
+    "Rules_and_AI_union": {
+      "frozen": {
+        "TP": 31,
+        "FN": 17,
+        "FP": 2,
+        "TN": 57,
+        "unknown_excluded": 4,
+        "recall": 0.6458333333333334,
+        "recall_descriptive_iid_interval": [
+          0.4945682554366303,
+          0.7783940670881664
+        ],
+        "normal_flag_fraction": 0.03389830508474576,
+        "normal_flag_fraction_descriptive_iid_interval": [
+          0.004131932972365215,
+          0.11714846388839315
+        ]
+      },
+      "control": {
+        "TP": 27,
+        "FN": 21,
+        "FP": 2,
+        "TN": 57,
+        "unknown_excluded": 4,
+        "recall": 0.5625,
+        "recall_descriptive_iid_interval": [
+          0.4118083588406453,
+          0.7051987586661679
+        ],
+        "normal_flag_fraction": 0.03389830508474576,
+        "normal_flag_fraction_descriptive_iid_interval": [
+          0.004131932972365215,
+          0.11714846388839315
+        ]
+      },
+      "challenger": {
+        "TP": 27,
+        "FN": 21,
+        "FP": 2,
+        "TN": 57,
+        "unknown_excluded": 4,
+        "recall": 0.5625,
+        "recall_descriptive_iid_interval": [
+          0.4118083588406453,
+          0.7051987586661679
+        ],
+        "normal_flag_fraction": 0.03389830508474576,
+        "normal_flag_fraction_descriptive_iid_interval": [
+          0.004131932972365215,
+          0.11714846388839315
+        ]
+      }
+    },
+    "cross_label_identical_views": {
+      "frozen": {
+        "groups": 0,
+        "affected_rows": 0,
+        "unique_views": 86
+      },
+      "control": {
+        "groups": 0,
+        "affected_rows": 0,
+        "unique_views": 86
+      },
+      "challenger": {
+        "groups": 0,
+        "affected_rows": 0,
+        "unique_views": 86
+      }
+    },
+    "P0_at_already_locked_publisher_threshold_POSTHOC": {
+      "frozen": {
+        "TP": 18,
+        "FN": 30,
+        "FP": 0,
+        "TN": 59,
+        "unknown_excluded": 4,
+        "recall": 0.375,
+        "recall_descriptive_iid_interval": [
+          0.2395224034565858,
+          0.5264942393532239
+        ],
+        "normal_flag_fraction": 0.0,
+        "normal_flag_fraction_descriptive_iid_interval": [
+          0,
+          0.060608900950339835
+        ]
+      },
+      "control": {
+        "TP": 21,
+        "FN": 27,
+        "FP": 0,
+        "TN": 59,
+        "unknown_excluded": 4,
+        "recall": 0.4375,
+        "recall_descriptive_iid_interval": [
+          0.294801241333832,
+          0.5881916411593545
+        ],
+        "normal_flag_fraction": 0.0,
+        "normal_flag_fraction_descriptive_iid_interval": [
+          0,
+          0.060608900950339835
+        ]
+      },
+      "challenger": {
+        "TP": 15,
+        "FN": 33,
+        "FP": 0,
+        "TN": 59,
+        "unknown_excluded": 4,
+        "recall": 0.3125,
+        "recall_descriptive_iid_interval": [
+          0.1865962830960124,
+          0.462513578105436
+        ],
+        "normal_flag_fraction": 0.0,
+        "normal_flag_fraction_descriptive_iid_interval": [
+          0,
+          0.060608900950339835
+        ]
+      }
+    },
+    "header_perturbation_score_changes": {
+      "headers_missing": {
+        "frozen": {
+          "median_absolute_score_delta": 0.05708950757980347,
+          "max_absolute_score_delta": 0.504859983921051,
+          "label_known_decision_flips": 11
+        },
+        "control": {
+          "median_absolute_score_delta": 0.03143906593322754,
+          "max_absolute_score_delta": 0.6577346920967102,
+          "label_known_decision_flips": 2
+        },
+        "challenger": {
+          "median_absolute_score_delta": 0.2739008069038391,
+          "max_absolute_score_delta": 0.7617663145065308,
+          "label_known_decision_flips": 4
+        }
+      },
+      "headers_long_fixed": {
+        "frozen": {
+          "median_absolute_score_delta": 0.1723424196243286,
+          "max_absolute_score_delta": 0.8097895979881287,
+          "label_known_decision_flips": 2
+        },
+        "control": {
+          "median_absolute_score_delta": 0.06603842973709106,
+          "max_absolute_score_delta": 0.7010387778282166,
+          "label_known_decision_flips": 1
+        },
+        "challenger": {
+          "median_absolute_score_delta": 0.033614933490753174,
+          "max_absolute_score_delta": 0.6129050254821777,
+          "label_known_decision_flips": 4
+        }
+      }
+    },
+    "P0_feature_availability": {
+      "path_traversal": {
+        "rows": 12,
+        "body_nonempty": 0,
+        "body_redacted": 0,
+        "json_profile": 0,
+        "redacted_query_fields": 0
+      },
+      "benign": {
+        "rows": 59,
+        "body_nonempty": 0,
+        "body_redacted": 0,
+        "json_profile": 0,
+        "redacted_query_fields": 1
+      },
+      "cmd_injection": {
+        "rows": 12,
+        "body_nonempty": 12,
+        "body_redacted": 0,
+        "json_profile": 0,
+        "redacted_query_fields": 0
+      },
+      "sqli": {
+        "rows": 12,
+        "body_nonempty": 0,
+        "body_redacted": 0,
+        "json_profile": 0,
+        "redacted_query_fields": 0
+      },
+      "xss": {
+        "rows": 12,
+        "body_nonempty": 0,
+        "body_redacted": 0,
+        "json_profile": 0,
+        "redacted_query_fields": 0
+      },
+      "unknown": {
+        "rows": 4,
+        "body_nonempty": 4,
+        "body_redacted": 0,
+        "json_profile": 0,
+        "redacted_query_fields": 0
+      }
+    },
+    "publisher_TRAIN_method_balance": {
+      "CONNECT": {
+        "NORMAL": 0,
+        "ANOMALOUS": 1
+      },
+      "GET": {
+        "NORMAL": 32663,
+        "ANOMALOUS": 80314
+      },
+      "HEAD": {
+        "NORMAL": 0,
+        "ANOMALOUS": 106
+      },
+      "OPTIONS": {
+        "NORMAL": 117,
+        "ANOMALOUS": 74
+      },
+      "OTHER": {
+        "NORMAL": 0,
+        "ANOMALOUS": 278
+      },
+      "PATCH": {
+        "NORMAL": 0,
+        "ANOMALOUS": 126
+      },
+      "POST": {
+        "NORMAL": 1323,
+        "ANOMALOUS": 5103
+      },
+      "PUT": {
+        "NORMAL": 0,
+        "ANOMALOUS": 135
+      },
+      "TRACE": {
+        "NORMAL": 179,
+        "ANOMALOUS": 16
+      }
+    },
+    "Oracle_CAL_score_distribution": {
+      "frozen": {
+        "benign": {
+          "min": 0.016454577445983887,
+          "q25": 0.21504223346710205,
+          "median": 0.4186944365501404,
+          "q75": 0.991187110543251,
+          "max": 0.9982507824897766
+        },
+        "attempts": {
+          "min": 0.10585147142410278,
+          "q25": 0.13485030829906464,
+          "median": 0.1638491451740265,
+          "q75": 0.19284798204898834,
+          "max": 0.2218468189239502
+        }
+      },
+      "control": {
+        "benign": {
+          "min": 0.006381630897521973,
+          "q25": 0.034203171730041504,
+          "median": 0.2592635154724121,
+          "q75": 0.9915845096111298,
+          "max": 0.997569739818573
+        },
+        "attempts": {
+          "min": 0.027674496173858643,
+          "q25": 0.030255183577537537,
+          "median": 0.03283587098121643,
+          "q75": 0.035416558384895325,
+          "max": 0.03799724578857422
+        }
+      },
+      "challenger": {
+        "benign": {
+          "min": 0.011038601398468018,
+          "q25": 0.01124107837677002,
+          "median": 0.4923962354660034,
+          "q75": 0.9849805235862732,
+          "max": 0.9925589561462402
+        },
+        "attempts": {
+          "min": 0.0706753134727478,
+          "q25": 0.11646825075149536,
+          "median": 0.16226118803024292,
+          "q75": 0.20805412530899048,
+          "max": 0.25384706258773804
+        }
+      }
+    },
+    "encoder_latency_P0_once": {
+      "shared_ms_per_request": 6.853876990970929,
+      "challenger_full_shared_numeric_plus_separate_ms_per_request": 16.738939621637318,
+      "limit": "Single pass, quota-limited wall time; challenger diagnostic computes shared content redundantly. Not a production throughput benchmark."
+    },
+    "evaluation_report_sha256": "6c481f468127bf9192ae8952bad3e604ca80362fc776f94cc469ad6d1530ec70",
+    "diagnostic_source_sha256": "07186a30880bf30a5deccc94cee8b13bfe3bafd43867c9dfb53d1c4598a53385"
+  },
+  "resources": {
+    "training": {
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-103090-62726170.service",
+      "wall_seconds": 206.43515300699983,
+      "kernel_cpu_quota_percent": 25,
+      "cpu_temperature_min": 44.0,
+      "cpu_temperature_mean": 45.08212560386473,
+      "cpu_temperature_max": 66.0,
+      "peak_cgroup_memory_bytes": 587100160,
+      "peak_system_used_bytes": 12175835136,
+      "events": [],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "598937600",
+        "CPUUsageNSec": "50242004000"
+      },
+      "source_sha256": "6d81a2c8c681437ecd3787800b2126332a791aba76b62cc88ba5c6b2b712fad4",
+      "safety_scope": "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat",
+      "build_pause_only": false,
+      "scope_mode": false,
+      "policy": "rolling",
+      "instant_cutoff_c": 90,
+      "thermal_time_weighted": {
+        "current_c": 44.0,
+        "rolling_300s_c": 45.08440062116689,
+        "full_run_time_weighted_c": 45.08440062116689,
+        "active_time_weighted_c": 45.08440062116689,
+        "paused_time_weighted_c": null,
+        "active_seconds": 205.90282232199934,
+        "paused_seconds": 0.0,
+        "window_seconds": 205.90282232199934,
+        "sensor_health": "OK",
+        "wall_rolling_300s_c": 45.08440062116689,
+        "rolling_window_basis": "ACTIVE_SECONDS_ONLY; paused/idle cannot cool this average",
+        "active_window_seconds": 205.90282232199934
+      },
+      "emergency_stops": 0,
+      "watchdog_failure": null,
+      "automatic_restarts": 0,
+      "reserve_bytes": 4294967296
+    },
+    "evaluation": {
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-114262-18664573.service",
+      "wall_seconds": 17.776788105999003,
+      "kernel_cpu_quota_percent": 25,
+      "cpu_temperature_min": 50.0,
+      "cpu_temperature_mean": 50.61643835616438,
+      "cpu_temperature_max": 54.0,
+      "peak_cgroup_memory_bytes": 118333440,
+      "peak_system_used_bytes": 12508872704,
+      "events": [],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "118333440",
+        "CPUUsageNSec": "4326525000"
+      },
+      "source_sha256": "6d81a2c8c681437ecd3787800b2126332a791aba76b62cc88ba5c6b2b712fad4",
+      "safety_scope": "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat",
+      "build_pause_only": false,
+      "scope_mode": false,
+      "policy": "rolling",
+      "instant_cutoff_c": 90,
+      "thermal_time_weighted": {
+        "current_c": 50.0,
+        "rolling_300s_c": 50.61395984284741,
+        "full_run_time_weighted_c": 50.61395984284741,
+        "active_time_weighted_c": 50.61395984284741,
+        "paused_time_weighted_c": null,
+        "active_seconds": 17.39415659899896,
+        "paused_seconds": 0.0,
+        "window_seconds": 17.39415659899896,
+        "sensor_health": "OK",
+        "wall_rolling_300s_c": 50.61395984284741,
+        "rolling_window_basis": "ACTIVE_SECONDS_ONLY; paused/idle cannot cool this average",
+        "active_window_seconds": 17.39415659899896
+      },
+      "emergency_stops": 0,
+      "watchdog_failure": null,
+      "automatic_restarts": 0,
+      "reserve_bytes": 4294967296
+    },
+    "posthoc": {
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-114547-50858692.service",
+      "wall_seconds": 24.996000361003098,
+      "kernel_cpu_quota_percent": 25,
+      "cpu_temperature_min": 48.0,
+      "cpu_temperature_mean": 50.28846153846154,
+      "cpu_temperature_max": 61.0,
+      "peak_cgroup_memory_bytes": 387055616,
+      "peak_system_used_bytes": 12715589632,
+      "events": [],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "387891200",
+        "CPUUsageNSec": "6207589000"
+      },
+      "source_sha256": "6d81a2c8c681437ecd3787800b2126332a791aba76b62cc88ba5c6b2b712fad4",
+      "safety_scope": "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat",
+      "build_pause_only": false,
+      "scope_mode": false,
+      "policy": "rolling",
+      "instant_cutoff_c": 90,
+      "thermal_time_weighted": {
+        "current_c": 50.0,
+        "rolling_300s_c": 50.28570776059675,
+        "full_run_time_weighted_c": 50.28570776059675,
+        "active_time_weighted_c": 50.28570776059675,
+        "paused_time_weighted_c": null,
+        "active_seconds": 24.729714569999487,
+        "paused_seconds": 0.0,
+        "window_seconds": 24.729714569999487,
+        "sensor_health": "OK",
+        "wall_rolling_300s_c": 50.28570776059675,
+        "rolling_window_basis": "ACTIVE_SECONDS_ONLY; paused/idle cannot cool this average",
+        "active_window_seconds": 24.729714569999487
+      },
+      "emergency_stops": 0,
+      "watchdog_failure": null,
+      "automatic_restarts": 0,
+      "reserve_bytes": 4294967296
+    },
+    "training_duration_shorter_than_300s": true,
+    "full_300s_sustained_training_qualification": false
+  },
+  "protected_artifact_count_verified": 18,
+  "prospective_seal_sha256": "4c9c6521c843f93c6061fe9da89be8ff71e455c02f7c7d1a99bb3ea7b81b6710",
+  "evidence_index": [
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/plan.json",
+      "sha256": "2d7daf7630aa3e45616d58802217893e6d5b55ded9d6bfd75b635ce1fe8eef61",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/training-completion.json",
+      "sha256": "f3b74dfa76b310cc2bfb9b80b2038edd7214ab2eca4ef4b831e210f774f9f22c",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/status.json",
+      "sha256": "9c7d2d8a3ba646c25cb352e2f81a675935e3e24f92e301904e889fa113938bf6",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/control/summary.json",
+      "sha256": "2277f1b3db5b91ce2ae7897c9c8e63485d00a0162a4761addc3581174b557f3d",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/challenger/summary.json",
+      "sha256": "9c53e9aa4c808d0f49b274ea37205cf3152ae870316fbd6e63e6114b48aa2296",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/control/latest.json",
+      "sha256": "d1b47f530c6034bdcfba5b94650cf3879ff3c5b2b5e308a1535fb383bf84d329",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/challenger/latest.json",
+      "sha256": "d73db9228db4c12f1749cbdfadb48eecd983aa2bc3041abb7fb82d0f3378c755",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/control/metrics.jsonl",
+      "sha256": "728e86d69d8255952792afe41233d0ef820416df4af64a7a7beda05c0aed1584",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/challenger/metrics.jsonl",
+      "sha256": "38c820218324c732a77bf5e30eb77de36643f71f456add6b6c9f7dd0976cb9ba",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/resource/resource-report.json",
+      "sha256": "99ba376989b4be3feca854fac06124fdabdb6632609185e0b5dabe240c1f3a43",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/resource/watchdog-report.json",
+      "sha256": "b63bb168a8583e3835411f6f77bdb40b357e1cda2e5dcb7f1981cd03e24f2546",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/evaluation-lock.json",
+      "sha256": "c7d74d7db4434d6ea9041d09ba4a1db1b277a5b4f1d5d12ac35126394a756222",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/evaluation-exposed.json",
+      "sha256": "6c481f468127bf9192ae8952bad3e604ca80362fc776f94cc469ad6d1530ec70",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/scaled-normalization/results-review-20261107/pre-evaluation-integrity.json",
+      "sha256": "048fe2f16db9a89a70a51b72a87daa0690a5ec15b278dd00fc4bcb3520658cef",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/scaled-normalization/results-review-20261107/posthoc-diagnostics.json",
+      "sha256": "a5d1f7f0f8229ab5a3135cbb48d779830d4aaaae015961d5482f015c9b72a14b",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/scaled-normalization/results-review-20261107/diagnostics.py",
+      "sha256": "07186a30880bf30a5deccc94cee8b13bfe3bafd43867c9dfb53d1c4598a53385",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/scaled-normalization/results-review-20261107/exposed-evaluation-guard/resource-report.json",
+      "sha256": "0e642d494fe4567607eef2d6b4cbffa95684c8b007295c4b190a17be706ac6a0",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": ".local-dev/scaled-normalization/results-review-20261107/diagnostics-guard/resource-report.json",
+      "sha256": "9e3f44c52bfced36be48950b42b17105ae1364fb9e9e71e02be8c2051d604158",
+      "distribution": "LOCAL_ONLY"
+    },
+    {
+      "path": "ai-training/.artifacts/training_unblock_20261107/dataset-release-final-v2/prospective-seal.json",
+      "sha256": "4c9c6521c843f93c6061fe9da89be8ff71e455c02f7c7d1a99bb3ea7b81b6710",
+      "distribution": "LOCAL_ONLY"
+    }
+  ],
+  "next_task": "One Oracle attack-intent dataset release for domain adaptation: reuse existing eligible49TRAIN; measure production-visible representation and fill bounded workflow/family gaps before one matched adaptation experiment. No new capture or training in this review.",
+  "distribution": "Aggregate metadata only. Raw HTTP, session evidence, tensors, weights remain local ignored; frozen inference bootstrap unchanged."
+}

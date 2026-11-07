@@ -1,5 +1,10 @@
 # Scaled normalization experiment — 2026-11-07
 
+**Kết quả sau completion:** hai arms đã hoàn thành và được đánh giá ngày2026-11-07.
+Challenger không đạt locked retention gates; giữ frozen deployment reference.
+Xem [kết quả và quyết định](21_SCALED_NORMALIZATION_RESULTS.md). Phần dưới lưu
+protocol/prelaunch rationale; không coi wording chuẩn bị là trạng thái RUNNING.
+
 **Data/evaluation/recovery gates PASS; experiment khóa để chạy nền.** Git handoff
 lưu trạng thái chuẩn bị; trạng thái runtime thực tế nằm ở `status.json` và resource
 status local, không được suy ra từ một báo cáo Git tĩnh. Không có kết quả quality

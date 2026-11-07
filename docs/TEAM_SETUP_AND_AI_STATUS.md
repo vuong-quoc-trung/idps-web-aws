@@ -7,7 +7,8 @@ Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDIN
 Milestone research trước: [Data quality và Oracle cohort](17_DATA_QUALITY_AND_ORACLE_RESEARCH.md).
 Milestone trước: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
 Milestone trước: [Final training unblock và pilot kỹ thuật](19_FINAL_TRAINING_UNBLOCK.md).
-Milestone hiện tại: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPERIMENT.md).
+Protocol: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPERIMENT.md).
+Kết quả hiện tại: [Scaled normalization — completed, candidate rejected](21_SCALED_NORMALIZATION_RESULTS.md).
 
 ## Repository, model release và dependencies
 
@@ -471,8 +472,11 @@ Xem `docs/19_FINAL_TRAINING_UNBLOCK.md` và
 
 ## Scaled normalization experiment — 2026-11-07
 
-**Data/recovery/evaluation gates PASS, cấu hình đã khóa để launch nền.** Git report
-là prelaunch snapshot; dùng local`status.json`/status CLI làm runtime truth sau launch.
+**COMPLETED: hai arms đủ3,072updates, checkpoint reload/hash PASS. Candidate không
+đạt retention criteria; giữ Frozen Requestv2.** Báo cáo chuẩn bị
+`SCALED_NORMALIZATION_20261107.json` vẫn là prelaunch snapshot; kết quả hoàn thành ở
+`SCALED_NORMALIZATION_RESULTS_20261107.json` và tài liệu21. Runtime local vẫn là
+source of truth, không suy ra RUNNING từ snapshot cũ.
 Nguồn WAF publisher TRAIN/README/tensor còn sẵn, pin revision + SHA và MIT declaration.
 Reconstruction160,796views khớp original control bitwise. Không mở publisher heldouts.
 
@@ -505,3 +509,19 @@ corpus provenance và giới hạn. Research retention criteria không phải au
 Frozen release/GLU207/Requestv2/encoders/thresholds/Web/Rules/Policy nguyên trạng,
 AI enforcement DISABLED; noAWS. Raw/tensors/weights local-only, team inferencebootstrap
 không cần download research corpus.
+
+Evaluation2026-11-07: publisherDEV2,041views, matched Recall92.77%/NORMAL flags1.16%,
+challenger93.54%/1.39%; delta Recall+0.77pp, NORMAL+0.23pp, không đạt gates
+≥2pp/≤0.2pp và paired bootstrap không xác nhận lợi ích. Đây là publisher anomaly
+labels, không phải verified HTTP attack Recall. OracleCAL max-benign thresholds:
+control0.9975697398/challenger0.9925589561; frozen giữ0.8826237917. P0 exposed:
+control/challenger đềuTP3,FN45,FP0,TN59; frozenTP18,FN30,FP0,TN59; UNKNOWN4 excluded.
+XSS/cmd đều0/12 ở cảba, challenger không thêm phát hiện ngoài Suricata. Frozen
+thêm4attempt flags ngoài Rules trên chính P0; không suy ra independent generalization.
+
+Training resource PASS:206.4s wall, peak66°C, active mean45.08°C, workload peak≈571MiB,
+shared peak≈11.34GiB; không thermal stop/watchdog failure. Run ngắn hơn300s nên chưa
+phải kiểm chứng thermal sustained dài.12prospective vẫn sealed vì candidate đã fail;
+không tiêu hao để tìm kết quả cứu candidate. Human review vẫnPENDING. Không promote,
+không đổi shadow model/threshold/policy. Checkpoints haiarms giữ local ở experiment
+root nêu trên; exact resume mới được chứng minh subset4updates, không full3072resume.
