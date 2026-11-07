@@ -5,7 +5,8 @@ và Rule–AI coordination; xem `git log -5 --oneline` để xác định revisi
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
 Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
 Milestone research trước: [Data quality và Oracle cohort](17_DATA_QUALITY_AND_ORACLE_RESEARCH.md).
-Milestone hiện tại: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
+Milestone trước: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
+Milestone hiện tại: [Final training unblock và pilot kỹ thuật](19_FINAL_TRAINING_UNBLOCK.md).
 
 ## Repository, model release và dependencies
 
@@ -432,3 +433,36 @@ Không push receipts/session/tensors/review queue. Chi tiết, failures và hash
 với CSRF/session-state Oracle, kiểm runtime prerequisite trước capture, ít nhất
 2meaningful views và loại overlap trước HTTP. Không thu lại43cases, không đổi
 prospective seal hoặc candidate theo evaluation. Chưa có training job đang chạy.
+
+
+## Final training unblock — 2026-11-07
+
+**CALIBRATION PASS; pilot kỹ thuật COMPLETED, không có training nền đang chạy.**
+Bổ sung đúng2POST DVWA`/security.php` trên session mới sau preflight tách riêng;
+CSRF/Set-Cookie/GET state Oracle xác nhận2transitions.2candidate views/1frozen view,
+1workflow. Không replay43cases hoặc đổi3ping UNKNOWN thành benign.
+Calibration có10benign/2attempts eligible,4benign groups, cảformPOST/JSONPOST/GET,
+8frozen benign views/9candidate views, đạt minimum đã khóa. Human review PENDING.
+
+Fit derived giữ nguyên18TRAIN cũ, bổ sung31/35Oracle TRAIN legacy sau re-encode và
+loại4duplicate views:49unique samples,11workflow/session groups trong2apps.
+Không trộn publisher anomaly labels hoặc207features. Không mở/chấm prospective12;
+chỉ dùng opaque identifiers/templates để exclusion. Roles/seal cũ giữ nguyên.
+
+Run local:`ai-training/.artifacts/final_training_unblock_20261107/request-v3-pilot-20261107-01/`.
+Model50,696parameters, encoder riêng frozen-design hash, new initialization, seed17,
+Adam0.001,batch4,1epoch/13updates. Checkpoint weights/Adam/RNG/sampler/scheduler/config/
+dataset/metrics đã lưu và reload arrays khớp. Không claim real-data RESUME_EXACT.
+49samples chỉ đủ engineering/small-sample feasibility, chưa quality-improvement proof.
+
+Train loss2.104734→1.317241; frozenTRAIN TP7/FP4, challengerTP6/FP5, nên không promote.
+Calibration-only threshold0.99825078 giảmTRAIN flags cònTP2/FP0. Candidate threshold
+0.58970392 chỉ là research artifact; frozen live threshold0.88262379 không đổi.
+CAL0false flags không chứng nhậnFPR vì cùng benign data chọn threshold, ítgroups.
+Chưa xác nhận normalization hypothesis; không tự tăng epochs hoặc mở prospective.
+
+47tests/Ruff PASS; actual training max50°C; phase peak68°C, shared RAM≈11.71GB,
+all own resources stopped. Frozen baseline/Rules/Web/Policy/release/bootstrap nguyên
+trạng, AI enforcement DISABLED. Raw/session/tensors/review/checkpoints mới local-only.
+Xem `docs/19_FINAL_TRAINING_UNBLOCK.md` và
+`ai-training/reports/FINAL_TRAINING_UNBLOCK_20261107.json` để kiểm chứng.
