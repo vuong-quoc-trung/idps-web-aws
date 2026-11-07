@@ -9,7 +9,8 @@ Milestone trước: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
 Milestone trước: [Final training unblock và pilot kỹ thuật](19_FINAL_TRAINING_UNBLOCK.md).
 Protocol: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPERIMENT.md).
 Kết quả model gần nhất: [Scaled normalization — candidate rejected](21_SCALED_NORMALIZATION_RESULTS.md).
-Milestone hiện tại: [Attack-intent dataset v1 — released, training blocked](22_ATTACK_INTENT_DATASET_V1.md).
+Dataset milestone: [Attack-intent v1 — released, training blocked](22_ATTACK_INTENT_DATASET_V1.md).
+Milestone hiện tại: [HTTP body syntax — candidate partial](23_HTTP_BODY_SYNTAX_RESEARCH.md).
 
 ## Repository, model release và dependencies
 
@@ -563,3 +564,37 @@ Một nhiệm vụ kế tiếp: offline privacy-preserving body-syntax observabi
 trên hai mixed groups đã có, với allowlist/privacy canaries vàview/split checks;
 không tăng request count hoặc tự thay live telemetry. Xem tài liệu22 cho evidence,
 coverage, label tiers và hướng WARM_START có điều kiện.
+
+## HTTP body-syntax candidate — 2026-11-07
+
+**CASE B — CANDIDATE PARTIAL; production LIVE_OBSERVABILITY=NOT_READY.** Không train,
+không checkpoint, không đổi frozen inference/encoders/thresholds hoặc live Nginx,
+Web, Rules, correlation, Policy Engine. Không mở12sealed hoặc thêmGT cohort.
+
+`http-body-syntax-v1`:46numeric columns, JSON/formbounded8KiB,32fields,depth8;
+allowlisted noncredential text only, protected/unknown values không profile/emit.
+Không raw bodies, arbitrary names/values hoặc secret hashes trong telemetry.
+ContractSHA:`0e163b7392a9bb68131e4c66486fa5827ce6259295f0d703b403a8efad96982c`.
+Joint634view chỉ dùng collision diagnostics, không feed vào frozen model588.
+
+224records exposed: runtime122uniqueviews/2mixedgroups/35affected thành
+candidate158views/1mixedgroup/6affected. Stored-XSS29records tách thành23views,
+0mixed; JSONlogin6records vẫncollision do policy loại email/password. Không dùng
+labels để tinh chỉnh feature từngsample, không coi separation là Recall improvement.
+
+Actual isolatedHTTP→extractor→datagram→candidateworker parity224/224; byte/path/header
+forwardingwitnessPASS. Nominal235events,0drops; malformed/oversize/multipart/gzip/chunked
+không chặn forwarding.6canary families,0literal/encoded leaks ở exercised journals/
+serializers/features/errors; Rust/DB/dashboard candidate paths NOT_EXERCISED.
+Nginx bodytemp non-persistence chưa kiểm nên production privacy NOT_VERIFIED.
+
+49tests/RuffPASS; FrozenP0full/runtime giữ18/48attemptflags,0/59benignflags; không
+retune threshold. Pythonshadow/correlation regressionPASS, fullRust/DB/API tests
+không chạy lại. Studymax56°C, buffersbounded, ownedsocketsclosed. Bodyvectors/journals
+local-only tại`ai-training/.artifacts/body_syntax_20261107/`; publicreport
+`ai-training/reports/BODY_SYNTAX_20261107.json`. Dataset224/207Oracle/reviewPENDING
+không đổi; chưa re-audit candidate split/coverage, không training-ready tự động.
+
+Một nhiệm vụ kế tiếp: opt-in real ingress integration verification với canary
+non-persistence qua buffering và candidate-worker delivery, giữ identity exclusions
+và frozen path. Xem tài liệu23; team clone/bootstrap/frozen models/local demo giữ nguyên.
