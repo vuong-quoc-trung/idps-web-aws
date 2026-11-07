@@ -282,6 +282,7 @@ pub struct ParsedEvent {
     pub canonical: CanonicalEvent,
     pub detections: Vec<Detection>,
     pub native_alert: Option<NativeAlert>,
+    pub sensor_tx_id: Option<i64>,
 }
 
 fn text(value: &Value, key: &str) -> Option<String> {
@@ -347,6 +348,7 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
     let target;
     let mut native_alert = None;
     let mut signals = None;
+    let mut sensor_tx_id = None;
     match source {
         "STUDENT_AUDIT" => {
             event = serde_json::from_str::<CanonicalEvent>(line)
@@ -430,6 +432,7 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
                     "Invalid sensor identity"
                 );
+                sensor_tx_id = value["tx_id"].as_u64().and_then(|n| i64::try_from(n).ok());
                 event.source_instance = format!("suricata-{}", instance);
                 event.event_id = id.into();
             }
@@ -547,6 +550,7 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
     }
     event.sanitize(target.as_deref());
     Ok(ParsedEvent {
+        sensor_tx_id,
         canonical: event,
         detections,
         native_alert,

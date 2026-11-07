@@ -50,6 +50,10 @@ fn decode(raw: &[u8]) -> Result<Record> {
     );
     anyhow::ensure!(hex(&r.proof_sha256, 64), "Invalid proof digest");
     anyhow::ensure!(
+        r.tx_id.is_none_or(|n| n <= i64::MAX as u64),
+        "Transaction ID outside database range"
+    );
+    anyhow::ensure!(
         r.observed_at <= Utc::now() + chrono::Duration::seconds(30),
         "Future observation"
     );
@@ -143,12 +147,61 @@ mod tests {
     fn rejects_fake_matches_and_raw_fields() {
         let mut r = json!({"schema_version":"three-source-1","request_id":"a".repeat(32),"sensor_instance":"b".repeat(32),"observed_at":Utc::now(),"status":"MISSING_SOURCE","sources":["NGINX"],"flow_id":null,"tx_id":null,"duplicate_events":0,"flow_context_alerts":0,"late_event":false,"basis":"NO_IP_TIME_MATCH","proof_sha256":"c".repeat(64),"glu":null,"enforcement_actions":0});
         assert!(decode(&serde_json::to_vec(&r).unwrap()).is_ok());
+        let mut outside_range = r.clone();
+        outside_range["tx_id"] = json!(u64::MAX);
+        assert!(decode(&serde_json::to_vec(&outside_range).unwrap()).is_err());
         r["status"] = json!("MATCHED");
         assert!(decode(&serde_json::to_vec(&r).unwrap()).is_err());
         r["status"] = json!("MISSING_SOURCE");
         r["raw_body"] = json!("private");
         assert!(decode(&serde_json::to_vec(&r).unwrap()).is_err());
     }
+    #[sqlx::test(migrations = "./migrations")]
+    async fn detector_view_preserves_transaction_and_late_reconciliation(pool: PgPool) {
+        let rid = "a".repeat(32);
+        let other = "b".repeat(32);
+        let sensor = "c".repeat(32);
+        for (id, txid) in [(&rid, 0), (&other, 1)] {
+            let r = json!({"schema_version":"three-source-1","request_id":id,"sensor_instance":sensor,"observed_at":Utc::now(),"status":"MATCHED","sources":["NGINX","STUDENT_AUDIT","SURICATA"],"flow_id":"123","tx_id":txid,"duplicate_events":0,"flow_context_alerts":0,"late_event":false,"basis":"EDGE_RESPONSE_ID_AND_HTTP_CONSISTENCY","proof_sha256":"d".repeat(64),"glu":null,"enforcement_actions":0});
+            let mut tx = pool.begin().await.unwrap();
+            ingest(&mut tx, "receipt", &serde_json::to_vec(&r).unwrap())
+                .await
+                .unwrap();
+            tx.commit().await.unwrap();
+        }
+        let view = |id: String| {
+            sqlx::query_scalar::<_, Value>(include_str!("detector_view.sql"))
+                .bind(Some(id))
+                .bind(50_i64)
+        };
+        let before = view(rid.clone()).fetch_one(&pool).await.unwrap();
+        assert_eq!(before["status"], "INCOMPLETE_DETECTOR_EVIDENCE");
+        for (key, txid, basis) in [
+            ("native", Some(0_i64), "SENSOR_TRANSACTION"),
+            ("flow", None, "FLOW_CONTEXT"),
+        ] {
+            let id:i64=sqlx::query_scalar("INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,severity,action,evidence,event_key) VALUES(now(),'SURICATA','alert','test metadata',2,'ALERT','{}',$1) RETURNING id").bind(key).fetch_one(&pool).await.unwrap();
+            sqlx::query("INSERT INTO detector_alert_links(alert_id,source_instance,flow_id,tx_id,link_basis) VALUES($1,$2,'123',$3,$4)").bind(id).bind(format!("suricata-{sensor}")).bind(txid).bind(basis).execute(&pool).await.unwrap();
+        }
+        let a = view(rid.clone()).fetch_one(&pool).await.unwrap();
+        let b = view(other.clone()).fetch_one(&pool).await.unwrap();
+        assert_eq!(a["rules"].as_array().unwrap().len(), 1);
+        assert!(b["rules"].as_array().unwrap().is_empty());
+        assert_eq!(a["flow_context"].as_array().unwrap().len(), 1);
+        assert_eq!(b["flow_context"].as_array().unwrap().len(), 1);
+        assert_eq!(a["status"], "RULE_ALERT_ONLY_OBSERVED");
+        // Simulate a conflicting current proof: late view no longer links sensor tx.
+        sqlx::query("UPDATE request_correlations SET result=jsonb_set(result,'{status}','\"AMBIGUOUS\"') WHERE request_id=$1").bind(&rid).execute(&pool).await.unwrap();
+        let a = view(rid).fetch_one(&pool).await.unwrap();
+        assert_eq!(a["status"], "UNCERTAIN_CORRELATION");
+        assert!(a["rules"].as_array().unwrap().is_empty());
+        let n: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions")
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(n, 0);
+    }
+
     #[sqlx::test(migrations = "./migrations")]
     async fn model_before_correlation_is_not_a_match_and_stale_proofs_cannot_restore_match(
         pool: PgPool,

@@ -210,8 +210,14 @@ pub async fn list(
         three_source::list(&state.pool, q.request_id.as_deref(), q.limit.unwrap_or(50))
             .await
             .map_err(api_error)?;
+    let detectors: Vec<Value> = sqlx::query_scalar(include_str!("detector_view.sql"))
+        .bind(q.request_id.as_deref())
+        .bind(q.limit.unwrap_or(50))
+        .fetch_all(&state.pool)
+        .await
+        .map_err(api_error)?;
     Ok(Json(
-        json!({"items": items, "worker": worker, "delivery": delivery, "three_source":correlation, "mode": "shadow", "enforcement": "DISABLED", "GLU207": "CONTRACT_GATED_PER_REQUEST", "quality_scope": "Research score, not attack probability or Ground Truth"}),
+        json!({"detectors":detectors,"items": items, "worker": worker, "delivery": delivery, "three_source":correlation, "mode": "shadow", "enforcement": "DISABLED", "GLU207": "CONTRACT_GATED_PER_REQUEST", "quality_scope": "Research score, not attack probability or Ground Truth"}),
     ))
 }
 
