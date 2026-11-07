@@ -8,7 +8,8 @@ Milestone research trước: [Data quality và Oracle cohort](17_DATA_QUALITY_AN
 Milestone trước: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
 Milestone trước: [Final training unblock và pilot kỹ thuật](19_FINAL_TRAINING_UNBLOCK.md).
 Protocol: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPERIMENT.md).
-Kết quả hiện tại: [Scaled normalization — completed, candidate rejected](21_SCALED_NORMALIZATION_RESULTS.md).
+Kết quả model gần nhất: [Scaled normalization — candidate rejected](21_SCALED_NORMALIZATION_RESULTS.md).
+Milestone hiện tại: [Attack-intent dataset v1 — released, training blocked](22_ATTACK_INTENT_DATASET_V1.md).
 
 ## Repository, model release và dependencies
 
@@ -525,3 +526,40 @@ phải kiểm chứng thermal sustained dài.12prospective vẫn sealed vì cand
 không tiêu hao để tìm kết quả cứu candidate. Human review vẫnPENDING. Không promote,
 không đổi shadow model/threshold/policy. Checkpoints haiarms giữ local ở experiment
 root nêu trên; exact resume mới được chứng minh subset4updates, không full3072resume.
+
+## Attack-intent dataset v1 — 2026-11-07
+
+**CASE B: derivative dataset hoàn tất, chưa domain-adaptation training.** Dataset
+`attack-intent-v1-20261107`, fingerprint
+`fa9a2d87852afea879ed146d4bd8077e8a070d42337d6b36ffe836686a4fef5f`.
+Tái dùng206receipts hợp lệ/unknown có provenance, thêm18precommitted lab requests
+sau9Oracle preflight checksPASS. Không dùng publisher anomaly labels hoặc mởsealed12.
+
+224records:130BENIGN_INTENT/81ATTACK_INTENT/13UNKNOWN_INTENT;207internal Oracle
+verified,0independent human verification,224reviewPENDING. Outcomes:130benign success,
+51verified exploit successes,26unsafe reflections,17unknown; không gọi reflection
+là browser execution. New18:12benign/5attempts/1UNKNOWN,17Oracle matches.
+
+Giữ original roles:TRAIN63/CAL37/DEV124, cùng full-receipt và runtime-emulated
+tensors588 riêng. After strict exact/near/lineage quarantine cònTRAIN10/CAL13/DEV86.
+Runtime projection khớp actual worker envelope/model_record/tensor224/224; body=None,
+selected headers only. Fullview không có mixed-intent exact collision; runtimeview
+có2groups/35records chứa benign+XSS/SQLi. TRAIN sauquarantine thiếuXSS/cmd, benignPOST
+vàbenignview diversity. Không fit để tạo checkpoint trên contract mất thông tin.
+
+CAL có11benign+2attempts,8benign runtimeviews, form/JSON POST vàGET; đủminimum research
+coverage với limits. Frozen/runtime calibration-only trên P0 đều18/48attempts,
+0/59benignflags, XSS/cmd0/12; chưa có independent FPR≤1% hoặccross-domain evidence.
+Threshold deployment0.8826237917 giữ nguyên. 12prospective vẫn sealed; human review
+PENDING không bị dùng làm formal blocker tuyệt đối cho Oracle research.
+
+Private final release:`ai-training/.artifacts/attack_intent_20261107/release-v3/`.
+Public metadata:`ai-training/reports/ATTACK_INTENT_DATASET_20261107.json`.
+17tests/Ruff PASS; preflight/capture peak48/50°C, ownedlabs cleanup. Không training,
+promotion, newreleaseweights, AWS hoặc enforcement. Full artifacts/session/tensors
+local-only; frozen inference bootstrap giữ nguyên.
+
+Một nhiệm vụ kế tiếp: offline privacy-preserving body-syntax observability experiment
+trên hai mixed groups đã có, với allowlist/privacy canaries vàview/split checks;
+không tăng request count hoặc tự thay live telemetry. Xem tài liệu22 cho evidence,
+coverage, label tiers và hướng WARM_START có điều kiện.
