@@ -6,7 +6,8 @@ Model release frozen giữ nguyên. Không cần raw research20GB để chạy i
 Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
 Milestone research trước: [Data quality và Oracle cohort](17_DATA_QUALITY_AND_ORACLE_RESEARCH.md).
 Milestone trước: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
-Milestone hiện tại: [Final training unblock và pilot kỹ thuật](19_FINAL_TRAINING_UNBLOCK.md).
+Milestone trước: [Final training unblock và pilot kỹ thuật](19_FINAL_TRAINING_UNBLOCK.md).
+Milestone hiện tại: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPERIMENT.md).
 
 ## Repository, model release và dependencies
 
@@ -466,3 +467,41 @@ all own resources stopped. Frozen baseline/Rules/Web/Policy/release/bootstrap ng
 trạng, AI enforcement DISABLED. Raw/session/tensors/review/checkpoints mới local-only.
 Xem `docs/19_FINAL_TRAINING_UNBLOCK.md` và
 `ai-training/reports/FINAL_TRAINING_UNBLOCK_20261107.json` để kiểm chứng.
+
+
+## Scaled normalization experiment — 2026-11-07
+
+**Data/recovery/evaluation gates PASS, cấu hình đã khóa để launch nền.** Git report
+là prelaunch snapshot; dùng local`status.json`/status CLI làm runtime truth sau launch.
+Nguồn WAF publisher TRAIN/README/tensor còn sẵn, pin revision + SHA và MIT declaration.
+Reconstruction160,796views khớp original control bitwise. Không mở publisher heldouts.
+
+Fit cùng120,435TRAIN views (34,282NORMAL/86,153ANOMALOUS), không fit49Oracle labels.
+Không đổi original roles. Sau full-cosine≥.995 quarantine ở cả representations,
+CAL còn2,437(1,042NORMAL), DEV2,041(865NORMAL); nhiều near views cũ bị loại khỏi
+measurement. Đây là feature-near, không chứng minh physical duplicate transactions.
+
+Matchedcontrol dùng exact original rich-v2 sharedL2. Challenger cùng privacy/text/
+numeric/hash coordinates, chỉ đổi per-channelL2 trước finalL2; không dùngv3encoder
+pilot vốn thay thêmprivacy/hash layout. Cùng50,696parameters,seed31,initial arrays,
+batch256/lr0.001,3,072updates mỗiarm, finalcheckpoint-only; khôngloss-based selection.
+Native partial-binary task chỉpublisher NORMAL/ANOMALOUS,familyunknown; Oracle49TRAIN
+exposed diagnostics,12CAL và111P0DEV/Suricata riêng strata, không silent pool labels.
+
+Fresh-process recovery cả2arms first600realTRAIN,4updates cóepochwrap PASS bitwise.
+Full3,072-step resume chưa được thực nghiệm. Independent watchdog systemd + active
+rolling300s (không pha cooldown), cutoff90°C/active-limit80°C, reserve4GiB/shared30GB.
+Quota floor fix được probe trênmáy; trần conservative25% mộtCPU.52tests/Ruff PASS.
+
+Experiment local:
+`ai-training/.artifacts/scaled_normalization_20261107/scaled-normalization-20261107-v1/`.
+`plan.json`,`status.json`,arm`latest.json`,metrics và`resource/` chứa runtime/checkpoint.
+Source/config/dataset hashes được khóa trước fit. Không tự chạy evaluation hoặc mở
+prospective12 khi completion; chỉ mở một lần sau yêu cầu kiểm kết quả và khóa model/
+threshold. Publisher/Oracle/exposed/prospective/independentGT không gộp metrics.
+
+Xem`docs/20_SCALED_NORMALIZATION_EXPERIMENT.md` cho status/evaluation/resumecommands,
+corpus provenance và giới hạn. Research retention criteria không phải auto promotion.
+Frozen release/GLU207/Requestv2/encoders/thresholds/Web/Rules/Policy nguyên trạng,
+AI enforcement DISABLED; noAWS. Raw/tensors/weights local-only, team inferencebootstrap
+không cần download research corpus.
