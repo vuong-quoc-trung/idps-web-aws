@@ -1,0 +1,80 @@
+{
+  "schema_version": "research-experiment-design-1",
+  "experiment_id": "glu207-derivative-pilot-v1",
+  "status": "DESIGN_LOCKED_NOT_SCHEDULED",
+  "training_gate": "BLOCKED",
+  "hypothesis": "Diverse benign behavior and reviewed positive outcomes reduce shifted benign alerts beyond calibration-only while preserving positive-family sensitivity; not a claim of restoring unobserved payload syntax",
+  "reference": {
+    "model": "glu207-step652-e663b0979f6f",
+    "parameters": 9675784,
+    "spec_sha256": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+    "threshold": 0.5396780371665955,
+    "comparator": ">="
+  },
+  "derivative": {
+    "path": "ai-training/.artifacts/glu207_derivative_20261107",
+    "manifest_sha256": "60b9161ee28dfec4a604c5e074a1a734109c9038f64b4e757782b580f09a3d0c",
+    "rows": 41607,
+    "quarantined": 174,
+    "candidate_rows": 41433,
+    "label_tier": "Inherited research scenario/runner labels, no new approval",
+    "alone_sufficient": false
+  },
+  "comparators": [
+    "C0 frozen weights and threshold",
+    "C1 frozen weights; threshold from separate benign calibration only",
+    "C2 single bounded fine-tune, same architecture/spec and calibration rule",
+    "Rule-only on request-bound paired cohort when sensor observability permits"
+  ],
+  "data_roles": {
+    "train": "Explicit selected research rows plus diverse provenance-reviewed benign workflows/positive outcomes; UNKNOWN excluded",
+    "calibration": "Separate benign environment/time/workflow identities; never exposed P0/DVWA/current probes",
+    "evaluation": "New locked cohort >=2lab environments; dedup and group separation, embargo>=300s, attack attempts/outcomes separately defined",
+    "minimum_benign_per_eval_environment": 3000,
+    "positive_families": [
+      "sqli",
+      "xss",
+      "cmd_injection",
+      "path_traversal"
+    ],
+    "disclose_source_and_method_strata": true
+  },
+  "max_runs": 1,
+  "max_epochs": 1,
+  "max_updates": 250,
+  "seed": 17,
+  "optimizer_config": "NOT_LOCKED_UNTIL_RESUME_AND_DATA_GATE; do not execute this design as training config",
+  "promotion": {
+    "FPR_upper_95_percent_max": 0.1,
+    "family_recall_drop_max_percentage_points": 5,
+    "must_improve_over_calibration_only": true,
+    "uncertainty": "Paired, grouped by workflow/campaign/environment; insufficient group support => INCONCLUSIVE",
+    "if_calibration_only_equivalent": "Retain frozen weights"
+  },
+  "stop": [
+    "Thermal emergency or sensor loss => terminate, no automatic restart",
+    "Rolling>=80C or reserve/pressure violation => pause, no averaged-away emergencies",
+    "Nonfinite values, source/hash/causality/split conflict => fail closed",
+    "Budget exhausted or no development gain => stop; no repeated sweep"
+  ],
+  "resource_policy": {
+    "rolling_seconds": 300,
+    "target_rolling_C_below": 80,
+    "reduce_near_C": [
+      77,
+      78
+    ],
+    "instant_cutoff_C": 90,
+    "CPU_soft_target_fraction_of_host": 0.5,
+    "MemAvailable_reserve_GiB": 4,
+    "automatic_emergency_restarts": 0
+  },
+  "gate_blockers": [
+    "No separate representative benign calibration + newly locked multi-environment evaluation yet",
+    "P0/P0.5 DVWA111 remain development evidence, independent review PENDING; they do not supply GLU207 Student/207feature contract",
+    "Historical transaction IDs missing; quarantine resolves supervised selection conflicts, not original packet attestation",
+    "Exact resume not verified for historical frozen GLU run; verify bounded new-run checkpoint/optimizer/RNG/sampler round-trip before training",
+    "Persistent training supervisor/checkpoint/status writer not exercised for this proposed run; do not launch a placeholder job"
+  ],
+  "quality_claims": "No Recall/FPR/generalization improvement claim; no threshold tuning or training in this engineering milestone"
+}
