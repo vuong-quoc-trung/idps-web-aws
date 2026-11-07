@@ -598,3 +598,49 @@ không đổi; chưa re-audit candidate split/coverage, không training-ready t�
 Một nhiệm vụ kế tiếp: opt-in real ingress integration verification với canary
 non-persistence qua buffering và candidate-worker delivery, giữ identity exclusions
 và frozen path. Xem tài liệu23; team clone/bootstrap/frozen models/local demo giữ nguyên.
+
+## Real-ingress lab Nginx preflight fix — 2026-11-07
+
+**NGINX_PREFLIGHT=PASS; REAL_INGRESS/PRODUCTION_PRIVACY=NOT_VERIFIED.** Chỉ sửa và
+kiểm tra preflight; chưa chạy full OFF/ON acceptance, không attack probes/training.
+Ba source/test files của phiên gián đoạn được giữ và tiếp tục sử dụng; full ingress
+harness vẫn experimental, không được bootstrap tự động hoặc coi là đã kiểm chứng.
+
+Root cause đã tái hiện trên isolated Nginx **1.28.3 (Ubuntu)**, exit1:
+`mkdir() "/var/lib/nginx/fastcgi" failed (2: No such file or directory)`.
+Cú pháp config hợp lệ; binary đóng gói có compiled-in absolute FastCGI/SCGI/uWSGI
+temp paths. `-p` không chuyển các absolute defaults này vào lab. Generator trước đó
+chỉ override body/proxy temp paths, nên `nginx -t` vẫn thử tạo system temp directory
+dù không có FastCGI upstream. Không phải lỗi Rules maps hoặc Unix upstream socket.
+
+`ai-training/scripts/validate-real-body-ingress.py` nay dùng chung deterministic
+generator với đủ5temp paths trong output riêng: body/proxy/fastcgi/scgi/uwsgi.
+Không tạo `/var/lib/nginx`, không sudo, không sửa Nginx global/production. Preflight
+lưu run ID, exact argv/cwd, exit code, config/binary SHA256, bounded stdout/stderr
+(redact credential-bearing lines) và failure category vào local diagnostic directory;
+FAIL/timeout dừng với đường dẫn evidence, trước HTTP traffic.
+
+Chạy riêng preflight bằng output **mới**, không cần runtime/secrets hoặc services:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+ai-training/.venv/bin/python ai-training/scripts/validate-real-body-ingress.py \
+  --nginx-preflight-only --output "$PWD/.local-dev/nginx-preflight-check-01"
+```
+
+Chế độ này giữ candidate OFF, không tạo listener/worker/container và không gửi HTTP.
+Binary lab phải tồn tại tại `.local-dev/foundation/tools/runtime/usr/sbin/nginx`;
+không fallback vào Nginx của hệ thống. Không kết hợp với `--enable-body-syntax`.
+
+Verification: actual `nginx -t` exit0 qua nhiều lần kiểm tra; 7targeted tests PASS
+(bao gồm actual valid/invalid preflight, timeout/redaction, deterministic paths,
+default OFF và các ingress unit tests trước đó); Ruff/syntax/import PASS.
+Guard25% của1CPU, RAM cap2GiB, reserve4GiB; peak51°C, active average50.28°C trên
+4.92giây quan sát, không phải bằng chứng thermal endurance300giây. Guard cleanup
+hoàn tất; không còn test listeners/workers. Frozen/data/source protected34checksums
+PASS; prospective seal chỉ kiểm checksum, không mở nội dung. PostgreSQL volume và
+ignored historical research artifacts giữ nguyên. Diagnostics local-only:
+`.local-dev/nginx-preflight-20261107/` (reproduce/, fixed-v1/, test-guard/).
+
+Next action duy nhất: bounded real-ingress OFF/ON privacy acceptance trong yêu cầu
+tiếp theo. Preflight PASS không chứng minh live parity hoặc end-to-end privacy.
