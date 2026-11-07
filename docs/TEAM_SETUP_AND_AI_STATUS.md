@@ -1,9 +1,9 @@
 # Team setup và trạng thái AI-IDPS
 
-Cập nhật 2026-11-06. Tài liệu phản ánh integration candidate local, **chưa commit/
-push các thay đổi mới**. Remote branch hiện chưa tự chứa working tree này; người
-bàn giao phải review/commit/push được cho phép trước khi yêu cầu đồng nghiệp clone
-để tái lập milestone mới. Không tải raw research20GB để chạy inference.
+Cập nhật 2026-11-07. Integration branch chứa các milestone local shadow, three-source
+và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
+Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
+Báo cáo hiện tại: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
 
 ## Repository, model release và dependencies
 
@@ -76,7 +76,7 @@ Mở terminal riêng, sau foundation và kiểm nhiệt an toàn:
 
 ```sh
 ai-training/.venv/bin/python ai-training/scripts/integration-guard.py \
-  --scope --output .local-dev/ids-guard-demo --quota 5 --max-seconds 1800 -- \
+  --scope --output .local-dev/ids-guard-demo --quota 100 --max-seconds 1800 -- \
   ai-training/.venv/bin/python scripts/three-source-shadow.py host \
   --output .local-dev/ids-demo \
   --sensor-runtime "$PWD/.local-dev/suricata-runtime"
@@ -136,9 +136,9 @@ Sau khi source/feature checks PASS, terminal riêng chạy consumer được gua
 
 ```sh
 ai-training/.venv/bin/python ai-training/scripts/integration-guard.py \
-  --output .local-dev/glu-guard-demo --quota 5 --max-seconds 900 -- \
+  --output .local-dev/glu-guard-demo --quota 100 --max-seconds 900 -- \
   ai-training/.venv/bin/python scripts/glu207-live-shadow.py \
-  --sensor .local-dev/ids-demo --output .local-dev/glu-demo --max-requests 12
+  --sensor .local-dev/ids-demo --output .local-dev/glu-demo --max-requests 16 --since-now
 ```
 
 Chỉ MATCHED không late mới được xét; frozen collector còn phải xác nhận đủ ba
@@ -153,12 +153,34 @@ Model `glu207-step652-e663b0979f6f`,9,675,784parameters. Ngưỡng frozen
 0.5396780371665955, comparator`>=`, **PROVISIONAL_BENIGN_ONLY**. Hai model hiển thị
 riêng; không fusion, blocking, firewall hoặc sửa security policy.
 
-Đây là **bounded asynchronous shadow consumer**, chưa phải continuous low-latency
-serving: snapshot/collector/history replay có overhead lớn, nhất là quota5%.
-Đừng nhầm inference-only latency với event-to-result latency. Collector status
-JSON không phải heartbeat của GLU worker riêng; xem journal/API và resource report.
-Run12requests: predict-call280–357ms, nhưng event-to-result159–542s, mean381s.
-Chưa đạt yêu cầu phục vụ liên tục. Không tự tăng tải để che bottleneck này.
+Đây là **bounded asynchronous shadow consumer**. Snapshot bất biến được collect
+một lần/batch; các target có cùng tập completed-flow receipt được dùng chung kết
+quả frozen collect. Công thức feature/history không thay đổi, chưa tạo state engine
+mới. Mỗi input ONNX vẫn được kiểm parity trước khi publish.
+
+Benchmark12requests cùng snapshot/quota100% của **một CPU**: reference18.42–19.11s,
+cache3.69–3.81s, nhanh4.83–5.18lần; exact207vectors và scores. Đây không phải so sánh
+trực tiếp với run quota5% trước. Probe mới qua HTTP tới API có GLU sau3.30–3.34s
+(n=2); chưa là sustained-load SLA. Predict-call và end-to-end phải báo riêng.
+Collector status không phải GLU heartbeat; xem journals/API, batch profile và guard.
+
+## Rules + AI coordination
+
+Security Web → AI shadow có bảng **Rules và AI trên cùng transaction**. API
+`/api/ai-shadow` thêm `detectors`; các bảng/fields cũ vẫn giữ. Request ID hoặc
+sensor-generation/flow/tx là basis; không join bằng IP/time. Late alerts tự xuất
+hiện khi API được đọc lại, không tạo alert tổng hợp hoặc weighted fusion.
+
+- Rule alerts giữ source, severity/action/timestamp hiện có. Nginx-source alerts
+  do Rust signatures/edge hints phát hiện; Suricata-native alerts giữ SID.
+- Request v2/GLU giữ score, threshold/comparator, model version và timestamp riêng.
+- Thiếu inference là MISSING_INFERENCE/NOT_READY, không phải benign.
+- Flow-only alert là context, không tính thành request alert; AMBIGUOUS không join
+  sensor transaction hoặc hiển thị score GLU từ proof cũ.
+- “Chỉ thấy AI/Rules cảnh báo” mô tả evidence quan sát, không chứng minh detector
+  còn lại đã đánh giá âm tính. GLU dùng Suricata-derived metadata, không là phiếu độc lập.
+- Migration0007 tự tạo metadata links cho events mới; alert cũ thiếu transaction
+  metadata không được tự suy link. Chúng vẫn còn trong quản lý cảnh báo.
 
 ## Kiểm tra và quan sát
 
@@ -166,6 +188,9 @@ Chưa đạt yêu cầu phục vụ liên tục. Không tự tăng tải để c
 ai-training/.venv/bin/python scripts/test-three-source.py
 python3 scripts/verify-three-source.py --sensor .local-dev/ids-demo
 python3 scripts/verify-ai-local.py
+# Sau three-source acceptance, khi GLU consumer còn đủ request budget:
+python3 scripts/verify-detector-coordination.py --sensor .local-dev/ids-demo \
+  --output .local-dev/detector-proof-demo.json
 ```
 
 Security Web → **AI shadow** → correlation ba nguồn/GLU207 và bảng RI riêng.
@@ -234,8 +259,8 @@ minh giá trị phát hiện tấn công bổ sung độc lập so với RIv2/Su
 
 Nhiệt độ đã chạm86°C trong lần Rust test đầu, vượt yêu cầu80°C. Watchdog kill
 workload; sửa lỗi ưu tiên KILL/FREEZE và kiểm lại gate. Các run sau tối đa60–68°C,
-nhưng không tuyên bố host luôn an toàn; full56Rust tests chưa hoàn tất do thermal
-stop/deadline. Không tự đóng user apps hoặc tăng quota để vượt gate. Total shared
+nhưng không tuyên bố host luôn an toàn. Full56Rust tests của milestone2026-11-06
+chưa hoàn tất do thermal stop/deadline; milestone2026-11-07 đã chạy full57/57PASS. Không tự đóng user apps hoặc tăng quota để vượt gate. Total shared
 RAM vẫn30GB, các resource reports ghi peak khoảng11.88GB.
 
 Backend restart kiểm lại đủ12GLU scores,29correlations và32alerts không tăng/mất;
@@ -256,3 +281,48 @@ tư training lớn.9.68Mparameters đã gần mục tiêu10M; nút thắt là d�
 khả năng đánh giá, không phải thiếu số tham số. Thí nghiệm tiếp theo cần precommit
 hypothesis, fixed baseline, train/cal/eval tách biệt và tiêu chí dừng; xem báo cáo
 `ai-training/reports/THREE_SOURCE_INTEGRATION_20261106.json`.
+
+## Resource policy hiện hành và background training
+
+Policy cũ79/80°C trong báo cáo2026-11-06 là lịch sử. Guard mặc định hiện dùng
+rolling300s time-weighted average<80°C; reduce gần77°C, pause>=80°C, thêm pause sớm
+khi nhiệt tức thời/rate tăng nguy hiểm. Emergency cutoff90°C (device coretemp critical
+quan sát105°C); sensor/monitor heartbeat lỗi cũng kill. Không auto restart emergency.
+Active/pause averages, CPU utilization/throttling, MemAvailable, cgroup memory,
+PSI/swap/OOM events và sensor health được ghi vào `resource-status.json` atomic,
+`samples.jsonl`, `resource-report.json`. Không dùng cooldown để làm đẹp active average.
+
+CPUQuota tính theo **một CPU**, không theo phần trăm toàn host.100%=một CPU; guard
+cho phép ceiling tới50% tổng CPUs và giảm theo nhiệt/tải từ app khác, không ép đạt
+50%. Các run kiểm dùng ceiling100% và threads1, affinity tối đa8CPU; tăng concurrency
+cần đo riêng. `--policy legacy` chỉ tái lập policy cũ. Không sửa firmware/OS protection.
+
+`--memory-gib` là cgroup ceiling (mặc định4GiB), được hạ theo MemAvailable để giữ
+reserve4GiB và shared30GB. Không có cap16GB; không hứa cấp đủ giá trị request nếu
+host thiếu headroom. PSI/full hoặc swap-I/O cao cũng pause. Không tự đóng user apps.
+
+```sh
+cat .local-dev/glu-guard-demo/resource-status.json
+cat .local-dev/glu-guard-demo/resource-report.json
+systemctl --user list-units 'idps-integration-*'
+```
+
+**Không có training job mới đang chạy.** Derivative local:
+`ai-training/.artifacts/glu207_derivative_20261107/manifest.json`:
+41,607train rows,174quarantine,41,433research candidates; separate application/wire
+status, giữ original features/history/missingness và inherited label tier. Không
+đưa derivative/raw evidence này lên public; clone không tự có restricted train data.
+
+Thiết kế tối đa một pilot ở
+`ai-training/configs/research/glu207-derivative-pilot-v1.json`; trạng thái
+DESIGN_LOCKED_NOT_SCHEDULED, **không phải executable training configuration**.
+Chưa có calibration/evaluation mới đa môi trường hoặc new-run exact-resume test.
+P0 DVWA111requests vẫn exposed development/independent-review PENDING và không có
+GLU207 fused contract; không ép chúng vào training207features.
+
+Không có lệnh resume mới hợp lệ để team chạy ở thời điểm này. Historical GLU cần
+pinned revision/dataset như release notice; không tuyên bố RESUME_EXACT. Khi gate
+đủ, run mới phải khóa config/dataset, kiểm checkpoint round-trip rồi mới dùng
+persistent systemd supervisor + atomic status/checkpoints. Không tạo job giả chỉ để
+có RUNNING; không để Codex polling một training dài. Chi tiết blocker và proposal
+trong báo cáo milestone hiện tại.

@@ -1,0 +1,632 @@
+{
+  "schema_version": "rule-ai-engineering-milestone-1",
+  "date": "2026-11-07",
+  "scope": "Local plaintext lab, bounded shadow and train-only derivative; no sustained training, independent quality certification or production readiness",
+  "baseline_commit": "75ad32dab2177538ee800e32d72790a3308a30f1",
+  "branch": "feature/ai-idps-shadow-integration",
+  "git_handoff": "Source/tests/config/aggregate docs only; latest revision determined by git log; no main merge or force push",
+  "status": {
+    "RULE_AI_COORDINATION": "VERIFIED_BOUNDED_LOCAL",
+    "GLU207_FEATURE_AND_SCORE_PARITY": "PASS",
+    "RUNTIME": "MEASURED_IMPROVEMENT_NOT_SUSTAINED_SLA",
+    "DERIVATIVE": "PREPARED_RESEARCH_ONLY",
+    "HISTORICAL_PROVENANCE": "PARTIAL",
+    "RESOURCE_GUARD": "BOUNDED_VERIFIED_NOT_SUSTAINED_TRAINING_QUALIFIED",
+    "TRAINING_GATE": "BLOCKED",
+    "BACKGROUND_TRAINING": "NOT_STARTED"
+  },
+  "coordination": {
+    "API": "/api/ai-shadow detectors, existing fields retained",
+    "rule_link": "Application request ID; Suricata strict sensor_generation/flow/tx only if MATCHED; flow-only kept context",
+    "late_reconciliation": "Read latest correlation and joined detector observations on each API poll; no aggregate alert duplication",
+    "states": [
+      "RULE_AND_AI_ALERT",
+      "AI_ALERT_ONLY_OBSERVED",
+      "RULE_ALERT_ONLY_OBSERVED",
+      "NO_ALERT_OBSERVED",
+      "INCOMPLETE_DETECTOR_EVIDENCE",
+      "UNCERTAIN_CORRELATION"
+    ],
+    "limitations": [
+      "Only observed is not a negative evaluation by other detectors",
+      "Legacy alerts with missing transaction metadata remain unlinked; no backfill guesses",
+      "GLU uses Suricata-derived data, not independent detector votes",
+      "No weighted fusion or new AI enforcement path",
+      "Cases tested do not imply all rules/environments exercised"
+    ]
+  },
+  "actual_tests": {
+    "real_HTTP": "Single,4concurrent,keepalive tx0/1/2, sensor outage/restart, dummy-secret privacy",
+    "native_SID1000002": "tx1 only",
+    "native_SID1000005": "tx2 only",
+    "flow_threshold": "flow context only, never request label",
+    "Nginx_Rust_rules": "Source attribution retained separately",
+    "missing_sensor": "HTTP200, MISSING_SOURCE, GLU absent",
+    "authenticated_API": "PASS; unauth401",
+    "real_EVE_metadata_replay_alert_counts": [
+      [
+        38,
+        38
+      ],
+      [
+        43,
+        43
+      ]
+    ],
+    "restart": {
+      "status": "PASS",
+      "before": {
+        "request_correlations": 56,
+        "glu207_shadow_results": 24,
+        "security_alerts": 43,
+        "detector_alert_links": 8
+      },
+      "after": {
+        "request_correlations": 56,
+        "glu207_shadow_results": 24,
+        "security_alerts": 43,
+        "detector_alert_links": 8
+      },
+      "new_live_probe_results_preserved": 2,
+      "scope": "backend restart, not host power-cycle"
+    },
+    "automatic_firewall_actions": 0,
+    "UI": "Verified filtered transaction shows Rules+RIv2+GLU207 with generation/flow/tx/thresholds/timestamps, screenshot/AX retained",
+    "scope": "Attempt-shaped inputs only, no exploit-outcome or independent GT claim"
+  },
+  "runtime": {
+    "optimization": "Immutable batch frozen collect cache keyed by exact eligible flow receipt set; max32variants. Frozen formulas unchanged, causal prefix replay retained; no new state engine",
+    "measurement_protocol": "Paired12targets same snapshot/process/cgroup quota100%ONECPU, inverse arm order repeated; not comparison to previous quota5%live run",
+    "paired_runs": [
+      {
+        "reference": {
+          "wall_seconds": 19.111378312000056,
+          "cpu_seconds": 12.660524175,
+          "requests": 12,
+          "throughput_requests_per_second": 0.6278980340415043
+        },
+        "cached": {
+          "wall_seconds": 3.6883010899999817,
+          "cpu_seconds": 3.1124405179999997,
+          "requests": 12,
+          "throughput_requests_per_second": 3.253524461439878,
+          "frozen_collect_calls": 3
+        },
+        "wall_speedup": 5.181620980948752,
+        "exact_feature_and_score_parity": 12
+      },
+      {
+        "reference": {
+          "wall_seconds": 18.418609868999965,
+          "cpu_seconds": 12.718831927,
+          "requests": 12,
+          "throughput_requests_per_second": 0.6515147231582072
+        },
+        "cached": {
+          "wall_seconds": 3.814476658999979,
+          "cpu_seconds": 3.1274373749999995,
+          "requests": 12,
+          "throughput_requests_per_second": 3.1459068506477417,
+          "frozen_collect_calls": 3
+        },
+        "wall_speedup": 4.828607307254745,
+        "exact_feature_and_score_parity": 12
+      }
+    ],
+    "collect_calls": {
+      "reference": 24,
+      "cached": 3
+    },
+    "profile_means": {
+      "reference": {
+        "history_prefix": {
+          "n": 12,
+          "wall_ms_mean": 159.87230866665905
+        },
+        "feature_extract": {
+          "n": 12,
+          "wall_ms_mean": 0.12005566667501928
+        },
+        "feature_transform": {
+          "n": 12,
+          "wall_ms_mean": 0.1850345832963285
+        },
+        "onnx_inference": {
+          "n": 12,
+          "wall_ms_mean": 11.408008833332891
+        }
+      },
+      "cached": {
+        "history_prefix": {
+          "n": 12,
+          "wall_ms_mean": 131.55599408333765
+        },
+        "feature_extract": {
+          "n": 12,
+          "wall_ms_mean": 0.11190966664761011
+        },
+        "feature_transform": {
+          "n": 12,
+          "wall_ms_mean": 0.18389491666918426
+        },
+        "onnx_inference": {
+          "n": 12,
+          "wall_ms_mean": 11.20725299998071
+        }
+      }
+    },
+    "live": {
+      "scored_requests_with_actual_ONNX_input_parity": 14,
+      "scores_min": 0.14004456996917725,
+      "scores_max": 0.8872689008712769,
+      "above_frozen_threshold": 6,
+      "prior_flow_observed": 7,
+      "event_to_score_proof_seconds": {
+        "n": 14,
+        "min": 1.2436530590057373,
+        "mean": 2.3716821329934255,
+        "max": 3.8592162132263184
+      },
+      "separate_live_API_probes": [
+        {
+          "event_to_correlation_seconds": 0.11510491371154785,
+          "event_to_score_record_seconds": 2.1946399211883545,
+          "HTTP_start_to_API_visible_seconds": 3.3360941410064697,
+          "note": "API observation includes polling; source event clocks on same host, not instrumented DB insert latency"
+        },
+        {
+          "event_to_correlation_seconds": 0.08623600006103516,
+          "event_to_score_record_seconds": 2.431835174560547,
+          "HTTP_start_to_API_visible_seconds": 3.301251173019409,
+          "note": "API observation includes polling; source event clocks on same host, not instrumented DB insert latency"
+        },
+        {
+          "event_to_correlation_seconds": 0.046906232833862305,
+          "event_to_score_record_seconds": 1.9184491634368896,
+          "HTTP_start_to_API_visible_seconds": 2.6900806427001953,
+          "note": "API observation includes polling; source event clocks on same host, not instrumented DB insert latency"
+        },
+        {
+          "event_to_correlation_seconds": 0.021670103073120117,
+          "event_to_score_record_seconds": 2.1586101055145264,
+          "HTTP_start_to_API_visible_seconds": 2.6597044467926025,
+          "note": "API observation includes polling; source event clocks on same host, not instrumented DB insert latency"
+        }
+      ]
+    },
+    "limits": [
+      "Frozen collect wall/CPU covers parsing, SQL fusion, parquet IO/read together; not separately instrumented each decoder/SQL statement",
+      "History replay still about132-160ms per target in paired snapshot; future incremental engine only if next workload justifies",
+      "API visibility measured by bounded polling, not exact DB latency; UI refresh3s adds delivery delay not measured as SLA",
+      "No p95 claim from n12 replay/n2perliveprobe; no sustained-load claim",
+      "Warm/pagecache/shared host effects not fully isolated; both arm orders retain exact parity",
+      "Availability gate selects prior completed flow; no compulsory65s wait for current request, missing flow encoded explicitly"
+    ]
+  },
+  "data_derivative": {
+    "status": "PREPARED_NOT_TRAINING_ADMITTED",
+    "partition": "train only; no sealed holdout/evaluation opened",
+    "rows": 41607,
+    "classification": {
+      "CONSISTENT": 41433,
+      "APPLICATION_WIRE_STATUS_CONFLICT": 174
+    },
+    "supervised_candidates": 41433,
+    "impact_by_method_family_label": {
+      "retained|GET|benign|label=0": 16108,
+      "retained|POST|benign|label=0": 1897,
+      "retained|GET|scanner_recon|label=1": 1728,
+      "retained|GET|xss|label=1": 1728,
+      "retained|HEAD|benign|label=0": 5367,
+      "retained|GET|sqli|label=1": 1728,
+      "retained|GET|path_traversal|label=1": 1728,
+      "retained|PUT|benign|label=0": 220,
+      "retained|GET|cmd_injection|label=1": 1728,
+      "retained|OPTIONS|benign|label=0": 5446,
+      "quarantine|PATCH|benign|label=0": 174,
+      "retained|PATCH|benign|label=0": 70,
+      "retained|DELETE|benign|label=0": 229,
+      "retained|POST|brute_force|label=1": 1728,
+      "retained|GET|behavioral_anomaly|label=1": 1728
+    },
+    "source_hashes": {
+      "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5/dataset_manifest.json": "0c1a5ca3523c8ff769148766cee152d0a47c62c012a08200f0586f2349ee221e",
+      "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5/feature_spec.json": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580",
+      "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5/requests.parquet": "d04633aaea53bd34490faafd94d446701c7b8cf80a69d50d763e949516f93784",
+      "ai-training/.artifacts/scale_upgrade_20261030/prepared-v5/features.parquet": "7e02bbbc66621560a23beb3c80c1d8c1bf790aba0e012df93c1d3c9ec7edfb5e",
+      "ai-training/.artifacts/upgrade_20261030_deep/dataset-ready/collected/observations.parquet": "8f3405dad8d0817cd5a97b2c922c35af88f64e78183c010e984db7f58979f10a"
+    },
+    "files": {
+      "source_semantics.parquet": "88a7e7aad85c5aed12e8092dfdaa6a3b3e720b5335cc4f56d289d49a4ec65691",
+      "quarantine.jsonl": "ab59d90d5367afa0ef8896f2658144bf48e13afd98bbbb7404e168c260e9be42",
+      "requests_train.parquet": "226391c49763d0d1f4ec571a1a8475a8c3112a4f1750f47699068c105faa099c",
+      "features_train.parquet": "30009ac837400c0b2dd6939c085d5790673c3234eb5aa691eaa41879d552faf3",
+      "feature_spec.json": "3f7fe0a8c53d9aacadd5bc4e6070fb1a0f6de2b6a0f4bf208d686e83b5c1c580"
+    },
+    "frozen_unchanged": true,
+    "limits": [
+      "174 conflicts quarantined from supervised candidate selection, retained for history/provenance/impact analysis",
+      "Existing features copied exactly, not refitted. Other rows can retain historical contribution of quarantined requests; this is documented, not claimed full removal",
+      "Application405/wire403 lifecycle cause not reproduced; no outcome/attack/label correction inferred",
+      "Historical native tx_id unavailable, not invented",
+      "Labels inherited from scenario/runner research evidence; no independent review or formal admission claimed",
+      "No new calibration/evaluation datasets supplied; this derivative alone is insufficient to launch the proposed challenger"
+    ]
+  },
+  "data_quality_decision": {
+    "status_conflict_cause": "UNRESOLVED; sameID/method/route, app405/wire403; no demonstrated cross-request mix, no relabeling",
+    "unknown_supervised_labels": "Not introduced",
+    "P0_DVWA": "111exposed development requests, independent review PENDING; no fused207contract, not admitted or used to tune/train GLU",
+    "formal_admission_changed": false,
+    "source_method_shortcuts": "Scenario/method/family confounding possible; not proven learned shortcut",
+    "no_new_multienvironment_GT_collected": true
+  },
+  "resources": {
+    "policy": "rolling300s time-weighted<80C; reduce>=77C; pause>=80C or early unsafe instantaneous/rise; independent instantaneous90C cutoff, sensor/heartbeat fail-closed; zero emergency autorestarts",
+    "observed_device_coretemp_critical_C": 105,
+    "CPU": "Soft adaptive50%host ceiling, adjusts for external utilization; measured jobs100%oneCPU not50%host; threads1/affinity<=8",
+    "RAM": "4GiB MemAvailable reserve, dynamic4GiBdefault cgroup ceiling, no16GiBcap, shared30GBbudget; PSI/swap/OOM monitored; pressure pauses",
+    "peak_CPU_C_successful_workloads": 60.0,
+    "peak_host_used_bytes_successful_workloads": 14889521152,
+    "peak_cgroup_bytes_successful_workloads": 1308950528,
+    "sensor_run": {
+      "current_c": 48.0,
+      "rolling_300s_c": 50.32804026709665,
+      "full_run_time_weighted_c": 49.98239373365686,
+      "active_time_weighted_c": 49.98239373365686,
+      "paused_time_weighted_c": null,
+      "active_seconds": 558.9135836739999,
+      "paused_seconds": 0.0,
+      "window_seconds": 300.0,
+      "sensor_health": "OK"
+    },
+    "emergency_stops_observed": 0,
+    "validation_limits": [
+      "No forced90C hardware test; emergency/cooldown/sensor/pressure branches tested with fixtures",
+      "Active means unfrozen workload interval, includes waiting; not a busy-training-only average",
+      "Full300s window observed on mostly low-load559s sensor run; not sustained-training qualification",
+      "No absolute guarantee against host spikes or heat from other apps"
+    ]
+  },
+  "tests": {
+    "full_Rust": {
+      "passed": 57,
+      "failed": 0,
+      "final_log": ".local-dev/coordination/rust-tests-final/stdout.log"
+    },
+    "frontend": 3,
+    "launcher": 7,
+    "worker_contract": 4,
+    "correlation_causality": 11,
+    "resource_and_candidate": 13,
+    "Rust_build": "PASS final source; final full57Rust tests also PASS",
+    "UI_build": "PASS",
+    "ruff": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "failed_or_invalid_attempts": [
+    "InitialUIbuild missing nodePATH in systemd; explicitPATH propagation and clear missingcgroup error fixed; logs kept",
+    "Initialreversebenchmark wrong journal path; inputmanifest fixed; logs kept",
+    "Firstrestart probe overlapped RI HTTP acceptance; invalid count comparison retained; sequential repeatPASS",
+    "Sensor guard intentional signal2 at handoff, not thermal crash"
+  ],
+  "preservation": {
+    "frozen_integrity": {
+      "status": "PASS",
+      "verified_frozen_files": {
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/manifest.json": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/arrays.npz": "649d7f8c6e798894ee4efb51819bd93a73f819f0bce668324b7c9107c10317d6",
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/run/checkpoints/step-000000000652-90272717f88f/state.json": "979707c3ed463f0fb512053d94cae6a5462c1f0a6f3d6f49b24896c892e60af1",
+        "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/manifest.json": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+        "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/arrays.npz": "d2d6130d7e7e8a5b3d411bab1ac1739257c933adfbaa956184719937c34e8820",
+        "ai-training/.artifacts/request_intelligence_v2_20261104/run/model/checkpoints/step-000000003072-12c65f8b33b4/state.json": "6f628a4541b0980e46d4eb47f89d72bb92cc9f7e8d0e655de8bd428cf1c961e7",
+        "ai-training/.artifacts/research_glu207_bounded_final_20261104/research-final.onnx": "724692e045dc3a306f27926ef46bd114d8073b93b894812225dd9968c1cd2b14",
+        "ai-training/.artifacts/bc27_1104/threshold-manifest.json": "d7b00aa9905400b583015452599bbb452a5009ea1e9099c9fc62eb1cd6efced2",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/README.md": "8a86c544dfa26eae44975f29db1a041f48433455c5f0ffb253cac3c98a5bd856",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/checkpoint/arrays.npz": "d2d6130d7e7e8a5b3d411bab1ac1739257c933adfbaa956184719937c34e8820",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/checkpoint/manifest.json": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/checkpoint/state.json": "6f628a4541b0980e46d4eb47f89d72bb92cc9f7e8d0e655de8bd428cf1c961e7",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/evaluation-evidence.json": "a632e8d22cc32180ac06066fadb921fb8edbd00fb243b7cf369688bbd6eb786d",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/feature-contract.json": "c5ee3fc921598c4bc916fab8cf7936360c40384153a39886e4dffae53b5962af",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/infer.py": "d2f9f4074a364f9161249b238f3f23512718078f4fc121aea74b08db498c1d73",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/model.onnx": "10e07e0c597ce335d615add98f5db47da864beba6f0b5063575d8463e87396eb",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/new-training-plan-evidence.json": "f5d43a7234ec8c35602d9a8241dff487df0fb1bef3fc68829f9f00ef43cd1e36",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/onnx-parity.json": "ebbd556bc23d6cc52da8a2d097737ee505e02564e78e88a51c3c2144feb0ec50",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/__init__.py": "36b0a60c550dda52603dc8dff9dc03f886128f62a026f3056c0fc6120b438c1d",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/__main__.py": "1f6b201e6bdec3a7fff519d2f330e879b821be2e8e9e32ad1d4f03cc8e4d7ef1",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/cli.py": "142ab6187f9612b3ae076a3f33b10b7e212c714ff56df37fd796817cd9d9a056",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/common.py": "1e29c930289893f93e3320ee0f616d8afa0582e02aa72195c8ec2d83614e0dbc",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/__init__.py": "25c7640380dfa39e60ffd043ee6b369f0755c95e760e820a234f4e9a8f10fa05",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/assembly.py": "a4f036e616644937e3442c76a16d6dda9dfea65905d879ccefaa6914bf1210bc",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/baseline.py": "da29d8572a798def34d5285b76ad63780c94e6efe7cf15e73de4acae295d00e9",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/campaigns.py": "e7e6227f1a3ed8a11e4031b99779522ff9ad983291ebedc65eadf1da3de5e8cc",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/capacity.py": "c8bc3a37374fcac56dfcca05d562403f8d820380d0d71df5f434b6030f7cc524",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/corpus.py": "c6149bf1273bf69372c0b4dcbdf4d76f47ea1893641f891027159303c1aeee16",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/curated_split.py": "7056368a59d509a8e3027fc1515c78a3d2059f7cd6fbd5704db981a93b5250d6",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/dataset.py": "52f3cde6edd7faac1d801e9608514fefcfc6dbf9b081e4dc4d241540cf14bea1",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/dev_oracle_pilot.py": "38bad2afe8892d9d99df11dd24d3d34034e2c55430f8de222269a5a73895feb8",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/evidence_campaign.py": "30c5eee796b6a6544eebabb7268f24a135614efa5d5d9b6905cad9e8c367174e",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/http_benchmark.py": "bbd3d576093faa78d64d6c9c8485eb9614283702c08de1e4e53610def1e06e3a",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/http_curation.py": "cdf6610e526493a56f5667b0c5dce0fc4ac775ea9a17cdd3a8c8b303aba5f44b",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/lab_capture.py": "9bf92eb7e2f4feb895e6bc2663858d2d83582bf753c90cf582fc188c2ca14288",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/lab_runtime.py": "7c437a1e30a3f38be66355591e23a2b02c3a650f51d9fa6f19791dd2df39090b",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/label_evidence.py": "c26a688ae7a521683985590ee58e136f6ac0931f610517643e1c6643786d144e",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/pcap_http_evidence.py": "d1993ef51d462277b288adb10b977ceb5463465fe1897c5870ea4c305b11c775",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/pretrain.py": "1b2d90d932d412717771f4a0df751ca548a428395a9f5af3c8ba8f5064ee03c3",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/privacy.py": "dfcccab19a0a335872aa1bedbb5bb5b53877cc513578e98f5d09a6f9bd80c1c8",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/protocol_ground_truth.py": "c4d1a9b03098ae1012d8a72f85254d25870f12b26c0ff0cadb00079bb7651c11",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/provenance.py": "172a79515a6727df6765e443afaa38fa5422e86552072ea4eefebb05a555ce8a",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/query_numeric.py": "bdd48b26990620fe290df1a9da97a9c2d508448bb0d78a26471653d88e8b0638",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/readers.py": "d6a86936211dcfc74cce1cb2771bcbc6bba164395ec8dd64400f7b6f4c5a0cef",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/readiness.py": "fc9cc725b802a1cfa7c48508281b95ea5275d3dfc13845592a6cd834c3dd963d",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/real_http.py": "07396e13a40a7b34ba1867ccc4e572619238090cebcee672c3451ae40066dff4",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/request_campaigns.py": "d2a7f0bfd888a248b967c1d36be5a54380c1ecf648307a81aa21adf980803f6a",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/request_corpus.py": "1b131be4e807e6c121f91d451b02fc65a9229d8f71d5e0eaf6d23f19b5182d8a",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/review.py": "e4d04e2c273f33d1ede71942a87ae602748e13d88b5980c331e5c2c0bf6dddf7",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/scenario_data.py": "29bf5cc67f8a6cc55051f866a6ce84c7ea5ebb8fd203a8c4c497949d72c51c7c",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/sensor_decode.py": "eff69eb7a0062316351d4790707ddbc090f4b05bcc551a21fa0413e8d604bc2b",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/sensor_lab.py": "af9b38148b5d0cc4c38f7485ac847131d5a7cc42b6506b3763dcc7767f77074b",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/snapshot.py": "1ec3aa32fbfb1d872a078375768071795cc5c4e8321fe53e7f43a081df6f2153",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/split.py": "86befe2d28c565cf3f55d7fbe3d667ee6d87d2e786eea3fc8b6a70b249fb0461",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/structure.py": "22cba6fd484091ba731eb342ebfe9c6dc9c1aa0f76d0fffcd32bb650a2aa58ad",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/synthetic.py": "3d90ff57fd17fdcb19121eab74a3d7705b3be4dd853c6cf42fbc6d43016e6d76",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/telemetry_audit.py": "ddc7e9e7264f7656a50ac9eeb1f335767a8ef8ead7e32e8a969bd5fd63f6f71c",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/data/wcp.py": "ddeb32bdaabeab223051b462de876c25d1a35f28236834e60597b6f021388b78",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/export/__init__.py": "fe507b4542247eb3bdfcde6abc26ed76daabc1cfe9665fb37898fa32618df0de",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/export/onnx.py": "9ef2b46f2d8ccfca5077d904b09056e6311c0d6c8db025c4b9c8abdd738a8ad4",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/__init__.py": "be6b1ce9854c5147795ce280ae859b20123dcbf71142483b92c7b19e99cb97ad",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/behavior.py": "5bcdc5df6a3a37956b3a6154cbbaf5e992d50e75131dce9ec93c19dfd5cef270",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/pipeline.py": "fbf28d65a55fac9755d8da9c58e5c0ad02d1e999b4bb130bf7813f3b66db2794",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/request_encoding.py": "97eabb716b947d59d0fec359513f55677f9bd4a9d63e23aafffd150a2e87abfc",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/request_preprocessing.py": "740813e7ab15a2cd27cd13e6471331970a6c1ff2bf0f8799853d432abc991312",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/request_view.py": "00cde620943f7f353f13c26b1978ec06f64bbe5a6c189afe8d21ec03e6b2451b",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/rich_content.py": "4031f4898c8510221630eed00ccec95cb4706186aed2f99e184fd97ee3f63d27",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/rich_content_v2.py": "4b324dab85a2dacdace950e06b9ee18c1d7c192d5aa4a4f03116407b83bd7bdd",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/features/safe_content.py": "8a9c58c97aa627608eb4a8bb4209cbe3d72ca7928c345fbbe06471ae1b89a00a",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/inference.py": "f2b47ae2e172bf6ab5064c02155f08399ffe8b13d78e8cee3f282b78bdd0d5fd",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/mvp_inference.py": "b97dd0140117cfe03d459f614d0187514d3c8e2459711e9b76fa7867ce12287c",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/pilot.py": "5e7f15f7d7427c3c2d296ed00ce8eb7e7019cd0fcebb35328696c8f0d49d720d",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/request_inference.py": "fd716b29b86972d6a8197b8164cb505055a2336eb649b8b547b86fbcf580cf75",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/smoke.py": "3884b68240fb17a65a40727da5f7280c789efce45fbf24726edd9b62de1a17bf",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/__init__.py": "bd3c286d79e841ebc7afb3a659c5102c998ce3d88f995baf53cc7bfae29637ba",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/checkpoint.py": "27a3b0da80393dde451022e99953a04e9d9889ec15818093facb96dfe5edeb4c",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/deep.py": "6ee78a34330ba232d218b288aecb6abea08958b1ea843b837621fe69277da1e1",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/evaluation.py": "f11318f645a04b04d49f9977074bf2407bce5695bce7a326dd23cc7a24a70cb4",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/generalization.py": "4a394753bf32581776e38362c8e8d45013ffd6f9d92a8c62b5579b9ca7e7c989",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/models.py": "3faaa6dd3a2bd0fc1705b17895fde51e0131e9476cfde39edf9ab32da6074c76",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/partial.py": "c4767b35a69ac4c4c57aadf6c789e6583586e1d7b646480130d67342b19152a3",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/protocol.py": "e2130e244d468be8272798c1222705762a646e5f7baac211559db3f5633f801b",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/request_training.py": "90c13fb84e574c911dc71d05654f431e3a9f57e364d39b87709d3eeb3858ed7a",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/resources.py": "c8c718162cd07b22b2fdbff1c6bbaf8da841cb95da2eee34a7f21c58fa55bcf4",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/runner.py": "bd36c0db6f37b00bebec7cae1e04f6b15a0b236fd1e3bc497730b3f998943305",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/schedule.py": "023f0f7eaeda189c66898c6628dd94be137933a915114e01d0ce185e66fc0e37",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/session.py": "61e0f351f006bd67cee44e00ffee7f4897cb014811fa659a92203a7b76dbe1dd",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/tabular.py": "e98f17e4743b93d2442e2c413d01c371f7dffd1737ba97cbc176ea22140d1adb",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/python/idps_ai/training/tree_baseline.py": "3b4345ac014069a4cc924c71fea4c68da369dba4c58ac785a936e8b6d2837cbb",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/requirements.lock.txt": "a62cf5bd2ca14c104060535a1ea52c266c05436a67ed9d9fd609e7686e2594c5",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/sample-input.jsonl": "42387cf8d8d21721339f77441e1c184ed38ecefc302dd854c3c7b85c6b37f82e",
+        "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/threshold-source.json": "6d0fd376d0777f97fb61688b898556a4a9b9b94656738723e7b74e1d33061f6a"
+      },
+      "read_sealed_holdout": false,
+      "modified_frozen_data": false
+    },
+    "Student_business_code_changed": false,
+    "rules_changed": false,
+    "enforcement_policy_changed": false,
+    "published_release_changed": false,
+    "sealed_holdout_opened": false,
+    "sensitive_material": "Local ignored; no rawHTTP/PCAP/session material or derivative pushed"
+  },
+  "next_experiment": {
+    "design": "ai-training/configs/research/glu207-derivative-pilot-v1.json",
+    "state": "DESIGN_LOCKED_NOT_SCHEDULED, not executable training configuration",
+    "comparators": [
+      "Frozen",
+      "Calibration-only",
+      "One bounded samearchitecture/spec challenger",
+      "Rule-only paired if observable"
+    ],
+    "budget": "Oneepochor250updates max, one configuration, seed17",
+    "first_next_task": "Collect and role-lock representative benign/application workflows + reviewed positive outcomes with valid207contract across>=2lab environments; command injection/XSS/benignPOST hard negatives",
+    "blockers": [
+      "Separate benign calibration + new locked multi-environment evaluation unavailable",
+      "Existing derivative labels inherit research tier, not new independent outcome review",
+      "Historical GLU exact resume not established; verify newrun checkpoint/optimizer/RNG/sampler roundtrip",
+      "Persistent training supervisor/status/checkpoint writer not exercised for this proposed run; no placeholderjob launched"
+    ],
+    "promotion": "Require gain over calibration-only with group uncertainty, upper95%FPR<=0.1%perenvironment and no>5pp criticalfamilyrecall drop; precommit before collection/eval; inadequate support=>INCONCLUSIVE"
+  },
+  "handoff": {
+    "guide": "docs/TEAM_SETUP_AND_AI_STATUS.md",
+    "report": "docs/16_RULE_AI_COORDINATION.md",
+    "model_release": "ai-research-team-20261105 unchanged",
+    "runtime": "STOPPED after verification; volumes/checkpoints/evidence retained",
+    "no_training_job": true
+  },
+  "evidence_index": [
+    {
+      "path": ".local-dev/coordination/benchmark/report.json",
+      "sha256": "4bcdbccd056f9cfed5615f4247c52d86f88a8078143a3a96d6e56c0b0ebfc03e",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/benchmark-guard/resource-report.json",
+      "sha256": "901fcdcf18817f56bcd03faeb90aed32c842ecbaeb57b2e8c105b52fd745710c",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/benchmark-reverse-2/report.json",
+      "sha256": "8563e11677b860b3b0b0cc5fb6e7fe304bca2de81fb40a5322ab35971ceb1655",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/benchmark-reverse-guard/resource-report.json",
+      "sha256": "1ca3e02b8973d63ced7b9809d9eb67959e49f26494d8b1c5254d01bcbc1c913a",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/benchmark-reverse-guard-2/resource-report.json",
+      "sha256": "b396a69b87d75288ed118be1ebe7b031f952065f78abbb13f209d3e4e82858ca",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/correlation-tests.log",
+      "sha256": "246e020f5478fa0751aff864eccc2e434965008fca462c7e0b26feb088673b4a",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/dashboard-detectors-ax.txt",
+      "sha256": "c3d80c0c56f81fefa4777d7eac811f19aa61d189959b3d62c9d8d15c45924cf1",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/dashboard-detectors.png",
+      "sha256": "23156f74c2e2180b3d52b2bce4e76f1a05fcb9daa6eb3bd3097a2d65348c1f5b",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/derivative-guard/resource-report.json",
+      "sha256": "09b7ecff334f15fc1bf47eac212d16aab39091a27f13d5128abd1b46803770c6",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/detector-proof.json",
+      "sha256": "6a65c3e597a15d42f536595ee1f8663b8f6c28d4fe81d54ed7945656c6833997",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/final-guard-probe/resource-report.json",
+      "sha256": "103201cd80c172ae080a83eb78c584b24331bab657d8afdb3e6399e3bb54db1e",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/final-policy-probe/resource-report.json",
+      "sha256": "6d59bacba41e9f1603e200faa8248d331e508b728df05f139c92a3c5744ad352",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/frozen-integrity.json",
+      "sha256": "fa9610c23f97d678323d32c0f877b56ae08c37a82e494b9bff27eece153dedd9",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/glu-live-guard/resource-report.json",
+      "sha256": "466a2c023bf8a384ce2c96babb3daf8239ccd5a5afa970d5f4d092308e54e64e",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/glu-public-command-guard/resource-report.json",
+      "sha256": "c2b3c1ef029fb4c7b016e1b668912a8111def8dcf373b117d294f7339acdc6df",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/guard-probe/resource-report.json",
+      "sha256": "22c4ef16236f09ac253d74d5d444b302bd523ea6a60be41871434e16d6cc3de7",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/ids/acceptance-1794019468752009756.json",
+      "sha256": "fa3aa2368f8c6a6414a4d4f23a28faca40cf7743415a65f18b0c3e6ceb77bcf0",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/ids-guard/resource-report.json",
+      "sha256": "d4cdc9e44738b3f0f503ec5e8d4aedccb8a1d78de8fd4c0cdcc59ec05a16dc5c",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/launcher-tests.log",
+      "sha256": "9fcf6d3a2f60af7a49920c1da6e55ac6db07456fb79d49ef1956980cfa244829",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/public-command-proof.json",
+      "sha256": "5937b340ed53a0dcb152f6a5024806a4dc5056b92298b89e2831245c6435ca71",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/resource-tests.log",
+      "sha256": "169cb5382724cae71d783949f50b5598d644b04e469bff86fa50631f3d6254b4",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/restart-first-attempt.json",
+      "sha256": "a16641d85f27e41d837cb9c56f8ab542c39903e27dd7e6de27e5fdb22f9f6e10",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/restart-proof.json",
+      "sha256": "2874366bbd1e499cc3d9d8b818d50f58137629b52f1413c9a3394dbe38d5dfcd",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/rust-build/resource-report.json",
+      "sha256": "28761c07d31714ab585308b7797f1d8dda07a2c766d52e21d4914e763b3592d3",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/rust-tests/resource-report.json",
+      "sha256": "cb447ff6de06d3cecb9e40cb264ef40102c267a144be65e10667c18320944eec",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/rust-tests-final/resource-report.json",
+      "sha256": "1100d4580db439682e197459368cd6eb9b2cc491bcd102cea32478b5051a43f2",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/rust-tests-final/stderr.log",
+      "sha256": "d8751160045902b5ae6c23a5774411c93607b23b2b598b927ed031152f443d3b",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/rust-tests-final/stdout.log",
+      "sha256": "07fad07fa5894f64b08a20f21cff5e51231c55b1463677dc00cbb58125a62f88",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/ui-build/resource-report.json",
+      "sha256": "949360d994d1f76bed0595f5336d04676345bb37a668e84286e27764460e050a",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/ui-build-2/resource-report.json",
+      "sha256": "7e76986a531d0990a38447d28fd89a5ce49c74053d9a563bb47b6d77ff065f69",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/ui-build-final/resource-report.json",
+      "sha256": "756f7b197dce81cf557cf3ed13bf78d87b075307333766cfcc89700f736aa151",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/worker-tests.log",
+      "sha256": "6e734ee6237898adc4ff0d97b54e559671daf371e56eee2ceb7484a497e4f1a9",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": "ai-training/.artifacts/glu207_derivative_20261107/manifest.json",
+      "sha256": "60b9161ee28dfec4a604c5e074a1a734109c9038f64b4e757782b580f09a3d0c",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/rust-build-final/resource-report.json",
+      "sha256": "c9f30698bdc81b3348f9c69f56476ebc0ae580271dce4dd698b3be827a417071",
+      "distribution": "LOCAL_ONLY ignored evidence; not included in Git handoff"
+    },
+    {
+      "path": ".local-dev/coordination/security-review.json",
+      "sha256": "af5f73756562612a790034f8f47f72d786e13533914db536541a383b074096fb",
+      "distribution": "LOCAL_ONLY"
+    }
+  ],
+  "security_review": {
+    "status": "PASS",
+    "files_scanned": 22,
+    "runtime_credential_values_compared": 6,
+    "credential_token_key_findings": 0,
+    "ignored_evidence_not_staged": true,
+    "evidence_hashes_verified": 33,
+    "scope": "Exact current credential values + recognized key patterns, reviewed source/report paths; not a universal sensitive-data proof"
+  }
+}
