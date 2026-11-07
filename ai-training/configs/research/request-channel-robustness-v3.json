@@ -1,0 +1,72 @@
+{
+  "schema_version": "research-candidate-design-1",
+  "candidate_id": "request-channel-robustness-v3",
+  "state": "DESIGN_LOCKED_DATA_GATE_BLOCKED",
+  "model_selection": "One candidate maximum; frozenRequestv2 and calibration-only references retained",
+  "hypothesis": "Independent URI/body/header normalization and coarse field-aware non-secret security syntax preserve attack evidence without allowing long headers to renormalize body signal; representative benignPOST hard negatives are necessary to limit false alerts",
+  "architecture": {
+    "input_dimensions": 588,
+    "numeric": 76,
+    "URI_hash_features": 256,
+    "body_hash_features": 192,
+    "header_hash_features": 64,
+    "per_channel_normalization": "Separate fixed L2, explicit absent/present tokens; no shared header/body denominator",
+    "MLP_parameters_target": 50696,
+    "frozen_encoder_modified": false,
+    "new_encoder_implemented": false,
+    "privacy": "Credentials/Auth/Cookie/password fields entirely withheld; identity-bearing fields expose only capped structural security counters after PII removal, never names/emails or raw text. Privacy regression required before implementation can be used."
+  },
+  "initialization": "NEW_INITIALIZATION; same input width is not encoder compatibility. Never warm-start frozen first-layer weights with changed hash coordinates. New-run exact checkpoint roundtrip must be tested before training.",
+  "data": {
+    "current_internal_receipts": 75,
+    "raw_unique_method_URL_body": 75,
+    "frozen_views": 59,
+    "known_internal_intents": 70,
+    "independent_human_verified": 0,
+    "training_role_rows": 35,
+    "training_connected_groups": 2,
+    "eligible_calibration_physical_rows": 9,
+    "calibration_unique_views": 3,
+    "calibration_benignPOST": 0,
+    "prospective_rows": 13,
+    "prospective_attack_families": {
+      "sqli": 7
+    },
+    "current_role_ledger_sha256": "e07839914a4357da5832de5a8a6fb68edda2d923d62986e1510d0d43a5f10416",
+    "dataset_roles": "Current75role assignments remain immutable; do not move TRAIN benignPOST to calibration after seeing scores",
+    "publisher_anomaly_labels": "Not merged into Oracle attack-intent supervision without explicit separate task"
+  },
+  "evaluation": {
+    "primary_attempt_detection_recall_targets": {
+      "sqli": 0.8,
+      "xss": 0.8,
+      "cmd_injection": 0.8,
+      "path_traversal": 0.8
+    },
+    "FPR_target": 0.01,
+    "calibration": "Separate role-isolated benignPOST/GET workflow groups,1%budget, fixed strict> comparator, no prospective tuning",
+    "quality_claim": "Require appropriate exact confidence intervals and workflow/group uncertainty; small n => INCONCLUSIVE",
+    "blind_or_independent_claim": "Only after new data/group provenance and review meet that claim; no claim based onP0 or current exposeddiagnostics",
+    "calibration_only_result": "Current3view candidate rejected:TRAIN diagnosticFP2to18. Do not deploy it or sweep thresholds."
+  },
+  "budget": {
+    "configurations": 1,
+    "seed": 17,
+    "max_updates": 250,
+    "max_epochs": 1,
+    "checkpoint_every_updates": 25,
+    "optimizer": "Adam proposed; learningrate/batch not executable or locked until data/encoder/resume gates PASS",
+    "stop": "Budget, nonfinite values, missing sensors, data/hash/split/causality/privacy mismatch; zero emergency autorestarts"
+  },
+  "resources": {
+    "CPU_soft_fraction_host": 0.5,
+    "MemAvailable_reserve_GiB": 4,
+    "active_rolling_seconds": 300,
+    "rolling_temperature_limit_C": 80,
+    "instant_emergency_C": 90,
+    "training_specific_active_step_telemetry_required": true
+  },
+  "one_next_task": "One bounded role/session-isolated gap-filling cohort with diverse new TRAIN workflow groups, Oracle-supported benign POST CALIBRATION and unexposed XSS/command/traversal PROSPECTIVE workflows. Predeclare the coverage matrix and exclude current corpus templates/views before sending. Do not recollect documented cases or reassign existing roles.",
+  "training_now": false,
+  "enforcement": "DISABLED"
+}
