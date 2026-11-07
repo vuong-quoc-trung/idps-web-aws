@@ -4,7 +4,8 @@ Cập nhật 2026-11-07. Integration branch chứa các milestone local shadow, 
 và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
 Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
-Milestone research hiện tại: [Data quality và Oracle cohort](17_DATA_QUALITY_AND_ORACLE_RESEARCH.md).
+Milestone research trước: [Data quality và Oracle cohort](17_DATA_QUALITY_AND_ORACLE_RESEARCH.md).
+Milestone hiện tại: [Training data unblock](18_TRAINING_DATA_UNBLOCK.md).
 
 ## Repository, model release và dependencies
 
@@ -328,7 +329,7 @@ persistent systemd supervisor + atomic status/checkpoints. Không tạo job gi�
 có RUNNING; không để Codex polling một training dài. Chi tiết blocker và proposal
 trong báo cáo milestone hiện tại.
 
-## Data quality / Oracle research mới — 2026-11-07
+## Milestone trước: Data quality / Oracle research — 2026-11-07
 
 Đã thu **75requests thật** ở DVWA/Juice (46+29),75unique method/URL/body representations,
 59frozen Request-v2 feature views. Hai environment đều có benign và attack attempts.
@@ -389,3 +390,45 @@ workflow XSS/command/traversal chưa lộ choPROSPECTIVE EVALUATION; giữ Oracl
 không di chuyển currentTRAIN sangcalibration sau khi đã xemscore. Không thêm model,
 policy hoặc dashboard ở bước này. Human review chưa có không chặn mọi research,
 nhưng không được nâng internalOracle thành independent validation.
+
+
+## Training data unblock — 2026-11-07
+
+**CASE B — DATA IMPROVED, TRAINING BLOCKED.** Một campaign mới 43study requests,
+khóa roles/gates/candidate trước traffic:18TRAIN,13CALIBRATION,12PROSPECTIVE.
+43receipts verified,42frozen views và42candidate views;20benign,20attempts,
+3UNKNOWN.40semantic Oracle matches;14internal exploit successes,6unsafe reflections;
+43human reviews PENDING. Không formal admission mới hoặc independent quality claim.
+
+TRAIN đạt9workflow/session components và4attack families. Prospective đạt2templates
+mỗiSQLi/XSS/command/file-inclusion,4benignGET/POST;12rows đã hash-seal,0scores.
+Cùng DVWA/Juice/source/fixture lineage, không gọi là independent cross-domain.
+Calibration có4benign JSON feedback POST được Oracle/persisted-state kiểm chứng,
+nhưng thiếu benign **formPOST**:3ping cases trả response rỗng, giữ UNKNOWN.
+Cùng-image/user runtime probe cho thấy ping thiếu raw-socket capability. Không
+thêm quyền hoặc đổi Oracle để ép PASS. Gate còn thiếu1benign workflow group,
+1formPOST group và tối thiểu1unique benign view so với plan.
+
+Encoder research riêng: `ai-training/src/idps_ai/features/research_request_channels.py`;
+76numeric + URI256/body192/header64, normalization riêng, privacy/missingness tests.
+Frozen encoder/model/threshold không thay. Config precommitted được lưu ở
+`ai-training/configs/research/request-channel-unblock-pilot.json`;50,696parameters,
+new initialization, seed17, Adam0.001, batch4,1epoch/max250updates, chưa launch.
+Cross-process synthetic next-update recovery đã PASS; đây không phải actual cohort
+training hoặc checkpoint để promote.44tests và Ruff PASS.
+
+Capture max60°C; test có spike84°C, guard đã freeze/reduce/thaw, không chạm90°C.
+Active/paused thermal accounting tách riêng; chưa sustained-training qualification.
+Shared RAM peak≈12.83GB, tất cả owned lab resources đã cleanup. Existing frozen
+release, bootstrap và local-system workflow nguyên trạng; AI enforcement DISABLED.
+
+Dataset/private evidence: `ai-training/.artifacts/training_unblock_20261107/`,
+active capture `campaign-capture-v2`, active dataset `dataset-release-final-v2`.
+Không push receipts/session/tensors/review queue. Chi tiết, failures và hashes:
+`docs/18_TRAINING_DATA_UNBLOCK.md`,
+`ai-training/reports/TRAINING_DATA_UNBLOCK_20261107.json`.
+
+**Đúng một việc tiếp theo:** bổ sung calibration formPOST qua DVWA`/security.php`
+với CSRF/session-state Oracle, kiểm runtime prerequisite trước capture, ít nhất
+2meaningful views và loại overlap trước HTTP. Không thu lại43cases, không đổi
+prospective seal hoặc candidate theo evaluation. Chưa có training job đang chạy.
