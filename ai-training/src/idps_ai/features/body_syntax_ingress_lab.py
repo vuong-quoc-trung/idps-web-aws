@@ -13,6 +13,7 @@ import socket
 import socketserver
 import struct
 import threading
+import time
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
@@ -151,6 +152,8 @@ class LabIngress:
         self.worker_path = str(worker_path)
         self.observations = {}
         self.sent = self.dropped = self.max_prefix = 0
+        self.extraction_ms = []
+        self.max_payload_bytes = 0
         owner = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -212,6 +215,7 @@ class LabIngress:
                         try:
                             if not re.fullmatch(r"[a-f0-9]{32}", rid):
                                 raise ValueError("Missing trusted Nginx identity")
+                            started = time.perf_counter()
                             vector = owner.extractor(
                                 None if oversize else observed,
                                 self.headers.get("Content-Type"),
@@ -219,9 +223,11 @@ class LabIngress:
                                 transfer_encoding=original_transfer,
                                 declared_oversize=oversize,
                             )
+                            owner.extraction_ms.append((time.perf_counter() - started) * 1000)
                             payload = json.dumps(
                                 syntax.event(rid, vector), separators=(",", ":")
                             ).encode()
+                            owner.max_payload_bytes = max(owner.max_payload_bytes, len(payload))
                             with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as out:
                                 out.setblocking(False)
                                 out.sendto(payload, owner.worker_path)

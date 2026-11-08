@@ -1,6 +1,6 @@
 # Team setup và trạng thái AI-IDPS
 
-Cập nhật 2026-11-07. Integration branch chứa các milestone local shadow, three-source
+Cập nhật 2026-11-08. Integration branch chứa các milestone local shadow, three-source
 và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
 Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
@@ -10,7 +10,8 @@ Milestone trước: [Final training unblock và pilot kỹ thuật](19_FINAL_TRA
 Protocol: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPERIMENT.md).
 Kết quả model gần nhất: [Scaled normalization — candidate rejected](21_SCALED_NORMALIZATION_RESULTS.md).
 Dataset milestone: [Attack-intent v1 — released, training blocked](22_ATTACK_INTENT_DATASET_V1.md).
-Milestone hiện tại: [HTTP body syntax — candidate partial](23_HTTP_BODY_SYNTAX_RESEARCH.md).
+Nền tảng representation: [HTTP body syntax — prototype](23_HTTP_BODY_SYNTAX_RESEARCH.md).
+Milestone hiện tại: [Body-syntax live acceptance — verified for lab](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
 
 ## Repository, model release và dependencies
 
@@ -853,3 +854,132 @@ promotion, enforcement hoặc AWS.
 
 **Next action:** bounded real-ingress ON và end-to-end privacy acceptance trong
 milestone riêng khi người dùng yêu cầu. OFF đã PASS; lượt này dừng tại đây.
+
+## Body-syntax live acceptance — 2026-11-08
+
+**CASE A — LIVE_OBSERVABILITY = VERIFIED_FOR_LAB.** Baseline `909680f`, cây Git sạch
+khi bắt đầu. Một lượt acceptance hữu hạn đã PASS; không thu thêm cohort DVWA,
+không dùng sealed samples, không training hoặc thay model đang chạy. Candidate
+`http-body-syntax-v1` vẫn mặc định OFF; chỉ opt-in trong lab. Frozen models,
+encoders, thresholds, Student Web, Rust main, Rules/Policy, Suricata và correlation
+không đổi. Bootstrap/model restore và published Releases giữ nguyên.
+
+Báo cáo tổng hợp có phạm vi từng gate:
+[Body-syntax acceptance](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
+Báo cáo do harness thực thi tạo, giữ nguyên để đối chiếu:
+[Execution report](../ai-training/reports/BODY_SYNTAX_LIVE_20261108.json).
+Private protocols, source snapshots, receipts, numeric vectors, traces và DB material
+ở `.local-dev/body-live-20261108/`; không publish chúng hoặc runtime credentials.
+
+### Luồng lab và contract
+
+Nginx thật → trusted lab ingress/extractor → Unix datagram → candidate worker →
+private numeric bridge → isolated Rust receiver → schema riêng → authenticated API.
+Do Rust main cố ý từ chối body-version events ngoài frozen contract, thêm duy nhất
+example `security-web/examples/body_syntax_lab.rs`, không sửa main ingestion/models.
+Example chỉ build khi yêu cầu rõ `cargo build --example body_syntax_lab --locked
+--offline -j1` trong `security-web`; không nằm trong normal bootstrap/build/run.
+Khởi động còn đòi `IDPS_BODY_LAB_OPT_IN=YES`, loopback bind, private token tối thiểu
+32 ký tự, private input/journal paths và DB URL qua environment. Thiếu opt-in bị
+refuse. Không đưa credentials vào command history hoặc tài liệu. Test-only receiver
+này không phải dịch vụ production được cài sẵn cho đồng nghiệp.
+
+Receiver strict typed schema chỉ cho version, contract hash, request ID và 46 numeric
+features; reject raw/unknown fields, sai ranges/state/version. Persistence dùng
+`idps_body_syntax_lab.observations`, numeric journal và readonly `GET /observations`
+trên loopback. API không auth401/auth200. Không gọi normalizer/model/alert/Rules/Policy;
+không đưa 46 features vào frozen 588-input Request v2 hoặc GLU207.
+Contract SHA256 không đổi:
+`0e163b7392a9bb68131e4c66486fa5827ce6259295f0d703b403a8efad96982c`.
+
+### Kết quả acceptance và giới hạn
+
+| Gate | Status | Bằng chứng/phạm vi |
+|---|---|---|
+| NGINX_PREFLIGHT | PASS | Actual nginx configuration test |
+| REAL_INGRESS_OFF_BASELINE | PASS | Reuse OFF baseline, 32 bounded paired controls; 0 numeric events |
+| REAL_INGRESS_ON | PASS | 32 ON requests, explicit lab opt-in |
+| APPLICATION_BEHAVIOR | PASS | OFF/ON statuses bằng nhau; login/session/logout, malformed400, unsupported415 |
+| REQUEST_IDENTITY | PASS | Toàn bộ 73 Nginx IDs/statuses khớp Student Audit, 0 conflicts |
+| BODY_SYNTAX_LIVE_PARITY | PASS | Reference/worker/Rust journal/DB/API khớp 32/32 vector, đủ 46 features |
+| PRIVACY_CANARIES | PASS | Phạm vi canary hữu hạn bên dưới |
+| BODY_TEMP_FILE_NON_PERSISTENCE | PASS | Không tạo temp files trong workload đã exercise |
+| RUST_DB_DASHBOARD_PRIVACY | PASS | Isolated persistence và authenticated API; không qualify browser UI mới |
+| FROZEN_REQUEST_V2_REGRESSION | PASS | 67 current-worker offline/live comparisons, tolerance 1e-7 |
+| GLU207_REGRESSION | PARTIAL | Hashes/contracts/correlation tests giữ nguyên; không có sensor-derived live score |
+| RULE_POLICY_REGRESSION | PASS | Core source/binary giữ nguyên, 0 firewall actions |
+| RESOURCE_SAFETY | PASS | Guard healthy, quota/thermal/RAM bên dưới |
+| LAB_CLEANUP | PASS | Owned services/listeners stopped, PG volumes giữ nguyên |
+
+73 HTTP transactions gồm 32 OFF + 32 ON, 3 failure-phase CSRF GET và 6 direct
+failure login/session requests. Execution report `HTTP_request_count=67` đếm helper
+rows; 67 cũng là số Request v2 score comparisons thực tế. Normal Rust DB count160
+là cumulative từ các lượt lịch sử, không phải số inference mới hoặc chất lượng model.
+
+32 ON states: MISSING17, EMPTY1, OK8, MALFORMED2, OVERSIZE1,
+UNSUPPORTED_ENCODING1, UNSUPPORTED_TRANSFER1, UNSUPPORTED_TYPE1. Missing khác empty;
+body vượt 8 KiB bị withheld/OVERSIZE, không parse prefix rồi gọi TRUNCATED. Incomplete
+HTTP truncation chưa exercise. 0 nominal drops, worker ổn định trước fault injection;
+max numeric datagram278 bytes. Ba lỗi chủ động — extractor exception, worker thực sự
+đóng socket, target không phải socket — đều latch candidate OFF, login204/session200;
+không làm lỗi ứng dụng hoặc lộ exception details. Candidate/receiver cuối lượt OFF.
+
+Sáu fake-secret families được đặt vào protected/unknown body values, Authorization
+và extra Cookie, giữ nguyên session cookie hợp lệ. Quét literal, URL/base64/hex,
+SHA1/SHA256, JSON-escaped trên 20 acceptance files, 15 runtime files, 21 security DB
+và 14 Student DB tables, numeric telemetry/journals/artifacts và cả hai authenticated
+APIs: PASS. Feature invariance khi thay protected values: PASS. Không publish canary
+values hoặc fingerprints của chúng. Nginx temp dirs (body/proxy/fastcgi/scgi/uwsgi)
+đều0700; inotify kể cả transient create/delete self-test healthy; file-only strace
+0 temp O_CREAT; 0 residual entries. Không có raw body temp file để chứng minh lifecycle
+ở những inputs không được chạy. Giữ nguyên private evidence thay vì coi quét canary
+là chứng minh không thể có bất kỳ dữ liệu nhạy cảm nào.
+
+**PRODUCTION_PRIVACY = NOT_VERIFIED.** Numeric counts/syntax/state/media/timing vẫn
+có side channels, không có DP hoặc bảo đảm confidentiality tuyệt đối. Không qualify
+arbitrary URI/User-Agent placements, mọi shutdown/persistence path, production
+TLS/LAN/multitenancy/RBAC, multipart uploads, incomplete HTTP hoặc socket saturation.
+API research chỉ loopback/token; không có browser frontend qualification mới.
+
+### Hiệu năng, nhiệt và cleanup
+
+Extractor trên 32 nominal ON calls: p50 **0.0094 ms**, p95 **0.0682 ms**, max
+**0.1210 ms**. OFF/ON HTTP medians lần lượt258.74/141.65 ms; coarse cgroup CPU
+24.44/23.94% của một core. Sequential order, warmup và reference inference/scanners
+chi phối phép đo; không kết luận candidate tăng tốc hoặc ước lượng causal CPU overhead.
+Harness RSS OFF122.1→183.8 MB, ON184.4→184.6 MB bao gồm predictor/caches/scanners;
+không coi đây là isolated candidate memory overhead hoặc production benchmark.
+
+Guard quota **25% của một core**, instantaneous cutoff85°C, no pauses, sensor/watchdog
+healthy. Acceptance224.66s, active average **59.76°C**, peak **74°C**; không có đủ300s
+để tuyên bố endurance dài hơn lượt chạy. Peak cgroup memory538.4 MiB; toàn hệ thống
+MemAvailable tối thiểu19.13 GiB, vượt reserve4 GiB; không OOM/swap-thrashing event.
+Không đóng ứng dụng của người dùng hoặc sửa OS/firmware protections. Build guard peak
+76°C; targeted Python tests peak66°C. 57 Python tests, 1 Rust strict-contract test,
+offline Rust example build, Ruff và Rustfmt PASS. Không rerun Java suite vì Student
+source/jar không đổi; actual HTTP application acceptance là bằng chứng lượt này.
+
+Tất cả owned lab processes/listeners/sockets đã dừng. PostgreSQL Nov7/Nov8 đều stopped,
+volumes giữ nguyên. 158 protected current-file hashes và 26 legacy artifact pins
+khớp; không mở sealed samples hoặc sửa datasets/labels/checkpoints/releases.
+
+### Training readiness và đúng một bước tiếp theo
+
+Candidate **đủ điều kiện làm đầu vào cho nghiên cứu representation trong lab**;
+**TRAINING_READY=false, TRAINING=NOT_RUNNING**. Chưa có bằng chứng cải thiện
+Recall/FPR/generalization từ acceptance này. 73 functional requests không phải
+training release mới hoặc independent evaluation. Independent human review vẫn
+**PENDING**; labels hiện có chỉ ở internal-Oracle research tier.
+
+Còn phải khóa candidate encoder/model riêng (46 features không tự tương thích frozen
+588/207); materialize/re-audit existing attack-intent release sau privacy projection;
+kiểm exact/near/lineage collisions và strict group splits. Giữ identity exclusions,
+không khôi phục email/password/token để xóa 6 residual login collisions. Kiểm lại
+TRAIN/CAL workflow, benign POST và XSS/command-injection coverage sau quarantine;
+khóa evaluation protocol trước model selection, giữ prospective samples sealed.
+Chỉ training ở milestone khác khi data/feature/evaluation/recovery/resource gates đạt.
+
+**Một nhiệm vụ kế tiếp:** bounded offline materialization/re-audit các candidate views
+và strict group splits của attack-intent release hiện có, để chốt data readiness cho
+một challenger được khóa riêng. Không capture thêm, tune threshold, training,
+promotion hoặc deployment trong nhiệm vụ acceptance này. Dừng tại đây.

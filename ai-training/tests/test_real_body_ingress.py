@@ -316,6 +316,8 @@ def test_chunked_application_response_and_parser_failure_are_forwarded(tmp_path)
                 assert response.getheader("X-Request-Id") == "a" * 32
                 conn.close()
             assert not gate.enabled and gate.latched and ingress.dropped == 1
+            assert len(ingress.extraction_ms) == 1 and ingress.extraction_ms[0] >= 0
+            assert 0 < ingress.max_payload_bytes <= 4096
         finally:
             ingress.close()
             worker.close()

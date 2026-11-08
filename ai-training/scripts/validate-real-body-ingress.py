@@ -257,7 +257,7 @@ class Client:
             )
 
 
-def run(runtime, output, *, opt_in, off_only=False):
+def run(runtime, output, *, opt_in, off_only=False, student_only=False):
     if off_only and opt_in:
         raise ValueError("OFF-only acceptance cannot enable the candidate")
     os.umask(0o077)
@@ -274,7 +274,11 @@ def run(runtime, output, *, opt_in, off_only=False):
             ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
         ).stdout.strip(),
         "reviewed_source_updates": source_updates,
-        "mode": "STUDENT_OFF_ONLY" if off_only else "FULL_OFF_ON",
+        "mode": "STUDENT_OFF_ONLY"
+        if off_only
+        else "STUDENT_OFF_ON"
+        if student_only
+        else "FULL_OFF_ON",
         "candidate_contract_sha256": syntax.CONTRACT_SHA256,
         "default": "BODY_SYNTAX_EXPERIMENT=OFF",
         "opt_in_requested": opt_in,
@@ -307,14 +311,19 @@ def run(runtime, output, *, opt_in, off_only=False):
         },
         "protected_sha256": protected,
     }
-    if off_only:
+    if off_only or student_only:
         protocol["workflow_pairs"] = [
             v for v in protocol["workflow_pairs"] if not v.startswith("DVWA")
         ]
+    if off_only:
         protocol["privacy"] = (
             "NOT_TESTED in OFF-only status recovery; no final privacy scans or candidate activation"
         )
         protocol["bounded_failure_cases"] = []
+    if student_only:
+        protocol["Rust_candidate_contract"] += (
+            "; separate opt-in Rust lab example validates and stores numeric events in dedicated schema, authenticated loopback read API"
+        )
     protocol["fingerprint"] = digest(protocol)
     atomic_json(output / "protocol.json", protocol)
     gate = Gate(output / "gate.json")
@@ -324,6 +333,7 @@ def run(runtime, output, *, opt_in, off_only=False):
     features = []
     failure_checks = []
     frozen_checks = {}
+    rss_by_mode = {}
     canaries = [
         "FakePassword-" + secrets.token_hex(20),
         "FakeApiKey-" + secrets.token_hex(20),
@@ -410,13 +420,17 @@ def run(runtime, output, *, opt_in, off_only=False):
             counts[folder.name] = n
         for db in ["student_db", "security_db"]:
             tables = (
-                sql(db, "SELECT tablename FROM pg_tables WHERE schemaname='public'")
+                sql(
+                    db,
+                    "SELECT schemaname||'.'||tablename FROM pg_tables WHERE schemaname !~ '^pg_' AND schemaname<>'information_schema'",
+                )
                 .decode()
                 .splitlines()
             )
             for table in tables:
-                assert re.fullmatch(r"[A-Za-z0-9_]+", table)
-                blob = sql(db, f'COPY public."{table}" TO STDOUT')
+                assert re.fullmatch(r"[A-Za-z0-9_]+\.[A-Za-z0-9_]+", table)
+                schema, name = table.split(".")
+                blob = sql(db, f'COPY "{schema}"."{name}" TO STDOUT')
                 if any(s in blob for s in needles):
                     gate.trip("PRIVACY_CANARY_DATABASE_FAILURE")
                     raise RuntimeError("Privacy canary DB violation; candidate OFF")
@@ -531,6 +545,13 @@ def run(runtime, output, *, opt_in, off_only=False):
                             value = json.loads(line)
                             if source.name == "candidate.jsonl":
                                 syntax.validate_event(value)
+                                if student_only:
+                                    with (runtime / "body-research-input.jsonl").open(
+                                        "a"
+                                    ) as body_target:
+                                        body_target.write(
+                                            json.dumps(value, separators=(",", ":")) + "\n"
+                                        )
                             target.write(json.dumps(value, separators=(",", ":")) + "\n")
 
         bridge_thread = threading.Thread(target=bridge, daemon=True)
@@ -556,7 +577,7 @@ def run(runtime, output, *, opt_in, off_only=False):
             ],
         )
         wait(lambda: (output / "nginx.pid").read_text().strip())
-        if not off_only:
+        if not (off_only or student_only):
             # Fresh pinned DVWA lab. Its Session helper is replaced with RAM-only IO;
             # the historical collector would write receipts and is not used here.
             q.pm(
@@ -718,10 +739,14 @@ def run(runtime, output, *, opt_in, off_only=False):
         # Actual application baseline OFF, then the same workflows ON.
         for phase in [False] if off_only else [False, True]:
             if phase:
+                assert ingress.sent == 0 and worker.accepted == 0, "OFF emitted numeric events"
                 safe_scan()
                 assert monitor.healthy and gate.enable(opt_in=opt_in, privacy_preflight=True)
             else:
                 assert not gate.enabled
+            import psutil
+
+            rss_by_mode[str(phase)] = {"start": psutil.Process().memory_info().rss}
             c = Client(18890)
             h = csrf(c) | {"Content-Type": "application/x-www-form-urlencoded"}
             call(
@@ -759,6 +784,9 @@ def run(runtime, output, *, opt_in, off_only=False):
                 h = csrf(c) | {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Authorization": "Bearer " + canary,
+                    "Cookie": "; ".join(f"{v.name}={v.value}" for v in c.cookies)
+                    + "; lab_canary="
+                    + canary,
                 }
                 body = urlencode(
                     {
@@ -822,8 +850,9 @@ def run(runtime, output, *, opt_in, off_only=False):
                 csrf(c) | {"Content-Type": "application/json", "Transfer-Encoding": "chunked"},
                 400,
             )
-            if off_only:
-                break
+            rss_by_mode[str(phase)]["end"] = psutil.Process().memory_info().rss
+            if off_only or student_only:
+                continue
             q.pm(
                 "exec",
                 d.DB,
@@ -952,6 +981,39 @@ def run(runtime, output, *, opt_in, off_only=False):
         assert status == 200 and not any(n in page for n in needles)
         api_page = json.loads(page)
         assert any(r.get("request_ai") for r in api_page["detectors"])
+        research_persistence = None
+        if student_only:
+            observer = Client(18291)
+            status, _, _, _ = observer.call("GET", "/observations")
+            assert status == 401, "Research API must require private authentication"
+
+            def persisted_candidate():
+                status, _, body, _ = observer.call(
+                    "GET", "/observations", headers={"Authorization": "Bearer " + infra["body_api"]}
+                )
+                assert status == 200 and not any(n in body for n in needles)
+                result = json.loads(body)
+                by_id = {v["request_id"]: v for v in result["items"]}
+                if not set(worker.events) <= set(by_id):
+                    return False
+                for rid, event in worker.events.items():
+                    syntax.validate_event(by_id[rid])
+                    assert event == by_id[rid], "Rust/DB/API numeric parity failed"
+                assert result["rejected"] == 0 and result["accepted"] == len(worker.events)
+                return {
+                    "accepted_current_run": result["accepted"],
+                    "numeric_DB_API_parity": len(worker.events),
+                    "unauthenticated": 401,
+                    "authenticated": 200,
+                    "scope": "ISOLATED_RESEARCH_SCHEMA_AND_API; no production endpoint",
+                }
+
+            research_persistence = wait(persisted_candidate, 30)
+            assert (
+                worker.thread.is_alive()
+                and worker.accepted == ingress.sent
+                and worker.rejected == 0
+            )
         wait(
             lambda: all(
                 int(
@@ -984,7 +1046,8 @@ def run(runtime, output, *, opt_in, off_only=False):
             monitor.gate = gate
             ingress.extractor = broken if failure == "parser exception" else syntax.extract
             if failure == "absent worker socket":
-                ingress.worker_path = str(sockroot / "unavailable.sock")
+                worker.close()
+                ingress.worker_path = worker.socket_path
             elif failure == "non-socket datagram target":
                 wrong_target = sockroot / "not-a-socket"
                 wrong_target.touch(mode=0o600)
@@ -1006,26 +1069,27 @@ def run(runtime, output, *, opt_in, off_only=False):
         wait(frozen_parity, 30)
         np.savez(output / "candidate-feature-artifact.npz", features=np.array(features, np.uint8))
         scan = safe_scan()
-        maria_tables = q.pm(
-            "exec", d.DB, "mariadb", "-udvwa", "-pp@ssw0rd", "-N", "dvwa", "-e", "SHOW TABLES"
-        ).splitlines()
-        for table in maria_tables:
-            assert re.fullmatch(r"[A-Za-z0-9_]+", table)
-            contents = q.pm(
-                "exec",
-                d.DB,
-                "mariadb",
-                "-udvwa",
-                "-pp@ssw0rd",
-                "-N",
-                "dvwa",
-                "-e",
-                "SELECT * FROM " + table,
-            ).encode()
-            if any(n in contents for n in needles):
-                gate.trip("PRIVACY_CANARY_DVWA_DATABASE_FAILURE")
-                raise RuntimeError("Privacy canary lab database violation; candidate OFF")
-        scan["DVWA_MariaDB_tables"] = len(maria_tables)
+        if not student_only:
+            maria_tables = q.pm(
+                "exec", d.DB, "mariadb", "-udvwa", "-pp@ssw0rd", "-N", "dvwa", "-e", "SHOW TABLES"
+            ).splitlines()
+            for table in maria_tables:
+                assert re.fullmatch(r"[A-Za-z0-9_]+", table)
+                contents = q.pm(
+                    "exec",
+                    d.DB,
+                    "mariadb",
+                    "-udvwa",
+                    "-pp@ssw0rd",
+                    "-N",
+                    "dvwa",
+                    "-e",
+                    "SELECT * FROM " + table,
+                ).encode()
+                if any(n in contents for n in needles):
+                    gate.trip("PRIVACY_CANARY_DVWA_DATABASE_FAILURE")
+                    raise RuntimeError("Privacy canary lab database violation; candidate OFF")
+            scan["DVWA_MariaDB_tables"] = len(maria_tables)
         assert monitor.healthy and all(
             n == 0 for key, n in monitor.counts.items() if key != "SELF_TEST"
         )
@@ -1034,6 +1098,22 @@ def run(runtime, output, *, opt_in, off_only=False):
             for mode in [False, True]
         ]
         assert rows_by_mode[0] == rows_by_mode[1]
+        audit_rows = [
+            json.loads(line) for line in (runtime / "student-audit.jsonl").read_text().splitlines()
+        ]
+        assert not audit_status_differences(request_rows, audit_rows)
+        assert ingress.dropped == len(failure_checks), "Unexpected nominal telemetry drop"
+        assert set(worker.events) == {r["request_id"] for r in request_rows if r["candidate_on"]}
+        assert {
+            "MISSING",
+            "EMPTY",
+            "OK",
+            "MALFORMED",
+            "OVERSIZE",
+            "UNSUPPORTED_TYPE",
+            "UNSUPPORTED_ENCODING",
+            "UNSUPPORTED_TRANSFER",
+        } <= {syntax.state_of(v) for v in features}
         rust_errors = int(
             sql(
                 "security_db", "SELECT count(*) FROM ingestion_errors WHERE source='AI_SHADOW'"
@@ -1065,16 +1145,25 @@ def run(runtime, output, *, opt_in, off_only=False):
                 "frozen_metadata_records_accepted": frozen_count,
                 "raw_rejection_reason_suppressed": True,
                 "candidate_features_in_existing_AI_model_tables": False,
+                "isolated_valid_candidate_persistence": research_persistence,
             },
             "dashboard_API": "REAL_AUTHENTICATED_API_READ_SCAN_PASS",
             "failure_open_checks": failure_checks,
             "frozen_request_offline_live_parity": len(frozen_checks),
+            "audit_request_ids_matched": len(request_rows),
+            "audit_wire_status_conflicts": 0,
             "firewall_actions": 0,
             "protected_value_feature_invariance": True,
             "raw_body_or_secret_hash_exported": False,
             "nominal_drops": ingress.dropped - len(failure_checks),
             "deliberate_failure_drops": len(failure_checks),
             "max_buffer_prefix_bytes": ingress.max_prefix,
+            "max_numeric_datagram_bytes": ingress.max_payload_bytes,
+            "extractor_latency_ms_p50_p95_max": np.quantile(
+                ingress.extraction_ms[: len(features)], [0.5, 0.95, 1.0]
+            ).tolist(),
+            "acceptance_process_RSS_bytes_by_mode": rss_by_mode,
+            "performance_scope": "Sequential small control; harness includes reference predictor, scanners and workers. Not a production overhead benchmark.",
             "latency_ms_OFF_ON_p50_p95": {
                 str(mode): np.quantile(
                     [r["latency_ms"] for r in request_rows if r["candidate_on"] == mode],
@@ -1098,7 +1187,7 @@ def run(runtime, output, *, opt_in, off_only=False):
             assert file_sha256(ROOT / path) == sha
         atomic_json(output / "request-metadata.json", request_rows)
         atomic_json(output / "report.json", result)
-        atomic_json(ROOT / "ai-training/reports/REAL_BODY_INGRESS_20261108.json", result)
+        atomic_json(ROOT / "ai-training/reports/BODY_SYNTAX_LIVE_20261108.json", result)
         print(json.dumps(result, indent=2))
     finally:
         gate.off()
@@ -1142,6 +1231,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Bounded Student OFF checks; never enable candidate or run privacy acceptance",
     )
+    p.add_argument(
+        "--student-only",
+        action="store_true",
+        help="Use verified Student fixtures only, no DVWA probes",
+    )
     a = p.parse_args()
     if a.nginx_preflight_only:
         if a.enable_body_syntax or a.off_only:
@@ -1158,4 +1252,4 @@ if __name__ == "__main__":
     else:
         if a.runtime is None:
             p.error("--runtime is required for opt-in full acceptance")
-        run(a.runtime.resolve(), a.output.resolve(), opt_in=True)
+        run(a.runtime.resolve(), a.output.resolve(), opt_in=True, student_only=a.student_only)

@@ -1,0 +1,268 @@
+{
+  "milestone": "body-syntax-live-acceptance-20261108",
+  "baseline_commit": "909680f",
+  "case": "CASE_A_LIVE_CANDIDATE_VERIFIED_FOR_LAB",
+  "LIVE_OBSERVABILITY": "VERIFIED_FOR_LAB",
+  "PRODUCTION_PRIVACY": "NOT_VERIFIED",
+  "TRAINING": "NOT_RUNNING",
+  "TRAINING_READY": false,
+  "representation_research_input_ready": true,
+  "candidate_contract_sha256": "0e163b7392a9bb68131e4c66486fa5827ce6259295f0d703b403a8efad96982c",
+  "frozen_contract_changed": false,
+  "execution_report": {
+    "path": "ai-training/reports/BODY_SYNTAX_LIVE_20261108.json",
+    "sha256": "2b4f775c3fa2e8624233d2d061ba7b8b26e38520ce14a86eb2ae725673d464c3"
+  },
+  "acceptance_plan_fingerprint": "f16202bfadd361d6a31869ab53ef5960965b25a2f29a9614630e2ffa91fc3378",
+  "gates": {
+    "NGINX_PREFLIGHT": {
+      "status": "PASS",
+      "scope": "Actual isolated nginx-t on current generated config"
+    },
+    "REAL_INGRESS_OFF_BASELINE": {
+      "status": "PASS",
+      "scope": "Reuse909680f baseline plus32bounded paired controls;0numeric OFFevents"
+    },
+    "REAL_INGRESS_ON": {
+      "status": "PASS",
+      "scope": "32ON requests with explicit opt-in; candidate finally OFF_LATCHED"
+    },
+    "APPLICATION_BEHAVIOR": {
+      "status": "PASS",
+      "scope": "Matching OFF/ON statuses and real login/me/logout/session;3fail-open cases keep204/200"
+    },
+    "REQUEST_IDENTITY": {
+      "status": "PASS",
+      "scope": "73/73Nginx/StudentAudit IDs/statuses match;32candidate IDs match worker/Rust/DB/API"
+    },
+    "BODY_SYNTAX_LIVE_PARITY": {
+      "status": "PASS",
+      "scope": "32/32 exact numeric vectors;46features/order/version/ranges;MISSING andEMPTY distinct"
+    },
+    "PRIVACY_CANARIES": {
+      "status": "PASS",
+      "scope": "Six fake-secret families, protected body fields+Authorization+extraCookie; literal/url/base64/hex/sha1/sha256 scans across exercised files,35DBtables,bothauthenticated APIs; no absolute privacy claim"
+    },
+    "BODY_TEMP_FILE_NON_PERSISTENCE": {
+      "status": "PASS",
+      "scope": "5Nginx temp dirs0700; inotify incldeletedfile self-test; strace0temp O_CREAT;0residual files within exercised workload"
+    },
+    "RUST_DB_DASHBOARD_PRIVACY": {
+      "status": "PASS",
+      "scope": "Separate opt-in Rust example -> dedicated schema -> authenticated readonlyloopbackAPI;32/32numeric parity, no raw content; normal Rustrejectpath tested. API surface only, no new browserUI qualification"
+    },
+    "FROZEN_REQUEST_V2_REGRESSION": {
+      "status": "PASS",
+      "scope": "67actual current-worker offline/live score comparisons tolerance1e-7; unchanged manifest/threshold/body_observedfalse"
+    },
+    "GLU207_REGRESSION": {
+      "status": "PARTIAL",
+      "scope": "Frozen artifact hashes and source contracts unchanged, Python correlation testsPASS; no actual207sensor-derived live score/replay in this request-only cohort"
+    },
+    "RULE_POLICY_REGRESSION": {
+      "status": "PASS",
+      "scope": "Core Rust/Rules/Policy/Suricata/correlation source/binary unchanged; no46features in frozen models;0firewall actions"
+    },
+    "RESOURCE_SAFETY": {
+      "status": "PASS",
+      "scope": "25%onecore,85Ccutoff; peak74C activeavg59.76C; no watchdog failure/OOM; reserve held"
+    },
+    "LAB_CLEANUP": {
+      "status": "PASS",
+      "scope": "All owned transient units/listeners/sockets stopped; old/newPGvolumes preserved; default candidate/receiver OFF"
+    }
+  },
+  "counts": {
+    "nginx_total": 73,
+    "nominal_OFF": 32,
+    "nominal_ON": 32,
+    "failure_phase_CSRF": 3,
+    "direct_failure_login_and_me": 6,
+    "helper_recorded": 67
+  },
+  "identity": {
+    "all_edge_audit_matches": 73,
+    "all_status_conflicts": 0,
+    "candidate_worker_Rust_journal_DB_API": 32,
+    "feature_parity": 32,
+    "nominal_drops": 0,
+    "deliberate_drops": 3
+  },
+  "canaries": {
+    "families": 6,
+    "paired_auth_denial_requests": 12,
+    "positions": [
+      "protected/unknown body values",
+      "Authorization Bearer",
+      "extraCookie preserving actual validsession"
+    ],
+    "transformations": [
+      "literal",
+      "URLencoded",
+      "base64",
+      "hex",
+      "SHA1",
+      "SHA256",
+      "JSONescaped"
+    ],
+    "files_scanned": {
+      "acceptance-v1": 20,
+      "runtime": 15,
+      "security_db_tables": 21,
+      "student_db_tables": 14
+    },
+    "private_canary_values_published": false,
+    "protected_value_invariance": true,
+    "finite_scope_only": true
+  },
+  "body_states": {
+    "EMPTY": 1,
+    "MALFORMED": 2,
+    "MISSING": 17,
+    "OK": 8,
+    "OVERSIZE": 1,
+    "UNSUPPORTED_ENCODING": 1,
+    "UNSUPPORTED_TRANSFER": 1,
+    "UNSUPPORTED_TYPE": 1
+  },
+  "failure_open": [
+    {
+      "candidate": "OFF_LATCHED",
+      "case": "parser exception",
+      "login": 204,
+      "session": 200
+    },
+    {
+      "candidate": "OFF_LATCHED",
+      "case": "absent worker socket",
+      "login": 204,
+      "session": 200
+    },
+    {
+      "candidate": "OFF_LATCHED",
+      "case": "non-socket datagram target",
+      "login": 204,
+      "session": 200
+    }
+  ],
+  "persistence": {
+    "normal_Rust": "StrictAI_SHADOW rejected32bodyversionevents; no frozen contract changed",
+    "valid_Rust": "Opt-in example only; dedicated idps_body_syntax_lab.observations schema, numeric journal and readonlyGET/observations on loopback",
+    "numeric_parity": 32,
+    "API_without_auth": 401,
+    "API_with_auth": 200,
+    "frozen_metadata_record_count160": "Cumulative ownedDB count including historical runs; not a current-run metric or quality statistic",
+    "normal_bootstrap": "Unchanged: examples not built/run by normal cargo build/bootstrap; missing opt-in refusesstartup",
+    "main_rules_policy_called": false
+  },
+  "performance": {
+    "extraction_nominal_ms_p50_p95_max": [
+      0.009420999958820175,
+      0.06822260011176695,
+      0.1210469999932684
+    ],
+    "numeric_datagram_max_bytes": 278,
+    "observed_prefix_max_bytes": 272,
+    "prefix_limit_bytes": 8192,
+    "RSS_acceptance_process": {
+      "False": {
+        "end": 183799808,
+        "start": 122060800
+      },
+      "True": {
+        "end": 184573952,
+        "start": 184377344
+      }
+    },
+    "phase_observations": {
+      "OFF": {
+        "request_count": 32,
+        "HTTP_latency_median_ms": 258.7359005001417,
+        "cgroup_CPU_percent_one_core_approx": 24.438251993114232,
+        "scope": "Coarse1s edge completion windows; Java/Rust/reference predictor/workers included, PGcontainer excluded; sequential warm/order effects, not causal candidate overhead"
+      },
+      "ON": {
+        "request_count": 32,
+        "HTTP_latency_median_ms": 141.65133250025974,
+        "cgroup_CPU_percent_one_core_approx": 23.940121256218088,
+        "scope": "Coarse1s edge completion windows; Java/Rust/reference predictor/workers included, PGcontainer excluded; sequential warm/order effects, not causal candidate overhead"
+      }
+    },
+    "interpretation": "Sequential32/32small control; cold/warm/order effects and reference inference/scanning included. LowerON latency is not evidence of speedup; CPU/RSS are not isolated causal candidate overhead."
+  },
+  "resource": {
+    "wall_seconds": 224.65787444200032,
+    "active_average_c": 59.757676152167846,
+    "active_seconds": 224.3590610020001,
+    "peak_c": 74.0,
+    "cutoff_c": 85,
+    "quota_percent_one_core": 25,
+    "peak_tasks": 74,
+    "task_limit": 128,
+    "peak_cgroup_memory_bytes": 564551680,
+    "min_MemAvailable_bytes": 20543680512,
+    "watchdog_failure": null
+  },
+  "safety": {
+    "source_pins": "PASS",
+    "protected_current_files": 158,
+    "unchanged_legacy_artifact_pins": 26,
+    "frozen_models_encoders_thresholds": "UNCHANGED",
+    "Student_Rust_main_Rules_Policy_Suricata_correlation": "UNCHANGED",
+    "normal_bootstrap": "UNCHANGED_OPT_IN_EXAMPLE_ONLY",
+    "lab_listeners": [],
+    "PG_volumes": "BOTH_STOPPED_ONE_MOUNT_EACH_PRESERVED",
+    "candidate_final": "OFF",
+    "sealed_opened": false,
+    "nginx_temp_O_CREAT_calls": 0,
+    "temp_directories_permissions": {
+      "body": "0o700",
+      "proxy": "0o700",
+      "fastcgi": "0o700",
+      "scgi": "0o700",
+      "uwsgi": "0o700"
+    },
+    "temp_remaining_files": 0
+  },
+  "tests": {
+    "Python": 57,
+    "Rust_example_contract": 1,
+    "Ruff": "PASS",
+    "Rustfmt": "PASS",
+    "receiver_default_off_refusal": "PASS",
+    "integration": "FIRST_BOUNDED_ATTEMPT_PASS",
+    "Java": "Not rerun; Student source and jar unchanged from verified909680f; actual application regression exercised"
+  },
+  "training_gates_remaining": [
+    "Define and lock separate candidate encoder/model input:46body features are not compatible with frozen588/207tensors. No automatic feature concatenation/promotion.",
+    "Materialize/re-audit existing exposed224request release under same immutable privacy contract; recompute exact/near/lineage collisions and strict group splits. Preserve intentional identity exclusions and remaining6login mixed records.",
+    "Verify TRAIN/CAL workflow,benignPOST and XSS/command family coverage after quarantine; current functional fixtures are not a new training release or independent evaluation.",
+    "Keep label evidence at internal Oracle research tier, human independent reviewPENDING; keep prospective samples sealed and protocol locked before model selection.",
+    "Only start a later bounded challenger if data/feature/evaluation/recovery/resource gates actuallyPASS; no fit in this milestone."
+  ],
+  "existing_data_refs": [
+    "docs/22_ATTACK_INTENT_DATASET_V1.md",
+    "docs/23_HTTP_BODY_SYNTAX_RESEARCH.md"
+  ],
+  "independent_review": "PENDING_UNCHANGED",
+  "training_datasets_or_labels_modified": false,
+  "new_checkpoints": 0,
+  "published_releases_modified": false,
+  "residual_risks": [
+    "Coarse syntax/count/state/media/timing side channels remain; no DP or absolute confidentiality guarantee.",
+    "Canary coverage is finite and positioned in credential/body/Auth/Cookie paths; arbitraryURI/UA placements and all production persistence paths not qualified.",
+    "No production TLS/LAN/multitenancy,RBAC or long-run throughput qualification for the lab example/token.",
+    "IncompleteHTTPtruncation,multipart uploads and socket saturation not exercised; over8KiB content withheld and markedOVERSIZE, not partially parsed or mislabeledTRUNCATED.",
+    "No actualSuricata-derivedGLU207score; no Recall/FPR/generalization improvement claim.",
+    "Current request-only lab records do not cure existing data lineage/family coverage limitations."
+  ],
+  "next_action": "One bounded offline re-audit/materialization of existing attack-intent release candidate views and strict group splits to decide data readiness for a separately locked challenger; no newcapture,threshold tuning,training or deployment.",
+  "local_evidence": [
+    ".local-dev/body-live-20261108/locked-plan.json",
+    ".local-dev/body-live-20261108/acceptance-v1/report.json",
+    ".local-dev/body-live-20261108/acceptance-v1/nginx-files.trace",
+    ".local-dev/body-live-20261108/postmortem.json",
+    ".local-dev/body-live-20261108/acceptance-guard-v1/resource-report.json",
+    ".local-dev/body-live-20261108/source-snapshots/"
+  ]
+}
