@@ -97,6 +97,11 @@ def configure(root):
     c.RUN = RUN
     old_open, old_case = c.open_fixture_session, c.run_case
     transport = c.http
+    private_values = set()
+
+    def remember(value):
+        if isinstance(value, str) and len(value) >= 8:
+            private_values.add(value)
 
     def authenticated_http(port, method, path, raw, headers):
         # Pinned currentUser.js authenticates req.cookies.token, not Bearer.
@@ -105,7 +110,17 @@ def configure(root):
             token = headers.get("Authorization", "")
             assert token.startswith("Bearer ")
             headers = dict(headers, Cookie="token=" + token[7:])
-        return transport(port, method, path, raw, headers)
+        for key, value in headers.items():
+            if key.lower() in {"authorization", "cookie"}:
+                remember(value)
+                remember(value.removeprefix("Bearer "))
+                for part in value.split(";"):
+                    remember(part.partition("=")[2].strip())
+        result = transport(port, method, path, raw, headers)
+        for key, value in result[1]:
+            if key.lower() == "set-cookie":
+                remember(value.split(";", 1)[0].partition("=")[2])
+        return result
 
     c.http = authenticated_http
     encode = c.representation
@@ -126,10 +141,16 @@ def configure(root):
 
     def open_session(env, q, d, role, setup):
         if env != "juice":
-            return old_open(env, q, d, role, setup)
+            session = old_open(env, q, d, role, setup)
+            remember(session.token)
+            for value in session.cookies.values():
+                remember(value)
+            return session
         # Ordinary registration/login, no privileged role or database writes.
         email = secrets.token_hex(12) + "@example.invalid"
         password = secrets.token_urlsafe(24)
+        remember(email)
+        remember(password)
         status, _, data, _ = c.http(
             c.PORT,
             "POST",
@@ -150,6 +171,7 @@ def configure(root):
         setup[0] += 1
         assert status == 200, "Dedicated login failed"
         auth = json.loads(data)["authentication"]
+        remember(auth["token"])
         ss = SimpleNamespace(
             token=auth["token"], bid=auth["bid"], identity=email, uid=uid, basket_added=False
         )
@@ -260,6 +282,36 @@ def configure(root):
         return result
 
     c.open_fixture_session, c.run_case = open_session, run_case
+
+    def privacy_check():
+        # Finite actual-value scan before transient credentials leave RAM.
+        verifier = module("verify-request-v3")
+        needles = {n for value in private_values for n in verifier.forms(value)}
+        files = [p for p in root.rglob("*") if p.is_file()]
+        assert not any(n in p.read_bytes() for p in files for n in needles), (
+            "Private value in capture artifacts"
+        )
+        atomic_json(
+            root / "actual-value-privacy-check.json",
+            {
+                "status": "PASS_FOR_RESEARCH",
+                "files_scanned": len(files),
+                "actual_private_values_scanned_in_RAM": len(private_values),
+                "transformations": [
+                    "literal",
+                    "URL",
+                    "base64",
+                    "hex",
+                    "SHA1",
+                    "SHA256",
+                    "JSONescaped",
+                ],
+                "private_values_or_direct_digests_written": False,
+                "scope": "Finite emitted capture metadata/tensors only; no production certification",
+            },
+        )
+
+    c.privacy_check = privacy_check
     return c
 
 
@@ -338,6 +390,8 @@ def lock(root):
             ROOT / "ai-training/reports/BASKET_ORACLE_ROOT_CAUSE_20261108.json"
         ),
         "protocol_integrity": "PRESERVED_NO_ROLE_TEMPLATE_OR_ORACLE_MEANING_CHANGE",
+        "negative_gate": "Locked rejection/non-creation proof independent of exact exception taxonomy; missing required state fails campaign separately without overwriting positive proof",
+        "revalidation_of_reused_DVWA": "cases/run_case/preaudit/php_authenticated AST unchanged from514bedf; pinned DVWA/DB images, namespace33 33, helper hashes and Oracle meanings unchanged; new account/cookie bindings affect Juice only",
         "new_preflight_representatives": 4,
         "reused_preflight_representatives": 5,
         "negative_diagnostics": 1,
@@ -382,7 +436,10 @@ def capture(root):
     assert plan["environment_fingerprint"] == env["fingerprint"]
     for p, sha in env["source_sha256"].items():
         assert file_sha256(ROOT / p) == sha
-    c.capture(root)
+    try:
+        c.capture(root)
+    finally:
+        c.privacy_check()
 
 
 if __name__ == "__main__":

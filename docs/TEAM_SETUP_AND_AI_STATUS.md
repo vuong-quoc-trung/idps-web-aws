@@ -17,7 +17,8 @@ Coverage milestone: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_D
 Command prerequisite: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md).
 Acquisition milestone: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md).
 Basket root cause: [VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
-Milestone hiện tại: [Dataset completion — CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
+Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
+Milestone hiện tại: [Dataset acquisition completed — CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
 
 ## Repository, model release và dependencies
 
@@ -1244,3 +1245,48 @@ nêu trong báo cáo; production privacy NOT_VERIFIED.
 **Next action duy nhất:** hoàn tất hữu hạn phần Juice preflight còn thiếu với
 negative gate đã sửa. State setup cần thiết không được tính evidence độc lập.
 Chỉ sau 9/9 PASS mới chạy 12 main templates và materialize. Chưa bắt đầu training.
+
+
+## Request v3 acquisition complete — 2026-11-08
+
+Baseline `648a495`. [Báo cáo](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md),
+[machine report](../ai-training/reports/REQUEST_V3_DATASET_ACQUISITION_COMPLETE_20261108.json),
+[frozen pilot config](../ai-training/configs/research/request-v3-grounded-pilot-20261108.json).
+
+**CASE A — RESEARCH PILOT READY; REQUEST_V3_TRAINING=NOT_STARTED.**
+Fresh execution `request-v3-acquisition-final-20261108-r1` đạt preflight9/9
+(5 DVWA PASS tái sử dụng, 4 Juice mới), rồi 12/24 main theo template/role cũ.
+Main:11 benign success,1 verified SQLi exploit success,0 UNKNOWN. Basket CREATE200
+được DB read-only xác minh; negative duplicate500/state unchanged PASS độc lập,
+exception taxonomy vẫn UNKNOWN. Các UNKNOWN cũ giữ nguyên, không replay-promote.
+
+Release local ignored:
+`ai-training/.artifacts/request_v3_acquisition_final_20261108/release-v2/`.
+Version `request-v3-grounded-20261108-v1`, fingerprint
+`f6aa5b60b0c7d0291dfa123fe82a8e0870bb9fbacd36ac6eb27f3d6e9dfae22f`.
+236 rows,634 dimensions; parent224 giữ nguyên,12 main mới đều strict eligible.
+TRAIN48records/42views,CAL13/13,DEV93/90. TRAIN thêm JSONPOST1,command/file benign
+counterpart mỗi loại1. DEV thêm6 benign POST views/3workflows,FORM+JSON. Eligible
+cross-role overlap0; deterministic rebuild7/7byte-identical; parent parity224,
+assembly parity236,new source-body parity12. Không coi collision reduction là
+quality gain; TRAINJSON/CAL/family counts còn nhỏ, source/media shortcuts còn có
+thể tồn tại. Exposed DVWA/Juice, không independent generalization.
+
+Các research data/feature/Oracle/split/coverage/privacy gates PASS. Synthetic634
+warm-start/reload/exact-resume proof trước đó còn nguyên. Human review PENDING,
+INDEPENDENT_QUALITY_CERTIFIED=false,production privacyNOT_VERIFIED. 41 actual private
+values được finite-scan trong RAM trước exit; không có raw HTTP/session/cookie
+digest mới trong derivative. Evidence và tensors chỉ ở local ignored.
+
+Giữ challenger53,640params,seed17,batch16,max128updates hoặc20epochs. Với42canonical
+TRAINviews/no dropped tail, tối đa60updates; chưa tạo run/checkpoint thực nghiệm.
+Frozen v2/calibration-only/challenger dùng cùng canonical IDs, threshold từ CAL
+benign only, retention screen cũ không đổi. Không train hay promote.
+
+33 targeted tests và Ruff PASS. Guard peak52°C, không thermal/watchdog failure;
+lab sạch,24volume inventory không đổi,PG cũ stopped. 158protectedhashes và3historical
+UNKNOWN files không đổi. Frozen AI,Rules/Policy,web/Nginx/sensor/correlation,
+Releases/bootstrap giữ nguyên. Không sealed/AWS/enforcement.
+
+**Next action:** chỉ khi được cho phép riêng, khởi chạy một bounded pilot theo
+config đã freeze; không cần thêm capture để đạt minimum hiện tại. Dừng milestone.

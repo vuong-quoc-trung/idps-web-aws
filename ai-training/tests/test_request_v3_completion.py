@@ -1,9 +1,12 @@
 """Fixture amendment rejects status-only certification and preserves protocol."""
 
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+
+import pytest
 
 spec = importlib.util.spec_from_file_location(
     "completion", Path(__file__).parents[1] / "scripts/complete-request-v3-campaign.py"
@@ -128,6 +131,15 @@ def test_whoami_cookie_binding_is_transient_and_only_for_identity_endpoint(tmp_p
     c.http(1, "POST", "/api/BasketItems/", b"{}", {"Authorization": "Bearer private-test-token"})
     assert not any(k == "Cookie" for k, v in seen)
     assert not list(tmp_path.iterdir())
+    c.privacy_check()
+    proof = json.loads((tmp_path / "actual-value-privacy-check.json").read_text())
+    assert proof["status"] == "PASS_FOR_RESEARCH"
+    assert proof["actual_private_values_scanned_in_RAM"] > 0
+    (tmp_path / "bad-metadata.json").write_text(
+        json.dumps({"session_group": hashlib.sha256(b"private-test-token").hexdigest()})
+    )
+    with pytest.raises(AssertionError, match="Private value"):
+        c.privacy_check()
 
 
 def test_unknown_error_taxonomy_does_not_overwrite_positive_oracle(tmp_path, monkeypatch):
