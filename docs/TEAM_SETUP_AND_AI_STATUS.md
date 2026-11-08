@@ -11,7 +11,8 @@ Protocol: [Scaled matched normalization experiment](20_SCALED_NORMALIZATION_EXPE
 Kết quả model gần nhất: [Scaled normalization — candidate rejected](21_SCALED_NORMALIZATION_RESULTS.md).
 Dataset milestone: [Attack-intent v1 — released, training blocked](22_ATTACK_INTENT_DATASET_V1.md).
 Nền tảng representation: [HTTP body syntax — prototype](23_HTTP_BODY_SYNTAX_RESEARCH.md).
-Milestone hiện tại: [Body-syntax live acceptance — verified for lab](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
+Live prerequisite: [Body-syntax live acceptance — verified for lab](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
+Milestone hiện tại: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_READINESS.md).
 
 ## Repository, model release và dependencies
 
@@ -983,3 +984,63 @@ Chỉ training ở milestone khác khi data/feature/evaluation/recovery/resource
 và strict group splits của attack-intent release hiện có, để chốt data readiness cho
 một challenger được khóa riêng. Không capture thêm, tune threshold, training,
 promotion hoặc deployment trong nhiệm vụ acceptance này. Dừng tại đây.
+
+## Request Intelligence v3 data readiness — 2026-11-08
+
+**CASE B — derivative hoàn tất, TRAINING_READY=false; không training.** Baseline
+`8e069f0`. Chi tiết: [dataset readiness](24_REQUEST_V3_DATA_READINESS.md) và
+[machine report](../ai-training/reports/REQUEST_V3_DATA_READINESS_20261108.json).
+
+Final local build `ai-training/.artifacts/request_v3_body_syntax_20261108/release-v2/`,
+version `request-v3-body-syntax-20261108-v1`, fingerprint
+`5c95afd6555502725a10ddb4a77d2c4f80a039dfd5c93448bb658252b5367e0d`.
+224records materialize/parity/reference checks PASS; fresh rebuild7files byte-identical.
+634float32 input: frozen runtime numeric76/content512 + fixed-scale46body features;
+no fitted normalization, no raw body/value/identity/secret-hash inputs added.
+
+| Role | Parent strict | Candidate strict | Candidate unique views | Benign / Attack |
+|---|---:|---:|---:|---|
+| TRAIN |10|43|37|23 / 20|
+| CALIBRATION |13|13|13|11 / 2|
+| DEVELOPMENT |86|86|83|40 / 46|
+
+TRAIN XSS8/command4/SQLi4/file2unique attack views, benign POST19 qua3FORM workflows;
+đã cải thiện thiếu family/form coverage. TRAIN còn thiếu benign JSON POST và benign
+command/file counterparts cùng surface. CAL minimumPASS, không population FPR claim.
+DEV0benignPOST trong khi6POSTđềuattack: apparent gain có thể chỉ là method/body
+shortcut.224receipts chỉ149EMPTY+75OK, khác live availability cóMISSING; giữ đúng
+states, không tạo fake samples. All224mixed collision records35→6, stored-XSS group
+29→0mixed; identity-excluded JSON-login6vẫn quarantine. Đây không phải Recall gain.
+
+Roles/labels và raw/template/full/full-near/prior-admission/Oracle/lineage exclusions
+giữ nguyên; chỉ tính lại runtime-representation/within-role view exclusions. Strict
+candidate cross-role exact/near/lineage0overlaps; frozen-prefix similarity có thể
+còn khi body khác. Sealed candidate overlapUNVERIFIED;12sealed không mở.142eligible
+rows có internal Oracle; independent review224PENDING,0human verification mới.
+
+Privacy scan đầu phát hiện inherited session_group chứa cookie digests: rejected.
+Bản cuối dùng ordinal aliases, verify grouping bijection224rows. Chỉ bỏ unsafe
+records copy vừa tạo của rejected build; source evidence/parent dataset không sửa
+hoặc xóa, rejection diagnostics giữ local. Final scan137source values và transformed
+forms,6canary families PASS_FOR_RESEARCH; per-request artifacts local-only.
+PRODUCTION_PRIVACY vẫnNOT_VERIFIED, syntax/metadata side channels còn nguyên.
+
+Khóa một [design](../ai-training/configs/research/request-v3-body-syntax-design-20261108.json):
+634→64→64→64→64→8,53,640parameters, warm-startW0 thêm46zero rows, reset optimizer.
+Synthetic initial-function parityPASS,0updates/0checkpoints. Frozen/calibration-only
+controls và same-data CAL/DEV protocol khóa; actual634 recovery proof chưa chạy,
+phải xác minh trước future fit. GLU207 livePARTIAL không chặn request-only offline
+research. Không có runID, training service, checkpoint mới hoặc model promotion.
+
+40final Python tests/Ruff/formatPASS. Quota25%onecore,cutoff85°C,reserve4GiB;
+materialization v2 peak71°C, active average66.09°C, short finite workloads only.
+158protected files/parent release giữ nguyên. Student/Security/Nginx/Rules/Policy/
+Suricata/correlation, frozen weights/encoders/thresholds và Releases không đổi;
+candidate mặc địnhOFF. Team clone/bootstrap/model restore flow giữ nguyên.
+
+**Đúng một nhiệm vụ tiếp theo:** control-only Oracle campaign tối đa24receipts,
+precommit TRAIN/DEVELOPMENT groups, bổ sung3TRAIN gaps và≥6uniqueDEVbenignPOSTviews
+qua≥3workflows/FORM+JSON; thêm genuine missing-body controls khi feasible. Preflight
+lineage/template/full-near/candidate-near trước HTTP; không copy templates giữaroles,
+không mởsealed, không gán benign từ200 hoặc phát filler. Nếu không có Oracle/workflow
+novelty phù hợp, dừng với coverage gap; không lặp capture vô hạn. Chưa thực hiện.
