@@ -743,7 +743,9 @@ def launch(q, d, env):
         )
         image = d.APP_IMAGE
         port = "80"
-        extra = ["-e", "DB_SERVER=db"]
+        # Lab network namespace only: www-data GID33 may open ICMP datagram sockets.
+        # No CAP_NET_RAW, root application, profile relaxation or host sysctl change.
+        extra = ["-e", "DB_SERVER=db", "--sysctl", "net.ipv4.ping_group_range=33 33"]
     else:
         image = q.JUICE
         port = "3000"

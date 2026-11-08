@@ -13,7 +13,8 @@ Dataset milestone: [Attack-intent v1 — released, training blocked](22_ATTACK_I
 Nền tảng representation: [HTTP body syntax — prototype](23_HTTP_BODY_SYNTAX_RESEARCH.md).
 Live prerequisite: [Body-syntax live acceptance — verified for lab](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
 Data prerequisite: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_READINESS.md).
-Milestone hiện tại: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_DATA_COVERAGE.md).
+Coverage milestone: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_DATA_COVERAGE.md).
+Milestone hiện tại: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md).
 
 ## Repository, model release và dependencies
 
@@ -1087,3 +1088,40 @@ clone/bootstrap/model restore, Web/Nginx/Rules/Policy/Suricata/correlation khôn
 **Một blocker tiếp theo:** legitimate ping/Oracle cho application UID trong isolated
 lab. Chỉ tiếp tục campaign đã khóa sau khi dependency đó được xác minh; không nới
 privacy, sửa labels/roles hoặc thu filler. Không training/AWS/enforcement lượt này.
+
+## Command Oracle sandbox recovery — 2026-11-08
+
+**CASE A — command Oracle VERIFIED; không main capture/training.** Baseline `33e0b0d`.
+[Báo cáo](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md),
+[machine evidence](../ai-training/reports/COMMAND_ORACLE_SANDBOX_RECOVERY_20261108.json),
+[lab addendum](../ai-training/configs/research/command-oracle-sandbox-20261108.json).
+
+Root cause: namespace `ping_group_range=0 0` loại GID33; ICMP datagram EACCES13,
+ping fallback raw EPERM1. Binary0755/nosetuid/no capability xattr, loopbackUP;
+không phải binary execution failure. Minimal fix chỉ DVWA research app launch:
+`--sysctl "net.ipv4.ping_group_range=33 33"`. Worker/ping vẫn33:33/caps0/NNP1/seccomp2;
+không thêmCAP_NET_RAW/root app/privileged hoặc đổi host/firewall/security profile.
+Fresh default namespace sau cleanup vẫndeny; host range0–2147483647 giữ nguyên.
+
+Real HTTP positive200:4tx/4rx/0%loss, ICMP kernel counters+4/+4; actual ping ancestry
+khớp server worker PID/request ID. Negative thiếu authenticated session302,0packets,
+UNKNOWN; valid session vẫn giữ. Separate same-identity/argv CLI exit0. HTTP child
+exit không được DVWA expose trực tiếp; không bịa status0. Không admit diagnostic
+benign/attack labels. Metadata observer chỉrequestID/PID/status, xóa cùng lab.
+
+63Python tests và3actualPHPfixturesPASS; peak64°C, quota25%onecore, cutoff85°C,
+reserve4GiB. Private evidence ở `.local-dev/command-oracle-20261108/`; raw HTTP/
+cookies/session values và direct secret hashes không publish. Production privacy
+NOT_VERIFIED, independent reviewPENDING.158protected hashes/oldPGvolumes/frozenmodels/
+Rules/Policy/Web/Nginx/Suricata/correlation/Releases giữ nguyên; no sealed access.
+
+12main/9preflight templates, roles, budget và Oracle predicates không đổi; UNKNOWN
+cũ byte-identical. Parent fingerprint vẫn
+`5c95afd6555502725a10ddb4a77d2c4f80a039dfd5c93448bb658252b5367e0d`;
+TRAIN43/37views, CAL13/13, DEV86/83. Không derivative release/checkpoint/score mới.
+
+**Next action:** tiếp tục bounded campaign đã khóa khi được yêu cầu, rebind source/
+environment hashes và fresh physical execution IDs theo addendum, giữ logical parent
+plan/roles/lineage; không reuse UNKNOWN ID hoặc sửa history. Recovery này không chạy
+các workflow khác hoặc xác nhận overall training-ready. Main captureNOT_STARTED,
+Requestv3 trainingNOT_STARTED; candidateOFF, bootstrap/model restore flow giữ nguyên.
