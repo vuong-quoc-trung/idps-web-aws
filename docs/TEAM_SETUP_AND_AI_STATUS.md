@@ -19,7 +19,7 @@ Acquisition milestone: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_
 Basket root cause: [VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
 Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
 Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
-Milestone hiện tại: [Controlled v3 pilot](31_REQUEST_V3_CONTROLLED_PILOT.md).
+Milestone hiện tại: [Controlled v3 pilot — COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
 
 ## Repository, model release và dependencies
 
@@ -1293,14 +1293,44 @@ Releases/bootstrap giữ nguyên. Không sealed/AWS/enforcement.
 config đã freeze; không cần thêm capture để đạt minimum hiện tại. Dừng milestone.
 
 
-## Controlled Request v3 pilot — 2026-11-08
+## Controlled Request v3 pilot — completed, CASE B (2026-11-08)
 
-Training đã được cho phép riêng. Run `request-v3-pilot-20261108-r1` đã prepare,
-53,640 parameters,42 canonical TRAIN views,60 planned updates. Dataset/design
-đã freeze giữ nguyên; sampling theo recorded lineage, không replacement hoặc
-multiplicity inflation. Source handoff này trước launch; trạng thái thật nằm ở
-`ai-training/.artifacts/request_v3_pilots_20261108/request-v3-pilot-20261108-r1/status.json`.
-[Run protocol và status command](31_REQUEST_V3_CONTROLLED_PILOT.md).
-Không đổi frozen AI/thresholds, không CAL/DEV gradients, không sealed access hay
-promotion. Actual checkpoint recovery và independent resource guard thuộc cùng
-run; nếu kéo dài, job chạy dưới user systemd độc lập với chat.
+[Research report](31_REQUEST_V3_CONTROLLED_PILOT.md),
+[machine evidence](../ai-training/reports/REQUEST_V3_CONTROLLED_PILOT_20261108.json).
+Run `request-v3-pilot-20261108-r1`, source `9dbf084`, dataset fingerprint
+`f6aa5b60b0c7d0291dfa123fe82a8e0870bb9fbacd36ac6eb27f3d6e9dfae22f`.
+
+**REQUEST_V3_TRAINING=COMPLETED; CASE_B_NO_DEMONSTRATED_IMPROVEMENT.**
+53,640 parameters, fresh AdamW warm-start, seed17/batch16,42 canonical TRAIN views,
+60updates/20epochs. Actual update1 checkpoint resumed in a separate process;
+final step60 checkpoint verified. Sampler replay reproduces RNG/permutations.
+No CAL/DEV gradients/statistics or DEV-selected threshold/checkpoint.
+
+On identical90canonical DEV views (47benign/43attack): frozen v2 and calibration-only
+AP0.85689/Recall20of43(46.51%), challenger AP0.83382/Recall12of43(27.91%). All0FP;
+all6benign POSTs unflagged. XSS1→0of13,command0→0of3,SQLi12→11of12,file7→1of15.
+Paired1attack corrected/9lost,0new benign FP. Locked acceptance fails; no promotion,
+no changed threshold, no automatic second run. Rule/AI complementarity NOT_MEASURED.
+
+Same-objective TRAIN loss0.89565→0.29559 and AP0.61032→0.97214 are fit diagnostics.
+Important scope: TRAIN XSS8POST/body-syntax, DEV XSS13GET/no-body; direct body-XSS
+benefit is untested on DEV. Command still fails threshold even on TRAIN. This is
+consistent with transport shift, narrow-cohort fit and legacy-function drift;
+46features are not causally isolated from weight finetuning. With4DEV lineage
+groups, no independent quality claim. IID zero-FP upper95%bound7.55%, not FPR≤1%.
+Human review PENDING; existing JSON-login privacy exclusions retained.
+
+Private final checkpoint:
+`ai-training/.artifacts/request_v3_pilots_20261108/request-v3-pilot-20261108-r1/model/checkpoints/step-000000000060-52599c3250fb/`.
+ManifestSHA256 `8130e25acb570ba694fdc27cbb48a0950928203d85a7f60fafeacd40e82859d3`.
+Run root also holds status/loss/resource/evaluation and resumable optimizer state.
+Source/tests/aggregate report public; data, weights and per-record scores local ignored.
+
+Guard peak47°C,active average46.39°C; no thermal/watchdog failure/restart. Frozen
+models/thresholds/encoders,158protected hashes,3historical UNKNOWN files and qualified
+release remain unchanged. Web/Nginx/sensors/Rules/Policy/correlation/Releases/bootstrap
+preserved; no sealed/AWS/enforcement. Four new targeted tests and Ruff PASS.
+
+**Next task duy nhất:** finite precommitted body-carried XSS+command evaluation
+with matched benign POST controls and disjoint lineage; score the fixed current
+checkpoint and v2 without retraining/retuning. Chưa capture hay chạy task này.
