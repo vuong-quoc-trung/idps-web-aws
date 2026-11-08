@@ -1,0 +1,226 @@
+{
+  "milestone": "safe-recovery-real-ingress-20261108",
+  "case": "CASE_B_PARTIAL",
+  "LIVE_OBSERVABILITY": "NOT_READY",
+  "PRODUCTION_PRIVACY": "NOT_VERIFIED",
+  "training": "NOT_RUNNING",
+  "git_review_baseline": "340c2e007af444fe91ff897c11a7cca87f7fab96",
+  "backup_ref": "codex/backup-real-ingress-391d34c-20261108",
+  "source_compatibility": "Reviewed worker c71f002 adds startup status/socket-mode only; frozen encoder/model_record unchanged; legacy pin evidence retained. Renamed migrations validated by fresh new DB, old volume not upgraded.",
+  "protocol_fingerprint": "7b7238f5e76805a42007ae607912bccb9c0a0c9366722c50aded528fe496d7d7",
+  "candidate_contract_sha256": "0e163b7392a9bb68131e4c66486fa5827ce6259295f0d703b403a8efad96982c",
+  "candidate_default": "OFF",
+  "candidate_final": "OFF",
+  "workflow_HTTP_requests": 24,
+  "passed_locked_checks": 23,
+  "ON_requests": 0,
+  "candidate_events": 0,
+  "OFF_case_counts": {
+    "csrf": 11,
+    "form-login": 1,
+    "authenticated-me": 1,
+    "JSON-logout": 1,
+    "logout-state": 1,
+    "canary-auth-denial": 6,
+    "empty": 1,
+    "malformed": 1
+  },
+  "blocker": {
+    "case": "unsupported",
+    "method": "POST",
+    "path": "/api/auth/activate",
+    "content_type": "application/octet-stream",
+    "expected_status": 415,
+    "nginx_status": 401,
+    "student_audit_status": 415,
+    "candidate": "OFF",
+    "root_cause_level": "Mismatch proven; likely app error-dispatch authentication, exact dispatch chain NOT_VERIFIED",
+    "expected_status_changed": false,
+    "HTTP_replay_after_failure": false
+  },
+  "infrastructure": {
+    "initial_task_limit": 64,
+    "confirmed_failure": "runtime/cgo: pthread_create failed: Resource temporarily unavailable",
+    "pids_limit_events": 22,
+    "explicit_full_stack_task_limit": 128,
+    "peak_full_stack_tasks": 89,
+    "pids_limit_events_after_change": 0,
+    "default_guard_task_limit": 64,
+    "other_guard_limits_unchanged": true,
+    "infrastructure_attempts": 3,
+    "workflow_campaigns": 1
+  },
+  "frozen_request_regression": {
+    "scope": "Postmortem offline comparison on already-exposed OFF metadata; no HTTP replay, no model quality evaluation",
+    "frozen_request_live_scores": 24,
+    "frozen_request_comparisons": 24,
+    "max_absolute_difference": 0.0,
+    "parity": "PASS",
+    "threshold_unchanged": true,
+    "body_observed": false,
+    "enforcement_actions": 0,
+    "nginx_request_ids_unique": 24,
+    "student_audit_request_ids_matched": 24,
+    "edge_audit_status_differences": [
+      {
+        "case": "unsupported",
+        "edge_status": 401,
+        "audit_status": 415
+      }
+    ],
+    "candidate_ON_requests": 0,
+    "candidate_events": 0,
+    "canary_final_scan_completed": false
+  },
+  "resources": {
+    "wall_seconds": 106.35925237100014,
+    "active_temperature_average_c": 58.226604579984944,
+    "active_seconds": 90.1746372749999,
+    "paused_seconds": 15.978543025000135,
+    "peak_temperature_c": 86.0,
+    "cutoff_c": 90,
+    "events": [
+      {
+        "elapsed": 86.84762496500002,
+        "action": "FREEZE_AND_REDUCE",
+        "temperature": 86.0,
+        "cpu_quota_percent": 25.0
+      },
+      {
+        "elapsed": 102.82616799000016,
+        "action": "THAW",
+        "temperature": 56.0
+      }
+    ],
+    "watchdog_failure": null,
+    "minimum_mem_available_bytes": 21334224896,
+    "peak_cgroup_memory_bytes": 577994752,
+    "CPU_quota_percent_of_one_CPU": 50,
+    "container_quotas_percent_of_one_CPU": 25
+  },
+  "safety": {
+    "historical_artifact_pins_unchanged": 26,
+    "reviewed_worker_source_unchanged_since_git_review": true,
+    "protected_current_paths_checked": 153,
+    "allowed_changed_files": [
+      "ai-training/scripts/validate-real-body-ingress.py"
+    ],
+    "lab_listeners": [],
+    "owned_containers": "only stopped new PG, one preserved volume",
+    "old_pg_stopped_one_mount_preserved": true,
+    "DVWA_Maria_removed": true,
+    "lab_network_absent": true,
+    "candidate": "OFF",
+    "nginx_temp_O_CREAT_calls_OFF": 0,
+    "remaining_nginx_temp_entries": 0,
+    "min_MemAvailable_bytes": 21334224896,
+    "peak_system_used_bytes": 11106668544,
+    "cgroup_peak_pids": 89,
+    "max_pids_limit_events": 0,
+    "resource_events": [
+      {
+        "elapsed": 86.84762496500002,
+        "action": "FREEZE_AND_REDUCE",
+        "temperature": 86.0,
+        "cpu_quota_percent": 25.0
+      },
+      {
+        "elapsed": 102.82616799000016,
+        "action": "THAW",
+        "temperature": 56.0
+      }
+    ],
+    "sealed_opened": false
+  },
+  "statuses": {
+    "GIT_RECONCILIATION": {
+      "status": "PASS",
+      "scope": "Local/remote already shared merge340c2e0; backup391d34c retained; reviewed36 historical incoming commits across121files."
+    },
+    "NGINX_PREFLIGHT": {
+      "status": "PASS",
+      "scope": "Actual isolated nginx-t succeeded on all three startup attempts."
+    },
+    "REAL_INGRESS_OFF": {
+      "status": "PARTIAL",
+      "scope": "23requests passed locked checks; 24th unsupported media returned401 instead expected415."
+    },
+    "REAL_INGRESS_ON": {
+      "status": "NOT_TESTED",
+      "scope": "OFF gate stopped campaign before candidate activation."
+    },
+    "APPLICATION_BEHAVIOR": {
+      "status": "FAIL",
+      "scope": "Same request: StudentAudit415, Nginx401; default resolver reported unsupported media. Error-dispatch authentication is plausible but not traced or independently isolated."
+    },
+    "REQUEST_IDENTITY": {
+      "status": "PASS",
+      "scope": "24unique generated IDs,24StudentAudit matches; OFF scope only."
+    },
+    "BODY_SYNTAX_LIVE_PARITY": {
+      "status": "NOT_TESTED",
+      "scope": "No ON requests or candidate events in real ingress."
+    },
+    "PRIVACY_CANARIES": {
+      "status": "PARTIAL",
+      "scope": "Six fake-secret families sent via OFF auth-denial requests; final full scans not reached; no ON privacy qualification."
+    },
+    "BODY_TEMP_FILE_NON_PERSISTENCE": {
+      "status": "PARTIAL",
+      "scope": "OFF Nginx file trace shows0temp O_CREAT and0remaining entries in five temp directories. No ON or oversized/failure path coverage."
+    },
+    "RUST_DB_DASHBOARD_PRIVACY": {
+      "status": "NOT_TESTED",
+      "scope": "No authenticated final API/DB scans; numeric candidate Rust rejection not exercised."
+    },
+    "FROZEN_MODEL_REGRESSION": {
+      "status": "PARTIAL",
+      "scope": "RIv2 live/offline24/24scores exact postmortem; frozen hashes preserved; GLU compatibility unit tests passed, no actual Suricata-derived GLU score or ON regression."
+    },
+    "RESOURCE_SAFETY": {
+      "status": "PASS",
+      "scope": "Observed workload active average58.23C,peak86C,freeze/reduce/thaw,cutoff90Cnot reached; watchdog healthy, reserve met. Run106s, no300s endurance claim."
+    },
+    "LAB_CLEANUP": {
+      "status": "PASS",
+      "scope": "No lab listeners; DVWA/Maria/network removed; old and new PG stopped with volumes preserved."
+    },
+    "TRAINING_STATUS": {
+      "status": "PASS",
+      "scope": "NOT_RUNNING; no training, checkpoint creation, promotion or model release changes."
+    }
+  },
+  "independent_human_review": "PENDING_UNCHANGED",
+  "sealed_opened": false,
+  "research_readiness": "No domain-adaptation training readiness claim; representation and split audit still blocked by real ON/privacy acceptance.",
+  "next_action": "One bounded OFF-only diagnosis comparing direct Student and Nginx unsupported-media error dispatch, establish actual application baseline, then precommit and run OFF/ON acceptance; keep expected415 and current FAIL evidence intact until cause is isolated.",
+  "local_evidence": [
+    ".local-dev/real-ingress-20261108/git-review.json",
+    ".local-dev/real-ingress-20261108/locked-campaign.json",
+    ".local-dev/real-ingress-20261108/acceptance-v2/container-failure-1794097877882409592.json",
+    ".local-dev/real-ingress-20261108/acceptance-v3/protocol.json",
+    ".local-dev/real-ingress-20261108/acceptance-guard-v3/resource-report.json",
+    ".local-dev/real-ingress-20261108/postmortem.json",
+    ".local-dev/real-ingress-20261108/safety-cleanup.json"
+  ],
+  "limits": [
+    "Candidate not activated; no real body-syntax vectors sent",
+    "Canary needles ephemeral; final privacy scan not completed, cannot reconstruct or call PASS",
+    "No cross-domain model-quality evidence or Recall/FPR measurement",
+    "No AWS, AI enforcement, host installer execution or production configuration change",
+    "API/DB privacy remains unverified",
+    "Historical artifact26pins unchanged; reviewed mutable worker source recorded separately;153current paths checked, only authorized harness source changed"
+  ],
+  "tests": {
+    "final_targeted_tests": 39,
+    "final_pytest_seconds": 3.21,
+    "preparation_contract_body_tests": 37,
+    "worker_unit_tests": 6,
+    "host_adapter_tests": 7,
+    "counts_overlap_do_not_sum": true,
+    "Rust_build": "PASS_LOCKED_OFFLINE",
+    "Student_build": "PASS_OFFLINE",
+    "Ruff": "PASS",
+    "syntax_import": "PASS"
+  }
+}

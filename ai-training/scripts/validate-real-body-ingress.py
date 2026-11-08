@@ -19,6 +19,7 @@ import subprocess
 import tempfile
 import threading
 import time
+from collections import Counter
 from http.cookies import SimpleCookie
 from pathlib import Path
 from urllib.error import HTTPError
@@ -160,6 +161,32 @@ def module(name):
     return m
 
 
+def protected_snapshot(previous):
+    protected = dict(previous["protected_sha256"])
+    updates = {}
+    for path, expected in protected.items():
+        actual = file_sha256(ROOT / path)
+        if actual != expected:
+            # The reviewed upstream change only adds startup status/socket-mode.
+            # Admit this exact source revision, never a changed model/artifact.
+            assert path == "scripts/ai-shadow-worker.py", f"Protected artifact changed: {path}"
+            for revision, sha in [("391d34c", expected), ("c71f002", actual)]:
+                blob = subprocess.run(
+                    ["git", "show", f"{revision}:{path}"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    check=True,
+                    timeout=5,
+                ).stdout
+                assert hashlib.sha256(blob).hexdigest() == sha, "Unreviewed worker source"
+            updates[path] = {"historical_sha256": expected, "reviewed_sha256": actual}
+            protected[path] = actual
+    protected["ai-training/src/idps_ai/features/body_syntax_v1.py"] = file_sha256(
+        ROOT / "ai-training/src/idps_ai/features/body_syntax_v1.py"
+    )
+    return protected, updates
+
+
 def wait(predicate, seconds=30):
     end = time.monotonic() + seconds
     while time.monotonic() < end:
@@ -168,6 +195,24 @@ def wait(predicate, seconds=30):
             return value
         time.sleep(0.1)
     raise RuntimeError("Bounded lab acceptance timeout; inspect private metadata")
+
+
+def check_application_status(output, label, candidate_on, actual, expected):
+    if expected is not None and actual != expected:
+        atomic_json(
+            output / "application-failure.json",
+            {
+                "case": label,
+                "candidate": "ON" if candidate_on else "OFF",
+                "actual_status": actual,
+                "expected_status": expected,
+                "raw_response_saved": False,
+            },
+        )
+        raise RuntimeError(
+            f"Application baseline mismatch: {label}, actual={actual}, expected={expected}; "
+            f"diagnostics: {output / 'application-failure.json'}"
+        )
 
 
 class Client:
@@ -204,15 +249,14 @@ def run(runtime, output, *, opt_in):
     infra = load(runtime / "secrets.json")
     assert ready["state"] == "READY" and not (runtime / "cleanup.json").exists()
     previous = load(ROOT / "ai-training/.artifacts/body_syntax_20261107/plan.json")
-    protected = previous["protected_sha256"] | {
-        "ai-training/src/idps_ai/features/body_syntax_v1.py": file_sha256(
-            ROOT / "ai-training/src/idps_ai/features/body_syntax_v1.py"
-        )
-    }
+    protected, source_updates = protected_snapshot(previous)
     for p, sha in protected.items():
         assert file_sha256(ROOT / p) == sha
     protocol = {
-        "baseline": "9d0bd29",
+        "baseline": subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
+        ).stdout.strip(),
+        "reviewed_source_updates": source_updates,
         "candidate_contract_sha256": syntax.CONTRACT_SHA256,
         "default": "BODY_SYNTAX_EXPERIMENT=OFF",
         "opt_in_requested": opt_in,
@@ -222,12 +266,19 @@ def run(runtime, output, *, opt_in):
             "Student form login/me",
             "Student JSON logout",
             "Student malformed/unsupported/gzip/oversize",
+            "Student empty body and malformed form",
             "Student chunked",
             "DVWA stored-XSS",
             "DVWA command stdout",
         ],
         "privacy": "Canary content/encoded/digest scan all relevant lab files, DB tables, real Rust/API plus protected-value feature invariance; no raw bodies are exported to any journal",
         "Rust_candidate_contract": "Existing strict AI_SHADOW ingress rejects numeric body-v1 events; assert rejection and no candidate scores in DB/API, do not change Rust/Policy",
+        "bounded_failure_cases": [
+            "parser exception",
+            "absent worker socket",
+            "non-socket datagram target",
+        ],
+        "truncation": "Over8KiB bodies withheld entirely and marked OVERSIZE, never partial-parse. TRUNCATED state exists in offline contract; incomplete HTTP is not claimed here.",
         "sources": {
             p: file_sha256(ROOT / p)
             for p in [
@@ -244,6 +295,8 @@ def run(runtime, output, *, opt_in):
     threads_stop = threading.Event()
     request_rows = []
     features = []
+    failure_checks = []
+    frozen_checks = {}
     canaries = [
         "FakePassword-" + secrets.token_hex(20),
         "FakeApiKey-" + secrets.token_hex(20),
@@ -266,6 +319,14 @@ def run(runtime, output, *, opt_in):
         ]
     }
     psql = ROOT / ".local-dev/real-ingress-20261107/pgclient/runtime/usr/lib/postgresql/18/bin/psql"
+    module_from_path = importlib.util.spec_from_file_location(
+        "live_frozen_contract", ROOT / "scripts/ai-shadow-worker.py"
+    )
+    frozen_module = importlib.util.module_from_spec(module_from_path)
+    module_from_path.loader.exec_module(frozen_module)
+    predictor = frozen_module.module(
+        frozen_module.BUNDLE / "infer.py", "live_frozen_predictor"
+    ).RequestPredictor(frozen_module.BUNDLE)
 
     def sql(db, text):
         p = subprocess.run(
@@ -341,9 +402,44 @@ def run(runtime, output, *, opt_in):
     lab_network = None
     q = module("quality-lab-cohort")
     d = module("p0-dvwa-capture")
-    d.APP = "real-ingress-20261107-v1-dvwa"
-    d.DB = "real-ingress-20261107-v1-maria"
-    d.NET = "real-ingress-20261107-v1-net"
+
+    def lab_pm(*args, check=True):
+        result = subprocess.run(
+            ["podman", *map(str, args)],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=os.environ | {"GOMAXPROCS": "1"},
+        )
+        if check and result.returncode:
+            safe = result.stderr
+            for private in list(infra.values()) + canaries:
+                safe = safe.replace(private, "[REDACTED]")
+            evidence = output / f"container-failure-{time.time_ns()}.json"
+            pid_state = {}
+            group = Path("/sys/fs/cgroup") / Path("/proc/self/cgroup").read_text().strip().split(
+                "::", 1
+            )[1].lstrip("/")
+            for field in ["pids.current", "pids.max", "pids.events"]:
+                if (group / field).is_file():
+                    pid_state[field] = (group / field).read_text().strip()
+            atomic_json(
+                evidence,
+                {
+                    "operation": args[0],
+                    "exit_code": result.returncode,
+                    "stderr": safe_nginx_diagnostic(safe),
+                    "pid_state": pid_state,
+                },
+            )
+            raise RuntimeError(f"Owned lab container command failed; diagnostics: {evidence}")
+        return result.stdout.strip()
+
+    q.pm = lab_pm
+    d.APP = "real-ingress-20261108-v1-dvwa"
+    d.DB = "real-ingress-20261108-v1-maria"
+    d.NET = "real-ingress-20261108-v1-net"
+    d.PORT = 18290
     d.podman = q.pm
     work = tempfile.TemporaryDirectory(prefix="idps-real-ingress-")
     try:
@@ -365,6 +461,9 @@ def run(runtime, output, *, opt_in):
             {
                 "NGINX_BODY": output / "body",
                 "NGINX_PROXY": output / "proxy",
+                "NGINX_FASTCGI": output / "fastcgi",
+                "NGINX_SCGI": output / "scgi",
+                "NGINX_UWSGI": output / "uwsgi",
                 "STUDENT_TMP": runtime / "student-tmp",
                 "SELF_TEST": output / "self-test",
             },
@@ -429,7 +528,7 @@ def run(runtime, output, *, opt_in):
                 str(output / "nginx.conf"),
             ],
         )
-        wait(lambda: (output / "nginx.pid").exists())
+        wait(lambda: (output / "nginx.pid").read_text().strip())
         # Fresh pinned DVWA lab. Its Session helper is replaced with RAM-only IO;
         # the historical collector would write receipts and is not used here.
         q.pm(
@@ -437,7 +536,7 @@ def run(runtime, output, *, opt_in):
             "create",
             "--internal",
             "--label",
-            "idps.research-run=real-ingress-20261107-v1",
+            "idps.research-run=real-ingress-20261108-v1",
             d.NET,
         )
         lab_network = d.NET
@@ -467,7 +566,7 @@ def run(runtime, output, *, opt_in):
                 "--name",
                 name,
                 "--label",
-                "idps.research-run=real-ingress-20261107-v1",
+                "idps.research-run=real-ingress-20261108-v1",
                 "--network",
                 d.NET,
                 "--cpus=.25",
@@ -499,6 +598,24 @@ def run(runtime, output, *, opt_in):
                 return status, rh, response, headers
 
         dvwa = MemorySession()
+        wait(
+            lambda: (
+                q.pm(
+                    "exec",
+                    d.DB,
+                    "mariadb",
+                    "-udvwa",
+                    "-pp@ssw0rd",
+                    "-N",
+                    "dvwa",
+                    "-e",
+                    "SELECT 1",
+                    check=False,
+                )
+                == "1"
+            ),
+            60,
+        )
         d.initialize(dvwa)
         info = json.loads(q.pm("inspect", d.APP))[0]
         merged = Path(info["GraphDriver"]["Data"]["MergedDir"])
@@ -506,23 +623,42 @@ def run(runtime, output, *, opt_in):
         monitor._watch(merged / "tmp", "DVWA_TMP")
 
         def call(client, label, method, path, body=None, headers=None, expected=None):
+            atomic_json(
+                output / "progress.json", {"phase": "ON" if gate.enabled else "OFF", "case": label}
+            )
             was_on = gate.enabled
             status, rh, response, ms = client.call(method, path, body, headers)
-            if expected is not None:
-                assert status == expected, "Application behavior differed from locked protocol"
+            check_application_status(output, label, was_on, status, expected)
             rid = rh.get("X-Request-Id")
             assert rid and re.fullmatch(r"[a-f0-9]{32}", rid)
             if was_on:
                 event = wait(lambda: worker.events.get(rid))
                 h = {k.lower(): v for k, v in (headers or {}).items()}
                 expected_vector = syntax.extract(
-                    body,
+                    b"" if h.get("transfer-encoding") == "chunked" else body,
                     h.get("content-type"),
                     content_encoding=h.get("content-encoding"),
                     transfer_encoding=h.get("transfer-encoding"),
                 )
                 assert event["features"] == expected_vector, "Offline/live candidate parity failed"
                 features.append(event["features"])
+            if path.startswith("/api/"):
+                h = {k.lower(): v for k, v in (headers or {}).items()}
+                result = predictor.predict(
+                    frozen_module.model_record(
+                        {
+                            "request_id": rid,
+                            "method": method,
+                            "url": path,
+                            "headers": {
+                                "User-Agent": "BodySyntaxLab",
+                                "Accept": "",
+                                "Content-Type": h.get("content-type", ""),
+                            },
+                        }
+                    )
+                )
+                frozen_checks[rid] = result["score"]
             request_rows.append(
                 {
                     "label": label,
@@ -533,6 +669,7 @@ def run(runtime, output, *, opt_in):
                     "parity": True if was_on else None,
                 }
             )
+            atomic_json(output / "request-metadata.json", request_rows)
             return response, rid
 
         def csrf(client):
@@ -602,6 +739,7 @@ def run(runtime, output, *, opt_in):
                     "Protected values influenced candidate features"
                 )
             format_cases = [
+                ("empty", b"", {"Content-Type": "application/json"}, 400),
                 ("malformed", b'{"token":', {"Content-Type": "application/json"}, 400),
                 (
                     "unsupported",
@@ -626,6 +764,14 @@ def run(runtime, output, *, opt_in):
             ]
             for label, body, headers, expected in format_cases:
                 call(c, label, "POST", "/api/auth/activate", body, csrf(c) | headers, expected)
+            call(
+                c,
+                "malformed-form",
+                "POST",
+                "/api/auth/login",
+                b"message=%FF",
+                csrf(c) | {"Content-Type": "application/x-www-form-urlencoded"},
+            )
             # Real client chunking, kept unsupported by unchanged v1 contract.
             body = json.dumps({"token": canaries[2], "password": "short"}).encode()
             call(
@@ -743,25 +889,53 @@ def run(runtime, output, *, opt_in):
             30,
         )
 
-        # A real extractor exception occurs before a legitimate Student login.
+        # Compare real frozen-worker inference with the unchanged offline predictor.
+        def frozen_parity():
+            rows = [json.loads(line) for line in frozen_journal.read_text().splitlines()]
+            scored = {r["request_id"]: r["score"] for r in rows if r.get("status") == "SCORED"}
+            if not set(frozen_checks) <= set(scored):
+                return False
+            assert all(abs(scored[k] - v) <= 1e-7 for k, v in frozen_checks.items()), (
+                "Frozen offline/live score regression"
+            )
+            return True
+
+        wait(frozen_parity, 30)
+
+        # Real failures before legitimate Student login. No re-arming a latched gate;
+        # each case uses a fresh OFF gate with explicit lab-only activation.
         def broken(*_, **__):
             raise ValueError(canaries[0])
 
-        ingress.extractor = broken
-        c = Client(18890)
-        # Obtain CSRF while candidate OFF; then re-arm is not needed until the intentional failure.
-        gate.off()
-        h = csrf(c) | {"Content-Type": "application/x-www-form-urlencoded"}
-        assert gate.enable(opt_in=opt_in, privacy_preflight=True)
-        status, rh, _, _ = c.call(
-            "POST",
-            "/api/auth/login",
-            urlencode({"username": "ingress-admin", "password": infra["admin"]}).encode(),
-            h,
-        )
-        assert status == 204 and gate.latched and not gate.enabled
-        status, _, response, _ = c.call("GET", "/api/auth/me")
-        assert status == 200 and json.loads(response)["username"] == "ingress-admin"
+        for failure in protocol["bounded_failure_cases"]:
+            gate.off()
+            c = Client(18890)
+            h = csrf(c) | {"Content-Type": "application/x-www-form-urlencoded"}
+            gate = Gate(output / f"failure-{len(failure_checks)}-gate.json")
+            ingress.gate = gate
+            monitor.gate = gate
+            ingress.extractor = broken if failure == "parser exception" else syntax.extract
+            if failure == "absent worker socket":
+                ingress.worker_path = str(sockroot / "unavailable.sock")
+            elif failure == "non-socket datagram target":
+                wrong_target = sockroot / "not-a-socket"
+                wrong_target.touch(mode=0o600)
+                ingress.worker_path = str(wrong_target)
+            assert gate.enable(opt_in=opt_in, privacy_preflight=True)
+            status, rh, _, _ = c.call(
+                "POST",
+                "/api/auth/login",
+                urlencode({"username": "ingress-admin", "password": infra["admin"]}).encode(),
+                h,
+            )
+            assert status == 204 and gate.latched and not gate.enabled
+            status, _, response, _ = c.call("GET", "/api/auth/me")
+            assert status == 200 and json.loads(response)["username"] == "ingress-admin"
+            failure_checks.append(
+                {"case": failure, "login": 204, "session": 200, "candidate": "OFF_LATCHED"}
+            )
+            atomic_json(output / "failure-checks.json", failure_checks)
+        wait(frozen_parity, 30)
         np.savez(output / "candidate-feature-artifact.npz", features=np.array(features, np.uint8))
         scan = safe_scan()
         maria_tables = q.pm(
@@ -798,6 +972,7 @@ def run(runtime, output, *, opt_in):
             ).strip()
         )
         frozen_count = int(sql("security_db", "SELECT count(*) FROM ai_shadow_results").strip())
+        assert int(sql("security_db", "SELECT count(*) FROM firewall_actions").strip()) == 0
         result = {
             "case": "CASE_A_VERIFIED_FOR_LAB",
             "LIVE_OBSERVABILITY": "VERIFIED_FOR_LAB",
@@ -810,6 +985,7 @@ def run(runtime, output, *, opt_in):
             "HTTP_request_count": len(request_rows),
             "candidate_events": ingress.sent,
             "parity_pass": len(features),
+            "body_states": dict(Counter(syntax.state_of(v) for v in features)),
             "temp_monitor": {
                 "healthy": monitor.healthy,
                 "counts": monitor.counts,
@@ -823,11 +999,13 @@ def run(runtime, output, *, opt_in):
                 "candidate_features_in_existing_AI_model_tables": False,
             },
             "dashboard_API": "REAL_AUTHENTICATED_API_READ_SCAN_PASS",
-            "extractor_failure_Student_login_and_session": "PASS_204_AND_ME200",
+            "failure_open_checks": failure_checks,
+            "frozen_request_offline_live_parity": len(frozen_checks),
+            "firewall_actions": 0,
             "protected_value_feature_invariance": True,
             "raw_body_or_secret_hash_exported": False,
-            "nominal_drops": ingress.dropped - 1,
-            "deliberate_failure_drops": 1,
+            "nominal_drops": ingress.dropped - len(failure_checks),
+            "deliberate_failure_drops": len(failure_checks),
             "max_buffer_prefix_bytes": ingress.max_prefix,
             "latency_ms_OFF_ON_p50_p95": {
                 str(mode): np.quantile(
@@ -843,7 +1021,8 @@ def run(runtime, output, *, opt_in):
                 "Local HTTP only, production TLS/LAN/other host paths not qualified",
                 "Existing Rust contract rejects candidate features, intentionally no score/schema/policy change",
                 "Per-request size/timing and coarse-syntax side channels remain; no absolute privacy/DP claim",
-                "DVWA XSS/command, valid multipart uploads and truncation still require separate results if not exercised here",
+                "No real Suricata capture/GLU207 score in this request-only run; GLU contract compatibility and frozen checksums tested separately, never synthesize missing sensor features",
+                "Incomplete HTTP truncation, valid multipart file upload and socket queue saturation not exercised",
             ],
             "next_task": "Re-audit the fixed attack-intent release's candidate views and group splits using only this verified-for-lab numeric contract; no automatic training.",
         }
@@ -851,10 +1030,14 @@ def run(runtime, output, *, opt_in):
             assert file_sha256(ROOT / path) == sha
         atomic_json(output / "request-metadata.json", request_rows)
         atomic_json(output / "report.json", result)
-        atomic_json(ROOT / "ai-training/reports/REAL_BODY_INGRESS_20261107.json", result)
+        atomic_json(ROOT / "ai-training/reports/REAL_BODY_INGRESS_20261108.json", result)
         print(json.dumps(result, indent=2))
     finally:
         gate.off()
+        atomic_json(
+            output / "gate.json",
+            {"BODY_SYNTAX_EXPERIMENT": "OFF", "latched": gate.latched, "reason": gate.reason},
+        )
         threads_stop.set()
         if ingress:
             ingress.close()

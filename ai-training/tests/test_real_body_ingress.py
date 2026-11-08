@@ -102,6 +102,57 @@ def test_cli_without_opt_in_stays_off_and_creates_no_lab(tmp_path, harness):
     assert not output.exists()
 
 
+def test_changed_research_artifact_is_never_admitted_as_source_update(tmp_path, harness):
+    artifact = tmp_path / "evidence.json"
+    artifact.write_text("preserved evidence")
+    with pytest.raises(AssertionError, match="Protected artifact changed"):
+        harness.protected_snapshot({"protected_sha256": {str(artifact): "0" * 64}})
+
+
+def test_application_status_failure_preserves_observed_and_locked_status(tmp_path, harness):
+    with pytest.raises(RuntimeError, match="actual=401, expected=415"):
+        harness.check_application_status(tmp_path, "unsupported", False, 401, 415)
+    assert json.loads((tmp_path / "application-failure.json").read_text()) == {
+        "case": "unsupported",
+        "candidate": "OFF",
+        "actual_status": 401,
+        "expected_status": 415,
+        "raw_response_saved": False,
+    }
+
+
+def test_reviewed_worker_update_preserves_historical_provenance(harness):
+    old = subprocess.run(
+        ["git", "show", "391d34c:scripts/ai-shadow-worker.py"],
+        cwd=harness.ROOT,
+        capture_output=True,
+        check=True,
+    ).stdout
+    sha = harness.hashlib.sha256(old).hexdigest()
+    protected, updates = harness.protected_snapshot(
+        {"protected_sha256": {"scripts/ai-shadow-worker.py": sha}}
+    )
+    current = harness.file_sha256(harness.ROOT / "scripts/ai-shadow-worker.py")
+    assert protected["scripts/ai-shadow-worker.py"] == current
+    assert updates["scripts/ai-shadow-worker.py"] == {
+        "historical_sha256": sha,
+        "reviewed_sha256": current,
+    }
+
+
+@pytest.mark.parametrize("limit", [0, 63, 257, True, 128.0])
+def test_invalid_task_budget_rejected_before_starting_workload(tmp_path, harness, limit):
+    spec = importlib.util.spec_from_file_location(
+        "ingress_guard", Path(harness.__file__).with_name("integration-guard.py")
+    )
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    output = tmp_path / "not-started"
+    with pytest.raises(ValueError, match="task limit"):
+        guard.run(["never-start"], output, tasks_max=limit)
+    assert not output.exists()
+
+
 def test_gate_defaults_off_requires_preflight_and_latches_failures(tmp_path):
     gate = Gate(tmp_path / "gate.json")
     assert not gate.enabled and not gate.enable(opt_in=True)

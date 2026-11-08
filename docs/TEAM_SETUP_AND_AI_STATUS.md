@@ -644,3 +644,70 @@ ignored historical research artifacts giữ nguyên. Diagnostics local-only:
 
 Next action duy nhất: bounded real-ingress OFF/ON privacy acceptance trong yêu cầu
 tiếp theo. Preflight PASS không chứng minh live parity hoặc end-to-end privacy.
+
+## Safe recovery / real-ingress acceptance — 2026-11-08
+
+**CASE B — PARTIAL. Candidate mặc định/final OFF; chưa training-ready.** Local và
+remote đã cùng ở `340c2e0` khi bắt đầu, chứa cả `391d34c` và các cập nhật Rust/host
+worker; không cần merge lại. Backup local:
+`codex/backup-real-ingress-391d34c-20261108`. Review36incoming historical commits/
+121files: body-syntax implementation/contract không đổi; worker chỉ thêm startup
+status và optional group-write socket (default0600), không đổi model_record/model.
+Schema thêm constrained security signals; AI ingress vẫn tách Rules/Policy.
+Migrations AI đã rename thành0011–0013: dùng **database lab mới**, không upgrade
+volume cũ có migration history0005–0007. Không chạy host installer hoặc đổi services
+ngoài lab. Binaries Rust/Student được build offline từ source hiện tại; binary cũ
+được backup local. Frozen models/encoders/thresholds/releases không đổi.
+
+Một workflow campaign được khóa trước traffic; hai startup attempts dừng trước
+workflow do PID budget. Diagnostics xác nhận `pthread_create failed`,
+`pids.max=64`, `pids.events max22`. Guard nay cho phép explicit `--tasks-max 128`,
+default64 giữ nguyên, chỉ chấp nhận64–256.
+CPU/RAM/thermal/independent watchdog giữ nguyên. Full lab dùng128, peak89tasks,
+0PID-limit events; giảm Rust/Podman worker threads cũng được giữ. Không vô hiệu hóa
+OS/firmware protection. Mọi startup evidence được bảo toàn, không dùng retry để
+chọn scores hoặc đổi roles/cases/representation.
+
+Actual Nginx preflight PASS. OFF chạy24requests:23qua locked checks gồm11CSRF,
+form login204/me200, JSONlogout204/session401,6canary auth-denial401, empty và
+malformed JSON400. Request24 (`POST /api/auth/activate`, octet-stream) gây dừng:
+**expected415, edge401, StudentAudit415 với cùng request ID**. Student log xác nhận
+`HttpMediaTypeNotSupportedException`. Khả năng error-dispatch bị authentication
+chi phối phù hợp source, nhưng chưa trace hoặc so direct/backend để chốt chuỗi lỗi.
+Không sửa Web/Policy, không đổi415 thành401 rồi chạy lại để báo PASS.
+
+Candidate chưa bật,0numeric body events. ON/live body parity, oversized/chunked,
+DVWA execution, worker/socket fail-open và final Rust/DB/API privacy scans chưa chạy.
+Hai DVWA containers chỉ setup/preflight, đã cleanup; không thu cohort training mới.
+6canary families đã gửi trongOFF nhưng final literal/encoded/digest scans chưa tới;
+không gọi đây là privacy PASS. Nginx file trace trong phạm viOFF có0temp-file
+O_CREAT và0entries còn lại ở5temp dirs; chưa chứng minh ON/error/oversize paths.
+Privacy exclusions vẫn nguyên: không cho email/password/token vào syntax; derived
+counts/syntax vẫn có side-channel risk, không có tuyên bố privacy tuyệt đối.
+
+Postmortem offline (không replayHTTP): Frozen Requestv2 live/offline **24/24scores
+khớp tuyệt đối**, threshold không đổi, body_observed=false, enforcement_actions0.
+24unique Nginx IDs đều match StudentAudit;1status mismatch như trên. GLU207 chỉ
+kiểm checksum/contract/correlation tests, không có actual Suricata-derived score;
+không synthesize207features và không gọi whole-model/ON regression PASS.
+
+Resource: full run106.36s, active90.17s average58.23°C, spike86°C; guard freeze+
+reduce về25% của1CPU rồi thaw, cutoff90°C không chạm, watchdog healthy. Pause15.98s
+được tách khỏi active average. Không có300s endurance claim. MemAvailable tối thiểu
+19.87GiB, job memory peak551.22MiB; CPU ceiling50% của1CPU, mỗi container25% của1CPU.
+Không đóng ứng dụng của người dùng. Lab listeners/workers dừng, DVWA/Maria/network
+đã xóa; cả PostgreSQL cũ/mới dừng và volumes giữ nguyên. Không xóa artifacts cũ,
+không mởsealed12, reviewPENDING không đổi.26historical artifact pins vẫn khớp;
+worker source update c71f002 có provenance riêng, không hạ gate bảo vệ model.
+
+Public sanitized acceptance matrix:
+`ai-training/reports/REAL_BODY_INGRESS_20261108.json`.
+Private diagnostics, protocols, logs, PostgreSQL material và binary backups:
+`.local-dev/real-ingress-20261108/` — không publish. Existing clone/bootstrap/model
+restore path không đổi. Harness mới ghi actual/expected status khi failure, không
+lưu raw response. Tests/Ruff/syntax được kiểm riêng; full acceptance vẫn FAIL/PARTIAL.
+
+**Một nhiệm vụ kế tiếp:** bounded OFF-only diagnosis so direct Student với Nginx
+cho unsupported-media error dispatch, khóa baseline ứng dụng đúng theo evidence,
+rồi chạy lại một OFF/ON privacy acceptance hữu hạn. Giữ evidence401/415 hiện tại;
+chưa bắt đầu domain-adaptation research/training hoặc promotion.

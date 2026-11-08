@@ -148,8 +148,11 @@ def run(
     policy="rolling",
     memory_gib=4,
     cutoff=90,
+    tasks_max=64,
 ):
     sensor = sensor or cpu_reading
+    if type(tasks_max) is not int or not 64 <= tasks_max <= 256:
+        raise ValueError("Per-job task limit must be an integer from64 to256")
     if not 80 < cutoff <= 90 or not 0 < memory_gib <= 26:
         raise ValueError("Cutoff must be >80 and <=90C; memory budget must be <=26GiB")
     root = Path(output).resolve()
@@ -215,7 +218,7 @@ def run(
         "-p",
         "MemorySwapMax=0",
         "-p",
-        "TasksMax=64",
+        f"TasksMax={tasks_max}",
         "-p",
         "KillMode=control-group",
         "-p",
@@ -258,7 +261,7 @@ def run(
                 f"MemoryMax={int(safe_ram)}",
                 f"MemoryHigh={int(safe_ram * 0.8)}",
                 "MemorySwapMax=0",
-                "TasksMax=64",
+                f"TasksMax={tasks_max}",
             ]:
                 scope_command += ["-p", setting]
             environment = os.environ | {
@@ -452,6 +455,9 @@ def run(
                     "memory_pressure": psi,
                     "swap": swap,
                     "memory_events": (cgroup / "memory.events").read_text(),
+                    "pids_current": int((cgroup / "pids.current").read_text()),
+                    "pids_max": (cgroup / "pids.max").read_text().strip(),
+                    "pids_events": (cgroup / "pids.events").read_text().strip(),
                     "cpu_quota_percent_one_cpu": current_quota,
                 }
                 samples.append(sample)
@@ -585,6 +591,8 @@ def run(
             "unit": unit,
             "wall_seconds": time.monotonic() - start,
             "kernel_cpu_quota_percent": quota,
+            "kernel_tasks_max": tasks_max,
+            "peak_tasks": max((s.get("pids_current", 0) for s in samples), default=0),
             "cpu_temperature_min": min((s["cpu_max_celsius"] for s in samples), default=None),
             "cpu_temperature_mean": sum(s["cpu_max_celsius"] for s in samples) / len(samples)
             if samples
@@ -654,6 +662,12 @@ if __name__ == "__main__":
     parser.add_argument("--policy", choices=["rolling", "legacy"], default="rolling")
     parser.add_argument("--memory-gib", type=float, default=4)
     parser.add_argument("--cutoff", type=float, default=90)
+    parser.add_argument(
+        "--tasks-max",
+        type=int,
+        default=64,
+        help="Per-job process/thread budget64..256; does not change CPU/RAM/thermal limits",
+    )
     parser.add_argument("--max-seconds", type=int, default=180)
     parser.add_argument(
         "--scope",
@@ -680,4 +694,5 @@ if __name__ == "__main__":
             policy=args.policy,
             memory_gib=args.memory_gib,
             cutoff=args.cutoff,
+            tasks_max=args.tasks_max,
         )
