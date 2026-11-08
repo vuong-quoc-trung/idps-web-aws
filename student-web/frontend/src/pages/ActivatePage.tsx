@@ -1,3 +1,4 @@
+import AuthBrand from '../components/AuthBrand';
 /* ============================================================
    ActivatePage — /activate
    First-time account activation using a one-time token
@@ -159,13 +160,7 @@ export default function ActivatePage() {
       {/* *** Fixed: use auth-container with correct centering *** */}
       <div className="auth-container auth-container--wide">
         {/* Branding */}
-        <div className="auth-brand">
-          <div className="brand-icon"><img src="/images/dut-logo.jpg" alt="Logo Đại học Bách khoa Đà Nẵng" /></div>
-          <div className="brand-text">
-            <span className="brand-name">DUT - THÔNG TIN SINH VIÊN</span>
-            <span className="brand-sub">Kích hoạt tài khoản lần đầu</span>
-          </div>
-        </div>
+        <AuthBrand />
 
         <div className="auth-card">
           {/* SUCCESS */}

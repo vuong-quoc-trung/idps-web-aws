@@ -64,7 +64,11 @@ public class FamilyMemberService {
     }
     private FamilyMember require(Long studentId, Long id) {
         return repository.findByIdAndStudentId(id, studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("FamilyMember"));
+                .orElseThrow(() -> {
+                    if (repository.existsById(id))
+                        com.pbl4.studentweb.accesslog.service.SecuritySignals.objectDenied("FamilyMember", id);
+                    return new ResourceNotFoundException("FamilyMember");
+                });
     }
     private void apply(FamilyMember e, FamilyMemberRequest r) {
         e.setRelationship(r.relationship());

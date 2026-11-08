@@ -41,14 +41,14 @@ public class PasswordSetupService {
 
     @Transactional
     public void setInitialPassword(String token, String password) {
-        if (token == null || token.isBlank()) throw new IllegalArgumentException("Invalid activation token");
+        if (token == null || token.isBlank()) throw invalidRecoveryToken();
         if (password == null || password.length() < 12 || password.getBytes(StandardCharsets.UTF_8).length > 72)
             throw new IllegalArgumentException("Password must have at least 12 characters and at most 72 UTF-8 bytes");
         User user = users.findForActivation(hash(token))
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired activation token"));
+                .orElseThrow(() -> invalidRecoveryToken());
         if (!user.isEnabled() || !user.isPasswordSetupRequired() || user.getActivationExpiresAt() == null
                 || !user.getActivationExpiresAt().isAfter(LocalDateTime.now()))
-            throw new IllegalArgumentException("Invalid or expired activation token");
+            throw invalidRecoveryToken();
         if (user.getPendingActivationEmail() != null) {
             var student = students.findByUserId(user.getId()).orElseThrow();
             student.setPersonalEmail(user.getPendingActivationEmail());
@@ -76,6 +76,12 @@ public class PasswordSetupService {
         user.setActivationTokenHash(hash(token));
         user.setActivationExpiresAt(LocalDateTime.now().plusHours(24));
         return token;
+    }
+
+    private IllegalArgumentException invalidRecoveryToken() {
+        com.pbl4.studentweb.accesslog.service.SecuritySignals.markCurrent(
+            com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RECOVERY_TOKEN_INVALID);
+        return new IllegalArgumentException("Invalid or expired activation token");
     }
 
     private String randomToken() {

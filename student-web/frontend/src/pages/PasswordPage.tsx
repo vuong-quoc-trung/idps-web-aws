@@ -1,3 +1,4 @@
+import AuthBrand from '../components/AuthBrand';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
@@ -61,6 +62,7 @@ export default function PasswordPage({ mode }: { mode: 'change' | 'forgot' }) {
   const content = (
     <main className={`auth-page password-page ${changing ? 'password-page-authenticated' : ''}`}>
       <div className="auth-container">
+        <AuthBrand />
         <section className="auth-card">
           <div className="auth-card-header">
             <h1>{changing ? 'Đổi mật khẩu' : 'Quên mật khẩu'}</h1>

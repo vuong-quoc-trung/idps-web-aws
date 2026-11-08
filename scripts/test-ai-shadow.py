@@ -16,6 +16,12 @@ spec.loader.exec_module(worker)
 
 
 class ShadowTests(unittest.TestCase):
+    def test_startup_reports_ram_and_thermal_separately(self):
+        gib = 1024**3
+        self.assertEqual(worker.startup_status(41, 1.4 * gib), "RAM_STOP")
+        self.assertEqual(worker.startup_status(75, 8 * gib), "THERMAL_STOP")
+        self.assertEqual(worker.startup_status(41, 4 * gib), "READY")
+
     def message(self):
         return {
             "schema_version": "nginx-ai-1",

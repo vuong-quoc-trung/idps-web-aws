@@ -313,6 +313,71 @@
     },
     "truncated": {
       "type": "boolean"
+    },
+    "security": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "reasons",
+        "account_hmac",
+        "object_hmac",
+        "forbidden_fields"
+      ],
+      "properties": {
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "LOGIN_FAILED",
+              "OBJECT_ACCESS_DENIED",
+              "MASS_ASSIGNMENT",
+              "PRIVILEGE_DENIED",
+              "INVALID_SESSION",
+              "SESSION_REVOKED",
+              "WORKFLOW_DENIED",
+              "RATE_LIMITED",
+              "CSRF_INVALID",
+              "RECOVERY_TOKEN_INVALID"
+            ]
+          }
+        },
+        "account_hmac": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^hmac-sha256:[0-9a-f]{64}$"
+        },
+        "object_hmac": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^hmac-sha256:[0-9a-f]{64}$"
+        },
+        "forbidden_fields": {
+          "type": "array",
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "role",
+              "isAdmin",
+              "ownerId",
+              "userId",
+              "studentId",
+              "authorities",
+              "permissions"
+            ]
+          }
+        }
+      }
     }
   }
 }

@@ -798,11 +798,12 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
         .execute(&pool).await.unwrap();
     sqlx::query("INSERT INTO firewall_actions (ip,action,source,reason,status,created_at) VALUES ('192.0.2.1','BLOCK','AUTO','test','PENDING',now()-interval '5 minutes'), ('192.0.2.1','UNBLOCK','MANUAL','test','SUCCESS',now()-interval '5 minutes'), ('192.0.2.1','BLOCK','AUTO','old','ERROR',now()-interval '8 days')")
         .execute(&pool).await.unwrap();
-    for (seconds, buckets, expected) in [(3600_i64, 12_i64, 2_i64), (86400, 24, 2), (604800, 28, 3)]
+    for (seconds, buckets, expected) in [(3600_i64, 12_i64, 2_i64), (86400, 24, 2), (604800, 7, 3)]
     {
         let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
             .bind(seconds)
             .bind(buckets)
+            .bind(None::<i64>)
             .fetch_one(&pool)
             .await
             .unwrap();
@@ -820,6 +821,16 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
             result["recent"].as_array().unwrap().len(),
             expected as usize
         );
+        for point in result["trend"].as_array().unwrap() {
+            let sum: i64 = point["sources"]
+                .as_object()
+                .unwrap()
+                .values()
+                .map(|v| v.as_i64().unwrap())
+                .sum();
+            assert_eq!(sum, point["count"].as_i64().unwrap());
+        }
+        assert_eq!(result["alert_updates"]["count"], 0);
         assert_eq!(result["source_ips"][0]["severity"], 1);
         assert_eq!(result["source_ips"][0]["count"], 2);
         assert_eq!(result["destination_ips"].as_array().unwrap().len(), 1);
@@ -836,6 +847,7 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
     let empty = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
         .bind(3600_i64)
         .bind(12_i64)
+        .bind(None::<i64>)
         .fetch_one(&pool)
         .await
         .unwrap();
@@ -988,4 +1000,238 @@ async fn collection_status_empty_partial_error_and_recovery(pool: PgPool) {
     ingest::scan(&s, "SURICATA", path).await.unwrap();
     assert_eq!(s.watchers.read().await["SURICATA"].state, "watching");
     assert!(s.watchers.read().await["SURICATA"].error.is_none());
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
+    for source in ["SURICATA", "NGINX", "STUDENT_AUDIT"] {
+        sqlx::query("INSERT INTO security_alerts (occurred_at,source,event_type,rule_name,severity,action,evidence) VALUES (now()-interval '2 minutes',$1,'alert','fixture',2,'ALERT','{}')")
+            .bind(source).execute(&pool).await.unwrap();
+    }
+    let report = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
+        .bind(3600_i64)
+        .bind(12_i64)
+        .bind(0_i64)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(report["alert_updates"]["count"], 3);
+    assert_eq!(report["alert_updates"]["severity"], 2);
+    let points = report["trend"].as_array().unwrap();
+    assert_eq!(points.iter().filter(|p| p["count"] == 0).count(), 11);
+    for source in ["SURICATA", "NGINX", "STUDENT_AUDIT"] {
+        assert_eq!(
+            points
+                .iter()
+                .map(|p| p["sources"][source].as_i64().unwrap())
+                .sum::<i64>(),
+            1
+        );
+    }
+    let cursor = report["alert_updates"]["watermark"].as_i64().unwrap();
+    let again = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
+        .bind(604800_i64)
+        .bind(7_i64)
+        .bind(cursor)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(again["alert_updates"]["count"], 0);
+    assert_eq!(again["trend"].as_array().unwrap().len(), 7);
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn triage_permissions_conflicts_history_and_rule_evidence(pool: PgPool) {
+    let id:i64=sqlx::query_scalar("INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,signature,severity,action,evidence) VALUES(now(),'STUDENT_AUDIT','alert','APP-1017: test','APP-1017',2,'ALERT','{}') RETURNING id").fetch_one(&pool).await.unwrap();
+    insert_application_event(
+        &pool,
+        application_event("STUDENT_AUDIT", "2026-11-07T00:00:00Z", None),
+    )
+    .await;
+    let app = router(state(pool.clone()));
+    let admin = login(app.clone(), "admin").await;
+    let viewer = login(app.clone(), "viewer").await;
+    let path = format!("/api/alerts/{id}/triage");
+    let body =
+        serde_json::json!({"status":"INVESTIGATING","version":0,"note":"Investigating fixture"});
+    assert_eq!(
+        request(app.clone(), "POST", &path, None, body.clone())
+            .await
+            .0,
+        StatusCode::UNAUTHORIZED
+    );
+    assert_eq!(
+        request(app.clone(), "POST", &path, Some(&viewer), body.clone())
+            .await
+            .0,
+        StatusCode::FORBIDDEN
+    );
+    assert_eq!(
+        request(app.clone(), "POST", &path, Some(&admin), body.clone())
+            .await
+            .0,
+        StatusCode::OK
+    );
+    assert_eq!(
+        request(app.clone(), "POST", &path, Some(&admin), body)
+            .await
+            .0,
+        StatusCode::CONFLICT
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            &path,
+            Some(&admin),
+            serde_json::json!({"status":"WRONG","version":1,"note":"invalid"})
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            &path,
+            Some(&admin),
+            serde_json::json!({"status":"RESOLVED","version":1,"note":" "})
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+    let (_, detail) = request(
+        app.clone(),
+        "GET",
+        &format!("/api/alerts/{id}"),
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(detail["triage_history"].as_array().unwrap().len(), 1);
+    assert_eq!(detail["alert"]["triage_version"], 1);
+    assert_eq!(detail["alert"]["action"], "ALERT");
+    assert_eq!(detail["triage_history"][0]["actor"], "admin");
+    let (_, list) = request(
+        app.clone(),
+        "GET",
+        "/api/alerts/search?triage_status=INVESTIGATING",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(list["total"], 1);
+    let (_, list) = request(
+        app.clone(),
+        "GET",
+        "/api/alerts/search?triage_status=NEW",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert_eq!(list["total"], 0);
+    let (_, rules) = request(
+        app.clone(),
+        "GET",
+        "/api/rules",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    let rule = rules
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["code"] == "APP-1017")
+        .unwrap();
+    assert_eq!(rule["verification"]["last_alert"]["alert_id"], id);
+    assert_eq!(rule["verification"]["deployment"], "BUILT_IN");
+    assert_eq!(rule["verification"]["tested_current_deployment"], false);
+    let (_, health) = request(
+        app.clone(),
+        "GET",
+        "/api/status",
+        Some(&viewer),
+        serde_json::Value::Null,
+    )
+    .await;
+    assert!(health["collection"]["STUDENT_AUDIT"]["last_ingested_at"].is_string());
+    assert!(health["collection"]["STUDENT_AUDIT"]["last_ingested_event_at"].is_string());
+    assert_eq!(health["dataset_collection"], false);
+    assert!(health["checked_at"].is_string());
+    let sensor = rules
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["source"] == "SURICATA")
+        .unwrap();
+    assert_eq!(sensor["verification"]["deployment"], "UNVERIFIED");
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT count(*) FROM firewall_actions")
+            .fetch_one(&pool)
+            .await
+            .unwrap(),
+        0
+    );
+}
+
+#[sqlx::test(migrations = false)]
+async fn rust_idps_database_upgrades_to_ai_without_rewriting_history(pool: PgPool) {
+    let full = sqlx::migrate!("./migrations");
+    let original = sqlx::migrate::Migrator {
+        migrations: std::borrow::Cow::Owned(
+            full.iter().filter(|m| m.version <= 10).cloned().collect(),
+        ),
+        ..sqlx::migrate::Migrator::DEFAULT
+    };
+    original.run(&pool).await.unwrap();
+    let before: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version,checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .unwrap();
+    assert_eq!(before.len(), 10);
+    sqlx::query("INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,severity,action,evidence,triage_status) VALUES(now(),'NGINX','alert','retained',2,'ALERT','retained evidence','INVESTIGATING')").execute(&pool).await.unwrap();
+    full.run(&pool).await.unwrap();
+    full.run(&pool).await.unwrap();
+    let after: Vec<(i64, Vec<u8>)> = sqlx::query_as(
+        "SELECT version,checksum FROM _sqlx_migrations WHERE version<=10 ORDER BY version",
+    )
+    .fetch_all(&pool)
+    .await
+    .unwrap();
+    assert_eq!(before, after);
+    assert_eq!(
+        sqlx::query_scalar::<_, String>(
+            "SELECT triage_status FROM security_alerts WHERE rule_name='retained'"
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap(),
+        "INVESTIGATING"
+    );
+    for table in [
+        "ai_shadow_results",
+        "ai_shadow_worker",
+        "request_correlations",
+        "glu207_shadow_results",
+        "detector_alert_links",
+    ] {
+        assert_eq!(
+            sqlx::query_scalar::<_, i64>(&format!("SELECT count(*) FROM {table}"))
+                .fetch_one(&pool)
+                .await
+                .unwrap(),
+            0
+        );
+    }
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT count(*) FROM _sqlx_migrations")
+            .fetch_one(&pool)
+            .await
+            .unwrap(),
+        13
+    );
 }

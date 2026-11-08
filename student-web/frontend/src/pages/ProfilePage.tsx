@@ -1,3 +1,4 @@
+import ContentSkeleton from '../components/ContentSkeleton';
 import { validHttpUrl } from '../utils/urlValidation';
 /**
  * ProfilePage — Student self-service profile management
@@ -1368,15 +1369,16 @@ function PersonalTab({
         </label>
       </div>
 
-      {success && <div className="profile-alert-success"><IcoCheck/> Cập nhật thông tin cá nhân thành công! Mức độ hoàn thiện hồ sơ đã được đồng bộ.</div>}
+      {success && <div role="status" className="profile-alert-success"><IcoCheck/> Cập nhật thông tin cá nhân thành công! Mức độ hoàn thiện hồ sơ đã được đồng bộ.</div>}
       {err && <div className="profile-alert-error"><IcoWarn/> {err}</div>}
 
-      <div className="profile-save-bar">
+      {(dirty || submitting) && <div className="profile-save-bar profile-save-bar--sticky">
+        <span className="profile-save-status" role="status">{submitting ? 'Đang lưu hồ sơ…' : 'Bạn có thay đổi chưa lưu'}</span>
         <button className="btn-profile-cancel" onClick={reset} disabled={submitting}>Đặt lại</button>
         <button className="btn-profile-save" onClick={save} disabled={submitting || !dirty}>
           {submitting ? <><span className="spinner spinner-sm"/> Đang lưu...</> : <><IcoCheck/> Lưu thay đổi</>}
         </button>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -1562,12 +1564,7 @@ export default function ProfilePage() {
     return (
       <div className="profile-page">
         <AppHeader/>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
-            <span className="spinner" style={{ width: 28, height: 28, borderWidth: 3, borderTopColor: 'var(--accent)' }}/>
-            Đang tải hồ sơ sinh viên...
-          </div>
-        </div>
+        <div className="profile-inner"><ContentSkeleton label="Đang tải hồ sơ sinh viên…" /></div>
       </div>
     );
   }

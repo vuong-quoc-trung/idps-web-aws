@@ -359,6 +359,9 @@ async fn ingest_line(
         sqlx::query("INSERT INTO normalized_events(event_key,schema_version,source,source_instance,source_event_id,occurred_at,request_id,client_ip,dest_ip,event_type,http_method,uri_path,status_code,canonical) VALUES($1,$2,$3,$4,$5,$6,$7,$8::inet,$9::inet,$10,$11,$12,$13,$14) ON CONFLICT DO NOTHING")
             .bind(&key).bind(&event.schema_version).bind(&event.source).bind(&event.source_instance).bind(&event.event_id).bind(event.timestamp).bind(&event.request_id).bind(event.client_ip.map(|v|v.to_string())).bind(event.dest_ip.map(|v|v.to_string())).bind(&event.event_type).bind(&event.http_method).bind(&event.uri_path).bind(event.status_code.map(i32::from)).bind(serde_json::to_value(&event)?).execute(&mut **tx).await?;
     }
+    crate::nginx_detection::observe(tx, event, &key).await?;
+    application_detection::observe(tx, state, event, &key).await?;
+    crate::security_detection::observe(tx, event, &key).await?;
     if let Some(native) = &parsed.native_alert {
         save_alert(
             tx,
@@ -410,7 +413,7 @@ async fn ingest_line(
                 .bind(alert_key).bind(parsed.sensor_tx_id).execute(&mut **tx).await?;
         }
     }
-    if auth_failure(tx, state, event, &key).await? {
+    if auth_failure(tx, state, event, &key).await? && source != "STUDENT_AUDIT" {
         save_alert(
             tx,
             state,
@@ -494,6 +497,12 @@ pub async fn process_file(state: &AppState, source: &str, path: &FsPath) -> Resu
 
 pub async fn prune(state: &AppState) -> Result<()> {
     ai_shadow::prune(state).await?;
+    sqlx::query("DELETE FROM application_security_observations WHERE received_at < now()-interval '10 minutes'").execute(&state.pool).await?;
+    sqlx::query(
+        "DELETE FROM application_observations WHERE received_at<now()-interval '5 minutes'",
+    )
+    .execute(&state.pool)
+    .await?;
     sqlx::query(
         "UPDATE blocked_ips SET active=false,unblocked_at=now() WHERE active AND expires_at<=now()",
     )

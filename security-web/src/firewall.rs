@@ -111,7 +111,7 @@ pub async fn enqueue(
     event: Option<i64>,
 ) -> Result<i64> {
     Ok(sqlx::query_scalar("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,event_id) VALUES($1::inet,$2,$3,$4,'PENDING',$5,$6) RETURNING id")
-        .bind(ip.to_string()).bind(action).bind(if event.is_some() {"AUTO"} else {"API"}).bind(reason).bind(actor).bind(event).fetch_one(pool).await?)
+        .bind(ip.to_string()).bind(action).bind("API").bind(reason).bind(actor).bind(event).fetch_one(pool).await?)
 }
 #[derive(FromRow)]
 struct Job {
@@ -189,8 +189,13 @@ where
         sqlx::query("INSERT INTO blocked_ips(ip,reason,active,unblocked_at,expires_at) VALUES($1::inet,$2,$3,CASE WHEN $3 THEN NULL ELSE now() END,CASE WHEN $3 THEN $4 ELSE NULL END) ON CONFLICT(ip) DO UPDATE SET reason=$2,active=$3,blocked_at=CASE WHEN $3 THEN now() ELSE blocked_ips.blocked_at END,unblocked_at=CASE WHEN $3 THEN NULL ELSE now() END,expires_at=CASE WHEN $3 THEN $4 ELSE NULL END")
             .bind(&job.ip).bind(&job.reason).bind(job.action=="BLOCK").bind(job.expires_at).execute(&mut *tx).await?;
         if let Some(id) = job.event_id {
-            sqlx::query("UPDATE security_alerts SET action='AUTO-BLOCK' WHERE id=$1")
+            sqlx::query("UPDATE security_alerts SET action=$2 WHERE id=$1")
                 .bind(id)
+                .bind(if job.source == "API" {
+                    "BLOCK"
+                } else {
+                    "AUTO-BLOCK"
+                })
                 .execute(&mut *tx)
                 .await?;
         }

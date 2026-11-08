@@ -60,6 +60,19 @@ class StudentApiTests {
     User admin;
     StudentClass studentClass;
 
+    @Test void csrfAndRecoverySignalsAreExplicit() throws Exception {
+        var denied = mvc.perform(post("/api/auth/login").param("username", "test").param("password", "secret"))
+            .andExpect(status().isForbidden()).andReturn().getRequest();
+        assertThat(com.pbl4.studentweb.accesslog.service.SecuritySignals.get(denied).reasons())
+            .contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.CSRF_INVALID)
+            .doesNotContain(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.PRIVILEGE_DENIED);
+        var invalid = mvc.perform(post("/api/auth/activate").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+            .content("{\"token\":\"unknown-token\",\"password\":\"Valid-password-123\"}"))
+            .andExpect(status().isBadRequest()).andReturn().getRequest();
+        assertThat(com.pbl4.studentweb.accesslog.service.SecuritySignals.get(invalid).reasons())
+            .contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.RECOVERY_TOKEN_INVALID);
+    }
+
     @BeforeEach void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         faculty = new com.pbl4.studentweb.faculty.entity.Faculty();
@@ -484,7 +497,10 @@ class StudentApiTests {
         var one = login("ONE"); var two = login("TWO");
         String contact = "{\"fullName\":\"Emergency\",\"phoneNumber\":\"0900000001\",\"priority\":1}";
         long id = body(send(post("/api/me/emergency-contacts"), one, contact, 201)).get("id").asLong();
-        mvc.perform(get("/api/me/emergency-contacts/" + id).session(two)).andExpect(status().isNotFound());
+        var deniedObject = mvc.perform(get("/api/me/emergency-contacts/" + id).session(two)).andExpect(status().isNotFound()).andReturn();
+        assertThat(signals(deniedObject).reasons()).contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.OBJECT_ACCESS_DENIED);
+        var missingObject = mvc.perform(get("/api/me/emergency-contacts/999999999").session(two)).andExpect(status().isNotFound()).andReturn();
+        assertThat(signals(missingObject).reasons()).isEmpty();
         send(put("/api/me/emergency-contacts/" + id), two, contact, 404);
         mvc.perform(delete("/api/me/emergency-contacts/" + id).session(two).with(csrf())).andExpect(status().isNotFound());
         assertThat(contacts.existsById(id)).isTrue();
@@ -976,4 +992,35 @@ class StudentApiTests {
         send(post("/api/classes"), session, jsonBody("cohort", 2042, "programId", p.get("id").asLong(), "active", true), 400);
         send(post("/api/faculties"), session, jsonBody("shortCode", "FAC-IT", "name", "IT", "active", true), 400);
     }
+    private com.pbl4.studentweb.accesslog.service.SecuritySignals signals(MvcResult result) {
+        return com.pbl4.studentweb.accesslog.service.SecuritySignals.get(result.getRequest());
+    }
+    @Test void explicitSecuritySignalsDistinguishDenialsFromGenericErrors() throws Exception {
+        var anonymous = mvc.perform(get("/api/auth/me")).andExpect(status().isUnauthorized()).andReturn();
+        assertThat(signals(anonymous).reasons()).isEmpty();
+        var failed = mvc.perform(post("/api/auth/login").with(csrf()).param("username", "unknown-account").param("password", "wrong"))
+            .andExpect(status().isUnauthorized()).andReturn();
+        assertThat(signals(failed).account()).isEqualTo("unknown-account");
+        var session = login("staff-test");
+        var denied = send(post("/api/users"), session, "{\"username\":\"test\",\"role\":\"ADMIN\"}", 403);
+        assertThat(signals(denied).reasons()).contains(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.PRIVILEGE_DENIED);
+        var csrfDenied = mvc.perform(post("/api/users").session(session)).andExpect(status().isForbidden()).andReturn();
+        assertThat(signals(csrfDenied).reasons()).containsExactly(com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.CSRF_INVALID);
+    }
+    @Test void rejectsMassAssignmentButAllowsAdminRoleDto() throws Exception {
+        var session=login("admin-test");
+        var denied=send(post("/api/faculties"),session,"{\"shortCode\":\"ABC\",\"name\":\"Example\",\"role\":\"ADMIN\"}",400);
+        assertThat(signals(denied).fields()).containsExactly("role");
+        var allowed=send(post("/api/users"),session,"{\"username\":\"newstaff\",\"role\":\"STAFF\"}",201);
+        assertThat(signals(allowed).reasons()).isEmpty();
+    }
+    @Test void disabledAccountMutationHasWorkflowAndRevocationSignals() throws Exception {
+        var session=login("staff-test");
+        var user=users.findByUsername("staff-test").orElseThrow(); user.setEnabled(false); users.saveAndFlush(user);
+        var denied=send(post("/api/students"),session,"{}",401);
+        assertThat(signals(denied).reasons()).contains(
+            com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.SESSION_REVOKED,
+            com.pbl4.studentweb.accesslog.service.SecuritySignals.Reason.WORKFLOW_DENIED);
+    }
+
 }

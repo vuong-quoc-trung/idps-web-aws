@@ -42,9 +42,11 @@ public class AuditJsonlExporter {
             throw new IllegalArgumentException("Audit JSONL requires a >=32-byte HMAC key, valid source instance and file limit >=16384");
     }
 
-    public synchronized void append(AuditEvent event) throws IOException {
+    public void append(AuditEvent event) throws IOException { append(event, null); }
+
+    public synchronized void append(AuditEvent event, SecuritySignals signals) throws IOException {
         if (!enabled) return;
-        byte[] json = mapper.writeValueAsBytes(envelope(event));
+        byte[] json = mapper.writeValueAsBytes(envelope(event, signals));
         if (json.length + 1 > MAX_LINE_BYTES) throw new IOException("Audit JSONL line exceeds configured safety limit");
         Path parent = path.getParent();
         Files.createDirectories(parent, PosixFilePermissions.asFileAttribute(DIR_MODE));
@@ -86,7 +88,7 @@ public class AuditJsonlExporter {
         }
     }
 
-    private Map<String, Object> envelope(AuditEvent event) {
+    private Map<String, Object> envelope(AuditEvent event, SecuritySignals signals) {
         var result = new LinkedHashMap<String, Object>();
         result.put("schema_version", "1.0");
         result.put("event_id", event.eventId());
@@ -118,6 +120,14 @@ public class AuditJsonlExporter {
         result.put("flow", null);
         result.put("redacted", true);
         result.put("truncated", event.truncated());
+        if (signals != null && !signals.reasons().isEmpty()) {
+            var security = new LinkedHashMap<String, Object>();
+            security.put("reasons", signals.reasons().stream().map(Enum::name).sorted().toList());
+            security.put("account_hmac", pseudonym("attempted_account", signals.account()));
+            security.put("object_hmac", pseudonym("object", signals.object()));
+            security.put("forbidden_fields", signals.fields().stream().sorted().toList());
+            result.put("security", security);
+        }
         return result;
     }
 

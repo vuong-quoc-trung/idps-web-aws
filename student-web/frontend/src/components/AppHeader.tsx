@@ -205,7 +205,7 @@ export default function AppHeader() {
         {/* Logo */}
         <Link to="/" className="header-logo" id="header-logo" aria-label="Trang chủ">
           <div className="header-logo-icon"><img src="/images/dut-logo.jpg" alt="Logo Đại học Bách khoa Đà Nẵng" /></div>
-          <span className="header-logo-text">DUT - THÔNG TIN SINH VIÊN</span>
+          <span className="header-logo-text"><strong>DUT</strong><span>Thông tin sinh viên</span></span>
         </Link>
 
         {/* Desktop Nav */}
