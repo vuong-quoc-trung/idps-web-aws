@@ -474,7 +474,7 @@ def php_authenticated(q, d, session):
 def product_witness(name, expected):
     code = """let s='';process.stdin.on('data',c=>s+=c);process.stdin.on('end',()=>{let v=JSON.parse(s);let sql=require('sqlite3');let db=new sql.Database('data/juiceshop.sqlite',sql.OPEN_READONLY);db.get('SELECT id,name,description,price,image FROM Products WHERE id=?',[v.id],(e,r)=>{console.log(JSON.stringify({match:!e&&!!r&&r.name===v.name&&r.description===v.description&&Number(r.price)===v.price&&r.image===v.image}));db.close();});});"""
     p = subprocess.run(
-        ["podman", "exec", "-i", name, "node", "-e", code],
+        ["podman", "exec", "-i", name, "/nodejs/bin/node", "-e", code],
         input=json.dumps(expected).encode(),
         capture_output=True,
         timeout=10,
@@ -851,6 +851,13 @@ def capture(root):
     assert plan["fingerprint"] == digest({k: v for k, v in plan.items() if k != "fingerprint"})
     assert plan["source_sha256"] == file_sha256(__file__) and not any(plan["preaudit"].values())
     assert plan["run_id"] == RUN
+    reused = []
+    if "reuse_preflight" in plan:
+        witness = plan["reuse_preflight"]
+        assert file_sha256(witness["file"]) == witness["sha256"]
+        reused = [r for r in load(Path(witness["file"])) if r["case_id"] in witness["case_ids"]]
+        assert len(reused) == len(witness["case_ids"]) == len(set(witness["case_ids"]))
+        assert all(r["oracle_verified"] and r["environment"] == "dvwa" for r in reused)
     for name, sha in plan["helper_sha256"].items():
         assert file_sha256(Path(__file__).with_name(name + ".py")) == sha
     assert not (root / "capture-status.json").exists()
@@ -913,12 +920,18 @@ def capture(root):
                 if phase == "main"
                 else [c for c in cases() if c["case_id"] in plan["preflight_case_ids"]]
             )
+            if phase == "preflight":
+                selected = [
+                    c for c in selected if c["case_id"] not in {r["case_id"] for r in reused}
+                ]
             groups = []
             for c in selected:
                 key = (c["environment"], c["role"] if phase == "main" else "PREFLIGHT_ONLY")
                 if key not in groups:
                     groups.append(key)
-            receipts = []
+            receipts = (
+                [dict(r, evidence_reused=True) for r in reused] if phase == "preflight" else []
+            )
             for env, role in groups:
                 launch(q, d, env)
                 try:
@@ -990,11 +1003,15 @@ def capture(root):
                         assert row["oracle_verified"], (
                             "Essential application Oracle did not confirm"
                         )
+                        assert not row.get("campaign_gate_failure"), (
+                            "Diagnostic campaign gate failed"
+                        )
                 finally:
                     cleanup(q, d)
             phase_results[phase] = {
                 "receipts": len(receipts),
                 "Oracle_verified": sum(r["oracle_verified"] for r in receipts),
+                "reused_receipts": len(reused) if phase == "preflight" else 0,
                 "status": "PASS",
             }
             atomic_json(root / (phase + "-oracle-receipts.json"), receipts)

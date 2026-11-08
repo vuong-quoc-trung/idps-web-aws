@@ -16,7 +16,8 @@ Data prerequisite: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_REA
 Coverage milestone: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_DATA_COVERAGE.md).
 Command prerequisite: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md).
 Acquisition milestone: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md).
-Milestone hiện tại: [Basket Oracle root cause — VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
+Basket root cause: [VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
+Milestone hiện tại: [Dataset completion — CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
 
 ## Repository, model release và dependencies
 
@@ -1203,3 +1204,43 @@ labcleanupPASS,158protectedhashes/oldPGvolumes/frozenmodels/Rules/Policy/Web/Ngi
 Suricata/correlation/Releases giữ nguyên. Nosealedaccess/checkpoints/enforcement/AWS.
 Evidenceprivate tại `.local-dev/basket-oracle-20261108/`; independentreviewPENDING,
 noindependentquality hoặc productionprivacyclaim. Dừng,khôngautofix/capture.
+
+
+## Request v3 dataset completion — 2026-11-08
+
+Baseline `514bedf`. [Báo cáo](29_REQUEST_V3_DATASET_COMPLETION.md),
+[machine evidence](../ai-training/reports/REQUEST_V3_DATASET_COMPLETION_20261108.json).
+
+**CASE C — PREFLIGHT INSTRUMENTATION STOP.** Tài khoản lab riêng với basket rỗng
+(fixture v2.1) đã xác minh CREATE 200 và DB read-only từ 0 sang 1 pair, quantity 1;
+giỏ admin không đổi. Duplicate CREATE trả 500 và giữ nguyên DB. Automation đã
+ghép root-cause classifier cần exception class vào negative rejection gate;
+sanitizer UNKNOWN làm gate false và ghi positive receipt thành UNKNOWN. Đây là
+lỗi implementation của lượt này, chưa chứng minh thêm application failure. Đã
+sửa offline để tách rejection/non-creation với exact error taxonomy; **không chạy
+lại HTTP**. Receipt gốc và toàn bộ UNKNOWN lịch sử được giữ nguyên.
+
+Tái sử dụng 5 DVWA preflights. r2 có 1 positive HTTP và 1 negative diagnostic,
+main 0/24. Ledger có 6/9 representatives, 5 Oracle verified và 1 UNKNOWN;
+04/05/09 chưa chạy. Không promote setup hay diagnostic vào supervised dataset.
+r1 setup dừng trước targeted dispatch vì whoami cần token cookie; binding của
+r2 đã xác minh qua response thật. Product DB witness sửa absolute Node nhưng
+product preflight chưa được xác minh live.
+
+Parent 224 records, fingerprint
+`5c95afd6555502725a10ddb4a77d2c4f80a039dfd5c93448bb658252b5367e0d` không đổi.
+TRAIN 43/37 views, CAL 13/13, DEV 86/83. TRAIN JSON/command/file counterparts và
+DEV benign POST vẫn thiếu. Không có derivative, checkpoint hay actual-data
+updates. RESEARCH_PILOT_READY=false; INDEPENDENT_QUALITY_CERTIFIED=false;
+human review PENDING. Giữ challenger 634→64→64→64→64→8, 53,640 parameters,
+frozen AI và thresholds.
+
+32 targeted tests và Ruff PASS. Guard peak 61°C, quota 25% một core, không có
+thermal/watchdog failure. 158 protected hashes và historical UNKNOWN files
+không đổi; lab sạch, volume inventory giữ nguyên, PG cũ vẫn stopped. Finite
+privacy checks PASS cho diagnostics với giới hạn actual random credential scan
+nêu trong báo cáo; production privacy NOT_VERIFIED.
+
+**Next action duy nhất:** hoàn tất hữu hạn phần Juice preflight còn thiếu với
+negative gate đã sửa. State setup cần thiết không được tính evidence độc lập.
+Chỉ sau 9/9 PASS mới chạy 12 main templates và materialize. Chưa bắt đầu training.
