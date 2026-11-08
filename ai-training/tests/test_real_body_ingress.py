@@ -102,6 +102,55 @@ def test_cli_without_opt_in_stays_off_and_creates_no_lab(tmp_path, harness):
     assert not output.exists()
 
 
+def test_off_only_refuses_candidate_opt_in_before_creating_any_lab(tmp_path, harness):
+    output = tmp_path / "not-created"
+    with pytest.raises(ValueError, match="OFF-only acceptance cannot enable"):
+        harness.run(None, output, opt_in=True, off_only=True)
+    assert not output.exists()
+    result = subprocess.run(
+        [
+            sys.executable,
+            harness.__file__,
+            "--off-only",
+            "--enable-body-syntax",
+            "--output",
+            str(output),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 2 and "cannot be combined" in result.stderr
+    assert not output.exists()
+
+
+def test_dispatch_trace_recognizes_container_get_redispatch_without_values(harness):
+    spec = importlib.util.spec_from_file_location(
+        "status_trace", Path(harness.__file__).with_name("trace-status-mismatch.py")
+    )
+    trace = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(trace)
+    assert trace.dispatch_events(
+        [
+            "Securing POST /api/auth/activate",
+            "HttpMediaTypeNotSupportedException",
+            "Securing GET /error",
+            "private-value-that-must-not-be-returned",
+        ]
+    ) == ["REQUEST_SECURITY_CHAIN", "MVC_UNSUPPORTED_MEDIA", "ERROR_SECURITY_CHAIN"]
+
+
+@pytest.mark.parametrize(
+    "app_status,expected",
+    [(415, []), (500, [{"case": "probe", "wire_status": 415, "audit_status": 500}])],
+)
+def test_audit_phase_conflict_is_retained_without_rewriting_wire(harness, app_status, expected):
+    requests = [{"request_id": "unique", "label": "probe", "status": 415}]
+    audit = [{"request_id": "unique", "status_code": app_status}]
+    assert harness.audit_status_differences(requests, audit) == expected
+    assert requests[0]["status"] == 415 and audit[0]["status_code"] == app_status
+
+
 def test_changed_research_artifact_is_never_admitted_as_source_update(tmp_path, harness):
     artifact = tmp_path / "evidence.json"
     artifact.write_text("preserved evidence")

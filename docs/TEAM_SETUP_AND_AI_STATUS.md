@@ -711,3 +711,81 @@ lưu raw response. Tests/Ruff/syntax được kiểm riêng; full acceptance v�
 cho unsupported-media error dispatch, khóa baseline ứng dụng đúng theo evidence,
 rồi chạy lại một OFF/ON privacy acceptance hữu hạn. Giữ evidence401/415 hiện tại;
 chưa bắt đầu domain-adaptation research/training hoặc promotion.
+
+## HTTP 415/401 recovery — 2026-11-08
+
+**Original unsupported-media case FIXED; bounded Student OFF remains PARTIAL.**
+Baseline `66fbe58`, working tree sạch trước nhiệm vụ. Không bật candidate ON,
+không chạy full privacy acceptance, training, AWS hoặc thay Rules/Policy/frozen AI.
+
+Equivalent harmless POST activation, fresh anonymous CSRF session mỗi route:
+
+| Phase | Direct wire | Student Audit | Nginx upstream | Edge/client |
+|---|---:|---:|---:|---:|
+| Before fix | 401 | 415 | 401 | 401 |
+| After fix | 415 | 415 | 415 | 415 |
+
+Selected security-chain logs xác nhận thứ tự: POST activation → MVC unsupported
+media (`DefaultHandlerExceptionResolver.sendError415`) → filter finally/audit415 →
+container **GET `/error`** → security denial/anonymous entry point401. Nginx giữ
+nguyên upstream401; không có `error_page`, `proxy_intercept_errors` hoặc `auth_request`
+trong isolated config. Method của internal redispatch khác original HTTP request;
+đó không phải một request mới từ client. IDs từng lượt riêng biệt, không tái dùng.
+
+Minimal fix ở `ApiExceptionHandler`: map `HttpMediaTypeNotSupportedException` thành
+complete generic JSON415 trong original dispatch, giữ negotiation headers từ
+exception. Không bypass media validation, không mở `/error`/ERROR dispatch hoặc
+đổi auth/CSRF/audit writer. Expected415 của harness không đổi. Actual post-fix trace
+không còn ERROR redispatch cho case này. Success CSRF200, malformed JSON400,
+missing-CSRF403, protected-anonymous401 và explicit `/error`401 đều giữ nguyên.
+New embedded HTTP tests dùng servlet container thật vì MockMvc không tự thực hiện
+container ERROR redispatch. **60fresh Java tests PASS**, gồm50existing API tests,
+3real HTTP regression tests,3request-filter và4attribution tests; offline packagePASS.
+43Python tests/Ruff/syntax PASS, gồm OFF-only refuses opt-in và giữ status conflicts.
+
+### Status contract và Ground Truth
+
+| Field | Meaning |
+|---|---|
+| Student Audit `status_code` | Observation khi request filter finally ghi audit; có thể intermediate hoặc synthetic500 khi `failed=true`. Không mặc định là final wire status. |
+| Nginx `$upstream_status` | Upstream HTTP status proxy nhận; retry có thể tạo sequence, không tự ép thành scalar. |
+| Nginx `$status` | Edge response log status; vẫn cần client receipt để xác nhận client đã quan sát response. |
+| Client status | Status client thực sự nhận trong lượt kiểm tra. |
+
+Giữ source/phase và identity riêng; không overwrite audit bằng wire để che conflict.
+ID/method/route khớp không có nghĩa statuses bắt buộc bằng nhau. Existing derivative
+đã giữ `application_status`, `wire_status`, `source_statuses`; không đổi feature
+contracts207/588, datasets hoặc labels. Historical174 PATCH405/403 vẫn quarantine;
+cơ chế415/401 mới **không chứng minh** nguyên nhân của174rows hay loại history impact.
+
+### Bounded OFF result và điểm dừng
+
+New `--off-only` chạy Student subset của protocol cũ, từ chối opt-in, bỏ DVWA/ON/
+privacy stages. 32requests đã hoàn tất explicit wire-status checks: login204/me200,
+JSONlogout204/session401,6fake auth denials401, empty/malformed/gzip/oversize JSON400,
+unsupported415, chunked invalid JSON400; malformed form chưa có fixed expected status
+trong protocol gốc và trả401. 32unique IDs match32audits. Frozen Requestv2 live/offline
+parity32requests trong tolerance1e-7 đã PASS trước audit-consistency check.
+0ONrequests,0candidate numeric events; không có DVWA attack probes.
+
+**OFF dừng** ở một conflict khác: malformed form `%FF` tại login có audit500/wire401.
+Source có synthetic500 mapping trong filter nhưng selected logs chưa xác định exact
+exception/dispatch cho case này; không suy nguyên nhân chỉ từ415case. Giữ OFF PARTIAL,
+không đổi expected status/nhãn hoặc ép PASS. Harness nay lưu structured PARTIAL
+report trước khi fail, thay vì generic assertion; diagnostics patch được unit-test
+nhưng không chạy lại traffic sau lần dừng. Original failed evidence giữ nguyên;
+executed harness snapshot được khôi phục byte-exact bằng protocol SHA256.
+
+Actual Nginx preflightPASS. Post-fix/OFF guard peak67°C, active average56.86°C;
+watchdog healthy, lab processes/listeners dừng, PostgreSQL cũ/mới giữ nguyên volumes.
+Frozen artifacts/seal checksumsPASS; không mở sealed samples, human reviewPENDING
+không đổi. GLU207 không có new sensor score; chỉ giữ compatibility/hash evidence.
+Production privacy vẫn NOT_VERIFIED. Clone/bootstrap/model restore flow không đổi.
+
+Public aggregate: `ai-training/reports/HTTP_STATUS_RECOVERY_20261108.json`.
+Private trace/log/receipts/source snapshots: `.local-dev/status-mismatch-20261108/`;
+không push credentials, cookies, CSRF values hoặc raw HTTP evidence.
+
+Một nhiệm vụ kế tiếp: bounded direct/proxy OFF trace cho malformed form để tách
+audit500 với wire401 và xác định đúng exception/dispatch trước khi sửa hoặc qualify
+semantics. Chỉ tiếp tục ON/privacy sau OFF PASS; không tự training.

@@ -215,6 +215,21 @@ def check_application_status(output, label, candidate_on, actual, expected):
         )
 
 
+def audit_status_differences(request_rows, audit_rows):
+    audit = {r["request_id"]: r for r in audit_rows}
+    assert len({r["request_id"] for r in request_rows}) == len(request_rows)
+    assert all(r["request_id"] in audit for r in request_rows), "Missing Student audit correlation"
+    return [
+        {
+            "case": r["label"],
+            "wire_status": r["status"],
+            "audit_status": audit[r["request_id"]]["status_code"],
+        }
+        for r in request_rows
+        if r["status"] != audit[r["request_id"]]["status_code"]
+    ]
+
+
 class Client:
     def __init__(self, port):
         self.port = port
@@ -242,7 +257,9 @@ class Client:
             )
 
 
-def run(runtime, output, *, opt_in):
+def run(runtime, output, *, opt_in, off_only=False):
+    if off_only and opt_in:
+        raise ValueError("OFF-only acceptance cannot enable the candidate")
     os.umask(0o077)
     output.mkdir(parents=True, mode=0o700, exist_ok=False)
     ready = load(runtime / "ready.json")
@@ -257,6 +274,7 @@ def run(runtime, output, *, opt_in):
             ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
         ).stdout.strip(),
         "reviewed_source_updates": source_updates,
+        "mode": "STUDENT_OFF_ONLY" if off_only else "FULL_OFF_ON",
         "candidate_contract_sha256": syntax.CONTRACT_SHA256,
         "default": "BODY_SYNTAX_EXPERIMENT=OFF",
         "opt_in_requested": opt_in,
@@ -288,6 +306,14 @@ def run(runtime, output, *, opt_in):
         },
         "protected_sha256": protected,
     }
+    if off_only:
+        protocol["workflow_pairs"] = [
+            v for v in protocol["workflow_pairs"] if not v.startswith("DVWA")
+        ]
+        protocol["privacy"] = (
+            "NOT_TESTED in OFF-only status recovery; no final privacy scans or candidate activation"
+        )
+        protocol["bounded_failure_cases"] = []
     protocol["fingerprint"] = digest(protocol)
     atomic_json(output / "protocol.json", protocol)
     gate = Gate(output / "gate.json")
@@ -529,98 +555,99 @@ def run(runtime, output, *, opt_in):
             ],
         )
         wait(lambda: (output / "nginx.pid").read_text().strip())
-        # Fresh pinned DVWA lab. Its Session helper is replaced with RAM-only IO;
-        # the historical collector would write receipts and is not used here.
-        q.pm(
-            "network",
-            "create",
-            "--internal",
-            "--label",
-            "idps.research-run=real-ingress-20261108-v1",
-            d.NET,
-        )
-        lab_network = d.NET
-        for name, image, extra in [
-            (
-                d.DB,
-                d.DB_IMAGE,
-                [
-                    "--network-alias",
-                    "db",
-                    "-e",
-                    "MYSQL_ROOT_PASSWORD=dvwa",
-                    "-e",
-                    "MYSQL_DATABASE=dvwa",
-                    "-e",
-                    "MYSQL_USER=dvwa",
-                    "-e",
-                    "MYSQL_PASSWORD=p@ssw0rd",
-                ],
-            ),
-            (d.APP, d.APP_IMAGE, ["-p", "127.0.0.1:18290:80", "-e", "DB_SERVER=db"]),
-        ]:
-            q.pm("image", "inspect", image)
+        if not off_only:
+            # Fresh pinned DVWA lab. Its Session helper is replaced with RAM-only IO;
+            # the historical collector would write receipts and is not used here.
             q.pm(
-                "run",
-                "-d",
-                "--name",
-                name,
+                "network",
+                "create",
+                "--internal",
                 "--label",
                 "idps.research-run=real-ingress-20261108-v1",
-                "--network",
                 d.NET,
-                "--cpus=.25",
-                "--memory=512m",
-                "--memory-swap=512m",
-                "--pids-limit=128",
-                "--log-driver=none",
-                "--security-opt=no-new-privileges",
-                *extra,
-                image,
             )
-            lab_containers.append(name)
-
-        class MemorySession:
-            cookies = {}
-
-            def call(self, method, path, body="", extra=None):
-                headers = {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Cookie": "; ".join(f"{k}={v}" for k, v in self.cookies.items()),
-                    **(extra or {}),
-                }
-                status, rh, response = d.low_http(18290, method, path, body.encode(), headers)
-                for k, v in rh:
-                    if k.lower() == "set-cookie":
-                        jar = SimpleCookie()
-                        jar.load(v)
-                        self.cookies.update({key: val.value for key, val in jar.items()})
-                return status, rh, response, headers
-
-        dvwa = MemorySession()
-        wait(
-            lambda: (
-                q.pm(
-                    "exec",
+            lab_network = d.NET
+            for name, image, extra in [
+                (
                     d.DB,
-                    "mariadb",
-                    "-udvwa",
-                    "-pp@ssw0rd",
-                    "-N",
-                    "dvwa",
-                    "-e",
-                    "SELECT 1",
-                    check=False,
+                    d.DB_IMAGE,
+                    [
+                        "--network-alias",
+                        "db",
+                        "-e",
+                        "MYSQL_ROOT_PASSWORD=dvwa",
+                        "-e",
+                        "MYSQL_DATABASE=dvwa",
+                        "-e",
+                        "MYSQL_USER=dvwa",
+                        "-e",
+                        "MYSQL_PASSWORD=p@ssw0rd",
+                    ],
+                ),
+                (d.APP, d.APP_IMAGE, ["-p", "127.0.0.1:18290:80", "-e", "DB_SERVER=db"]),
+            ]:
+                q.pm("image", "inspect", image)
+                q.pm(
+                    "run",
+                    "-d",
+                    "--name",
+                    name,
+                    "--label",
+                    "idps.research-run=real-ingress-20261108-v1",
+                    "--network",
+                    d.NET,
+                    "--cpus=.25",
+                    "--memory=512m",
+                    "--memory-swap=512m",
+                    "--pids-limit=128",
+                    "--log-driver=none",
+                    "--security-opt=no-new-privileges",
+                    *extra,
+                    image,
                 )
-                == "1"
-            ),
-            60,
-        )
-        d.initialize(dvwa)
-        info = json.loads(q.pm("inspect", d.APP))[0]
-        merged = Path(info["GraphDriver"]["Data"]["MergedDir"])
-        monitor.counts["DVWA_TMP"] = 0
-        monitor._watch(merged / "tmp", "DVWA_TMP")
+                lab_containers.append(name)
+
+            class MemorySession:
+                cookies = {}
+
+                def call(self, method, path, body="", extra=None):
+                    headers = {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Cookie": "; ".join(f"{k}={v}" for k, v in self.cookies.items()),
+                        **(extra or {}),
+                    }
+                    status, rh, response = d.low_http(18290, method, path, body.encode(), headers)
+                    for k, v in rh:
+                        if k.lower() == "set-cookie":
+                            jar = SimpleCookie()
+                            jar.load(v)
+                            self.cookies.update({key: val.value for key, val in jar.items()})
+                    return status, rh, response, headers
+
+            dvwa = MemorySession()
+            wait(
+                lambda: (
+                    q.pm(
+                        "exec",
+                        d.DB,
+                        "mariadb",
+                        "-udvwa",
+                        "-pp@ssw0rd",
+                        "-N",
+                        "dvwa",
+                        "-e",
+                        "SELECT 1",
+                        check=False,
+                    )
+                    == "1"
+                ),
+                60,
+            )
+            d.initialize(dvwa)
+            info = json.loads(q.pm("inspect", d.APP))[0]
+            merged = Path(info["GraphDriver"]["Data"]["MergedDir"])
+            monitor.counts["DVWA_TMP"] = 0
+            monitor._watch(merged / "tmp", "DVWA_TMP")
 
         def call(client, label, method, path, body=None, headers=None, expected=None):
             atomic_json(
@@ -677,8 +704,18 @@ def run(runtime, output, *, opt_in):
             value = json.loads(page)
             return {value["headerName"]: value["token"]}
 
+        def frozen_parity():
+            rows = [json.loads(line) for line in frozen_journal.read_text().splitlines()]
+            scored = {r["request_id"]: r["score"] for r in rows if r.get("status") == "SCORED"}
+            if not set(frozen_checks) <= set(scored):
+                return False
+            assert all(abs(scored[k] - v) <= 1e-7 for k, v in frozen_checks.items()), (
+                "Frozen offline/live score regression"
+            )
+            return True
+
         # Actual application baseline OFF, then the same workflows ON.
-        for phase in [False, True]:
+        for phase in [False] if off_only else [False, True]:
             if phase:
                 safe_scan()
                 assert monitor.healthy and gate.enable(opt_in=opt_in, privacy_preflight=True)
@@ -783,6 +820,8 @@ def run(runtime, output, *, opt_in):
                 csrf(c) | {"Content-Type": "application/json", "Transfer-Encoding": "chunked"},
                 400,
             )
+            if off_only:
+                break
             q.pm(
                 "exec",
                 d.DB,
@@ -847,6 +886,43 @@ def run(runtime, output, *, opt_in):
             assert region and b"AI_INTENT_PIPE" in b"\n".join(
                 re.findall(rb"<pre>(.*?)</pre>", region[1], re.S)
             )
+        if off_only:
+            wait(frozen_parity, 30)
+            assert not gate.enabled and ingress.sent == 0 and worker.accepted == 0
+            audit_rows = [
+                json.loads(line)
+                for line in (runtime / "student-audit.jsonl").read_text().splitlines()
+            ]
+            conflicts = audit_status_differences(request_rows, audit_rows)
+            for path, sha in protected.items():
+                assert file_sha256(ROOT / path) == sha
+            result = {
+                "case": "STUDENT_BOUNDED_OFF_PARTIAL" if conflicts else "STUDENT_BOUNDED_OFF_PASS",
+                "REAL_INGRESS_OFF": "PARTIAL" if conflicts else "PASS",
+                "scope": "Student workflows only; no DVWA or ON/privacy experiment",
+                "candidate_default": "OFF",
+                "candidate_final": "OFF",
+                "ON_requests": 0,
+                "candidate_events": 0,
+                "request_count": len(request_rows),
+                "audit_request_ids_matched": len(request_rows),
+                "audit_wire_status_conflicts": conflicts,
+                "statuses": {r["label"]: r["status"] for r in request_rows},
+                "frozen_request_offline_live_parity": len(frozen_checks),
+                "frozen_body_observed": False,
+                "privacy_acceptance": "NOT_TESTED",
+                "GLU207_live_score": "NOT_TESTED_NO_SENSOR_FEATURES",
+                "sealed_opened": False,
+                "training": "NOT_RUNNING",
+                "protocol_fingerprint": protocol["fingerprint"],
+            }
+            atomic_json(output / "report.json", result)
+            if conflicts:
+                raise RuntimeError(
+                    f"OFF audit/wire status conflict; diagnostics: {output / 'report.json'}"
+                )
+            print(json.dumps(result, indent=2))
+            return result
         # Inspect actual Rust ingestion/database/API, not a mock serializer.
         wait(
             lambda: (
@@ -890,16 +966,6 @@ def run(runtime, output, *, opt_in):
         )
 
         # Compare real frozen-worker inference with the unchanged offline predictor.
-        def frozen_parity():
-            rows = [json.loads(line) for line in frozen_journal.read_text().splitlines()]
-            scored = {r["request_id"]: r["score"] for r in rows if r.get("status") == "SCORED"}
-            if not set(frozen_checks) <= set(scored):
-                return False
-            assert all(abs(scored[k] - v) <= 1e-7 for k, v in frozen_checks.items()), (
-                "Frozen offline/live score regression"
-            )
-            return True
-
         wait(frozen_parity, 30)
 
         # Real failures before legitimate Student login. No re-arming a latched gate;
@@ -1069,11 +1135,22 @@ if __name__ == "__main__":
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--enable-body-syntax", action="store_true")
     p.add_argument("--nginx-preflight-only", action="store_true")
+    p.add_argument(
+        "--off-only",
+        action="store_true",
+        help="Bounded Student OFF checks; never enable candidate or run privacy acceptance",
+    )
     a = p.parse_args()
     if a.nginx_preflight_only:
-        if a.enable_body_syntax:
-            p.error("--nginx-preflight-only requires the candidate to remain OFF")
+        if a.enable_body_syntax or a.off_only:
+            p.error("--nginx-preflight-only cannot be combined with an acceptance mode")
         print(json.dumps(preflight_only(a.output), indent=2))
+    elif a.off_only:
+        if a.enable_body_syntax:
+            p.error("--off-only cannot be combined with --enable-body-syntax")
+        if a.runtime is None:
+            p.error("--runtime is required for OFF-only acceptance")
+        run(a.runtime.resolve(), a.output.resolve(), opt_in=False, off_only=True)
     elif not a.enable_body_syntax:
         print(json.dumps({"BODY_SYNTAX_EXPERIMENT": "OFF", "lab_started": False}))
     else:

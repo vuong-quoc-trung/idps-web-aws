@@ -1,0 +1,444 @@
+{
+  "milestone": "HTTP-status-mismatch-recovery-20261108",
+  "baseline_commit": "66fbe58",
+  "case": "ORIGINAL_CASE_FIXED_OFF_PARTIAL_ADDITIONAL_CONFLICT",
+  "STATUS_MISMATCH_ROOT_CAUSE": "VERIFIED",
+  "STATUS_MISMATCH_FIXED": true,
+  "fix_scope": "Original unsupported-media415/audit vs401wire case only; not every possible application/wire difference",
+  "REAL_INGRESS_OFF": "PARTIAL",
+  "REAL_INGRESS_ON": "NOT_TESTED",
+  "PRODUCTION_PRIVACY": "NOT_VERIFIED",
+  "TRAINING": "NOT_RUNNING",
+  "root_cause": {
+    "before_direct_status": 401,
+    "before_application_audit_status": 415,
+    "before_nginx_upstream_status": 401,
+    "before_final_client_status": 401,
+    "verified_runtime_sequence": [
+      "REQUEST_SECURITY_POST_ACTIVATE",
+      "MVC_UNSUPPORTED_MEDIA_SEND_ERROR_415",
+      "ERROR_SECURITY_GET_ERROR"
+    ],
+    "source_mechanism": "DefaultHandlerExceptionResolver handles unsupported media via sendError415. SecurityRequestFilter records status415 in finally before container GET/error redispatch. /error denied by unchanged security policy; anonymous authenticationEntryPoint writes401. Nginx forwards upstream401 unchanged.",
+    "proxy_error_interception": false,
+    "framework_libraries": [
+      "tomcat-embed-core-11.0.24.jar",
+      "spring-web-7.0.9.jar",
+      "spring-webmvc-7.0.9.jar",
+      "spring-security-web-7.1.1.jar"
+    ]
+  },
+  "fix": {
+    "file": "student-web/backend/src/main/java/com/pbl4/studentweb/common/web/ApiExceptionHandler.java",
+    "behavior": "Handle HttpMediaTypeNotSupportedException with complete generic JSON415 in original dispatch, preserving exception negotiation headers; avoid sendError redispatch for this media failure.",
+    "expected415_unchanged": true,
+    "authentication_rules_unchanged": true,
+    "CSRF_unchanged": true,
+    "error_route_still_protected": true,
+    "audit_writer_unchanged": true,
+    "after_direct_status": 415,
+    "after_application_audit_status": 415,
+    "after_nginx_upstream_status": 415,
+    "after_final_client_status": 415,
+    "no_ERROR_dispatch_for_media_case_after_fix": true
+  },
+  "trace_before": [
+    {
+      "route": "direct",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "direct",
+      "case": "unsupported-media",
+      "client_status": 401,
+      "application_audit_status": 415,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "direct",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "direct",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "direct",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "direct",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "nginx",
+      "case": "unsupported-media",
+      "client_status": 401,
+      "application_audit_status": 415,
+      "nginx_upstream_status": 401,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "nginx",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": 403,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": 401,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": 401,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    }
+  ],
+  "trace_after": [
+    {
+      "route": "direct",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "direct",
+      "case": "unsupported-media",
+      "client_status": 415,
+      "application_audit_status": 415,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "direct",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "direct",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "direct",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "direct",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": null,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "nginx",
+      "case": "unsupported-media",
+      "client_status": 415,
+      "application_audit_status": 415,
+      "nginx_upstream_status": 415,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "response_content_type": "application/json"
+    },
+    {
+      "route": "nginx",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": 403,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": 401,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    },
+    {
+      "route": "nginx",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": 401,
+      "response_content_type": "application/json;charset=ISO-8859-1"
+    }
+  ],
+  "request_equivalence": "Same fixed harmless body/method/path/media; same UA/Host127.0.0.1/XFF127.0.0.1/protohttp. Fresh anonymous cookie/CSRF session per route; token/cookie values remain RAM-only. IDs unique per call; edge overwrites supplied ID.",
+  "bounded_OFF": {
+    "request_count": 32,
+    "unique_request_ids": 32,
+    "audit_matches": 32,
+    "all_explicit_original_wire_status_checks_passed": true,
+    "unknown_expected_case": "malformed-form originally had no fixed expected wire status; received401",
+    "observed_statuses": {
+      "csrf": 200,
+      "form-login": 204,
+      "authenticated-me": 200,
+      "JSON-logout": 204,
+      "logout-state": 401,
+      "canary-auth-denial": 401,
+      "empty": 400,
+      "malformed": 400,
+      "unsupported": 415,
+      "gzip": 400,
+      "oversize": 400,
+      "malformed-form": 401,
+      "chunked": 400
+    },
+    "unresolved_conflicts": [
+      {
+        "case": "malformed-form",
+        "wire_status": 401,
+        "audit_status": 500
+      }
+    ],
+    "gate_outcome": "FAILED_UNQUALIFIED_AUDIT_WIRE_CONSISTENCY_CHECK; kept PARTIAL, no threshold/status edits and no further HTTP replay",
+    "result_provenance": "Postmortem aggregation from saved observations; original job stopped before writing a final report. Exact executed harness recovered by SHA256; later diagnostics-only patch tested separately, no live rerun.",
+    "executed_source_sha256": "cae8e3c2e84af5e6d069c28971e1788a59eb2d7b2d1a8ecfa6e002fcde1b9a85",
+    "executed_source_recovered_exactly": true,
+    "frozen_request_live_offline_comparisons": 32,
+    "frozen_score_tolerance": 1e-07,
+    "frozen_parity_verification": "Executed wait(frozen_parity,30) succeeded before the later audit assertion;32SCORED IDs match32observed requests; body_observed false.",
+    "candidate_ON_requests": 0,
+    "candidate_numeric_events": 0,
+    "DVWA_probes": 0,
+    "privacy_experiment": "NOT_RUN"
+  },
+  "status_contract": {
+    "StudentAudit.status_code": "Application filter observation at finally; may be intermediate, or synthetic500 when failed=True; not guaranteed final client status.",
+    "Nginx.upstream_status": "Upstream HTTP status observed by Nginx; do not collapse retry status sequences.",
+    "Nginx.status": "Edge response log status; check separate client receipt for actual client observation.",
+    "client.status": "HTTP status received by the client.",
+    "correlation": "Preserve request identity, route, method, source and phase; identical request IDs do not require equal statuses. Never overwrite one source with another to hide a conflict."
+  },
+  "historical_174": {
+    "existing_evidence": "PATCH /api/faculties/[id], Student405/Nginx403/EVE403, quarantined derivative",
+    "same_cause_proven": false,
+    "records_rewritten": 0,
+    "training_data_or_labels_changed": false,
+    "quarantine_unchanged": true,
+    "source_refs": [
+      "docs/15_THREE_SOURCE_INTELLIGENCE.md",
+      "docs/16_RULE_AI_COORDINATION.md",
+      "scripts/prepare-glu207-derivative.py"
+    ]
+  },
+  "remaining_blocker": {
+    "case": "malformed-form",
+    "wire_status": 401,
+    "audit_status": 500,
+    "original_415_case_regressed": false,
+    "mechanism_verified": false,
+    "source_note": "SecurityRequestFilter has failed?500 synthetic mapping; exact exception/dispatch cause of this malformed-form500/401 not traced in the saved selected logs. Do not generalize from original media case."
+  },
+  "tests": {
+    "fresh_Java_total": 60,
+    "Java_suites": [
+      {
+        "suite": "com.pbl4.studentweb.HttpErrorStatusTests",
+        "tests": 3,
+        "fresh_report": true
+      },
+      {
+        "suite": "com.pbl4.studentweb.StudentApiTests",
+        "tests": 50,
+        "fresh_report": true
+      },
+      {
+        "suite": "com.pbl4.studentweb.configuration.SecurityRequestFilterTests",
+        "tests": 3,
+        "fresh_report": true
+      },
+      {
+        "suite": "com.pbl4.studentweb.configuration.RequestAttributionTests",
+        "tests": 4,
+        "fresh_report": true
+      }
+    ],
+    "Python_targeted": 43,
+    "Ruff": "PASS",
+    "syntax_import": "PASS",
+    "Student_package_offline": "PASS",
+    "Nginx_preflight": "PASS_ACTUAL",
+    "full_OFF_ON_privacy": "NOT_RUN"
+  },
+  "safety": {
+    "frozen_checkpoints_encoders_thresholds": "UNCHANGED",
+    "Rules_Policy_Nginx_sources": "UNCHANGED",
+    "unchanged_historical_pins": 26,
+    "protected_paths_checked": 156,
+    "sealed_opened": false,
+    "candidate_final": "OFF",
+    "old_and_new_PG": "STOPPED_ONE_MOUNT_EACH_PRESERVED",
+    "lab_listeners": []
+  },
+  "resources": [
+    {
+      "job": "before-traced-guard",
+      "status": "PASS",
+      "max_c": 81.0,
+      "active_average_c": 59.80986157591539,
+      "watchdog_failure": null,
+      "events": [
+        {
+          "elapsed": 2.148202663999882,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 81.0,
+          "cpu_quota_percent": 25.0
+        },
+        {
+          "elapsed": 18.30967440099994,
+          "action": "THAW",
+          "temperature": 56.0
+        }
+      ]
+    },
+    {
+      "job": "after-guard",
+      "status": "STOPPED",
+      "max_c": 67.0,
+      "active_average_c": 56.859680852963336,
+      "watchdog_failure": null,
+      "events": []
+    },
+    {
+      "job": "red-test-guard",
+      "status": "STOPPED",
+      "max_c": 81.0,
+      "active_average_c": 56.86240824418486,
+      "watchdog_failure": null,
+      "events": [
+        {
+          "elapsed": 1.0660210999999435,
+          "action": "FREEZE_AND_REDUCE",
+          "temperature": 81.0,
+          "cpu_quota_percent": 25.0
+        },
+        {
+          "elapsed": 17.151570783999887,
+          "action": "THAW",
+          "temperature": 56.0
+        }
+      ]
+    },
+    {
+      "job": "final-python-tests-guard",
+      "status": "PASS",
+      "max_c": 62.0,
+      "active_average_c": 55.999571798108434,
+      "watchdog_failure": null,
+      "events": []
+    },
+    {
+      "job": "before-guard",
+      "status": "STOPPED",
+      "max_c": 64.0,
+      "active_average_c": 55.84551854501107,
+      "watchdog_failure": null,
+      "events": []
+    },
+    {
+      "job": "build-after-guard",
+      "status": "PASS",
+      "max_c": 70.0,
+      "active_average_c": 57.02115964286985,
+      "watchdog_failure": null,
+      "events": []
+    },
+    {
+      "job": "python-tests-guard",
+      "status": "PASS",
+      "max_c": 60.0,
+      "active_average_c": 58.73840735120334,
+      "watchdog_failure": null,
+      "events": []
+    }
+  ],
+  "cleanup": "PASS_ALL_OWNED_UNITS_AND_LAB_LISTENERS_STOPPED",
+  "independent_review": "PENDING_UNCHANGED",
+  "next_action": "One bounded OFF-only direct/proxy diagnosis for malformed form to isolate audit500 vs wire401 and qualify/fix that phase semantics; resume ON/privacy only after OFF PASS.",
+  "local_evidence": [
+    ".local-dev/status-mismatch-20261108/before-traced/",
+    ".local-dev/status-mismatch-20261108/before-dispatch-proof.json",
+    ".local-dev/status-mismatch-20261108/after/",
+    ".local-dev/status-mismatch-20261108/off-acceptance/",
+    ".local-dev/status-mismatch-20261108/off-conflict-diagnostic.json",
+    ".local-dev/status-mismatch-20261108/source-snapshots/validate-real-body-ingress.executed.py",
+    ".local-dev/status-mismatch-20261108/safety-final.json"
+  ]
+}
