@@ -18,7 +18,8 @@ Command prerequisite: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SAN
 Acquisition milestone: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md).
 Basket root cause: [VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
 Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
-Milestone hiện tại: [Dataset acquisition completed — CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
+Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
+Milestone hiện tại: [Controlled v3 pilot](31_REQUEST_V3_CONTROLLED_PILOT.md).
 
 ## Repository, model release và dependencies
 
@@ -1290,3 +1291,16 @@ Releases/bootstrap giữ nguyên. Không sealed/AWS/enforcement.
 
 **Next action:** chỉ khi được cho phép riêng, khởi chạy một bounded pilot theo
 config đã freeze; không cần thêm capture để đạt minimum hiện tại. Dừng milestone.
+
+
+## Controlled Request v3 pilot — 2026-11-08
+
+Training đã được cho phép riêng. Run `request-v3-pilot-20261108-r1` đã prepare,
+53,640 parameters,42 canonical TRAIN views,60 planned updates. Dataset/design
+đã freeze giữ nguyên; sampling theo recorded lineage, không replacement hoặc
+multiplicity inflation. Source handoff này trước launch; trạng thái thật nằm ở
+`ai-training/.artifacts/request_v3_pilots_20261108/request-v3-pilot-20261108-r1/status.json`.
+[Run protocol và status command](31_REQUEST_V3_CONTROLLED_PILOT.md).
+Không đổi frozen AI/thresholds, không CAL/DEV gradients, không sealed access hay
+promotion. Actual checkpoint recovery và independent resource guard thuộc cùng
+run; nếu kéo dài, job chạy dưới user systemd độc lập với chat.
