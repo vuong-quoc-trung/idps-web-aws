@@ -19,7 +19,8 @@ Acquisition milestone: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_
 Basket root cause: [VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
 Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
 Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
-Milestone hiện tại: [Controlled v3 pilot — COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
+Training pilot: [COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
+Milestone hiện tại: [Body-carried evaluation — PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
 
 ## Repository, model release và dependencies
 
@@ -1334,3 +1335,46 @@ preserved; no sealed/AWS/enforcement. Four new targeted tests and Ruff PASS.
 **Next task duy nhất:** finite precommitted body-carried XSS+command evaluation
 with matched benign POST controls and disjoint lineage; score the fixed current
 checkpoint and v2 without retraining/retuning. Chưa capture hay chạy task này.
+
+
+## Body-carried evaluation — partial XSS value observed (2026-11-08)
+
+[Báo cáo](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md),
+[protocol](../ai-training/configs/research/request-v3-body-evaluation-20261108.json),
+[machine evidence](../ai-training/reports/REQUEST_V3_BODY_CARRIED_EVALUATION_20261108.json).
+Cohort `request-v3-body-eval-20261108-r2`, fingerprint
+`0d775248323eb183f91382cbd47e718fbfa6972b6689dfd39e050a8b9fcd9c56`.
+
+**BODY_CARRIED_EVALUATION=PARTIAL; V3_RESEARCH_VALUE=OBSERVED cho XSS subset.**
+Precommit24templates, chỉ4complete XSS pairs qua raw/template/full/candidate overlap
+rules:8main receipts/8unique634views,4unsafe reflections+4benign successes,0UNKNOWN.
+Command0qualified matched pairs do benign controls đều overlap lịch sử; không
+phát request để bù quota. Command INCONCLUSIVE. Một diagnostic preflight riêng;
+9targeted HTTP,24setup attempts. Ba session/campaign groups mới, một guestbook
+business workflow DVWA đã biết; không independent cross-domain claim.
+
+Manifest/labels/privacy/parity khóa trước first score. Cả8có cùng588prefix.
+Frozen v2/control TP0,FN4,FP0,TN4,AP0.5; v3 TP2,FN2,FP0,TN4,AP1.0. Hai v3-only
+XSS detections ở2of3groups,không new benign FP. Strict thresholds giữ nguyên:
+v2 0.8826237916946411,control0.8275630474090576,v3 0.7795706987380981.
+Tail ablation trên checkpoint cố định cho0detections/AP0.5; cho thấy conditional
+body-feature use, chưa tách global representation/backbone finetune effects.
+N=4benign, IID zero-FP upper95%bound60.24%; không FPR≤1% hay độc lập thống kê.
+Human review PENDING; browser execution NOT_TESTED; Rule/AI NOT_MEASURED.
+
+Kết quả này không đảo ngược training-pilot CASE B/old90DEV regression. V3_PROMOTION
+vẫn REJECTED. REQUEST_V3_TRAINING=NOT_STARTED trong milestone này; checkpoint cũ
+vẫn step60, không weights/threshold changes. New cohort EVALUATION_ONLY; nếu dùng
+fit/CAL sau này phải retire evaluation independence một cách rõ ràng.
+
+21actualprivatevalues finite-scan trong RAM, không raw sensitive HTTP/session/cookie
+digest mới. Restricted evidence/scores local ignored. R1startup0HTTP watchdog
+readiness timeout được bảo toàn; r2 dùng lại verified lightweight watchdog CLI,
+không đổi catalog/gates. Guardpeak48°C, không thermal/watchdog failure; lab sạch,
+24volumes/oldPG mounts giữ nguyên. 158protectedhashes,3historicalUNKNOWN files,
+qualified release và pilot artifacts không đổi. 7targetedtests/RuffPASS.
+
+**Next task duy nhất:** controlled weight-preservation arm, cùng634representation/
+TRAIN/seed/order/budget, freeze v2 backbone và15state/media rows; chỉ31body count/
+syntax rows trainable (1,984params). Compare existingfullv3/frozenv2 bằng old90DEV+
+new8 như exposed diagnostics. Chưa implement/train; không đổi admission hay promote.
