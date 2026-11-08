@@ -12,7 +12,8 @@ Kết quả model gần nhất: [Scaled normalization — candidate rejected](21
 Dataset milestone: [Attack-intent v1 — released, training blocked](22_ATTACK_INTENT_DATASET_V1.md).
 Nền tảng representation: [HTTP body syntax — prototype](23_HTTP_BODY_SYNTAX_RESEARCH.md).
 Live prerequisite: [Body-syntax live acceptance — verified for lab](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
-Milestone hiện tại: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_READINESS.md).
+Data prerequisite: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_READINESS.md).
+Milestone hiện tại: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_DATA_COVERAGE.md).
 
 ## Repository, model release và dependencies
 
@@ -1044,3 +1045,45 @@ qua≥3workflows/FORM+JSON; thêm genuine missing-body controls khi feasible. Pr
 lineage/template/full-near/candidate-near trước HTTP; không copy templates giữaroles,
 không mởsealed, không gán benign từ200 hoặc phát filler. Nếu không có Oracle/workflow
 novelty phù hợp, dừng với coverage gap; không lặp capture vô hạn. Chưa thực hiện.
+
+## Request v3 final coverage — 2026-11-08
+
+**CASE C — command-control Oracle không vận hành được trong sandbox hiện tại.**
+Baseline `467425a`. [Báo cáo](25_REQUEST_V3_FINAL_DATA_COVERAGE.md) và
+[machine evidence](../ai-training/reports/REQUEST_V3_FINAL_DATA_COVERAGE_20261108.json).
+
+Plan12main/9preflight, total targeted cap24, roles/templates/Oracles/coverage đã khóa;
+pre-audit cả12planned cases không overlap theo checks đã định. Hai setup aborts do
+session Oracle đọc sai namespace và cleanup masking được bảo toàn. Sửa reader theo
+pinned DVWA `$_SESSION['dvwa']['username']`,3actualPHPfixturesPASS. Corrected preflight
+1HTTP200nhưng không có ping packet/hostname Oracle: **UNKNOWN**, không admit benign;
+main0, không tiếp tục capture. CLI probe cùng image/UIDwww-data/no-new-privileges
+localhost-only exit2/PERMISSION_DENIED. Không đổi host security/thermal settings.
+
+Observed1completed targeted receipt; conservatively reserve1possible prior dispatch,
+global upper bound2≤24. Setup/auth24calls tách riêng, không là supervised receipts;
+không claim toàn bộ HTTP traffic≤24. Per-request diagnostics local-only tại
+`ai-training/.artifacts/request_v3_final_20261108/`; không raw bodies/headers/responses
+hoặc cookie digests trong telemetry. Ordinal lineage aliases không chứa session values.
+
+Parent dataset giữ nguyên fingerprint
+`5c95afd6555502725a10ddb4a77d2c4f80a039dfd5c93448bb658252b5367e0d`:
+TRAIN43/37views (23benign/20attack), CAL13/13views (11/2), DEV86/83views (40/46).
+Không có new derivative release. TRAIN JSON/command/file benign gaps và DEV0benignPOST
+còn nguyên; không thêm missingness giả. Review224PENDING, new UNKNOWN diagnostic riêng.
+
+**Positive infrastructure proof:** actual634/53,640parameter warm start từ frozen v2,
+new Adam step0, checkpoint reload và cross-process exact next update trên synthetic
+fixturesPASS. Chỉ2synthetic updates,0actual-cohort updates. Proof/checkpoints ở
+`ai-training/.artifacts/request_v3_final_20261108/synthetic-recovery/`, không inference/
+promotion. Existing architecture/evaluation/thresholds không đổi, GLU207livePARTIAL
+không là blocker của request-only offline research. TRAINING_READY=false.
+
+46final Python tests/Ruff/formatPASS; peak guard66°C, quota25%onecore, reserve4GiB,
+no thermal/watchdog failure. All owned lab resources dừng;158protected hashes, old
+PG volumes, checkpoints/encoders và Releases giữ nguyên. Candidate defaultOFF;
+clone/bootstrap/model restore, Web/Nginx/Rules/Policy/Suricata/correlation không đổi.
+
+**Một blocker tiếp theo:** legitimate ping/Oracle cho application UID trong isolated
+lab. Chỉ tiếp tục campaign đã khóa sau khi dependency đó được xác minh; không nới
+privacy, sửa labels/roles hoặc thu filler. Không training/AWS/enforcement lượt này.
