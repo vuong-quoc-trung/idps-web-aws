@@ -13,6 +13,27 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 final class SecurityRequestFilter extends OncePerRequestFilter {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SecurityRequestFilter.class);
+
+    private static void failureMetadata(Exception error, HttpServletRequest request, String requestId, boolean authenticated, int status) {
+        if (!LOG.isDebugEnabled()) return;
+        String origin = "unclassified";
+        String stage = "unclassified";
+        for (var frame : error.getStackTrace()) {
+            if (origin.equals("unclassified") && frame.getClassName().startsWith("org.springframework.security.")) {
+                origin = frame.getClassName() + "." + frame.getMethodName();
+            }
+            if (frame.getClassName().startsWith("org.springframework.security.web.authentication.")
+                    || frame.getClassName().startsWith("org.springframework.security.web.csrf.")) {
+                stage = frame.getClassName() + "." + frame.getMethodName();
+                break;
+            }
+        }
+        // Class/stage metadata only: never exception messages, values or stack dumps.
+        int declaredStatus = error instanceof org.apache.tomcat.util.http.InvalidParameterException invalid ? invalid.getErrorCode() : 0;
+        LOG.debug("Request chain failed: type={}, dispatch={}, request_id={}, entry_authenticated={}, observed_status={}, origin={}, declared_parameter_status={}, stage={}",
+                error.getClass().getName(), request.getDispatcherType(), requestId, authenticated, status, origin, declaredStatus, stage);
+    }
     private static final Set<String> LIMITED = Set.of("/api/auth/login", "/api/auth/activate", "/api/auth/activation/verify", "/api/auth/activation/send",
         "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/change-password");
     private final SensitiveRequestLimiter limiter;
@@ -50,7 +71,35 @@ final class SecurityRequestFilter extends OncePerRequestFilter {
                 return;
             }
             chain.doFilter(request, response);
-        } catch (ServletException | IOException | RuntimeException e) { failed = true; throw e; }
+        } catch (ServletException | RuntimeException e) {
+            failed = true;
+            failureMetadata(e, request, client.requestId(), before != null, response.getStatus());
+            if (response.isCommitted()) throw e;
+            // Parameter parsing can fail in security filters, before MVC advice.
+            // Trust only the container's explicit parser status; other exceptions
+            // remain genuine server errors, never inferred from exception messages.
+            int status = 500;
+            if (e instanceof org.apache.tomcat.util.http.InvalidParameterException invalid
+                    && (invalid.getErrorCode() == 400 || invalid.getErrorCode() == 413)) {
+                status = invalid.getErrorCode();
+            }
+            // resetBuffer alone retains stale framing (e.g. an old Content-Length).
+            // Preserve security/session/identity headers, then start a clean body.
+            var headers = new java.util.LinkedHashMap<String, java.util.List<String>>();
+            var entity = Set.of("content-length", "transfer-encoding", "content-encoding", "content-type");
+            for (String name : response.getHeaderNames()) {
+                if (!entity.contains(name.toLowerCase(java.util.Locale.ROOT)))
+                    headers.put(name, java.util.List.copyOf(response.getHeaders(name)));
+            }
+            response.reset();
+            headers.forEach((name, values) -> values.forEach(value -> response.addHeader(name, value)));
+            SecurityConfiguration.error(response, status, status == 500 ? "Internal server error" : "Invalid request data");
+            failed = false; // Completed response: audit its observed status, not synthetic500.
+        } catch (IOException e) {
+            failed = true;
+            failureMetadata(e, request, client.requestId(), before != null, response.getStatus());
+            throw e;
+        }
         finally {
             if (path.startsWith("/api/") && (includeReads || mutation || response.getStatus() >= 400 || failed)) {
                 var auth = identity();

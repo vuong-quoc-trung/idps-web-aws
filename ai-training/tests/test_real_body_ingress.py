@@ -140,6 +140,41 @@ def test_dispatch_trace_recognizes_container_get_redispatch_without_values(harne
     ) == ["REQUEST_SECURITY_CHAIN", "MVC_UNSUPPORTED_MEDIA", "ERROR_SECURITY_CHAIN"]
 
 
+def test_error_trace_preserves_declared_parser_status_without_error_values(harness):
+    spec = importlib.util.spec_from_file_location(
+        "form_trace", Path(harness.__file__).with_name("trace-status-mismatch.py")
+    )
+    trace = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(trace)
+    rows = trace.failure_metadata(
+        [
+            "Request chain failed: type=org.apache.tomcat.util.http.InvalidParameterException, dispatch=REQUEST, request_id=opaque, entry_authenticated=false, observed_status=200, origin=org.springframework.security.web.firewall.StrictHttpFirewall.getParameter, declared_parameter_status=400, stage=org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername",
+            "password=must-not-be-returned",
+        ]
+    )
+    assert len(rows) == 1 and rows[0]["declared_parameter_status"] == 400
+    assert rows[0]["observed_status"] == 200 and rows[0]["dispatch_type"] == "REQUEST"
+    assert "UsernamePasswordAuthenticationFilter" in rows[0]["security_stage"]
+    assert "must-not-be-returned" not in json.dumps(rows) and "request_id" not in rows[0]
+
+
+def test_security_trace_distinguishes_error_dispatch_from_request_denial(harness):
+    spec = importlib.util.spec_from_file_location(
+        "security_trace", Path(harness.__file__).with_name("trace-status-mismatch.py")
+    )
+    trace = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(trace)
+    assert trace.security_decisions(
+        [
+            "Security decision: dispatch=ERROR, error_status=400, request_id=opaque, status=401",
+            "Security decision: dispatch=REQUEST, error_status=null, request_id=opaque, status=403",
+        ]
+    ) == [
+        {"dispatch_type": "ERROR", "container_error_status": 400, "security_status": 401},
+        {"dispatch_type": "REQUEST", "container_error_status": None, "security_status": 403},
+    ]
+
+
 @pytest.mark.parametrize(
     "app_status,expected",
     [(415, []), (500, [{"case": "probe", "wire_status": 415, "audit_status": 500}])],

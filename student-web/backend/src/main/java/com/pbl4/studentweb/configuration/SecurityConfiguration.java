@@ -55,11 +55,13 @@ public class SecurityConfiguration {
                 .deleteCookies("JSESSIONID"));
         http.exceptionHandling(errors -> errors
                 .authenticationEntryPoint((request, response, error) -> {
+                    decisionMetadata(request, response, 401);
                     if (request.getRequestedSessionId() != null && !request.isRequestedSessionIdValid())
                         SecuritySignals.get(request).mark(SecuritySignals.Reason.INVALID_SESSION);
                     error(response, 401, "Authentication required");
                 })
                 .accessDeniedHandler((request, response, error) -> {
+                    decisionMetadata(request, response, 403);
                     if (error instanceof org.springframework.security.web.csrf.CsrfException)
                         SecuritySignals.get(request).mark(SecuritySignals.Reason.CSRF_INVALID);
                     // Exclude CSRF failures: they do not establish lack of privilege.
@@ -76,6 +78,13 @@ public class SecurityConfiguration {
         http.requestCache(cache -> cache.disable());
         http.addFilterBefore(new ActiveAccountFilter(users), AuthorizationFilter.class);
         return http.build();
+    }
+    private static void decisionMetadata(jakarta.servlet.http.HttpServletRequest request, HttpServletResponse response, int status) {
+        Object errorStatus = request.getAttribute(jakarta.servlet.RequestDispatcher.ERROR_STATUS_CODE);
+        org.slf4j.LoggerFactory.getLogger(SecurityConfiguration.class).debug(
+                "Security decision: dispatch={}, error_status={}, request_id={}, status={}",
+                request.getDispatcherType(), errorStatus instanceof Integer ? errorStatus : null,
+                response.getHeader("X-Request-Id"), status);
     }
     static void error(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);

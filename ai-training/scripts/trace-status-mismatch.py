@@ -15,6 +15,7 @@ import socket
 import subprocess
 import tempfile
 from pathlib import Path
+from urllib.parse import urlencode
 
 from idps_ai.common import atomic_json
 from idps_ai.features.body_syntax_ingress_lab import Gate, LabIngress
@@ -39,7 +40,49 @@ def dispatch_events(lines):
     return events
 
 
-def run(runtime, output):
+def failure_metadata(lines):
+    pattern = re.compile(
+        r"Request chain failed: type=([\w.$]+), dispatch=([A-Z]+), request_id=[\w.-]+, "
+        r"entry_authenticated=(true|false), observed_status=(\d+), origin=([\w.$]+), "
+        r"declared_parameter_status=(\d+)"
+    )
+    result = []
+    for line in lines:
+        if match := pattern.search(line):
+            kind, dispatch, auth, status, origin, declared = match.groups()
+            metadata = {
+                "exception_class": kind,
+                "dispatch_type": dispatch,
+                "entry_authenticated": auth == "true",
+                "observed_status": int(status),
+                "origin": origin,
+                "declared_parameter_status": int(declared),
+            }
+            if stage := re.search(r", stage=([\w.$]+)", line):
+                metadata["security_stage"] = stage[1]
+            result.append(metadata)
+    return result
+
+
+def security_decisions(lines):
+    result = []
+    for line in lines:
+        if match := re.search(
+            r"Security decision: dispatch=([A-Z]+), error_status=(null|\d+), request_id=[\w.-]+, status=(\d+)",
+            line,
+        ):
+            dispatch, error, status = match.groups()
+            result.append(
+                {
+                    "dispatch_type": dispatch,
+                    "container_error_status": None if error == "null" else int(error),
+                    "security_status": int(status),
+                }
+            )
+    return result
+
+
+def run(runtime, output, *, malformed_form=False):
     os.umask(0o077)
     assert output.is_relative_to(ROOT / ".local-dev"), "Diagnostics must remain local-only"
     ready = h.load(runtime / "ready.json")
@@ -146,6 +189,8 @@ def run(runtime, output):
                                 else None,
                                 "nginx_upstream_status": upstream,
                                 "dispatch_trace": events,
+                                "failure_metadata": failure_metadata(lines),
+                                "security_decisions": security_decisions(lines),
                                 "response_content_type": rh.get("Content-Type"),
                                 "candidate": "OFF",
                             }
@@ -179,6 +224,59 @@ def run(runtime, output):
                     )
                     call("protected-anonymous", "GET", "/api/auth/me")
                     call("error-remains-protected", "GET", "/error")
+                    if malformed_form:
+                        form = {"Content-Type": "application/x-www-form-urlencoded"}
+                        call(
+                            "malformed-form-anonymous",
+                            "POST",
+                            "/api/auth/login",
+                            b"message=%FF",
+                            csrf_header | form,
+                        )
+                        call(
+                            "invalid-percent-form",
+                            "POST",
+                            "/api/auth/login",
+                            b"message=%ZZ",
+                            csrf_header | form,
+                        )
+                        call(
+                            "malformed-form-no-csrf",
+                            "POST",
+                            "/api/auth/login",
+                            b"message=%FF",
+                            form,
+                        )
+                        call(
+                            "invalid-credentials",
+                            "POST",
+                            "/api/auth/login",
+                            b"username=missing-fixture-user&password=fixture-invalid",
+                            csrf_header | form,
+                        )
+                        infra = h.load(runtime / "secrets.json")
+                        call(
+                            "valid-login",
+                            "POST",
+                            "/api/auth/login",
+                            urlencode(
+                                {"username": "ingress-admin", "password": infra["admin"]}
+                            ).encode(),
+                            csrf_header | form,
+                        )
+                        assert rows[-1]["client_status"] == 204, "Owned lab valid login failed"
+                        call("authenticated-me", "GET", "/api/auth/me")
+                        assert rows[-1]["client_status"] == 200, "Valid session not established"
+                        csrf = json.loads(call("authenticated-csrf", "GET", "/api/auth/csrf"))
+                        csrf_header = {csrf["headerName"]: csrf["token"]}
+                        call(
+                            "malformed-form-authenticated",
+                            "POST",
+                            "/api/auth/login",
+                            b"message=%FF",
+                            csrf_header | form,
+                        )
+                        call("session-after-malformed-form", "GET", "/api/auth/me")
                 assert len({r["request_id"] for r in rows}) == len(rows)
                 atomic_json(
                     output / "report.json",
@@ -211,5 +309,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runtime", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--malformed-form", action="store_true")
     args = parser.parse_args()
-    run(args.runtime.resolve(), args.output.resolve())
+    run(args.runtime.resolve(), args.output.resolve(), malformed_form=args.malformed_form)

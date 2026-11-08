@@ -1,0 +1,1158 @@
+{
+  "milestone": "final-off-malformed-form-20261108",
+  "baseline_commit": "aa5c89f",
+  "case": "CASE_A_OFF_PASS",
+  "MALFORMED_FORM_ROOT_CAUSE": "VERIFIED",
+  "MALFORMED_FORM_FIX": "PASS",
+  "HTTP_ERROR_DISPATCH_REGRESSION": "PASS",
+  "REAL_INGRESS_OFF": "PASS",
+  "REAL_INGRESS_OFF_scope": "Bounded Student workflows only; not full-system/ON/privacy acceptance",
+  "REAL_INGRESS_ON": "NOT_TESTED",
+  "PRODUCTION_PRIVACY": "NOT_VERIFIED",
+  "TRAINING": "NOT_RUNNING",
+  "root_cause": {
+    "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+    "declared_error_status": 400,
+    "observed_status_at_escape": 200,
+    "old_audit_status": 500,
+    "audit500_is_synthetic": "SecurityRequestFilter failed?500 branch after chain exception; not a proven internal server500 for these fixtures",
+    "before_wire_anonymous": 401,
+    "before_wire_authenticated": 403,
+    "error_dispatch_type": "ERROR",
+    "container_error_status": 400,
+    "security_parameter_facade": "StrictHttpFirewall.StrictFirewalledRequest.getParameter",
+    "with_valid_csrf_stage": "UsernamePasswordAuthenticationFilter.obtainUsername; before credential verification",
+    "without_csrf_stage": "CsrfTokenRequestHandler.resolveCsrfTokenValue; before CSRF token resolution completes",
+    "nginx": "Upstream and final client statuses identical; no interception",
+    "scope": "Exact fixtures on direct and proxy routes, fresh anonymous and valid authenticated sessions; no generalization to every status conflict"
+  },
+  "fix": {
+    "boundary": "SecurityRequestFilter around downstream security/MVC chain; exception is outside MVC advice at original failure stage",
+    "direct_known_parser_statuses": [
+      400,
+      413
+    ],
+    "unexpected_uncommitted_Servlet_or_Runtime": "Generic JSON500; no message-based or nested-cause inference into4xx",
+    "response": "Complete original dispatch without sendError; audit observed400/500",
+    "framing": "Reset uncommitted response; preserve security/session/identity headers, discard old entity framing headers and buffered body",
+    "transport_or_already_committed": "Rethrow; cannot invent a successful rewritten wire response",
+    "auth_policy": "UNCHANGED; /error remains protected; valid-input missingCSRF403 and invalid credentials401 remain",
+    "diagnostic_logging": "DEBUG metadata only, no message/stack/body/password/cookie; default not enabled globally"
+  },
+  "before": [
+    {
+      "route": "direct",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "unsupported-media",
+      "client_status": 415,
+      "application_audit_status": 415,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 403
+        }
+      ],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "malformed-form-anonymous",
+      "client_status": 401,
+      "application_audit_status": 500,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "invalid-percent-form",
+      "client_status": 401,
+      "application_audit_status": 500,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "malformed-form-no-csrf",
+      "client_status": 401,
+      "application_audit_status": 500,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "invalid-credentials",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "valid-login",
+      "client_status": 204,
+      "application_audit_status": 204,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "authenticated-me",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "authenticated-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "malformed-form-authenticated",
+      "client_status": 403,
+      "application_audit_status": 500,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": true,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 403
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "session-after-malformed-form",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "unsupported-media",
+      "client_status": 415,
+      "application_audit_status": 415,
+      "nginx_upstream_status": 415,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": 403,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 403
+        }
+      ],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-form-anonymous",
+      "client_status": 401,
+      "application_audit_status": 500,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "invalid-percent-form",
+      "client_status": 401,
+      "application_audit_status": 500,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-form-no-csrf",
+      "client_status": 401,
+      "application_audit_status": 500,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "invalid-credentials",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "valid-login",
+      "client_status": 204,
+      "application_audit_status": 204,
+      "nginx_upstream_status": 204,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "authenticated-me",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "authenticated-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-form-authenticated",
+      "client_status": 403,
+      "application_audit_status": 500,
+      "nginx_upstream_status": 403,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": true,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter"
+        }
+      ],
+      "security_decisions": [
+        {
+          "container_error_status": 400,
+          "dispatch_type": "ERROR",
+          "security_status": 403
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "session-after-malformed-form",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    }
+  ],
+  "after": [
+    {
+      "route": "direct",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "unsupported-media",
+      "client_status": 415,
+      "application_audit_status": 415,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 403
+        }
+      ],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "direct",
+      "case": "malformed-form-anonymous",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "invalid-percent-form",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "malformed-form-no-csrf",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.csrf.CsrfTokenRequestHandler.resolveCsrfTokenValue"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "invalid-credentials",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "valid-login",
+      "client_status": 204,
+      "application_audit_status": 204,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "authenticated-me",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "authenticated-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "malformed-form-authenticated",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": null,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": true,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "direct",
+      "case": "session-after-malformed-form",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": null,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "success-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "unsupported-media",
+      "client_status": 415,
+      "application_audit_status": 415,
+      "nginx_upstream_status": 415,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-json",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "missing-csrf",
+      "client_status": 403,
+      "application_audit_status": 403,
+      "nginx_upstream_status": 403,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 403
+        }
+      ],
+      "dispatch_trace": [
+        "REQUEST_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "protected-anonymous",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "error-remains-protected",
+      "client_status": 401,
+      "application_audit_status": null,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [],
+      "security_decisions": [
+        {
+          "container_error_status": null,
+          "dispatch_type": "REQUEST",
+          "security_status": 401
+        }
+      ],
+      "dispatch_trace": [
+        "ERROR_SECURITY_CHAIN"
+      ]
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-form-anonymous",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "invalid-percent-form",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-form-no-csrf",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": false,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.csrf.CsrfTokenRequestHandler.resolveCsrfTokenValue"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "invalid-credentials",
+      "client_status": 401,
+      "application_audit_status": 401,
+      "nginx_upstream_status": 401,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "valid-login",
+      "client_status": 204,
+      "application_audit_status": 204,
+      "nginx_upstream_status": 204,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "authenticated-me",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "authenticated-csrf",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "malformed-form-authenticated",
+      "client_status": 400,
+      "application_audit_status": 400,
+      "nginx_upstream_status": 400,
+      "failure_metadata": [
+        {
+          "declared_parameter_status": 400,
+          "dispatch_type": "REQUEST",
+          "entry_authenticated": true,
+          "exception_class": "org.apache.tomcat.util.http.InvalidParameterException",
+          "observed_status": 200,
+          "origin": "org.springframework.security.web.firewall.StrictHttpFirewall$StrictFirewalledRequest.getParameter",
+          "security_stage": "org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.obtainUsername"
+        }
+      ],
+      "security_decisions": [],
+      "dispatch_trace": []
+    },
+    {
+      "route": "nginx",
+      "case": "session-after-malformed-form",
+      "client_status": 200,
+      "application_audit_status": 200,
+      "nginx_upstream_status": 200,
+      "failure_metadata": [],
+      "security_decisions": [],
+      "dispatch_trace": []
+    }
+  ],
+  "paired_trace_requests_per_phase": 30,
+  "bounded_OFF": {
+    "GLU207_live_score": "NOT_TESTED_NO_SENSOR_FEATURES",
+    "ON_requests": 0,
+    "REAL_INGRESS_OFF": "PASS",
+    "audit_request_ids_matched": 32,
+    "audit_wire_status_conflicts": [],
+    "candidate_default": "OFF",
+    "candidate_events": 0,
+    "candidate_final": "OFF",
+    "case": "STUDENT_BOUNDED_OFF_PASS",
+    "frozen_body_observed": false,
+    "frozen_request_offline_live_parity": 32,
+    "privacy_acceptance": "NOT_TESTED",
+    "protocol_fingerprint": "93ff532697c573303d798dd366794e7564ef8fc9763031a195e6e9444fc7fb48",
+    "request_count": 32,
+    "scope": "Student workflows only; no DVWA or ON/privacy experiment",
+    "sealed_opened": false,
+    "statuses": {
+      "JSON-logout": 204,
+      "authenticated-me": 200,
+      "canary-auth-denial": 401,
+      "chunked": 400,
+      "csrf": 200,
+      "empty": 400,
+      "form-login": 204,
+      "gzip": 400,
+      "logout-state": 401,
+      "malformed": 400,
+      "malformed-form": 400,
+      "oversize": 400,
+      "unsupported": 415
+    },
+    "training": "NOT_RUNNING"
+  },
+  "protocol_fingerprint": "c52678d436a7483454a73018387db6fd6968ecde77d6dcefc6a4521ff1017bd8",
+  "post_source_pins": "PASS",
+  "tests": {
+    "final_targeted_Java": 15,
+    "Java_suites": [
+      {
+        "suite": "com.pbl4.studentweb.HttpErrorStatusTests",
+        "tests": 5,
+        "fresh": true
+      },
+      {
+        "suite": "com.pbl4.studentweb.configuration.SecurityRequestFilterTests",
+        "tests": 6,
+        "fresh": true
+      },
+      {
+        "suite": "com.pbl4.studentweb.configuration.RequestAttributionTests",
+        "tests": 4,
+        "fresh": true
+      }
+    ],
+    "Python": 45,
+    "earlier_API": {
+      "count": 50,
+      "scope": "Passed before final framing-header reset correction; not counted as final-source full-suite rerun"
+    },
+    "true_internal500": "PASS_REAL_EMBEDDED_HTTP_TEST_ONLY_SERVICE_FAULT; returned500/audit500 without sensitive error details",
+    "known_parser413": "UNIT_TEST_ONLY; not injected into actual lab HTTP",
+    "buffered_response_framing": "PASS; original regression caught stale Content-Length999 after resetBuffer; fixed with reset plus preserved nonentity headers",
+    "committed_and_IO_failures": "PASS_PROPAGATION_TEST",
+    "Ruff_syntax": "PASS",
+    "Nginx_preflight": "PASS_ACTUAL",
+    "OFF_identity": "32/32",
+    "frozen_request_live_offline_parity": "32/32 within1e-7",
+    "GLU207": "Frozen hashes/compatibility retained; no new live score without sensor features"
+  },
+  "resource_history": [
+    {
+      "job": "after-guard",
+      "status": "PASS",
+      "max_sensor_c": 66.0,
+      "active_average_c": 57.35096562638799,
+      "cutoff_c": 85.0,
+      "watchdog_reason": "monitor_completed",
+      "failure": null
+    },
+    {
+      "job": "diagnostic-build-guard",
+      "status": "PASS",
+      "max_sensor_c": 66.0,
+      "active_average_c": 56.31747986939312,
+      "cutoff_c": 90,
+      "watchdog_reason": "monitor_completed",
+      "failure": null
+    },
+    {
+      "job": "build-conservative-guard",
+      "status": "PASS",
+      "max_sensor_c": 74.0,
+      "active_average_c": 57.116588233204205,
+      "cutoff_c": 85.0,
+      "watchdog_reason": "monitor_completed",
+      "failure": null
+    },
+    {
+      "job": "build-final-guard",
+      "status": "STOPPED",
+      "max_sensor_c": 92.0,
+      "active_average_c": 62.29364447920632,
+      "cutoff_c": 90,
+      "watchdog_reason": "emergency_temperature",
+      "failure": "emergency_temperature"
+    },
+    {
+      "job": "before-guard",
+      "status": "PASS",
+      "max_sensor_c": 61.0,
+      "active_average_c": 56.63500389755018,
+      "cutoff_c": 90,
+      "watchdog_reason": "monitor_completed",
+      "failure": null
+    },
+    {
+      "job": "build-after-guard",
+      "status": "STOPPED",
+      "max_sensor_c": 70.0,
+      "active_average_c": 58.23192051825283,
+      "cutoff_c": 90,
+      "watchdog_reason": "monitor_completed",
+      "failure": "Workload failed: {'ActiveState': 'failed', 'SubState': 'failed', 'Result': 'exit-code', 'ExecMainStatus': '1', 'MemoryPeak': '636559360', 'CPUUsageNSec': '125251100000'}"
+    },
+    {
+      "job": "python-tests-guard",
+      "status": "PASS",
+      "max_sensor_c": 64.0,
+      "active_average_c": 59.95552280284116,
+      "cutoff_c": 90,
+      "watchdog_reason": "monitor_completed",
+      "failure": null
+    }
+  ],
+  "resource_final": {
+    "CPU_quota_percent_one_core": 25,
+    "cutoff_c": 85,
+    "peak_c": 66.0,
+    "active_average_c": 57.35096562638799,
+    "active_seconds": 191.43278456200005,
+    "peak_tasks": 67,
+    "task_limit": 128,
+    "peak_cgroup_memory_bytes": 538980352,
+    "MemAvailable_min_bytes": 21688623104,
+    "watchdog_failure": null
+  },
+  "thermal_incident": {
+    "job": "build-final-guard",
+    "quota_one_core_percent": 100,
+    "watchdog_threshold_c": 90,
+    "observed_peak_c": 92,
+    "action": "EMERGENCY_STOP",
+    "automatic_restart": false,
+    "recovery": "Checked stable sensors then explicitly ran smaller targeted workload at25%onecore/cutoff85",
+    "hardware_protection_changed": false
+  },
+  "safety": {
+    "protected_current_paths_checked": 156,
+    "unchanged_legacy_pins": 26,
+    "frozen_models_encoders_thresholds": "UNCHANGED",
+    "Rules_Policy_Suricata_correlation_Nginx_config": "UNCHANGED",
+    "sealed_opened": false,
+    "candidate_final": "OFF",
+    "lab_listeners": [],
+    "all_own_guard_units": "INACTIVE",
+    "both_PG": "STOPPED_ONE_MOUNT_EACH_PRESERVED"
+  },
+  "historical174": "UNCHANGED_QUARANTINE; current mechanism is not proof of historical PATCH405/403 causes; no dataset/labels/history rewritten",
+  "independent_review": "PENDING_UNCHANGED",
+  "training_data_changes": 0,
+  "candidate_ON_requests": 0,
+  "candidate_numeric_events": 0,
+  "new_model_checkpoints": 0,
+  "new_published_model_releases": 0,
+  "remaining_limits": [
+    "No ON/privacy acceptance or production persistence qualification",
+    "IOException/committed responses and failures before this filter are not given fabricated new wire statuses",
+    "500 fault tested in embedded HTTP with test-only service injection, not injected into actual lab app",
+    "No new model-quality, Recall/FPR or cross-domain claim"
+  ],
+  "local_evidence": [
+    ".local-dev/malformed-form-20261108/root-proof.json",
+    ".local-dev/malformed-form-20261108/before/",
+    ".local-dev/malformed-form-20261108/after/",
+    ".local-dev/malformed-form-20261108/off-acceptance/report.json",
+    ".local-dev/malformed-form-20261108/post-protocol.json",
+    ".local-dev/malformed-form-20261108/source-snapshots/",
+    ".local-dev/malformed-form-20261108/safety-final.json"
+  ],
+  "next_action": "Bounded real-ingress ON and end-to-end privacy acceptance in a separate user-requested milestone; no automatic training."
+}

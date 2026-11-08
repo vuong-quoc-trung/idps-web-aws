@@ -33,6 +33,9 @@ class HttpErrorStatusTests {
     @Autowired Environment environment;
     @Autowired JsonMapper json;
     @MockitoBean SecurityAuditService audit;
+    @MockitoBean com.pbl4.studentweb.user.service.PasswordSetupService passwords;
+    @org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+    org.springframework.security.crypto.password.PasswordEncoder encoder;
 
     URI uri(String path) {
         return URI.create("http://127.0.0.1:" + environment.getProperty("local.server.port") + path);
@@ -87,5 +90,36 @@ class HttpErrorStatusTests {
             response = client.send(HttpRequest.newBuilder(uri(path)).timeout(Duration.ofSeconds(10)).GET().build(), HttpResponse.BodyHandlers.ofString());
             assertThat(response.statusCode()).isEqualTo(401);
         }
+    }
+
+    @Test void malformedFormsReturn400BeforePasswordAuthentication() throws Exception {
+        var client = client(); var csrf = csrf(client);
+        org.mockito.Mockito.clearInvocations(encoder);
+        for (String input : new String[]{"message=%FF", "message=%ZZ"}) {
+            var id = UUID.randomUUID().toString().replace("-", "");
+            var response = client.send(request("POST", "/api/auth/login", input, "application/x-www-form-urlencoded", id)
+                    .header(csrf.get("headerName").asString(), csrf.get("token").asString()).build(), HttpResponse.BodyHandlers.ofInputStream());
+            try (var body = response.body()) {
+                assertThat(response.statusCode()).isEqualTo(400);
+                assertThat(new String(body.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8)).contains("Invalid request data").doesNotContain(input);
+                assertThat(response.headers().firstValue("X-Request-Id")).contains(id);
+            }
+            verify(audit, timeout(2000)).record(argThat(e -> id.equals(e.requestId()) && e.statusCode() == 400), any());
+        }
+        org.mockito.Mockito.verify(encoder, org.mockito.Mockito.never()).matches(any(), any());
+    }
+
+    @Test void genuineServerFailureRemains500WithoutSensitiveErrorDisclosure() throws Exception {
+        org.mockito.Mockito.doThrow(new RuntimeException("private-fault-detail"))
+                .when(passwords).setInitialPassword("fixture-token", "Valid-test-password-123");
+        var client = client(); var csrf = csrf(client); var id = UUID.randomUUID().toString().replace("-", "");
+        var response = client.send(request("POST", "/api/auth/activate", "{\"token\":\"fixture-token\",\"password\":\"Valid-test-password-123\"}", "application/json", id)
+                .header(csrf.get("headerName").asString(), csrf.get("token").asString()).build(), HttpResponse.BodyHandlers.ofInputStream());
+        try (var body = response.body()) {
+            assertThat(response.statusCode()).isEqualTo(500);
+            assertThat(new String(body.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8)).contains("Internal server error")
+                    .doesNotContain("private-fault-detail", "fixture-token", "Valid-test-password-123", "Exception", "stackTrace");
+        }
+        verify(audit, timeout(2000)).record(argThat(e -> id.equals(e.requestId()) && e.statusCode() == 500), any());
     }
 }

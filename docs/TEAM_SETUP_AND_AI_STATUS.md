@@ -789,3 +789,67 @@ không push credentials, cookies, CSRF values hoặc raw HTTP evidence.
 Một nhiệm vụ kế tiếp: bounded direct/proxy OFF trace cho malformed form để tách
 audit500 với wire401 và xác định đúng exception/dispatch trước khi sửa hoặc qualify
 semantics. Chỉ tiếp tục ON/privacy sau OFF PASS; không tự training.
+
+## Final malformed-form recovery / bounded OFF PASS — 2026-11-08
+
+**CASE A — bounded Student OFF PASS. Candidate vẫn OFF; ON/privacy chưa chạy.**
+Baseline `aa5c89f`. Milestone này giải quyết conflict còn lại, không thay dataset,
+models/encoders/thresholds, Rules/Policy, Suricata, correlation hoặc published releases.
+
+Root cause đã chứng minh trên cả direct và Nginx, anonymous và valid authenticated
+sessions: `org.apache.tomcat.util.http.InvalidParameterException`, declared400.
+Khi validCSRF, lỗi nằm ở `UsernamePasswordAuthenticationFilter.obtainUsername`
+qua `StrictHttpFirewall.StrictFirewalledRequest.getParameter`, **trước credential
+verification**, ngoài MVC advice. Khi thiếuCSRF, parameter parsing lỗi tại
+`CsrfTokenRequestHandler.resolveCsrfTokenValue`, trước khi token resolution hoàn tất.
+Response lúc exception thoát còn200; audit500 trước đây đến từ `failed?500` nên là
+synthetic status. Container tạo ERROR dispatch với original error_status400;
+security trả401anonymous/403authenticated tại `/error`. Nginx giữ upstream status.
+Không phải mọi500 đều là bad input; exception type, declared status và dispatch
+attributes đã được kiểm riêng thay vì suy từ response hoặc exception message.
+
+Shared fix ở `SecurityRequestFilter`: direct container parser exceptions với explicit
+400/413 được trả generic JSON4xx ngay trong original dispatch. Unexpected uncommitted
+Servlet/Runtime exceptions vẫn500; không map theo message hoặc arbitrary nested cause.
+Audit ghi observed response status sau khi error được hoàn tất. IOException và
+response đã commit tiếp tục propagate; không bịa wire status mới. MVC400/415 handlers
+giữ nguyên. `/error`, auth/CSRF policy không mở quyền; metadata DEBUG logs không chứa
+messages, body, credentials, cookies hoặc stack dump và không bật global mặc định.
+
+Regression bắt được stale `Content-Length` khi chỉ resetBuffer; bản cuối reset response
+chưa commit rồi restore security/session/request-ID headers, bỏ entity framing cũ.
+Tests xác nhận buffered content không lọt, CSP/identity giữ nguyên; genuine internal
+fault vẫn500/audit500 với generic body, không lộ private error details.
+
+| Test surface | Result |
+|---|---|
+| Paired direct/proxy | 30requests mỗi phase; sau sửa mọi malformed-form variants400/audit400, không ERROR redispatch; session sau lỗi vẫn200 |
+| Controls | Success200/204, malformed JSON400, auth failure401, CSRF403, unsupported media415; `/error` vẫn protected |
+| Real embedded HTTP fault | Genuine unexpected service exception500/audit500; test-only injection, không cài fault endpoint vào lab app |
+| Final-source Java | 15targeted testsPASS:5real HTTP,6filter-boundary,4attribution |
+| Earlier API coverage | 50API testsPASS trước final framing-header correction; không gọi là full-suite rerun trên source cuối |
+| Python / lint | 45tests, Ruff/syntaxPASS |
+| Bounded Student OFF | **32requests PASS**,32unique IDs/32audits,0status conflicts; malformed form expected400 có căn cứ từ container exception contract |
+| Frozen Requestv2 | Actual Nginx/worker offline-live parity32/32 trong tolerance1e-7; body_observed=false |
+| GLU207 | Frozen hash/compatibility giữ nguyên; không tạo features hoặc new score khi thiếu sensor evidence |
+
+Nginx preflight actualPASS. Candidate0ONrequests/0numeric events, không DVWA attack
+probes hoặc full privacy scans. Đây là OFF PASS cho Student subset, không phải
+full-system/production privacy hoặc model-quality evaluation. Status vẫn có source/
+phase semantics ở các paths chưa qualify;174historical405/403 records và quarantine
+giữ nguyên, không suy cùng cause hoặc sửa training/history/labels. Human reviewPENDING.
+
+Thermal history được giữ đầy đủ: một rerun tại100% của1core bị watchdog cutoff90°C
+dừng khi sensor đạt92°C, không auto-restart. Sau kiểm tra sensors ổn định, giảm xuống
+25% của1core, cutoff85°C, chỉ rerun targeted tests cần thiết. Final OFF peak66°C,
+active average57.35°C, watchdog healthy. Không đóng ứng dụng người dùng hoặc đổi
+OS/firmware protections. Lab processes/listeners dừng; PostgreSQL cũ/mới và volumes
+được bảo toàn, không xóa ignored research artifacts hoặc mở sealed samples.
+
+Public sanitized report: `ai-training/reports/MALFORMED_FORM_OFF_RECOVERY_20261108.json`.
+Private protocols, source snapshots, logs và receipts: `.local-dev/malformed-form-20261108/`.
+Clone/bootstrap/model restore flow giữ nguyên. Không training, checkpoint mới,
+promotion, enforcement hoặc AWS.
+
+**Next action:** bounded real-ingress ON và end-to-end privacy acceptance trong
+milestone riêng khi người dùng yêu cầu. OFF đã PASS; lượt này dừng tại đây.

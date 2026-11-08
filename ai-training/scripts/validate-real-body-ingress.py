@@ -296,6 +296,7 @@ def run(runtime, output, *, opt_in, off_only=False):
             "absent worker socket",
             "non-socket datagram target",
         ],
+        "malformed_form_contract": "Direct Tomcat InvalidParameterException declares400; complete parser failure in original filter dispatch, not synthetic audit500 or ERROR-auth401/403",
         "truncation": "Over8KiB bodies withheld entirely and marked OVERSIZE, never partial-parse. TRUNCATED state exists in offline contract; incomplete HTTP is not claimed here.",
         "sources": {
             p: file_sha256(ROOT / p)
@@ -808,6 +809,7 @@ def run(runtime, output, *, opt_in, off_only=False):
                 "/api/auth/login",
                 b"message=%FF",
                 csrf(c) | {"Content-Type": "application/x-www-form-urlencoded"},
+                400,
             )
             # Real client chunking, kept unsupported by unchanged v1 contract.
             body = json.dumps({"token": canaries[2], "password": "short"}).encode()
