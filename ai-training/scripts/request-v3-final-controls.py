@@ -769,6 +769,38 @@ def launch(q, d, env):
         {"HostIp": "127.0.0.1", "HostPort": str(PORT)}
     ]
 
+    if env == "dvwa":
+        effective = pm(
+            "exec",
+            "--user",
+            "33:33",
+            d.APP,
+            "sh",
+            "-c",
+            "cat /proc/sys/net/ipv4/ping_group_range; readlink /proc/self/ns/net; grep -E '^(CapEff|NoNewPrivs|Seccomp):' /proc/self/status",
+        ).splitlines()
+        assert effective[0].split() == ["33", "33"]
+        assert (
+            "CapEff:\t0000000000000000" in effective
+            and "NoNewPrivs:\t1" in effective
+            and "Seccomp:\t2" in effective
+        )
+        if DISPATCH_ROOT is not None:
+            n = len(list(DISPATCH_ROOT.glob("namespace-configuration-*.json")))
+            atomic_json(
+                DISPATCH_ROOT / f"namespace-configuration-{n:02}.json",
+                {
+                    "environment": env,
+                    "effective_namespace_metadata": effective,
+                    "privileged": info["HostConfig"]["Privileged"],
+                    "cap_add": info["HostConfig"]["CapAdd"],
+                    "environment_fingerprint": load(DISPATCH_ROOT / "plan.json").get(
+                        "environment_fingerprint"
+                    ),
+                    "host_sysctl_changed": False,
+                },
+            )
+
 
 def cleanup(q, d):
     for name in [d.APP, d.DB]:
@@ -818,6 +850,7 @@ def capture(root):
     plan = load(root / "plan.json")
     assert plan["fingerprint"] == digest({k: v for k, v in plan.items() if k != "fingerprint"})
     assert plan["source_sha256"] == file_sha256(__file__) and not any(plan["preaudit"].values())
+    assert plan["run_id"] == RUN
     for name, sha in plan["helper_sha256"].items():
         assert file_sha256(Path(__file__).with_name(name + ".py")) == sha
     assert not (root / "capture-status.json").exists()
@@ -852,6 +885,8 @@ def capture(root):
             sys.executable,
             str(Path(__file__).resolve()),
             "watchdog",
+            "--execution-id",
+            RUN,
             "--output",
             str(root),
         ],
@@ -920,6 +955,14 @@ def capture(root):
                         if c["role"] not in sessions:
                             sessions[c["role"]] = open_fixture_session(env, q, d, c["role"], setup)
                         row, f, x, v, b = run_case(c, sessions[c["role"]], q, d, setup, phase)
+                        row.update(
+                            execution_id=RUN,
+                            environment_fingerprint=plan.get("environment_fingerprint"),
+                            oracle_contract_version="locked-final-controls-v1",
+                            observation_status="ORACLE_VERIFIED"
+                            if row["oracle_verified"]
+                            else "ORACLE_UNVERIFIED",
+                        )
                         count += 1
                         if c["operation"] == "basket-read":
                             assert row["oracle_verified"]
@@ -1075,8 +1118,16 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("action", choices=["plan", "capture", "watchdog"])
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument(
+        "--execution-id",
+        help="Fresh physical execution identity; never changes logical cases/roles",
+    )
     a = p.parse_args()
     os.umask(0o077)
+    if a.execution_id:
+        if not re.fullmatch(r"request-v3-[a-z0-9-]{1,64}", a.execution_id):
+            p.error("Invalid execution ID")
+        RUN = a.execution_id
     try:
         with threadpool_limits(limits=1):
             {"plan": prepare, "capture": capture, "watchdog": watch}[a.action](a.output.resolve())

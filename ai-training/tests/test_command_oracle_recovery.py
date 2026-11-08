@@ -79,6 +79,8 @@ def test_lab_fix_is_app_only_and_preserves_no_new_privileges(monkeypatch):
                     }
                 ]
             )
+        if args[0] == "exec":
+            return "33 33\nnet:[fixture]\nCapEff:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t2"
         if args[:2] == ("network", "inspect"):
             return json.dumps([{"internal": True}])
         return ""

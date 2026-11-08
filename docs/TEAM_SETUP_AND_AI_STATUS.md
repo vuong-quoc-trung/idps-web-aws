@@ -14,7 +14,8 @@ Nền tảng representation: [HTTP body syntax — prototype](23_HTTP_BODY_SYNTA
 Live prerequisite: [Body-syntax live acceptance — verified for lab](../ai-training/reports/BODY_SYNTAX_LIVE_ACCEPTANCE_20261108.json).
 Data prerequisite: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_READINESS.md).
 Coverage milestone: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_DATA_COVERAGE.md).
-Milestone hiện tại: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md).
+Command prerequisite: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md).
+Milestone hiện tại: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md).
 
 ## Repository, model release và dependencies
 
@@ -1125,3 +1126,43 @@ environment hashes và fresh physical execution IDs theo addendum, giữ logical
 plan/roles/lineage; không reuse UNKNOWN ID hoặc sửa history. Recovery này không chạy
 các workflow khác hoặc xác nhận overall training-ready. Main captureNOT_STARTED,
 Requestv3 trainingNOT_STARTED; candidateOFF, bootstrap/model restore flow giữ nguyên.
+
+## Request v3 grounded acquisition — 2026-11-08
+
+**CASE C — preflight stopped at JuiceShop basket POST500.** Baseline `f22a1f3`.
+[Báo cáo](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md),
+[machine evidence](../ai-training/reports/REQUEST_V3_GROUNDED_DATA_ACQUISITION_20261108.json).
+Execution `request-v3-grounded-20261108-r1`: fresh IDs/source/environment bindings;
+12templates/9preflights, roles/Oracle/coverage predicates ASTunchanged, planned overlap
+checks clear. Effective DVWAlab33:33/CapEff0/NNP1/seccomp2,ping_group_range33 33;
+nohostchange/capadd. Historical UNKNOWN không relabel/reuse.
+
+6/9preflightscompleted: ping/publicfile/UNIONcanary/login/logoutPASS, basket-add500
+UNKNOWN. Basket expectedownedproduct/quantityresponse absent; server-side cause
+chưa giữ được sanitized witness nên không suy rootcause. Basketread/product/whoami
+preflights chưa chạy. Main0/24;6diagnosticskhôngadmit supervised, không chạy mainđểdebug.
+23setup/authcalls táchriêng. Existing prior2dispatchupperbound+current6=8, previous
+recovery2diagnosticsriêng; không coi legacycounter7làhistorical-inclusive.
+
+Private numeric diagnostics tại
+`ai-training/.artifacts/request_v3_grounded_20261108/campaign-final-r1/`, execution/
+request IDs, ordinal lineage, intent/outcome/observationstatus và explicit non-admission;
+review6PENDING. Không rawHTTPbody/headers/responses,cookie/token/digests trong artifacts.
+2naturalMISSINGchỉlàpreflight; nofakecoverage hoặc independentGTclaim.
+
+Không derivative release/freshrebuild vì chưa có admittedmaincohort. Parent224release
+fingerprint vẫn `5c95afd6555502725a10ddb4a77d2c4f80a039dfd5c93448bb658252b5367e0d`;
+TRAIN43/37views(23benign/20attack),CAL13/13(11/2),DEV86/83(40/46). TRAINJSONPOST0,
+command/filebenigncounterparts0;DEVbenignPOST0,coverageFAIL. CALroles,strictsplits,
+35→6mixedcollisionrecordsevidence giữ nguyên,sealedcandidateoverlapUNVERIFIED.
+634contract/53,640parameterdesign/LR/budget/evaluation/recoveryproof giữ nguyên;
+RESEARCH_PILOT_READY=false,INDEPENDENT_QUALITY_CERTIFIED=false,trainingNOT_STARTED.
+
+65tests/Ruff/formatPASS. Capturepeak64°C,activeavg56.90°C;overallpeak66°C;
+quota25%onecore,cutoff85°C,reserve4GiB,no thermal/watchdogfailure. LabcleanupPASS,
+158protectedhashes/oldUNKNOWN/PGvolumes/frozenmodels/Rules/Policy/Web/Nginx/Suricata/
+correlation/Releases giữ nguyên,candidateOFF. ProductionprivacyNOT_VERIFIED.
+
+**Next action duy nhất:** bounded diagnosis ownedBasketItems POST500, sanitized
+errorclass/status+readonlystatewitness, freshdiagnosticID; không đổi templates/roles/
+Oracle để épPASS và không capturemain trước Oracle verification. Dừng milestone.

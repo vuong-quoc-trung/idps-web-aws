@@ -136,3 +136,47 @@ def test_dispatch_receipt_precedes_transport_and_never_contains_secret(monkeypat
     monkeypatch.setattr(c, "DISPATCHES", [{}] * 23)
     with pytest.raises(AssertionError):
         c.http(1, "GET", "/fixture", None, {"X-Request-Id": "b" * 32})
+
+
+def test_capture_rejects_wrong_physical_execution_before_any_lab_action(tmp_path):
+    import json
+
+    import pytest
+
+    from idps_ai.common import digest, file_sha256
+
+    plan = {
+        "source_sha256": file_sha256(c.__file__),
+        "preaudit": {},
+        "run_id": "wrong-physical-execution",
+    }
+    plan["fingerprint"] = digest(plan)
+    (tmp_path / "plan.json").write_text(json.dumps(plan))
+    with pytest.raises(AssertionError):
+        c.capture(tmp_path)
+    assert not (tmp_path / "heartbeat").exists()
+    assert not (tmp_path / "dispatch-ledger.json").exists()
+
+
+def test_rebind_keeps_logical_templates_and_Oracle_function_bodies_unchanged():
+    import ast
+    import subprocess
+
+    baseline = ast.parse(
+        subprocess.check_output(
+            ["git", "show", "33e0b0d:ai-training/scripts/request-v3-final-controls.py"], text=True
+        )
+    )
+    current = ast.parse(Path(c.__file__).read_text())
+
+    def functions(tree):
+        return {
+            n.name: ast.dump(n, include_attributes=False)
+            for n in tree.body
+            if isinstance(n, ast.FunctionDef)
+        }
+
+    a, b = functions(baseline), functions(current)
+    assert all(
+        a[name] == b[name] for name in ["cases", "run_case", "preaudit", "php_authenticated"]
+    )
