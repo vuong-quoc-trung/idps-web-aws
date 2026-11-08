@@ -15,7 +15,8 @@ Live prerequisite: [Body-syntax live acceptance — verified for lab](../ai-trai
 Data prerequisite: [Request v3 data readiness — CASE B](24_REQUEST_V3_DATA_READINESS.md).
 Coverage milestone: [Request v3 final coverage — CASE C](25_REQUEST_V3_FINAL_DATA_COVERAGE.md).
 Command prerequisite: [Command Oracle recovery — CASE A](26_COMMAND_ORACLE_SANDBOX_RECOVERY.md).
-Milestone hiện tại: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md).
+Acquisition milestone: [Grounded acquisition — CASE C](27_REQUEST_V3_GROUNDED_DATA_ACQUISITION.md).
+Milestone hiện tại: [Basket Oracle root cause — VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
 
 ## Repository, model release và dependencies
 
@@ -1166,3 +1167,39 @@ correlation/Releases giữ nguyên,candidateOFF. ProductionprivacyNOT_VERIFIED.
 **Next action duy nhất:** bounded diagnosis ownedBasketItems POST500, sanitized
 errorclass/status+readonlystatewitness, freshdiagnosticID; không đổi templates/roles/
 Oracle để épPASS và không capturemain trước Oracle verification. Dừng milestone.
+
+## Basket Oracle HTTP500 root cause — 2026-11-08
+
+**CASE A — root cause VERIFIED: TEST_FIXTURE_ERROR.** Baseline `2ba9722`.
+[Báo cáo](28_BASKET_ORACLE_ROOT_CAUSE.md),
+[machine evidence](../ai-training/reports/BASKET_ORACLE_ROOT_CAUSE_20261108.json).
+
+Fixture đăng nhập seededadmin; ownbasket đã cóProductId1/quantity2. POSTCREATE
+ProductId1/quantity1vào cùngbasket chạm unique(ProductId,BasketId). Read-only state
+xác nhận ownership/product/stock/limit hợp lệ, existingpair1row,3basketitems.
+Actual POST500 với SequelizeUniqueConstraintError/SQLITE_CONSTRAINT, stack
+`basketItems.js:79` tại `.save()`. GETauthenticated200khớpDB, quantityvẫn2;
+statebefore/afteridentical,0successfulmutation. Không phải Oracle cần đổi500thành200.
+
+Đúng2BasketdiagnosticHTTP+1loginsetuphoàn tất, không main/preflight campaign.
+Các earlierreadiness/toolattempts chưa hoàn tất BasketHTTP;1earlierloginsetupdispatch
+responseunconfirmed ghi riêng. Diagnostic helper dùng installed `/nodejs/bin/node`,
+OPEN_READONLY và sanitized error class/category/known locations; no rawHTTP/session/
+secret values/digests. Product-witness helper cũ cũng dùngnodequaPATH là separate
+blocker chưa sửa, không phải cause của Basket500.
+
+**Correction đề xuất duy nhất, chưa thực hiện:** dedicated authenticated fixtureaccount
+vớiownbasketrỗng; readonlyverifyProductId1pairabsent trước existingCREATE,giữProductId1/
+quantity1/method/endpoint/dynamicBasketID. Version/reviewfixtureenvironmentrevision;
+không xóa/repairseed, đổiPOST→PUT/upsert, đổirole/expectedstatus hoặc relabelUNKNOWN.
+CurrentOracle refusal đúng nhưng successworkflow vẫnBLOCKED_FIXTURE_PRECONDITION;
+preflightNOT_RERUN/mainNOT_STARTED/trainingNOT_STARTED.
+
+Parent224release fingerprint vẫn
+`5c95afd6555502725a10ddb4a77d2c4f80a039dfd5c93448bb658252b5367e0d`;
+TRAIN43/37views,CAL13/13,DEV86/83,roles/strictsplits/UNKNOWN giữ nguyên.
+13targetedtests/Ruff/formatPASS,peak64°C,quota25%onecore/cutoff85°C/reserve4GiB;
+labcleanupPASS,158protectedhashes/oldPGvolumes/frozenmodels/Rules/Policy/Web/Nginx/
+Suricata/correlation/Releases giữ nguyên. Nosealedaccess/checkpoints/enforcement/AWS.
+Evidenceprivate tại `.local-dev/basket-oracle-20261108/`; independentreviewPENDING,
+noindependentquality hoặc productionprivacyclaim. Dừng,khôngautofix/capture.
