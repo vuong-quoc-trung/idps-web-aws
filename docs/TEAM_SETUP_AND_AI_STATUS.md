@@ -20,7 +20,8 @@ Basket root cause: [VERIFIED](28_BASKET_ORACLE_ROOT_CAUSE.md).
 Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASET_COMPLETION.md).
 Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
 Training pilot: [COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
-Milestone hiện tại: [Body-carried evaluation — PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
+Body-carried evaluation: [PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
+Milestone hiện tại: [Frozen-backbone experiment](33_REQUEST_V3_FROZEN_BACKBONE.md).
 
 ## Repository, model release và dependencies
 
@@ -1378,3 +1379,20 @@ qualified release và pilot artifacts không đổi. 7targetedtests/RuffPASS.
 TRAIN/seed/order/budget, freeze v2 backbone và15state/media rows; chỉ31body count/
 syntax rows trainable (1,984params). Compare existingfullv3/frozenv2 bằng old90DEV+
 new8 như exposed diagnostics. Chưa implement/train; không đổi admission hay promote.
+
+
+## Frozen-backbone adapter experiment — 2026-11-09
+
+Một arm đã được cho phép: `request-v3-frozen-backbone-20261109-r1`.
+[Protocol/source handoff](33_REQUEST_V3_FROZEN_BACKBONE.md),
+[design +31feature indices](../ai-training/configs/research/request-v3-frozen-backbone-20261109.json).
+Source handoff trước launch; runtime status nằm ở
+`ai-training/.artifacts/request_v3_frozen_backbone_20261109/request-v3-frozen-backbone-20261109-r1/status.json`.
+
+Tensor riêng31x64=1,984trainable parameters; toàn bộ backbone v2 read-only/hash
+checked,15state/media features không có weights. Fixedschema/count/syntax selection,
+không dựa labels/scores; kết quả exploratory. Dùng236release/TRAIN42canonical,
+seed17/sampler cũ,batch16,60updates/20epochs. Zero-adapter byteparity PASS trên
+TRAIN và154non-OK probes trước training; legacy GET được kiểm tra riêng.
+Không capture/đổi roles,không CAL/DEV/body gradients,không sealed/Policy/production.
+New CAL-only threshold và secondary frozen-v2threshold được precommit trước fit.
