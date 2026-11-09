@@ -1,6 +1,6 @@
 # Team setup và trạng thái AI-IDPS
 
-Cập nhật 2026-11-08. Integration branch chứa các milestone local shadow, three-source
+Cập nhật 2026-11-09. Integration branch chứa các milestone local shadow, three-source
 và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
 Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
@@ -21,7 +21,7 @@ Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASE
 Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
 Training pilot: [COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
 Body-carried evaluation: [PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
-Milestone hiện tại: [Frozen-backbone experiment](33_REQUEST_V3_FROZEN_BACKBONE.md).
+Milestone hiện tại: [Frozen-backbone — COMPLETED, CASE B](33_REQUEST_V3_FROZEN_BACKBONE.md).
 
 ## Repository, model release và dependencies
 
@@ -1383,16 +1383,48 @@ new8 như exposed diagnostics. Chưa implement/train; không đổi admission ha
 
 ## Frozen-backbone adapter experiment — 2026-11-09
 
-Một arm đã được cho phép: `request-v3-frozen-backbone-20261109-r1`.
-[Protocol/source handoff](33_REQUEST_V3_FROZEN_BACKBONE.md),
-[design +31feature indices](../ai-training/configs/research/request-v3-frozen-backbone-20261109.json).
-Source handoff trước launch; runtime status nằm ở
-`ai-training/.artifacts/request_v3_frozen_backbone_20261109/request-v3-frozen-backbone-20261109-r1/status.json`.
+**COMPLETED — CASE B**, run `request-v3-frozen-backbone-20261109-r1`.
+[Final report](33_REQUEST_V3_FROZEN_BACKBONE.md),
+[aggregate evidence](../ai-training/reports/REQUEST_V3_FROZEN_BACKBONE_20261109.json),
+[locked design and 31 feature indices](../ai-training/configs/research/request-v3-frozen-backbone-20261109.json).
 
-Tensor riêng31x64=1,984trainable parameters; toàn bộ backbone v2 read-only/hash
-checked,15state/media features không có weights. Fixedschema/count/syntax selection,
-không dựa labels/scores; kết quả exploratory. Dùng236release/TRAIN42canonical,
-seed17/sampler cũ,batch16,60updates/20epochs. Zero-adapter byteparity PASS trên
-TRAIN và154non-OK probes trước training; legacy GET được kiểm tra riêng.
-Không capture/đổi roles,không CAL/DEV/body gradients,không sealed/Policy/production.
-New CAL-only threshold và secondary frozen-v2threshold được precommit trước fit.
+Separate 31×64 tensor = **1,984 trainable parameters**, no bias. All 50,696 v2
+parameters unchanged/read-only, 15 state/media inputs contribute zero. Same frozen
+236-record release, TRAIN48eligible/42canonical, seed17/group sampler, batch16,
+60updates/20epochs. Full TRAIN objective0.895648→0.609889. Actual step1 checkpoint
+resumed in a separate process; final step60 checkpoint integrity PASS.
+
+DEV90: adapter TP20/FN23/FP0/TN47, AP0.862376, recall46.51%; frozen/control same
+confusion, AP0.856891; previous full-v3 TP12/FN31/FP0/TN47/AP0.833820. Adapter
+XSS1/13,command0/3,SQLi12/12,file7/15; benignPOST FP0/6. Exposed body8: adapter
+TP0/FN4/FP0/TN4/AP1.0, frozen0/4TP/AP0.5, previousfull-v3 2/4TP/AP1.0. Both CAL
+threshold0.8871806859970093 and secondary original0.8826237916946411 give adapter
+0/4bodyTP. No new detection benefit at the precommitted points; no threshold retune.
+
+Syntax-only ablation retains bodyAP1.0; counts-only/disabledAP0.5. Learned syntax
+ranking is real within this matched cohort, but attack scores0.733–0.824 remain
+below either threshold. Benign CAL feedback also increases; neither threshold-only
+nor counts-only causation is established. Body/DEV are exploratory, human review
+PENDING; no independent quality or FPR≤1% claim, Rule/AI overlap NOT_MEASURED.
+
+Exact original scores/flags on154zero-selected rows (153GET); disabled adapter
+byte-exact on244rows. All protected dataset/evidence/checkpoint/source pins unchanged.
+No new capture, roles/Oracle/normalization changes, CAL/DEV/body gradients or sealed
+access. No Student/Security/Nginx/Rules/Policy/live inference changes or promotion.
+
+Private checkpoint:
+`ai-training/.artifacts/request_v3_frozen_backbone_20261109/request-v3-frozen-backbone-20261109-r1/model/checkpoints/step-000000000060-5ac6f69425ec/`.
+Manifest SHA256 `b1b4f4d69999d60722d5e50f40d3b50d3497b244fbb8149742abfba9ec8a009f`.
+Status/logs/model/optimizer/per-record scores remain local ignored. Aggregate report
+pins dataset/feature/plan fingerprints and checkpoint arrays. No public weight release.
+Team clone → bootstrap → restore frozen models → local shadow workflow is unchanged.
+
+Independent guard: 25%onecore/2GiB/noSwap/4GiBsystemreserve; 85°C instant cutoff,
+active rolling80°C. Completed in5.71s, peak/active-average48°C, sensorOK, no pauses,
+emergencies/restarts. This tiny window does not establish sustained300s thermal safety.
+Seven focused tests/RuffPASS. Candidate remains OFF outside authorized research.
+
+**Next task only:** one precommitted margin-aware TRAIN-objective arm, same frozen
+adapter/data/seed/sampler/60updates/CAL rule; test operating-margin transfer without
+threshold selection on exposed outcomes. Not started. Do not increase epochs,
+parameters or data automatically. Preserve CASE B and pending independent review.
