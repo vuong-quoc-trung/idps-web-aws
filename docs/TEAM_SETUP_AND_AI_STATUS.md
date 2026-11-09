@@ -21,7 +21,8 @@ Dataset completion trước: [CASE C, instrumentation stop](29_REQUEST_V3_DATASE
 Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
 Training pilot: [COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
 Body-carried evaluation: [PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
-Milestone hiện tại: [Frozen-backbone — COMPLETED, CASE B](33_REQUEST_V3_FROZEN_BACKBONE.md).
+Milestone trước: [Frozen-backbone — COMPLETED, CASE B](33_REQUEST_V3_FROZEN_BACKBONE.md).
+Milestone hiện tại: [2M data scaling readiness — CASE B](34_AI_IDPS_2M_DATA_SCALING_READINESS.md).
 
 ## Repository, model release và dependencies
 
@@ -1428,3 +1429,55 @@ Seven focused tests/RuffPASS. Candidate remains OFF outside authorized research.
 adapter/data/seed/sampler/60updates/CAL rule; test operating-margin transfer without
 threshold selection on exposed outcomes. Not started. Do not increase epochs,
 parameters or data automatically. Preserve CASE B and pending independent review.
+
+
+## 2M request data scaling readiness — 2026-11-09
+
+**CASE B — DATA SOURCES INSUFFICIENT; pipeline pilot verified.**
+[Report](34_AI_IDPS_2M_DATA_SCALING_READINESS.md),
+[aggregate inventory/evidence](../ai-training/reports/AI_IDPS_2M_DATA_SCALING_READINESS_20261109.json),
+[locked research profile](../ai-training/configs/research/http-scaling-admission-20261109.json).
+The prior margin-aware arm was not started; this milestone concerns data only.
+
+23 source groups inventoried. WAF1.924Mrows/1.612Mrepresentations, SRBH907815records,
+WCP811129nonreservedrecords/756548signatures are not additive verified physicalHTTP.
+WAMM shares SRBH lineage. PublisherC, heuristicD and unknownE labels do not become
+Oracle/reviewed attack intent. Human review remains PENDING. No raw public push,
+reserved ZIP member reads or sealed payload access; five permitted raw files rehashed.
+
+Fixed pilot:236existinggroundedrecords+9764WAFpositions, no score-based selection.
+10,000candidate positions;236trustedreceiptidentities;219supportedtargetlabels;
+**74strict: TRAIN48/42views, CAL10/10views, DEV16/16views**. Quarantine9926;
+UNKNOWN9777, plus4declaredintents without verifiedOracle support. All74alreadyexisted;
+WAF adds0strictrequests. 825representationrepeat extras are not certified physical
+request duplicates. 10000runtime634shapes validated; WAF wirebodyMISSING, notEMPTY;
+82totalbodyOK. GLU207compatible0, no padding or frozen-encoder changes.
+
+New unified request/raw/template/view/session/campaign closure quarantines80more
+oldeligible records (CAL3/DEV77), retaining excludedbridges. This conservativeprofile
+is stricter than prior direct-overlap plus lineage-only closure; priorroles/results
+unchanged. No independent eval created. StrictDEV now lacksSQLi/command coverage.
+Coarse-near index saturated8709rows; failclosed, not a true duplicate-rate estimate.
+SRBH ±600s boundary probes affect23054/522rows; no chronology independence claim.
+
+Actualresume2500→10000 and separate same-input rebuild byte-identical. R1missing
+explicittemplateedges preserved as invalid-for-final diagnostics; R2fixed under the
+same policy/windows. Same10000positions visitedthree times, not30000newrequests.
+Four adversarialtests/RuffPASS. PrivateSQLite/decisionledgers/HMACkey ignored.
+Dataset fingerprint `232d39885150b5712492dc628d2703a5f29702d90463a9f8f8ecaaf136812005`.
+Private root `ai-training/.artifacts/data_scaling_20261109/`; controls/guards in
+`.local-dev/data-scaling-20261109/`. Final213protectedhashes unchanged.
+
+Validpilot170.24s/58.74candidates-per-second at25%onecore; peak72°C, activeaverage
+50.3–50.7°C, watchdoghealthy/no emergencies. Pilotcgrouppeak223MiB; MemAvailable
+above20GiB. No sustained300s/2M-load certification. Linear2Mcandidate cost≈9.46h,
+metadata6.44GB+634float32features5.07GB, excludingraw; these are not qualifiedyield
+or full-scale benchmark promises. The gap from pilot74 to2Mis1999926; global
+qualifiedcapacity remainsUNKNOWN. No100K scaling/training gate PASS is claimed.
+
+**Next task:** one authorized ≤10K reviewed RAW+LABEL subset verification, with
+Biblio-US17 an access/usage-limited candidate, not available capacity. RequireRID
+join, actualreviewprovenance, matchedbenign/attacks, groupedsplits, honestmissingness;
+noCLEAN-as-benign or publisherclaim→tierB default. No download/authorcontact started.
+No training/modelpromotion or changes to system/policy/thresholds/releases. Team
+clone→bootstrap→restorefrozenmodels→localshadow path and dependencies unchanged.

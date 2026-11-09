@@ -1,0 +1,55 @@
+{
+  "version": "http-scaling-admission-1",
+  "purpose": "Research attack-intent admission; no formal or production admission",
+  "target_requests": 2000000,
+  "pilot_max_candidate_rows": 10000,
+  "pilot_sources": [
+    {"id": "grounded-v3", "path": "ai-training/.artifacts/request_v3_acquisition_final_20261108/release-v2", "rows": 236, "selection": "all already-exposed TRAIN/CAL/DEV rows; preserve original roles and exclusions"},
+    {"id": "waf-v2", "path": "ai-training/.artifacts/autonomous_research_20261104/waf_v2/train.parquet", "rows": 9764, "selection": "first4882rows in each of two existing row groups; metadata-only selection, no labels/scores; not representative or independent evaluation"}
+  ],
+  "identity": {
+    "count_unit": "distinct receipt-backed HTTP transaction in a trusted capture namespace",
+    "publisher_row_coordinate": "traceable source record, not proof of a physical HTTP transaction",
+    "content_uniqueness": "separate from event identity; canonical whole-request privateHMAC when raw exists; inherited equivalence namespace otherwise; no global raw dedup claim where incomparable",
+    "telemetry_join": "trusted capture-scoped transactionID only; never nearest timestamp/IP/flow alone; copied sources must retain capture namespace",
+    "unknown_identity": "quarantine from strict physical-request count; retain publisher representation statistics"
+  },
+  "label_tiers": {
+    "A": "collector intent plus request-bound application Oracle, internal research evidence",
+    "B": "genuine independent human decision with request-bound provenance",
+    "C": "external publisher label retained verbatim in its declared task; no upgrade to reviewed intent",
+    "D": "heuristic, detector, model or scenario-only attribution without request-bound semantic support",
+    "E": "unknown or unverifiable"
+  },
+  "strict_research_label_tiers": ["A", "B"],
+  "strict_label_task": "attack_intent",
+  "external_research": "C may enter separately named publisher-task exploratory research after source-specific lineage/privacy/conflict checks; not counted as strict attack-intent admission. Existing source restrictions remain binding.",
+  "evaluation": "preserve exposed DEVELOPMENT; no new independent holdout; do not read sealed payloads or mixed prospective ledgers",
+  "features": {
+    "required": "existing634request_v3 contract, no fitted statistics; runtime588prefix with selected User-Agent/Accept/Content-Type and body=None",
+    "body": "use inherited attested syntax for grounded release; WAF body field lacks capture completeness/encoding attestation, so actual observation MISSING; never call absent publication data EMPTY",
+    "GLU207": "unavailable for request-only sources; no padding",
+    "frozen_encoders": "unchanged"
+  },
+  "dedup": {
+    "exact": "disk-backed event, representation and versioned feature indexes; dedup telemetry by event, retain content/view repeats as separate counters; conflicting labels quarantine every affected event",
+    "groups": "disk-backed capture/session/campaign/workflow/template keys; cross-role connected groups quarantine all members, including ineligible bridges; unknown external lineage blocks strict admission",
+    "near": "four16bitbands over fixed64bitSimHash of privacy-projected syntax; verify Hamming<=3; at most256candidates per bucket; overflow quarantines every bucket member. Approximate syntax diagnostic, not exhaustive semantic/template proof. Grounded source additionally inherits pinned exhaustive236row protocol.",
+    "same_role_repeated_views": "retain physical accounting; unique-view counts and future group sampler must prevent excess gradient weight",
+    "source_independence": "WAMM/SRBH one upstream lineage; CSIC copies/mirrors not additive; no domain claim from new IDs",
+    "unknown_cross_corpus_overlap": "UNVERIFIED; C pool never silently promoted"
+  },
+  "time": {
+    "new_role_assignment": "none; preserve all original roles",
+    "future_embargo_seconds": 600,
+    "rationale": "minimum conservative screen above documented60secondhistory window; insufficient when campaign/session duration or clock uncertainty exceeds600seconds",
+    "unknown_time_or_clock": "cannot certify temporal generalization; quarantine from any future temporal evaluation",
+    "existing_SRBH_boundaries_UTC": [1595030400,1595116800],
+    "future_split": "whole session/campaign components plus embargo around boundaries, then source/environment-disjoint validation where feasible; never random row splits"
+  },
+  "storage": "private SQLite with disk indexes and16MiBcache, committed chunks<=256, source cursor in same transaction, atomic progress projection, no rawHTTP/secrets in outputs, HMAC key local0600",
+  "resume": "SQLite is authoritative; bind source/config/code/key fingerprints, reconcile stale progress after crash, reject changed inputs, no duplicate-counting on rerun",
+  "rebuild": "same pinned inputs/privateHMACkey/config -> byte-identical ordered decision ledger and semantic summary; runtime telemetry excluded from dataset fingerprint",
+  "resource": {"cpu_quota_percent_of_one_core":25,"memory_gib":2,"system_reserve_gib":4,"instant_cutoff_c":85,"rolling_active_limit_c":80,"max_seconds":300},
+  "training": "NOT_AUTHORIZED; no scores, fitting, architecture or threshold changes"
+}
