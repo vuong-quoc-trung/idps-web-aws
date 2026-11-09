@@ -1,6 +1,6 @@
 # Team setup và trạng thái AI-IDPS
 
-Cập nhật 2026-11-09. Integration branch chứa các milestone local shadow, three-source
+Cập nhật 2026-11-10. Integration branch chứa các milestone local shadow, three-source
 và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.
 Báo cáo integration: [Rule–AI coordination và tối ưu](16_RULE_AI_COORDINATION.md).
@@ -22,7 +22,8 @@ Dataset acquisition: [CASE A](30_REQUEST_V3_DATASET_ACQUISITION_COMPLETE.md).
 Training pilot: [COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
 Body-carried evaluation: [PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
 Milestone trước: [Frozen-backbone — COMPLETED, CASE B](33_REQUEST_V3_FROZEN_BACKBONE.md).
-Milestone hiện tại: [2M data scaling readiness — CASE B](34_AI_IDPS_2M_DATA_SCALING_READINESS.md).
+Milestone trước: [2M data scaling readiness — CASE B](34_AI_IDPS_2M_DATA_SCALING_READINESS.md).
+Milestone hiện tại: [RAW+LABEL source qualification — CASE C](35_AI_IDPS_RAW_LABEL_SOURCE_QUALIFICATION.md).
 
 ## Repository, model release và dependencies
 
@@ -1481,3 +1482,42 @@ join, actualreviewprovenance, matchedbenign/attacks, groupedsplits, honestmissin
 noCLEAN-as-benign or publisherclaim→tierB default. No download/authorcontact started.
 No training/modelpromotion or changes to system/policy/thresholds/releases. Team
 clone→bootstrap→restorefrozenmodels→localshadow path and dependencies unchanged.
+
+
+## RAW+LABEL source qualification — 2026-11-10
+
+**CASE C — Biblio-US17 inaccessible; 0newstrictrequests.**
+[Focused report](35_AI_IDPS_RAW_LABEL_SOURCE_QUALIFICATION.md),
+[machine evidence](../ai-training/reports/AI_IDPS_RAW_LABEL_SOURCE_QUALIFICATION_20261110.json).
+Actual baseline6209e6b/clean branch verified. No training or pipeline expansion.
+
+Officialidentity/DOI/creators verified via current idUS metadata200 and author docs.
+Repository accessStatus=embargo; archiveHEAD401 (1,223,176,305bytes advertised),
+0archiveGET/bytes. Two repositoryREADMEHEADs also401. Public documentation is
+accessible; no authorizedRAW+LABELcopy found in project artifact/catalog paths.
+Frontendwebtool403 alone was not treated as proof. No bypass, credentials, large
+archive download, copyrequest submission or authorcontact.
+
+RightsUNKNOWN: publicREADME saysCC_BY_NC, repository saysCC_BY_NC_ND4.0. ND alone
+is not a ban on private noncommercial adaptation; intendedaccess/retention/derived
+sharing scope remains unresolved. ArticleCC_BY4.0 is not a datasetgrant.
+PhysicalidentityPARTIAL: documentedRID ties to original Apache day/service/ordinal,
+not wireHTTP or verified currentrows. LabelsPARTIAL: publisherexpert S2/S3 method,
+not everyrequest independently reviewed; CLEAN/nonmatch/default are not verifiedbenign.
+Header/body/fulltimestamps absent: no588parity, no recovered46bodyfeatures, no207.
+
+PilotNOT_RUN, candidate0/10000, newstrict0, rebuildNOT_RUN. Cross-source/dedup not
+certified. No staging or newquarantine records created. Prior74pilotpool and
+236derivative unchanged;2McapacityNOT_ESTABLISHED. Old1.61MWAFrepresentations and
+publisher47MBiblioclaims remain different from qualifiedcapacity. No100Kexpansion.
+
+**Next task:** one owner-authorized first-party <=10Kcapture package with trusted
+requestIDs and request-boundOracle/reviewer evidence plus observedmissingness and
+lineage. Supportedcategory by existing219Oraclelabels/74strictpilot, not a claim
+that productiondataalreadyexists. No acquisitionstarted. Do not retry blocked
+Biblio indefinitely or start auxiliaryweak-label training.
+
+Metadata snapshots localignored `.local-dev/raw-label-source-20261110/`; public
+aggregate evidenceonly. 188smallhistoricalpins checked;25largepayloads not rehashed.
+No encoders/models/thresholds/system/releases/sealeddata changes; no sourcecode
+edits/tests needed. Existing clone→bootstrap→restoremodels→localshadow path unchanged.
