@@ -64,6 +64,16 @@ def load_state():
     return json.loads(STATE.read_text()) if STATE.exists() else {}
 
 
+def shared_acceptance_cgroup():
+    """Only the opt-in acceptance harness may retain children in its guarded scope."""
+    if os.environ.get('IDPS_ACCEPTANCE_SHARED_CGROUP') != '1':
+        return False
+    membership = Path('/proc/self/cgroup').read_text()
+    if '/idps-integration-' not in membership or '.scope' not in membership:
+        raise RuntimeError('Shared acceptance mode requires the existing guarded integration scope')
+    return True
+
+
 def start(name, command, cwd, environment):
     state = load_state()
     old = state.get(name, {})
@@ -71,9 +81,9 @@ def start(name, command, cwd, environment):
         print(f'{name}: already running ({old["pid"]})', flush=True)
         return False
     unit = None
-    if os.environ.get('DEV_LIMIT_SERVICES') == 'true' and name != 'ai':
+    if os.environ.get('DEV_LIMIT_SERVICES') == 'true' and name != 'ai' and not shared_acceptance_cgroup():
         unit = 'idps-demo-'+name+'-'+secrets.token_hex(6)+'.scope'
-        command = ['systemd-run','--user','--scope','--quiet','--unit',unit,'-p','CPUQuota=100%',
+        command = ['systemd-run','--user','--scope','--quiet','--unit',unit,'-p','CPUQuota=20%',
                    '-p','CPUQuotaPeriodSec=10ms','-p','MemoryMax=1G','-p','MemorySwapMax=0',*command]
     with (RUNTIME / f'{name}.log').open('ab') as output:
         process = subprocess.Popen(command, cwd=cwd, env=environment, stdin=subprocess.DEVNULL,
@@ -189,7 +199,7 @@ def start_ai():
     resources = RUNTIME/'ai'/('resources-'+str(time.time_ns()))
     began=time.time()
     spawned=start('ai', [str(python),str(ROOT/'ai-training/scripts/integration-guard.py'),
-        '--output',str(resources),'--quota','100','--max-seconds','7200','--',
+        '--output',str(resources),'--quota','20','--max-seconds','7200','--',
         str(python),str(ROOT/'scripts/ai-shadow-worker.py'),
         '--socket',str(socket_path),'--output',str(RUNTIME/'ai/results.jsonl')], ROOT, os.environ.copy())
     # A spawned supervisor PID is not proof that a model is ready.

@@ -12,6 +12,13 @@ launcher=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(launcher)
 
 class LauncherTests(unittest.TestCase):
+    def test_shared_scope_cannot_bypass_limits_from_an_unguarded_process(self):
+        with patch.dict(launcher.os.environ, {'IDPS_ACCEPTANCE_SHARED_CGROUP':'1'}):
+            with patch.object(launcher.Path, 'read_text', return_value='0::/unrelated.scope'):
+                with self.assertRaises(RuntimeError):
+                    launcher.shared_acceptance_cgroup()
+            with patch.object(launcher.Path, 'read_text', return_value='0::/user.slice/idps-integration-test.scope'):
+                self.assertTrue(launcher.shared_acceptance_cgroup())
     def test_http_up_does_not_mean_bootstrap_admin_transaction_is_committed(self):
         with patch.object(launcher,'sql',side_effect=['0','0','1']) as query,patch.object(launcher.time,'sleep'):
             launcher.wait_bootstrap_admin()

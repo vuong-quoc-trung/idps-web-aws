@@ -1834,3 +1834,29 @@ prelaunch design, not a claim of RUNNING without actual optimizer evidence.
 34 relevant tests PASS;20% one-core/≤8GiB/4GiB reserve and tested adaptive limits
 remain. Local live acceptance still pending; all Web/system/frozen functionality
 and team clone/bootstrap/restore workflow remain unchanged.
+
+## Final model evaluation and Local v1.0 RC1 — 2026-11-10
+
+[RC1 runbook](44_AI_IDPS_LOCAL_V1_RC1.md),
+[aggregate metrics](../ai-training/reports/FINAL_LOCAL_MODEL_EVALUATION_20261110.json).
+Step2490 checkpoint verified unchanged. EVAL850:341normal/509anomalous, CAL-only
+threshold0.004070103168487549 strict`>` gives P92.65/R94.11/F193.37%, AP0.98095,
+FPR11.14%, FNR5.89%, matrix[[303,38],[30,479]]. Nominal Wilson95% FPR8.23–14.93%.
+Locked research criteria PASS; low-FPR/production quality is not established.
+Both normal POSTs falsely flagged; EMPTY/window1 has22/40normal FP. Score calibration
+is poor. Sampler ends with1750normal views, last1024one group: possible bias, not
+causal proof or authorization for new training. Last-batch loss is not full TRAIN loss.
+
+New EVAL has1content-near relation to old TRAIN; no fair paired improvement is
+claimed. Different520/850-view cohorts remain separate. New publisher model stays
+EVALUATED_OFFLINE/LIVE_UNSUPPORTED; frozen Requestv2 remains serving shadow, GLU207
+unchanged/causal-contract-gated. No model/threshold/policy promotion or attack-family
+quality claim; independent human review remains PENDING.
+
+One finite `AI-IDPS-Local-v1.0-rc1` job runs existing startup/passive gateway/HTTP/
+fault/recovery/shutdown acceptance with independent resource guard. Current live
+acceptance PENDING until `.local-dev/rc1-acceptance/AI-IDPS-Local-v1.0-rc1.json`
+records final gates/resource closure. Private request proofs/logs stay local.
+Local serving/AI scope defaults are20% one core; narrowly opt-in guarded acceptance
+keeps children inside the common quota. Web/Rules/Nginx/Suricata source and frozen
+artifacts remain unchanged. No training, source expansion, AWS or enforcement.
