@@ -28,10 +28,18 @@ SCENARIOS = [
     Scenario('burst', 'Behavior', '120 request có giới hạn', 120, profile='behavior', fixture=False, method='GET', marker=''),
     Scenario('ai-shadow', 'AI Shadow', 'AI Shadow · HTTP probe', 1, profile='safe', fixture=False, method='GET', marker=''),
 ]
-CATALOG = {s.id: s for s in SCENARIOS}
+AUTH_SCENARIOS = [
+    Scenario('student-users', 'Authenticated Attack', 'STUDENT · GET users', 1),
+    Scenario('student-students', 'Authenticated Attack', 'STUDENT · GET students', 1),
+    Scenario('staff-users', 'Authenticated Attack', 'STAFF · GET users', 1),
+    Scenario('idor-get', 'Authenticated Attack', 'STUDENT · IDOR GET fixture', 1),
+    Scenario('mass-assignment', 'Authenticated Attack', 'Mass Assignment · fixture PUT', 1, method='PUT'),
+    Scenario('workflow-abuse', 'Authenticated Attack', 'Business Workflow Abuse · fixture PUT', 1, method='PUT'),
+]
+CATALOG = {s.id: s for s in SCENARIOS + AUTH_SCENARIOS}
 
 def catalog():
-    return [asdict(s) for s in SCENARIOS]
+    return [asdict(s) for s in SCENARIOS + AUTH_SCENARIOS]
 
 def request_spec(s, index, run_id):
     path = '/api/auth/me'

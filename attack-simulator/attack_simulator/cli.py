@@ -1,5 +1,7 @@
 import argparse
 import json
+import getpass
+import warnings
 import signal
 import threading
 from .config import Config
@@ -19,6 +21,13 @@ def main(argv=None):
     p.add_argument('--confirm-multiple', action='store_true', default=None)
     p.add_argument('--fixture-confirmed', action='store_true', default=None)
     p.add_argument('--lab-username')
+    p.add_argument('--auth-role', choices=['STUDENT','STAFF'])
+    p.add_argument('--auth-confirmed', action='store_true', default=None)
+    p.add_argument('--write-confirmed', action='store_true', default=None, help='Cho phép PUT cố định trên dữ liệu lab riêng')
+    p.add_argument('--safety-contract-confirmed', action='store_true', default=None, help='Đã đối chiếu backend: protected fields và @Valid placeOfBirth max150 trước ghi')
+    p.add_argument('--fixture-wait', type=float, help='Thời gian chờ xác nhận workflow sau login (1–180s)')
+    p.add_argument('--object-type', choices=['family-members','emergency-contacts','post-graduation-contacts'])
+    p.add_argument('--object-ids', type=lambda v: [int(x) for x in v.split(',')])
     p.add_argument('--profile', choices=['safe', 'behavior'])
     p.add_argument('--max-requests', type=int)
     for name in ('rate', 'timeout', 'duration'): p.add_argument('--'+name, type=float)
@@ -49,7 +58,26 @@ def main(argv=None):
         stop = threading.Event()
         old = signal.signal(signal.SIGINT, lambda *_: stop.set())
         try:
-            runner = Runner(config, stop=stop)
+            credentials = None
+            if config.auth_role:
+                username = input('Lab username: ')
+                with warnings.catch_warnings():
+                    warnings.simplefilter('error', getpass.GetPassWarning)
+                    try: password = getpass.getpass('Lab password: ')
+                    except getpass.GetPassWarning: raise ValidationError('Cần terminal hỗ trợ nhập password ẩn.') from None
+                credentials = (username, password)
+                username = password = ''
+            try:
+                def fixture_prompt(gate):
+                    def read_confirmation():
+                        try:
+                            answer = input('Phiên đã đăng nhập. Trên Defender chỉ vô hiệu hóa tài khoản LAB của run này; không gửi request bằng phiên này. Nhập DISABLED để xác nhận fixture, hoặc Enter để bỏ qua: ')
+                            gate.confirm(answer == 'DISABLED')
+                        except (EOFError, OSError): gate.confirm(False)
+                    threading.Thread(target=read_confirmation, daemon=True).start()
+                runner = Runner(config, stop=stop, credentials=credentials, fixture_prompt=fixture_prompt)
+            finally:
+                credentials = None
             result = runner.execute()
         finally:
             signal.signal(signal.SIGINT, old)

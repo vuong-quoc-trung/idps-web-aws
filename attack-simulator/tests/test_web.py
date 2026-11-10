@@ -60,3 +60,56 @@ class WebTests(unittest.TestCase):
         for key in ('security_url','security_token'):
             r=self.client.post('/api/run',base_url=self.base,headers=self.h,json={'target':'http://localhost','authorized':True,key:'unused'})
             self.assertEqual(r.status_code,400)
+
+    def test_authenticated_form_and_credentials_not_persisted(self):
+        from test_authenticated import MockClient, sequence
+        from attack_simulator.runner import Runner
+        def factory(config, **kwargs): return Runner(config,client=MockClient(sequence()),**kwargs)
+        app=create_app(runner_factory=factory);c=app.test_client()
+        page=c.get('/',base_url=self.base)
+        self.assertIn('name="auth_password"',page.text)
+        t=re.search(r'name="simulator-token" content="([^"]+)"',page.text).group(1)
+        h={'X-Simulator-Token':t}
+        with patch('attack_simulator.web.threading.Thread') as thread:
+            result=c.post('/api/run',base_url=self.base,headers=h,json={'target':'http://lab','authorized':True,'confirm_multiple':True,'auth_confirmed':True,'auth_role':'STUDENT','scenarios':['student-users'],'rate':5,'credentials':{'username':'lab-private','password':'SECRET_PASSWORD'}})
+            self.assertEqual(result.status_code,202)
+            thread.call_args.kwargs['target']()
+        state=c.get('/api/state',base_url=self.base,headers=h)
+        self.assertEqual(state.json['report']['state'],'COMPLETED')
+        for secret in ('SECRET_PASSWORD','lab-private','SECRET_NEW','rotated'):
+            self.assertNotIn(secret,state.text)
+
+    def test_fixture_confirmation_bound_to_active_run(self):
+        r=self.client.post('/api/fixture-confirm',base_url=self.base,headers=self.h,json={'run_id':'old','confirmed':True})
+        self.assertEqual(r.status_code,409)
+        self.assertEqual(self.client.post('/api/fixture-confirm',base_url=self.base,json={'run_id':'old','confirmed':True}).status_code,403)
+        self.assertEqual(self.client.post('/api/fixture-confirm',base_url=self.base,headers=self.h,json={'run_id':'old','confirmed':'yes'}).status_code,400)
+
+    def test_mock_flask_workflow_roundtrip(self):
+        import time
+        from test_authenticated import MockClient, sequence, reply
+        from attack_simulator.runner import Runner
+        q=sequence();q[4]=reply(401)
+        target=MockClient(q)
+        def factory(config,**kwargs):return Runner(config,client=target,**kwargs)
+        app=create_app(runner_factory=factory);c=app.test_client()
+        t=re.search(r'name="simulator-token" content="([^"]+)"',c.get('/',base_url=self.base).text).group(1)
+        h={'X-Simulator-Token':t}
+        try:
+            started=c.post('/api/run',base_url=self.base,headers=h,json={'target':'http://lab','authorized':True,'confirm_multiple':True,'auth_confirmed':True,'auth_role':'STUDENT','scenarios':['workflow-abuse'],'write_confirmed':True,'safety_contract_confirmed':True,'rate':5,'credentials':{'username':'lab-private','password':'SECRET_PASSWORD'}})
+            self.assertEqual(started.status_code,202)
+            deadline=time.monotonic()+5
+            while time.monotonic()<deadline:
+                report=c.get('/api/state',base_url=self.base,headers=h).json['report']
+                if report.get('phase')=='awaiting_fixture':break
+                time.sleep(.02)
+            self.assertEqual(report['phase'],'awaiting_fixture');self.assertEqual(len(target.calls),4)
+            self.assertEqual(c.post('/api/fixture-confirm',base_url=self.base,headers=h,json={'run_id':'wrong','confirmed':True}).status_code,409)
+            self.assertEqual(c.post('/api/fixture-confirm',base_url=self.base,headers=h,json={'run_id':report['run_id'],'confirmed':True}).status_code,200)
+            while time.monotonic()<deadline:
+                state=c.get('/api/state',base_url=self.base,headers=h).json
+                if not state['active']:break
+                time.sleep(.02)
+            self.assertFalse(state['active']);self.assertEqual(state['report']['state'],'COMPLETED')
+            self.assertNotIn('SECRET',json.dumps(state));self.assertEqual(target.calls[-1][0],'PUT')
+        finally:app.extensions['simulator_shutdown']()

@@ -6,7 +6,7 @@ import re
 import socket
 import ssl
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib.parse import urlsplit
 
 
@@ -98,6 +98,7 @@ class Response:
     headers: dict
     body: bytes
     truncated: bool = False
+    set_cookies: list = field(default_factory=list)
 
 
 class Client:
@@ -123,7 +124,8 @@ class Client:
             response = conn.getresponse()
             data = response.read(262145)
             # Never follow redirects, even same-origin; never retain response body in reports.
-            return Response(response.status, {k.lower(): v for k, v in response.getheaders()}, data[:262144], len(data) > 262144)
+            headers = response.getheaders()
+            return Response(response.status, {k.lower(): v for k, v in headers}, data[:262144], len(data) > 262144, [v for k,v in headers if k.lower() == 'set-cookie'])
         finally:
             timer.cancel()
             conn.close()

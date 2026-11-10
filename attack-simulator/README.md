@@ -107,3 +107,65 @@ python -m attack_simulator --help
 ```
 
 Tests không phụ thuộc Defender đang chạy và không gửi probe vào hệ thống thật. Flask cần được cài để chạy đủ UI tests. Tính portable dựa trên Python stdlib/Flask; cần nghiệm thu thêm trên Windows/Kali và đường mạng hai laptop thật. Công cụ không suy luận từ HTTP status rằng tấn công đã thành công hay Defender đã phát hiện.
+
+## Authenticated Attack Mode
+
+Bốn scenario mới chạy **riêng** với 13 scenario cũ:
+
+- `student-users`: STUDENT → GET `/api/users`.
+- `student-students`: STUDENT → GET `/api/students`.
+- `staff-users`: STAFF → GET `/api/users`.
+- `idor-get`: STUDENT → GET `/api/me/{object-type}/{id}`, chỉ ID lab cung cấp trước (tối đa20). Ba loại: family-members, emergency-contacts, post-graduation-contacts.
+
+```bash
+python -m attack_simulator --target http://192.168.10.1 --scenario student-users --auth-role STUDENT --auth-confirmed --authorized --confirm-multiple
+python -m attack_simulator --target http://192.168.10.1 --scenario idor-get --auth-role STUDENT --object-type family-members --object-ids 101,102 --auth-confirmed --authorized --confirm-multiple
+```
+
+CLI hỏi username và password ẩn bằng getpass; không nhận password từ CLI args/config. UI có phần Authenticated Attack riêng, không lưu credentials trong localStorage. Chọn role, bỏ chọn baseline/scenario cũ và xác nhận fixture. Không dùng ADMIN. ID phải do người vận hành chuẩn bị, không lấy dữ liệu thật hoặc dò ID.
+
+Luồng: GET CSRF → form login204 → nhận cookie xoay vòng → GET CSRF mới → GET auth/me xác minh username, role, enabled và passwordSetupRequired → GET probe → POST logout. Một phiên riêng mỗi run, chỉ JSESSIONID đúng host/path và Secure tương thích được gửi. Không tự đăng nhập lại khi401, không theo redirect. Setup4 request + logout1 được tính vào budget; logout có chỗ dự phòng về request và thời gian. Stop dừng probe nhưng vẫn thử logout trong giới hạn. Nếu phiên hết hạn, cleanup được bỏ qua; nếu mạng/CSRF lỗi thì report ghi cleanup FAILED/SKIPPED, không hứa phiên server đã bị hủy. Cookie/token/password luôn bị xóa khỏi đối tượng quản lý khi kết thúc; Python không bảo đảm zeroize mọi bản sao immutable trong bộ nhớ.
+
+Các GET bị403/404 vẫn là HTTP đã thực thi, không kết luận về detector. Khi login/role mismatch/session expiry, không chạy tiếp hoặc tự đổi tài khoản. Report không lưu response body/profile, username, cookie, CSRF hoặc password.
+
+**Chưa hỗ trợ:** Unauthorized Privilege Change và authenticated CSRF. Mass Assignment/Workflow chỉ chạy theo quy trình fixture kiểm soát bên dưới. Scenario `csrf` cũ vẫn giữ nguyên cho fixture login thất bại, không phải authenticated CSRF mới.
+
+## Mass Assignment và Business Workflow Abuse — fixture kiểm soát
+
+Hai scenario mới (`mass-assignment`, `workflow-abuse`) bổ sung vào 17 scenario trước. Chỉ role STUDENT, không nhận payload tùy ý. Mỗi bài tối đa **1 PUT `/api/me/profile`** với JSON cố định:
+
+- `role: "STUDENT"` là trường bị cấm (không yêu cầu nâng lên ADMIN).
+- `placeOfBirth`: 151 ký tự `L` — lớp dự phòng buộc DTO không qua `@Size(max=150)` nếu protected-field check bị thiếu.
+
+Đã đối chiếu code repository: `ProtectedFieldAdvice` từ chối role trước binding; `MyProfileController.update` dùng `@Valid`; DTO giới hạn placeOfBirth; `ActiveAccountFilter` chặn thao tác ghi khi tài khoản disabled/password-setup-required. **Không thể xác minh deployment từ HTTP response hoặc lời xác nhận một mình.** Người vận hành phải đối chiếu phiên bản/config lab trước; không xác nhận được thì bỏ chọn safety contract, simulator SKIPPED và không gửi PUT. Không chạy nếu validation đã bị bỏ qua/sửa khác repo.
+
+Hai xác nhận riêng là `--write-confirmed` và `--safety-contract-confirmed`. Không có đủ cả hai thì scenario SKIPPED. Không lưu body/profile trong report. Simulator không tự thay đổi DB/trạng thái tài khoản, không đọc Security API và không kết luận signal/không thay đổi dữ liệu từ HTTP400/401.
+
+### Chạy cả hai trong một đợt có kiểm soát
+
+1. **Defender chuẩn bị trước:** tài khoản STUDENT lab riêng đã active, hồ sơ lab riêng; chụp/ghi đối chiếu trường hồ sơ, role và trạng thái ban đầu bằng công cụ phía Defender. Không dùng dữ liệu thật. Đối chiếu code đang deploy có đủ hai lớp validation kể trên. Đảm bảo audit pipeline hoạt động riêng ở Defender.
+2. **Simulator:** chọn Mass Assignment trước, Workflow cuối; bỏ chọn baseline. Chọn STUDENT, nhập username/password lab, xác nhận tài khoản, nhiều request, quyền test và hai xác nhận PUT/contract. Đặt duration300s, fixture wait120s nếu cần thao tác thủ công.
+3. Login/CSRF/role được xác minh. Mass Assignment gửi1 PUT, **dự kiến HTTP400**. Nếu nhận2xx simulator FAILED và dừng, không retry hoặc rollback. Kiểm tra ngay dữ liệu lab ở Defender. 400 không tự chứng minh nguyên nhân từ chối.
+4. Simulator dừng ở **“Đang chờ fixture”** sau login, chưa gửi PUT workflow. Người vận hành trên Defender kiểm tra dữ liệu sau bài đầu rồi **vô hiệu hóa đúng tài khoản lab** bằng công cụ quản trị đã được phép. Việc thay đổi enabled là fixture chủ động, không phải tác dụng của simulator. Không dùng phiên đang thử để GET kiểm tra trạng thái: request đó có thể thu hồi phiên trước bài PUT.
+5. Bấm **“Đã chuẩn bị đúng fixture · Tiếp tục”** hoặc **“Bỏ qua workflow”**. Xác nhận gắn run ID hiện tại, chỉ dùng một lần và chỉ có hiệu lực trong lúc chờ. Không có xác nhận/timeout → SKIPPED; Stop → CANCELLED. Không tự lấy việc hết thời gian làm đồng ý.
+6. Workflow gửi1 PUT với session/CSRF đã có, **dự kiến HTTP401** do account filter. Không gửi GET/relogin trung gian. Nếu fixture chưa disabled, payload vẫn phải bị hai lớp validation từ chối; HTTP400 được ghi là không đúng kỳ vọng workflow, không coi là chứng minh thao tác nghiệp vụ bị chặn đúng cơ chế.
+7. **Defender đối chiếu riêng:** kiểm tra hồ sơ và role không đổi; chỉ enabled thay đổi như fixture chủ động. Tìm bằng request ID/thời gian trong WebSentinel, kiểm tra `MASS_ASSIGNMENT` và `WORKFLOW_DENIED` ở phía Defender. Lưu bằng chứng tại Defender; không chuyển cookie/token hoặc nội dung hồ sơ vào report simulator. Nếu chỉ đổi credential version/role mà không disabled/password-setup-required, không được coi là fixture workflow tương đương.
+8. Người vận hành khôi phục fixture lab phía Defender theo quy trình riêng. Simulator chỉ logout khi còn phiên và xóa dữ liệu quản lý phiên; không tự phục hồi tài khoản.
+
+CLI (password nhập ẩn; sau login sẽ hỏi xác nhận fixture):
+
+```bash
+python -m attack_simulator --target http://IP-DEFENDER \
+  --scenario mass-assignment --scenario workflow-abuse \
+  --auth-role STUDENT --auth-confirmed --authorized --confirm-multiple \
+  --write-confirmed --safety-contract-confirmed \
+  --duration 300 --fixture-wait 120 --report reports/controlled-fixtures.json
+```
+
+Khi CLI hỏi, chỉ gõ `DISABLED` sau khi đã chuẩn bị đúng trạng thái trên Defender. Enter/EOF hoặc hết thời gian sẽ bỏ qua. Xác nhận trước login trong config không thể thay thế bước này.
+
+`COMPLETED` chỉ nói request đã thực thi; `expected_http_status`/`http_expectation_met` là đối chiếu HTTP, không phải detector verdict. Response2xx ngoài dự kiến phải dừng và kiểm tra dữ liệu. HTTP401 cũng có thể do session hết hạn, nên không tự khẳng định workflow signal. Tổng budget gồm setup4, hai PUT, logout tối đa1; chờ fixture nằm trong duration và dành thời gian cleanup. Không có polling tới Student hoặc Defender khi chờ.
+
+### Trạng thái nghiệm thu
+
+Unit/integration tests dùng HTTP mock kiểm tra payload, CSRF/cookie, hai lớp xác nhận, workflow gate/run ID, timeout/Stop, status ngoài dự kiến và không rò secret. **Chưa chạy end-to-end Student Web thật:** còn cần tài khoản/fixture do người vận hành chuẩn bị, xác nhận contract đang deploy và đối chiếu dữ liệu trước/sau. Mock thành công không phải bằng chứng dữ liệu lab thật không đổi hoặc Defender đã tạo signal.
