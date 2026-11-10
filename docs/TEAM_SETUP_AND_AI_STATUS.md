@@ -1605,3 +1605,37 @@ additional authorized sources and cross-source lineage checks remain necessary.
 Next step after actual pilot verification is one disjoint cumulative500K WAF batch,
 not automatic training. Frozen Request v2/GLU207/v3 checkpoints, Web/Nginx/Suricata/
 Rules/Policy/correlation, published releases and prospective seal remain unchanged.
+
+## Adaptive thermal recovery — 2026-11-10
+
+[Recovery report](38_ADAPTIVE_THERMAL_RECOVERY.md),
+[machine evidence](../ai-training/reports/ADAPTIVE_THERMAL_RECOVERY_20261110.json).
+The first100K job stopped at23,040 because the independent watchdog saw92°C under
+its old85°C cutoff. It was not a completed dataset. That attempt and its original
+telemetry remain preserved; the previous generic service-lost diagnosis did not
+identify the original thermal trigger accurately.
+
+The new isolated execution policy has85/90/93°C warning/throttle/strong bands and
+an effective96°C emergency cutoff, below the locally reported105°C CPU junction
+critical limit. Other hardware domains retain their own lower trips. No kernel,
+firmware, fan or host CPU setting changed. Stable starting/maximum CPU quota remains
+20% of one core, RAM<=8GiB with4GiB reserve. Independent100ms CPU monitoring,
+15s stablecooldown, gradual1%→20% recovery,300s cooling timeout and mutual monitor
+health checks replace permanent failure at90–95°C for this new attempt only.
+
+31 tests PASS. Actual low-load preflight passed in25.66s, peak56°C, including real
+quota/freeze/thaw readbacks and full committed-prefix/source integrity checks.
+The first probe failure at55°C is preserved and regression-tested. Intentional
+cooling does not require a frozen worker heartbeat, and status polling never waits
+on its SQLite lock. Physical sensor calibration/hidden firmware limits and precise
+attribution of earlier spikes are not claimed.
+
+Same run `student-training-v1-100k-r2`, new attempt `attempts/recovery-a1`, same
+source/data fingerprint, resume23,040; skip completed4,096 boundary. New supervisor
+`idps-student-adaptive-recovery-a1.service`; read root `status.json` or the new attempt
+status/services/thermal logs. The old service and root supervisor-result remain
+historical failures. Completion requires new attempt result+controller success and
+verified100K/rebuild, not just a status label. Reviewed code/report are published
+before launch; live private status records whether background recovery is RUNNING.
+No training,500K expansion, sealed access or model/system change. Team bootstrap
+and inference model restore remain unchanged.

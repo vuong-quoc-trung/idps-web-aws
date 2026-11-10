@@ -1,0 +1,397 @@
+{
+  "schema_version": "ADAPTIVE_THERMAL_RECOVERY-1",
+  "date": "2026-11-10",
+  "baseline_commit": "940c0521a2d43065225c35bc57e8373315e6c3d6",
+  "branch": "feature/ai-idps-shadow-integration",
+  "state": "PREFLIGHT_VERIFIED_BACKGROUND_RESUME_PREPARED",
+  "original_run_id": "student-training-v1-100k-r2",
+  "new_attempt_id": "recovery-a1",
+  "dataset_plan_fingerprint": "b6d337f5b2a50ff3477012711e7bff60e7d5856007e8b067ed17626552673cd5",
+  "recovery_plan_fingerprint": "0dd6ab34613173a36b72eee8e54099470e0712277a1f73377f7534dbb3de7a5d",
+  "hardware": {
+    "auxiliary_sensors": [
+      {
+        "critical_C": 84.85,
+        "driver": "nvme",
+        "path": "/sys/class/hwmon/hwmon4/temp1_input"
+      }
+    ],
+    "cpu_sensors": [
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp10_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 58.0,
+        "label": "Core 8",
+        "path": "/sys/class/hwmon/hwmon8/temp10_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp11_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 58.0,
+        "label": "Core 9",
+        "path": "/sys/class/hwmon/hwmon8/temp11_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp12_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 58.0,
+        "label": "Core 10",
+        "path": "/sys/class/hwmon/hwmon8/temp12_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp13_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 58.0,
+        "label": "Core 11",
+        "path": "/sys/class/hwmon/hwmon8/temp13_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp14_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 62.0,
+        "label": "Core 12",
+        "path": "/sys/class/hwmon/hwmon8/temp14_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp15_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 62.0,
+        "label": "Core 13",
+        "path": "/sys/class/hwmon/hwmon8/temp15_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp16_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 62.0,
+        "label": "Core 14",
+        "path": "/sys/class/hwmon/hwmon8/temp16_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp17_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 62.0,
+        "label": "Core 15",
+        "path": "/sys/class/hwmon/hwmon8/temp17_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp18_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 60.0,
+        "label": "Core 16",
+        "path": "/sys/class/hwmon/hwmon8/temp18_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp1_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 63.0,
+        "label": "Package id 0",
+        "path": "/sys/class/hwmon/hwmon8/temp1_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp22_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 58.0,
+        "label": "Core 20",
+        "path": "/sys/class/hwmon/hwmon8/temp22_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp26_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 56.0,
+        "label": "Core 24",
+        "path": "/sys/class/hwmon/hwmon8/temp26_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp2_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 56.0,
+        "label": "Core 0",
+        "path": "/sys/class/hwmon/hwmon8/temp2_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp30_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 56.0,
+        "label": "Core 28",
+        "path": "/sys/class/hwmon/hwmon8/temp30_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp34_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 47.0,
+        "label": "Core 32",
+        "path": "/sys/class/hwmon/hwmon8/temp34_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp35_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 47.0,
+        "label": "Core 33",
+        "path": "/sys/class/hwmon/hwmon8/temp35_input"
+      },
+      {
+        "alarm": "/sys/class/hwmon/hwmon8/temp6_crit_alarm",
+        "critical_C": 105.0,
+        "initial_C": 56.0,
+        "label": "Core 4",
+        "path": "/sys/class/hwmon/hwmon8/temp6_input"
+      }
+    ],
+    "effective_emergency_C": 96.0,
+    "fingerprint": "a74c1679bf3ae4385b61e4ff00db34a5d8c642a427cae2f40934811a8f47485e",
+    "lowest_coretemp_critical_C": 105.0,
+    "official_max_operating_C": 110,
+    "platform_zones": [
+      {
+        "initial_C": 44.0,
+        "limits": [
+          {
+            "C": 108.0,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone0/temp",
+        "type": "acpitz"
+      },
+      {
+        "initial_C": 52.0,
+        "limits": [
+          {
+            "C": 108.0,
+            "kind": "critical"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone1/temp",
+        "type": "acpitz"
+      },
+      {
+        "initial_C": 0.05,
+        "limits": [
+          {
+            "C": 80.05,
+            "kind": "critical"
+          },
+          {
+            "C": 75.05,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone3/temp",
+        "type": "SEN1"
+      },
+      {
+        "initial_C": 0.05,
+        "limits": [
+          {
+            "C": 80.05,
+            "kind": "critical"
+          },
+          {
+            "C": 75.05,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone4/temp",
+        "type": "SEN2"
+      },
+      {
+        "initial_C": 0.05,
+        "limits": [
+          {
+            "C": 80.05,
+            "kind": "critical"
+          },
+          {
+            "C": 75.05,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone5/temp",
+        "type": "SEN6"
+      },
+      {
+        "initial_C": 0.05,
+        "limits": [
+          {
+            "C": 80.05,
+            "kind": "critical"
+          },
+          {
+            "C": 75.05,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone6/temp",
+        "type": "SEN7"
+      },
+      {
+        "initial_C": 0.05,
+        "limits": [
+          {
+            "C": 80.05,
+            "kind": "critical"
+          },
+          {
+            "C": 75.05,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone7/temp",
+        "type": "SEN8"
+      },
+      {
+        "initial_C": 61.05,
+        "limits": [
+          {
+            "C": 110.05,
+            "kind": "critical"
+          },
+          {
+            "C": 110.05,
+            "kind": "hot"
+          }
+        ],
+        "path": "/sys/class/thermal/thermal_zone8/temp",
+        "type": "TCPU"
+      }
+    ],
+    "processor": "Intel(R) Core(TM) Ultra 9 285H",
+    "requested_emergency_C": 96,
+    "sensor_scope": "coretemp cores/package for CPU; other thermal domains retain own hot/critical limits",
+    "sources": [
+      "https://www.intel.com/content/www/us/en/products/sku/241747/intel-core-ultra-9-processor-285h-24m-cache-up-to-5-40-ghz/specifications.html",
+      "https://www.kernel.org/doc/html/latest/hwmon/coretemp.html"
+    ],
+    "unmapped_SEN_warning": "50 millidegree readings are not interpreted as CPU temperature; own reported trips still monitored"
+  },
+  "historical_incident": {
+    "watchdog_max_C": 92,
+    "main_monitor_max_C": 71,
+    "heartbeat_age_at_trip_seconds": 0.04802083969116211,
+    "cause": "independent watchdog emergency_temperature at previous85C cutoff; later genericservice-lost supervisor status hid originalreason",
+    "spike_which_core": "UNRECOVERABLE; oldwatchdog kept max only",
+    "workload_attribution": "NOT_ESTABLISHED; lowquota andmean do not prove own/external cause",
+    "old_resource_attempt_unchanged": true
+  },
+  "policy": {
+    "warning_C": 85,
+    "throttle_C": 90,
+    "strong_throttle_C": 93,
+    "requested_emergency_C": 96,
+    "effective_emergency_C": 96.0,
+    "starting_and_maximum_quota_percent_one_cpu": 20,
+    "minimum_quota_percent_one_cpu": 1,
+    "first_hot_band_reduction": "halvecurrentquota",
+    "pause": "risingstrongband,>=95C, or sustainedstrongband2s",
+    "cooldown": "<85C continuously15s; then1% and+2points every5s; neverexceed20%",
+    "maximum_cooling_seconds": 300,
+    "emergency": "stoponlynamedAIcgroup, THERMAL_EMERGENCY, norestart",
+    "sensor_cadence_seconds": 0.1,
+    "other_domain_cadence_seconds": 1,
+    "memory_cap_GiB": 8,
+    "system_reserve_GiB": 4,
+    "intentional_pause": "THERMAL_COOLDOWN; monitor checks supervisoroutsidefrozenworker, neverfrozenworkerHB",
+    "averages": "reported, not smoothing/rejecting instantaneouspeaks; thisexplicitnewpolicy replacesold85Ccutoff/oldrollinghardstopfor thisattemptonly"
+  },
+  "preflight": {
+    "attempt": "preflight-a2",
+    "state": "PASS",
+    "seconds": 25.664356839000902,
+    "peak_C": 56.0,
+    "controller_probe": {
+      "operations": [
+        {
+          "action": "quota",
+          "at": 1794276814.613739,
+          "value": 10
+        },
+        {
+          "action": "freeze",
+          "at": 1794276815.6582806,
+          "value": true
+        },
+        {
+          "action": "freeze",
+          "at": 1794276816.733089,
+          "value": false
+        },
+        {
+          "action": "quota",
+          "at": 1794276817.7352152,
+          "value": 5
+        },
+        {
+          "action": "quota",
+          "at": 1794276818.724518,
+          "value": 20
+        }
+      ],
+      "real_sensor_max_C": 56.0,
+      "state": "PASS",
+      "worker_heartbeat_not_used_for_monitor_health": true
+    },
+    "source_integrity": "PASS",
+    "sqlite_quick_check": "ok",
+    "cursor": 23040,
+    "shards_readable_finite_588_float32": 90,
+    "source_code_policy_key_bindings": "PASS",
+    "orphan_or_partial_files": 0,
+    "failed_preflight_preserved": {
+      "attempt": "preflight-a1",
+      "peak_C": 55,
+      "reason": "probe misread intentionalCOOLDOWN as insufficientheadroom; fixed andregressiontested",
+      "new_dataset_positions": 0
+    }
+  },
+  "tests": {
+    "count": 31,
+    "state": "PASS",
+    "ruff": "PASS",
+    "coverage": [
+      "80normal",
+      "88warning",
+      "91throttle",
+      "94strong",
+      "63->92->95pause",
+      "96emergency",
+      "cooldownhysteresis",
+      "gradualresume",
+      "lowerhardwarelimit",
+      "sensorunavailable",
+      "watchdogprocessloss",
+      "intentionalpauseheartbeat",
+      "ownedcgroupscoping",
+      "freeze/thawreadback",
+      "skipcompletedmilestones",
+      "nonblockingstatusduringSQLiteexclusivewrite",
+      "studenttiers/privacy/resume/leakage"
+    ]
+  },
+  "verification_scope": "simulation+realcooltemperaturecgroupactuation, actualsource/shardchecks, independentservices; noartificialheating, noabsolute guarantee againstexternalheat/hiddenfirmware limits/overshoot",
+  "preservation": {
+    "old_data_plan_sha256": "6db75ffcd198b6794cfeb53bb9e7fe2aba86a2a7b8de6e4fb66bced723c81286",
+    "dataset_code_policy_encoders": "UNCHANGED",
+    "old_resource_directory": "PRESERVED",
+    "old_root_status": "bytecopiedtoattempt/historybeforeauthorizedresume",
+    "new_original_dataset_positions": 0,
+    "new_model_training_steps": 0,
+    "sealed_access": false,
+    "production_system": "UNCHANGED",
+    "old_small_pins_unchanged": 187
+  },
+  "final_state_at_publication": {
+    "THERMAL_POLICY": "VERIFIED_WITH_STATED_SCOPE",
+    "AUTO_COOLDOWN": "PASS_SIMULATION_AND_KERNEL_ACTUATION",
+    "AUTO_RESUME": "PASS_SIMULATION_AND_KERNEL_ACTUATION",
+    "WATCHDOG_INDEPENDENCE": "PASS",
+    "SENSOR_VALIDATION": "PASS_CPU_MAPPING_RANGE_AND_REPORTED_LIMITS; notphysicalcalibration",
+    "RESUME_CURSOR": 23040,
+    "DATASET_INTEGRITY": "PASS_COMMITTED_PREFIX",
+    "BACKGROUND_DATA_PIPELINE": "NOT_STARTED_PREPUBLICATION",
+    "TRAINING": "NOT_STARTED",
+    "FROZEN_MODELS": "UNCHANGED"
+  },
+  "private_attempt": "ai-training/.artifacts/student_training_20261110/student-training-v1-100k-r2/attempts/recovery-a1",
+  "live_status": "status.json underoriginalrun + attempts/recovery-a1/status.json",
+  "publication": "aggregate/codespec only; no rawHTTP, feature arrays, nativeIDs or secrets"
+}
