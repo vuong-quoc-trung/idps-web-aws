@@ -50,7 +50,7 @@ class LauncherTests(unittest.TestCase):
                 self.assertEqual(launcher.recent_ai_records(),[{'status':'READY'}])
 
     def test_opt_in_ai_sink_keeps_existing_sanitized_log_and_api_routing(self):
-        snippet=(launcher.ROOT/'security-web/nginx/pbl4-proxy.conf').read_text()
+        snippet=(launcher.ROOT/'security-web/nginx/pbl4-local-demo.conf').read_text()
         generated=launcher.ai_shadow_nginx(snippet,Path('/tmp/private/nginx.sock'))
         self.assertIn('syslog:server=unix:/tmp/private/nginx.sock,tag=ai_shadow,nohostname',generated)
         self.assertIn('proxy_pass http://student_api;',generated)

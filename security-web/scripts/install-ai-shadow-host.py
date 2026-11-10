@@ -79,10 +79,9 @@ def patch_site(text):
 
 
 def formats():
-    # Reuse all current query signature maps and redacted canonical access fields.
-    src = (ROOT / "security-web/nginx/pbl4-proxy.conf").read_text().split("# Local services are preferred;")[0]
-    src = src.replace("idps_", "pbl4_host_").replace("log_format pbl4_host_json", "log_format pbl4_ai_access")
-    return src + "\n" + (ROOT / "security-web/deploy/ai-shadow/telemetry.conf").read_text()
+    # Shared host log schema; independent of local demo upstreams.
+    return ((ROOT / "security-web/nginx/pbl4-access.conf").read_text()
+            + "\n" + (ROOT / "security-web/deploy/ai-shadow/telemetry.conf").read_text())
 
 
 def unit(user, group, python, package):

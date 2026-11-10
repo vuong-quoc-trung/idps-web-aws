@@ -460,7 +460,7 @@ def main():
     else:
         security_environment.pop('AI_SHADOW_RESULTS_PATH', None)
     start('security', [str(security)], ROOT/'security-web', security_environment)
-    snippet = (ROOT/'security-web/nginx/pbl4-proxy.conf').read_text().replace('listen 0.0.0.0:80;', f'listen {edge_bind}:{ports["edge"]};')
+    snippet = (ROOT/'security-web/nginx/pbl4-local-demo.conf').read_text().replace('listen 0.0.0.0:80;', f'listen {edge_bind}:{ports["edge"]};')
     snippet = snippet.replace('127.0.0.1:8080', f'127.0.0.1:{ports["api"]}').replace('127.0.0.1:5173', f'127.0.0.1:{ports["frontend"]}')
     snippet = snippet.replace('/var/log/nginx/access.log', str(access))
     if args.ai_shadow:

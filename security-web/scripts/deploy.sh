@@ -10,7 +10,7 @@ set -euo pipefail
 
 # The legacy deploy flow replaces system configuration. Never use it on the host.
 if [ "${1:-}" = "--deploy" ]; then
-    echo "Host deployment is manual. Follow docs/HOST_SECURITY_SETUP.md; no changes applied." >&2
+    echo "Host deployment is manual. Follow docs/NGINX_HOST_SYNC.md; no changes applied." >&2
     exit 2
 fi
 
@@ -243,7 +243,7 @@ run_check() {
     if command -v nginx >/dev/null 2>&1; then
         local nginx_output
         nginx_output=$(nginx -t 2>&1 || true)
-        if echo "$nginx_output" | grep -q "syntax is ok"; then
+        if echo "$nginx_output" | grep -q "test is successful"; then
             log_success "Nginx system configuration syntax is valid"
         else
             log_error "Nginx configuration syntax error: $nginx_output"

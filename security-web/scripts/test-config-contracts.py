@@ -28,6 +28,10 @@ def binary(name):
 
 class EdgeConfigTests(unittest.TestCase):
     @classmethod
+    def config_snippet(cls):
+        return (ROOT / "nginx/pbl4-local-demo.conf").read_text()
+
+    @classmethod
     def setUpClass(cls):
         cls.nginx = binary("nginx")
         if not cls.nginx:
@@ -56,7 +60,7 @@ class EdgeConfigTests(unittest.TestCase):
         with socket.socket() as reservation:
             reservation.bind(("127.0.0.1", 0))
             cls.port = reservation.getsockname()[1]
-        snippet = (ROOT / "nginx/pbl4-proxy.conf").read_text()
+        snippet = cls.config_snippet()
         snippet = snippet.replace("listen 0.0.0.0:80;", f"listen 127.0.0.1:{cls.port};")
         snippet = snippet.replace("127.0.0.1:8080", f"127.0.0.1:{cls.upstream.server_port}").replace("127.0.0.1:5173", f"127.0.0.1:{cls.upstream.server_port}").replace("192.168.20.10:80 backup", "127.0.0.1:1 backup")
         cls.access = cls.work / "access.log"
@@ -187,7 +191,7 @@ class EdgeConfigTests(unittest.TestCase):
                 work=Path(temporary)
                 with socket.socket() as sock:
                     sock.bind(("127.0.0.1",0)); port=sock.getsockname()[1]
-                snippet=(ROOT/"nginx/pbl4-proxy.conf").read_text().replace("listen 0.0.0.0:80;",f"listen 127.0.0.1:{port};")
+                snippet=(ROOT/"nginx/pbl4-local-demo.conf").read_text().replace("listen 0.0.0.0:80;",f"listen 127.0.0.1:{port};")
                 snippet=snippet.replace("127.0.0.1:8080",f"127.0.0.1:{primary.server_port}").replace("127.0.0.1:5173",f"127.0.0.1:{primary.server_port}").replace("192.168.20.10:80 backup",f"127.0.0.1:{backup.server_port} backup")
                 snippet=snippet.replace("/var/log/nginx/access.log",str(work/"access.log"))
                 paths="\n".join(f"{kind}_temp_path {work/kind};" for kind in ["client_body","proxy","fastcgi","uwsgi","scgi"])
