@@ -1757,3 +1757,37 @@ examples.500K is deferred;2M usable capacity is not established. No requalificat
 new ingestion, training, promotion, AWS, enforcement or model/system change starts
 without the next user request. Team clone/bootstrap/restore/local inference remains
 unchanged and does not require this private research corpus.
+
+## Local v1.0 priority and bounded200K data job — 2026-11-10
+
+[Release/data plan](42_LOCAL_RELEASE_AND_200K.md),
+[locked config](../ai-training/configs/research/local-release-200k-20261110.json),
+[supervised worker](../ai-training/scripts/local-release-200k.py).
+The practical local shadow release supersedes2M/model-size scaling as the immediate
+academic priority. No owned stack/services/containers were active at inspection;
+old READY heartbeat was stale. Existing launcher/restore/AI journal/Rust API/UI
+remain the shortest release path; Rules/Policy keep authority, no AI enforcement.
+
+Current genuine publisher-source offline replay PASS, frozen588 score and separately
+named publisher-anomaly score; missing representation rejected without a fake score.
+Independent guardian peak60°C,7.85s. This is not current live HTTP→DB/UI acceptance.
+Local v1.0 remains NOT_ACCEPTED until existing startup/shutdown, real request
+correlation, fallback and Web/Rules regression checks pass. No application code or
+deployment model is changed.5 worker and7 launcher tests pass this turn.
+
+One locked derivative run `local-release200k-20261110-r1` reuses100K metadata/391
+shards and selects100K disjoint WAF publisher positions. It checks the fixed27,235
+legacy candidates against correct legacy heldout encoders and protects all old
+heldouts plus completed pilot CAL/EVAL. Recovered old components are TRAIN-only;
+new-only near/lineage components use precommitted group splits. Current new eligible
+count is pending, not200K. Original3,783 SILVER/3,751 views and2,667 pilot TRAIN
+remain historical verified counts. Publisher physical identity/global lineage
+remain unverified/PARTIAL; independent review PENDING.
+
+20% one-core,8GiB/4GiB reserve, tested85/90/93/96°C/lower-hardware-limit watchdog,
+atomic cursor/near accumulator checkpoints,6h bound and no automatic restart.
+Read private run status/services/logs; public docs describe prelaunch design.
+On completion, `release-accounting.json` and `final-training-config.json` provide
+actual counts/fingerprints/finite optimizer budget. The worker never calls training
+or promotes a model. No500K/2M/AWS/enforcement, sealed access or frozen modification.
+Team bootstrap/model restore/local inference workflow remains unchanged.

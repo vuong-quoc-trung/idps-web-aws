@@ -1,0 +1,27 @@
+{
+  "version": "local-release200k-v1",
+  "maximum_source_positions": 200000,
+  "old_positions_reused": 100000,
+  "new_windows_zero_based_end_exclusive": [[49964, 99964], [1098539, 1148539]],
+  "role_policy": "All recovered/old admitted components TRAIN-only. New-only components seeded hash70/15/15 after exact+near closure. All historical CAL/DEV and completed pilot CAL/EVAL remain excluded/protected.",
+  "legacy_review": "27235 fixed diagnostic candidates; original safe/v1 encoder heldout near checks, known group/view/route protection and whole-component conflicts; no automatic admission on missing evidence",
+  "resource_policy": {"CPU_percent_one_core": 20, "RAM_cap_GiB": 8, "reserve_GiB": 4, "warning_C": 85, "throttle_C": 90, "strong_C": 93, "requested_emergency_C": 96, "lower_hardware_limits": true, "maximum_seconds": 21600},
+  "final_training": {
+    "version": "local-publisher-final-pilot-v1",
+    "task": "publisher_anomaly",
+    "tiers": ["SILVER"],
+    "feature_contract": "student-http588-rich-v2-publisher-v1",
+    "model": {"kind": "deep_mlp", "layers": [588,64,64,64,64,8], "parameters": 50696, "initialization": "fresh seed17", "output_semantics": "normal0 versus marginal anomaly1..7, no family labels"},
+    "training": {"seed":17, "epochs":10, "batch_size":64, "learning_rate":0.001, "optimizer":"AdamW-v1", "scheduler":"constant", "class_weights":"inverse TRAIN-only canonical frequency", "smoothing":0.005, "family_weight":0.0, "sampler":"group round-robin once per canonical view/epoch", "checkpoint_interval_steps":16, "checkpoint_selection":"final fixed budget only", "search":false},
+    "checkpoint_resume": "existing atomic save/reload: weights, Adam m/v, scheduler step, epoch/cursor, RNG/permutation, dataset/config/split fingerprints; require exact next-update control on authorized launch",
+    "evaluation": {"threshold":"fixed0.5 and CAL-only balanced accuracy maximum, highest tie, strict >", "baseline":"same-task TRAIN prior and TRAIN-only window/body priors; old model only a disclosed exposed-source reference", "acceptance":"AP exceeds every same-task metadata/prior baseline by>=0.05 and calibrated balanced accuracy>=0.75 on locked internal EVAL; report all FP/FN, Wilson intervals and POST/body strata; never select hyperparameters/checkpoints on EVAL", "production_acceptance":"NOT_GRANTED; requires real local acceptance and task-compatible evidence", "leakage_limits":"same publisher exposed source, unknown physical/campaign/time/raw lineage PARTIAL; no blind/cross-domain/attack-intent claim"},
+    "resources":{"CPU_percent_one_core":20,"RAM_cap_GiB":8,"reserve_GiB":4,"warning_C":85,"throttle_C":90,"strong_C":93,"requested_emergency_C":96},
+    "training_examples": null,
+    "dataset_fingerprint": null,
+    "execution": "BLOCKED until completed derivative generates fingerprint-bound exact-count final-training-config.json and user authorizes launch",
+    "promotion": false
+  },
+  "training_authorized_this_milestone": false,
+  "sealed_access": false,
+  "live_model_change": false
+}
