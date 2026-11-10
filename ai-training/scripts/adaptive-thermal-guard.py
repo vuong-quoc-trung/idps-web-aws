@@ -14,6 +14,7 @@ import psutil
 
 from idps_ai.common import PipelineError, atomic_json, canonical_bytes
 from idps_ai.training.adaptive_thermal import SensorReader, ThermalMachine
+from idps_ai.training.heartbeat import HeartbeatMonitor
 
 
 def ctl(*items, check=True):
@@ -90,8 +91,11 @@ class CgroupControl:
 
 def heartbeat_healthy(path, now=None):
     try:
-        age = (time.time() if now is None else now) - Path(path).stat().st_mtime
-        return 0 <= age <= 3
+        observed = Path(path).stat().st_mtime
+        current = time.time() if now is None else now
+        age = current - observed
+        # Legacy filesystem API: bounded50ms skew, never arbitrary future dates.
+        return -0.05 <= age <= 3
     except OSError:
         return False
 
@@ -128,6 +132,8 @@ def watch(attempt, unit, probe=False):
         cooldown=policy["cooldown_seconds"],
         cooling_timeout=policy["maximum_cooldown_seconds"],
     )
+    supervisor_pid = json.loads((attempt / "services.json").read_text())["supervisor_pid"]
+    heartbeat = HeartbeatMonitor(attempt / "supervisor-heartbeat.json", supervisor_pid)
     control = CgroupControl(unit)
     control.quota_set(20)
     started = time.monotonic()
@@ -190,10 +196,11 @@ def watch(attempt, unit, probe=False):
                         raise PipelineError("Worker OOM detected")
                     last_resource = now
                     swap_old = swap
+                health = heartbeat.check()
                 result = machine.update(
                     now,
                     temp,
-                    supervisor_healthy=heartbeat_healthy(attempt / "supervisor.heartbeat"),
+                    supervisor_healthy=health["healthy"],
                     memory_pressure=pressure,
                     hardware_emergency=sample["hardware_emergency"],
                 )
@@ -213,6 +220,7 @@ def watch(attempt, unit, probe=False):
                             "state": terminal,
                             "sample": sample,
                             "policy": result,
+                            "supervisor_health": health,
                             "time": time.time(),
                         },
                     )
@@ -264,6 +272,7 @@ def watch(attempt, unit, probe=False):
                     "state": result["state"],
                     "time": time.time(),
                     "last_heartbeat": time.time(),
+                    "heartbeat_monotonic_ns": time.monotonic_ns(),
                     "unit": unit,
                     "controller_pid": os.getpid(),
                     "CPU_quota_percent_one_core": control.quota,
@@ -273,6 +282,7 @@ def watch(attempt, unit, probe=False):
                     "effective_emergency_C": machine.emergency,
                     "sample": sample,
                     "policy": result,
+                    "supervisor_health": health,
                     "resources": metrics,
                     "samples": samples,
                     "active_average_C": active_area / active_seconds if active_seconds else None,

@@ -16,10 +16,12 @@ from pathlib import Path
 from idps_ai.common import PipelineError, atomic_json, digest, file_sha256
 from idps_ai.training.adaptive_thermal import SensorReader, hardware_snapshot
 from idps_ai.training.checkpoint import RunLock
+from idps_ai.training.heartbeat import SupervisorHeartbeat
 
 REPO = Path(__file__).resolve().parents[2]
 ORIGINAL = Path(__file__).with_name("student-data-pipeline.py")
 GUARD = Path(__file__).with_name("adaptive-thermal-guard.py")
+FINALIZE = Path(__file__).with_name("student-finalize.py")
 
 
 def load(path):
@@ -65,14 +67,17 @@ def code_binding():
         for p in [
             Path(__file__),
             GUARD,
+            FINALIZE,
             REPO / "ai-training/src/idps_ai/training/adaptive_thermal.py",
+            REPO / "ai-training/src/idps_ai/training/heartbeat.py",
+            REPO / "ai-training/src/idps_ai/data/resumable_near.py",
         ]
     }
 
 
 def initialize(root, attempt, preflight, preflight_proof=None):
     assert not attempt.exists(), "Never overwrite an attempt"
-    assert cursor(root / "materialized") == 23040
+    assert cursor(root / "materialized") == 100000
     assert load(root / "plan.json")["candidate_positions"] == 100000
     hardware = hardware_snapshot()
     first = SensorReader(hardware).read(time.monotonic())
@@ -91,13 +96,17 @@ def initialize(root, attempt, preflight, preflight_proof=None):
         if (root / name).exists():
             shutil.copyfile(root / name, attempt / "history" / name)
     atomic_json(attempt / "hardware.json", hardware)
+    if (root / "materialized/near-progress.json").exists():
+        shutil.copyfile(
+            root / "materialized/near-progress.json", attempt / "history/legacy-near-progress.json"
+        )
     plan = {
-        "version": "student-adaptive-recovery-v1",
+        "version": "student-finalization-recovery-v2",
         "original_run_id": root.name,
         "attempt_id": attempt.name,
         "original_plan_fingerprint": load(root / "plan.json")["fingerprint"],
         "original_plan_sha256": file_sha256(root / "plan.json"),
-        "resume_cursor": 23040,
+        "resume_cursor": 100000,
         "preflight": preflight,
         "preflight_proof": str(preflight_proof) if preflight_proof else None,
         "code_hashes": code_binding(),
@@ -112,8 +121,10 @@ def initialize(root, attempt, preflight, preflight_proof=None):
         "effective_emergency_C": hardware["effective_emergency_C"],
         "cooldown_seconds": 15,
         "maximum_cooldown_seconds": 300,
-        "runtime_seconds": 120 if preflight else 10800,
+        "runtime_seconds": 180 if preflight else 10800,
         "model_training": "NOT_STARTED",
+        "source_ingestion": "DISABLED; rebuild from committed normalized metadata and immutable feature copies",
+        "legacy_near_cursor": "NOT_RESUMABLE; no accumulator; new audit begins at0 exactly once",
     }
     plan["fingerprint"] = digest(plan)
     atomic_json(attempt / "recovery-plan.json", plan)
@@ -236,8 +247,21 @@ def worker(root, attempt):
             atomic_json(attempt / "integrity.json", checked)
             if plan["preflight"]:
                 hb.write(phase="PREFLIGHT_READ_ONLY")
-                # Real bounded I/O and hashing; never deliberately heat the processor.
-                until = time.monotonic() + 12
+                subprocess.run(
+                    [
+                        sys.executable,
+                        str(FINALIZE),
+                        "--root",
+                        str(root),
+                        "--attempt",
+                        str(attempt),
+                        "--action",
+                        "benchmark",
+                    ],
+                    check=True,
+                )
+                # Keep the actual controller probe bounded and unheated.
+                until = time.monotonic() + 3
                 while time.monotonic() < until:
                     for name in list(checked["shard_hashes"])[:3]:
                         assert (
@@ -250,28 +274,18 @@ def worker(root, attempt):
                     {
                         "state": "COMPLETED",
                         "preflight": True,
-                        "cursor_unchanged": cursor(root / "materialized") == 23040,
+                        "cursor_unchanged": cursor(root / "materialized") == 100000,
                     },
                 )
             else:
-                command = [sys.executable, str(ORIGINAL), "--root", str(root)]
+                command = [sys.executable, str(FINALIZE), "--root", str(root)]
+                assert cursor(root / "materialized") == 100000
                 for name in ["materialized", "rebuild"]:
                     output = root / name
-                    for stop in pending_boundaries(cursor(output)):
-                        hb.write(
-                            phase="INGEST_" + name, resume_cursor=cursor(output), planned_rows=stop
-                        )
+                    if name == "rebuild":
+                        hb.write(phase="REBUILD_DERIVATIVE_NO_SOURCE_INGESTION")
                         subprocess.run(
-                            [
-                                *command,
-                                "--action",
-                                "ingest",
-                                "--output",
-                                str(output),
-                                "--stop",
-                                str(stop),
-                            ],
-                            check=True,
+                            [*command, "--action", "clone", "--output", str(output)], check=True
                         )
                     hb.write(phase="FINALIZE_" + name)
                     subprocess.run(
@@ -299,10 +313,11 @@ def worker(root, attempt):
                     "attempt_id": attempt.name,
                     "summary": a,
                     "original_plan_fingerprint": plan["original_plan_fingerprint"],
-                    "resume_from": 23040,
+                    "resume_from": 100000,
                     "old_shards_unchanged": True,
                     "actual_cross_process_resume": True,
                     "deterministic_rebuild": True,
+                    "rebuild_scope": "normalized metadata, exact graph, independently counted near pairs, finalized ledgers and bytecopied features; raw-source feature extraction NOT repeated",
                     "feature_shards_byte_identical": True,
                     "same_candidate_positions": 100000,
                     "new_source_positions": 0,
@@ -382,6 +397,7 @@ def supervise(root, attempt):
     last_status = 0
     last_sample = None
     completion_wait = None
+    supervisor_heartbeat = None
     with RunLock(root.parent / "student-recovery-launcher"):
         try:
             vm = __import__("psutil").virtual_memory()
@@ -394,7 +410,8 @@ def supervise(root, attempt):
             )
             if cap < 1024**3:
                 raise PipelineError("Shared RAM reserve unavailable")
-            (attempt / "supervisor.heartbeat").touch()
+            supervisor_heartbeat = SupervisorHeartbeat(attempt / "supervisor-heartbeat.json")
+            supervisor_heartbeat.start_writer()
             start_service(
                 workunit,
                 [
@@ -440,7 +457,7 @@ def supervise(root, attempt):
             )
             guard_started = True
             while True:
-                (attempt / "supervisor.heartbeat").touch()
+                supervisor_heartbeat.pulse()
                 now = time.monotonic()
                 if now - began > plan["runtime_seconds"]:
                     raise PipelineError("Bounded attempt deadline exceeded")
@@ -458,7 +475,11 @@ def supervise(root, attempt):
                 )
                 if thermal:
                     last_sample = thermal
-                    if time.time() - thermal["last_heartbeat"] > 2:
+                    if (
+                        not -0.001
+                        <= (time.monotonic_ns() - thermal["heartbeat_monotonic_ns"]) / 1e9
+                        <= 2
+                    ):
                         terminal = "WATCHDOG_FAILURE"
                         raise PipelineError("Independent controller heartbeat stale")
                     if (
@@ -508,7 +529,7 @@ def supervise(root, attempt):
                         "last_heartbeat": time.time(),
                         "thermal_state": thermal["state"] if thermal else "STARTING_GUARD",
                         "thermal": thermal,
-                        "resume_cursor": 23040,
+                        "resume_cursor": 100000,
                         "current_cursor": status_cursor(root / "materialized"),
                     }
                     atomic_json(attempt / "status.json", value)
@@ -530,6 +551,8 @@ def supervise(root, attempt):
             )
             raise
         finally:
+            if supervisor_heartbeat is not None:
+                supervisor_heartbeat.close()
             if terminal != "COMPLETED" and work_started:
                 try:
                     g.CgroupControl(workunit).stop()
@@ -544,7 +567,7 @@ def supervise(root, attempt):
                 "attempt_id": attempt.name,
                 "preflight": plan["preflight"],
                 "last_heartbeat": time.time(),
-                "resume_cursor": 23040,
+                "resume_cursor": 100000,
                 "current_cursor": status_cursor(root / "materialized"),
                 "last_thermal": last_sample,
                 "seconds": time.monotonic() - began,

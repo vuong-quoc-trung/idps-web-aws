@@ -1639,3 +1639,37 @@ verified100K/rebuild, not just a status label. Reviewed code/report are publishe
 before launch; live private status records whether background recovery is RUNNING.
 No training,500K expansion, sealed access or model/system change. Team bootstrap
 and inference model restore remain unchanged.
+
+## 100K reliability/finalization recovery — 2026-11-10
+
+[Focused recovery report](39_PIPELINE_RELIABILITY_RECOVERY.md),
+[machine evidence](../ai-training/reports/PIPELINE_RELIABILITY_RECOVERY_20261110.json).
+Attempt recovery-a1 stopped at54°C with supervisor-heartbeat loss after100K ingestion
+and30,272 old near-audit anchors. A timestamp-ordering race was reproduced; its
+historical causation remains unproven because the old decision omitted age/PID data.
+The new atomic monotonic heartbeat validates PID/start ticks, same boot, sequence
+and main-loop progress. The3s deadlines remain unchanged, with diagnostic reasons.
+
+The old audit cursor has no accumulator. New `near-resumable-v1` checkpoints save
+cursor+pair total+input/code/checksum bindings atomically. Exact identical-vector
+grouping removes repeated dot products while weighted counts retain all original
+pairs; coverage is not approximated.40 tests PASS, including actual abrupt child
+exit/resume equivalence. Preflight-a3 passed35.74s, peak70°C, all391 shards and100K
+coordinates intact. The4,096-row comparison produced54,910 pairs both ways;
+audit-only times3.031s versus1.786s exclude new cache construction.
+
+Same dataset/run, new attempt `recovery-a2`, new supervisor
+`idps-student-adaptive-recovery-a2.service`. No source ingestion is repeated.
+Finalization is followed by an independent normalized-metadata/graph/ledger rebuild
+and copied-feature/near-result checks. This is not a repeat of raw feature extraction.
+Original labels, source manifest/fingerprint,391 shards, SQLite data and history
+are preserved. New live audit progress is
+`materialized/near-resumable-v1/progress.json`; the old `near-progress.json` stays
+historical30,272. Use new attempt status/log/thermal/launch evidence, not old services.
+
+Reviewed code/aggregate docs are published before launch; actual status remains in
+private artifacts.20% one-core quota,<=8GiB/4GiB reserve and85/90/93/96°C adaptive
+policy remain active. Frozen models/thresholds, strict datasets/roles, all Web/system,
+Rules/Policy, releases and sealed samples remain unchanged. No training,500K, AWS,
+enforcement or promotion. After this dataset completes, user requests validation
+and training readiness separately. Team bootstrap/inference workflow is unchanged.
