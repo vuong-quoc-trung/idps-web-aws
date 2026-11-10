@@ -169,3 +169,20 @@ Khi CLI hỏi, chỉ gõ `DISABLED` sau khi đã chuẩn bị đúng trạng th�
 ### Trạng thái nghiệm thu
 
 Unit/integration tests dùng HTTP mock kiểm tra payload, CSRF/cookie, hai lớp xác nhận, workflow gate/run ID, timeout/Stop, status ngoài dự kiến và không rò secret. **Chưa chạy end-to-end Student Web thật:** còn cần tài khoản/fixture do người vận hành chuẩn bị, xác nhận contract đang deploy và đối chiếu dữ liệu trước/sau. Mock thành công không phải bằng chứng dữ liệu lab thật không đổi hoặc Defender đã tạo signal.
+
+## Repeat GET vượt quyền sau đăng nhập
+
+`--repeat 1..8` (mặc định1) chỉ nhân số GET của `student-users`, `student-students`, `staff-users`. UI có ô **Repeat GET vượt quyền**. Đăng nhập đúng một lần/run, giữ cookie hiện tại, gửi tuần tự rồi logout. IDOR, PUT fixture và 13 scenario ban đầu không bị nhân số request. Run có các GET này giới hạn rate hiệu lực tối đa2/s (nhập cao hơn được giới hạn về2); Repeat>1 cần rate≥0.2/s. Các run khác giữ giới hạn rate hiện có.
+
+Demo STUDENT lab:
+
+```bash
+python -m attack_simulator --target http://IP-DEFENDER \
+  --scenario student-users --auth-role STUDENT --auth-confirmed \
+  --repeat 8 --rate 2 --max-requests 13 --duration 120 \
+  --authorized --confirm-multiple --report reports/repeated-users.json
+```
+
+Tổng13 request: setup4 + probe8 + logout1. Nhiều scenario được chọn thì mỗi scenario GET vượt quyền dùng Repeat riêng, cộng chung budget. CLI/UI từ chối budget quá nhỏ. Request thực thi vẫn chịu duration/timeout/Stop và phần thời gian dự phòng logout. HTTP401 dừng ngay, không tự login lại; role mismatch không gửi probe. HTTP403/200 vẫn được ghi riêng từng lượt, không kết luận detector.
+
+Ở rate2/s, 8 probe cần khoảng3.5 giây cộng độ trễ response cuối nếu mỗi response nhanh hơn0.5s; với mạng lab bình thường nằm trong60s. Không bảo đảm60s khi mạng/upstream chậm hoặc session hết hạn; không tăng tốc hoặc vượt timeout để ép đạt. Dùng cấu hình demo trên để tránh duration quá ngắn. Bảng UI có cột lượt/bước và từng HTTP status, request ID, độ trễ, trạng thái. Người vận hành đối chiếu kết quả riêng tại Dashboard Defender; simulator không gọi Security API.

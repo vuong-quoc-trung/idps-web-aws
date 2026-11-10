@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from http.cookies import SimpleCookie
 from urllib.parse import urlencode
 from .http_client import Client
-from .authenticated import Session, AuthFailure, AUTH_SCENARIOS, WRITE_SCENARIOS, guarded_profile_payload
+from .authenticated import Session, AuthFailure, AUTH_SCENARIOS, WRITE_SCENARIOS, guarded_profile_payload, REPEATABLE
 from .fixture_gate import FixtureGate
 from .scenarios import CATALOG, request_spec
 
@@ -187,7 +187,8 @@ class Runner:
                     if 300 <= response.status < 400: raise AuthFailure('Nhận redirect; dừng và không theo redirect.')
                     continue
                 paths = ([f'/api/me/{self.config.object_type}/{i}' for i in self.config.object_ids]
-                         if sid == 'idor-get' else [AUTH_SCENARIOS[sid][1]])
+                         if sid == 'idor-get' else [AUTH_SCENARIOS[sid][1]] * (self.config.repeat if sid in REPEATABLE else 1))
+                current['planned_requests'] = len(paths)
                 for index, path in enumerate(paths):
                     if not session.headers(path).get('Cookie'): raise AuthFailure('Cookie không còn hợp lệ cho endpoint; dừng.')
                     response = request(s, 'GET', path, stage='probe', index=index+1)

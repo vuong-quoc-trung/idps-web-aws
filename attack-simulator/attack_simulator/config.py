@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 from .http_client import ValidationError, Target
 from .scenarios import CATALOG
-from .authenticated import AUTH_SCENARIOS
+from .authenticated import AUTH_SCENARIOS, REPEATABLE
 
 @dataclass
 class Config:
@@ -22,6 +22,7 @@ class Config:
     lab_username: str = ''
     max_requests: int = 60
     rate: float = 2
+    repeat: int = 1
     timeout: float = 5
     duration: float = 120
     allowlist: list = field(default_factory=list)
@@ -49,6 +50,14 @@ class Config:
             v = getattr(c, name)
             if type(v) not in (int, float) or not low <= v <= high or name == 'max_requests' and type(v) is not int:
                 raise ValidationError(f'{name} phải trong [{low}, {high}].')
+        if type(c.repeat) is not int or not 1 <= c.repeat <= 8:
+            raise ValidationError('Repeat phải là số nguyên 1–8.')
+        if c.repeat > 1 and not any(sid in REPEATABLE for sid in c.scenarios):
+            raise ValidationError('Repeat chỉ áp dụng ba scenario GET vượt quyền.')
+        if any(sid in REPEATABLE for sid in c.scenarios):
+            c.rate = min(c.rate, 2)
+            if c.repeat > 1 and c.rate < .2:
+                raise ValidationError('Repeat cần rate từ 0.2 đến 2 request/s để tránh kéo dài quá 60s.')
         auth = [sid for sid in c.scenarios if sid in AUTH_SCENARIOS]
         if c.auth_role not in ('', 'STUDENT', 'STAFF'):
             raise ValidationError('Chỉ hỗ trợ STUDENT hoặc STAFF.')
@@ -65,7 +74,7 @@ class Config:
             if c.duration < 2*c.timeout + 2/c.rate: raise ValidationError('Duration cần đủ thời gian dành riêng cho logout.')
         if 'workflow-abuse' in c.scenarios and c.scenarios[-1] != 'workflow-abuse':
             raise ValidationError('Workflow phải là scenario cuối vì có thể thu hồi phiên.')
-        planned = sum(len(c.object_ids) if sid == 'idor-get' else CATALOG[sid].count + int(CATALOG[sid].fixture) for sid in c.scenarios) + (5 if auth else 0)
+        planned = sum(len(c.object_ids) if sid == 'idor-get' else c.repeat if sid in REPEATABLE else CATALOG[sid].count + int(CATALOG[sid].fixture) for sid in c.scenarios) + (5 if auth else 0)
         if planned > 1 and not c.confirm_multiple:
             raise ValidationError('Nhiều request cần confirm_multiple rõ ràng.')
         if c.profile not in ('safe', 'behavior') or any(CATALOG[s].profile == 'behavior' for s in c.scenarios) and c.profile != 'behavior':

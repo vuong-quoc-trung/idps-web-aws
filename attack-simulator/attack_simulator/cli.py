@@ -30,6 +30,7 @@ def main(argv=None):
     p.add_argument('--object-ids', type=lambda v: [int(x) for x in v.split(',')])
     p.add_argument('--profile', choices=['safe', 'behavior'])
     p.add_argument('--max-requests', type=int)
+    p.add_argument('--repeat', type=int, default=None, help='1–8 GET mỗi scenario student-users/student-students/staff-users; mặc định1, rate tối đa2/s')
     for name in ('rate', 'timeout', 'duration'): p.add_argument('--'+name, type=float)
     p.add_argument('--report', default='reports/latest.json')
     p.add_argument('--web', action='store_true')

@@ -7,6 +7,8 @@ from http.cookies import SimpleCookie, CookieError
 from urllib.parse import urlencode
 from .http_client import ValidationError
 
+REPEATABLE = frozenset(('student-users', 'student-students', 'staff-users'))
+
 AUTH_SCENARIOS = {
     'student-users': ('STUDENT', '/api/users'),
     'student-students': ('STUDENT', '/api/students'),
