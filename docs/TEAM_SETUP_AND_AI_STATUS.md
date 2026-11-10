@@ -1712,3 +1712,48 @@ Baselines/thresholds/metrics are frozen in config; no attack-family/independent
 attack-intent claims or model promotion. Source construction counters stay frozen;
 actual training consumption is tracked in the new run. No500K/AWS/enforcement or
 Web/system/Rules/Policy/frozen inference change. Team bootstrap/model restore unchanged.
+
+## First publisher pilot completed and evaluated — 2026-11-10
+
+[Completion/evaluation report](41_STUDENT_PUBLISHER_EVALUATION.md),
+[aggregate metrics](../ai-training/reports/STUDENT_PUBLISHER_EVALUATION_20261110.json),
+[manual evaluator](../ai-training/scripts/evaluate-student-publisher.py).
+Run `student-publisher-anomaly-20261110-r1` completed420/420 updates,10 epochs,
+2,667 canonical TRAIN views/26,670 presentations. Fresh588→64×4→8 MLP50,696params;
+final checkpoint `model/checkpoints/step-000000000420-4cff462d0af0`, manifest
+`def83fbbabe7bc69464a9454d3c8a3c5daf56b3e08cbb2d74b2cd9b405d69c6d`.
+Weights/Adam/scheduler/RNG/sampler/config/data bindings pass; actual preflight exact
+resume evidence is retained. No new training was performed for evaluation.
+
+The32-record difference is fully accounted for:3,783 accepted SILVER records map
+to3,751 canonical588 views, with32 same-label aliases (TRAIN22/CAL9/EVAL1).
+They remain in the source ledger and do not receive extra gradient weight.
+Dataset/split roles and fingerprint977dbdff18dfb5c9aa1ced18e42abfd0080b8f994b465d3eeef0c69325548e9c are unchanged.
+
+CAL-only balanced-accuracy threshold0.3641684055328369, strict `>`: EVAL520 views,
+precision96.34%, recall94.05%, F195.18%, AP0.98881, FPR6.52%, FP12/FN20.
+Nominal Wilson95% FPR3.77–11.05%; no<=1% claim. Fixed0.5 gives recall90.77%,
+FPR3.80%. Same-task majority and window/body controls are substantially weaker.
+Both publisher-normal POSTs are false positives (2/2), too few for a stable POST
+estimate. All data is from WAF; source/campaign lineage remains PARTIAL and the
+holdout was exposed for curation. SILVER publisher anomaly is not verified attack
+intent. No SQLi/XSS/command recall or direct Frozenv2 improvement is established.
+Independent human review remains PENDING; no Rule overlap is inferred.
+
+Training peak50°C,20% of one-core quota, sampled cgroup memory31.13MiB, no OOM/swap
+or pauses. Evaluation completed under the independent adaptive guardian, peak56°C.
+The85/90/93/96°C policy and lower hardware limits remain. Frozen model payloads and
+187 nonsealed small pins are unchanged. Research checkpoints/data/scores stay local;
+the original training-time status still says evaluation NOT_RUN, while new private
+`evaluation-v1/metrics.json` records this separately authorized evaluation.
+
+**Next recommendation supersedes the earlier automatic500K direction:** choose
+one bounded role-aware requalification of the existing100K legacy-TRAIN-only
+exclusions into a new derivative, preserving every held-out protection/conflict/
+privacy/dedup constraint.96,115 positions in blocked components dominate the losses
+behind3.783% accepted yield.
+27,235 positions are only diagnostic requalification candidates, not newly admitted
+examples.500K is deferred;2M usable capacity is not established. No requalification,
+new ingestion, training, promotion, AWS, enforcement or model/system change starts
+without the next user request. Team clone/bootstrap/restore/local inference remains
+unchanged and does not require this private research corpus.

@@ -1,0 +1,4407 @@
+{
+  "accounting": {
+    "accepted_records": 3783,
+    "alias_classes": {
+      "0": 20,
+      "1": 12
+    },
+    "alias_disposition": "preserved source records sharing exact588view with canonical representative; notlost/quarantined/reserved; never extra gradientweight",
+    "aliases": 32,
+    "canonical_counts": {
+      "CALIBRATION": {
+        "anomalous": 358,
+        "examples": 564,
+        "groups": 523,
+        "normal": 206
+      },
+      "EVALUATION": {
+        "anomalous": 336,
+        "examples": 520,
+        "groups": 484,
+        "normal": 184
+      },
+      "TRAIN": {
+        "anomalous": 1673,
+        "examples": 2667,
+        "groups": 2497,
+        "normal": 994
+      }
+    },
+    "canonical_views": 3751,
+    "retained_records_by_role": {
+      "CALIBRATION": 573,
+      "EVALUATION": 521,
+      "TRAIN": 2689
+    }
+  },
+  "branch": "feature/ai-idps-shadow-integration",
+  "capacity": {
+    "2M_training_eligible_capacity": "NOT_ESTABLISHED",
+    "500K_readiness": "DEFERRED_PENDING_ROLE_AWARE_YIELD_QUALIFICATION",
+    "basis": "hash-bound historical inventory in AI_IDPS_2M_DATA_SCALING_READINESS_20261109.json, not a new all-row census",
+    "conditional_2M_canonical_70pct_train_10epochs_batch64_updates": 218750,
+    "cross_source_additive_capacity_verified": false,
+    "exact_representation_shortfall_to_2M_at_least": 387983,
+    "feature_float32_floor_2M_decimal_bytes": 4704000000,
+    "historical_count_discrepancy_rows": 1,
+    "historical_count_discrepancy_status": "NOT_RESOLVED_BY_NEW_FULL_CENSUS_THIS_TURN",
+    "openappsec_existing_supervised_fit_restriction_unchanged": true,
+    "openappsec_nonreserved_rows": 811129,
+    "openappsec_retained_signatures": 756548,
+    "raw_positions_shortfall_to_2M": 75539,
+    "waf_conflicting_representations": 192,
+    "waf_duplicate_extras": 312443,
+    "waf_exact_representations_before_exclusions": 1612017,
+    "waf_rows": 1924461
+  },
+  "checkpoint_manifest_sha256": "def83fbbabe7bc69464a9454d3c8a3c5daf56b3e08cbb2d74b2cd9b405d69c6d",
+  "checkpoint_path": "ai-training/.artifacts/student_publisher_pilot_20261110/student-publisher-anomaly-20261110-r1/model/checkpoints/step-000000000420-4cff462d0af0",
+  "checks": {
+    "relevant_tests_passed_this_turn": 37,
+    "ruff_evaluator_metric_tests": "PASS",
+    "training_updates_during_evaluation": 0
+  },
+  "data_yield": {
+    "accepted_publisher_classes": {
+      "0": 1404,
+      "1": 2379
+    },
+    "exclusive_waterfall": {
+      "ACCEPTED_SILVER": 3783,
+      "EXACT_DUPLICATE_OUTSIDE_BLOCKED_COMPONENT": 29,
+      "PROTECTED_OR_LABEL_CONFLICT_COMPONENT": 96115,
+      "REFERENCE_ONLY_NO588_NOSEMANTIC_LABEL": 73
+    },
+    "legacy_protection_diagnostic": {
+      "interpretation": "potential over-conservatism only, NOT newly admissible counts; protectedviews/routes, incompatiblelegacynear, exactconflicts/rawlineage still require qualification",
+      "legacy_TRAIN_only_template_keys_vs_all_known_CAL_DEV": 71415,
+      "policy_unchanged": true,
+      "quarantined_matching": 66153,
+      "quarantined_matching_without_direct_current_near": 30557,
+      "quarantined_matching_without_known_heldout_group_or_current_near_anywhere_in_component": 27235,
+      "source_of_conservatism": "student-data-pipeline.protected uses all_protected=True for both legacycorpora, including their TRAIN",
+      "source_rows_matching": 66153
+    },
+    "mixed_label_representation_keys": 4,
+    "mixed_label_view_keys": 206,
+    "overlapping_reasons": {
+      "EXACT_REPRESENTATION_DUPLICATE": 16292,
+      "MODEL_FEATURE_UNAVAILABLE": 73,
+      "NO_COMPLETE_588_SOURCE_INPUTS": 73,
+      "PROTECTED_EXISTING_ROLE": 94948,
+      "PROTECTED_EXISTING_TEMPLATE_VIEW_OR_ROUTE": 75719,
+      "PROTECTED_NEAR_COMMON_CONTRACT": 61734,
+      "PROTECTED_OR_CONFLICT_COMPONENT": 96115,
+      "REFERENCE_ONLY_EXPOSED": 73
+    }
+  },
+  "dataset_fingerprint": "977dbdff18dfb5c9aa1ced18e42abfd0080b8f994b465d3eeef0c69325548e9c",
+  "decision": {
+    "attack_intent_improvement": "NOT_ESTABLISHED",
+    "diagnostic_upper_candidate_count_not_admission": 27235,
+    "next_milestone": "A_IMPROVE_DATA_YIELD_WITHOUT_WEAKENING_QUALITY",
+    "one_task": "Bounded role-aware requalification of existing100K legacy-TRAIN-only exclusions in a new derivative; preserve all CAL/DEV/evaluation/sealed protections, conflicts, exact/near dedup and old evidence; no new ingestion or training.",
+    "promotion": false,
+    "research_result": "PUBLISHER_ANOMALY_SIGNAL_DEMONSTRATED_ON_INTERNAL_GROUPED_HOLDOUT",
+    "stop_condition": "Complete one per-reason provenance-bound new derivative or quantified unresolved quarantine; report recovered eligible canonical views and remaining blockers; no automatic scaling/training."
+  },
+  "elapsed_seconds": 27.40087530100209,
+  "evaluation_resources": {
+    "effective_emergency_C": 96.0,
+    "independent_systemd_service": true,
+    "peak_temperature_C": 56.0,
+    "samples": 316,
+    "seconds": 35.67875133000052,
+    "state": "COMPLETED"
+  },
+  "evaluation_state": "COMPLETED",
+  "evaluator_code_sha256": {
+    "ai-training/scripts/evaluate-student-publisher.py": "540dab3b8998b5848efab00b1745abd3efeedf044a73a092fbddb10be16c3b19",
+    "ai-training/src/idps_ai/training/publisher_evaluation.py": "0ccea8fdedbd38e77422e92fa28b788495c44be15ad16054c21274f7d20435ed"
+  },
+  "frozen_v2_numerical_comparison": "NOT_RUN_optionaldiagnosticomitted;notindependentunseensourcebaseline",
+  "group_weighted_metrics": {
+    "CALIBRATION": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9382907306997159,
+          "FPR": 0.03992901508429459,
+          "average_precision": 0.9852581632827118,
+          "groups": 523,
+          "precision": 0.9758324382384532,
+          "recall": 0.9035305818000995,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.9227931488801056,
+          "FPR": 0.0292812777284827,
+          "average_precision": 0.9852581632827118,
+          "groups": 523,
+          "precision": 0.9815022421524665,
+          "recall": 0.8707110890104428,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FPR": 0.0,
+          "average_precision": 0.6408540471637987,
+          "groups": 523,
+          "precision": null,
+          "recall": 0.0,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7811225480675859,
+          "FPR": 1.0,
+          "average_precision": 0.6408540471637987,
+          "groups": 523,
+          "precision": 0.6408540471637986,
+          "recall": 1.0,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7765190525231719,
+          "FPR": 0.8509316770186335,
+          "average_precision": 0.666511962454892,
+          "groups": 523,
+          "precision": 0.6627988748241912,
+          "recall": 0.9373446046742914,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7765190525231719,
+          "FPR": 0.8509316770186335,
+          "average_precision": 0.666511962454892,
+          "groups": 523,
+          "precision": 0.6627988748241912,
+          "recall": 0.9373446046742914,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7765190525231719,
+          "FPR": 0.8509316770186335,
+          "average_precision": 0.6614239129717748,
+          "groups": 523,
+          "precision": 0.6627988748241912,
+          "recall": 0.9373446046742914,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7765190525231719,
+          "FPR": 0.8509316770186335,
+          "average_precision": 0.6614239129717748,
+          "groups": 523,
+          "precision": 0.6627988748241912,
+          "recall": 0.9373446046742914,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      }
+    },
+    "EVALUATION": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9489327208862469,
+          "FPR": 0.06983511154219206,
+          "average_precision": 0.987852789861454,
+          "groups": 484,
+          "precision": 0.9606126914660832,
+          "recall": 0.9375333689268553,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.9384700665188471,
+          "FPR": 0.04073714839961203,
+          "average_precision": 0.987852789861454,
+          "groups": 484,
+          "precision": 0.975792507204611,
+          "recall": 0.9038974906567004,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FPR": 0.0,
+          "average_precision": 0.6449724517906337,
+          "groups": 484,
+          "precision": null,
+          "recall": 0.0,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7841741678877957,
+          "FPR": 1.0,
+          "average_precision": 0.6449724517906337,
+          "groups": 484,
+          "precision": 0.6449724517906336,
+          "recall": 1.0,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7549433459231281,
+          "FPR": 0.9010669253152279,
+          "average_precision": 0.6514812843441339,
+          "groups": 484,
+          "precision": 0.6464992389649923,
+          "recall": 0.9071009076348104,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7549433459231281,
+          "FPR": 0.9010669253152279,
+          "average_precision": 0.6514812843441339,
+          "groups": 484,
+          "precision": 0.6464992389649923,
+          "recall": 0.9071009076348104,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7549433459231281,
+          "FPR": 0.9010669253152279,
+          "average_precision": 0.6463574018222598,
+          "groups": 484,
+          "precision": 0.6464992389649923,
+          "recall": 0.9071009076348104,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7549433459231281,
+          "FPR": 0.9010669253152279,
+          "average_precision": 0.6463574018222598,
+          "groups": 484,
+          "precision": 0.6464992389649923,
+          "recall": 0.9071009076348104,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      }
+    },
+    "TRAIN": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9530850774667028,
+          "FPR": 0.04085289374664038,
+          "average_precision": 0.9917532735778326,
+          "groups": 2497,
+          "precision": 0.9746497665110073,
+          "recall": 0.9324539942559302,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.9455951394642365,
+          "FPR": 0.025801827629457083,
+          "average_precision": 0.9917532735778326,
+          "groups": 2497,
+          "precision": 0.9834558823529411,
+          "recall": 0.9105414317625785,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FPR": 0.0,
+          "average_precision": 0.6274863169136295,
+          "groups": 2497,
+          "precision": null,
+          "recall": 0.0,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7711110199729319,
+          "FPR": 1.0,
+          "average_precision": 0.6274863169136295,
+          "groups": 2497,
+          "precision": 0.6274863169136297,
+          "recall": 1.0,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7608667556972386,
+          "FPR": 0.8924923848772621,
+          "average_precision": 0.6495783299702135,
+          "groups": 2497,
+          "precision": 0.6393715609614827,
+          "recall": 0.9393681523242208,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7608667556972386,
+          "FPR": 0.8924923848772621,
+          "average_precision": 0.6495783299702135,
+          "groups": 2497,
+          "precision": 0.6393715609614827,
+          "recall": 0.9393681523242208,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7608667556972386,
+          "FPR": 0.8924923848772621,
+          "average_precision": 0.6386509366547837,
+          "groups": 2497,
+          "precision": 0.6393715609614827,
+          "recall": 0.9393681523242208,
+          "weighting": "inverse size per recorded exact+near component"
+        },
+        "fixed0.5": {
+          "F1": 0.7608667556972386,
+          "FPR": 0.8924923848772621,
+          "average_precision": 0.6386509366547837,
+          "groups": 2497,
+          "precision": 0.6393715609614827,
+          "recall": 0.9393681523242208,
+          "weighting": "inverse size per recorded exact+near component"
+        }
+      }
+    }
+  },
+  "limits": [
+    "SILVERpublisherlabels, notverifiedattackintent",
+    "internalexposedgroupedholdout,notindependentcross-domain",
+    "unknowncampaign/time/globalrawlineagePARTIAL",
+    "selectedtwo-windowpoolnotdeploymentprevalence",
+    "teacherpretrainingoverlap2912sourceeligible,butcandidatefresh",
+    "familygroundtruthunavailable",
+    "WilsonCIisnominaliid;groupdependence/labelnoiseuncovered"
+  ],
+  "metrics": {
+    "CALIBRATION": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9391304347826087,
+          "FN": 34,
+          "FP": 8,
+          "FPR": 0.038834951456310676,
+          "TN": 198,
+          "TP": 324,
+          "accuracy": 0.925531914893617,
+          "anomalous": 358,
+          "average_precision": 0.9849639727516938,
+          "balanced_accuracy": 0.9330964907522916,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              198,
+              8
+            ],
+            [
+              34,
+              324
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.01980736956739712,
+              0.07474715236646107
+            ],
+            "precision": [
+              0.9531796733537332,
+              0.9877404891230279
+            ],
+            "recall": [
+              0.8702157693755943,
+              0.931240207905621
+            ]
+          },
+          "normal": 206,
+          "precision": 0.9759036144578314,
+          "recall": 0.9050279329608939,
+          "rows": 564,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.9230769230769231,
+          "FN": 46,
+          "FP": 6,
+          "FPR": 0.02912621359223301,
+          "TN": 200,
+          "TP": 312,
+          "accuracy": 0.9078014184397163,
+          "anomalous": 358,
+          "average_precision": 0.9849639727516938,
+          "balanced_accuracy": 0.9211910831480176,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              200,
+              6
+            ],
+            [
+              46,
+              312
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.013415748908940033,
+              0.062076762960367814
+            ],
+            "precision": [
+              0.9594540071118753,
+              0.9913246810076073
+            ],
+            "recall": [
+              0.8328598543340606,
+              0.9022687317238816
+            ]
+          },
+          "normal": 206,
+          "precision": 0.9811320754716981,
+          "recall": 0.8715083798882681,
+          "rows": 564,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FN": 358,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 206,
+          "TP": 0,
+          "accuracy": 0.36524822695035464,
+          "anomalous": 358,
+          "average_precision": 0.6347517730496454,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              206,
+              0
+            ],
+            [
+              358,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.018306481675656787
+            ],
+            "precision": null,
+            "recall": [
+              0.0,
+              0.010616414252844672
+            ]
+          },
+          "normal": 206,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 564,
+          "threshold": 0.6272965879265092,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7765726681127982,
+          "FN": 0,
+          "FP": 206,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 358,
+          "accuracy": 0.6347517730496454,
+          "anomalous": 358,
+          "average_precision": 0.6347517730496454,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              206
+            ],
+            [
+              0,
+              358
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.981693518324343,
+              0.9999999999999999
+            ],
+            "precision": [
+              0.5942264585068892,
+              0.673453890715369
+            ],
+            "recall": [
+              0.9893835857471553,
+              1.0
+            ]
+          },
+          "normal": 206,
+          "precision": 0.6347517730496454,
+          "recall": 1.0,
+          "rows": 564,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.771889400921659,
+          "FN": 23,
+          "FP": 175,
+          "FPR": 0.8495145631067961,
+          "TN": 31,
+          "TP": 335,
+          "accuracy": 0.648936170212766,
+          "anomalous": 358,
+          "average_precision": 0.6603715538277595,
+          "balanced_accuracy": 0.543119813418669,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              175
+            ],
+            [
+              23,
+              335
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.794318311942356,
+              0.8919140503814567
+            ],
+            "precision": [
+              0.6146240907774398,
+              0.6967559998193997
+            ],
+            "recall": [
+              0.9054445489565967,
+              0.9568115369459521
+            ]
+          },
+          "normal": 206,
+          "precision": 0.6568627450980392,
+          "recall": 0.9357541899441341,
+          "rows": 564,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.771889400921659,
+          "FN": 23,
+          "FP": 175,
+          "FPR": 0.8495145631067961,
+          "TN": 31,
+          "TP": 335,
+          "accuracy": 0.648936170212766,
+          "anomalous": 358,
+          "average_precision": 0.6603715538277595,
+          "balanced_accuracy": 0.543119813418669,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              175
+            ],
+            [
+              23,
+              335
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.794318311942356,
+              0.8919140503814567
+            ],
+            "precision": [
+              0.6146240907774398,
+              0.6967559998193997
+            ],
+            "recall": [
+              0.9054445489565967,
+              0.9568115369459521
+            ]
+          },
+          "normal": 206,
+          "precision": 0.6568627450980392,
+          "recall": 0.9357541899441341,
+          "rows": 564,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.771889400921659,
+          "FN": 23,
+          "FP": 175,
+          "FPR": 0.8495145631067961,
+          "TN": 31,
+          "TP": 335,
+          "accuracy": 0.648936170212766,
+          "anomalous": 358,
+          "average_precision": 0.6554422077876675,
+          "balanced_accuracy": 0.543119813418669,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              175
+            ],
+            [
+              23,
+              335
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.794318311942356,
+              0.8919140503814567
+            ],
+            "precision": [
+              0.6146240907774398,
+              0.6967559998193997
+            ],
+            "recall": [
+              0.9054445489565967,
+              0.9568115369459521
+            ]
+          },
+          "normal": 206,
+          "precision": 0.6568627450980392,
+          "recall": 0.9357541899441341,
+          "rows": 564,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.771889400921659,
+          "FN": 23,
+          "FP": 175,
+          "FPR": 0.8495145631067961,
+          "TN": 31,
+          "TP": 335,
+          "accuracy": 0.648936170212766,
+          "anomalous": 358,
+          "average_precision": 0.6554422077876675,
+          "balanced_accuracy": 0.543119813418669,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              175
+            ],
+            [
+              23,
+              335
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.794318311942356,
+              0.8919140503814567
+            ],
+            "precision": [
+              0.6146240907774398,
+              0.6967559998193997
+            ],
+            "recall": [
+              0.9054445489565967,
+              0.9568115369459521
+            ]
+          },
+          "normal": 206,
+          "precision": 0.6568627450980392,
+          "recall": 0.9357541899441341,
+          "rows": 564,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    },
+    "EVALUATION": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9518072289156626,
+          "FN": 20,
+          "FP": 12,
+          "FPR": 0.06521739130434782,
+          "TN": 172,
+          "TP": 316,
+          "accuracy": 0.9384615384615385,
+          "anomalous": 336,
+          "average_precision": 0.9888143114147022,
+          "balanced_accuracy": 0.9376293995859213,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              172,
+              12
+            ],
+            [
+              20,
+              316
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.03769728667054057,
+              0.11052057213170849
+            ],
+            "precision": [
+              0.9371502246627966,
+              0.9789498945940384
+            ],
+            "recall": [
+              0.909853893149413,
+              0.9611404847206938
+            ]
+          },
+          "normal": 184,
+          "precision": 0.9634146341463414,
+          "recall": 0.9404761904761905,
+          "rows": 520,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.941358024691358,
+          "FN": 31,
+          "FP": 7,
+          "FPR": 0.03804347826086957,
+          "TN": 177,
+          "TP": 305,
+          "accuracy": 0.926923076923077,
+          "anomalous": 336,
+          "average_precision": 0.9888143114147022,
+          "balanced_accuracy": 0.9348473084886129,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              177,
+              7
+            ],
+            [
+              31,
+              305
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0185483447107941,
+              0.07643313026659554
+            ],
+            "precision": [
+              0.9544208873065139,
+              0.9890904589008158
+            ],
+            "recall": [
+              0.8720177184697728,
+              0.934240590774853
+            ]
+          },
+          "normal": 184,
+          "precision": 0.9775641025641025,
+          "recall": 0.9077380952380952,
+          "rows": 520,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FN": 336,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 184,
+          "TP": 0,
+          "accuracy": 0.35384615384615387,
+          "anomalous": 336,
+          "average_precision": 0.6461538461538462,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              184,
+              0
+            ],
+            [
+              336,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.02045053762258643
+            ],
+            "precision": null,
+            "recall": [
+              0.0,
+              0.011303679174473356
+            ]
+          },
+          "normal": 184,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 520,
+          "threshold": 0.6272965879265092,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7850467289719626,
+          "FN": 0,
+          "FP": 184,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 336,
+          "accuracy": 0.6461538461538462,
+          "anomalous": 336,
+          "average_precision": 0.6461538461538462,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              184
+            ],
+            [
+              0,
+              336
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.9795494623774134,
+              0.9999999999999999
+            ],
+            "precision": [
+              0.6041209191998402,
+              0.6860432085921682
+            ],
+            "recall": [
+              0.9886963208255265,
+              0.9999999999999999
+            ]
+          },
+          "normal": 184,
+          "precision": 0.6461538461538462,
+          "recall": 1.0,
+          "rows": 520,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7564894932014833,
+          "FN": 30,
+          "FP": 167,
+          "FPR": 0.907608695652174,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6211538461538462,
+          "anomalous": 336,
+          "average_precision": 0.652625582858141,
+          "balanced_accuracy": 0.5015527950310559,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              167
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8570310893122134,
+              0.9415146680606782
+            ],
+            "precision": [
+              0.6028382131757986,
+              0.6886632857579758
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 184,
+          "precision": 0.6469344608879493,
+          "recall": 0.9107142857142857,
+          "rows": 520,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7564894932014833,
+          "FN": 30,
+          "FP": 167,
+          "FPR": 0.907608695652174,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6211538461538462,
+          "anomalous": 336,
+          "average_precision": 0.652625582858141,
+          "balanced_accuracy": 0.5015527950310559,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              167
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8570310893122134,
+              0.9415146680606782
+            ],
+            "precision": [
+              0.6028382131757986,
+              0.6886632857579758
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 184,
+          "precision": 0.6469344608879493,
+          "recall": 0.9107142857142857,
+          "rows": 520,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7564894932014833,
+          "FN": 30,
+          "FP": 167,
+          "FPR": 0.907608695652174,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6211538461538462,
+          "anomalous": 336,
+          "average_precision": 0.6468647631438329,
+          "balanced_accuracy": 0.5015527950310559,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              167
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8570310893122134,
+              0.9415146680606782
+            ],
+            "precision": [
+              0.6028382131757986,
+              0.6886632857579758
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 184,
+          "precision": 0.6469344608879493,
+          "recall": 0.9107142857142857,
+          "rows": 520,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7564894932014833,
+          "FN": 30,
+          "FP": 167,
+          "FPR": 0.907608695652174,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6211538461538462,
+          "anomalous": 336,
+          "average_precision": 0.6468647631438329,
+          "balanced_accuracy": 0.5015527950310559,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              167
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8570310893122134,
+              0.9415146680606782
+            ],
+            "precision": [
+              0.6028382131757986,
+              0.6886632857579758
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 184,
+          "precision": 0.6469344608879493,
+          "recall": 0.9107142857142857,
+          "rows": 520,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    },
+    "TRAIN": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9532824427480916,
+          "FN": 112,
+          "FP": 41,
+          "FPR": 0.04124748490945674,
+          "TN": 953,
+          "TP": 1561,
+          "accuracy": 0.9426321709786277,
+          "anomalous": 1673,
+          "average_precision": 0.991911327853076,
+          "balanced_accuracy": 0.9459034541979913,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              953,
+              41
+            ],
+            [
+              112,
+              1561
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.030549125296600713,
+              0.0554780266741607
+            ],
+            "precision": [
+              0.9654654566044315,
+              0.98107879385742
+            ],
+            "recall": [
+              0.9200588926946781,
+              0.9440657342208966
+            ]
+          },
+          "normal": 994,
+          "precision": 0.9744069912609239,
+          "recall": 0.9330543933054394,
+          "rows": 2667,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.9453416149068323,
+          "FN": 151,
+          "FP": 25,
+          "FPR": 0.025150905432595575,
+          "TN": 969,
+          "TP": 1522,
+          "accuracy": 0.9340082489688789,
+          "anomalous": 1673,
+          "average_precision": 0.991911327853076,
+          "balanced_accuracy": 0.9422960356279939,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              969,
+              25
+            ],
+            [
+              151,
+              1522
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.017093028729744768,
+              0.03686490050314863
+            ],
+            "precision": [
+              0.9762522512755041,
+              0.9890301710414509
+            ],
+            "recall": [
+              0.8950570226942707,
+              0.9225515787558694
+            ]
+          },
+          "normal": 994,
+          "precision": 0.9838396897220426,
+          "recall": 0.9097429766885834,
+          "rows": 2667,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FN": 1673,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 994,
+          "TP": 0,
+          "accuracy": 0.37270341207349084,
+          "anomalous": 1673,
+          "average_precision": 0.6272965879265092,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              994,
+              0
+            ],
+            [
+              1673,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              2.168404344971009e-19,
+              0.003849768704974616
+            ],
+            "precision": null,
+            "recall": [
+              0.0,
+              0.0022908896965105965
+            ]
+          },
+          "normal": 994,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 2667,
+          "threshold": 0.6272965879265092,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7709677419354839,
+          "FN": 0,
+          "FP": 994,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 1673,
+          "accuracy": 0.6272965879265092,
+          "anomalous": 1673,
+          "average_precision": 0.6272965879265092,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              994
+            ],
+            [
+              0,
+              1673
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.9961502312950253,
+              0.9999999999999999
+            ],
+            "precision": [
+              0.6087749969978976,
+              0.6454519986770203
+            ],
+            "recall": [
+              0.9977091103034894,
+              1.0
+            ]
+          },
+          "normal": 994,
+          "precision": 0.6272965879265092,
+          "recall": 1.0,
+          "rows": 2667,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7615366030442136,
+          "FN": 97,
+          "FP": 890,
+          "FPR": 0.8953722334004024,
+          "TN": 104,
+          "TP": 1576,
+          "accuracy": 0.6299212598425197,
+          "anomalous": 1673,
+          "average_precision": 0.6490730577375532,
+          "balanced_accuracy": 0.5233240446865292,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              104,
+              890
+            ],
+            [
+              97,
+              1576
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8747984708579658,
+              0.9129018126409173
+            ],
+            "precision": [
+              0.6199334814731126,
+              0.6578171399483745
+            ],
+            "recall": [
+              0.9297760828385905,
+              0.9522393231021512
+            ]
+          },
+          "normal": 994,
+          "precision": 0.6390916463909164,
+          "recall": 0.9420203227734608,
+          "rows": 2667,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7615366030442136,
+          "FN": 97,
+          "FP": 890,
+          "FPR": 0.8953722334004024,
+          "TN": 104,
+          "TP": 1576,
+          "accuracy": 0.6299212598425197,
+          "anomalous": 1673,
+          "average_precision": 0.6490730577375532,
+          "balanced_accuracy": 0.5233240446865292,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              104,
+              890
+            ],
+            [
+              97,
+              1576
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8747984708579658,
+              0.9129018126409173
+            ],
+            "precision": [
+              0.6199334814731126,
+              0.6578171399483745
+            ],
+            "recall": [
+              0.9297760828385905,
+              0.9522393231021512
+            ]
+          },
+          "normal": 994,
+          "precision": 0.6390916463909164,
+          "recall": 0.9420203227734608,
+          "rows": 2667,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7615366030442136,
+          "FN": 97,
+          "FP": 890,
+          "FPR": 0.8953722334004024,
+          "TN": 104,
+          "TP": 1576,
+          "accuracy": 0.6299212598425197,
+          "anomalous": 1673,
+          "average_precision": 0.638407772708282,
+          "balanced_accuracy": 0.5233240446865292,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              104,
+              890
+            ],
+            [
+              97,
+              1576
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8747984708579658,
+              0.9129018126409173
+            ],
+            "precision": [
+              0.6199334814731126,
+              0.6578171399483745
+            ],
+            "recall": [
+              0.9297760828385905,
+              0.9522393231021512
+            ]
+          },
+          "normal": 994,
+          "precision": 0.6390916463909164,
+          "recall": 0.9420203227734608,
+          "rows": 2667,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7615366030442136,
+          "FN": 97,
+          "FP": 890,
+          "FPR": 0.8953722334004024,
+          "TN": 104,
+          "TP": 1576,
+          "accuracy": 0.6299212598425197,
+          "anomalous": 1673,
+          "average_precision": 0.638407772708282,
+          "balanced_accuracy": 0.5233240446865292,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              104,
+              890
+            ],
+            [
+              97,
+              1576
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8747984708579658,
+              0.9129018126409173
+            ],
+            "precision": [
+              0.6199334814731126,
+              0.6578171399483745
+            ],
+            "recall": [
+              0.9297760828385905,
+              0.9522393231021512
+            ]
+          },
+          "normal": 994,
+          "precision": 0.6390916463909164,
+          "recall": 0.9420203227734608,
+          "rows": 2667,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    }
+  },
+  "no_new_optimizer_updates": true,
+  "per_source": {
+    "metrics_same_as_aggregate": true,
+    "source": "WAF"
+  },
+  "per_stratum": {
+    "CALIBRATION": {
+      "body": {
+        "EMPTY": {
+          "F1": 0.8,
+          "FN": 7,
+          "FP": 1,
+          "FPR": 0.03225806451612903,
+          "TN": 30,
+          "TP": 16,
+          "accuracy": 0.8518518518518519,
+          "anomalous": 23,
+          "average_precision": 0.882255937116904,
+          "balanced_accuracy": 0.8316970546984572,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              30,
+              1
+            ],
+            [
+              7,
+              16
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.005717221525416816,
+              0.16194105164724906
+            ],
+            "precision": [
+              0.7301796936242461,
+              0.9895395990150025
+            ],
+            "recall": [
+              0.49134243731240795,
+              0.8439597554678597
+            ]
+          },
+          "normal": 31,
+          "precision": 0.9411764705882353,
+          "recall": 0.6956521739130435,
+          "rows": 54,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "MISSING": {
+          "F1": 0.9490445859872612,
+          "FN": 27,
+          "FP": 5,
+          "FPR": 0.028901734104046242,
+          "TN": 168,
+          "TP": 298,
+          "accuracy": 0.9357429718875502,
+          "anomalous": 325,
+          "average_precision": 0.9886912108632196,
+          "balanced_accuracy": 0.9440106714095153,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              168,
+              5
+            ],
+            [
+              27,
+              298
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.012406951549592947,
+              0.06586348861188793
+            ],
+            "precision": [
+              0.9619591069224456,
+              0.9929314125207485
+            ],
+            "recall": [
+              0.8818271239233364,
+              0.9422782093028093
+            ]
+          },
+          "normal": 173,
+          "precision": 0.9834983498349835,
+          "recall": 0.916923076923077,
+          "rows": 498,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PUBLISHER_PRESENT_WIRE_COMPLETENESS_UNVERIFIED": {
+          "F1": 0.9090909090909091,
+          "FN": 0,
+          "FP": 2,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 10,
+          "accuracy": 0.8333333333333334,
+          "anomalous": 10,
+          "average_precision": 0.9999999999999999,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.34238022750665303,
+              1.0
+            ],
+            "precision": [
+              0.5519691377470266,
+              0.9530348578161463
+            ],
+            "recall": [
+              0.7224672001371107,
+              0.9999999999999999
+            ]
+          },
+          "normal": 2,
+          "precision": 0.8333333333333334,
+          "recall": 1.0,
+          "rows": 12,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "method": {
+        "GET": {
+          "F1": 0.9411764705882353,
+          "FN": 33,
+          "FP": 6,
+          "FPR": 0.029850746268656716,
+          "TN": 195,
+          "TP": 312,
+          "accuracy": 0.9285714285714286,
+          "anomalous": 345,
+          "average_precision": 0.985421617212767,
+          "balanced_accuracy": 0.9372485399091499,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              195,
+              6
+            ],
+            [
+              33,
+              312
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.013751200729656916,
+              0.06358401701335273
+            ],
+            "precision": [
+              0.9594540071118753,
+              0.9913246810076073
+            ],
+            "recall": [
+              0.8687118016052977,
+              0.9310784553876563
+            ]
+          },
+          "normal": 201,
+          "precision": 0.9811320754716981,
+          "recall": 0.9043478260869565,
+          "rows": 546,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "HEAD": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "OPTIONS": {
+          "F1": null,
+          "FN": 0,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 1,
+          "TP": 0,
+          "accuracy": 1.0,
+          "anomalous": 0,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.7934506856227626
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "normal": 1,
+          "precision": null,
+          "recall": null,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PATCH": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 2,
+          "accuracy": 1.0,
+          "anomalous": 2,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.34238022750665303,
+              1.0
+            ],
+            "recall": [
+              0.34238022750665303,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 2,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "POST": {
+          "F1": 0.8235294117647058,
+          "FN": 1,
+          "FP": 2,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 7,
+          "accuracy": 0.7,
+          "anomalous": 8,
+          "average_precision": 0.975,
+          "balanced_accuracy": 0.4375,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.34238022750665303,
+              1.0
+            ],
+            "precision": [
+              0.45258896910698887,
+              0.9367748928821533
+            ],
+            "recall": [
+              0.5291118177871464,
+              0.9775825085499433
+            ]
+          },
+          "normal": 2,
+          "precision": 0.7777777777777778,
+          "recall": 0.875,
+          "rows": 10,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PUT": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "TRACE": {
+          "F1": null,
+          "FN": 0,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 2,
+          "TP": 0,
+          "accuracy": 1.0,
+          "anomalous": 0,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              2,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.6576197724933469
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "normal": 2,
+          "precision": null,
+          "recall": null,
+          "rows": 2,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "TRACK": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "window": {
+        "0": {
+          "F1": 0.9476923076923077,
+          "FN": 27,
+          "FP": 7,
+          "FPR": 0.04,
+          "TN": 168,
+          "TP": 308,
+          "accuracy": 0.9333333333333333,
+          "anomalous": 335,
+          "average_precision": 0.9882707918439264,
+          "balanced_accuracy": 0.9397014925373134,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              168,
+              7
+            ],
+            [
+              27,
+              308
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.019508837291298556,
+              0.08025247609958534
+            ],
+            "precision": [
+              0.9548480984977241,
+              0.9891947531230005
+            ],
+            "recall": [
+              0.88527651896493,
+              0.9440198752189285
+            ]
+          },
+          "normal": 175,
+          "precision": 0.9777777777777777,
+          "recall": 0.9194029850746268,
+          "rows": 510,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "1": {
+          "F1": 0.8,
+          "FN": 7,
+          "FP": 1,
+          "FPR": 0.03225806451612903,
+          "TN": 30,
+          "TP": 16,
+          "accuracy": 0.8518518518518519,
+          "anomalous": 23,
+          "average_precision": 0.882255937116904,
+          "balanced_accuracy": 0.8316970546984572,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              30,
+              1
+            ],
+            [
+              7,
+              16
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.005717221525416816,
+              0.16194105164724906
+            ],
+            "precision": [
+              0.7301796936242461,
+              0.9895395990150025
+            ],
+            "recall": [
+              0.49134243731240795,
+              0.8439597554678597
+            ]
+          },
+          "normal": 31,
+          "precision": 0.9411764705882353,
+          "recall": 0.6956521739130435,
+          "rows": 54,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    },
+    "EVALUATION": {
+      "body": {
+        "EMPTY": {
+          "F1": 0.9285714285714286,
+          "FN": 4,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 17,
+          "TP": 26,
+          "accuracy": 0.9148936170212766,
+          "anomalous": 30,
+          "average_precision": 0.9764366942668483,
+          "balanced_accuracy": 0.9333333333333333,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              0
+            ],
+            [
+              4,
+              26
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.1843181350088518
+            ],
+            "precision": [
+              0.8712710781407846,
+              1.0
+            ],
+            "recall": [
+              0.703186733179637,
+              0.9469034451594526
+            ]
+          },
+          "normal": 17,
+          "precision": 1.0,
+          "recall": 0.8666666666666667,
+          "rows": 47,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "MISSING": {
+          "F1": 0.9543147208121827,
+          "FN": 16,
+          "FP": 11,
+          "FPR": 0.06626506024096386,
+          "TN": 155,
+          "TP": 282,
+          "accuracy": 0.9418103448275862,
+          "anomalous": 298,
+          "average_precision": 0.9902414627641809,
+          "balanced_accuracy": 0.9400218322956255,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              155,
+              11
+            ],
+            [
+              16,
+              282
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.03740095467368268,
+              0.11474952142400321
+            ],
+            "precision": [
+              0.9340355857729857,
+              0.9789096647881782
+            ],
+            "recall": [
+              0.9145731491441628,
+              0.9666841872047666
+            ]
+          },
+          "normal": 166,
+          "precision": 0.962457337883959,
+          "recall": 0.9463087248322147,
+          "rows": 464,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PUBLISHER_PRESENT_WIRE_COMPLETENESS_UNVERIFIED": {
+          "F1": 0.9411764705882353,
+          "FN": 0,
+          "FP": 1,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 8,
+          "accuracy": 0.8888888888888888,
+          "anomalous": 8,
+          "average_precision": 1.0,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              8
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.20654931437723745,
+              1.0
+            ],
+            "precision": [
+              0.5650002944233439,
+              0.9801091123614551
+            ],
+            "recall": [
+              0.6755924351161198,
+              1.0
+            ]
+          },
+          "normal": 1,
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "rows": 9,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "method": {
+        "GET": {
+          "F1": 0.9558359621451105,
+          "FN": 19,
+          "FP": 9,
+          "FPR": 0.05056179775280899,
+          "TN": 169,
+          "TP": 303,
+          "accuracy": 0.944,
+          "anomalous": 322,
+          "average_precision": 0.9894713603981686,
+          "balanced_accuracy": 0.9452159955335334,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              169,
+              9
+            ],
+            [
+              19,
+              303
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.026825714697326877,
+              0.09328693157346127
+            ],
+            "precision": [
+              0.9460956190332226,
+              0.9847511453458209
+            ],
+            "recall": [
+              0.9096867642272242,
+              0.9619027536563216
+            ]
+          },
+          "normal": 178,
+          "precision": 0.9711538461538461,
+          "recall": 0.9409937888198758,
+          "rows": 500,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "OPTIONS": {
+          "F1": 0.8,
+          "FN": 0,
+          "FP": 1,
+          "FPR": 0.3333333333333333,
+          "TN": 2,
+          "TP": 2,
+          "accuracy": 0.8,
+          "anomalous": 2,
+          "average_precision": 1.0,
+          "balanced_accuracy": 0.8333333333333334,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              2,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.06149194472039621,
+              0.7923403991979522
+            ],
+            "precision": [
+              0.2076596008020477,
+              0.9385080552796037
+            ],
+            "recall": [
+              0.34238022750665303,
+              1.0
+            ]
+          },
+          "normal": 3,
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "rows": 5,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PATCH": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "POST": {
+          "F1": 0.8571428571428571,
+          "FN": 1,
+          "FP": 2,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 9,
+          "accuracy": 0.75,
+          "anomalous": 10,
+          "average_precision": 0.9651515151515152,
+          "balanced_accuracy": 0.44999999999999996,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              9
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.34238022750665303,
+              1.0
+            ],
+            "precision": [
+              0.523019438039156,
+              0.9486323102539149
+            ],
+            "recall": [
+              0.5958499732047615,
+              0.9821237869049271
+            ]
+          },
+          "normal": 2,
+          "precision": 0.8181818181818182,
+          "recall": 0.9,
+          "rows": 12,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PUT": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "TRACE": {
+          "F1": null,
+          "FN": 0,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 1,
+          "TP": 0,
+          "accuracy": 1.0,
+          "anomalous": 0,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.7934506856227626
+            ],
+            "precision": null,
+            "recall": null
+          },
+          "normal": 1,
+          "precision": null,
+          "recall": null,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "window": {
+        "0": {
+          "F1": 0.9539473684210527,
+          "FN": 16,
+          "FP": 12,
+          "FPR": 0.0718562874251497,
+          "TN": 155,
+          "TP": 290,
+          "accuracy": 0.9408033826638478,
+          "anomalous": 306,
+          "average_precision": 0.9904559417327121,
+          "balanced_accuracy": 0.937928065437752,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              155,
+              12
+            ],
+            [
+              16,
+              290
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.04157961673733164,
+              0.12138702504202122
+            ],
+            "precision": [
+              0.9318415309403563,
+              0.9771261449004238
+            ],
+            "recall": [
+              0.9167611445158768,
+              0.9675620866065417
+            ]
+          },
+          "normal": 167,
+          "precision": 0.9602649006622517,
+          "recall": 0.9477124183006536,
+          "rows": 473,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "1": {
+          "F1": 0.9285714285714286,
+          "FN": 4,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 17,
+          "TP": 26,
+          "accuracy": 0.9148936170212766,
+          "anomalous": 30,
+          "average_precision": 0.9764366942668483,
+          "balanced_accuracy": 0.9333333333333333,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              0
+            ],
+            [
+              4,
+              26
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.1843181350088518
+            ],
+            "precision": [
+              0.8712710781407846,
+              1.0
+            ],
+            "recall": [
+              0.703186733179637,
+              0.9469034451594526
+            ]
+          },
+          "normal": 17,
+          "precision": 1.0,
+          "recall": 0.8666666666666667,
+          "rows": 47,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    },
+    "TRAIN": {
+      "body": {
+        "EMPTY": {
+          "F1": 0.8604651162790697,
+          "FN": 23,
+          "FP": 1,
+          "FPR": 0.009615384615384616,
+          "TN": 103,
+          "TP": 74,
+          "accuracy": 0.8805970149253731,
+          "anomalous": 97,
+          "average_precision": 0.9691402610076727,
+          "balanced_accuracy": 0.8766356066613799,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              103,
+              1
+            ],
+            [
+              23,
+              74
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0016993728496512567,
+              0.05246772470794581
+            ],
+            "precision": [
+              0.9282663444557845,
+              0.9976424488609515
+            ],
+            "recall": [
+              0.6692591230575402,
+              0.8364852463360335
+            ]
+          },
+          "normal": 104,
+          "precision": 0.9866666666666667,
+          "recall": 0.7628865979381443,
+          "rows": 201,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "MISSING": {
+          "F1": 0.9578414839797639,
+          "FN": 89,
+          "FP": 36,
+          "FPR": 0.04077010192525481,
+          "TN": 847,
+          "TP": 1420,
+          "accuracy": 0.947742474916388,
+          "anomalous": 1509,
+          "average_precision": 0.9926466578821622,
+          "balanced_accuracy": 0.9501252207404872,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              847,
+              36
+            ],
+            [
+              89,
+              1420
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.02959278278400604,
+              0.055925838460366945
+            ],
+            "precision": [
+              0.9659606992480173,
+              0.9820874546371577
+            ],
+            "recall": [
+              0.9279766036890885,
+              0.9518247742011995
+            ]
+          },
+          "normal": 883,
+          "precision": 0.9752747252747253,
+          "recall": 0.9410205434062293,
+          "rows": 2392,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PUBLISHER_PRESENT_WIRE_COMPLETENESS_UNVERIFIED": {
+          "F1": 0.9710144927536232,
+          "FN": 0,
+          "FP": 4,
+          "FPR": 0.5714285714285714,
+          "TN": 3,
+          "TP": 67,
+          "accuracy": 0.9459459459459459,
+          "anomalous": 67,
+          "average_precision": 0.9995673804888601,
+          "balanced_accuracy": 0.7142857142857143,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              3,
+              4
+            ],
+            [
+              0,
+              67
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.2504583645276572,
+              0.8417801447485302
+            ],
+            "precision": [
+              0.8639039420002305,
+              0.9778754806983033
+            ],
+            "recall": [
+              0.9457738606086981,
+              0.9999999999999998
+            ]
+          },
+          "normal": 7,
+          "precision": 0.9436619718309859,
+          "recall": 1.0,
+          "rows": 74,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "method": {
+        "CONNECT": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "GET": {
+          "F1": 0.9556135770234987,
+          "FN": 105,
+          "FP": 31,
+          "FPR": 0.032091097308488616,
+          "TN": 935,
+          "TP": 1464,
+          "accuracy": 0.9463510848126233,
+          "anomalous": 1569,
+          "average_precision": 0.9921602819066675,
+          "balanced_accuracy": 0.9504936482864823,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              935,
+              31
+            ],
+            [
+              105,
+              1464
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.022698739523961772,
+              0.045190149141156655
+            ],
+            "precision": [
+              0.9707179853668959,
+              0.9853537803070407
+            ],
+            "recall": [
+              0.9196259846962883,
+              0.9444153287994591
+            ]
+          },
+          "normal": 966,
+          "precision": 0.9792642140468227,
+          "recall": 0.9330783938814532,
+          "rows": 2535,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "HEAD": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 4,
+          "accuracy": 1.0,
+          "anomalous": 4,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              4
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.5101091635454027,
+              1.0
+            ],
+            "recall": [
+              0.5101091635454027,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 4,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "LOCK": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "OPTIONS": {
+          "F1": 0.4,
+          "FN": 2,
+          "FP": 1,
+          "FPR": 0.16666666666666666,
+          "TN": 5,
+          "TP": 1,
+          "accuracy": 0.6666666666666666,
+          "anomalous": 3,
+          "average_precision": 0.5555555555555556,
+          "balanced_accuracy": 0.5833333333333333,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              5,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.030053369748306635,
+              0.5635028221864702
+            ],
+            "precision": [
+              0.09453120573423074,
+              0.9054687942657693
+            ],
+            "recall": [
+              0.06149194472039621,
+              0.7923403991979522
+            ]
+          },
+          "normal": 6,
+          "precision": 0.5,
+          "recall": 0.3333333333333333,
+          "rows": 9,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PATCH": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 14,
+          "accuracy": 1.0,
+          "anomalous": 14,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              14
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.7846891972623643,
+              1.0
+            ],
+            "recall": [
+              0.7846891972623643,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 14,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "POST": {
+          "F1": 0.8992248062015504,
+          "FN": 4,
+          "FP": 9,
+          "FPR": 0.6923076923076923,
+          "TN": 4,
+          "TP": 58,
+          "accuracy": 0.8266666666666667,
+          "anomalous": 62,
+          "average_precision": 0.9853324221408656,
+          "balanced_accuracy": 0.6215880893300249,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              4,
+              9
+            ],
+            [
+              4,
+              58
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.42369343180549035,
+              0.8731929634428948
+            ],
+            "precision": [
+              0.7639962773866296,
+              0.927689083357045
+            ],
+            "recall": [
+              0.8455248427224711,
+              0.9746270944795592
+            ]
+          },
+          "normal": 13,
+          "precision": 0.8656716417910447,
+          "recall": 0.9354838709677419,
+          "rows": 75,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PROPPATCH": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 1,
+          "accuracy": 1.0,
+          "anomalous": 1,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "recall": [
+              0.20654931437723745,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 1,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "PUT": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 8,
+          "accuracy": 1.0,
+          "anomalous": 8,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              8
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.6755924351161198,
+              1.0
+            ],
+            "recall": [
+              0.6755924351161198,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 8,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "TRACE": {
+          "F1": 0.0,
+          "FN": 1,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 9,
+          "TP": 0,
+          "accuracy": 0.9,
+          "anomalous": 1,
+          "average_precision": 0.5,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              9,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.2991450484195441
+            ],
+            "precision": null,
+            "recall": [
+              0.0,
+              0.7934506856227626
+            ]
+          },
+          "normal": 9,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 10,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "TRACK": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 7,
+          "accuracy": 1.0,
+          "anomalous": 7,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              7
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.6456695649333126,
+              1.0
+            ],
+            "recall": [
+              0.6456695649333126,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 7,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "UNLOCK": {
+          "F1": 1.0,
+          "FN": 0,
+          "FP": 0,
+          "FPR": null,
+          "TN": 0,
+          "TP": 2,
+          "accuracy": 1.0,
+          "anomalous": 2,
+          "average_precision": null,
+          "balanced_accuracy": null,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": null,
+            "precision": [
+              0.34238022750665303,
+              1.0
+            ],
+            "recall": [
+              0.34238022750665303,
+              1.0
+            ]
+          },
+          "normal": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "rows": 2,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "window": {
+        "0": {
+          "F1": 0.9584273283918788,
+          "FN": 89,
+          "FP": 40,
+          "FPR": 0.0449438202247191,
+          "TN": 850,
+          "TP": 1487,
+          "accuracy": 0.9476885644768857,
+          "anomalous": 1576,
+          "average_precision": 0.992912118313596,
+          "balanced_accuracy": 0.9492920492785033,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              850,
+              40
+            ],
+            [
+              89,
+              1487
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.03317732356456214,
+              0.06062170308979764
+            ],
+            "precision": [
+              0.9645273039957007,
+              0.9807044779516718
+            ],
+            "recall": [
+              0.9310160369008879,
+              0.9538828826676405
+            ]
+          },
+          "normal": 890,
+          "precision": 0.9738048461034708,
+          "recall": 0.9435279187817259,
+          "rows": 2466,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "1": {
+          "F1": 0.8604651162790697,
+          "FN": 23,
+          "FP": 1,
+          "FPR": 0.009615384615384616,
+          "TN": 103,
+          "TP": 74,
+          "accuracy": 0.8805970149253731,
+          "anomalous": 97,
+          "average_precision": 0.9691402610076727,
+          "balanced_accuracy": 0.8766356066613799,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              103,
+              1
+            ],
+            [
+              23,
+              74
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0016993728496512567,
+              0.05246772470794581
+            ],
+            "precision": [
+              0.9282663444557845,
+              0.9976424488609515
+            ],
+            "recall": [
+              0.6692591230575402,
+              0.8364852463360335
+            ]
+          },
+          "normal": 104,
+          "precision": 0.9866666666666667,
+          "recall": 0.7628865979381443,
+          "rows": 201,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    }
+  },
+  "plan_fingerprint": "3353ad863a09d7a1f508916b228a77751d0cdcdb6665d65ab54b63b0c847b28a",
+  "preservation": {
+    "both_frozen_manifest_payload_checks": "PASS",
+    "frozen_GLU207_manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+    "frozen_v2_manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "production_changes": false,
+    "sealed_named_pin_skipped": 1,
+    "small_pins_verified": 187
+  },
+  "private_evaluation_fingerprint": "94f7cf454bf4b962cc6603354c00347dac16c32de4d6b64637e92f3aa86d7355",
+  "promotion": false,
+  "repository_base_commit": "c9dde0e416527c6478770815069c4f2322428855",
+  "resources": {
+    "OOM_events": false,
+    "background_committed_new_updates": 418,
+    "background_gradient_presentations": 26542,
+    "background_supervisor_seconds": 11.463493704999564,
+    "max_memory_bytes": 32641024,
+    "min_MemAvailable_bytes": 20363390976,
+    "paused_samples": 0,
+    "peak_C": 50.0,
+    "quota_values": [
+      20
+    ],
+    "watchdog": "COMPLETED"
+  },
+  "retained_record_metrics": {
+    "CALIBRATION": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9383070301291249,
+          "FN": 35,
+          "FP": 8,
+          "FPR": 0.037914691943127965,
+          "TN": 203,
+          "TP": 327,
+          "accuracy": 0.924956369982548,
+          "anomalous": 362,
+          "average_precision": 0.984429950791919,
+          "balanced_accuracy": 0.9327001125919719,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              203,
+              8
+            ],
+            [
+              35,
+              327
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.019334977304000224,
+              0.07301897956078598
+            ],
+            "precision": [
+              0.9535925203130337,
+              0.9878507172124141
+            ],
+            "recall": [
+              0.8685021467683777,
+              0.9296578019188889
+            ]
+          },
+          "normal": 211,
+          "precision": 0.9761194029850746,
+          "recall": 0.9033149171270718,
+          "rows": 573,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.9224011713030746,
+          "FN": 47,
+          "FP": 6,
+          "FPR": 0.02843601895734597,
+          "TN": 205,
+          "TP": 315,
+          "accuracy": 0.9075043630017452,
+          "anomalous": 362,
+          "average_precision": 0.984429950791919,
+          "balanced_accuracy": 0.9208648634495038,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              205,
+              6
+            ],
+            [
+              47,
+              315
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.013096274109495307,
+              0.06063930238328649
+            ],
+            "precision": [
+              0.9598272407435814,
+              0.9914060196961266
+            ],
+            "recall": [
+              0.8316175515675426,
+              0.9009402095563872
+            ]
+          },
+          "normal": 211,
+          "precision": 0.9813084112149533,
+          "recall": 0.8701657458563536,
+          "rows": 573,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FN": 362,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 211,
+          "TP": 0,
+          "accuracy": 0.3682373472949389,
+          "anomalous": 362,
+          "average_precision": 0.631762652705061,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              211,
+              0
+            ],
+            [
+              362,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.017880435376768655
+            ],
+            "precision": null,
+            "recall": [
+              0.0,
+              0.010500337586333805
+            ]
+          },
+          "normal": 211,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 573,
+          "threshold": 0.6272965879265092,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.774331550802139,
+          "FN": 0,
+          "FP": 211,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 362,
+          "accuracy": 0.631762652705061,
+          "anomalous": 362,
+          "average_precision": 0.631762652705061,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              211
+            ],
+            [
+              0,
+              362
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.9821195646232311,
+              0.9999999999999999
+            ],
+            "precision": [
+              0.5915148907386206,
+              0.670255475609019
+            ],
+            "recall": [
+              0.9894996624136662,
+              0.9999999999999999
+            ]
+          },
+          "normal": 211,
+          "precision": 0.631762652705061,
+          "recall": 1.0,
+          "rows": 573,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7681818181818182,
+          "FN": 24,
+          "FP": 180,
+          "FPR": 0.8530805687203792,
+          "TN": 31,
+          "TP": 338,
+          "accuracy": 0.643979057591623,
+          "anomalous": 362,
+          "average_precision": 0.6561292901144221,
+          "balanced_accuracy": 0.5403105443690921,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              180
+            ],
+            [
+              24,
+              338
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.7990087182718877,
+              0.8945259505852758
+            ],
+            "precision": [
+              0.6105167005031655,
+              0.6922572499550121
+            ],
+            "recall": [
+              0.9032489931240705,
+              0.9550462941629215
+            ]
+          },
+          "normal": 211,
+          "precision": 0.6525096525096525,
+          "recall": 0.9337016574585635,
+          "rows": 573,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7681818181818182,
+          "FN": 24,
+          "FP": 180,
+          "FPR": 0.8530805687203792,
+          "TN": 31,
+          "TP": 338,
+          "accuracy": 0.643979057591623,
+          "anomalous": 362,
+          "average_precision": 0.6561292901144221,
+          "balanced_accuracy": 0.5403105443690921,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              180
+            ],
+            [
+              24,
+              338
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.7990087182718877,
+              0.8945259505852758
+            ],
+            "precision": [
+              0.6105167005031655,
+              0.6922572499550121
+            ],
+            "recall": [
+              0.9032489931240705,
+              0.9550462941629215
+            ]
+          },
+          "normal": 211,
+          "precision": 0.6525096525096525,
+          "recall": 0.9337016574585635,
+          "rows": 573,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7681818181818182,
+          "FN": 24,
+          "FP": 180,
+          "FPR": 0.8530805687203792,
+          "TN": 31,
+          "TP": 338,
+          "accuracy": 0.643979057591623,
+          "anomalous": 362,
+          "average_precision": 0.6511341608099006,
+          "balanced_accuracy": 0.5403105443690921,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              180
+            ],
+            [
+              24,
+              338
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.7990087182718877,
+              0.8945259505852758
+            ],
+            "precision": [
+              0.6105167005031655,
+              0.6922572499550121
+            ],
+            "recall": [
+              0.9032489931240705,
+              0.9550462941629215
+            ]
+          },
+          "normal": 211,
+          "precision": 0.6525096525096525,
+          "recall": 0.9337016574585635,
+          "rows": 573,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7681818181818182,
+          "FN": 24,
+          "FP": 180,
+          "FPR": 0.8530805687203792,
+          "TN": 31,
+          "TP": 338,
+          "accuracy": 0.643979057591623,
+          "anomalous": 362,
+          "average_precision": 0.6511341608099006,
+          "balanced_accuracy": 0.5403105443690921,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              31,
+              180
+            ],
+            [
+              24,
+              338
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.7990087182718877,
+              0.8945259505852758
+            ],
+            "precision": [
+              0.6105167005031655,
+              0.6922572499550121
+            ],
+            "recall": [
+              0.9032489931240705,
+              0.9550462941629215
+            ]
+          },
+          "normal": 211,
+          "precision": 0.6525096525096525,
+          "recall": 0.9337016574585635,
+          "rows": 573,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    },
+    "EVALUATION": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9518072289156626,
+          "FN": 20,
+          "FP": 12,
+          "FPR": 0.06486486486486487,
+          "TN": 173,
+          "TP": 316,
+          "accuracy": 0.9385796545105566,
+          "anomalous": 336,
+          "average_precision": 0.9887945663607686,
+          "balanced_accuracy": 0.9378056628056628,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              173,
+              12
+            ],
+            [
+              20,
+              316
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.03749137236000596,
+              0.10994160657673127
+            ],
+            "precision": [
+              0.9371502246627966,
+              0.9789498945940384
+            ],
+            "recall": [
+              0.909853893149413,
+              0.9611404847206938
+            ]
+          },
+          "normal": 185,
+          "precision": 0.9634146341463414,
+          "recall": 0.9404761904761905,
+          "rows": 521,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.941358024691358,
+          "FN": 31,
+          "FP": 7,
+          "FPR": 0.03783783783783784,
+          "TN": 178,
+          "TP": 305,
+          "accuracy": 0.927063339731286,
+          "anomalous": 336,
+          "average_precision": 0.9887945663607686,
+          "balanced_accuracy": 0.9349501287001287,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              178,
+              7
+            ],
+            [
+              31,
+              305
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.01844742997274769,
+              0.07603107560602292
+            ],
+            "precision": [
+              0.9544208873065139,
+              0.9890904589008158
+            ],
+            "recall": [
+              0.8720177184697728,
+              0.934240590774853
+            ]
+          },
+          "normal": 185,
+          "precision": 0.9775641025641025,
+          "recall": 0.9077380952380952,
+          "rows": 521,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FN": 336,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 185,
+          "TP": 0,
+          "accuracy": 0.3550863723608445,
+          "anomalous": 336,
+          "average_precision": 0.6449136276391555,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              185,
+              0
+            ],
+            [
+              336,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.0,
+              0.020342242877617298
+            ],
+            "precision": null,
+            "recall": [
+              0.0,
+              0.011303679174473356
+            ]
+          },
+          "normal": 185,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 521,
+          "threshold": 0.6272965879265092,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7841306884480747,
+          "FN": 0,
+          "FP": 185,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 336,
+          "accuracy": 0.6449136276391555,
+          "anomalous": 336,
+          "average_precision": 0.6449136276391555,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              185
+            ],
+            [
+              0,
+              336
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.9796577571223828,
+              1.0
+            ],
+            "precision": [
+              0.6028988539321928,
+              0.6848070760438677
+            ],
+            "recall": [
+              0.9886963208255265,
+              0.9999999999999999
+            ]
+          },
+          "normal": 185,
+          "precision": 0.6449136276391555,
+          "recall": 1.0,
+          "rows": 521,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7555555555555555,
+          "FN": 30,
+          "FP": 168,
+          "FPR": 0.9081081081081082,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6199616122840691,
+          "anomalous": 336,
+          "average_precision": 0.6513043654039549,
+          "balanced_accuracy": 0.5013030888030887,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              168
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8577772921901504,
+              0.941835255515146
+            ],
+            "precision": [
+              0.6014946650083319,
+              0.6873040514960542
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 185,
+          "precision": 0.6455696202531646,
+          "recall": 0.9107142857142857,
+          "rows": 521,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7555555555555555,
+          "FN": 30,
+          "FP": 168,
+          "FPR": 0.9081081081081082,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6199616122840691,
+          "anomalous": 336,
+          "average_precision": 0.6513043654039549,
+          "balanced_accuracy": 0.5013030888030887,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              168
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8577772921901504,
+              0.941835255515146
+            ],
+            "precision": [
+              0.6014946650083319,
+              0.6873040514960542
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 185,
+          "precision": 0.6455696202531646,
+          "recall": 0.9107142857142857,
+          "rows": 521,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7555555555555555,
+          "FN": 30,
+          "FP": 168,
+          "FPR": 0.9081081081081082,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6199616122840691,
+          "anomalous": 336,
+          "average_precision": 0.6455110494840567,
+          "balanced_accuracy": 0.5013030888030887,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              168
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8577772921901504,
+              0.941835255515146
+            ],
+            "precision": [
+              0.6014946650083319,
+              0.6873040514960542
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 185,
+          "precision": 0.6455696202531646,
+          "recall": 0.9107142857142857,
+          "rows": 521,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7555555555555555,
+          "FN": 30,
+          "FP": 168,
+          "FPR": 0.9081081081081082,
+          "TN": 17,
+          "TP": 306,
+          "accuracy": 0.6199616122840691,
+          "anomalous": 336,
+          "average_precision": 0.6455110494840567,
+          "balanced_accuracy": 0.5013030888030887,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              17,
+              168
+            ],
+            [
+              30,
+              306
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8577772921901504,
+              0.941835255515146
+            ],
+            "precision": [
+              0.6014946650083319,
+              0.6873040514960542
+            ],
+            "recall": [
+              0.8754008961760082,
+              0.9367425102163887
+            ]
+          },
+          "normal": 185,
+          "precision": 0.6455696202531646,
+          "recall": 0.9107142857142857,
+          "rows": 521,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    },
+    "TRAIN": {
+      "candidate": {
+        "calibrated_balanced": {
+          "F1": 0.9523520485584218,
+          "FN": 112,
+          "FP": 45,
+          "FPR": 0.044642857142857144,
+          "TN": 963,
+          "TP": 1569,
+          "accuracy": 0.9416139828932689,
+          "anomalous": 1681,
+          "average_precision": 0.9917553345099772,
+          "balanced_accuracy": 0.9443650675618254,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              963,
+              45
+            ],
+            [
+              112,
+              1569
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.033529932518235266,
+              0.059213311003399806
+            ],
+            "precision": [
+              0.9628977821933827,
+              0.979098104789821
+            ],
+            "recall": [
+              0.9204364499004746,
+              0.9443333433475073
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.9721189591078067,
+          "recall": 0.933372992266508,
+          "rows": 2689,
+          "threshold": 0.3641684055328369,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.9456118665018541,
+          "FN": 151,
+          "FP": 25,
+          "FPR": 0.0248015873015873,
+          "TN": 983,
+          "TP": 1530,
+          "accuracy": 0.9345481591669765,
+          "anomalous": 1681,
+          "average_precision": 0.9917553345099772,
+          "balanced_accuracy": 0.9426854645288614,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              983,
+              25
+            ],
+            [
+              151,
+              1530
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.016854846511152537,
+              0.03635651219661042
+            ],
+            "precision": [
+              0.9763738666442482,
+              0.9890867268522666
+            ],
+            "recall": [
+              0.8955521079554114,
+              0.9229225282072291
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.9839228295819936,
+          "recall": 0.91017251635931,
+          "rows": 2689,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "majority_prior": {
+        "calibrated_balanced": {
+          "F1": 0.0,
+          "FN": 1681,
+          "FP": 0,
+          "FPR": 0.0,
+          "TN": 1008,
+          "TP": 0,
+          "accuracy": 0.37486054295277055,
+          "anomalous": 1681,
+          "average_precision": 0.6251394570472295,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              1008,
+              0
+            ],
+            [
+              1681,
+              0
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              2.168404344971009e-19,
+              0.0037965026904228285
+            ],
+            "precision": null,
+            "recall": [
+              2.168404344971009e-19,
+              0.002280012045396222
+            ]
+          },
+          "normal": 1008,
+          "precision": null,
+          "recall": 0.0,
+          "rows": 2689,
+          "threshold": 0.6272965879265092,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7693363844393593,
+          "FN": 0,
+          "FP": 1008,
+          "FPR": 1.0,
+          "TN": 0,
+          "TP": 1681,
+          "accuracy": 0.6251394570472295,
+          "anomalous": 1681,
+          "average_precision": 0.6251394570472295,
+          "balanced_accuracy": 0.5,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              0,
+              1008
+            ],
+            [
+              0,
+              1681
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.9962034973095771,
+              0.9999999999999999
+            ],
+            "precision": [
+              0.6066762871924151,
+              0.6432455928334274
+            ],
+            "recall": [
+              0.9977199879546036,
+              0.9999999999999999
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.6251394570472295,
+          "recall": 1.0,
+          "rows": 2689,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_body": {
+        "calibrated_balanced": {
+          "F1": 0.7602591792656588,
+          "FN": 97,
+          "FP": 902,
+          "FPR": 0.8948412698412699,
+          "TN": 106,
+          "TP": 1584,
+          "accuracy": 0.6284864261807364,
+          "anomalous": 1681,
+          "average_precision": 0.6471652351530062,
+          "balanced_accuracy": 0.5237274911947727,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              106,
+              902
+            ],
+            [
+              97,
+              1584
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8743817854739171,
+              0.9123027223221378
+            ],
+            "precision": [
+              0.6180692390463792,
+              0.6558437836418313
+            ],
+            "recall": [
+              0.930107901548297,
+              0.9524677213478933
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.6371681415929203,
+          "recall": 0.942296252230815,
+          "rows": 2689,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7602591792656588,
+          "FN": 97,
+          "FP": 902,
+          "FPR": 0.8948412698412699,
+          "TN": 106,
+          "TP": 1584,
+          "accuracy": 0.6284864261807364,
+          "anomalous": 1681,
+          "average_precision": 0.6471652351530062,
+          "balanced_accuracy": 0.5237274911947727,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              106,
+              902
+            ],
+            [
+              97,
+              1584
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8743817854739171,
+              0.9123027223221378
+            ],
+            "precision": [
+              0.6180692390463792,
+              0.6558437836418313
+            ],
+            "recall": [
+              0.930107901548297,
+              0.9524677213478933
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.6371681415929203,
+          "recall": 0.942296252230815,
+          "rows": 2689,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      },
+      "metadata_window": {
+        "calibrated_balanced": {
+          "F1": 0.7602591792656588,
+          "FN": 97,
+          "FP": 902,
+          "FPR": 0.8948412698412699,
+          "TN": 106,
+          "TP": 1584,
+          "accuracy": 0.6284864261807364,
+          "anomalous": 1681,
+          "average_precision": 0.6364740414139006,
+          "balanced_accuracy": 0.5237274911947727,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              106,
+              902
+            ],
+            [
+              97,
+              1584
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8743817854739171,
+              0.9123027223221378
+            ],
+            "precision": [
+              0.6180692390463792,
+              0.6558437836418313
+            ],
+            "recall": [
+              0.930107901548297,
+              0.9524677213478933
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.6371681415929203,
+          "recall": 0.942296252230815,
+          "rows": 2689,
+          "threshold": 0.48258706467661694,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        },
+        "fixed0.5": {
+          "F1": 0.7602591792656588,
+          "FN": 97,
+          "FP": 902,
+          "FPR": 0.8948412698412699,
+          "TN": 106,
+          "TP": 1584,
+          "accuracy": 0.6284864261807364,
+          "anomalous": 1681,
+          "average_precision": 0.6364740414139006,
+          "balanced_accuracy": 0.5237274911947727,
+          "comparator": ">",
+          "confusion_matrix_normal_anomaly": [
+            [
+              106,
+              902
+            ],
+            [
+              97,
+              1584
+            ]
+          ],
+          "nominal_iid_Wilson95": {
+            "FPR": [
+              0.8743817854739171,
+              0.9123027223221378
+            ],
+            "precision": [
+              0.6180692390463792,
+              0.6558437836418313
+            ],
+            "recall": [
+              0.930107901548297,
+              0.9524677213478933
+            ]
+          },
+          "normal": 1008,
+          "precision": 0.6371681415929203,
+          "recall": 0.942296252230815,
+          "rows": 2689,
+          "threshold": 0.5,
+          "uncertainty_scope": "nominal iid intervals; within-group dependence/source-selection/label noise not certified"
+        }
+      }
+    }
+  },
+  "run_id": "student-publisher-anomaly-20261110-r1",
+  "schema_version": "STUDENT_PUBLISHER_EVALUATION-1",
+  "sealed_access": false,
+  "split_fingerprint": "75188987ac4aa2cd4fd4c1ab6a1b9ee7d51a74a572d607c31ac5de8958bc874c",
+  "task": "publisher_anomaly",
+  "threshold_file_sha256": "19442077f0f3da76b633f1ae981eb483a24a220dc23d8d73030ae610e7a31404",
+  "thresholds": {
+    "candidate": {
+      "calibration_anomalous": 358,
+      "calibration_normal": 206,
+      "candidate_count": 564,
+      "comparator": ">",
+      "fit_partition": "CALIBRATION",
+      "objective": "balanced_accuracy",
+      "threshold": 0.3641684055328369,
+      "tie_break": "highest_threshold"
+    },
+    "majority_prior": {
+      "calibration_anomalous": 358,
+      "calibration_normal": 206,
+      "candidate_count": 2,
+      "comparator": ">",
+      "fit_partition": "CALIBRATION",
+      "objective": "balanced_accuracy",
+      "threshold": 0.6272965879265092,
+      "tie_break": "highest_threshold"
+    },
+    "metadata_body": {
+      "calibration_anomalous": 358,
+      "calibration_normal": 206,
+      "candidate_count": 4,
+      "comparator": ">",
+      "fit_partition": "CALIBRATION",
+      "objective": "balanced_accuracy",
+      "threshold": 0.48258706467661694,
+      "tie_break": "highest_threshold"
+    },
+    "metadata_window": {
+      "calibration_anomalous": 358,
+      "calibration_normal": 206,
+      "candidate_count": 3,
+      "comparator": ">",
+      "fit_partition": "CALIBRATION",
+      "objective": "balanced_accuracy",
+      "threshold": 0.48258706467661694,
+      "tie_break": "highest_threshold"
+    }
+  },
+  "training": {
+    "checkpoint_selection": "finalfixedbudgetonly",
+    "epoch": 10,
+    "epoch_logged_loss": [
+      {
+        "epoch": 0,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.7279641863012869
+      },
+      {
+        "epoch": 1,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.46467162481684554
+      },
+      {
+        "epoch": 2,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.33486802199036864
+      },
+      {
+        "epoch": 3,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.3241666970526199
+      },
+      {
+        "epoch": 4,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.27278952997147143
+      },
+      {
+        "epoch": 5,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.24147125680111775
+      },
+      {
+        "epoch": 6,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.23284760181791184
+      },
+      {
+        "epoch": 7,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.20744274688402792
+      },
+      {
+        "epoch": 8,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.22045260837853936
+      },
+      {
+        "epoch": 9,
+        "updates": 42,
+        "weighted_by_batch_rows_mean_logged_loss": 0.21559216619995944
+      }
+    ],
+    "final_batch_loss": 0.22552325133354842,
+    "final_objective_losses": {
+      "CALIBRATION": 0.21684722058505104,
+      "EVALUATION": 0.1978364731855917,
+      "TRAIN": 0.16833497526014807
+    },
+    "first_batch_loss": 1.1645560917618902,
+    "gradient_presentations": 26670,
+    "optimizer_state": "AdamW m/v finite nonzero step420",
+    "parameters": 50696,
+    "planned_steps": 420,
+    "preflight_exact_resume": {
+      "actual_committed_updates": 2,
+      "calibration_evaluation_gradient_rows": 0,
+      "checkpoint_directory": "ai-training/.artifacts/student_publisher_pilot_20261110/student-publisher-anomaly-20261110-r1/model",
+      "checkpoint_step1_reload_exact": true,
+      "next_update_parameters_Adam_RNG_cursor_exact": true,
+      "planned_steps": 420,
+      "state": "PASS",
+      "training_examples": 2667
+    },
+    "sampler_RNG_order_epoch_cursor": "REPLAY_MATCH",
+    "state": "COMPLETED",
+    "steps": 420,
+    "unique_gradient_views": 2667,
+    "weights_sha256": "be98a5d11545da7aa8756ad386c0fc83f2831137b9804bf7be98570fbefae7b7"
+  },
+  "yield_definitions": {
+    "accepted_record_yield": 0.03783,
+    "accepted_tiers": {
+      "BRONZE": 0,
+      "GOLD": 0,
+      "SILVER": 3783,
+      "UNLABELED": 0
+    },
+    "additional_unlabeled_588_admitted": 0,
+    "body634_compatible": 0,
+    "canonical_view_yield": 0.03751,
+    "causal207_compatible": 0,
+    "firstparty_reference_only": 73,
+    "gradient_train_view_yield": 0.02667,
+    "offline588_compatible": 99927,
+    "positions": 100000,
+    "publisher_observations": 99927,
+    "self_supervised_compatible_same_pool": 3783,
+    "source_publisher_classes": {
+      "anomalous": 22786,
+      "normal": 77141
+    },
+    "source_tiers": {
+      "SILVER": 99927,
+      "UNLABELED": 73
+    },
+    "verified_physical_source_identities": 73,
+    "verified_physical_training_identities": 0,
+    "yield_representative_of_population": false
+  }
+}
