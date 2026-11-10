@@ -1791,3 +1791,46 @@ On completion, `release-accounting.json` and `final-training-config.json` provid
 actual counts/fingerprints/finite optimizer budget. The worker never calls training
 or promotes a model. No500K/2M/AWS/enforcement, sealed access or frozen modification.
 Team bootstrap/model restore/local inference workflow remains unchanged.
+
+## Authorized one-shot final publisher training — 2026-11-10
+
+[Handoff/runbook](43_FINAL_LOCAL_TRAINING_HANDOFF.md),
+[validator](../ai-training/src/idps_ai/data/final_release_validation.py),
+[one-shot runner](../ai-training/scripts/final-local-publisher.py).
+The user now authorizes exactly one conditional data→training transition; the
+previous stop-before-training restriction is superseded only for that handoff.
+No automatic evaluation/promotion/enforcement/source expansion is authorized.
+
+Producer `local-release200k-20261110-r1` is COMPLETED,5272.98s, peak84°C. Outputs:
+200K positions (100K reused/100K new),199,927 offline588 publisher observations,
+73 first-party reference-only receipts;21,331 accepted SILVER records/17,588
+canonical views.8,612 legacy candidate records recovered;10,070 new-frame records
+accepted. Locked canonical TRAIN15,890 (old9,205/new6,685), CAL848, EVAL850;
+3,743 aliases receive no extra gradient weight. Accepted GOLD/BRONZE/UNLABELED0;
+source retains73 UNLABELED. Physical TRAIN identity unverified, review PENDING.
+
+New run `final-local-publisher-200k-20261110-r1` uses the producer config fingerprint
+55dad3110d0cd25f06623d99b86ca835e4c330b2aafd258fb2f0c3273e2f2f96 and dataset
+3544b3da532b9eacba62daba6e8556199399d3f0f659e5a2095cbd9d16d29863.
+One persistent user service validates the actual release under independent thermal
+supervision before any optimizer update. Source/SQLite/shards/provenance/privacy,
+canonicalization, locked roles, cross-role near and protected heldouts must PASS;
+failures record an exact gate and block training. Old config authorization text
+remains a historic snapshot, separately superseded by immutable one-run authorization.
+
+Reuse fresh seed17 MLP588→64×4→8,50,696params, SILVER publisher anomaly, AdamW,
+lr0.001/batch64/10epochs/**2490updates**. No EVAL gradients/statistics/threshold
+selection, no teacher optimizer/warmstart, no search. Actual same-run step1 reload/
+next-update exact proof precedes continuation; checkpoints retain Adam/scheduler/
+RNG/cursor and fingerprints. Same-task TRAIN majority/body/window controls are locked.
+
+Service `idps-final-local-publisher-200k-20261110-r1.service` is independent of chat,
+has a one-shot marker/lock/fixed Run ID, persists in user systemd across reboot/login,
+and disables itself on terminal decision. Interruptions may resume the same stream;
+prior safety stops require review. No second experiment/evaluation is launched.
+Read private `handoff-status.json`, `status.json`, `active-attempt.json` and checkpoint
+under `ai-training/.artifacts/final_local_training_20261110/`; public docs record
+prelaunch design, not a claim of RUNNING without actual optimizer evidence.
+34 relevant tests PASS;20% one-core/≤8GiB/4GiB reserve and tested adaptive limits
+remain. Local live acceptance still pending; all Web/system/frozen functionality
+and team clone/bootstrap/restore workflow remain unchanged.
