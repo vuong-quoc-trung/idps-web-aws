@@ -23,7 +23,8 @@ Training pilot: [COMPLETED, CASE B](31_REQUEST_V3_CONTROLLED_PILOT.md).
 Body-carried evaluation: [PARTIAL, XSS value observed](32_REQUEST_V3_BODY_CARRIED_EVALUATION.md).
 Milestone trước: [Frozen-backbone — COMPLETED, CASE B](33_REQUEST_V3_FROZEN_BACKBONE.md).
 Milestone trước: [2M data scaling readiness — CASE B](34_AI_IDPS_2M_DATA_SCALING_READINESS.md).
-Milestone hiện tại: [RAW+LABEL source qualification — CASE C](35_AI_IDPS_RAW_LABEL_SOURCE_QUALIFICATION.md).
+Milestone trước: [RAW+LABEL source qualification — CASE C](35_AI_IDPS_RAW_LABEL_SOURCE_QUALIFICATION.md).
+Milestone hiện tại: [First-party source — CASE B](36_FIRST_PARTY_DATA_ACQUISITION_STRATEGY.md).
 
 ## Repository, model release và dependencies
 
@@ -1521,3 +1522,50 @@ Metadata snapshots localignored `.local-dev/raw-label-source-20261110/`; public
 aggregate evidenceonly. 188smallhistoricalpins checked;25largepayloads not rehashed.
 No encoders/models/thresholds/system/releases/sealeddata changes; no sourcecode
 edits/tests needed. Existing clone→bootstrap→restoremodels→localshadow path unchanged.
+
+
+## First-party source qualification — 2026-11-10
+
+**CASE B — source exists, Ground Truth insufficient.**
+[Report](36_FIRST_PARTY_DATA_ACQUISITION_STRATEGY.md),
+[machine evidence](../ai-training/reports/FIRST_PARTY_SOURCE_QUALIFICATION_20261110.json),
+[collector intake contract](FIRST_PARTY_RAW_LABEL_INTAKE.md).
+Baseline9e323c9/clean. No Biblio retry,23sourceinventoryrepeat, HTTP, DBqueries,
+capture, sourcecode/frameworkchange or training.
+
+Chosen source: existing ownedStudentfixture live-ingress capture20261108, private
+read-onlyqualification within existingcontrolledlabscope/currentuserauthorization;
+notarbitraryproductiondata or a rawredistributiongrant.73distinctnativegatewayIDs,
+73application ID/method/route/status matches.75appaudits include2nongatewayrecords;
+67helperrecords+6directfailurecalls=73, not extra sources/requests.32OFF+32ONrepeat
+workflows intentionally; noindependentcampaign count. EarlierSuricataacceptance is
+separate and is not borrowed as207observability for thiscapture.
+
+Keyfinding: Student exporter lowercase`outcome` is merely status>=400 failure,
+else success (all75match), not attack/benign/exploitGroundTruth. All67helperrecords
+lack semanticintent/outcome/oracle/label-source/review fields;`label` means technical
+case. Pinnedcode has partialloginidentity/logoutstate assertions, but retained
+perrequest expected/actualOracle andintentpackage is incomplete. No PASS→benign
+promotion. ValidresearchOracleA does not require independenthumanreview.
+
+32bodyevents pass46contract but contain11views:17MISSING,8OK,1EMPTY,2MALFORMED,
+4otherunsupported/oversize states. Missingevent on41requests is notBODY_MISSING:
+OFF/drops mustremain observationabsence. No634materialization or207padding.
+0nativeIDoverlap with known236+8references; raw/template/near andindependence not
+certified. Allsource is alreadyexposedengineeringevidence, notnewblindholdout.
+
+`PILOT=NOT_RUN_SOURCE_GT_INSUFFICIENT`; admissioncandidates0,newstrict0,noquarantine/
+stagingrelease. A private73rowUNKNOWNcollectorqueue was created, with no new label,
+datasetrole orindependentreviewdecisions:
+`.local-dev/first-party-source-20261110/collector-intake-pending.jsonl`.
+Sourcepinsunchanged; no sensitivevalues/publicrequestIDs pushed. No new tests
+needed for docs/metadata-only qualification.
+
+**Exactlyone next task:** collector supplies request-boundsemanticledger andretained
+redactedOracle/reviewproof for those73IDs. Unrecoverable staysUNKNOWN; do not create
+historicalresponses or recapturetofixpast. Then <=73qualification inlaterrequest.
+Noownercontactsent. Prior74strictpool unchanged;2Mgapfromthatpool1999926, not a
+newglobalcensus.10K/100K/500K/2Mneednewauthorizedcapacity andmeasuredlabelyield,
+not repeats/weaklabels. No sourcevolume or balancedattackcoverage established.
+Frozenmodels/checkpoints/encoders/thresholds, allWeb/system/correlation/admission
+policy, datasets/roles/releases/sealeddata and teambootstrap workflow unchanged.
