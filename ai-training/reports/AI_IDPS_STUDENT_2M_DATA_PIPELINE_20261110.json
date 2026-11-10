@@ -1,0 +1,245 @@
+{
+  "schema_version": "AI_IDPS_STUDENT_2M_DATA_PIPELINE-1",
+  "date": "2026-11-10",
+  "baseline_commit": "29563213513ff4de1714192945dbb6a1f193c978",
+  "branch": "feature/ai-idps-shadow-integration",
+  "state": "PRELAUNCH_PREFLIGHT_VERIFIED",
+  "profile": "student-training-v1",
+  "run_id": "student-training-v1-100k-r2",
+  "plan_fingerprint": "b6d337f5b2a50ff3477012711e7bff60e7d5856007e8b067ed17626552673cd5",
+  "teacher": {
+    "checkpoint_manifest": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+    "encoder": "rich_content_v2+bounded-request-v1",
+    "model": "Frozen Request v2 step3072",
+    "parameters": 50696,
+    "probability_calibrated": false,
+    "threshold": 0.8826237916946411
+  },
+  "frame_positions": 100000,
+  "processed_preflight": {
+    "SOURCE_ROWS": 512,
+    "PARSED_HTTP_OBSERVATIONS": 512,
+    "VERIFIED_PHYSICAL_REQUESTS": 73,
+    "FEATURE_COMPATIBLE": 439,
+    "ACTUAL_TRAINING_CONSUMED": 0,
+    "ACTUAL_TRAINING_ELIGIBLE": null,
+    "DEDUPLICATED_TRAINING_EXAMPLES": null,
+    "QUARANTINED": null
+  },
+  "preflight_source_primary_tiers": {
+    "UNLABELED": 73,
+    "SILVER": 439
+  },
+  "preflight_original_publisher_labels": {
+    "anomalous": 177,
+    "normal": 262
+  },
+  "preflight_teacher": {
+    "scored": 30,
+    "positive_aux_proposals_before_final_quarantine": 21,
+    "abstained": 491,
+    "conflicts": 0
+  },
+  "counter_scope": "512 positions, not final release; future component propagation may change eligibility. Null is unmeasured, not zero. No scores used for frame/policy selection.",
+  "first_party_reconciliation": {
+    "passes": 1,
+    "records": 73,
+    "recovered_GOLD": 0,
+    "intent": "UNKNOWN",
+    "outcome": "UNKNOWN",
+    "original_queue_unchanged": true,
+    "human_review": "PENDING"
+  },
+  "resources": {
+    "failed_initial_preparation": {
+      "status": "STOPPED",
+      "failure": "85.0C emergency stop",
+      "unit": "idps-integration-23783-14982621.service",
+      "wall_seconds": 1.1006375159995514,
+      "kernel_cpu_quota_percent": 100,
+      "kernel_tasks_max": 64,
+      "peak_tasks": 3,
+      "cpu_temperature_min": 63.0,
+      "cpu_temperature_mean": 68.33333333333333,
+      "cpu_temperature_max": 95.0,
+      "peak_cgroup_memory_bytes": 186408960,
+      "peak_system_used_bytes": 9465663488,
+      "events": [],
+      "systemd_result": "ActiveState=failed\nResult=signal\nExecMainStatus=9\nMemoryPeak=208179200\nCPUUsageNSec=769676000\n",
+      "source_sha256": "cee2501984ddf9f4ccdec721f38e5111161cd6dd872736dc8fa724ea425170b6",
+      "safety_scope": "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat",
+      "build_pause_only": false,
+      "scope_mode": false,
+      "policy": "rolling",
+      "instant_cutoff_c": 85.0,
+      "thermal_time_weighted": {
+        "current_c": 95.0,
+        "rolling_300s_c": 63.0,
+        "full_run_time_weighted_c": 63.0,
+        "active_time_weighted_c": 63.0,
+        "paused_time_weighted_c": null,
+        "active_seconds": 1.050508278000052,
+        "paused_seconds": 0.0,
+        "window_seconds": 1.050508278000052,
+        "sensor_health": "OK"
+      },
+      "emergency_stops": 1,
+      "watchdog_failure": "emergency_temperature",
+      "automatic_restarts": 0,
+      "reserve_bytes": 4294967296
+    },
+    "reduced_load_preparation": {
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-23930-12101919.service",
+      "wall_seconds": 66.553611456,
+      "kernel_cpu_quota_percent": 20,
+      "kernel_tasks_max": 64,
+      "peak_tasks": 4,
+      "cpu_temperature_min": 52.0,
+      "cpu_temperature_mean": 53.25867507886435,
+      "cpu_temperature_max": 62.0,
+      "peak_cgroup_memory_bytes": 538243072,
+      "peak_system_used_bytes": 9819611136,
+      "events": [],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "601120768",
+        "CPUUsageNSec": "13192475000"
+      },
+      "source_sha256": "cee2501984ddf9f4ccdec721f38e5111161cd6dd872736dc8fa724ea425170b6",
+      "safety_scope": "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat",
+      "build_pause_only": false,
+      "scope_mode": false,
+      "policy": "rolling",
+      "instant_cutoff_c": 85.0,
+      "thermal_time_weighted": {
+        "current_c": 54.0,
+        "rolling_300s_c": 53.258297800352864,
+        "full_run_time_weighted_c": 53.258297800352864,
+        "active_time_weighted_c": 53.258297800352864,
+        "paused_time_weighted_c": null,
+        "active_seconds": 66.40368312300052,
+        "paused_seconds": 0.0,
+        "window_seconds": 66.40368312300052,
+        "sensor_health": "OK"
+      },
+      "emergency_stops": 0,
+      "watchdog_failure": null,
+      "automatic_restarts": 0,
+      "reserve_bytes": 4294967296
+    },
+    "actual_preflight": {
+      "status": "PASS",
+      "failure": null,
+      "unit": "idps-integration-24483-31175877.service",
+      "wall_seconds": 27.14941102299963,
+      "kernel_cpu_quota_percent": 20,
+      "kernel_tasks_max": 64,
+      "peak_tasks": 5,
+      "cpu_temperature_min": 52.0,
+      "cpu_temperature_mean": 53.50387596899225,
+      "cpu_temperature_max": 57.0,
+      "peak_cgroup_memory_bytes": 521900032,
+      "peak_system_used_bytes": 9801170944,
+      "events": [],
+      "systemd_result": {
+        "ActiveState": "active",
+        "SubState": "exited",
+        "Result": "success",
+        "ExecMainStatus": "0",
+        "MemoryPeak": "521900032",
+        "CPUUsageNSec": "5212651000"
+      },
+      "source_sha256": "cee2501984ddf9f4ccdec721f38e5111161cd6dd872736dc8fa724ea425170b6",
+      "safety_scope": "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat",
+      "build_pause_only": false,
+      "scope_mode": false,
+      "policy": "rolling",
+      "instant_cutoff_c": 85.0,
+      "thermal_time_weighted": {
+        "current_c": 54.0,
+        "rolling_300s_c": 53.50522320996747,
+        "full_run_time_weighted_c": 53.50522320996747,
+        "active_time_weighted_c": 53.50522320996747,
+        "paused_time_weighted_c": null,
+        "active_seconds": 27.039874402999885,
+        "paused_seconds": 0.0,
+        "window_seconds": 27.039874402999885,
+        "sensor_health": "OK"
+      },
+      "emergency_stops": 0,
+      "watchdog_failure": null,
+      "automatic_restarts": 0,
+      "reserve_bytes": 4294967296
+    }
+  },
+  "tests": {
+    "passed": 16,
+    "files": [
+      "test_student_training.py",
+      "test_scaling_admission.py",
+      "test_rich_content_v2.py",
+      "test_rolling_resource_policy.py"
+    ],
+    "ruff": "PASS"
+  },
+  "completion_protocol": {
+    "resume_boundaries": [
+      512,
+      4096,
+      100000
+    ],
+    "rebuild": "same100000positions; byte-identical features/ledgers and equal semantic summaries required",
+    "final_status": "completion.json +resourcePASS +supervisor-resultCOMPLETED",
+    "private_root": "ai-training/.artifacts/student_training_20261110/student-training-v1-100k-r2",
+    "background_launch": "after reviewed commit/push; status.json is authoritative"
+  },
+  "leakage": {
+    "known_protected_common_v2": "blocked exhaustive FP64 metric before teacher",
+    "global_raw_campaign_lineage": "PARTIAL",
+    "legacy_incompatible_encoder_near": "PARTIAL; known exact template groups excluded",
+    "new_independent_eval": false,
+    "sealed_opened": false
+  },
+  "privacy": {
+    "metadata_allowlist": "PASS_TESTED",
+    "frozen_feature_projection": "existing value exclusions reused",
+    "all_per_example_material": "LOCAL_ONLY",
+    "staged_public_secret_value_scan": "PASS; known fixture secret values/encodings, native request IDs and session HMAC values absent"
+  },
+  "capacity": {
+    "WAF_source_rows_verified": 1924461,
+    "WAF_historical_exact_representations": 1612017,
+    "source_shortfall_to2M_rows_WAF_only": 75539,
+    "minimum_representation_shortfall_WAF_only_before_exclusions": 387983,
+    "current_admitted_yield": "PENDING_100K_COMPLETION",
+    "cross_source_additive_capacity": "UNVERIFIED",
+    "two_million_physical_requests": "NOT_ESTABLISHED",
+    "next_batch": "one disjoint cumulative500K WAF frame after pilotverification; not started"
+  },
+  "preservation": {
+    "frozen_models": "UNCHANGED",
+    "strict_profile": "UNCHANGED",
+    "old_dataset_roles": "UNCHANGED",
+    "system_and_web": "UNCHANGED",
+    "releases": "UNCHANGED",
+    "training_steps": 0,
+    "small_existing_pins_verified_unchanged": 187,
+    "reserved_or_large_pins_not_read": 1
+  },
+  "final_state": {
+    "STUDENT_TRAINING_POLICY": "LOCKED",
+    "DATA_100K_PILOT": "PREFLIGHT_ONLY; supervisor launch pending",
+    "LABEL_TIER_PIPELINE": "PASS_TARGETED_TESTS; fullframepending",
+    "PSEUDO_LABELING": "PARTIAL_EXPLORATORY_UNCALIBRATED",
+    "DATASET_REBUILD": "NOT_RUN_FOR100K",
+    "TRAINING_EXAMPLES_AVAILABLE": null,
+    "VERIFIED_PHYSICAL_REQUESTS": 73,
+    "TWO_MILLION_CAPACITY": "PARTIAL",
+    "MODEL_TRAINING": "NOT_STARTED"
+  }
+}

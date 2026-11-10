@@ -1569,3 +1569,39 @@ newglobalcensus.10K/100K/500K/2Mneednewauthorizedcapacity andmeasuredlabelyield,
 not repeats/weaklabels. No sourcevolume or balancedattackcoverage established.
 Frozenmodels/checkpoints/encoders/thresholds, allWeb/system/correlation/admission
 policy, datasets/roles/releases/sealeddata and teambootstrap workflow unchanged.
+
+## Student training-data scaling — 2026-11-10
+
+The updated student-project requirements now permit SILVER/BRONZE/UNLABELED data.
+[Student policy and100K pipeline report](37_AI_IDPS_STUDENT_2M_DATA_PIPELINE.md)
+supersedes the earlier strict-label-only scaling recommendation, without changing
+[the strict profile](../ai-training/configs/research/http-scaling-admission-20261109.json).
+No model training or promotion is performed. Clone → bootstrap → restore models →
+local inference remains unchanged; the private research corpus is not required.
+
+New separate profile: `ai-training/configs/research/student-training-v1.json`.
+The fixed100K frame is73 retained first-party identities +99,927 publisher WAF
+observations. First-party reconciliation is complete, all73 remain UNKNOWN and
+reference-only for588; no new capture or independent review. WAF SILVER targets
+publisher anomaly, not attack intent. Frozen v2's version-bound positive-only
+BRONZE proposals use its unchanged operating threshold and never overwrite SILVER.
+No rule evidence is invented. Global raw/campaign lineage remains PARTIAL.
+Existing CAL/DEV/sealed roles are protected; no fresh independent evaluation claim.
+
+The versioned run is `student-training-v1-100k-r2` under
+`ai-training/.artifacts/student_training_20261110/`. The public report records the
+prelaunch state; authoritative live/final evidence stays private in `status.json`,
+`materialized/progress.json`, `completion.json`, `resource/resource-report.json`
+and `supervisor-result.json`. Counts are final only after verified rebuild and
+resource PASS. Keep raw HTTP, pseudo-label ledgers, features and identity keys local.
+The initial one-core100% preparation stopped at95°C before any WAF samples; its
+log is preserved. Reduced-load preparation at20% of one core passed, peak62°C,
+66.55s. Instant cutoff85°C, active300s<80°C, independent watchdog,<=8GiB and4GiB
+system reserve apply to the supervised bounded run. No automatic thermal restart.
+
+WAF has historical1,612,017 distinct representations before exclusions, not that
+many verified independent wire requests.2M usable-example capacity is PARTIAL;
+additional authorized sources and cross-source lineage checks remain necessary.
+Next step after actual pilot verification is one disjoint cumulative500K WAF batch,
+not automatic training. Frozen Request v2/GLU207/v3 checkpoints, Web/Nginx/Suricata/
+Rules/Policy/correlation, published releases and prospective seal remain unchanged.

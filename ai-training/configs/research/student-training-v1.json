@@ -1,0 +1,103 @@
+{
+  "version": "student-training-v1",
+  "scope": "Separate student research training profile; never overrides strict admission, frozen inference or dataset roles",
+  "tiers": {
+    "GOLD": "request-bound Oracle or genuine reviewed evidence; intent/outcome/observation separate",
+    "SILVER": "original publisher labels retained in publisher task, not verified attack intent",
+    "BRONZE": "versioned weak/teacher labels, explicitly uncalibrated unless independently supported",
+    "UNLABELED": "no supported supervised target; abstention allowed"
+  },
+  "sources": {
+    "waf": {
+      "revision": "b035dc17f875f1f732c10654709abed66a4e9742",
+      "train_sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+      "license": "pinned publisher MIT card; private research use; no raw redistribution",
+      "task": "publisher_anomaly",
+      "labels": {
+        "normal": 0,
+        "anomalous": 1
+      },
+      "intent_mapping": "NONE; intent stays UNKNOWN",
+      "physical_identity": "UNVERIFIED; sourceSHA+row is import provenance only"
+    },
+    "first_party": {
+      "rows": 73,
+      "recovery": "one pass over existing intake/evidence only; missing semantic Oracle stays UNKNOWN; original queue unchanged",
+      "purpose": "REFERENCE_ONLY_EXPOSED; no role reassignment or forced588features"
+    }
+  },
+  "selection": {
+    "max_candidate_positions": 100000,
+    "seed": 17,
+    "first_party_rows": 73,
+    "WAF_rowgroup_windows": [
+      [
+        0,
+        49964
+      ],
+      [
+        1,
+        49963
+      ]
+    ],
+    "window_semantics": "first N rows of each of two rowgroups; deterministic metadata-only frame, not prevalence-representative",
+    "rebuild": "same100000positions; no newsource coordinates"
+  },
+  "features": {
+    "version": "student-http588-rich-v2-publisher-v1",
+    "dimension": 588,
+    "dtype": "float32",
+    "numeric": "existing bounded76 fixed spec",
+    "content": "existing rich_request_v2 on publisher-supplied method/url/headers/body, unsigned char3-5 hashing512 sharedL2",
+    "normalization_fit": "NONE",
+    "missingness": "publisher missing/empty/nonempty fields retained separately in metadata even when frozen representation conflates them; no wire-completeness claim",
+    "request634": "NOT_MATERIALIZED; no guessed wire body syntax",
+    "GLU207": "UNAVAILABLE; no fabricated telemetry"
+  },
+  "split": {
+    "new_WAF": "TRAIN_STAGING_EXPOSED_PUBLISHER_TASK_ONLY",
+    "new_independent_eval": false,
+    "protected": "exclude all known legacy-v1 sample templates and current-v2 CAL/DEV safe templates and exact views; exclude routes of236/8/73 reference captures; block matched v2 protected near neighbors",
+    "old_roles": "unchanged; exposed DEV is diagnostics only; sealed never opened",
+    "chronology": "unknown WAF clock/campaign, no chronological/generalization claim"
+  },
+  "dedup": {
+    "physical_vs_representation_vs_feature": "separate counters; do not dedup distinct supported physical events merely by feature equality",
+    "exact": "whole-request privateHMAC; conflicting original labels quarantine all members; first source coordinate is canonical for duplicate representations",
+    "feature_conflict": "quarantine mixed publisher-label exact588views without majority vote",
+    "groups": "existing disk-backed request/raw/view/template graph with excluded bridges; protected flag propagates through exact connected components",
+    "near": "exhaustive blocked FP64 cosine on unique512content vectors, threshold0.995 with1e-7 tolerance; no limited hash buckets. Matched protected-near flags quarantine exact components. WithinTRAIN similarity counts do not mean duplicate physical identity",
+    "coverage_limit": "full for selected frame/common-v2 protected metric; incompatible legacy encoder near and unknown global raw/campaign lineage remain PARTIAL; no independent evaluation certification"
+  },
+  "pseudo": {
+    "version": "teacher-positive-proposal-v1",
+    "teacher": "Frozen Request v2 step3072/50696params",
+    "threshold_source": "unchanged frozen threshold-manifest, strict >; no invented negative cutoff",
+    "positive": "BRONZE auxiliary proposal only above existing operating point and if publisher label agrees or is absent",
+    "negative": "ABSTAIN; no validated negative-confidence policy",
+    "disagreement": "explicit conflict+abstain, original SILVER target never overwritten",
+    "protected": "never score/pseudo-label protected evaluation/reference records",
+    "confidence": "raw teacher score is NOT calibrated confidence/PPV; same-source teacher pretraining acknowledged",
+    "rules": "NOT_OBSERVED; no fabricated agreement",
+    "evaluation": "no accuracy against own labels; no DEV or holdout threshold tuning"
+  },
+  "training": {
+    "optimizer_updates": 0,
+    "supervised_task": "publisher_anomaly for SILVER; GOLD attack-intent is a separate task",
+    "primary_weight": "1/accepted-count-of-identical588view to prevent excess feature-view weight while retaining distinct examples",
+    "proposed_future_losses": "GOLD intent and SILVER anomaly separately normalized (starting coefficient1 each where available); BRONZE optionaldistillation coefficient0.1 is a research heuristic, not optimized; UNLABELED0supervised. Current consumption0 for everytier",
+    "future_validation": "new authorized untouched grouped data required for independent quality; oldDEV/body8 not model-selection holdout"
+  },
+  "resources": {
+    "logical_CPU_limit": 8,
+    "math_threads": 1,
+    "initial_quota_percent_one_core": 20,
+    "memory_GiB": 8,
+    "reserve_GiB": 4,
+    "active_rolling_limit_C": 80,
+    "instant_cutoff_C": 85,
+    "max_job_seconds": 10800,
+    "reason": "100% one-core preparation stopped at95C; one bounded20% retry, no automatic emergency restart"
+  },
+  "acceptance": "source/teacher binding, tier semantics, privacy, exact protected isolation, atomic resume, deterministic features/ledger/rebuild, honest scope/counters; not merely100Kreads and not model quality"
+}
