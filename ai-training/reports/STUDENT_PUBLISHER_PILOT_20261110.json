@@ -1,0 +1,239 @@
+{
+  "schema_version": "STUDENT_PUBLISHER_PILOT-1",
+  "date": "2026-11-10",
+  "baseline_commit": "803aabc2da2d5192bfe65dbd4b7c4b5155bbf9c6",
+  "branch": "feature/ai-idps-shadow-integration",
+  "state": "DATA_VERIFIED_ACTUAL_STEP2_BACKGROUND_PREPARED",
+  "data_pipeline": "PASS_WITH_DOCUMENTED_PARTIAL_GLOBAL_LINEAGE",
+  "dataset_fingerprint": "977dbdff18dfb5c9aa1ced18e42abfd0080b8f994b465d3eeef0c69325548e9c",
+  "counts": {
+    "ACTUAL_TRAINING_CONSUMED": 0,
+    "ACTUAL_TRAINING_ELIGIBLE": 3783,
+    "BRONZE": 0,
+    "DEDUPLICATED_TRAINING_EXAMPLES": 3783,
+    "FEATURE_COMPATIBLE": 99927,
+    "GOLD": 0,
+    "PARSED_HTTP_OBSERVATIONS": 100000,
+    "QUARANTINED": 96217,
+    "SILVER": 3783,
+    "SOURCE_ROWS": 100000,
+    "UNLABELED": 0,
+    "VERIFIED_PHYSICAL_REQUESTS": 73
+  },
+  "valid_observation_scope": "99927 parsedpublisherHTTP representations +73 correlatedtechnicalreceipts; not100K independentlyverifiedphysicalrequests",
+  "accepted_primary_tiers": {
+    "SILVER": 3783
+  },
+  "source_primary_tiers": {
+    "SILVER": 99927,
+    "UNLABELED": 73
+  },
+  "source_publisher_labels": {
+    "None": 73,
+    "anomalous": 22786,
+    "normal": 77141
+  },
+  "accepted_publisher_labels": {
+    "normal": 1404,
+    "anomalous": 2379
+  },
+  "supervised_training_eligible_records": 3783,
+  "canonical_training_pool_views": 3751,
+  "self_supervised_compatible_existing_pool": 3783,
+  "new_unlabeled_feature_compatible_pool": 0,
+  "self_supervised_count_scope": "sameacceptedpooliflabelsignored; notadditionalexamples; noSSLpilot",
+  "physical_identity": {
+    "verified_source_receipts": 73,
+    "verified_physical_training_examples": 0,
+    "WAF_physical_identity": "UNVERIFIED"
+  },
+  "feature_matrix": {
+    "WAF": {
+      "offline588": 99927,
+      "634": 0,
+      "causal207": 0
+    },
+    "first_party_technical73": {
+      "588": 0,
+      "634": 0,
+      "causal207": 0
+    },
+    "limitations": "publisherbodycompleteness notwireverified; firstparty46events do notconstitute634input; no fabricatedthree-sourcefeatures"
+  },
+  "verification": {
+    "focused_final_check": "PASS",
+    "SQLite_materialized_rebuild": "PASS100000uniquesourcecoordinates",
+    "shards": 391,
+    "all_shards_finite_float32_588": "PASS",
+    "byte_identical_derivative_rebuild": "PASS",
+    "raw_feature_rematerialization": "NOT_REPEATED; derivativeonly",
+    "training_index_hash": "645879e484aff42b42aeb05e9a9281a86aa34685b517c8a6091145524580467b",
+    "ledger_hash": "a7a1113a392fc907e856c97743e2d1831ca5fdeb75a365ba31e8e4f6e93681ec",
+    "near": {
+      "materialized": {
+        "fingerprint": "e3f1e9279e0798762ae198c3b96dd7d92467e46e9dc560c7c63bbcdc10c42937",
+        "pairs": 427968495,
+        "rows": 99927,
+        "vectors": 32735
+      },
+      "rebuild": {
+        "fingerprint": "e3f1e9279e0798762ae198c3b96dd7d92467e46e9dc560c7c63bbcdc10c42937",
+        "pairs": 427968495,
+        "rows": 99927,
+        "vectors": 32735
+      }
+    },
+    "privacy": "existingfrozenprivacyprojection+allowlisttests andhash-boundmetadata; per-examplematerialremainslocal",
+    "first_metadata_export_failure": "privatecheckerint64JSONserializationfixed; datasetassertionspassed; samecriteria/seedrerun noexperimentsearch"
+  },
+  "label_provenance": {
+    "task": "publisher_anomaly",
+    "intent_mapping": "NONE",
+    "firstparty73": "UNKNOWN_INTENT/UNKNOWN_OUTCOME; quarantinedfor588; independentreviewPENDING",
+    "teacher": {
+      "checkpoint_manifest": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+      "encoder": "rich_content_v2+bounded-request-v1",
+      "model": "Frozen Request v2 step3072",
+      "parameters": 50696,
+      "probability_calibrated": false,
+      "threshold": 0.8826237916946411
+    },
+    "pseudo": {
+      "abstained": 97635,
+      "aux_BRONZE_proposals_before_quarantine": 2365,
+      "aux_BRONZE_proposals_eligible": 2277,
+      "binary_disagreements": 610,
+      "conflicts": 23,
+      "scored": 4979
+    },
+    "auxiliary_BRONZE_proposals_eligible": 2277,
+    "primary_BRONZE_examples": 0,
+    "pseudo_used_for_gradients": false,
+    "rule_evidence": "NOT_OBSERVED",
+    "teacher_accuracy": "NOT_MEASURED_NO_CIRCULAREVALUATION"
+  },
+  "split": {
+    "fingerprint": "75188987ac4aa2cd4fd4c1ab6a1b9ee7d51a74a572d607c31ac5de8958bc874c",
+    "counts": {
+      "CALIBRATION": {
+        "anomalous": 358,
+        "examples": 564,
+        "groups": 523,
+        "normal": 206
+      },
+      "EVALUATION": {
+        "anomalous": 336,
+        "examples": 520,
+        "groups": 484,
+        "normal": 184
+      },
+      "TRAIN": {
+        "anomalous": 1673,
+        "examples": 2667,
+        "groups": 2497,
+        "normal": 994
+      }
+    },
+    "accepted_original_components": 3652,
+    "after_near_closure_components": 3504,
+    "near_edges_joined": 263,
+    "canonicalization_removed_duplicate_feature_rows": 32,
+    "known_exact_or_metric_near_cross_role_overlap": 0,
+    "source_release_roles_changed": false,
+    "new_internal_roles": "separatecandidateonly",
+    "scope": "groupheldoutpublisherstaging; notfreshindependentorcross-domain",
+    "global_unknown_campaign_rawlineage": "PARTIAL",
+    "teacher_pretraining_template_overlap_source_records": 2912,
+    "new_candidate_pretraining": "NONE_FRESH_RANDOM"
+  },
+  "training": {
+    "run_id": "student-publisher-anomaly-20261110-r1",
+    "task": "publisher_anomaly",
+    "architecture": [
+      588,
+      64,
+      64,
+      64,
+      64,
+      8
+    ],
+    "parameters": 50696,
+    "training_examples": 2667,
+    "TRAIN_normal": 994,
+    "TRAIN_anomalous": 1673,
+    "CALIBRATION_examples": 564,
+    "EVALUATION_examples": 520,
+    "epochs": 10,
+    "planned_optimizer_updates": 420,
+    "actual_committed_preflight_updates": 2,
+    "gradient_presentations_full_budget": 26670,
+    "initialization": "freshseed17,noFrozenweights",
+    "optimizer": "adamw-v1",
+    "learning_rate": 0.001,
+    "checkpoint_interval": 16,
+    "preflight": {
+      "actual_committed_updates": 2,
+      "calibration_evaluation_gradient_rows": 0,
+      "checkpoint_directory": "/home/trung/projects/idps-web-aws/ai-training/.artifacts/student_publisher_pilot_20261110/student-publisher-anomaly-20261110-r1/model",
+      "checkpoint_step1_reload_exact": true,
+      "next_update_parameters_Adam_RNG_cursor_exact": true,
+      "planned_steps": 420,
+      "state": "PASS",
+      "training_examples": 2667
+    },
+    "resource_preflight": {
+      "effective_emergency_C": 96.0,
+      "independent_systemd_service": true,
+      "peak_temperature_C": 50.0,
+      "samples": 141,
+      "seconds": 16.400081272000534,
+      "state": "COMPLETED"
+    },
+    "baseline": "TRAINmajority/prior andmetadatawindow/bodypriors",
+    "eval_when": "userexplicitreturnonly",
+    "eval_protocol": "fixed0.5 +CAL-onlybalancedaccuracythreshold(highesttie); TP/FP/TN/FN,precision,recall,F1,AP,FPR,Wilsonuncertainty,source/method/body/groupdiagnostics",
+    "no_family_truth": "notavailable;8logits marginalbinary, nofamily supervision",
+    "selection": "finalfixedbudgetonly",
+    "plan_fingerprint": "3353ad863a09d7a1f508916b228a77751d0cdcdb6665d65ab54b63b0c847b28a",
+    "private_run": "ai-training/.artifacts/student_publisher_pilot_20261110/student-publisher-anomaly-20261110-r1"
+  },
+  "readiness": "PASS_FOR_BOUNDED_INTERNAL_PUBLISHER_ANOMALY_RESEARCH",
+  "independent_attack_intent_quality": "NOT_ESTABLISHED",
+  "tests": {
+    "passed": 42,
+    "ruff": "PASS",
+    "actual_checkpoint_reload_and_next_update": "EXACT_MODEL_ADAM_RNG_ORDER_CURSOR",
+    "holdout_gradient_rows": 0
+  },
+  "resources": {
+    "CPU_ceiling_percent_one_core": 20,
+    "RAM_cap_GiB": 8,
+    "reserve_GiB": 4,
+    "thermal_C": [
+      85,
+      90,
+      93,
+      96
+    ],
+    "independent_watchdog": true
+  },
+  "preservation": {
+    "small_pins_verified": 187,
+    "frozen_model_payloads": {
+      "Request_v2": {
+        "manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+        "payload_hashes": "PASS"
+      },
+      "GLU207": {
+        "manifest_sha256": "e663b0979f6fd3222ce08922f7e50958d2111a59d8d72a59f470d292146c0636",
+        "payload_hashes": "PASS"
+      }
+    },
+    "source_dataset_roles_thresholds_models_system": "UNCHANGED",
+    "sealed_access": false,
+    "500K": false,
+    "AWS_enforcement_promotion": false
+  },
+  "publication": "aggregateandreviewedsourceonly; dataset,teacherledgers,modelcheckpoints andsecretsstaylocal",
+  "next_action": "resumeexactsamepilotfromstep2 inoneindependentbackgroundjob; verifyupdates/checkpoint/watchdog thenendchat; noautomaticfinalevaluation"
+}

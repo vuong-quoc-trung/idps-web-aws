@@ -1,0 +1,18 @@
+{
+  "version": "student-publisher-pilot-v1",
+  "task": "publisher_anomaly",
+  "dataset_fingerprint": "977dbdff18dfb5c9aa1ced18e42abfd0080b8f994b465d3eeef0c69325548e9c",
+  "feature_contract": "student-http588-rich-v2-publisher-v1",
+  "labels": {"normal": 0, "anomalous": 1},
+  "tiers": ["SILVER"],
+  "teacher_auxiliary_used_for_gradients": false,
+  "source_roles_unchanged": true,
+  "split": {"version": "student-publisher-group-split-v1", "seed": 17, "groups": "closure of original exact lineage components plus all eligible content cosine>=0.995-1e-7 edges", "assignment": "SHA256(student-publisher-v1:17:minimum-original-row) first64bits modulo100: TRAIN<70, CALIBRATION<85, else EVALUATION", "canonicalization": "first source row per identical588view, equivalent inverse-view-multiplicity objective", "minimum_canonical_train": 500, "minimum_each_class_per_role": 50, "failure": "BLOCK; do not reseed or resample to force coverage", "scope": "internal grouped holdout from exposed publisher staging; not independent cross-domain test"},
+  "model": {"kind": "deep_mlp", "layers": [588,64,64,64,64,8], "parameters": 50696, "initialization": "fresh seed17; no frozen/teacher warmstart", "objective": {"kind": "partial_binary_v1", "smoothing": 0.005, "family_weight": 0.0}, "output_semantics": "logit0 publisher-normal; marginal logits1..7 publisher-anomaly latent bins, no family supervision"},
+  "training": {"seed": 17, "epochs": 10, "batch_size": 64, "learning_rate": 0.001, "scheduler": "constant", "optimizer": "existing AdamW-v1, betas0.9/0.999, epsilon1e-8, globalL2clip1, W-onlydecay0.0001", "class_weights": "inverse canonical TRAIN class frequency only", "sampler": "seeded group round-robin, each canonical TRAIN view once per epoch", "checkpoint_interval_steps": 16, "checkpoint_selection": "final fixed budget only; library best pointer is bookkeeping", "search": false},
+  "evaluation": {"when": "only on explicit user return; never automatic after training", "baseline": "TRAIN majority/prior; metadata-only TRAIN window/body-state priors as shortcut control", "frozen_v2_reference": "optional diagnostic only, disclose source pretraining overlap; never treat as unseen baseline", "thresholds": ["fixed0.5", "maximize balanced accuracy on CALIBRATION only, highest threshold on ties"], "metrics": ["TP","FP","TN","FN","precision","recall","F1","average_precision","FPR","Wilson95%intervals"], "report": ["canonical-view and retained-record scope","per-window/body/method","near/lineage group sensitivity","publisher label noise and same-source shift"], "family_metrics": "UNAVAILABLE unless separately verified; do not invent attack-family labels", "no_quality_claim": "publisher-anomaly learning is not independently verified attack-intent improvement"},
+  "resources": {"CPU_ceiling_percent_one_core":20,"memory_cap_GiB":8,"system_reserve_GiB":4,"math_threads":1,"warning_C":85,"throttle_C":90,"strong_C":93,"requested_emergency_C":96,"max_training_seconds":7200},
+  "promotion": false,
+  "sealed_access": false,
+  "500K_processing": false
+}

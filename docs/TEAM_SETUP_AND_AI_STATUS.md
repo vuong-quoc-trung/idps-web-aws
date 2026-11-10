@@ -1673,3 +1673,42 @@ policy remain active. Frozen models/thresholds, strict datasets/roles, all Web/s
 Rules/Policy, releases and sealed samples remain unchanged. No training,500K, AWS,
 enforcement or promotion. After this dataset completes, user requests validation
 and training readiness separately. Team bootstrap/inference workflow is unchanged.
+
+## Final100K verification and first publisher pilot — 2026-11-10
+
+[Dataset/pilot report](40_STUDENT_PUBLISHER_ANOMALY_PILOT.md),
+[machine evidence](../ai-training/reports/STUDENT_PUBLISHER_PILOT_20261110.json),
+[fixed config](../ai-training/configs/research/student-publisher-pilot-20261110.json).
+Recovery-a2 completed successfully:100K positions,99,927 finite588 feature rows,
+391 unchanged/rebuild-identical shards, exact near count427,968,495 and deterministic
+normalized derivative rebuild. Dataset fingerprint977dbdff18dfb5c9aa1ced18e42abfd0080b8f994b465d3eeef0c69325548e9c.
+SQLite, coordinates, training index, labels and privacy lineage pass focused checks;
+known frozen Requestv2/GLU207 payload hashes and187 small pins are unchanged.
+
+Actual accepted pool:3,783 SILVER publisher-anomaly records, normal1,404/anomalous2,379;
+3,751 unique588 views.96,217 quarantined.73 verified physical source identities are
+first-party technical receipts, all UNKNOWN and not588 training eligible. WAF physical
+identity is unverified. Accepted GOLD/BRONZE/UNLABELED0/0/0; source tiers retain73
+UNLABELED. SSL could reuse this same3,783 pool, not add it again; no SSL run is started.
+Auxiliary teacher proposals are separate and not gradient labels. No Rule evidence.
+
+Fixed seed17 component+near closure split:TRAIN2,667/CAL564/EVAL520 canonical views,
+with both publisher classes in every role and no known exact/metric-near cross-role
+links. Global campaign/raw lineage remains PARTIAL; this is exposed-source internal
+holdout, not independent cross-domain quality. New candidate uses fresh weights,
+not the teacher with known source-template overlap. Original source roles unchanged.
+
+One run `student-publisher-anomaly-20261110-r1`:existing588→64×4→8 deepMLP50,696params,
+SILVER binary publisher objective, AdamW, seed17, lr0.001, batch64,10epochs/420updates.
+Actual first2 updates and exact checkpoint/reload/next-update continuation PASS;
+42 tests PASS, guarded preparation peak50°C. Private artifacts under
+`ai-training/.artifacts/student_publisher_pilot_20261110/`; background continuation
+resumes the same run at step2. Live status/log/checkpoint and train attempt services
+are authoritative after launch. Public documentation records prelaunch readiness.
+
+20% one-core CPU,<=8GiB/4GiB reserve and85/90/93/96°C independent adaptive control
+remain active. No automatic evaluation after completion: user returns explicitly.
+Baselines/thresholds/metrics are frozen in config; no attack-family/independent
+attack-intent claims or model promotion. Source construction counters stay frozen;
+actual training consumption is tracked in the new run. No500K/AWS/enforcement or
+Web/system/Rules/Policy/frozen inference change. Team bootstrap/model restore unchanged.
