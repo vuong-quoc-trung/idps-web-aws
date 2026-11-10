@@ -1,0 +1,16 @@
+{
+  "target": "http://192.168.1.20",
+  "scenarios": [
+    "baseline",
+    "sqli",
+    "ai-shadow"
+  ],
+  "authorized": false,
+  "confirm_multiple": false,
+  "profile": "safe",
+  "max_requests": 60,
+  "rate": 2,
+  "timeout": 5,
+  "duration": 120,
+  "allowlist": []
+}

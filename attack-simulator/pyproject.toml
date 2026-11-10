@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "websentinel-attack-simulator"
+version = "0.1.0"
+description = "Bounded HTTP lab simulator for WebSentinel"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+web = ["Flask>=3.1,<4"]
+
+[project.scripts]
+attack-simulator = "attack_simulator.cli:main"
+
+[tool.setuptools.package-data]
+attack_simulator = ["templates/*.html", "static/*.css", "static/*.js"]
+
+[tool.setuptools.packages.find]
+include = ["attack_simulator*"]
