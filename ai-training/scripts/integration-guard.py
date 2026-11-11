@@ -6,6 +6,7 @@ including threads/descendants. No host thermal/power configuration is modified.
 """
 
 import argparse
+from collections import deque
 import importlib.util
 import json
 import os
@@ -77,11 +78,15 @@ def watchdog_override(action, build_pause, paused, watchdog_paused):
 
 def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=90):
     root = Path(root)
-    samples = []
+    samples = deque(maxlen=20000)
+    total_samples, minimum, maximum = 0, None, None
     reason = "monitor_completed"
     try:
         while not (root / "watchdog-done").exists():
             temp, _ = cpu_reading()
+            total_samples += 1
+            minimum = temp if minimum is None else min(minimum, temp)
+            maximum = temp if maximum is None else max(maximum, temp)
             heartbeat = root / "heartbeat"
             age = time.time() - heartbeat.stat().st_mtime
             samples.append(
@@ -113,9 +118,10 @@ def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=90):
             json.dumps(
                 {
                     "reason": reason,
-                    "samples": len(samples),
-                    "temperature_min": min((x["cpu_max_celsius"] for x in samples), default=None),
-                    "temperature_max": max((x["cpu_max_celsius"] for x in samples), default=None),
+                    "samples": total_samples,
+                    "retained_samples": len(samples),
+                    "temperature_min": minimum,
+                    "temperature_max": maximum,
                 },
                 indent=2,
             )
@@ -149,12 +155,15 @@ def run(
     memory_gib=4,
     cutoff=90,
     tasks_max=64,
+    data_quota_plan=None,
 ):
     sensor = sensor or cpu_reading
     if type(tasks_max) is not int or not 64 <= tasks_max <= 256:
         raise ValueError("Per-job task limit must be an integer from64 to256")
     if not 80 < cutoff <= 90 or not 0 < memory_gib <= 26:
         raise ValueError("Cutoff must be >80 and <=90C; memory budget must be <=26GiB")
+    if max_seconds < 0 or (max_seconds == 0 and not scope):
+        raise ValueError("Continuous serving is allowed only in a supervised scope")
     root = Path(output).resolve()
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
     os.umask(0o077)
@@ -175,7 +184,7 @@ def run(
         - (4 * 1024**3 if policy == "rolling" else 2_000_000_000),
     )
     if temperature >= (75 if policy == "rolling" else 65) or safe_ram < 1024**3:
-        raise RuntimeError("CPU must be below65C and shared RAM headroom >=1GiB")
+        raise RuntimeError(f"Resource startup refused: CPU={temperature:.1f}C, requires <{75 if policy == 'rolling' else 65}C; safe_RAM={int(safe_ram)} bytes, requires >=1GiB; policy={policy}")
     if not 1 <= quota <= (100 if policy == "legacy" else 50 * (os.cpu_count() or 1)):
         raise RuntimeError("Quota exceeds soft50% host budget (quota units are percent of one CPU)")
     (root / "heartbeat").touch()
@@ -183,15 +192,23 @@ def run(
     heat = rolling.HeatWindow()
     last_adjust = 0
     current_quota = quota
+    ramp = None
+    if data_quota_plan:
+        from idps_ai.training.data_quota_ramp import DataQuotaRamp
+
+        if policy != "rolling" or quota != 5 or cutoff > 85:
+            raise ValueError("Data ramp requires initial5%, rolling control and cutoff<=85C")
+        ramp = DataQuotaRamp(data_quota_plan, root)
     previous_cpu_usage = None
     previous_swap = None
     emergency = False
     psutil.cpu_percent()
-    samples, events = [], []
+    samples, events = (deque(maxlen=20000) if max_seconds == 0 else []), []
     metrics = None
     paused = False
     cool_since = None
     previous = temperature
+    max_temp_seen = temperature
     previous_at = time.monotonic()
     start = time.monotonic()
     failure = None
@@ -344,6 +361,7 @@ def run(
                 }
                 break
             temp, values = sensor()
+            max_temp_seen = max(max_temp_seen, temp)
             now = time.monotonic()
             elapsed = now - start
             memory = psutil.virtual_memory()
@@ -410,6 +428,18 @@ def run(
                     pressure,
                     cutoff,
                 )
+                ceiling = quota
+                if ramp:
+                    members = {int(p) for p in (cgroup / "cgroup.procs").read_text().split()}
+                    ceiling = ramp.observe(
+                        now, temp, paused, pressure, own_cpu_percent, members, current_quota
+                    )
+                    if current_quota > ceiling:
+                        ctl("set-property", "--runtime", unit, f"CPUQuota={ceiling}%")
+                        q, p = map(int, (cgroup / "cpu.max").read_text().split())
+                        if abs(q / p - ceiling / 100) > 0.001:
+                            raise RuntimeError("Reduced quota readback mismatch")
+                        current_quota = ceiling
                 if (
                     metrics["rolling_300s_c"] < 76
                     and temp < 75
@@ -418,10 +448,13 @@ def run(
                 ):
                     # Host utilization includes other apps; headroom is a soft budget.
                     next_quota = rolling.cpu_budget(
-                        current_quota, quota, cpu_percent, own_cpu_percent, os.cpu_count() or 1
+                        current_quota, ceiling, cpu_percent, own_cpu_percent, os.cpu_count() or 1
                     )
                     if next_quota != current_quota:
                         ctl("set-property", "--runtime", unit, f"CPUQuota={next_quota}%")
+                        actual_q, actual_period = map(int, (cgroup / "cpu.max").read_text().split())
+                        if abs(actual_q / actual_period - next_quota / 100) > 0.001:
+                            raise RuntimeError("Live CPU quota readback mismatch")
                         current_quota = next_quota
                     last_adjust = now
             threads = []
@@ -473,6 +506,11 @@ def run(
                     "host_cpu_utilization_percent": cpu_percent,
                     "mem_available_bytes": memory.available,
                     "quota_percent_one_cpu": current_quota,
+                    "own_cpu_percent_one_cpu": own_cpu_percent,
+                    "memory_current_bytes": sample.get("memory_current")
+                    if cgroup.exists()
+                    else None,
+                    "maximum_temperature_C": max_temp_seen,
                     "policy": policy,
                 },
             )
@@ -518,7 +556,7 @@ def run(
                 paused = False
                 events.append({"elapsed": elapsed, "action": "THAW", "temperature": temp})
             heat.previous = (now, temp, paused)
-            if elapsed > max_seconds:
+            if max_seconds > 0 and elapsed > max_seconds:
                 raise RuntimeError("wall-time limit")
             status = ctl(
                 "show",
@@ -590,6 +628,7 @@ def run(
             "failure": failure,
             "unit": unit,
             "wall_seconds": time.monotonic() - start,
+            "sample_statistics_scope": "LAST_20000_SAMPLES; thermal_time_weighted contains full-run aggregates" if max_seconds == 0 else "FULL_BOUNDED_RUN",
             "kernel_cpu_quota_percent": quota,
             "kernel_tasks_max": tasks_max,
             "peak_tasks": max((s.get("pids_current", 0) for s in samples), default=0),
@@ -618,6 +657,15 @@ def run(
             "automatic_restarts": 0,
             "reserve_bytes": 4 * 1024**3 if policy == "rolling" else 2_000_000_000,
         }
+        if (root / "watchdog-report.json").exists():
+            watchdog_peak = json.loads((root / "watchdog-report.json").read_text()).get(
+                "temperature_max"
+            )
+            report["monitor_temperature_max_C"] = report["cpu_temperature_max"]
+            report["independent_watchdog_temperature_max_C"] = watchdog_peak
+            report["cpu_temperature_max"] = max(
+                v for v in [watchdog_peak, report["cpu_temperature_max"]] if v is not None
+            )
         if policy == "rolling":
             report["safety_scope"] = (
                 "rolling300s>=80 pause; reduce>=77; instantaneous cutoff; independent sensor/heartbeat watchdog; active/paused averages separate, no auto emergency restart; cannot control external heat"
@@ -669,6 +717,7 @@ if __name__ == "__main__":
         help="Per-job process/thread budget64..256; does not change CPU/RAM/thermal limits",
     )
     parser.add_argument("--max-seconds", type=int, default=180)
+    parser.add_argument("--data-quota-plan", type=Path)
     parser.add_argument(
         "--scope",
         action="store_true",
@@ -695,4 +744,5 @@ if __name__ == "__main__":
             memory_gib=args.memory_gib,
             cutoff=args.cutoff,
             tasks_max=args.tasks_max,
+            data_quota_plan=args.data_quota_plan,
         )

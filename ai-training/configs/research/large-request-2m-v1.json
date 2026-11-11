@@ -1,0 +1,93 @@
+{
+  "version": "large-request-2m-v1",
+  "targets": {
+    "parameters_min": 9500000,
+    "parameters_max": 10500000,
+    "distinct_requests": 2000000,
+    "unique_TRAIN_examples": 2000000
+  },
+  "source": {
+    "path": "ai-training/.artifacts/autonomous_research_20261104/waf_v2/train.parquet",
+    "sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+    "rows": 1924461,
+    "task": "publisher_anomaly",
+    "tier": "SILVER",
+    "physical_identity": "UNVERIFIED",
+    "license": "pinned publisher MIT card; local research only",
+    "verified_census_path": "ai-training/.artifacts/autonomous_research_20261104/waf_v2/audit-train-v2.json",
+    "verified_census_sha256": "5da2e3a273702c77e367eed3f0cfa005a4477836231a180dc68d3656d605164a"
+  },
+  "synthetic": {
+    "version": "catalog-expression-lab-v1",
+    "maximum_candidates": 1048576,
+    "maximum_executed": 600000,
+    "maximum_seconds": 7200,
+    "maximum_consecutive_duplicate_views": 8192,
+    "seed": 17,
+    "roles": "group index modulo10:0 CALIBRATION,1 EVALUATION,2..9 TRAIN; no score-based role assignment",
+    "labels": "BRONZE synthetic intent; outcome only request validation/filter evaluation, never exploitation",
+    "duplicate_policy": "exact request, exact588view and canonical symbolic template are separate; skip non-novel feature views before HTTP; quarantine cross-role views"
+  },
+  "feature_contract": {
+    "dimension": 588,
+    "numeric": "frozen bounded76, exact ordering",
+    "content": "frozen rich_content_v2 unsigned char3-5 hashing512 sharedL2",
+    "headers": [
+      "User-Agent",
+      "Accept",
+      "Content-Type"
+    ],
+    "body": "NOT_OBSERVED; always None in projection, actual bodies retained only in memory",
+    "fit_statistics": "NONE",
+    "GLU207": "UNAVAILABLE"
+  },
+  "model": {
+    "version": "request-swiglu-10m-multitask-v1",
+    "width": 1024,
+    "blocks": 3,
+    "expected_parameters": 10065928,
+    "outputs": {
+      "0:2": "intent",
+      "2:4": "publisher_anomaly",
+      "4:8": "masked numeric self-supervision"
+    },
+    "initialization": "fresh seed17; frozen files immutable"
+  },
+  "training": {
+    "experiments": 1,
+    "epochs": 3,
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "optimizer": "existing AdamW-v1 globalL2clip1 W-only decay0.0001",
+    "scheduler": "constant",
+    "checkpoint_every_updates": 128,
+    "selection": "final fixed-budget checkpoint only",
+    "search": false
+  },
+  "integration_gates": {
+    "new_untouched_eval_required": true,
+    "intent_eval_min_positive": 300,
+    "intent_eval_min_negative": 1000,
+    "normal_POST_min": 300,
+    "FPR_Wilson_upper_max": 0.02,
+    "recall_Wilson_lower_min": 0.8,
+    "AP_gain_over_same_task_baseline_min": 0.02,
+    "inference_p95_ms_max": 100,
+    "independent_review_claim": "PENDING; synthetic evaluation is not independent natural generalization",
+    "operator_firewall_approval": "REQUIRED; otherwise PENDING_APPROVAL",
+    "unattended_block": false
+  },
+  "resources": {
+    "logical_CPU_max": 8,
+    "initial_quota_percent_one_core": 5,
+    "RAM_GiB_max": 16,
+    "worker_memory_GiB": 12,
+    "reserve_GiB": 4,
+    "CPU_instant_cutoff_C_max": 85,
+    "rolling_active_limit_C": 80,
+    "disk_budget_GiB": 24,
+    "disk_reserve_GiB": 20,
+    "maximum_workflow_seconds": 43200
+  },
+  "stop": "Fail closed at missing gates. No automatic emergency restart, second experiment, synthetic count inflation, sealed access or source-role reassignment. Request corpus counts are not physical receipt counts. Public census is capacity evidence, not admitted features."
+}
