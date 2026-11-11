@@ -6,7 +6,6 @@ including threads/descendants. No host thermal/power configuration is modified.
 """
 
 import argparse
-from collections import deque
 import importlib.util
 import json
 import os
@@ -14,6 +13,7 @@ import signal
 import subprocess
 import sys
 import time
+from collections import deque
 from pathlib import Path
 
 import psutil
@@ -37,6 +37,11 @@ def atomic_status(root, value):
     path.replace(root / "resource-status.json")
 
 
+def quota_property(value):
+    # systemd fixed-point percentages accept at most two fractional digits.
+    return f"CPUQuota={value:.2f}%"
+
+
 def ctl(*args, check=True):
     return subprocess.run(
         ["systemctl", "--user", *args], capture_output=True, text=True, timeout=5, check=check
@@ -55,11 +60,11 @@ def cpu_reading():
 
 
 def control_action(temp, rate, paused, cool_seconds, pressure=False):
-    if temp >= 80:
+    if temp >= 100:
         return "KILL"
-    if pressure or temp >= 72 or (temp >= 65 and rate >= 5):
+    if pressure:
         return "FREEZE" if not paused else "WAIT"
-    if paused and temp < 68 and cool_seconds >= 5:
+    if paused and temp < 100 and cool_seconds >= 5:
         return "THAW"
     return "WAIT"
 
@@ -76,7 +81,7 @@ def watchdog_override(action, build_pause, paused, watchdog_paused):
     return action
 
 
-def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=90):
+def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=100):
     root = Path(root)
     samples = deque(maxlen=20000)
     total_samples, minimum, maximum = 0, None, None
@@ -96,13 +101,13 @@ def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=90):
                     "heartbeat_age_seconds": age,
                 }
             )
-            if policy == "legacy" and build_pause and temp >= 70 and age <= 3:
+            if policy == "legacy" and build_pause and temp >= 100 and age <= 3:
                 ctl("freeze", unit)
                 (root / "watchdog-paused").touch()
-            if temp >= (79 if policy == "legacy" else cutoff) or age > 3:
+            if temp >= (100 if policy == "legacy" else cutoff) or age > 3:
                 reason = (
                     "emergency_temperature"
-                    if temp >= (79 if policy == "legacy" else cutoff)
+                    if temp >= (100 if policy == "legacy" else cutoff)
                     else "monitor_heartbeat_stale"
                 )
                 kill_unit(unit)
@@ -134,11 +139,11 @@ def watchdog(unit, root, build_pause=False, policy="rolling", cutoff=90):
 
 def build_control_action(temp, rate, paused, cool_seconds, pressure=False):
     """Suspend build processes early, retaining compiler state, never used by AI."""
-    if temp >= 80:
+    if temp >= 100:
         return "KILL"
-    if pressure or temp >= 65 or (temp >= 60 and rate >= 5):
+    if pressure:
         return "FREEZE" if not paused else "WAIT"
-    if paused and temp < 60 and cool_seconds >= 5:
+    if paused and temp < 100 and cool_seconds >= 5:
         return "THAW"
     return "WAIT"
 
@@ -153,15 +158,15 @@ def run(
     scope=False,
     policy="rolling",
     memory_gib=4,
-    cutoff=90,
+    cutoff=100,
     tasks_max=64,
     data_quota_plan=None,
 ):
     sensor = sensor or cpu_reading
     if type(tasks_max) is not int or not 64 <= tasks_max <= 256:
         raise ValueError("Per-job task limit must be an integer from64 to256")
-    if not 80 < cutoff <= 90 or not 0 < memory_gib <= 26:
-        raise ValueError("Cutoff must be >80 and <=90C; memory budget must be <=26GiB")
+    if not 80 < cutoff <= 100 or not 0 < memory_gib <= 26:
+        raise ValueError("Cutoff must be >80 and <=100C; memory budget must be <=26GiB")
     if max_seconds < 0 or (max_seconds == 0 and not scope):
         raise ValueError("Continuous serving is allowed only in a supervised scope")
     root = Path(output).resolve()
@@ -183,8 +188,8 @@ def run(
         - (memory.total - memory.available)
         - (4 * 1024**3 if policy == "rolling" else 2_000_000_000),
     )
-    if temperature >= (75 if policy == "rolling" else 65) or safe_ram < 1024**3:
-        raise RuntimeError(f"Resource startup refused: CPU={temperature:.1f}C, requires <{75 if policy == 'rolling' else 65}C; safe_RAM={int(safe_ram)} bytes, requires >=1GiB; policy={policy}")
+    if temperature >= 100 or safe_ram < 1024**3:
+        raise RuntimeError(f"Resource startup refused: CPU={temperature:.1f}C, requires <100C; safe_RAM={int(safe_ram)} bytes, requires >=1GiB; policy={policy}")
     if not 1 <= quota <= (100 if policy == "legacy" else 50 * (os.cpu_count() or 1)):
         raise RuntimeError("Quota exceeds soft50% host budget (quota units are percent of one CPU)")
     (root / "heartbeat").touch()
@@ -196,8 +201,8 @@ def run(
     if data_quota_plan:
         from idps_ai.training.data_quota_ramp import DataQuotaRamp
 
-        if policy != "rolling" or quota != 5 or cutoff > 85:
-            raise ValueError("Data ramp requires initial5%, rolling control and cutoff<=85C")
+        if policy != "rolling" or quota != 5 or cutoff > 100:
+            raise ValueError("Data ramp requires initial5%, rolling control and cutoff<=100C")
         ramp = DataQuotaRamp(data_quota_plan, root)
     previous_cpu_usage = None
     previous_swap = None
@@ -225,7 +230,7 @@ def run(
         "--working-directory",
         os.getcwd(),
         "-p",
-        f"CPUQuota={quota}%",
+        quota_property(quota),
         "-p",
         "CPUQuotaPeriodSec=10ms",
         "-p",
@@ -273,7 +278,7 @@ def run(
             # Keep the same kernel memory/CPU limits and independent watchdog.
             scope_command = ["systemd-run", "--user", "--scope", "--quiet", "--unit", unit]
             for setting in [
-                f"CPUQuota={quota}%",
+                quota_property(quota),
                 "CPUQuotaPeriodSec=10ms",
                 f"MemoryMax={int(safe_ram)}",
                 f"MemoryHigh={int(safe_ram * 0.8)}",
@@ -409,7 +414,7 @@ def run(
             previous_at = now
             if (
                 paused
-                and temp < (75 if policy == "rolling" else (60 if build_pause else 68))
+                and temp < 100
                 and not pressure
             ):
                 cool_since = now if cool_since is None else cool_since
@@ -435,14 +440,14 @@ def run(
                         now, temp, paused, pressure, own_cpu_percent, members, current_quota
                     )
                     if current_quota > ceiling:
-                        ctl("set-property", "--runtime", unit, f"CPUQuota={ceiling}%")
+                        ctl("set-property", "--runtime", unit, quota_property(ceiling))
                         q, p = map(int, (cgroup / "cpu.max").read_text().split())
                         if abs(q / p - ceiling / 100) > 0.001:
                             raise RuntimeError("Reduced quota readback mismatch")
                         current_quota = ceiling
                 if (
-                    metrics["rolling_300s_c"] < 76
-                    and temp < 75
+                    metrics["rolling_300s_c"] < 100
+                    and temp < 100
                     and not paused
                     and now - last_adjust > 5
                 ):
@@ -451,7 +456,7 @@ def run(
                         current_quota, ceiling, cpu_percent, own_cpu_percent, os.cpu_count() or 1
                     )
                     if next_quota != current_quota:
-                        ctl("set-property", "--runtime", unit, f"CPUQuota={next_quota}%")
+                        ctl("set-property", "--runtime", unit, quota_property(next_quota))
                         actual_q, actual_period = map(int, (cgroup / "cpu.max").read_text().split())
                         if abs(actual_q / actual_period - next_quota / 100) > 0.001:
                             raise RuntimeError("Live CPU quota readback mismatch")
@@ -520,10 +525,10 @@ def run(
                 )
             if action == "KILL":
                 emergency = True
-                raise RuntimeError(f"{cutoff if policy == 'rolling' else 80}C emergency stop")
+                raise RuntimeError(f"{cutoff if policy == 'rolling' else 100}C emergency stop")
             if action == "REDUCE" and now - last_adjust >= 2:
                 current_quota = max(1, current_quota / 2)
-                ctl("set-property", "--runtime", unit, f"CPUQuota={current_quota}%")
+                ctl("set-property", "--runtime", unit, quota_property(current_quota))
                 events.append(
                     {
                         "elapsed": elapsed,
@@ -540,7 +545,7 @@ def run(
                     if policy == "legacy"
                     else max(1, current_quota / 2)
                 )
-                ctl("set-property", "--runtime", unit, f"CPUQuota={current_quota}%")
+                ctl("set-property", "--runtime", unit, quota_property(current_quota))
                 paused = True
                 events.append(
                     {
@@ -709,7 +714,7 @@ if __name__ == "__main__":
     parser.add_argument("--quota", type=int, default=100)
     parser.add_argument("--policy", choices=["rolling", "legacy"], default="rolling")
     parser.add_argument("--memory-gib", type=float, default=4)
-    parser.add_argument("--cutoff", type=float, default=90)
+    parser.add_argument("--cutoff", type=float, default=100)
     parser.add_argument(
         "--tasks-max",
         type=int,

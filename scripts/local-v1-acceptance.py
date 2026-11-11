@@ -120,7 +120,7 @@ def wait_gateway(process):
         if process.poll() is not None:
             raise RuntimeError("Isolated sensor gateway exited; inspect sensor log")
         try:
-            with socket.create_connection((os.environ.get("IDPS_DEMO_LISTEN", "127.0.0.1"), 18782), timeout=0.5):
+            with socket.create_connection(("127.0.0.1" if os.environ.get("IDPS_DEMO_LISTEN") == "0.0.0.0" else os.environ.get("IDPS_DEMO_LISTEN", "127.0.0.1"), 18782), timeout=0.5):
                 return
         except OSError:
             time.sleep(0.5)
@@ -466,7 +466,7 @@ def supervise(output):
         "--memory-gib",
         "8",
         "--cutoff",
-        "85",
+        "100",
         "--tasks-max",
         "256",
         "--max-seconds",

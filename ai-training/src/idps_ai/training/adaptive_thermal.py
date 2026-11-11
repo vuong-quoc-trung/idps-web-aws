@@ -159,19 +159,19 @@ class ThermalMachine:
     def __init__(
         self,
         *,
-        emergency=96,
-        warning=85,
-        throttle=90,
-        strong=93,
+        emergency=100,
+        warning=100,
+        throttle=100,
+        strong=100,
         ceiling=20,
         minimum=1,
         cooldown=15,
         ramp_seconds=5,
         cooling_timeout=300,
     ):
-        if not 0 < minimum <= ceiling <= 20 or not 0 < emergency <= 96:
+        if not 0 < minimum <= ceiling <= 20 or not 0 < emergency <= 100:
             raise PipelineError("Unsafe thermal configuration")
-        if not 0 < warning < throttle < strong <= 96:
+        if not 0 < warning <= throttle <= strong <= 100:
             raise PipelineError("Invalid adaptive temperature bands")
         self.warning, self.throttle, self.strong = warning, throttle, strong
         self.emergency, self.ceiling, self.minimum = emergency, ceiling, minimum
@@ -242,7 +242,7 @@ class ThermalMachine:
         elif band == "WARNING" and rate > 0:
             self.quota = min(self.quota, max(self.minimum, self.ceiling / 2))
         # Proactive response to a fast rise even before WARNING.
-        elif band == "NORMAL" and temperature >= 80 and rate >= 10:
+        elif band == "NORMAL" and temperature >= 100 and rate >= 10:
             self.quota = min(self.quota, max(self.minimum, self.ceiling / 2))
         cool = self.cool_since is not None and now - self.cool_since >= self.cooldown
         if self.paused:

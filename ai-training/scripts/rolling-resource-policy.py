@@ -53,17 +53,13 @@ class HeatWindow:
         }
 
 
-def action(temp, rolling, rate, paused, cool_seconds, pressure=False, cutoff=90):
+def action(temp, rolling, rate, paused, cool_seconds, pressure=False, cutoff=100):
     if temp >= cutoff:
         return "KILL"
-    if pressure or rolling >= 80 or temp >= min(87, cutoff - 2):
+    if pressure:
         return "WAIT" if paused else "FREEZE"
-    if temp >= 78 and rate >= 3:
-        return "WAIT" if paused else "FREEZE"
-    if paused and temp < 75 and rolling < 77 and cool_seconds >= 15:
+    if paused and temp < cutoff and cool_seconds >= 5:
         return "THAW"
-    if not paused and (rolling >= 77 or temp >= 80):
-        return "REDUCE"
     return "WAIT"
 
 

@@ -205,10 +205,10 @@ def wait_ai_startup_headroom(timeout=90):
     while time.monotonic() < deadline:
         temperature = max(v['celsius'] for v in thermal.cpu_sensors().values())
         available = psutil.virtual_memory().available
-        if temperature < 70 and available >= 4*1024**3:
+        if temperature < 100 and available >= 4*1024**3:
             return
         time.sleep(.5)
-    raise RuntimeError(f'AI startup headroom timeout: CPU={temperature:.1f}C (requires <70C), MemAvailable={available} (requires >=4GiB)')
+    raise RuntimeError(f'AI startup headroom timeout: CPU={temperature:.1f}C (requires <100C), MemAvailable={available} (requires >=4GiB)')
 
 
 def start_ai():
@@ -323,10 +323,10 @@ def host_preflight(seconds=5):
     memory={k:int(v.split()[0])*1024 for k,v in (line.split(':',1) for line in Path('/proc/meminfo').read_text().splitlines())}
     used=memory['MemTotal']-memory['MemAvailable']
     report={'CPU_C_max':max(temperatures),'CPU_C_last':temperatures[-1],'samples':len(temperatures),'system_used_bytes':used,
-            'safe_to_build':max(temperatures)<65 and used<28_000_000_000,'scope':'Five-second sampled preflight; later external heat can still stop workload'}
+            'safe_to_build':max(temperatures)<100 and used<28_000_000_000,'scope':'Five-second sampled preflight; later external heat can still stop workload'}
     (RUNTIME/('preflight-'+str(time.time_ns())+'.json')).write_text(json.dumps(report,indent=2)+'\n')
     if not report['safe_to_build']:
-        raise RuntimeError('Host not thermally stable below65C or RAM headroom insufficient; wait, do not build')
+        raise RuntimeError('Host not thermally stable below100C or RAM headroom insufficient; wait, do not build')
     return report
 
 

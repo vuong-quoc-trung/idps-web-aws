@@ -16,6 +16,15 @@ spec.loader.exec_module(worker)
 
 
 class ShadowTests(unittest.TestCase):
+    def test_only_fresh_same_scope_guard_can_explain_sampling_gap(self):
+        g={'unit':'idps-integration-test.scope','status':'RUNNING','heartbeat':100,'thermal':{'paused_seconds':20}}
+        membership='0::/user.slice/idps-integration-test.scope'
+        self.assertTrue(worker.supervised_pause(g,membership,4,16,101))
+        self.assertFalse(worker.supervised_pause(g,membership,19,16,101))
+        self.assertFalse(worker.supervised_pause(g,membership,4,16,110))
+        self.assertFalse(worker.supervised_pause(g,'0::/other',4,16,101))
+        self.assertFalse(worker.supervised_pause(None,membership,None,16,101))
+
     def test_startup_reports_ram_and_thermal_separately(self):
         gib = 1024**3
         self.assertEqual(worker.startup_status(41, 1.4 * gib), "RAM_STOP")

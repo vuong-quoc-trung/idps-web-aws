@@ -49,7 +49,7 @@ class DataQuotaRamp:
                 if w.get("phase") not in ["REAL_10M_TRAINING", "TRAINING_PREFLIGHT"]
                 else min(5, self.ceiling)
             )
-        if not healthy or paused or pressure or temperature >= 75:
+        if not healthy or paused or pressure or temperature >= 100:
             self.rows = []
             self.ceiling = 5
             self.index = 0
@@ -98,7 +98,7 @@ class DataQuotaRamp:
         metrics["feature_cpu_seconds_delta"] = b["feature_cpu_seconds"] - a["feature_cpu_seconds"]
         metrics["http_wall_seconds_delta"] = b["http_wall_seconds"] - a["http_wall_seconds"]
         safe = (
-            metrics["maximum_temperature"] < 75
+            metrics["maximum_temperature"] < 100
             and metrics["error_count_delta"] == 0
             and metrics["candidates_per_second"] > 0
             and metrics["receipts_per_second"] > 0

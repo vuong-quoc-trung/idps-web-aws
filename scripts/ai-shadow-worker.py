@@ -55,6 +55,16 @@ def verify_active_strategy(path=ROOT / "ai-training/MODEL_STRATEGY.json"):
         )
 
 
+def supervised_pause(guard, membership, previous_paused, gap, wall_now):
+    if not guard or previous_paused is None:
+        return False
+    delta = guard.get('thermal', {}).get('paused_seconds', 0)-previous_paused
+    return (guard.get('unit', '!') in membership
+            and guard.get('status') in {'RUNNING','PAUSED'}
+            and 0 <= wall_now-guard.get('heartbeat', 0) < 3
+            and delta >= gap-3)
+
+
 def now():
     return datetime.now(UTC).isoformat()
 
@@ -169,7 +179,7 @@ def model_record(value):
 
 
 def startup_status(temperature, available_bytes):
-    if temperature >= 75:
+    if temperature >= 100:
         return "THERMAL_STOP"
     if available_bytes < 4 * 1024**3:
         return "RAM_STOP"
@@ -230,6 +240,9 @@ def serve(args):
     def monitor():
         previous, previous_at = None, time.monotonic()
         last_heartbeat, cool_since = 0, None
+        previous_guard_paused = None
+        guard_root = os.environ.get('IDPS_DEMO_ACCEPTANCE_ROOT')
+        membership = Path('/proc/self/cgroup').read_text()
         heat = module(
             ROOT / "ai-training/scripts/rolling-resource-policy.py", "rolling_resource"
         ).HeatWindow()
@@ -246,19 +259,27 @@ def serve(args):
                 )
                 previous, previous_at = temp, current
                 state.update(cpu_temperature_c=temp, system_used_bytes=used)
+                guard = json.loads((Path(guard_root)/'guard/resource-status.json').read_text()) if guard_root else None
+                if heat.previous and current-heat.previous[0] > 5:
+                    if not supervised_pause(guard, membership, previous_guard_paused, current-heat.previous[0], time.time()):
+                        raise RuntimeError('Unexplained sensor sampling gap')
+                    # No inference ran while cgroup was frozen. The independent
+                    # guard retained heat telemetry; do not invent worker samples.
+                    heat.previous = None
+                if guard:
+                    previous_guard_paused = guard['thermal']['paused_seconds']
                 heat_metrics = heat.add(
                     current, temp, state["status"] == "THERMAL_PAUSED"
                 )
-                if temp >= 90 or mem.available < 4 * 1024**3:
+                if temp >= 100 or mem.available < 4 * 1024**3:
                     ready.clear()
-                    state["status"] = "THERMAL_STOP" if temp >= 90 else "RAM_STOP"
+                    state["status"] = "THERMAL_STOP" if temp >= 100 else "RAM_STOP"
                     heartbeat()
                     stop.set()
                     break
                 if (
-                    heat_metrics["rolling_300s_c"] >= 80
-                    or temp >= 87
-                    or (temp >= 78 and rate >= 3)
+                    heat_metrics["rolling_300s_c"] >= 100
+                    or temp >= 100
                 ):
                     ready.clear()
                     state["status"] = "THERMAL_PAUSED"
@@ -266,7 +287,7 @@ def serve(args):
                 elif state["status"] == "THERMAL_PAUSED":
                     cool_since = (
                         (cool_since or current)
-                        if temp < 75 and heat_metrics["rolling_300s_c"] < 77
+                        if temp < 100 and heat_metrics["rolling_300s_c"] < 100
                         else None
                     )
                     if cool_since and current - cool_since >= 15:

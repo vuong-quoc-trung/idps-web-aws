@@ -69,3 +69,12 @@ def test_cpu_budget_accounts_for_other_apps_and_memory_pressure():
     )
     assert m.memory_pressure("full avg10=0 avg60=0 avg300=0 total=0", 20 * 1024**2, 0, 1)
     assert not m.memory_pressure("full avg10=0 avg60=0 avg300=0 total=0", 0, 0, 1)
+
+
+def test_kernel_quota_property_has_systemd_fixed_point_precision():
+    spec = importlib.util.spec_from_file_location("guard_quota", Path(__file__).parents[1] / "scripts/integration-guard.py")
+    g = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(g)
+    assert g.quota_property(139.98631520507138) == "CPUQuota=139.99%"
+    assert g.quota_property(50) == "CPUQuota=50.00%"
+    assert g.quota_property(1.23456789) == "CPUQuota=1.23%"

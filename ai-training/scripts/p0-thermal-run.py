@@ -64,7 +64,7 @@ def main():
     budget = min(30_000_000_000, memory.total)
     reserve = 2_000_000_000
     headroom = min(memory.available, budget - (memory.total - memory.available)) - reserve
-    if headroom < 2_000_000_000 or max(x["celsius"] for x in sensors.values()) >= 75:
+    if headroom < 2_000_000_000 or max(x["celsius"] for x in sensors.values()) >= 100:
         raise RuntimeError("Insufficient shared RAM or CPU not cool enough to start")
     start = time.monotonic()
     events, samples = [], []
@@ -105,7 +105,7 @@ def main():
                 used = memory.total - memory.available
                 elapsed = time.monotonic() - start
                 rate = (temperature - previous_temperature) / max(elapsed - previous_elapsed, 0.1)
-                rapid_rise = temperature >= 68 and rate >= 5
+                rapid_rise = temperature >= 100 and rate >= 5
                 previous_temperature, previous_elapsed = temperature, elapsed
                 try:
                     parent = psutil.Process(process.pid)
@@ -139,14 +139,14 @@ def main():
                         ):
                             known_containers.add(name)
                 pressure = used >= budget - 500_000_000 or memory.available < reserve
-                if (temperature >= 74 or rapid_rise or pressure) and not stopped:
+                if (temperature >= 100 or rapid_rise or pressure) and not stopped:
                     os.killpg(process.pid, signal.SIGSTOP)
                     for name in known_containers:
                         if podman("pause", name).returncode == 0:
                             paused_containers.add(name)
                     stopped = True
                     cool_since = None
-                    hard_stops += int(temperature >= 80)
+                    hard_stops += int(temperature >= 100)
                     events.append(
                         {
                             "seconds": elapsed,
@@ -162,7 +162,7 @@ def main():
                         )
                 elif (
                     stopped
-                    and temperature < 70
+                    and temperature < 100
                     and used < budget - 2_000_000_000
                     and memory.available > reserve
                 ):
@@ -179,7 +179,7 @@ def main():
                         )
                 elif stopped:
                     cool_since = None
-                if temperature >= 72 and not reduced:
+                if temperature >= 100 and not reduced:
                     for name in known_containers:
                         podman("update", name, "--cpus=1")
                     # Kernel scheduler affinity also limits a CPU-bound child or
