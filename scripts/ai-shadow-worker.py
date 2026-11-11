@@ -36,6 +36,25 @@ THRESHOLD = 0.8826237916946411
 MANIFEST_SHA = "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c"
 
 
+def verify_active_strategy(path=ROOT / "ai-training/MODEL_STRATEGY.json"):
+    strategy = json.loads(path.read_text())
+    models = strategy["strategic_models"]
+    live = [m for m in models if m["live_allowed"]]
+    if (
+        len(models) != 2
+        or {m["id"] for m in models} != {MODEL, "request-swiglu-10m-multitask-v1"}
+        or strategy["active_model"] != MODEL
+        or len(live) != 1
+        or live[0]["id"] != MODEL
+        or live[0]["manifest_sha256"] != MANIFEST_SHA
+        or live[0]["threshold"] != THRESHOLD
+        or live[0]["live_feature_profile"] != "selected_headers_no_body"
+    ):
+        raise ValueError(
+            "Only the pinned Frozen Requestv2 is authorized for live inference"
+        )
+
+
 def now():
     return datetime.now(UTC).isoformat()
 
@@ -279,9 +298,17 @@ def serve(args):
         state["system_used_bytes"] = memory.total - memory.available
         status = startup_status(temp, memory.available)
         if status != "READY":
-            print(json.dumps({"startup": status, "cpu_temperature_c": temp,
-                              "available_gib": round(memory.available / 1024**3, 2),
-                              "required_available_gib": 4}), flush=True)
+            print(
+                json.dumps(
+                    {
+                        "startup": status,
+                        "cpu_temperature_c": temp,
+                        "available_gib": round(memory.available / 1024**3, 2),
+                        "required_available_gib": 4,
+                    }
+                ),
+                flush=True,
+            )
             heartbeat(status)
             return 3
     except Exception:  # noqa: BLE001 -- sensor validation is a fail-closed boundary
@@ -295,6 +322,7 @@ def serve(args):
             != MANIFEST_SHA
         ):
             raise ValueError("untrusted model manifest")
+        verify_active_strategy()
         predictor = module(
             args.bundle / "infer.py", "frozen_request_infer"
         ).RequestPredictor(args.bundle)
@@ -409,8 +437,12 @@ if __name__ == "__main__":
     parser.add_argument("--bundle", type=Path, default=BUNDLE)
     parser.add_argument("--socket", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--socket-mode", choices=["600", "620"], default="600",
-                        help="620 allows write-only access to the service primary group")
+    parser.add_argument(
+        "--socket-mode",
+        choices=["600", "620"],
+        default="600",
+        help="620 allows write-only access to the service primary group",
+    )
     try:
         raise SystemExit(serve(parser.parse_args()))
     except (OSError, RuntimeError, ValueError):

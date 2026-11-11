@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import hmac
 import importlib.util
+import ipaddress
 import json
 import os
 import select
@@ -45,6 +46,42 @@ class TCPServer(socketserver.ThreadingTCPServer):
     daemon_threads = True
     allow_reuse_address = True
     request_queue_size = 64
+
+
+def gateway_network(listen, allowed):
+    address = ipaddress.IPv4Address(listen)
+    network = ipaddress.IPv4Network(allowed, strict=True)
+    private = [
+        ipaddress.ip_network(v)
+        for v in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8")
+    ]
+    if (
+        address.is_unspecified
+        or not any(network.subnet_of(v) for v in private)
+        or address not in network
+    ):
+        raise ValueError(
+            "Bind a specific private/loopback IPv4 inside the allowed lab subnet"
+        )
+    return network
+
+
+class LabGateway(TCPServer):
+    """Only authorized subnet peers; no HTTP header is trusted as a client IP."""
+
+    def verify_request(self, request, address):
+        allowed = ipaddress.IPv4Address(address[0]) in self.allowed_network
+        if allowed:
+            self.peer_journal.append(
+                {
+                    "observed_at": datetime.now(UTC).isoformat(),
+                    "tcp_peer_ip": address[0],
+                    "tcp_peer_port": address[1],
+                    "identity_scope": "SOCKET_PEER_ONLY_NOT_REQUEST_CORRELATION",
+                    "forwarded_client_attribution": "UNAVAILABLE_RELAY; BLOCK_PROHIBITED",
+                }
+            )
+        return allowed
 
 
 class Relay(socketserver.BaseRequestHandler):
@@ -133,6 +170,19 @@ def sensor_config(out, runtime):
     return path
 
 
+def wait_engine(sensor, log_path, offset, timeout=90):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if sensor.poll() is not None:
+            raise RuntimeError(f"Suricata exited rc={sensor.returncode} before capture readiness; inspect {log_path}")
+        with log_path.open("rb") as stream:
+            stream.seek(offset)
+            if b"Engine started." in stream.read():
+                return
+        time.sleep(.1)
+    raise RuntimeError(f"Suricata engine readiness timed out; inspect {log_path}")
+
+
 def namespace(args):
     out = args.output
     runtime = args.sensor_runtime
@@ -188,8 +238,11 @@ def namespace(args):
             )
             if test.returncode:
                 raise RuntimeError("Suricata config/rule validation failed")
+            offset = (out / "sensor.log").stat().st_size
             sensor = subprocess.Popen(command, env=environment, stdout=log, stderr=log)
             children.append(sensor)
+            wait_engine(sensor, out / "sensor.log", offset)
+            (out / "sensor-ready.json").write_text(json.dumps({"pid":sensor.pid, "ready_at":time.time(), "basis":"CURRENT_ENGINE_STARTED_LOG"}))
             (out / "sensor-pid.json").write_text(
                 json.dumps(
                     {
@@ -201,15 +254,19 @@ def namespace(args):
             )
             while True:
                 if (out / "STOP_SENSOR").exists() and sensor.poll() is None:
+                    (out / "sensor-ready.json").unlink(missing_ok=True)
                     sensor.send_signal(signal.SIGINT)
                     sensor.wait(timeout=15)
                     (out / "STOP_SENSOR").unlink()
                 if (out / "START_SENSOR").exists():
                     if sensor.poll() is not None:
+                        offset = (out / "sensor.log").stat().st_size
                         sensor = subprocess.Popen(
                             command, env=environment, stdout=log, stderr=log
                         )
                         children.append(sensor)
+                        wait_engine(sensor, out / "sensor.log", offset)
+                        (out / "sensor-ready.json").write_text(json.dumps({"pid":sensor.pid, "ready_at":time.time(), "basis":"CURRENT_ENGINE_STARTED_LOG"}))
                     (out / "START_SENSOR").unlink()
                 if sensor.poll() is not None and not (out / "sensor-stopped").exists():
                     (out / "sensor-stopped").touch()
@@ -230,6 +287,7 @@ def namespace(args):
 
 
 def host(args):
+    allowed_network = gateway_network(args.listen, args.allow_cidr)
     out = args.output
     out.mkdir(parents=True, exist_ok=False, mode=0o700)
     os.umask(0o077)
@@ -323,13 +381,17 @@ def host(args):
 
     signal.signal(signal.SIGTERM, stop)
     try:
-        while not (out / "to-net.sock").exists():
+        deadline = time.monotonic() + 150
+        while not (out / "sensor-ready.json").exists():
             if child.poll() is not None:
                 raise RuntimeError("Namespace startup failed")
+            if time.monotonic() > deadline:
+                raise RuntimeError(f"Capture readiness deadline; inspect {out / 'sensor.log'}")
             time.sleep(0.2)
-        gateway = background(
-            TCPServer(("127.0.0.1", args.gateway_port), Relay), str(out / "to-net.sock")
-        )
+        gateway = LabGateway((args.listen, args.gateway_port), Relay)
+        gateway.allowed_network = allowed_network
+        gateway.peer_journal = shadow.Journal(out / "gateway-peers.jsonl")
+        background(gateway, str(out / "to-net.sock"))
         while True:
             if child.poll() is not None:
                 raise RuntimeError("Namespace exited")
@@ -372,6 +434,9 @@ def host(args):
                     ),
                     "host_namespace": args.host_namespace,
                     "gateway_port": args.gateway_port,
+                    "gateway_bind": args.listen,
+                    "allowed_client_network": str(allowed_network),
+                    "client_attribution": "SOCKET_PEER_RECORDED_SEPARATELY; NGINX_SEES_PROTECTED_RELAY",
                     "enforcement_actions": 0,
                     "started_at": started,
                     "observed_at": datetime.now(UTC).isoformat(),
@@ -407,6 +472,8 @@ def main():
     )
     p.add_argument("--edge-port", type=int, default=18780)
     p.add_argument("--gateway-port", type=int, default=18782)
+    p.add_argument("--listen", default="127.0.0.1")
+    p.add_argument("--allow-cidr", default="127.0.0.0/8")
     p.add_argument("--host-namespace")
     a = p.parse_args()
     a.output = a.output.resolve()

@@ -33,6 +33,18 @@ class LauncherTests(unittest.TestCase):
             self.assertFalse(launcher.owned_alive({'pid':123,'start_token':'old'}))
             self.assertTrue(launcher.owned_alive({'pid':123,'start_token':'new'}))
 
+    def test_shared_guard_runs_AI_inside_existing_supervised_scope(self):
+        command=['python','worker.py']
+        with patch.object(launcher,'shared_acceptance_cgroup',return_value=True),patch.object(launcher,'wait_ai_startup_headroom') as headroom:
+            self.assertEqual(launcher.ai_command(command,Path('/python'),Path('/resources')),command)
+            headroom.assert_called_once()
+
+    def test_standalone_AI_still_requires_independent_guard(self):
+        with patch.object(launcher,'shared_acceptance_cgroup',return_value=False),patch.object(launcher,'wait_ai_startup_headroom') as headroom:
+            result=launcher.ai_command(['python','worker.py'],Path('/python'),Path('/resources'))
+            self.assertIn(str(launcher.ROOT/'ai-training/scripts/integration-guard.py'),result)
+            headroom.assert_not_called()
+
     def test_delivery_probe_records_first_lost_datagram_and_recovers(self):
         class Response:
             def __init__(self,rid): self.headers={'X-Request-Id':rid}

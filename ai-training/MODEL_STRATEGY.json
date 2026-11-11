@@ -1,0 +1,41 @@
+{
+  "schema_version": "ai-idps-model-strategy-1",
+  "effective_date": "2026-11-11",
+  "active_model": "request-intelligence-v2-frozen-step3072",
+  "strategic_models": [
+    {
+      "id": "request-intelligence-v2-frozen-step3072",
+      "name": "Request Intelligence v2",
+      "state": "ACTIVE_FROZEN",
+      "live_allowed": true,
+      "parameters": 50696,
+      "features": 588,
+      "TRAIN_unique_views_metadata": 120435,
+      "optimizer_updates": 3072,
+      "bundle": "ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle",
+      "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c",
+      "checkpoint_manifest_sha256": "acdc0a2c9bff24fa0e4720dfcdd97e4a315e39fc625cf603e06eecc5c07a92fc",
+      "feature_contract_sha256": "c5ee3fc921598c4bc916fab8cf7936360c40384153a39886e4dffae53b5962af",
+      "live_feature_profile": "selected_headers_no_body",
+      "threshold": 0.8826237916946411,
+      "threshold_comparison": "strict >",
+      "score_semantics": "UNCALIBRATED_RESEARCH_SCORE_NOT_ATTACK_PROBABILITY"
+    },
+    {
+      "id": "request-swiglu-10m-multitask-v1",
+      "name": "AI-IDPS 10M",
+      "state": "POSTPONED",
+      "live_allowed": false,
+      "parameters_verified_preflight": 10065928,
+      "actual_data_optimizer_updates": 0,
+      "target_unique_eligible_TRAIN_examples": 1000000,
+      "preserved_run": ".local-dev/large-request-2m-20261110-r1",
+      "migration": "Explicit user approval AND successful comparative evaluation required; never automatic"
+    }
+  ],
+  "unlisted_model_default": "ARCHIVED_RESEARCH_ONLY_NOT_LIVE_OR_SELECTION_CANDIDATE",
+  "archive_catalog": "ai-training/archive/README.md",
+  "artifact_policy": "Archive in place; no moving hash-bound paths, deletion, payload redistribution or sealed access",
+  "automatic_model_selection": false,
+  "automatic_training": false
+}
