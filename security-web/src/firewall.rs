@@ -14,8 +14,22 @@ pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
     Ok(ip)
 }
 pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<String> {
-    let mut command = Command::new("sudo");
-    command.arg("-n").arg(cmd).arg(action);
+    let mut command = if env::var("PBL4_DISPOSABLE_NAMESPACE_RESPONSE").as_deref() == Ok("true") {
+        // sudo cannot initialize inside this unprivileged user namespace. This
+        // opt-in is impossible in the initial/host user namespace: only a single
+        // non-root host UID mapped to namespace root is accepted.
+        let mapping = std::fs::read_to_string("/proc/self/uid_map")?;
+        anyhow::ensure!(
+            namespace_mapping_safe(&mapping),
+            "Direct response requires a disposable unprivileged user namespace"
+        );
+        Command::new(cmd)
+    } else {
+        let mut c = Command::new("sudo");
+        c.arg("-n").arg(cmd);
+        c
+    };
+    command.arg(action);
     if let Some(ip) = ip {
         command.arg(ip.to_string());
     }
@@ -32,6 +46,13 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
         String::from_utf8_lossy(&out.stderr)
     );
     Ok(String::from_utf8(out.stdout)?)
+}
+pub fn namespace_mapping_safe(mapping: &str) -> bool {
+    let values: Vec<_> = mapping.split_whitespace().collect();
+    values.len() == 3
+        && values[0] == "0"
+        && values[1].parse::<u32>().is_ok_and(|v| v > 0)
+        && values[2] == "1"
 }
 pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
     let value: serde_json::Value = serde_json::from_str(text)?;
@@ -110,8 +131,35 @@ pub async fn enqueue(
     reason: &str,
     event: Option<i64>,
 ) -> Result<i64> {
-    Ok(sqlx::query_scalar("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,event_id) VALUES($1::inet,$2,$3,$4,'PENDING',$5,$6) RETURNING id")
-        .bind(ip.to_string()).bind(action).bind("API").bind(reason).bind(actor).bind(event).fetch_one(pool).await?)
+    let mut tx = pool.begin().await?;
+    let id = enqueue_tx(&mut tx, ip, action, actor, reason, event, 300).await?;
+    tx.commit().await?;
+    Ok(id)
+}
+pub async fn enqueue_tx(
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+    ip: IpAddr,
+    action: &str,
+    actor: &str,
+    reason: &str,
+    event: Option<i64>,
+    ttl: u64,
+) -> Result<i64> {
+    anyhow::ensure!(
+        matches!(action, "BLOCK" | "UNBLOCK") && (1..=300).contains(&ttl),
+        "Invalid response action/TTL"
+    );
+    sqlx::query("SELECT pg_advisory_xact_lock(7272402)")
+        .execute(&mut **tx)
+        .await?;
+    if action == "BLOCK" {
+        let duplicate:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM blocked_ips WHERE ip=$1::inet AND active AND expires_at>now()) OR EXISTS(SELECT 1 FROM firewall_actions WHERE ip=$1::inet AND action='BLOCK' AND (status='PENDING' OR created_at>now()-interval '30 seconds'))").bind(ip.to_string()).fetch_one(&mut **tx).await?;
+        anyhow::ensure!(!duplicate, "Duplicate block or response cooldown");
+        let rate:i64=sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE action='BLOCK' AND created_at>now()-interval '60 seconds'").fetch_one(&mut **tx).await?;
+        anyhow::ensure!(rate < 10, "Response rate limit reached");
+    }
+    Ok(sqlx::query_scalar("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,event_id,expires_at) VALUES($1::inet,$2,'API',$3,'PENDING',$4,$5,now()+make_interval(secs=>$6)) RETURNING id")
+        .bind(ip.to_string()).bind(action).bind(reason).bind(actor).bind(event).bind(ttl as f64).fetch_one(&mut **tx).await?)
 }
 #[derive(FromRow)]
 struct Job {
@@ -148,22 +196,31 @@ where
     } else {
         network::Safety::parse_host(&job.ip)
     };
-    let validation =
-        if job.action == "BLOCK" && state.safety.mode == "MANUAL" && job.source != "API" {
-            Err(anyhow::anyhow!("Automatic BLOCK disabled in MANUAL mode"))
-        } else if job.action == "BLOCK" && state.safety.discover_before_apply {
-            match network::discover().await {
-                Ok(protected) if protected.contains(&job.ip.parse::<IpAddr>()?) => {
-                    Err(anyhow::anyhow!("Current host/gateway IP is protected"))
-                }
-                Ok(_) => validation,
-                Err(_) => Err(anyhow::anyhow!(
-                    "Safety discovery unavailable; BLOCK refused"
-                )),
+    let approved_restore = if job.action == "BLOCK" && job.source == "RESTORE" {
+        sqlx::query_scalar::<_,bool>("SELECT EXISTS(SELECT 1 FROM firewall_actions WHERE ip=$1::inet AND source='API' AND action='BLOCK' AND status='SUCCESS' AND expires_at=$2)")
+            .bind(&job.ip).bind(job.expires_at).fetch_one(&mut *tx).await?
+    } else {
+        false
+    };
+    let validation = if job.action == "BLOCK"
+        && state.safety.mode == "MANUAL"
+        && job.source != "API"
+        && !approved_restore
+    {
+        Err(anyhow::anyhow!("Automatic BLOCK disabled in MANUAL mode"))
+    } else if job.action == "BLOCK" && state.safety.discover_before_apply {
+        match network::discover().await {
+            Ok(protected) if protected.contains(&job.ip.parse::<IpAddr>()?) => {
+                Err(anyhow::anyhow!("Current host/gateway IP is protected"))
             }
-        } else {
-            validation
-        };
+            Ok(_) => validation,
+            Err(_) => Err(anyhow::anyhow!(
+                "Safety discovery unavailable; BLOCK refused"
+            )),
+        }
+    } else {
+        validation
+    };
     let validation = if job.action == "BLOCK" && job.expires_at.is_none_or(|at| at <= Utc::now()) {
         Err(anyhow::anyhow!(
             "BLOCK job expired or predates the response deadline contract"
@@ -223,9 +280,31 @@ pub async fn worker(state: AppState) {
         tokio::time::sleep(Duration::from_secs(2)).await;
     }
     loop {
+        if let Err(e)=sqlx::query("UPDATE blocked_ips SET active=false,unblocked_at=now() WHERE active AND expires_at<=now()").execute(&state.pool).await {
+            tracing::error!(error=%e,"Cannot reconcile expired response deadlines");
+        }
         let cmd = state.firewall_cmd.clone();
         match process_one(&state, move |action, ip, ttl| async move {
-            run(&cmd, &action, Some(ip), ttl).await.map(|_| ())
+            run(&cmd, &action, Some(ip), ttl).await?;
+            let actual = match run(&cmd, "list-json", None, None)
+                .await
+                .and_then(|text| parse_set(&text))
+            {
+                Ok(actual) => actual,
+                Err(e) => {
+                    if action == "block" {
+                        let _ = run(&cmd, "unblock", Some(ip), None).await;
+                    }
+                    return Err(e.context("Kernel verification failed; attempted BLOCK rollback"));
+                }
+            };
+            if actual.contains(&ip.to_string()) != (action == "block") {
+                if action == "block" {
+                    let _ = run(&cmd, "unblock", Some(ip), None).await;
+                }
+                bail!("Kernel response verification failed; attempted BLOCK rollback");
+            }
+            Ok(())
         })
         .await
         {
@@ -265,6 +344,13 @@ pub async fn audit(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn direct_response_never_allowed_in_host_user_namespace() {
+        assert!(!namespace_mapping_safe("0 0 4294967295"));
+        assert!(!namespace_mapping_safe("0 1000 65536"));
+        assert!(namespace_mapping_safe("0 1000 1"));
+        assert!(!namespace_mapping_safe("0 1000 1\n1 0 1"));
+    }
     #[test]
     fn empty_and_populated_sets() {
         assert!(

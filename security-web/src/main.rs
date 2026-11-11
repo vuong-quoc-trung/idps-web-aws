@@ -5,6 +5,7 @@ mod auth;
 mod detection;
 mod events;
 mod firewall;
+mod hybrid;
 mod ingest;
 mod metrics;
 mod network;
@@ -269,6 +270,7 @@ async fn main() -> Result<()> {
     tokio::spawn(metrics::sample_resources());
     tokio::spawn(operations::monitor());
     tokio::spawn(firewall::worker(state.clone()));
+    tokio::spawn(hybrid::worker(state.clone()));
     let addr = env::var("APP_ADDR").unwrap_or("127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(&addr).await?;
     info!(%addr, "security dashboard starting");
@@ -299,6 +301,8 @@ fn router(state: AppState) -> Router {
         .route("/api/audit", get(firewall::audit))
         .route("/api/application-audit", get(application_audit::list))
         .route("/api/ai-shadow", get(ai_shadow::list))
+        .route("/api/hybrid-incidents", get(hybrid::list))
+        .route("/api/hybrid-proposals/{id}/approve", post(hybrid::approve))
         .route(
             "/api/application-audit/{id}",
             get(application_audit::detail),
