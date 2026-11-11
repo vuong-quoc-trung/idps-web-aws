@@ -120,7 +120,7 @@ def wait_gateway(process):
         if process.poll() is not None:
             raise RuntimeError("Isolated sensor gateway exited; inspect sensor log")
         try:
-            with socket.create_connection(("127.0.0.1", 18782), timeout=0.5):
+            with socket.create_connection((os.environ.get("IDPS_DEMO_LISTEN", "127.0.0.1"), 18782), timeout=0.5):
                 return
         except OSError:
             time.sleep(0.5)
@@ -212,8 +212,8 @@ def receipt_evidence(m, receipts):
     return proof
 
 
-def worker(output):
-    assert not RUNTIME.exists() and not SENSOR.exists(), (
+def worker(output, resumed_gates=None, startup_verified=False):
+    assert (startup_verified or not (RUNTIME / "configuration.json").exists()) and not SENSOR.exists(), (
         "Fresh isolated runtime only; preserve prior runs"
     )
     output.mkdir(parents=True, exist_ok=True)
@@ -234,6 +234,11 @@ def worker(output):
             publish()
 
     def run(name, command, cwd=REPO, timeout=600):
+        publish(phase=name)
+        if resumed_gates and name in {"RULES_POLICY_TESTS", "FRONTEND_TESTS", "LOCAL_STARTUP", "AI_FAULT_RECOVERY_AND_SHUTDOWN"}:
+            gate = {"RULES_POLICY_TESTS":"RULES_POLICY", "FRONTEND_TESTS":"SECURITY_FRONTEND_TESTS", "LOCAL_STARTUP":"LOCAL_STARTUP", "AI_FAULT_RECOVERY_AND_SHUTDOWN":"INFERENCE_FALLBACK"}[name]
+            if resumed_gates.get(gate) == "PASS":
+                return
         publish(phase=name)
         with (output / (name + ".log")).open("wb") as log:
             result = subprocess.run(
@@ -264,6 +269,7 @@ def worker(output):
                     "--offline",
                     "-j",
                     "1",
+                    *(["--test", "hybrid_policy_effect"] if os.environ.get("IDPS_HYBRID_ACCEPTANCE") == "1" else []),
                     "parser_tests",
                     "--",
                     "--test-threads=1",
@@ -287,10 +293,8 @@ def worker(output):
             timeout=600,
         )
         foundation = load(RUNTIME / "smoke-report.json")
-        assert (
-            foundation["status"] == "PASS"
-            and foundation["ai_shadow_startup"] == "READY"
-        )
+        if foundation.get("status") != "PASS" or foundation.get("ai_shadow_startup") != "READY":
+            raise RuntimeError(f"LOCAL_STARTUP not ready: foundation={foundation.get('status')}, ai={foundation.get('ai_shadow_startup')}; evidence={RUNTIME / 'smoke-report.json'}; AI diagnostics={RUNTIME / 'ai/startup-failure.json'}")
         gates.update(
             LOCAL_STARTUP="PASS",
             STUDENT_WEB_REGRESSION="PASS",
@@ -387,7 +391,8 @@ def worker(output):
             LIVE_HTTP_SMOKE="PASS",
         )
     except Exception as exc:  # noqa: BLE001 -- preserve failed gate and finish independent checks
-        failures.append({"stage": status["phase"], "reason": str(exc)})
+        gates[status["phase"]] = "FAIL"
+        failures.append({"stage": status["phase"], "type": type(exc).__name__, "reason": str(exc) or f"{type(exc).__name__} without message; inspect stage log", "log": str(output / (status["phase"] + ".log")), "runtime": str(RUNTIME)})
     finally:
         publish(phase="OWNED_RUNTIME_CLEANUP")
         try:

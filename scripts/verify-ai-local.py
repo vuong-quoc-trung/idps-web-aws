@@ -166,8 +166,20 @@ def main():
             pass
     assert len(children) == 1
     os.kill(children[0], signal.SIGKILL)
-    down_receipt = student("?worker=down")
+    down_query = "?worker=down"
+    if os.environ.get("IDPS_HYBRID_ACCEPTANCE") == "1":
+        down_query += "&" + urllib.parse.urlencode({"search": "1' OR 1=1--"})
+    down_receipt = student(down_query)
     wait_for(ai, lambda p: p["worker"]["stale"], 30)
+    hybrid_fallback = None
+    if os.environ.get("IDPS_HYBRID_ACCEPTANCE") == "1":
+        def hybrid_incident():
+            status, page = call("/api/hybrid-incidents?request_id=" + down_receipt["request_id"], token=token)
+            assert status == 200
+            return page["incidents"]
+        incidents = wait_for(hybrid_incident, lambda items: bool(items) and items[0]["rule_risk_component"] > 0 and items[0]["ai_risk_component"] == 0, 30)
+        hybrid_fallback = incidents[0]
+        assert hybrid_fallback["policy_action"] in {"ALERT", "REVIEW"}
     launcher.stop_ai()
     launcher.start_ai()
     wait_for(
@@ -228,17 +240,7 @@ def main():
         attempt = str(time.time_ns())
         output = RUNTIME / "ai" / (kind + "-status-" + attempt + ".jsonl")
         evidence = RUNTIME / "ai" / (kind + "-guard-" + attempt)
-        completed = subprocess.run(
-            [
-                str(ROOT / "ai-training/.venv/bin/python"),
-                str(ROOT / "ai-training/scripts/integration-guard.py"),
-                "--output",
-                str(evidence),
-                "--quota",
-                "3",
-                "--max-seconds",
-                "60",
-                "--",
+        probe_command = [
                 str(ROOT / "ai-training/.venv/bin/python"),
                 str(ROOT / "scripts/ai-shadow-worker.py"),
                 "--bundle",
@@ -247,11 +249,16 @@ def main():
                 str(RUNTIME / "ai" / (kind + ".sock")),
                 "--output",
                 str(output),
-            ],
-            capture_output=True,
-            check=False,
-            timeout=75,
-        )
+        ]
+        if launcher.shared_acceptance_cgroup():
+            launcher.wait_ai_startup_headroom()
+            supervision = "EXISTING_ACCEPTANCE_SCOPE_WITH_INDEPENDENT_WATCHDOG"
+        else:
+            probe_command = [str(ROOT / "ai-training/.venv/bin/python"),
+                str(ROOT / "ai-training/scripts/integration-guard.py"), "--output",str(evidence),
+                "--quota","3","--max-seconds","60","--",*probe_command]
+            supervision = "SEPARATE_RESOURCE_GUARD"
+        completed = subprocess.run(probe_command, capture_output=True, check=False, timeout=75)
         if not output.exists():
             raise RuntimeError("Fault probe did not reach the worker; inspect thermal/resource guard. Not a model-fault PASS.")
         records = [json.loads(s) for s in output.read_text().splitlines()]
@@ -260,7 +267,7 @@ def main():
         )
         assert student()["http_status"] == 200
         faults.append(
-            {"case": kind, "status": "MODEL_UNAVAILABLE", "Student_HTTP": 200}
+            {"case": kind, "status": "MODEL_UNAVAILABLE", "Student_HTTP": 200, "resource_supervision": supervision}
         )
 
     # Prove transient canary, cookies and auth do not appear in AI persisted data.
@@ -289,6 +296,7 @@ def main():
             "lost_requests_replayed": False,
             "canonical_NGINX_observed_without_AI_result": missing_observed,
         },
+        "hybrid_ai_failure_fallback": hybrid_fallback,
         "worker_restart": {
             "status": "PASS",
             "request": restarted,

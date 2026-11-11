@@ -163,7 +163,7 @@ def postgres(name, image, port, database, password):
     else:
         free_port(port)
         environment = os.environ | {'POSTGRES_PASSWORD': password}
-        run(['docker', 'run', '-d', '--name', name, '--label', 'idps.foundation=true',
+        run(['docker', 'run', '-d', '--cpus', '0.1', '--memory', '512m', '--memory-swap', '512m', '--name', name, '--label', 'idps.foundation=true',
              '-e', 'POSTGRES_PASSWORD', '-e', f'POSTGRES_DB={database}',
              '-p', f'127.0.0.1:{port}:5432', '-v', f'{name}-data:/var/lib/postgresql/data', image], env=environment, capture=True)
     deadline = time.monotonic() + 30
@@ -187,6 +187,30 @@ def wait_bootstrap_admin(timeout=120):
     raise RuntimeError('Student HTTP is up but local bootstrap admin is not ready; inspect private startup logs')
 
 
+def ai_command(worker_command, python, resources):
+    if shared_acceptance_cgroup():
+        wait_ai_startup_headroom()
+        return worker_command
+    return [str(python),str(ROOT/'ai-training/scripts/integration-guard.py'),
+        '--output',str(resources),'--quota','20','--max-seconds','7200','--',*worker_command]
+
+
+def wait_ai_startup_headroom(timeout=90):
+    import importlib.util
+    import psutil
+    spec = importlib.util.spec_from_file_location('startup_thermal', ROOT/'ai-training/scripts/p0-thermal-run.py')
+    thermal = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(thermal)
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        temperature = max(v['celsius'] for v in thermal.cpu_sensors().values())
+        available = psutil.virtual_memory().available
+        if temperature < 70 and available >= 4*1024**3:
+            return
+        time.sleep(.5)
+    raise RuntimeError(f'AI startup headroom timeout: CPU={temperature:.1f}C (requires <70C), MemAvailable={available} (requires >=4GiB)')
+
+
 def start_ai():
     (RUNTIME/'ai').mkdir(mode=0o700, exist_ok=True)
     socket_path = RUNTIME/'ai/nginx.sock'
@@ -198,10 +222,13 @@ def start_ai():
     python = ROOT/'ai-training/.venv/bin/python'
     resources = RUNTIME/'ai'/('resources-'+str(time.time_ns()))
     began=time.time()
-    spawned=start('ai', [str(python),str(ROOT/'ai-training/scripts/integration-guard.py'),
-        '--output',str(resources),'--quota','20','--max-seconds','7200','--',
-        str(python),str(ROOT/'scripts/ai-shadow-worker.py'),
-        '--socket',str(socket_path),'--output',str(RUNTIME/'ai/results.jsonl')], ROOT, os.environ.copy())
+    worker_command = [str(python),str(ROOT/'scripts/ai-shadow-worker.py'),
+        '--socket',str(socket_path),'--output',str(RUNTIME/'ai/results.jsonl')]
+    # The verified acceptance scope already has an independent watchdog and
+    # bounds all descendants. A nested service escapes that envelope and can
+    # reject a harmless startup transient before model inference even begins.
+    command = ai_command(worker_command, python, resources)
+    spawned=start('ai', command, ROOT, os.environ.copy())
     # A spawned supervisor PID is not proof that a model is ready.
     deadline = time.monotonic() + 150
     while time.monotonic() < deadline:
@@ -492,7 +519,8 @@ def main():
         try:
             start_ai()
             ai_startup = 'READY'
-        except (OSError, RuntimeError, subprocess.SubprocessError):
+        except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+            (RUNTIME/'ai/startup-failure.json').write_text(json.dumps({'type':type(exc).__name__,'reason':str(exc) or type(exc).__name__,'log':str(RUNTIME/'ai.log')},indent=2)+'\n')
             # Optional AI failure must not keep the application stack offline.
             ai_startup = 'NOT_READY; inspect private ai.log/resource reports'
             print('AI is not ready; Student/Nginx/Security stay available. Check thermal/model status.',flush=True)

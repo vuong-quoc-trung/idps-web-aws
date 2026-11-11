@@ -5,6 +5,7 @@ import argparse
 import concurrent.futures
 import http.client
 import json
+import os
 import socket
 import time
 from pathlib import Path
@@ -67,13 +68,17 @@ def main():
         return rows
 
     def matched(ids):
-        return wait(
-            results,
-            lambda rows: all(
-                rows.get(rid, {}).get("status") == "MATCHED" for rid in ids
-            ),
-            90,
-        )
+        try:
+            return wait(
+                results,
+                lambda rows: all(rows.get(rid, {}).get("status") == "MATCHED" for rid in ids),
+                90,
+            )
+        except RuntimeError as exc:
+            rows = results()
+            path = a.sensor / "correlation-failure.json"
+            path.write_text(json.dumps({"state":"FAIL", "receipts":receipts, "unmatched":{rid:rows.get(rid) for rid in ids}, "sensor_status":str(a.sensor / "status.json"), "sensor_log":str(a.sensor / "sensor.log")},indent=2))
+            raise RuntimeError(f"Real HTTP receipts lack complete sensor correlation; diagnostics={path}") from exc
 
     single = request("single", "?size=2")
     assert single["HTTP"] == 200
@@ -136,7 +141,7 @@ def main():
     # Stop only IDS, leaving byte relays and Student intact.
     (a.sensor / "STOP_SENSOR").touch()
     wait(lambda: (a.sensor / "sensor-stopped").exists(), bool, 30)
-    missing = request("sensor-stopped", "?size=3")
+    missing = request("sensor-stopped", "?" + urlencode({"search": "1' OR 1=1--"}) if os.environ.get("IDPS_HYBRID_ACCEPTANCE") == "1" else "?size=3")
     assert missing["HTTP"] == 200
     rows = wait(
         results,
