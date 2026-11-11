@@ -1,5 +1,31 @@
 # Team setup và trạng thái AI-IDPS
 
+Cậpnhật mạng: `scripts/run-all.sh` mặcđịnh nghe`0.0.0.0:18782`, nhậnmọinguồnIPv4
+(theo yêu cầu chủdựán), khôngcầnđổiACL khiWiFiđổi192.168 sang10.10.
+HealthinLAN_URLS theoIPhiệntại; SecurityAPI vàDBvẫngiữlocalhost.
+
+
+
+## Bật lại toàn bộ sau khi khởi động máy
+
+Chạy`/home/trung/projects/idps-web-aws/scripts/run-all.sh` đểtựchọnIPv4/subnet
+LAN của default route, phục hồi2Postgresvolumes, Studentbackend/frontend,
+SecurityRust/UI,NGINX,Suricata,Requestv2 vàHybridPolicy. ChờHEALTHY; startupkhông
+cầntrain/buildlại hoặcđặtpasswordmới. Đangchạythìreuse session, khôngspawntrùng.
+Chỉkhởichạy modelactiveRequestv2;10Mtiếptụchoãn. NếuDHCPđổi, URLmớiinởLAN_URL.
+`./scripts/idps-demo.sh credentials` đọctài khoảnWeblocalhiệncó;
+khônglưumậtkhẩu vàoGit. Studentusernamefoundation-admin, Securityusernameadmin.
+StudentURLLAN:18782/login; SecurityUIchỉhost127.0.0.1:3001.
+`health`kiểmtraHTTP/AI/correlation/policy; `status`xemguard; `stop`dừngtoànruntime
+vàgiữvolumes/credentials. Sau rebootdữliệuvàpasswordkhôngđổi.
+
+AI monitor nhậnbiết khoảngdừng dooutercgroupfreeze chỉkhi cóguardheartbeatmới,
+sameunit vàpausedtimeđủkhớp; gapkhônggiảithíchđược vẫnfailclosed. Modelweights,
+encoder vàthresholdkhôngđổi. RecoveryriêngAI khôngđóngWeb/gateway.
+
+---
+
+
 ## Demo sẵn sàng kiểm thử LAN — xác minh11/11/2026
 
 Validation`demo-acceptance-20261111-r7`: **tất cả gate localPASS**, failures=[],

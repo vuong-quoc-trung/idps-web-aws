@@ -28,6 +28,28 @@ accept = module("hybrid-system-acceptance")
 
 
 class DemoTests(unittest.TestCase):
+    def test_health_refuses_backend_only_success_when_LAN_refuses(self):
+        from unittest.mock import Mock
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder); pointer=root/'pointer.json'
+            pointer.write_text(json.dumps({'root':str(root),'pid':123,'start_ticks':456}))
+            ready={'gateway':'http://192.168.1.28:18782','sensor':str(root/'sensor')}
+            (root/'demo-ready.json').write_text(json.dumps(ready))
+            (root/'guard').mkdir(); (root/'sensor').mkdir()
+            (root/'guard/resource-status.json').write_text(json.dumps({'status':'RUNNING','heartbeat':__import__('time').time()}))
+            (root/'sensor/status.json').write_text('{}')
+            opener=Mock(); opener.open.side_effect=ConnectionRefusedError('LAN listener absent')
+            with patch.object(demo,'POINTER',pointer), patch.object(demo,'process_identity',return_value=456), patch.object(demo.urllib.request,'build_opener',return_value=opener), patch.object(demo,'request',return_value={'status':'alive'}):
+                value=demo.health_snapshot()
+            self.assertEqual(value['status'],'UNHEALTHY')
+            self.assertIn('LAN listener absent',value['errors'][0])
+
+    def test_sensor_uses_distro_permitted_rootless_namespace(self):
+        from unittest.mock import Mock
+        with patch.object(sensor.shutil,'which',return_value='/usr/bin/podman'), patch.object(sensor.subprocess,'run',return_value=Mock(returncode=0)) as run:
+            self.assertEqual(sensor.namespace_command(),['podman','unshare','unshare','-n'])
+            self.assertEqual(run.call_args.args[0],['podman','unshare','unshare','-n','true'])
+
     def test_concurrent_heartbeat_and_final_writes_are_atomic(self):
         from concurrent.futures import ThreadPoolExecutor
         with tempfile.TemporaryDirectory() as folder:
@@ -59,13 +81,15 @@ class DemoTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'before capture readiness'):
                 sensor.wait_engine(proc, path, 0)
 
-    def test_lan_bind_is_specific_and_subnet_scoped(self):
+    def test_gateway_supports_explicit_all_source_and_legacy_subnet_modes(self):
         self.assertEqual(
             str(sensor.gateway_network("192.168.1.28", "192.168.1.0/24")),
             "192.168.1.0/24",
         )
+        self.assertEqual(str(sensor.gateway_network("0.0.0.0", "0.0.0.0/0")), "0.0.0.0/0")
+        for client in ["10.10.1.50", "192.168.122.224", "192.168.1.90", "203.0.113.5"]:
+            self.assertIn(__import__('ipaddress').IPv4Address(client), sensor.gateway_network("0.0.0.0", "0.0.0.0/0"))
         for address, network in [
-            ("0.0.0.0", "0.0.0.0/0"),
             ("8.8.8.8", "8.8.8.0/24"),
             ("192.168.2.28", "192.168.1.0/24"),
         ]:

@@ -60,7 +60,7 @@ def env():
     }
 
 
-def verified_cutoff(root):
+def verified_cutoff(root, quota=200):
     """Use local CPU limits, retaining a margin under the user's <96C ceiling."""
     limits = []
     readings = {}
@@ -75,7 +75,7 @@ def verified_cutoff(root):
         raise RuntimeError(
             "CPU temperature/critical limits unavailable; no workload started"
         )
-    cutoff = min(90, min(limits) - 5)
+    cutoff = min(100, min(limits))
     if cutoff <= 80:
         raise RuntimeError("Hardware limit requires a lower workload profile")
     atomic(
@@ -85,8 +85,8 @@ def verified_cutoff(root):
             "local_coretemp_critical_C": min(limits),
             "instant_cutoff_C": cutoff,
             "initial_readings_C": readings,
-            "sustained_average_limit_C": 80,
-            "quota_percent_one_core": 200,
+            "sustained_average_limit_C": 100,
+            "quota_percent_one_core": quota,
             "memory_GiB": 8,
             "reserve_GiB": 4,
             "manufacturer_reference": "https://www.intel.com/content/www/us/en/products/sku/241747/intel-core-ultra-9-processor-285h-24m-cache-up-to-5-40-ghz/specifications.html",
@@ -325,6 +325,7 @@ def demo_worker(root):
     accept.RUNTIME = RUNTIME
     accept.environment = env
     sensor = None
+    atomic(root / "wrapper-status.json", {"state":"RUNNING", "phase":"STARTING_LOCAL_SERVICES", "pid":os.getpid(), "heartbeat":time.time()})
     subprocess.run(
         [str(REPO / "scripts/dev-up-and-verify.sh"), "--ai-shadow", "--skip-build"],
         cwd=REPO,
@@ -355,15 +356,23 @@ def demo_worker(root):
             )
         accept.SENSOR = sensor_root
         accept.wait_gateway(sensor)
+        listen_host = os.environ.get("IDPS_DEMO_LISTEN", "127.0.0.1")
+        gateway_url = "http://" + ("127.0.0.1" if listen_host == "0.0.0.0" else listen_host) + ":18782"
+        import urllib.request
+        with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(gateway_url + "/api/auth/csrf", timeout=10) as response:
+            response.read()
+            if response.status != 200 or not response.headers.get("X-Request-Id"):
+                raise RuntimeError(f"LAN HTTP readiness failed at {gateway_url}; expected NGINX HTTP200 with X-Request-Id")
         atomic(
             root / "demo-ready.json",
             {
                 "state": "READY",
                 "runtime": str(RUNTIME),
                 "sensor": str(sensor_root),
-                "gateway": "http://"
-                + os.environ.get("IDPS_DEMO_LISTEN", "127.0.0.1")
-                + ":18782",
+                "gateway": gateway_url,
+                "probe_url": gateway_url,
+                "listen": listen_host,
+                "allowed_sources": os.environ.get("IDPS_DEMO_ALLOW_CIDR", "127.0.0.0/8"),
                 "two_machine_validation": "PENDING_EXTERNAL_CLIENT",
                 "client_attribution": "TCP peer is logged separately; relay IP is protected; no LAN IP blocking",
                 "automatic_block": False,
@@ -429,7 +438,7 @@ def demo_worker(root):
                     "phase": "CLASSROOM_DEMO_SERVING",
                     "pid": os.getpid(),
                     "heartbeat": time.time(),
-                    "gateway": "http://" + os.environ.get("IDPS_DEMO_LISTEN", "127.0.0.1") + ":18782",
+                    "gateway": gateway_url,
                 },
             )
             time.sleep(0.5)
@@ -499,7 +508,7 @@ def supervise(root, demo=False):
     try:
         if os.environ.get("IDPS_DEMO_RESUME_FROM"):
             resume_evidence(root)
-        cutoff = verified_cutoff(root)
+        cutoff = verified_cutoff(root, 50 if demo else 200)
         # Podman conmon must not inherit the killable acceptance scope. Containers
         # are already label-owned and bounded to0.1CPU/512MiB by the existing helper.
         launcher.postgres(
@@ -526,7 +535,7 @@ def supervise(root, demo=False):
             "--policy",
             "rolling",
             "--quota",
-            "200",
+            "50" if demo else "200",
             "--memory-gib",
             "8",
             "--cutoff",
@@ -574,6 +583,11 @@ def supervise(root, demo=False):
             }
     if demo:
         heartbeat_done.set()
+        if failure is None and code != 0:
+            resource = load(root / "guard/resource-report.json") if (root / "guard/resource-report.json").exists() else {}
+            failure = {"reason":resource.get("failure") or "Demo workload exited; inspect guard/stderr.log and sensor.log", "guard_exit":code, "temperature_max_C":resource.get("cpu_temperature_max"), "watchdog_reason":resource.get("watchdog_failure"), "action":"If thermal stopped, let CPU cool below70C and reduce external load before manually restarting; protection remains enabled"}
+        if failure:
+            atomic(root / "demo-failure.json", failure)
         atomic(
             root / "supervisor.json",
             {

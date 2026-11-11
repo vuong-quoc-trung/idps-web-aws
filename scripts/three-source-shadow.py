@@ -12,6 +12,7 @@ import ipaddress
 import json
 import os
 import select
+import shutil
 import signal
 import socket
 import socketserver
@@ -51,6 +52,8 @@ class TCPServer(socketserver.ThreadingTCPServer):
 def gateway_network(listen, allowed):
     address = ipaddress.IPv4Address(listen)
     network = ipaddress.IPv4Network(allowed, strict=True)
+    if network.prefixlen == 0:
+        return network  # Explicit user-authorized all-source IPv4 demo mode.
     private = [
         ipaddress.ip_network(v)
         for v in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8")
@@ -67,7 +70,7 @@ def gateway_network(listen, allowed):
 
 
 class LabGateway(TCPServer):
-    """Only authorized subnet peers; no HTTP header is trusted as a client IP."""
+    """Configured IPv4 admission, including explicit all-source demo mode."""
 
     def verify_request(self, request, address):
         allowed = ipaddress.IPv4Address(address[0]) in self.allowed_network
@@ -181,6 +184,19 @@ def wait_engine(sensor, log_path, offset, timeout=90):
                 return
         time.sleep(.1)
     raise RuntimeError(f"Suricata engine readiness timed out; inspect {log_path}")
+
+
+def namespace_command():
+    # Use the distro's existing Podman userns permission when terminal-launched
+    # unshare is restricted by AppArmor. No host policy/sysctl/capability changes.
+    candidates = ([['podman', 'unshare', 'unshare', '-n']] if shutil.which('podman') else []) + [['unshare', '-Urn']]
+    failures = []
+    for command in candidates:
+        probe = subprocess.run([*command, 'true'], check=False, capture_output=True, text=True, timeout=15)
+        if probe.returncode == 0:
+            return command
+        failures.append({'command':command, 'reason':probe.stderr.strip()})
+    raise RuntimeError(f"No permitted private sensor namespace; diagnostics={failures}. Use installed rootless Podman; do not disable AppArmor.")
 
 
 def namespace(args):
@@ -348,10 +364,11 @@ def host(args):
     relay = background(
         UnixServer(str(out / "to-host.sock"), Relay), ("127.0.0.1", args.edge_port)
     )
+    ns_command = namespace_command()
+    (out / "namespace-launch.json").write_text(json.dumps({"command":ns_command, "scope":"PRIVATE_USER_AND_NETWORK_NAMESPACE_ONLY"}))
     child = subprocess.Popen(
         [
-            "unshare",
-            "-Urn",
+            *ns_command,
             sys.executable,
             str(Path(__file__).resolve()),
             "namespace",

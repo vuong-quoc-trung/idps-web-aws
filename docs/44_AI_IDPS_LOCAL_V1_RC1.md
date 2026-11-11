@@ -1,5 +1,62 @@
 # AI-IDPS Local Demo v1.0 — vận hành và acceptance
 
+## Chế độ mọi nguồn IPv4 — yêu cầu chủdựán11/11/2026
+
+`run-all.sh` mặcđịnh bind`0.0.0.0:18782`, allow`0.0.0.0/0`. Khônggiới hạn
+192.168.1.x: nhậncảWiFi10.10.x.x, mạngVM192.168.122.x vàIPv4khác córoute tới máy.
+Mọi HTTP vẫnđi quaSuricata gateway→NGINX→Student→AI/Rules→HybridPolicy/audit.
+AdminSecurity/DB vẫnlocalhost; khôngmởfirewall tựđộng hoặcportforwardrouter.
+
+`health` probe127.0.0.1 khi wildcardbind đểkhôngnhầm0.0.0.0 làURLclient;
+LAN_URL/LAN_URLS tínhIPinterfacehiệntại (ưu tiêndefault route), cậpnhậtkhiđổiWiFi.
+Máyngoài dùnghttp://IP_WIFI_MAY_CHU:18782; KaliNATdefault cóthểdùng
+http://192.168.122.1:18782. Khôngcầnđổiallow-cidr saumỗiWiFi.
+Lệnhoverrideprivate/subnet cũ vẫn dùngđược khi chủđộng chỉđịnh.
+NhậnmọiIP khôngvượtđượcAPclientisolation hoặcfirewallmạngtrường; kiểmthửtừ
+máyBvẫnPENDING chođếnkhicórequestthực. Modelv2/frozenweights và10MPOSTPONED giữnguyên.
+
+---
+
+
+## Sửa lỗi run-all từ terminal — 11/11/2026
+
+Session864530730917 bịthermalstop90°C sau14,37s, chưa tớisensor; không phải lỗipassword
+hayworkingdirectory/opt/antigravity. Demo serving/startup naygiớihạn50%ONEcore thay200%
+(chỉ50% của1core, không50% toànmáy). Guardcutoff90/rolling80, independentwatchdog
+vẫngiữnguyên. Acceptance cũ giữngân sáchriêng. Cho phépstartupđến240s vàinphase.
+
+Session020608654766 trướcđóthoátvìsystemd từchốiCPUQuota139.98631520507138%.
+MọiCPUQuota gửisystemd nayđịnhdạng2chữsốthậpphân139.99%; đãxácminhparse bằng
+transientscope vôhại. Regression+thermal22testsPASS. Guardresourcefailure vànhiệtđỉnh
+đượcđưa vàoJSONlỗistartup, khôngchỉđưađườngdẫn. Khôngauto retrykhiemergencystop.
+Dùngrun-all.sh saukhimáynguội; khôngvôhiệu thermalprotection hoặcđóngappngườidùng.
+
+---
+
+
+## Phục hồi LAN và health — 11/11/2026
+
+Session321973593298 dừng vìindependent watchdog đo92°C (cutoff90), không tựrestart.
+Session077476605445 sau đóFAILED do`unshare` bịtừchối`uid_map` tronglaunchcontext
+khác; servicecleanup đãdừngruntime. VìvậyRustREADY trongsnapshot cũ không làLANready.
+Sensor giờ ưu tiên`podman unshare unshare -n` dùngprofile distro hiệnhữu, kiểmtra
+permission trước startup; không thayAppArmor/sysctl/firewall. Namespace vẫnprivate.
+
+`start` phục hồi cấu hìnhLAN từ`.local-dev/demo-network.json`, chờHTTP thật và
+SCORED/MATCHED/policy trướcHEALTHY. Startkhi cósession sống chỉreporthealth,
+không spawnjobtrùng; filelocktồn tại không tựcó nghĩa lockđanggiữ. `health` trảexit1
+vàdiagnostic cóaction khi LANrefused, guardpaused/stale, sensor/model/correlation
+khôngsẵn sàng. Không lấyRustalive/AIready đơnlẻ làmHEALTHY.
+
+URL192.168.1.28:18782 làsensor gateway;NGINX thực nghe127.0.0.1:18780 phía sau,
+adminAPI127.0.0.1:3001. Không bypasssensor hoặc mởadminAPI raLAN. MáyB thật vẫn
+PENDING_EXTERNAL_CLIENT. Kiểmtraendpoint từhost chỉlàHOST_TO_LAN_LISTENER.
+Tiếp tụcgiữcutoff90°C: nhiệt doứngdụngkhác cóthể khiếnfailsafe dừngdemo; khôngraise
+threshold để che sựkiện92°C. Dùngstatus/health đểxácđịnhsession sống trước gọistart.
+
+---
+
+
 ## Kết quả mới nhất — localPASS, phục vụLAN
 
 `demo-acceptance-20261111-r7/final-status.json`: mọi localgatePASS, failures=[],
