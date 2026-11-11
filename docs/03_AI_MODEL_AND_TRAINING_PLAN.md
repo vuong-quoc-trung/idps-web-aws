@@ -1,4 +1,40 @@
-# 03 — Thiết kế AI và training theo ca 2–3 giờ
+# 03 — Hai dòng mô hình AI-IDPS
+
+Cập nhật **11/11/2026** theo quyết định của chủ dự án. Registry thực thi:
+[`MODEL_STRATEGY.json`](../ai-training/MODEL_STRATEGY.json).
+
+| Dòng chiến lược | Trạng thái | Cấu hình xác minh | Quyền sử dụng |
+|---|---|---|---|
+| Request Intelligence v2 | ACTIVE_FROZEN | 588→64→64→64→64→8; **50.696 tham số**, step3072; metadata120.435 TRAIN views | Model duy nhất của demo; giữ weights/threshold |
+| AI-IDPS 10M | POSTPONED | request-swiglu-10m-multitask-v1; **10.065.928 tham số có gradient** trong preflight; actual-data updates0 | Không train/live trong milestone demo; migration cần user duyệt và so sánh đạt |
+
+Requestv2 dùng76 số bounded +512 hash char3–5 L2, không fit scaler mới.
+Live chỉ quan sát method/URI và User-Agent/Accept/Content-Type; body là **không
+quan sát**, không tạo body hoặc207 features giả. Threshold strict
+`score > 0.8826237916946411`; score chưa hiệu chuẩn thành xác suất tấn công.
+120.435 là unique TRAIN views theo metadata, không phải120.435 physical requests
+có attack-intent GT. Metadata có34.282 publisher_NORMAL và86.153 publisher_ANOMALOUS.
+
+Nguồn: bundle `ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle/`
+(`manifest.json`, `checkpoint/state.json`, `new-training-plan-evidence.json`,
+`feature-contract.json`, `onnx-parity.json`). SHA pins nằm trong registry.
+ONNX parity128TRAIN samples PASS là kiểm tra runtime, không chứng minh chất lượng.
+
+[Archive tại chỗ](../ai-training/archive/README.md) liệt kê GLU207, Requestv3,
+normalization, publisher100K/200K và các architecture cũ. Không xóa dataset,
+checkpoints, provenance hoặc sealed data. Shared code vẫn cần cho tái lập.
+Model publisher200K cũng50.696 tham số nhưng **không phải Requestv2** và không
+được dùng thay model demo. Worker pin registry + model ID/hash/threshold độc lập.
+
+10M run `.local-dev/large-request-2m-20261110-r1` đã dừng do nhiệt; markerPOSTPONED
+và SQLite snapshot giữ20.141 source positions/15.902 receipts đã ghi. Chưa có
+training thật. Launcher từ chối execution khi marker còn tồn tại; không tự resume.
+[Kế hoạch1M](37_AI_IDPS_STUDENT_2M_DATA_PIPELINE.md) chỉ là công việc tương lai.
+[Demo thực tế và trạng thái acceptance](44_AI_IDPS_LOCAL_V1_RC1.md).
+
+---
+
+## Hồ sơ lịch sử (không phải trạng thái live hiện hành)
 
 ## Trước study tiếp: dữ liệu và bằng chứng intent — 2026-11-01T07:36:28.147641+07:00
 

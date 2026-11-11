@@ -1,3 +1,21 @@
+# Học liệu AI-IDPS — cập nhật11/11/2026
+
+Ba HTML tiếng Việt dưới đây có phần trạng thái hiện hành ở đầu. **Requestv2 là
+model active duy nhất; AI-IDPS10M hoãn.** Chương/metrics cũ là hồ sơResearchMVP,
+không phải chứng nhận live hoặc danh sách model đang chạy. Registryhai dòng,
+archivevà kế hoạch1M đã nối vào từng tài liệu.
+
+- [Demo hiện hành và lệnhLAN](../44_AI_IDPS_LOCAL_V1_RC1.md).
+- [Model/score/policy](../03_AI_MODEL_AND_TRAINING_PLAN.md).
+- [1M uniqueTRAIN tương lai](../37_AI_IDPS_STUDENT_2M_DATA_PIPELINE.md).
+
+Acceptance live đang cần hoàn tất; hai máyPENDING do chưa cómáyB; manualblock
+chỉ khioperatorduyệt. Clone nhánh`feature/ai-idps-shadow-integration` và mởHTMLoffline.
+
+---
+
+## Mục lục học liệu lịch sử (mốc06/11/2026)
+
 # Bộ học liệu AI-IDPS (`docs/learning-materials/`)
 
 Bộ **3 sổ tay tương tác tiếng Việt** (tự chứa 100% HTML/CSS/SVG/JS, đọc offline, hỗ trợ **In / lưu PDF**) giải thích toàn diện dự án **AI-IDPS** từ cơ bản đến chuyên sâu, đã được cập nhật đồng bộ với cột mốc **`AI-IDPS Research MVP v1.0 — Frozen Baseline`** (commit `09a12e4`, ngày **06/11/2026**):

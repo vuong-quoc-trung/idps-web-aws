@@ -14,7 +14,27 @@
 <li><a href="#sys-policy-firewall">P2.09 · Policy Engine, Helper &amp; nftables</a></li>
 <li><a href="#viet-tat-kiem-tra">10 · Bảng Viết Tắt &amp; Tự Kiểm Tra</a></li>
 </ol></nav></details><p class="side-note">Tài liệu được chia làm 2 phần rõ rệt: <strong>Phần I (Chương 01–05)</strong> chuyên về AI kèm mức hiện tại &amp; mục tiêu dự kiến; <strong>Phần II (Chương 06–09)</strong> giải thích toàn bộ thuật ngữ hệ thống, mạng, rule và bảo mật.</p></aside>
-<main class="paper" id="main"><div class="hero"><div class="eyebrow">Tài liệu 03 · Từ điển Tham chiếu &amp; Định chuẩn Mục tiêu</div><h1>Từ điển Thuật ngữ Toàn diện &amp; Bảng Mức–Mục Tiêu Dự Kiến của AI-IDPS</h1><p class="lead">Tài liệu tra cứu chuyên sâu chia làm 2 phần lớn: <strong>Phần I</strong> giải thích toàn bộ thuật ngữ AI/ML/DL từ cơ bản đến nâng cao kèm <em>Mức đạt hiện tại (Research MVP v1.0)</em> và <em>Mức–Mục tiêu dự kiến sẽ đạt (Research Gate &amp; Cổng 2.000.000 Request)</em>; <strong>Phần II</strong> giải thích toàn bộ thuật ngữ Web, Mạng, Cấu tạo Rule, Collector, Bảo mật riêng tư và Tường lửa nhân Linux.</p><p class="meta">Biên tập ngày 06/11/2026 · Đối chiếu code tại <code>09a12e4</code> (<code>RESEARCH_MVP_V1_0_FROZEN</code>) · Tiếng Việt · Dùng offline</p><div class="chips" aria-label="Phạm vi tài liệu"><span class="chip">Phần I: AI + Mức đạt &amp; Mục tiêu dự kiến</span><span class="chip">Phần II: Web · Mạng · Rule · Bảo mật · Hạ tầng</span><span class="chip">Có ô lọc thuật ngữ trực tiếp</span></div><div class="toolbar"><button type="button" onclick="window.print()">In / lưu PDF</button><button id="answer-toggle" type="button" onclick="toggleAnswers()">Mở mọi đáp án</button></div>
+<main class="paper" id="main">
+<section id="current-demo-20261111"><h2>Trạng thái hiện hành · 11/11/2026</h2>
+<p><strong>Chỉ hai dòng chiến lược:</strong> Request Intelligence v2 là model live duy nhất
+(50.696 tham số, 588 features, step3072, metadata120.435 TRAIN views);
+AI-IDPS 10M (10.065.928 tham số đã kiểm tra gradient) đang <strong>POSTPONED</strong>, chưa train dữ liệu thực.</p>
+<p>GLU207, Requestv3, publisher100K/200K và các model khác là <strong>lịch sử nghiên cứu</strong>.
+Các chương/metrics mốc06/11 bên dưới được giữ để học và tái lập, không mô tả model active
+hoặc chất lượng live hiện nay. Những dòng ghi “request” trong thống kê corpus cũ là
+observations/representations nếu không có receipt vật lý; không cộng thành giao dịch độc lập.</p>
+<p>Luồng demo: HTTP → NGINX → Student; NGINX/Application Audit/Suricata → correlation
+request_id + sensor transaction → Rule + Frozen Requestv2 → Rust Hybrid Policy → incident/audit.
+AI dùng76numeric +512hash; body live không quan sát. Score chưa là xác suất tấn công;
+strict score&gt;0.8826237916946411 tạo signal categorical, có thể cộng10risk để ALERT→REVIEW.
+Rule quan trọng vẫn giữ dù AI thấp/mất. PROPOSE_BLOCK không tự block; operator và Response Engine
+kiểm tra protectedIP, TTL, cooldown, kernel state. AUTO_BLOCK=false.</p>
+<p><strong>Local acceptance PASS (11/11/2026):</strong> r7 xác minh real HTTP/NGINX/Suricata/Requestv2/Hybrid Policy/DBaudit/fallback/recovery/resource, không có lỗi. Demo LAN tại192.168.1.28:18782, dịch vụ giữ chạy để test. Máy B thực vẫn PENDING_EXTERNAL_CLIENT; manual firewall PENDING_APPROVAL. Không gọi namespace là kiểm thử hai máy. LateSuricata chỉ cập nhật incident sau HTTP, không chặn ngược response đã xong.</p>
+<p><a href="../44_AI_IDPS_LOCAL_V1_RC1.md">Lệnh demo và bằng chứng hiện hành</a> ·
+<a href="../03_AI_MODEL_AND_TRAINING_PLAN.md">Hai model và archive</a> ·
+<a href="../37_AI_IDPS_STUDENT_2M_DATA_PIPELINE.md">Kế hoạch tự động1M TRAIN (chưa thực thi)</a>.</p>
+</section>
+<div class="hero"><div class="eyebrow">Tài liệu 03 · Từ điển Tham chiếu &amp; Định chuẩn Mục tiêu</div><h1>Từ điển Thuật ngữ Toàn diện &amp; Bảng Mức–Mục Tiêu Dự Kiến của AI-IDPS</h1><p class="lead">Tài liệu tra cứu chuyên sâu chia làm 2 phần lớn: <strong>Phần I</strong> giải thích toàn bộ thuật ngữ AI/ML/DL từ cơ bản đến nâng cao kèm <em>Mức đạt hiện tại (Research MVP v1.0)</em> và <em>Mức–Mục tiêu dự kiến sẽ đạt (Research Gate &amp; Cổng 2.000.000 Request)</em>; <strong>Phần II</strong> giải thích toàn bộ thuật ngữ Web, Mạng, Cấu tạo Rule, Collector, Bảo mật riêng tư và Tường lửa nhân Linux.</p><p class="meta">Biên tập ngày 06/11/2026 · Đối chiếu code tại <code>09a12e4</code> (<code>RESEARCH_MVP_V1_0_FROZEN</code>) · Tiếng Việt · Dùng offline</p><div class="chips" aria-label="Phạm vi tài liệu"><span class="chip">Phần I: AI + Mức đạt &amp; Mục tiêu dự kiến</span><span class="chip">Phần II: Web · Mạng · Rule · Bảo mật · Hạ tầng</span><span class="chip">Có ô lọc thuật ngữ trực tiếp</span></div><div class="toolbar"><button type="button" onclick="window.print()">In / lưu PDF</button><button id="answer-toggle" type="button" onclick="toggleAnswers()">Mở mọi đáp án</button></div>
 <div class="route-card"><strong>Chuyển nhanh theo nhu cầu tra cứu</strong><a href="#tong-quan-muc-tieu">Bảng Mục tiêu AI (2M req &amp; 9,67M params)</a><a href="#ai-kien-truc">Thuật ngữ Model &amp; SwiGLU</a><a href="#sys-network-rule">Thuật ngữ Mạng &amp; Rule Suricata</a><a href="#sys-policy-firewall">Thuật ngữ Policy &amp; nftables</a></div>
 
 <div class="lab" role="search" aria-label="Bộ lọc thuật ngữ tức thời">

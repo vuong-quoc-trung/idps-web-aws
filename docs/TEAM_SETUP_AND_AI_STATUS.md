@@ -1,5 +1,41 @@
 # Team setup và trạng thái AI-IDPS
 
+## Demo sẵn sàng kiểm thử LAN — xác minh11/11/2026
+
+Validation`demo-acceptance-20261111-r7`: **tất cả gate localPASS**, failures=[],
+resourcePASS/peak64°C/0emergency. R5 closurefailure làrace cùngtempfile; sửa bằng
+uniqueatomic tempfile/fsync và regression8threads×30writes. R6 chỉfailpreflight
+chainreuse; đã sửa truynguồn/hash, không có functionaltestfailed. Giữevidencecũ.
+Phiênphụcvụ dùng`./scripts/idps-demo.sh start --listen 192.168.1.28 --allow-cidr 192.168.1.0/24`.
+`./scripts/idps-demo.sh status` xác định sessionđangchạy. Khôngcleanup sautest/demo;
+chỉoperatorstop hoặcfailsafe. Hướngdẫn hiệnhành tại[runbook44](44_AI_IDPS_LOCAL_V1_RC1.md).
+**TWO_MACHINE=PENDING_EXTERNAL_CLIENT; MANUAL_BLOCK/UNBLOCK=PENDING_APPROVAL**.
+Khônggọi PARTIAL vìcácgate này làlỗilocal. Frozenv2ONLY;10MPOSTPONED.
+
+---
+
+
+## Trạng thái hiện hành — 11/11/2026
+
+Chỉ **Request Intelligence v2** live:50.696params,588features,120.435TRAIN views
+metadata, frozenstep3072/threshold0.8826237916946411strict>. [Registry hai dòng](../ai-training/MODEL_STRATEGY.json).
+**AI-IDPS10M POSTPONED**, actual-data updates0; marker và SQLite/receipts/checkpoint
+được giữ. GLU207/v3/publisher100K/200K archive tại chỗ, không chọn vào demo.
+
+[Runbook demo và LAN](44_AI_IDPS_LOCAL_V1_RC1.md) là hướng dẫn hiện hành.
+`demo-acceptance-20261110-r2`:2production-policyfixtures+2responseunitPASS;
+thermalstop88°C trướcHTTP nên chưa đạtfullacceptance. Lượt`demo-acceptance-20261111-r3`
+sẽ ghi gates thật trong`.local-dev/.../final-status.json`; `./scripts/idps-demo.sh status`.
+MáyB chưa có, TWO_MACHINE_NETWORK=PENDING; manualfirewall cầnoperatorapproval.
+Không tuyên bố namespace làhai máy. Student/Security user-facing source giữ nguyên.
+
+[Kế hoạch1M TRAIN tương lai](37_AI_IDPS_STUDENT_2M_DATA_PIPELINE.md): chỉ tài liệu,
+không chạy collection/training. Clone→bootstrap→restoremodels→local vẫn dùng bundle
+frozen; không tải20GBraw vàkhông đổi publishedreleases. Các mục bên dưới là ledger
+lịch sử, không phải phép bậtmodel archived.
+
+---
+
 Cập nhật 2026-11-10. Integration branch chứa các milestone local shadow, three-source
 và Rule–AI coordination; xem `git log -5 --oneline` để xác định revision clone.
 Model release frozen giữ nguyên. Không cần raw research20GB để chạy inference.

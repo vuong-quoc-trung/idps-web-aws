@@ -1,4 +1,195 @@
-# AI-IDPS-Local-v1.0-rc1 — 2026-11-10
+# AI-IDPS Local Demo v1.0 — vận hành và acceptance
+
+## Kết quả mới nhất — localPASS, phục vụLAN
+
+`demo-acceptance-20261111-r7/final-status.json`: mọi localgatePASS, failures=[],
+RESOURCE_SAFETY=PASS, peak64°C, watchdog0trip. GlobalreleasePARTIAL chỉ vì máyB
+chưa có vàoperator chưaduyệt firewall. Khôngclaim externaltest/manuallyblockPASS.
+PhiêndemoLAN sauvalidation dùngcontinuousscope, giữdịchvụchạy saukiểmthử.
+IPhiện192.168.1.28:18782, allow192.168.1.0/24; hostadmin127.0.0.1:3001.
+Dùng`./scripts/idps-demo.sh status`/`health`; `history`xem100incidents gầnnhất;
+`stop`chỉkhi muốn kếtthúc. Lấy X-Request-Id từB đểtraAI/rules/policy trênA.
+Cácghi chú bên dưới làlịch sử/giới hạn. HướngdẫnLAN vàoperator giữnguyên.
+
+---
+
+
+Cập nhật **11/11/2026**, branch `feature/ai-idps-shadow-integration`, HEAD lúc
+kiểm tra `2cd32b0` (đã merge attack-simulator; không reset các sửa đổi chưa commit).
+**LOCAL_DEMO chưa ACCEPTED**. Lượt`demo-acceptance-20261110-r2` đã PASS2test
+policy Rust +2testresponse, nhưng watchdog dừng88°C tại cutoff85 trước live HTTP.
+Không chuyển NOT_RUN thành FAIL chức năng hoặc PASS từ sơ đồ/fixtures.
+Lượt tiếp theo: `demo-acceptance-20261111-r3`; xem`final-status.json` sau khi kết thúc.
+
+## Recovery r3 → r4
+
+r3 đã kết thúcBLOCKED: Web/auth/audit PASS nhưng AI startupNOT_READY. `ai.log`
+ghi guard con từ chối resource startup; guard ngoàiPASS, peak79°C, không có
+thermal emergency. Launcher cũ tạo nestedguard ngay trong acceptance scope.
+`assert` kiểm tra READY không có message nên failure.reason rỗng.
+
+Recovery dùng chung scope đã xác minh + independentwatchdog; standaloneAI vẫn
+có guard riêng. Trước AI launch chờ CPU<70°C/RAMavailable≥4GiB có deadline90s.
+Worker vẫn tự kiểm tra nhiệt/RAM. Lỗi mới lưutype/reason/evidencepath;
+guard startup ghi nhiệt/RAM và ngưỡng thực tế (rolling75°C, không nhầm65°C).
+
+Run`demo-acceptance-20261111-r4` tái sử dụng Rust build/policy/response/6parser
+và frontend tests từr3 khi fingerprints nguồn/weights còn khớp. Không build/test
+lại toàn suite. Giai đoạnLOCAL_STARTUP_INDEPENDENT phải cóHTTP/auth, heartbeatREADY
+và requestSCORED thật trong connection-check mới được ghistartup-independent.json
+PASS và chạy tiếp nativeRule+AI/correlation/recovery. Trạng thái hiện tại phải đọc
+trongrun directory; ghi chú này chưa chứng nhận livePASS. LAN máyB vàmanualoperator
+vẫn là hai gate riêng đangPENDING.
+
+## Recovery Suricata/correlation r4 → r5
+
+r4=PARTIAL. Startup/NGINX/HTTPGET/POST/Requestv2SCORED/backend/fallback/recovery/
+resourcePASS. THREE_SOURCE_HTTP fail: gateway nhậnrequest trước engine readiness,
+EVE chỉstats+reverse flow, không cóHTTP event; correlation đúng khi giữMISSING_SOURCE.
+Chưa khẳng định race là nguyên nhân duy nhất cho đến khi chạy lại capture.
+NativeNGINX chết vìchownUID65534 khôngmapped; preflight sau sửa còn phát hiện
+missingdefaultfastcgi tempdir. Đã dùnguserrootmapped và cả5temp paths dướilabroot;
+`unshare -Urn nginx -t` PASS. Không đổihostNGINX hoặcStudent/Securitysource.
+
+R5 đợilogEngine started của đúngsensor generation trước mởgateway; restartcũng
+cófreshreadiness. Nativepolicy test chỉ phátrequest sau sensorready/configtest.
+Failures cópaths/proofs; correlationtimeout lưurequestIDs vàsources thực thiếu.
+Hybridfailr4 xảyra trướcpolicyinput nên chưa làbằng chứng lỗilogic; r5 dùnggate
+BLOCKED_BY_LIVE_EVIDENCE nếu prerequisite chưađạt, không tự đổi thànhtestPASS.
+
+`demo-acceptance-20261111-r5 --resume-from ...r4` táisửdụng Rust/frontend và
+fallback/restartPASS theo fingerprints; startup cần chạy lại đểphục hồi dịchvụ đãdừng,
+sau đó chạy freshsensor/nativepolicy/DBaudit/cleanup. Khôngtrain/rebuild/modelmigration.
+Xem`reused-evidence.json`,`reused-live-gates.json`,`native-lab/result.json` vàfinalgates.
+LệnhLAN ở dưới giữnguyên; máyBthật vàmanualapproval vẫnPENDING.
+
+## Sửa resource closure và phiên LAN giữ chạy — 11/11/2026
+
+R5 đãPASS toàn bộ functional gates, gồm actualSuricata+AI+PROPOSE+DBaudit;
+RESOURCE_SAFETY=FAIL vìworker exit1 dohai writer cùngrename`wrapper-status.writing`,
+không phảioverheat (peak75°C, watchdogkhôngtrip). GhiJSON hiện dùngtempfileduynhất+
+fsync; test8threads×30writesPASS. R6preflight phát hiệnchainreuse logfallback nằmởr4,
+đã sửa truynguồn theoSHA; evidencecũ giữnguyên. R7 xácminhresourceclosure sau sửa.
+
+PhiêndemoLAN đượcstart riêng sauvalidation, **không chạycleanup sau các request
+kiểm thử**. Chạyđếnkhioperatorstop hoặcresource/sensorfailsafe. Guardscope continuous
+(max-seconds0) vẫn cówatchdog độc lập, thermal90°C/rolling80°C, RAMreserve4GiB;
+telemetrygiữtốiđa20.000samples đểkhông tăngRAM vôhạn. Researchjobs vẫnfinite.
+
+Lệnhquan sát bổsung: `./scripts/idps-demo.sh history` liệtkê100incidents mới nhất.
+MachineA dùngAI/rules/policy/incident với`--request-id` lấy từX-Request-Id củaB.
+HostAPI/DB chỉloopback; chỉgateway192.168.1.28:18782 mởsubnet192.168.1.0/24.
+Manualfirewall khôngđược duyệt trongacceptance; kernelreadback trênhostMODEOFF
+cóthểUNAVAILABLE doactuator bịvôhiệu hóa. Khôngđược coi làblock/unblockPASS.
+
+## Model và đường dữ liệu thực
+
+**Duy nhất Requestv2 live:**50.696params/588features/120.435TRAIN views metadata,
+step3072, frozenstrict`>0.8826237916946411`. Bundle giữ nguyên tại
+`ai-training/.artifacts/integration_candidate_20261105/demo-request-bundle`.
+[Registry](../ai-training/MODEL_STRATEGY.json), [hai dòng model](03_AI_MODEL_AND_TRAINING_PLAN.md).
+10M hoãn; GLU207/publisher200K/v3 chỉ archive, không live.
+
+HTTP→NGINX→Student; NGINX syslog riêng→588encoder→Frozenv2→inference journal;
+Application Audit + NGINX logs + EVE đã privacy-project→Rust normalize/DB;
+request_id và sensor response-ID/flow/tx→correlation→`hybrid::evaluate`→incident/
+proposal/audit. Sensor là passive private namespace gateway; chỉ traffic qua
+port18782 có sensor coverage. Alert đến sau HTTP là quyết định hậu quan sát,
+không thể chặn ngược request đã hoàn tất. SameIP/flow không đủ ghép request.
+
+Policy severity1..5→risk90/70/45/20/20, lấymax rule request-bound; AI compatible
+above-threshold thêm10, không gọi score là attack probability. Payload rule và
+AI có thể phụ thuộc cùng evidence, không tính thành hai xác nhận độc lập.
+Ba App401/403 khác request cho behavioral support10, không tự coi là attack GT.
+High rule→REVIEW dù AI thấp/mất; AI alone→ALERT; rule+AI có thể ALERT→REVIEW.
+PROPOSE_BLOCK cần rule≥70+AIhigh+matched/fresh+3denials+approved disposableIP+
+khôngprotected. PROPOSE không gọi firewall. DefaultAUTO_BLOCKfalse/MODEOFF.
+
+## Lệnh demo
+
+Chỉ start sau khi acceptance đã dừng (flock ngăn chạy chồng). Tại repo:
+
+```sh
+./scripts/idps-demo.sh start
+./scripts/idps-demo.sh status
+./scripts/idps-demo.sh health
+./scripts/idps-demo.sh normal
+./scripts/idps-demo.sh ai
+./scripts/idps-demo.sh test
+./scripts/idps-demo.sh rules
+./scripts/idps-demo.sh policy
+./scripts/idps-demo.sh incident
+./scripts/idps-demo.sh response
+./scripts/idps-demo.sh stop
+```
+
+Chờ`demo-ready.json`/healthREADY; AI/correlation bất đồng bộ nên dùngrequest_id
+trongreceipt để tra lại sau vài giây. Các lệnh`ai/rules/policy/incident` hỗ trợ
+`--request-id HEX32`. Demo tối đa90phút, sensor≤2048requests; không dùng flood.
+Stop gửi marker để cleanup graceful, giữDB/logs; status cho biết supervisor sống
+và finalgates, không coi heartbeat cũ làRUNNING. Raw/credentials chỉ`.local-dev`.
+
+## Máy B cùng mạng LAN
+
+User xác nhận **chưa có máyB**; kiểm thửhai máy =PENDING_EXTERNAL_CLIENT.
+Host hiện`wlo1=192.168.1.28/24`, gateway192.168.1.1; IP có thể đổi theoDHCP.
+Kiểm tra`ip -brief address` trước demo. Không mở adminAPI/DB raLAN.
+
+```sh
+# Máy A — bind đúng IP private, chỉ nhận subnet lab đã cho phép
+./scripts/idps-demo.sh start --listen 192.168.1.28 --allow-cidr 192.168.1.0/24
+# Máy B — đổi HOST nếu DHCP thay; không chạy ngoài lab được cho phép
+HOST=http://192.168.1.28:18782
+curl --connect-timeout 5 -i "$HOST/api/auth/csrf"
+curl --connect-timeout 5 -i --get --data-urlencode "search=1' OR 1=1--" "$HOST/api/auth/csrf"
+# Máy A — lấy X-Request-Id từ response B, rồi tra sự kiện thật
+./scripts/idps-demo.sh ai --request-id HEX32
+./scripts/idps-demo.sh rules --request-id HEX32
+./scripts/idps-demo.sh policy --request-id HEX32
+```
+
+HTTP200 chỉ chứng minh app trả lời; query này kiểm tra rule/AI, không tuyên bố
+SQLi exploit thành công. Nếu không kết nối: kiểm tra cùngsubnet, AP client-isolation,
+route, listener18782 và firewall hiện hữu; chưa sửa host firewall/routing tự động.
+Gateway ACL từchối ngoài subnet trước relay. TCPpeerIP lưu riêng trong
+`gateway-peers.jsonl`; không lấy X-Forwarded-For client gửi làm danh tính tin cậy.
+NGINX phía sau relay thấy127.0.0.1 (protected). Vì vậy LAN demo này dùng
+ALERT/REVIEW và **không block máyB theoIP**; không mạo nhậnPROPOSE_BLOCK LAN PASS.
+PROPOSE/response kiểm tra riêng bằng native veth client, không gọi đó là máyB.
+
+## Response và chứng cứ phải tách
+
+A: actualHTTP receipt+SCORED; B: `policy-effect-fixture.json` dùngproductionRust,
+giữrule cố định,scorefixture0.1/0.99→ALERT/REVIEW; C:`native-lab/result.json`
+phải có SuricataSENSOR_TRANSACTION+AI cùngrequest. Không lấyB thayA/C.
+
+Manualblock/unblock/TTL =**PENDING_APPROVAL** cho đến khi operator chủ động chạy:
+
+```sh
+./scripts/idps-demo.sh manual-proof --operator-approved-isolated-client
+```
+
+Chỉ clientdisposable10.203.17.2 trongprivate user/network namespace; không sửa
+hostnftables. TTL15/4s,cooldown,protectedIP,DBqueue vàkernelreadback được kiểm tra.
+Chưa cóoperator action thì không gửi approveAPI. Không triển khai AWS/enforcement.
+
+## Tài nguyên và trạng thái
+
+CPUCoreUltra9 285H,16logical; localcoretempcritical105°C. [Intel specs](https://www.intel.com/content/www/us/en/products/sku/241747/intel-core-ultra-9-processor-285h-24m-cache-up-to-5-40-ghz/specifications.html)
+cho max110°C; dùng mức bảo thủ **cutoff90°C**, dưới yêu cầu<96 vàlocalcritical.
+Quota khởi200%ONEcore (không phải200%host), workloadhai slowcores, threadsBLAS1;
+rolling300s<80, reduce từ77, freeze nóng/rise nhanh, independentwatchdog0,2s,
+RAM≤8GiB/keep4GiBavailable. Không đổi firmware/governor hoặc đóng app khác.
+Không hứa khống chế nhiệt do ứng dụng ngoài scope.
+
+Final acceptance phải có startup,normalGET/POST,realAI,Suricata,correlation,policy,
+DBaudit,AIoutage fallback,sensor/backendrestart,shutdown,preservation vàresourcePASS.
+Hai máy vàmanualapproval là gate riêng; chưa có thì toàn bộ vẫnPARTIAL.
+Không commit/push mixed working tree trước khi kết quả/diff được review.
+
+---
+
+## Hồ sơ lịch sử (không phải trạng thái live hiện hành)
 
 **MODEL_EVALUATION=PASS under locked research criteria; LOCAL_RELEASE=PENDING
 current real-HTTP acceptance.** No production readiness, attack-intent quality,

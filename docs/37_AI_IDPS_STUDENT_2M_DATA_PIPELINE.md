@@ -1,4 +1,109 @@
-# AI_IDPS_STUDENT_2M_DATA_PIPELINE — 2026-11-10
+# 37 — Kế hoạch tự động 1M TRAIN examples cho AI-IDPS 10M
+
+**PLANNED / POSTPONED — 11/11/2026. Không capture hoặc train trong milestone demo.**
+Mục tiêu hiện hành là ≥1.000.000 HTTP requests phân biệt có evidence hợp lệ và
+≥1.000.000 unique eligible TRAIN examples;2M là mục tiêu lịch sử. Hai bộ đếm
+khác nhau: một request có nhiều logs vẫn chỉ một transaction; epoch không tạo mẫu.
+
+### Lựa chọn kỹ thuật
+
+Tái dùng admission SQLite, receipts fsync, feature hashing, checkpoint và supervisor
+hiện có. Không xây framework mới. Dùng **một model10M đa nhiệm** đã có: intent,
+publisher anomaly và self-supervision có mask nhãn riêng. Requestv2 chỉ làm baseline/
+teacher weak-label có provenance; không tạo model thứ ba. Teacher không nâng nhãn
+thành GOLD. Không buộc mọi row có independent human review.
+
+**Nguồn ưu tiên và giới hạn** (metadata nguồn kiểm tra11/11/2026):
+
+| Nguồn | Chọn dùng | Cách tính và giới hạn |
+|---|---|---|
+| WAFv2 TRAIN local pinSHA3e1f8bc6…a7a3fd6 | nguồn public đầu tiên cho SILVER publisher_anomaly |1.924.461 source rows, census1.612.017 HTTP representations; chưa phải runtime588 TRAIN eligible/physical receipts. Không mở eval/test/heldout |
+| SR-BH2020 local | pool phụ, giữ task publisher và provenance | historical905.043 natural observations; source/campaign overlap và roles cũ phải giữ; không cộng WAMM derivative thành nguồn độc lập |
+| Open-appsec legitimate | nguồn benign-workflow tham khảo hoặc unlabeled theo quyền/role hiện có | giữ supervised-fit restriction cũ và148case reserved; không lấy benchmark đã exposed làm fresh test |
+| Grounded236 và first-party73 | regression/provenance; dùng đúng roles cũ | không phải nguồn triệu mẫu; benign technical success không tự thành GT |
+| HTTP lab của mình | nguồn tạo physical receipts và bù TRAIN views thực | đa workflow/ngữ pháp, server receipt thật; simulated intent BRONZE, không khai man exploit success |
+| Public logs chưa có nhãn | self-supervision của cùng model | UNKNOWN intent; không gán benign vì HTTP200 hoặc rule không báo |
+
+[WAF card](https://huggingface.co/datasets/puyang2025/waf_data_v2) công bố MIT;
+[Open-appsec](https://github.com/openappsec/waf-comparison-project) công bố Apache2
+cho legitimate data/tooling, còn malicious collection có nhiều license. Giữ
+source revision/license metadata và không public raw sessions. [Kyoushi](https://github.com/ait-aecid/kyoushi-simulation)
+cho thấy workflow state-machine có thể tự động hóa; tái dùng nguyên tắc trong
+runner có sẵn, không cài cả cyber range mới. [Kiểm kê23nguồn](34_AI_IDPS_2M_DATA_SCALING_READINESS.md)
+và [source qualification](35_AI_IDPS_RAW_LABEL_SOURCE_QUALIFICATION.md) giữ các
+hạn chế pháp lý/lineage cụ thể. Không tải Biblio chưa được cấp bản raw+labels.
+
+### Kế hoạch thực thi hữu hạn sau khi được cho phép lại
+
+1. **Khóa release revision và roles trước chạy.** Giữ nguồn/reserved hiện có;
+   group mới phân TRAIN/CAL/EVAL80/10/10 theo hash campaign+workflow-template,
+   không theo scores/record IDs. Nguồn cùng ứng dụng không phải cross-domain mới.
+2. **Một pilot10K candidates**, không train: public slice có provenance và lab
+   workflow mới, đo eligible-yield, template/view novelty, RAM, thermal và throughput.
+   Nếu TRAIN yield thấp, dừng ở pilot để sửa nguyên nhân cụ thể; không tự chạy triệu
+   request trùng rồi đổi roles. Config hiện tại tối đa1.048.576 synthetic candidates
+   không thể cung cấp1M TRAIN với split80% ngay cả yield100%; cần revision mới.
+3. **Một campaign tối đa2M candidates/48h**, target tối thiểu1,6M receipt-backed
+   requests đa dạng khi cần bảo đảm physical target. Với TRAIN fraction0,8 và
+   retention0,8 dự kiến1,024M TRAIN; đây là tính dung lượng, không phải yield đã
+   chứng minh. Dừng sớm khi hai bộ đếm đạt; nếu hết budget thì báo thiếu chính xác.
+   Public row không có transaction ID chỉ tăng observations/examples, không tăng
+   verified physical receipts. Replay vào app lab tạo receipt mới nhưng source-label
+   vẫn publisher; không được gọi replay là vụ tấn công tự nhiên thành công.
+4. **Một materialization release**: incremental SQLite unique constraints/source
+   cursor; immutable shards1–4K rows; transactional commit + fingerprints; exact
+   request/view dedup, near-grouping bằng index/blocked candidates. Không O(N²)
+   toàn nguồn. Overflow phải cách ly hoặc kiểm tra exact có giới hạn, không PASS giả.
+   Nhóm xuyên role cách ly khỏi fit; không bỏ node cầu nối. Không mở sealed để check;
+   chỉ dùng fingerprint reference được phép. Giữ label conflict theo task riêng.
+5. **Một training run sau authorization riêng**: khóa config/code/data/split, seed,
+   task masks/weights, sampling theo campaign/view trước khi nhìn EVAL. Optimizer
+   và resume đã có; không dùng EVAL chọn threshold/epoch. CAL chọn operating point,
+   EVAL chỉ mở một lần. Không tự promote dù metric đẹp.
+
+### Nhãn và chống shortcuts
+
+GOLD=Oracle/reviewer thật có lineage; SILVER=publisher task; BRONZE=weak/synthetic/
+pseudo-label có phiên bản rule/model và confidence; UNLABELED chỉ self-supervision.
+Intent/outcome/review là ba cột riêng. UNKNOWN không vào supervised loss tương ứng.
+Mỗi canonical view chỉ được tính một example; nhiều objectives trên cùng view
+không tăng số đếm. Dataset feature-contract588 phải trùng runtime; body46/GLU207
+không được padding vào hợp đồng này. Missingness ghi rõ. Không đổi privacy để đạt1M.
+
+Generator cần catalog/search/filter/auth/form/JSON/CRUD và hard negatives với cả
+benign/attack intent trong từng method/source; random nonce, timestamp, UA không
+được coi là semantic diversity. LLM chỉ soạn scenario specs hữu hạn rồi freeze;
+HTTP runner mới tạo request/receipt. Không dùng LLM để chứng nhận independent GT.
+Dành template/campaign/app mới cho tương lai; giới hạn tỷ trọng một template/source,
+đo per-source/method/body states, group-weighted metrics, source-only prior baseline,
+OOD mới, và lỗi FP benign POST/XSS/command. Giảm collision chưa chứng minh tăng recall.
+
+### Ngân sách thực tế và tiêu chí thành công
+
+Máy16CPU/32GiB-class; giữ4GiB MemAvailable. Feature1M×588×float32≈2,19GiB,
+1,6M≈3,50GiB;2copies+index/SQLite+raw receipts có thể cần20–40GiB disk.
+Model10,07M float32≈38,4MiB, weights+grad+Adam≈154MiB chưa kể temporaryFP64/activations.
+Dùng mmap/shards, một ingestion writer và tối đa2encoder workers sau benchmark.
+Không tải cảraw corpus/feature matrix nhiều bản lênRAM; raw chỉ local.
+
+Lượt cũ đo62,3receipts/s trong một cửa sổ quota50%ONE core nhưng sau đó thermal
+stop: **không phải sustained-safe throughput**. Tính toán1,6M/20–60requests/s là
+7,4–22,2giờ chỉ capture; admission/dedup/rebuild thêm thời gian chưa đo.
+Tại yieldTRAIN≈7,9% của200K trước, mở rộng y hệt sẽ không đạt mục tiêu trong2M;
+phải kiểm chứng source/contract/campaign diversity ở10K trước. Không tăng quota
+hoặc lặp template để che yield thấp. Thời gian training10M chưa có benchmark thật;
+không lấy2preflightupdates làm ETA. Sau này chỉ đo cửa sổ đã khóa trong run chính.
+
+Nhanh nhất thực tế: tận dụng public TRAIN đã có, cache projection theo content,
+materialize+dedup streaming đồng thời capture thật; ưu tiên data diversity thay
+thêmepochs. Gate cuối yêu cầu unique TRAIN≥1M, physical receipt counter≥1M nếu
+đang tuyên bố mục tiêu physical, coverage/label masks/leakage/privacy PASS. Nếu
+chỉ đạt observations thì báo đúng observations. Promotion cần evaluation so sánh
+và chủ dự án duyệt, không theo parameter count hoặc training loss.
+
+---
+
+## Hồ sơ lịch sử (không phải trạng thái live hiện hành)
 
 The new `student-training-v1` profile permits imperfect labels for student research.
 It is separate from the unchanged strict attack-intent admission profile. **No model
