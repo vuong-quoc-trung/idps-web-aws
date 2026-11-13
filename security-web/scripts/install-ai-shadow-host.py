@@ -81,7 +81,8 @@ def patch_site(text):
 def formats():
     # Shared host log schema; independent of local demo upstreams.
     return ((ROOT / "security-web/nginx/pbl4-access.conf").read_text()
-            + "\n" + (ROOT / "security-web/deploy/ai-shadow/telemetry.conf").read_text())
+            + "\n" + (ROOT / "security-web/deploy/ai-shadow/telemetry.conf").read_text()
+            + "\n" + (ROOT / "security-web/nginx/pbl4-edge-limits.conf").read_text())
 
 
 def unit(user, group, python, package):

@@ -88,6 +88,25 @@ class HostConfigTests(contracts.EdgeConfigTests):
         self.request("/normal")
         self.assertEqual((self.work / "telemetry.log").read_text(), before)
 
+    def test_z_auth_limit_rejects_before_upstream(self):
+        outcomes = []
+        for _ in range(9):
+            before = len(self.upstream_headers)
+            status, ids, event, _ = self.request('/api/auth/reset-password', method='POST', body='')
+            outcomes.append(status)
+            if status == 429:
+                self.assertEqual(len(self.upstream_headers), before)
+                self.assertEqual(ids, [event['request_id']])
+                self.assertEqual(event['status'], 429)
+        self.assertIn(429, outcomes)
+        self.assertIn(204, outcomes)
+
+    def test_z_body_limit_rejects_before_upstream(self):
+        before = len(self.upstream_headers)
+        status, _, _, _ = self.request('/api/probe', method='POST', body='x' * (1024 * 1024 + 1))
+        self.assertEqual(status, 413)
+        self.assertEqual(len(self.upstream_headers), before)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

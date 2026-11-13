@@ -24,7 +24,8 @@ def render(host="192.168.10.1", upstream="192.168.20.10", lan=None):
                         f"listen {lan}:80;" if lan and lan != host else "# No additional LAN listener")
     site = site.replace("http://192.168.20.10:80;", f"http://{upstream}:80;")
     formats = ((ROOT / "nginx/pbl4-access.conf").read_text() + "\n"
-               + (ROOT / "deploy/ai-shadow/telemetry.conf").read_text())
+               + (ROOT / "deploy/ai-shadow/telemetry.conf").read_text()
+               + "\n" + (ROOT / "nginx/pbl4-edge-limits.conf").read_text())
     return site, formats
 
 
