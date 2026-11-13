@@ -1,0 +1,1001 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:idps:multisource-view:1.0.0",
+  "title": "AI-owned post-observation request view; not canonical-event-v1 or a serving change",
+  "description": "Schema plus validate_contract.py invariants and protocol.json form the contract. No runtime adapter is installed.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "idps-multisource-view-1.0.0"
+    },
+    "record_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "record_kind": {
+      "enum": [
+        "REQUEST_VIEW",
+        "CONTENT_VIEW"
+      ]
+    },
+    "namespace": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "deployment": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capture": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "key_domain": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "environment": {
+          "enum": [
+            "LOCAL",
+            "AWS",
+            "EXTERNAL_DATASET"
+          ]
+        }
+      },
+      "required": [
+        "deployment",
+        "capture",
+        "key_domain",
+        "environment"
+      ]
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "TRUSTED_EDGE_REQUEST",
+            "SENSOR_TRANSACTION",
+            "SOURCE_EVENT",
+            "CONTENT_COORDINATE"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "assurance": {
+          "enum": [
+            "VERIFIED",
+            "UNVERIFIED"
+          ]
+        },
+        "proof_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "physical_request_verified": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "key",
+        "assurance",
+        "proof_refs",
+        "physical_request_verified"
+      ]
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "previous_record_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sequence",
+        "previous_record_sha256"
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "phase": {
+          "enum": [
+            "POST_RESPONSE",
+            "PARTIAL_OBSERVATION",
+            "OFFLINE_CONTENT"
+          ]
+        },
+        "cutoff": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "watermark": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "clock_uncertainty_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "phase",
+        "cutoff",
+        "watermark",
+        "clock_uncertainty_ms"
+      ]
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "source_observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "N": {
+          "$ref": "#/$defs/source_state"
+        },
+        "S": {
+          "$ref": "#/$defs/source_state"
+        },
+        "A": {
+          "$ref": "#/$defs/source_state"
+        }
+      },
+      "required": [
+        "N",
+        "S",
+        "A"
+      ]
+    },
+    "usable_source_mask": {
+      "enum": [
+        "NONE",
+        "N",
+        "S",
+        "A",
+        "NS",
+        "NA",
+        "SA",
+        "NSA"
+      ]
+    },
+    "correlation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "SINGLE_SOURCE",
+            "VERIFIED",
+            "AMBIGUOUS",
+            "UNVERIFIED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/edge"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "conflict": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "state",
+        "edges",
+        "conflict"
+      ]
+    },
+    "content_origin": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source_asset_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "source_coordinate": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "representation_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "source_asset_id",
+            "source_sha256",
+            "source_coordinate",
+            "representation_sha256"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/feature"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/label"
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "original_role": {
+          "enum": [
+            "TRAIN",
+            "CALIBRATION",
+            "DEVELOPMENT",
+            "TEST",
+            "SEALED",
+            "UNASSIGNED"
+          ]
+        },
+        "exposure": {
+          "enum": [
+            "UNEXPOSED",
+            "EXPOSED",
+            "UNKNOWN"
+          ]
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/group_key"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "representation_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "feature_view_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "canonical_sample_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "parent_sample_key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "variant": {
+          "enum": [
+            "NATIVE",
+            "SOURCE_DROPOUT"
+          ]
+        },
+        "protected": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "original_role",
+        "exposure",
+        "groups",
+        "representation_sha256",
+        "feature_view_sha256",
+        "canonical_sample_key",
+        "parent_sample_key",
+        "variant",
+        "protected"
+      ]
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "REVERIFY",
+            "EXCLUDE",
+            "REFERENCE_ONLY",
+            "ELIGIBLE_FOR_DECLARED_TASK"
+          ]
+        },
+        "permitted_tasks": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "ATTACK_INTENT",
+              "PUBLISHER_ANOMALY",
+              "HEURISTIC_PROXY"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 3
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "state",
+        "permitted_tasks",
+        "reasons"
+      ]
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "raw_payload_persisted": {
+          "const": false
+        },
+        "identity_features_allowed": {
+          "const": false
+        },
+        "projection_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "raw_payload_persisted",
+        "identity_features_allowed",
+        "projection_sha256"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "record_kind",
+    "namespace",
+    "identity",
+    "revision",
+    "decision",
+    "events",
+    "source_observations",
+    "usable_source_mask",
+    "correlation",
+    "content_origin",
+    "features",
+    "labels",
+    "lineage",
+    "admission",
+    "privacy"
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "event_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "enum": [
+            "N",
+            "S",
+            "A"
+          ]
+        },
+        "producer_instance": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "boot_scope": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "event_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "available_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "event_kind": {
+          "enum": [
+            "HTTP_TRANSACTION",
+            "APPLICATION_REQUEST",
+            "FLOW_CONTEXT",
+            "ALERT_CONTEXT"
+          ]
+        },
+        "parse_status": {
+          "enum": [
+            "VALID",
+            "PARSE_ERROR"
+          ]
+        },
+        "edge_request_key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sensor_instance": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "flow_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{1,20}$"
+        },
+        "tx_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "relation": {
+          "enum": [
+            "CURRENT_REQUEST",
+            "PRIOR_CONTEXT"
+          ]
+        }
+      },
+      "required": [
+        "event_key",
+        "source",
+        "producer_instance",
+        "boot_scope",
+        "event_time",
+        "received_at",
+        "available_at",
+        "event_kind",
+        "parse_status",
+        "edge_request_key",
+        "sensor_instance",
+        "flow_id",
+        "tx_id",
+        "payload_sha256",
+        "relation"
+      ]
+    },
+    "source_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "presence": {
+          "enum": [
+            "PRESENT",
+            "MISSING",
+            "UNSUPPORTED"
+          ]
+        },
+        "parse": {
+          "enum": [
+            "VALID",
+            "PARSE_ERROR",
+            "UNKNOWN",
+            "NOT_APPLICABLE",
+            "MIXED"
+          ]
+        },
+        "arrival": {
+          "enum": [
+            "ON_TIME",
+            "LATE",
+            "UNKNOWN",
+            "NOT_APPLICABLE",
+            "MIXED"
+          ]
+        },
+        "event_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "health": {
+          "enum": [
+            "HEALTHY",
+            "DEGRADED",
+            "UNKNOWN",
+            "DISABLED"
+          ]
+        }
+      },
+      "required": [
+        "presence",
+        "parse",
+        "arrival",
+        "event_refs",
+        "health"
+      ]
+    },
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "feature_id": {
+          "enum": [
+            "http.method",
+            "http.uri_numeric76",
+            "http.rich512",
+            "http.body_syntax46",
+            "http.status_code",
+            "http.latency_ms",
+            "http.request_bytes",
+            "http.response_bytes",
+            "audit.role",
+            "audit.authenticated",
+            "sensor.completed_flow5",
+            "context.request_count_10s",
+            "context.request_count_60s",
+            "context.request_count_300s",
+            "context.denials_120s",
+            "context.coverage_seconds"
+          ]
+        },
+        "state": {
+          "enum": [
+            "OBSERVED",
+            "EMPTY",
+            "MISSING",
+            "PARSE_ERROR",
+            "TRUNCATED",
+            "UNSUPPORTED",
+            "REDACTED"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1,
+              "maxItems": 512
+            }
+          ]
+        },
+        "dependency_sources": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "N",
+              "S",
+              "A"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 3
+        },
+        "event_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "transform_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "input_profile": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+        },
+        "available_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "time_scope": {
+          "enum": [
+            "REQUEST_ONLY",
+            "POST_RESPONSE",
+            "PRIOR_COMPLETED_FLOW",
+            "PRIOR_REQUEST_WINDOW",
+            "CONTENT_ONLY"
+          ]
+        },
+        "window_start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "window_end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "history_complete": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "history_manifest_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "feature_id",
+        "state",
+        "value",
+        "dependency_sources",
+        "event_refs",
+        "transform_sha256",
+        "input_profile",
+        "available_at",
+        "time_scope",
+        "window_start",
+        "window_end",
+        "history_complete",
+        "history_manifest_sha256"
+      ]
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "left_event": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "right_event": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "basis": {
+          "enum": [
+            "TRUSTED_EDGE_REQUEST_ID",
+            "EDGE_RESPONSE_ID_SENSOR_TRANSACTION"
+          ]
+        },
+        "proof_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "consistency": {
+          "enum": [
+            "MATCH",
+            "INSUFFICIENT",
+            "CONFLICT"
+          ]
+        }
+      },
+      "required": [
+        "left_event",
+        "right_event",
+        "basis",
+        "proof_sha256",
+        "consistency"
+      ]
+    },
+    "group_key": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "REQUEST",
+            "CAMPAIGN",
+            "SESSION",
+            "ENVIRONMENT",
+            "TEMPLATE",
+            "NEAR_COMPONENT"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "key_domain": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "key",
+        "key_domain"
+      ]
+    },
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "enum": [
+            "ATTACK_INTENT",
+            "PUBLISHER_ANOMALY",
+            "HEURISTIC_PROXY",
+            "UNLABELED"
+          ]
+        },
+        "target": {
+          "enum": [
+            0,
+            1,
+            null
+          ]
+        },
+        "family": {
+          "enum": [
+            "sqli",
+            "xss",
+            "cmd_injection",
+            "path_traversal",
+            "brute_force",
+            "scanner_recon",
+            "behavioral_anomaly",
+            null
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "UNKNOWN",
+            "BENIGN_WORKFLOW_VERIFIED",
+            "ATTEMPT_BLOCKED",
+            "EXPLOIT_CONFIRMED",
+            "UNSAFE_REFLECTION"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "SEMANTIC_ORACLE",
+            "INDEPENDENT_REVIEW",
+            "PUBLISHER",
+            "SCENARIO",
+            "RULE",
+            "TEACHER",
+            "NONE"
+          ]
+        },
+        "confidence_class": {
+          "enum": [
+            "SEMANTIC_SUPPORTED",
+            "PUBLISHER_ONLY",
+            "WEAK_PROXY",
+            "UNKNOWN"
+          ]
+        },
+        "independent_review": {
+          "enum": [
+            "VERIFIED",
+            "PENDING",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "assigned_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legacy_tier": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "GOLD",
+            "SILVER",
+            "BRONZE",
+            "UNLABELED",
+            null
+          ]
+        }
+      },
+      "required": [
+        "task",
+        "target",
+        "family",
+        "outcome",
+        "basis",
+        "confidence_class",
+        "independent_review",
+        "evidence_refs",
+        "assigned_at",
+        "legacy_tier"
+      ]
+    }
+  }
+}

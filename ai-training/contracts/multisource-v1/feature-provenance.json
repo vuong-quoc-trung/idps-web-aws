@@ -1,0 +1,275 @@
+{
+  "schema_version": "t02-feature-provenance-1",
+  "scope": "Semantic feature families only; final tensor ordering/scaling is T05. Widths for legacy blocks are pinned, not a 706-column proposal.",
+  "features": [
+    {
+      "id": "http.method",
+      "group": "COMMON_HTTP",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "scalar enum code; OTHER is observed unknown method, never missing"
+    },
+    {
+      "id": "http.uri_numeric76",
+      "group": "COMMON_HTTP",
+      "width": 76,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "Requires original privacy projection; sanitized path alone cannot reconstruct URI/query syntax"
+    },
+    {
+      "id": "http.rich512",
+      "group": "COMMON_HTTP",
+      "width": 512,
+      "allowed_native_sources": [
+        "N",
+        "S"
+      ],
+      "semantics": "Requires declared input profile and selected headers; never merge independently hashed source vectors"
+    },
+    {
+      "id": "http.body_syntax46",
+      "group": "COMMON_HTTP",
+      "width": 46,
+      "allowed_native_sources": [
+        "N",
+        "A"
+      ],
+      "semantics": "Only existing qualified body-syntax side-channel; neither standard NGINX nor Student audit currently emits this"
+    },
+    {
+      "id": "http.status_code",
+      "group": "COMMON_HTTP",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "Compare same observation point; app/wire status conflict is not a benign/attack label"
+    },
+    {
+      "id": "http.latency_ms",
+      "group": "COMMON_HTTP",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "A"
+      ],
+      "semantics": "Producer timing semantics differ; select profile, do not average"
+    },
+    {
+      "id": "http.request_bytes",
+      "group": "COMMON_HTTP",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S"
+      ],
+      "semantics": "NGINX request_length includes headers; sensor body length is a different measurement"
+    },
+    {
+      "id": "http.response_bytes",
+      "group": "COMMON_HTTP",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S"
+      ],
+      "semantics": "body_bytes_sent differs from TCP bytes; no silent conversion"
+    },
+    {
+      "id": "audit.role",
+      "group": "AUDIT",
+      "width": 1,
+      "allowed_native_sources": [
+        "A"
+      ],
+      "semantics": "ADMIN/STAFF/STUDENT/ANONYMOUS explicit enum; missing distinct from anonymous"
+    },
+    {
+      "id": "audit.authenticated",
+      "group": "AUDIT",
+      "width": 1,
+      "allowed_native_sources": [
+        "A"
+      ],
+      "semantics": "Observed authorization/session context, not inferred from HTTP200"
+    },
+    {
+      "id": "sensor.completed_flow5",
+      "group": "SENSOR_CONTEXT",
+      "width": 5,
+      "allowed_native_sources": [
+        "S"
+      ],
+      "semantics": "duration/bytes/packets of prior COMPLETED flow; not current request totals"
+    },
+    {
+      "id": "context.request_count_10s",
+      "group": "CAUSAL_CONTEXT",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "Deduplicate canonical request identity across sources before counting"
+    },
+    {
+      "id": "context.request_count_60s",
+      "group": "CAUSAL_CONTEXT",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "Only accepted prior request events at decision cutoff"
+    },
+    {
+      "id": "context.request_count_300s",
+      "group": "CAUSAL_CONTEXT",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "Reset history at partition/namespace boundary"
+    },
+    {
+      "id": "context.denials_120s",
+      "group": "CAUSAL_CONTEXT",
+      "width": 1,
+      "allowed_native_sources": [
+        "A"
+      ],
+      "semantics": "Distinct request denials, not independent attack GT; share evidence group with policy"
+    },
+    {
+      "id": "context.coverage_seconds",
+      "group": "QUALITY",
+      "width": 1,
+      "allowed_native_sources": [
+        "N",
+        "S",
+        "A"
+      ],
+      "semantics": "Observed duration of history, never assume warm on startup"
+    }
+  ],
+  "producer_evidence": [
+    {
+      "source": "N",
+      "path": "security-web/nginx/pbl4-proxy.conf",
+      "supports": [
+        "trusted_request_id",
+        "method",
+        "sanitized_path",
+        "status",
+        "request_length",
+        "body_bytes_sent",
+        "request_time"
+      ],
+      "missing": [
+        "raw_query_in_canonical",
+        "body",
+        "complete_headers"
+      ],
+      "additional_profile": "scripts/ai-shadow-worker.py reads bounded raw URI/selected headers in memory; host installer omits query"
+    },
+    {
+      "source": "S",
+      "path": "ai-training/src/idps_ai/data/sensor_decode.py",
+      "supports": [
+        "EVE_HTTP",
+        "response_request_id",
+        "flow_id",
+        "tx_id",
+        "sensor_metadata"
+      ],
+      "limits": [
+        "flow context is not per-request evidence",
+        "TLS must be visible at a declared observation point",
+        "restart namespace and received_at need explicit future adapter binding"
+      ]
+    },
+    {
+      "source": "A",
+      "path": "student-web/backend/src/main/java/com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.java",
+      "supports": [
+        "event_id",
+        "request_id",
+        "method",
+        "sanitized_path",
+        "role",
+        "status",
+        "latency",
+        "HMAC identities",
+        "server security reasons"
+      ],
+      "missing": [
+        "body",
+        "packet_counters",
+        "wire_query"
+      ],
+      "limits": [
+        "outcome is HTTP success/failure, not attack intent",
+        "HMAC identities are metadata only"
+      ]
+    }
+  ],
+  "not_model_features": [
+    "raw_IP",
+    "request_id",
+    "user_id",
+    "session_hmac",
+    "source_row",
+    "capture_path",
+    "campaign_id",
+    "label",
+    "oracle_result",
+    "rule_SID",
+    "rule_score",
+    "model_teacher_score",
+    "future_flow_totals",
+    "absolute_timestamp"
+  ],
+  "legacy_constraints": {
+    "numeric76": "Feature order and transform pinned by v2 bundle; values cannot be reconstructed from an already-redacted canonical URI",
+    "rich512": "Shared L2 hash across content; cross-source hashed sums/averages invalid; choose one attested profile",
+    "body46": "11state+4media+31syntax dimensions; allowlist specific to research workflows; not universal production coverage",
+    "glu207": "Do not concatenate207+588 blindly; exclude rule context; choose causal nonduplicate components; missing native tx_id is not restored by feature copy"
+  },
+  "enum_codes": {
+    "http.method": {
+      "OTHER": 0,
+      "GET": 1,
+      "POST": 2,
+      "PUT": 3,
+      "DELETE": 4,
+      "PATCH": 5,
+      "HEAD": 6,
+      "OPTIONS": 7,
+      "CONNECT": 8,
+      "TRACE": 9
+    },
+    "audit.role": {
+      "ANONYMOUS": 0,
+      "STUDENT": 1,
+      "STAFF": 2,
+      "ADMIN": 3,
+      "OTHER": 4
+    }
+  },
+  "selection": "One feature_id per view: choose one attested input profile. Alternative producer measurements remain evidence, not averaged or concatenated. Missing values are null.",
+  "history": "PRIOR_CONTEXT events do not contribute to native mask/correlation. Windowed aggregates require an external content-addressed history manifest with contributor identities, receipt/availability bounds, dedup policy, partition boundary and count; no raw payload. Validator checks references, not that a referenced manifest or attestation is truthful."
+}

@@ -1,0 +1,364 @@
+{
+  "schema_version": "t02-contract-checks-1",
+  "scope": "Synthetic fixtures only; no runtime certification, evidence resolution or dataset admission",
+  "python": "3.12.14",
+  "checks": [
+    {
+      "name": "native_mask_N",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "native_mask_S",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "native_mask_A",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "native_mask_NS",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "native_mask_NA",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "native_mask_SA",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "native_mask_NSA",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "content_without_fake_N",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "missing_field_null",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "observed_empty_body_separate_from_missing",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "late_source_retained_not_used",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "parse_error_source_not_used",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "ambiguous_quarantine_abstains",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "sensor_transaction_single_source",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "event_only_does_not_claim_physical_request",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "late_revision_keeps_canonical_sample",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "unknown_clock_abstains",
+      "status": "PASS",
+      "expected_rejection": null,
+      "actual_errors": []
+    },
+    {
+      "name": "late_source_mask",
+      "status": "PASS",
+      "expected_rejection": "SOURCE_MASK",
+      "actual_errors": [
+        "SOURCE_ARRIVAL_STATE",
+        "SOURCE_MASK"
+      ]
+    },
+    {
+      "name": "feature_after_cutoff",
+      "status": "PASS",
+      "expected_rejection": "FUTURE_FEATURE",
+      "actual_errors": [
+        "FUTURE_FEATURE"
+      ]
+    },
+    {
+      "name": "availability_before_receipt",
+      "status": "PASS",
+      "expected_rejection": "EVENT_BEFORE_RECEIPT",
+      "actual_errors": [
+        "EVENT_BEFORE_RECEIPT"
+      ]
+    },
+    {
+      "name": "feature_before_input",
+      "status": "PASS",
+      "expected_rejection": "FEATURE_BEFORE_INPUT",
+      "actual_errors": [
+        "FEATURE_BEFORE_INPUT"
+      ]
+    },
+    {
+      "name": "duplicate_event",
+      "status": "PASS",
+      "expected_rejection": "DUPLICATE_EVENT",
+      "actual_errors": [
+        "DUPLICATE_EVENT"
+      ]
+    },
+    {
+      "name": "disconnected_join",
+      "status": "PASS",
+      "expected_rejection": "DISCONNECTED_CORRELATION",
+      "actual_errors": [
+        "DISCONNECTED_CORRELATION"
+      ]
+    },
+    {
+      "name": "wrong_request_join",
+      "status": "PASS",
+      "expected_rejection": "FALSE_CORRELATION",
+      "actual_errors": [
+        "EDGE_ID_MISMATCH",
+        "FALSE_CORRELATION"
+      ]
+    },
+    {
+      "name": "sensor_without_tx",
+      "status": "PASS",
+      "expected_rejection": "SENSOR_TX_MISSING",
+      "actual_errors": [
+        "SENSOR_TX_MISSING"
+      ]
+    },
+    {
+      "name": "IP_time_join_disallowed",
+      "status": "PASS",
+      "expected_rejection": "SCHEMA_INVALID",
+      "actual_errors": [
+        "SCHEMA_INVALID"
+      ]
+    },
+    {
+      "name": "ambiguous_fused_feature",
+      "status": "PASS",
+      "expected_rejection": "UNCERTIFIED_FUSED_FEATURES",
+      "actual_errors": [
+        "FEATURE_SOURCE_MASK",
+        "SOURCE_MASK",
+        "UNCERTIFIED_FUSED_FEATURES"
+      ]
+    },
+    {
+      "name": "field_from_unobserved_source",
+      "status": "PASS",
+      "expected_rejection": "FEATURE_SOURCE_MASK",
+      "actual_errors": [
+        "FEATURE_SOURCE_MASK",
+        "REQUEST_FEATURE_PROVENANCE"
+      ]
+    },
+    {
+      "name": "missing_value_fabricated",
+      "status": "PASS",
+      "expected_rejection": "UNOBSERVED_VALUE",
+      "actual_errors": [
+        "UNOBSERVED_VALUE"
+      ]
+    },
+    {
+      "name": "truncated_value_fabricated",
+      "status": "PASS",
+      "expected_rejection": "UNOBSERVED_VALUE",
+      "actual_errors": [
+        "UNOBSERVED_VALUE"
+      ]
+    },
+    {
+      "name": "NaN_value",
+      "status": "PASS",
+      "expected_rejection": "NONFINITE_VALUE",
+      "actual_errors": [
+        "NONFINITE_VALUE"
+      ]
+    },
+    {
+      "name": "encoder_width",
+      "status": "PASS",
+      "expected_rejection": "FEATURE_WIDTH_OR_VALUE",
+      "actual_errors": [
+        "FEATURE_WIDTH_OR_VALUE"
+      ]
+    },
+    {
+      "name": "future_watermark",
+      "status": "PASS",
+      "expected_rejection": "FUTURE_WATERMARK",
+      "actual_errors": [
+        "FUTURE_WATERMARK"
+      ]
+    },
+    {
+      "name": "response_in_pre_response",
+      "status": "PASS",
+      "expected_rejection": "RESPONSE_BEFORE_RESPONSE",
+      "actual_errors": [
+        "RESPONSE_BEFORE_RESPONSE"
+      ]
+    },
+    {
+      "name": "current_flow_total",
+      "status": "PASS",
+      "expected_rejection": "CURRENT_FLOW_LEAKAGE",
+      "actual_errors": [
+        "CURRENT_FLOW_LEAKAGE"
+      ]
+    },
+    {
+      "name": "count_without_history",
+      "status": "PASS",
+      "expected_rejection": "CONTEXT_WITHOUT_WINDOW",
+      "actual_errors": [
+        "CONTEXT_WITHOUT_WINDOW"
+      ]
+    },
+    {
+      "name": "publisher_as_intent",
+      "status": "PASS",
+      "expected_rejection": "WEAK_LABEL_AS_INTENT",
+      "actual_errors": [
+        "WEAK_LABEL_AS_INTENT"
+      ]
+    },
+    {
+      "name": "scenario_confidence_not_ground_truth",
+      "status": "PASS",
+      "expected_rejection": "WEAK_LABEL_AS_INTENT",
+      "actual_errors": [
+        "WEAK_LABEL_AS_INTENT"
+      ]
+    },
+    {
+      "name": "unlabeled_is_not_benign",
+      "status": "PASS",
+      "expected_rejection": "UNLABELED_TARGET",
+      "actual_errors": [
+        "UNLABELED_TARGET"
+      ]
+    },
+    {
+      "name": "claimed_review_not_verified",
+      "status": "PASS",
+      "expected_rejection": "REVIEW_UNVERIFIED",
+      "actual_errors": [
+        "REVIEW_UNVERIFIED"
+      ]
+    },
+    {
+      "name": "test_role_unprotected",
+      "status": "PASS",
+      "expected_rejection": "PROTECTED_ROLE",
+      "actual_errors": [
+        "PROTECTED_ROLE"
+      ]
+    },
+    {
+      "name": "protected_role_fit",
+      "status": "PASS",
+      "expected_rejection": "PROTECTED_ADMISSION",
+      "actual_errors": [
+        "PROTECTED_ADMISSION"
+      ]
+    },
+    {
+      "name": "dropout_new_sample",
+      "status": "PASS",
+      "expected_rejection": "DROPOUT_CAPACITY_INFLATION",
+      "actual_errors": [
+        "DROPOUT_CAPACITY_INFLATION"
+      ]
+    },
+    {
+      "name": "unmapped_HMAC_domain",
+      "status": "PASS",
+      "expected_rejection": "LINEAGE_KEY_DOMAIN",
+      "actual_errors": [
+        "LINEAGE_KEY_DOMAIN"
+      ]
+    },
+    {
+      "name": "revision_without_previous",
+      "status": "PASS",
+      "expected_rejection": "REVISION_PARENT",
+      "actual_errors": [
+        "REVISION_PARENT"
+      ]
+    },
+    {
+      "name": "raw_payload_injection",
+      "status": "PASS",
+      "expected_rejection": "SCHEMA_INVALID",
+      "actual_errors": [
+        "SCHEMA_INVALID"
+      ]
+    },
+    {
+      "name": "content_fakes_N",
+      "status": "PASS",
+      "expected_rejection": "SOURCE_MASK",
+      "actual_errors": [
+        "SOURCE_MASK"
+      ]
+    },
+    {
+      "name": "variant_split_leakage",
+      "status": "PASS",
+      "expected_rejection": "VARIANT_SPLIT_LEAKAGE",
+      "actual_errors": [
+        "VARIANT_SPLIT_LEAKAGE"
+      ]
+    }
+  ],
+  "passed": 48,
+  "failed": 0
+}

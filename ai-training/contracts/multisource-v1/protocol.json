@@ -1,0 +1,99 @@
+{
+  "contract_version": "idps-multisource-view-1.0.0",
+  "status": "LOCKED_T02_SPECIFICATION_ONLY",
+  "compatibility": "New AI-owned derived view. Existing canonical-event-v1/three-source-1/ai-shadow-1 and frozen bundles unchanged.",
+  "source_mask_order": [
+    "N",
+    "S",
+    "A"
+  ],
+  "seven_masks": [
+    "N",
+    "S",
+    "A",
+    "NS",
+    "NA",
+    "SA",
+    "NSA"
+  ],
+  "identity_rules": [
+    "event_key identifies one producer observation; request identity identifies one physical request in deployment/capture/key-domain scope",
+    "NGINX-generated request ID accepted only with attested overwrite/trusted-proxy chain; valid syntax alone is not proof",
+    "Sensor transaction uses sensor_instance+boot_scope+flow_id+tx_id; flow_id alone is never a request key",
+    "Join two sources only through trusted edge identity or response-ID-to-sensor-transaction proof; HTTP field consistency validates a join, never creates it",
+    "Do not require N present for SA: verified edge-response mapping may be retained while N log is missing; if proof absent keep separate records",
+    "SOURCE_EVENT is allowed for single-source evidence with physical_request_verified=false; no invented receipt",
+    "Multiple audit events for one request are legitimate distinct event types, not automatically ambiguity; conflicting authoritative values are ambiguous",
+    "Different HMAC domains cannot be compared without an authorized mapping; never regenerate keys or infer equality from time/IP",
+    "No forced equivalence of byte lengths, normalized paths or app/wire statuses across observation points; protocol profile defines comparability"
+  ],
+  "time_rules": [
+    "received_at is collector receipt time; available_at=max(receipt, parse/projection completion); event_time may be unknown/coarse; all stored wall times UTC",
+    "decision cutoff and watermark explicit; usable source means VALID non-context request event available_at<=cutoff; late evidence may be retained but cannot affect that revision",
+    "Feature available_at>=every contributor available_at and <=cutoff; post-response values require POST_RESPONSE scope; no future or same-request completed-flow leakage",
+    "Legacy available_at is NOT renamed received_at: dataset.py replaces fused timestamp with max(matches) without recomputing availability; migration needs original provenance",
+    "Unknown receipt/clock provenance prevents decision-time certification; content-only auxiliary task may remain useful without timestamps",
+    "Late data creates revision preserving canonical_sample_key and lineage; previous record hash required; revision is not a new training example",
+    "Context request counts deduplicate identities across sources; source dropout recomputes all dependent aggregates; history reset/embargo boundaries defined before fit",
+    "CURRENT_REQUEST versus PRIOR_CONTEXT is explicit. Window aggregates reference a versioned history manifest; all included events available by cutoff and completed strictly before cutoff. Watermark <= cutoff is a completeness boundary, not permission to use future events."
+  ],
+  "missingness_rules": [
+    "presence, parse status, arrival status and field state are orthogonal; source silence does not prove healthy or benign",
+    "source mask excludes late/invalid/context-only events; observation map preserves their existence",
+    "EMPTY requires explicit observation of empty value/body; MISSING/PARSE_ERROR/TRUNCATED/UNSUPPORTED/REDACTED have null model values",
+    "CONTENT_VIEW has NONE source mask and no native events; publisher or DSL content is not relabeled NGINX",
+    "NONE on REQUEST_VIEW is an abstention/health case, not an eighth supported scoring mode",
+    "Tensor zero fill is allowed only behind explicit field/group masks after T05; output bias cannot fabricate an observed modality",
+    "Mixed valid/error or on-time/late observations use MIXED; per-event states remain authoritative. At least one valid current-request event on time is required for each usable source.",
+    "Ambiguous/unverified multi-source records are quarantine evidence only: mask NONE, no model features, no eligibility. Emit independently keyed single-source views when correlation cannot be proved.",
+    "Clock uncertainty unknown prevents certified request scoring: preserve evidence with NONE and no observed features."
+  ],
+  "labels": {
+    "principle": "Evidence basis and declared task are authoritative; tier is a legacy annotation, never a calibrated probability.",
+    "mapping": {
+      "A_or_GOLD_or_B": "Map to ATTACK_INTENT only after bound semantic Oracle or independent-review evidence; human review may remain PENDING for internal research",
+      "C_or_SILVER": "PUBLISHER_ANOMALY; intent remains unknown unless separately evidenced",
+      "D_or_BRONZE": "HEURISTIC_PROXY or UNLABELED; scenario/rule/teacher alone cannot supervise trusted intent",
+      "E_or_UNLABELED": "target=null"
+    },
+    "independence": "Oracle/reviewer/model/rule origins tracked; detector output cannot validate itself; exploit outcome is separate from intent and HTTP status",
+    "family": "Unknown family is null with masked loss, not benign and not a made-up seven-family classification",
+    "weighting": "No numeric confidence weights fixed in T02. Any later weights selected on TRAIN/DEV protocol, never TEST."
+  },
+  "admission_and_splits": [
+    "Four accounting units: raw observation, verified physical request, normalized representation, canonical versioned sample; presentations/aliases/revisions/dropout do not increase capacity",
+    "Original CAL/DEV/TEST/SEALED protection inherited by every derivative, dropout mask and revision; no role reassignment to TRAIN",
+    "Exact/label conflict and known lineage closure precede split; near similarity is a review relation with index recall/saturation tracked, not physical-identity proof",
+    "Canonicalization groups equivalent views only under the same feature contract, task and compatible labels; retain aliases and avoid excess gradient weight",
+    "ELIGIBLE_FOR_DECLARED_TASK means internal research eligibility, never formal production readiness; current T02 admits zero new records",
+    "Keep content-only weak-label reuse separate from native7mask training capacity; require both labels and native multi-source coverage for final detector claims"
+  ],
+  "runtime_profiles": {
+    "LOCAL_DEMO": "Original-URI in-memory selected-header telemetry + passive namespace EVE + Student audit; gateway source attribution limits remain",
+    "LOCAL_HOST_VM": "Installed telemetry suppresses query/body; preserve narrower feature profile rather than pretend parity",
+    "AWS": "Same normalized contract; capture after TLS termination at declared observation point, trusted edge/IP chain and clock/receive metadata required; no AWS capture or verification exists in T02"
+  },
+  "roadmap_adjustments": [
+    "Replace fixed634+32+24+16 budgeting with evidence-backed semantic feature families; choose tensor layout in T05 and width after pilot",
+    "Start with shared compact masked-input MLP; compare separate gated branches only if heterogeneous missingness warrants added complexity",
+    "Do not mandate an auxiliary publisher head or distillation: compare supervised-only versus weak-label pretraining/auxiliary loss using fixed protocol",
+    "Separate native masks from dropout-derived masks and unknown legacy coverage; never claim all7 masks from a full-source dataset alone",
+    "Do not read mixed TRAIN/test Parquet payloads to recover legacy207; dedicated train derivative exists",
+    "Non-empty SQLite WAL makes immutable main-file snapshots incomplete; T02 uses recorded manifest for postponed10M instead of checkpointing/copying source"
+  ],
+  "boundaries": {
+    "training": false,
+    "live_adapter_changes": false,
+    "enforcement": false,
+    "model_implementation": false,
+    "T03_started": false
+  },
+  "next_task": "T03: isolate and verify <=8CPU/16GiB total resource profile against existing uncommitted changes, without starting applications/training.",
+  "hashing_and_evidence": {
+    "identity": "HMAC-SHA256 over UTF-8 compact JSON array of strings [identity-profile-version, deployment, capture, producer/boot scope when needed, trusted request ID OR sensor instance/flow_id/tx_id]. Key domain identifies the secret/config version; no secret persisted. Event key uses producer namespace plus native event ID or immutable file coordinate+payload digest. Missing unique coordinates prevents dedup certification.",
+    "digests": "sha256 is lowercase hex over exact asset bytes. representation/view keys use a pinned canonicalization profile including privacy projection, encoder/version, task and compatible-label group; do not conflate hashes from different profiles.",
+    "evidence_resolution": "Hashes are references, not proofs by themselves. Later admission must resolve each identity/label/projection/history proof against the pinned ledger and verify scope/trust. T02 reference validation never grants production admission.",
+    "canonical_sample": "Stable request lineage key or content-equivalence cluster under a declared task/feature contract. Revisions and dropout share it; conflicting labels quarantine a cluster. Cross-row lineage closure and protected-role dominance are mandatory before fit.",
+    "retry": "Same event key+payload hash is idempotent; same event key+different payload hash is a conflict. New UUID event IDs are not automatically new requests."
+  }
+}

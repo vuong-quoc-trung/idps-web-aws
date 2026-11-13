@@ -1,0 +1,190 @@
+{
+  "schema_version": "t02-capacity-sample-1",
+  "sampling_locked_by": "audit_capacity.py SHA in acceptance.json",
+  "inspection_budget": {
+    "maximum": 10000,
+    "script_record_inspections": 4676,
+    "prior_exploratory_inspections": 2,
+    "prior_aborted_attempt_inspections": 4164,
+    "prior_attempt_stop": "Non-empty BRONZE WAL detected before any BRONZE record read; no output published",
+    "total_record_inspections_this_task": 8842,
+    "distinct_selected_records": 4676,
+    "repeat_same_rows_not_new_capacity": true
+  },
+  "payload_access": {
+    "raw_HTTP": false,
+    "feature_tensors": false,
+    "CAL_DEV_TEST": false,
+    "sealed": false
+  },
+  "publisher": {
+    "inspected": 4096,
+    "selection": "first4096 rows.npy coordinates in hash-verified final-data/train.npz; indexed SQLite lookups",
+    "selected_metadata_sha256": "15ef090f7e85923c2f684e507aa87cc634f888aa946885128243ce1e7d1e3b67",
+    "train_coordinate_sha256": "d492df5c374277bed112ceb09d51b25909280420654443898f4b5ab0d06d44ab",
+    "unique_representations_in_sample": 4096,
+    "unique_feature_views_in_sample": 4096,
+    "verified_physical_requests": 0,
+    "categories": {
+      "source": {
+        "waf": 4096
+      },
+      "target_task": {
+        "publisher_anomaly": 4096
+      },
+      "tier": {
+        "SILVER": 4096
+      },
+      "intent": {
+        "UNKNOWN_INTENT": 4096
+      },
+      "outcome": {
+        "UNKNOWN_OUTCOME": 4096
+      },
+      "body_observation": {
+        "MISSING": 4031,
+        "PUBLISHER_PRESENT_WIRE_COMPLETENESS_UNVERIFIED": 65
+      },
+      "physical_identity": {
+        "UNVERIFIED": 4096
+      },
+      "headers_observation": {
+        "PUBLISHER_PRESENT": 4096
+      },
+      "target": {
+        "0": 2009,
+        "1": 2087
+      }
+    },
+    "native_NSA_mask": "NOT_APPLICABLE_CONTENT_ONLY",
+    "new_contract_admitted": 0
+  },
+  "grounded": {
+    "inspected": 68,
+    "selection": "grounded-v3 TRAIN-only SQL predicate; existing exclusions read as metadata, no CAL/DEV rows decoded",
+    "selected_metadata_sha256": "27c95cc6ebcbd4ba380a199a1c6c33e316f757bc906f5423f1e037a491d6fb9f",
+    "historical_eligible_records_reconciled": 48,
+    "historical_eligible_views_reconciled": 42,
+    "categories": {
+      "tier": {
+        "A": 48
+      },
+      "label_task": {
+        "attack_intent": 48
+      },
+      "label": {
+        "0": 27,
+        "1": 21
+      },
+      "body_state": {
+        "EMPTY": 10,
+        "MISSING": 3,
+        "OK": 35
+      },
+      "family": {
+        "benign": 27,
+        "cmd_injection": 4,
+        "path_traversal": 2,
+        "sqli": 5,
+        "xss": 10
+      }
+    },
+    "exclusion_reasons_overlapping": {
+      "CROSS_ROLE_TEMPLATE": 20,
+      "CROSS_ROLE_NEAR_CANDIDATE": 18,
+      "CROSS_ROLE_NEAR_FULL": 10,
+      "PRIOR_TRAIN_ADMISSION_EXCLUDED": 4,
+      "INHERITED_EXCLUSION": 20,
+      "CROSS_ROLE_COMPONENT": 20,
+      "CROSS_ROLE_CANDIDATE_VIEW": 11,
+      "WITHIN_ROLE_DUPLICATE_CANDIDATE_VIEW": 5,
+      "CROSS_ROLE_FULL_VIEW": 3,
+      "CROSS_ROLE_RAW": 1,
+      "REPEATED_REPRESENTATION": 1,
+      "CONFLICT": 4,
+      "OPPOSITE_INTENT_IDENTICAL_CANDIDATE_VIEW": 4
+    },
+    "native_NSA_mask": "UNVERIFIED_NOT_IN_ADMISSION_METADATA",
+    "new_contract_admitted": 0
+  },
+  "bronze": {
+    "inspected": 0,
+    "sample_status": "BLOCKED_NONEMPTY_WAL_USE_RECORDED_METADATA",
+    "recorded_receipts": 15902,
+    "count_freshness": "POSTPONED_MANIFEST_NOT_CURRENT_SQL_RECOUNT",
+    "wal_bytes": 4173592,
+    "native_NSA_mask": "NOT_APPLICABLE_DSL_CONTENT_ONLY",
+    "new_contract_admitted": 0
+  },
+  "glu": {
+    "inspected": 512,
+    "selection": "first512 metadata projections from dedicated requests_train.parquet; no feature/numeric/flow blobs or URI read",
+    "selected_metadata_sha256": "9a9cc2c190e6a2d7780138b4fcdaf71fe59eb45b514345c6d2181e9da55c40b1",
+    "legacy_declared_source_masks": {
+      "NSA": 512
+    },
+    "categories": {
+      "correlation": {
+        "request_id": 512
+      },
+      "label_source": {
+        "scenario_manifest": 512
+      },
+      "label_confidence": {
+        "1.0": 512
+      },
+      "observation_count": {
+        "3": 512
+      }
+    },
+    "legacy_available_at_before_fused_timestamp": 512,
+    "missing_contract_columns": [
+      "received_at",
+      "decision_time",
+      "sensor_instance",
+      "tx_id",
+      "per_feature_evidence"
+    ],
+    "new_contract_verified_masks": {
+      "N": 0,
+      "S": 0,
+      "A": 0,
+      "NS": 0,
+      "NA": 0,
+      "SA": 0,
+      "NSA": 0
+    },
+    "new_contract_admitted": 0,
+    "limit": "legacy NSA declaration and confidence1.0 are not new verified correlation/label evidence"
+  },
+  "input_stat_before_after_equal": true,
+  "input_stats": {
+    "ai-training/.artifacts/local_release_20261110/local-release200k-20261110-r1/final-data/train.npz": [
+      6480334,
+      1794309583872693949
+    ],
+    "ai-training/.artifacts/local_release_20261110/local-release200k-20261110-r1/materialized/index.sqlite": [
+      434774016,
+      1794309501493981030
+    ],
+    "ai-training/.artifacts/data_scaling_20261109/pilot-r2/index.sqlite": [
+      20213760,
+      1794194086462918431
+    ],
+    ".local-dev/large-request-2m-20261110-r1/qualification.sqlite": [
+      68050944,
+      1794325456651628899
+    ],
+    "ai-training/.artifacts/glu207_derivative_20261107/requests_train.parquet": [
+      7017940,
+      1794019219538760056
+    ]
+  },
+  "duration_seconds": 0.141,
+  "limits": [
+    "Deterministic bounded convenience sample, not a statistical yield estimate",
+    "No cross-dataset physical uniqueness claim; different HMAC domains cannot be equated",
+    "Metadata counts of all roles are not admission or inspection of protected payloads",
+    "No adapters, encoders, model scores, training or T03 resource changes executed"
+  ]
+}
