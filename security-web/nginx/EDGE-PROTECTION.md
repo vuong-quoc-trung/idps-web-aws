@@ -27,8 +27,11 @@ Omit --lan-ip for VMware-only access. IPs must exist on this host. The installer
 replaces the managed pbl4 site and shared format file with the repository template;
 review custom runtime directives before applying. It tests the candidate against
 other installed includes, backs up both files under /var/backups/pbl4-nginx-edge,
-tests again and reloads (not restarts) NGINX. No AI restart, firewall, DB or VM edits.
-Identical files cause no reload. A failed apply restores the backup.
+tests again and reloads a running NGINX, or starts it if stopped. No AI restart, firewall, DB or VM edits.
+Identical files cause no reload, but a stopped service is started. A failed apply
+restores the backup. If the old configuration is invalid (for example a stale LAN
+IP), recovery is reported separately without hiding the original failure. A
+previously stopped service is not started with the restored old configuration.
 
     sudo nginx -t
     systemctl is-active nginx
@@ -40,6 +43,7 @@ Use the exact rollback command printed by the installer:
 
 ## Tests
     python3 security-web/scripts/test-nginx-host.py
+    python3 security-web/scripts/test-sync-nginx-edge.py
 
 Tests use disposable loopback NGINX and mock upstream, including 429/413 rejection
 before forwarding, identity, privacy and detector signals. They do not load-test

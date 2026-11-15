@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Review/render by default; --apply validates, backs up and reloads NGINX only."""
+"""Review/render by default; --apply validates, backs up and reloads or starts NGINX only."""
 import argparse
 import datetime
 import importlib.util
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -15,6 +16,34 @@ def load(name, filename):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+def nginx_active():
+    result = subprocess.run(['systemctl', 'is-active', '--quiet', 'nginx'],
+                            check=False, timeout=15)
+    if result.returncode not in (0, 3):
+        raise RuntimeError('Cannot determine NGINX service state')
+    return result.returncode == 0
+
+
+def activate(installer, changed=True):
+    active = nginx_active()
+    if changed or not active:
+        installer.run(['systemctl', 'reload' if active else 'start', 'nginx'])
+    if not nginx_active():
+        raise RuntimeError('NGINX is not active after applying configuration')
+
+
+def recover(installer, records, was_active):
+    # Preserve the original apply exception even if the old configuration is invalid.
+    try:
+        installer.restore(records)
+        installer.run(['/usr/sbin/nginx', '-t'])
+        if was_active:
+            activate(installer)
+    except Exception as error:
+        print('ROLLBACK WARNING: old files may be restored but service recovery failed: '
+              + str(error), file=sys.stderr)
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -30,7 +59,7 @@ def main():
             parser.error('Rollback requires sudo')
         installer.restore(json.loads(args.rollback.read_text()))
         installer.run(['/usr/sbin/nginx', '-t'])
-        installer.run(['systemctl', 'reload', 'nginx'])
+        activate(installer)
         return
     site, formats = load('prepare', 'prepare-nginx-host.py').render(args.host_ip, args.upstream_ip, args.lan_ip)
     if not args.apply:
@@ -48,22 +77,24 @@ def main():
     config = Path('/etc/nginx/conf.d/pbl4-ai-shadow.conf')
     installer.syntax(target, site, formats)
     if target.read_text() == site and config.read_text() == formats:
-        print('Already synchronized; no reload.')
+        installer.run(['/usr/sbin/nginx', '-t'])
+        activate(installer, changed=False)
+        print('Already synchronized; NGINX active.')
         return
     backup = Path('/var/backups/pbl4-nginx-edge') / datetime.datetime.now().strftime('%Y%m%d-%H%M%S-%f')
     backup.mkdir(parents=True, mode=0o700)
     records = installer.snapshot(backup, [target, config])
     manifest = backup / 'rollback.json'
     installer.atomic(manifest, json.dumps(records).encode(), 0o600)
+    was_active = nginx_active()
+    print('Backup: ' + str(manifest))
     try:
         installer.atomic(target, site.encode(), 0o644)
         installer.atomic(config, formats.encode(), 0o644)
         installer.run(['/usr/sbin/nginx', '-t'])
-        installer.run(['systemctl', 'reload', 'nginx'])
+        activate(installer)
     except BaseException:
-        installer.restore(records)
-        installer.run(['/usr/sbin/nginx', '-t'])
-        installer.run(['systemctl', 'reload', 'nginx'])
+        recover(installer, records, was_active)
         raise
     print('Synchronized. Rollback: sudo python3 ' + str(Path(__file__).resolve()) + ' --rollback ' + str(manifest))
 
