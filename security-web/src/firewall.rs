@@ -8,6 +8,10 @@ use tokio::{
 pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
     let ip = state.safety.validate(value)?;
     anyhow::ensure!(
+        ip != state.ingestion.suricata_origin.proxy_ip,
+        "Trusted proxy IP is protected"
+    );
+    anyhow::ensure!(
         !state.whitelist.contains(&ip),
         "IP is protected by whitelist"
     );

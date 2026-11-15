@@ -1,5 +1,5 @@
 SELECT jsonb_build_object(
- 'alert', to_jsonb(a) || jsonb_build_object('src_ip',host(a.src_ip),'dest_ip',host(a.dest_ip)),
+ 'alert', to_jsonb(a) || jsonb_build_object('src_ip',host(a.src_ip),'dest_ip',host(a.dest_ip),'client_ip',host(a.client_ip),'network_src_ip',host(a.network_src_ip)),
  'triage_history', COALESCE((SELECT jsonb_agg(to_jsonb(h)) FROM (
    SELECT version,previous_status,status,actor,note,created_at FROM alert_triage_history
    WHERE alert_id=a.id ORDER BY version DESC LIMIT 50

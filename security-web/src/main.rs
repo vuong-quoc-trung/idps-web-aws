@@ -11,6 +11,7 @@ mod network;
 mod nginx_detection;
 mod operations;
 mod security_detection;
+mod suricata_origin;
 mod three_source;
 mod triage;
 use anyhow::{Context, Result, bail};

@@ -14,3 +14,9 @@ Authority: `canonical-event-v1.schema.json`. Implementations: Java `AuditJsonlEx
 Limits: Student line max 16KiB; collector max line 64KiB by default; bounded 1MiB scans. Oversized input is explicitly quarantined by source/hash/byte range, without retaining its raw content. Dataset persistence is opt-in (`COLLECT_ALL_EVENTS=true`) and is distinct from alerting.
 
 Exporter DB and file writes are independent sinks, not an atomic outbox. File writes are synchronous/locked/fsynced with owner-only permissions and follow rename/create rotation; disk/permission/64MiB file-limit failure is logged safely. This does not guarantee lossless production export if both sinks fail. Remote VM/cloud collection requires secure file transport/mount of the configured audit path; the reverse-proxy failover does not transport files by itself.
+
+Optional additive `suricata_origin` metadata records network source, transaction ID,
+post-proxy mode and client verification. Old v1 records remain valid; Student Audit
+and AI feature schemas are unchanged. `client_ip_verified` means the configured,
+operator-confirmed proxy boundary plus transaction-local EVE evidence matched; it
+is not a user identity or cryptographic proof. Network source is never rewritten in EVE.

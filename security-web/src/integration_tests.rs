@@ -831,8 +831,15 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
             assert_eq!(sum, point["count"].as_i64().unwrap());
         }
         assert_eq!(result["alert_updates"]["count"], 0);
-        assert_eq!(result["source_ips"][0]["severity"], 1);
-        assert_eq!(result["source_ips"][0]["count"], 2);
+        let source_rows = result["source_ips"].as_array().unwrap();
+        assert!(source_rows.iter().any(|r| r["ip"] == "192.0.2.1"
+            && r["ip_kind"] == "client"
+            && r["count"] == 1
+            && r["severity"] == 2));
+        assert!(source_rows.iter().any(|r| r["ip"] == "192.0.2.1"
+            && r["ip_kind"] == "network"
+            && r["count"] == 1
+            && r["severity"] == 1));
         assert_eq!(result["destination_ips"].as_array().unwrap().len(), 1);
         assert_eq!(result["unknown_destinations"], expected - 1);
         assert_eq!(
@@ -1232,6 +1239,11 @@ async fn rust_idps_database_upgrades_to_ai_without_rewriting_history(pool: PgPoo
             .fetch_one(&pool)
             .await
             .unwrap(),
-        13
+        full.iter().count() as i64
+    );
+    let untouched: bool = sqlx::query_scalar("SELECT client_ip IS NULL AND network_src_ip IS NULL AND client_ip_verified IS NULL FROM security_alerts WHERE rule_name='retained'").fetch_one(&pool).await.unwrap();
+    assert!(
+        untouched,
+        "migration must not invent historical attribution"
     );
 }

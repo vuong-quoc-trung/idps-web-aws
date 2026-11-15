@@ -24,13 +24,15 @@ WITH bounds AS (
 ), severities AS (
     SELECT severity, count(*) AS count FROM events GROUP BY severity ORDER BY severity
 ), source_ips AS (
-    SELECT host(src_ip) AS ip, count(*) AS count, min(severity) AS severity, max(occurred_at) AS last_seen
-    FROM events WHERE src_ip IS NOT NULL GROUP BY src_ip ORDER BY count DESC, ip LIMIT 5
+    SELECT host(src_ip) AS ip,
+        CASE WHEN source='SURICATA' AND client_ip_verified IS DISTINCT FROM TRUE THEN 'network' ELSE 'client' END AS ip_kind, count(*) AS count, min(severity) AS severity, max(occurred_at) AS last_seen
+    FROM events WHERE src_ip IS NOT NULL GROUP BY src_ip, ip_kind ORDER BY count DESC, ip, ip_kind LIMIT 5
 ), destination_ips AS (
     SELECT host(dest_ip) AS ip, count(*) AS count, min(severity) AS severity, max(occurred_at) AS last_seen
     FROM events WHERE dest_ip IS NOT NULL GROUP BY dest_ip ORDER BY count DESC, ip LIMIT 5
 ), recent AS (
     SELECT id, occurred_at, source, host(src_ip) AS src_ip, host(dest_ip) AS dest_ip,
+           host(client_ip) AS client_ip, host(network_src_ip) AS network_src_ip, client_ip_verified, suricata_post_proxy,
            rule_name, severity, action, evidence FROM events ORDER BY occurred_at DESC, id DESC LIMIT 10
 ), jobs AS (
     SELECT status, count(*) AS count FROM firewall_actions, bounds b
@@ -49,7 +51,7 @@ SELECT jsonb_build_object(
     'total_alerts', (SELECT count(*) FROM events),
     'critical_alerts', (SELECT count(*) FROM events WHERE severity = 1),
     'blocked_attacks', (SELECT count(*) FROM events WHERE action = 'AUTO-BLOCK'),
-    'unique_sources', (SELECT count(DISTINCT src_ip) FROM events),
+    'unique_sources', (SELECT count(DISTINCT (src_ip, CASE WHEN source='SURICATA' AND client_ip_verified IS DISTINCT FROM TRUE THEN 'network' ELSE 'client' END)) FROM events WHERE src_ip IS NOT NULL),
     'unknown_destinations', (SELECT count(*) FROM events WHERE dest_ip IS NULL),
     'trend', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM trend t), '[]'::jsonb),
     'types', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM types t), '[]'::jsonb),

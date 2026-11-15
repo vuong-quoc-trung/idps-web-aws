@@ -10,6 +10,7 @@ use tokio::{
 const SCAN_BYTES: usize = 1024 * 1024;
 #[derive(Clone, Debug)]
 pub struct Config {
+    pub suricata_origin: crate::suricata_origin::Policy,
     pub collect_all: bool,
     pub max_line_bytes: usize,
     pub auth_threshold: i64,
@@ -21,6 +22,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            suricata_origin: crate::suricata_origin::Policy::default(),
             collect_all: false,
             max_line_bytes: 64 * 1024,
             auth_threshold: 10,
@@ -34,6 +36,7 @@ impl Default for Config {
 impl Config {
     pub fn from_env() -> Result<Self> {
         let mut c = Self::default();
+        c.suricata_origin = crate::suricata_origin::Policy::from_env()?;
         if let Ok(v) = env::var("COLLECT_ALL_EVENTS") {
             c.collect_all = v.parse().context("COLLECT_ALL_EVENTS must be true/false")?;
         }
@@ -219,10 +222,11 @@ async fn save_alert(
     let name: String = name.chars().take(160).collect();
     let age = Utc::now() - event.timestamp;
     let auto = auto
+        && event.suricata_origin.as_ref().is_none_or(|o| !o.post_proxy)
         && age >= chrono::Duration::seconds(-5)
         && age <= chrono::Duration::seconds(state.ingestion.max_response_age_seconds);
-    let id = sqlx::query_scalar::<_, i64>("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,dest_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,$2,'alert',$3::inet,$4::inet,$5,$6,$6,$7,$8,'ALERT',$9,$10) ON CONFLICT(event_key) DO NOTHING RETURNING id")
-        .bind(event.timestamp).bind(&event.source).bind(event.client_ip.map(|p|p.to_string())).bind(event.dest_ip.map(|p|p.to_string())).bind(&event.transport).bind(&name).bind(category).bind(severity).bind(evidence).bind(key).fetch_optional(&mut **tx).await?;
+    let id = sqlx::query_scalar::<_, i64>("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,dest_ip,proto,rule_name,signature,category,severity,action,evidence,event_key,client_ip,network_src_ip,client_ip_verified,suricata_post_proxy) VALUES($1,$2,'alert',$3::inet,$4::inet,$5,$6,$6,$7,$8,'ALERT',$9,$10,$11::inet,$12::inet,$13,$14) ON CONFLICT(event_key) DO NOTHING RETURNING id")
+        .bind(event.timestamp).bind(&event.source).bind(event.client_ip.map(|p|p.to_string())).bind(event.dest_ip.map(|p|p.to_string())).bind(&event.transport).bind(&name).bind(category).bind(severity).bind(evidence).bind(key).bind(event.suricata_origin.as_ref().and_then(|_| event.client_ip).map(|p|p.to_string())).bind(event.suricata_origin.as_ref().and_then(|o|o.network_src_ip).map(|p|p.to_string())).bind(event.suricata_origin.as_ref().map(|o|o.client_ip_verified)).bind(event.suricata_origin.as_ref().map(|o|o.post_proxy)).fetch_optional(&mut **tx).await?;
     // Strict request-ID link for application rules; Suricata transaction metadata is
     // reconciled below from its parsed native tx, never from IP/time proximity.
     sqlx::query("INSERT INTO detector_alert_links(alert_id,request_id,source_instance,flow_id,link_basis) SELECT id,$2,$3,$4,$5 FROM security_alerts WHERE event_key=$1 ON CONFLICT DO NOTHING")
@@ -316,7 +320,9 @@ async fn ingest_line(
     }
     let parsed = std::str::from_utf8(raw)
         .map_err(anyhow::Error::from)
-        .and_then(|line| events::parse(source, line.trim_end()));
+        .and_then(|line| {
+            events::parse_with_origin(source, line.trim_end(), &state.ingestion.suricata_origin)
+        });
     let mut parsed = match parsed {
         Ok(event) => event,
         Err(_) => {

@@ -40,6 +40,8 @@ pub struct SecuritySignals {
 #[serde(deny_unknown_fields)]
 pub struct CanonicalEvent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub suricata_origin: Option<crate::suricata_origin::Origin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub security: Option<SecuritySignals>,
     pub schema_version: String,
     pub event_id: String,
@@ -88,6 +90,7 @@ pub struct CanonicalEvent {
 impl CanonicalEvent {
     pub fn new(source: &str, timestamp: DateTime<Utc>) -> Self {
         Self {
+            suricata_origin: None,
             security: None,
             schema_version: SCHEMA_VERSION.into(),
             event_id: String::new(),
@@ -131,6 +134,10 @@ impl CanonicalEvent {
         anyhow::ensure!(
             matches!(self.source.as_str(), "STUDENT_AUDIT" | "NGINX" | "SURICATA"),
             "Invalid source"
+        );
+        anyhow::ensure!(
+            self.suricata_origin.is_none() || self.source == "SURICATA",
+            "Suricata origin is source-specific"
         );
         for id in [&self.event_id, &self.source_instance] {
             anyhow::ensure!(
@@ -415,7 +422,16 @@ fn query_features(target: &str) -> Option<QueryFeatures> {
     })
 }
 
+#[cfg(test)]
 pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
+    parse_with_origin(source, line, &crate::suricata_origin::Policy::default())
+}
+
+pub fn parse_with_origin(
+    source: &str,
+    line: &str,
+    policy: &crate::suricata_origin::Policy,
+) -> Result<ParsedEvent> {
     let mut event;
     let target;
     let mut native_alert = None;
@@ -521,6 +537,9 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
             }
             .into();
             event.client_ip = ip(&value, "src_ip")?;
+            let (client, origin) = policy.resolve(&value, event.client_ip);
+            event.client_ip = client;
+            event.suricata_origin = Some(origin);
             event.dest_ip = ip(&value, "dest_ip")?;
             event.src_port = value["src_port"].as_u64().map(u16::try_from).transpose()?;
             event.dest_port = value["dest_port"].as_u64().map(u16::try_from).transpose()?;
@@ -833,8 +852,23 @@ mod contract_tests {
         ))
         .unwrap();
         let value = serde_json::to_value(event).unwrap();
-        let actual: std::collections::BTreeSet<_> =
+        let mut actual: std::collections::BTreeSet<_> =
             value.as_object().unwrap().keys().cloned().collect();
+        // Source-specific optional metadata must not be attached to Student Audit.
+        let suricata = parse(
+            "SURICATA",
+            r#"{"timestamp":"2026-11-15T00:00:00Z","event_type":"flow","src_ip":"192.0.2.1"}"#,
+        )
+        .unwrap()
+        .canonical;
+        actual.extend(
+            serde_json::to_value(suricata)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .keys()
+                .cloned(),
+        );
         let expected: std::collections::BTreeSet<_> = schema["properties"]
             .as_object()
             .unwrap()
