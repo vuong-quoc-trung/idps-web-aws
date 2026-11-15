@@ -1,3 +1,4 @@
+import { sourceIpLabel } from "./sourceIp";
 import {
   AlertTriage,
   type TriageAlert,
@@ -13,6 +14,10 @@ export type Detail = {
     source: string;
     severity: number;
     src_ip: string | null;
+    client_ip?: string | null;
+    network_src_ip?: string | null;
+    client_ip_verified?: boolean | null;
+    suricata_post_proxy?: boolean | null;
     dest_ip: string | null;
     proto: string | null;
     rule_name: string;
@@ -137,7 +142,15 @@ export function AlertDetail({
               UTC: new Date(a.occurred_at).toISOString(),
               Nguồn: a.source,
               "Mức độ": `Severity ${a.severity}`,
-              "IP nguồn": a.src_ip,
+              "IP nguồn": sourceIpLabel(a),
+              "Network Source IP":
+                a.network_src_ip ?? (a.source === "SURICATA" ? a.src_ip : null),
+              "Xác minh Client IP":
+                a.source === "SURICATA"
+                  ? a.client_ip_verified
+                    ? "Đã xác minh từ proxy tin cậy"
+                    : "Chưa xác minh"
+                  : "Theo nguồn ứng dụng",
               "IP đích": a.dest_ip,
               "Giao thức": a.proto,
               Rule: a.rule_name,

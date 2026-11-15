@@ -1,3 +1,4 @@
+import { sourceIpLabel } from "./sourceIp";
 import {
   freshness,
   triageLabels,
@@ -35,6 +36,10 @@ type Alert = {
   occurred_at: string;
   source: string;
   src_ip: string | null;
+  client_ip?: string | null;
+  network_src_ip?: string | null;
+  client_ip_verified?: boolean | null;
+  suricata_post_proxy?: boolean | null;
   dest_ip: string | null;
   rule_name: string;
   severity: number;
@@ -42,6 +47,7 @@ type Alert = {
   evidence: string;
 };
 type IpSummary = {
+  ip_kind?: string;
   ip: string;
   count: number;
   severity: number;
@@ -433,6 +439,9 @@ function App() {
         "Thời gian",
         "Nguồn",
         "IP",
+        "Client IP",
+        "Network Source IP",
+        "Client IP verified",
         "Rule",
         "Severity",
         "Hành động",
@@ -442,7 +451,10 @@ function App() {
         a.id,
         a.occurred_at,
         a.source,
-        a.src_ip,
+        sourceIpLabel(a),
+        a.client_ip,
+        a.network_src_ip,
+        a.client_ip_verified,
         a.rule_name,
         a.severity,
         a.action,
@@ -716,7 +728,7 @@ function App() {
                 ["Tổng cảnh báo", stats?.total_alerts],
                 ["Mức nghiêm trọng 1", stats?.critical_alerts],
                 ["Sự kiện auto-block thành công", stats?.blocked_attacks],
-                ["IP nguồn khác nhau", stats?.unique_sources],
+                ["Nguồn IP (client / mạng)", stats?.unique_sources],
               ].map(([label, value], index) => (
                 <article
                   className={`metric-card metric-${index} ${index === 1 && effectsEnabled && alertFeedback?.severity === 1 ? "new-alert new-alert-s1" : ""}`}
@@ -818,7 +830,7 @@ function App() {
                     </span>
                   </summary>
                   <p>
-                    Nguồn: {a.source} · IP: {a.src_ip ?? "Không có"} →{" "}
+                    Nguồn: {a.source} · IP: {sourceIpLabel(a)} →{" "}
                     {a.dest_ip ?? "Không có"} · Hành động: {a.action}
                   </p>
                   <button onClick={() => setSelectedAlert(a.id)}>
@@ -902,12 +914,20 @@ function App() {
                 <section className="panel" key={title}>
                   <h2>{title}</h2>
                   <p className="muted">
-                    Top 5 · mức độ cao nhất là số severity nhỏ nhất
+                    Top 5 · mức độ cao nhất là số severity nhỏ nhất. IP mạng và
+                    Client được thống kê riêng.
                   </p>
                   {rows?.map((row) => (
-                    <div className="type-row" key={row.ip}>
+                    <div className="type-row" key={`${row.ip_kind}:${row.ip}`}>
                       <div>
-                        <strong>{row.ip}</strong>
+                        <strong>
+                          {row.ip}{" "}
+                          {row.ip_kind === "network"
+                            ? "(IP mạng / lịch sử)"
+                            : row.ip_kind === "client"
+                              ? "(Client)"
+                              : ""}
+                        </strong>
                         <small>
                           Severity {row.severity} · Gần nhất:{" "}
                           {new Date(row.last_seen).toLocaleString("vi-VN", {
@@ -1189,7 +1209,7 @@ function App() {
                         </small>
                       </td>
                       <td>
-                        {a.src_ip ?? "—"} → {a.dest_ip ?? "—"}
+                        {sourceIpLabel(a)} → {a.dest_ip ?? "—"}
                       </td>
                       <td>
                         <span
