@@ -45,11 +45,26 @@ def recover(installer, records, was_active):
               + str(error), file=sys.stderr)
 
 
+def tls_options(prepare, current, cert=None, key=None, disable=False):
+    if disable:
+        if cert or key:
+            raise ValueError('--disable-https cannot be combined with TLS paths')
+        return None, None
+    if cert or key:
+        if not cert or not key:
+            raise ValueError('Both --tls-cert and --tls-key are required')
+        return prepare.certificate_path(cert), prepare.certificate_path(key)
+    return prepare.existing_tls(current)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--host-ip', default='192.168.10.1')
     parser.add_argument('--upstream-ip', default='192.168.20.10')
     parser.add_argument('--lan-ip')
+    parser.add_argument('--tls-cert', help='Absolute certificate path; pair with --tls-key')
+    parser.add_argument('--tls-key', help='Absolute private key path; never copied into Git')
+    parser.add_argument('--disable-https', action='store_true', help='Explicitly remove HTTPS; keep HTTP')
     parser.add_argument('--apply', action='store_true')
     parser.add_argument('--rollback', type=Path)
     args = parser.parse_args()
@@ -61,7 +76,11 @@ def main():
         installer.run(['/usr/sbin/nginx', '-t'])
         activate(installer)
         return
-    site, formats = load('prepare', 'prepare-nginx-host.py').render(args.host_ip, args.upstream_ip, args.lan_ip)
+    target = Path('/etc/nginx/sites-available/pbl4-proxy').resolve()
+    prepare = load('prepare', 'prepare-nginx-host.py')
+    cert, key = tls_options(prepare, target.read_text() if target.exists() else '',
+                            args.tls_cert, args.tls_key, args.disable_https)
+    site, formats = prepare.render(args.host_ip, args.upstream_ip, args.lan_ip, cert, key)
     if not args.apply:
         print(site)
         print('Review HTTP-context limits in nginx/pbl4-edge-limits.conf. Use --apply to install.')

@@ -49,3 +49,9 @@ Tests use disposable loopback NGINX and mock upstream, including 429/413 rejecti
 before forwarding, identity, privacy and detector signals. They do not load-test
 production. Connection saturation and slow-client behavior still require separate
 controlled acceptance; no distributed-DDoS protection is claimed.
+
+## HTTPS lab
+
+See [HTTPS-LAB.md](HTTPS-LAB.md) for optional TLS termination, certificate SAN,
+persistent sync, isolated tests, acceptance and rollback. HTTP upstream and all
+edge limits remain unchanged.

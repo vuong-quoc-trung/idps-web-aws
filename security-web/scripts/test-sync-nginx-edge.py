@@ -10,6 +10,16 @@ sync = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(sync)
 
 class LifecycleTests(unittest.TestCase):
+    def test_https_persistence_disable_and_partial_input(self):
+        prepare = sync.load('prepare_test', 'prepare-nginx-host.py')
+        site, _ = prepare.render(tls_cert='/etc/pbl4/lab.crt', tls_key='/etc/pbl4/lab.key')
+        self.assertEqual(sync.tls_options(prepare, site), ('/etc/pbl4/lab.crt', '/etc/pbl4/lab.key'))
+        self.assertEqual(sync.tls_options(prepare, site, disable=True), (None, None))
+        with self.assertRaises(ValueError):
+            sync.tls_options(prepare, site, cert='/tmp/new.crt')
+        with self.assertRaises(ValueError):
+            sync.tls_options(prepare, site, cert='/tmp/new.crt', disable=True)
+
     def test_stopped_service_starts(self):
         installer = Mock()
         with patch.object(sync, 'nginx_active', side_effect=[False, True]):
