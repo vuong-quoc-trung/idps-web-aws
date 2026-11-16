@@ -433,6 +433,7 @@ pub fn parse_with_origin(
     policy: &crate::suricata_origin::Policy,
 ) -> Result<ParsedEvent> {
     let mut event;
+    let mut detect_request = source != "SURICATA";
     let target;
     let mut native_alert = None;
     let mut signals = None;
@@ -561,6 +562,22 @@ pub fn parse_with_origin(
             } else {
                 target = None;
             }
+            // EVE alert records already have a native SID. Other EVE records may
+            // repeat a request URI while describing a response (notably fileinfo).
+            // Only HTTP transaction records may feed the supplemental URI rules.
+            detect_request = value["event_type"] == "http"
+                && value["proto"] == "TCP"
+                && value["app_proto"] == "http"
+                && value["flow_id"].as_u64().is_some()
+                && value["tx_id"].as_u64().is_some()
+                && event.http_method.as_deref().is_some_and(|m| !m.is_empty())
+                && target.as_deref().is_some_and(|u| !u.is_empty())
+                && value.get("direction").is_none_or(|d| d == "to_server")
+                && (!policy.post_proxy
+                    || (ip(&value, "src_ip")? == Some(policy.proxy_ip)
+                        && event.dest_ip == Some(policy.server_ip)
+                        && value["dest_port"].as_u64() == Some(policy.server_port)
+                        && value["in_iface"].as_str() == Some(policy.interface.as_str())));
             if let Some(flow) = value.get("flow") {
                 event.flow = Some(FlowFeatures {
                     duration_seconds: flow["age"].as_f64(),
@@ -665,10 +682,14 @@ pub fn parse_with_origin(
         }
         _ => bail!("Unsupported source"),
     }
-    let mut detections = detection::detect(
-        target.as_deref().unwrap_or_default(),
-        event.user_agent.as_deref(),
-    );
+    let mut detections = if detect_request {
+        detection::detect(
+            target.as_deref().unwrap_or_default(),
+            event.user_agent.as_deref(),
+        )
+    } else {
+        Vec::new()
+    };
     if source == "NGINX" && crate::nginx_detection::unexpected_method(event.http_method.as_deref())
     {
         detections.push(Detection {
@@ -746,6 +767,67 @@ mod tests {
             );
         }
     }
+    #[test]
+    fn eve_response_metadata_never_creates_request_alerts() {
+        let policy = || crate::suricata_origin::Policy {
+            post_proxy: true,
+            trusted_edge: true,
+            ..Default::default()
+        };
+        let eve = |tx: u64, client: &str| {
+            serde_json::json!({
+                "timestamp":"2026-11-15T00:00:00Z", "event_type":"alert",
+                "src_ip":"192.168.20.1", "dest_ip":"192.168.20.10",
+                "dest_port":80, "proto":"TCP", "app_proto":"http",
+                "in_iface":"vmnet3", "flow_id":123, "tx_id":tx,
+                "alert":{"signature_id":1000003,"severity":2,"xff":client},
+                "http":{"http_method":"GET"}
+            })
+        };
+        for (uri, rule) in [
+            ("/api/probe?q=%3Cscript%3Ealert(1)%3C/script%3E", "XSS"),
+            ("/api/probe?q=1%27%20union%20select%201", "SQLI"),
+            ("/../../etc/passwd", "PATH_TRAVERSAL"),
+        ] {
+            let mut v = eve(0, "192.168.10.1");
+            v["http"]["url"] = serde_json::json!(uri);
+            v["http"]["xff"] = serde_json::json!("192.168.10.1");
+            let parse =
+                |v: &Value| parse_with_origin("SURICATA", &v.to_string(), &policy()).unwrap();
+            let native = parse(&v);
+            assert_eq!(native.native_alert.as_ref().unwrap().sid, Some(1000003));
+            assert_eq!(native.canonical.flow_id.as_deref(), Some("123"));
+            assert_eq!(
+                native.canonical.suricata_origin.as_ref().unwrap().tx_id,
+                Some(0)
+            );
+            assert!(native.detections.is_empty());
+            assert!(native.canonical.suricata_origin.unwrap().client_ip_verified);
+            v["event_type"] = serde_json::json!("http");
+            assert!(parse(&v).detections.iter().any(|d| d.rule_id == rule));
+            for field in ["tx_id", "flow_id", "app_proto", "proto", "in_iface"] {
+                let mut incomplete = v.clone();
+                incomplete.as_object_mut().unwrap().remove(field);
+                assert!(parse(&incomplete).detections.is_empty(), "missing {field}");
+            }
+            v["direction"] = serde_json::json!("to_client");
+            assert!(parse(&v).detections.is_empty());
+            v.as_object_mut().unwrap().remove("direction");
+            for kind in ["fileinfo", "flow", "tls"] {
+                v["event_type"] = serde_json::json!(kind);
+                let parsed = parse(&v);
+                assert!(parsed.detections.is_empty(), "{kind}: {rule}");
+                assert!(parsed.native_alert.is_none());
+                assert_eq!(parsed.canonical.flow_id.as_deref(), Some("123"));
+                assert!(parsed.canonical.uri_path.is_some());
+            }
+            v["event_type"] = serde_json::json!("http");
+            v["src_ip"] = serde_json::json!("192.168.20.10");
+            v["dest_ip"] = serde_json::json!("192.168.20.1");
+            assert!(parse(&v).detections.is_empty());
+        }
+    }
+
     #[test]
     fn custom_http_methods_never_persist_arbitrary_header_text() {
         let parsed = parse("NGINX", r#"{"timestamp":"2026-10-26T00:00:00Z","http_method":"CANARY_SECRET","uri_path":"/api/faculties","status":405}"#).unwrap();
