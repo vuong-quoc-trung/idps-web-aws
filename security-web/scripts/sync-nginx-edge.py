@@ -59,6 +59,8 @@ def tls_options(prepare, current, cert=None, key=None, disable=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    prepare = load('prepare', 'prepare-nginx-host.py')
+    prepare.add_egress_arguments(parser)
     parser.add_argument('--host-ip', default='192.168.10.1')
     parser.add_argument('--upstream-ip', default='192.168.20.10')
     parser.add_argument('--lan-ip')
@@ -80,7 +82,8 @@ def main():
     prepare = load('prepare', 'prepare-nginx-host.py')
     cert, key = tls_options(prepare, target.read_text() if target.exists() else '',
                             args.tls_cert, args.tls_key, args.disable_https)
-    site, formats = prepare.render(args.host_ip, args.upstream_ip, args.lan_ip, cert, key)
+    site, formats = prepare.render(args.host_ip, args.upstream_ip, args.lan_ip, cert, key,
+                                   prepare.select_egress(args, target.read_text() if target.exists() else ''))
     if not args.apply:
         print(site)
         print('Review HTTP-context limits in nginx/pbl4-edge-limits.conf. Use --apply to install.')

@@ -4,6 +4,7 @@ import argparse
 import importlib.util
 import ipaddress
 import re
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,8 +35,49 @@ def existing_tls(text):
     return certificate_path(certs[0]), certificate_path(keys[0])
 
 
+def egress_options(ca, name, port=443):
+    ca = certificate_path(ca)
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?", name):
+        raise ValueError("Upstream TLS name must be a DNS name")
+    if isinstance(port, bool) or not isinstance(port, int) or not 1 <= port <= 65535:
+        raise ValueError("Invalid upstream TLS port")
+    return dict(ca=ca, name=name, port=port)
+
+
+def existing_egress(text):
+    markers = re.findall(r"^# PBL4 EGRESS OPTIONS (.+)$", text, re.M)
+    if not markers:
+        if 'PBL4 TLS EGRESS' in text:
+            raise ValueError("Missing managed egress metadata")
+        return None
+    if len(markers) != 1:
+        raise ValueError("Ambiguous egress metadata")
+    return egress_options(**json.loads(markers[0]))
+
+
+def add_egress_arguments(parser):
+    parser.add_argument('--egress-ca', help='Enable local TLS egress with this CA file')
+    parser.add_argument('--egress-name', help='Verified upstream certificate DNS name')
+    parser.add_argument('--egress-port', type=int, default=None)
+    parser.add_argument('--disable-egress', action='store_true')
+
+
+def select_egress(args, current=''):
+    supplied = any(v is not None for v in (args.egress_ca, args.egress_name, args.egress_port))
+    if args.disable_egress:
+        if supplied:
+            raise ValueError('Cannot disable egress and supply egress options')
+        return None
+    if supplied:
+        if not args.egress_ca or not args.egress_name:
+            raise ValueError('--egress-ca and --egress-name are required together')
+        return egress_options(args.egress_ca, args.egress_name,
+                              args.egress_port if args.egress_port is not None else 443)
+    return existing_egress(current)
+
+
 def render(host="192.168.10.1", upstream="192.168.20.10", lan=None,
-           tls_cert=None, tls_key=None):
+           tls_cert=None, tls_key=None, egress=None):
     host, upstream = address(host), address(upstream)
     lan = address(lan) if lan else None
     site = (ROOT / "nginx/pbl4-proxy.conf").read_text()
@@ -55,6 +97,17 @@ def render(host="192.168.10.1", upstream="192.168.20.10", lan=None,
                 "\n    ssl_protocols TLSv1.2 TLSv1.3;"
                 "\n    ssl_session_tickets off;\n    # PBL4 HTTPS END")
     site = site.replace("# OPTIONAL_HTTPS", tls)
+    if egress is not None:
+        egress = egress_options(**egress)
+        if not tls_cert:
+            raise ValueError('TLS egress requires Edge HTTPS; disable egress first for HTTP-only rollback')
+        site = site.replace(f'proxy_pass http://{upstream}:80;',
+                            'proxy_bind 127.77.0.1;\n        proxy_pass http://127.77.0.2:18080;')
+        template = (ROOT / 'nginx/pbl4-egress.conf.template').read_text()
+        for token, value in {'UPSTREAM': upstream, 'PORT': egress['port'],
+                             'NAME': egress['name'], 'CA': egress['ca']}.items():
+            template = template.replace('@' + token + '@', str(value))
+        site += '\n# PBL4 EGRESS OPTIONS ' + json.dumps(egress, sort_keys=True) + '\n' + template
     formats = ((ROOT / "nginx/pbl4-access.conf").read_text() + "\n"
                + (ROOT / "deploy/ai-shadow/telemetry.conf").read_text()
                + "\n" + (ROOT / "nginx/pbl4-edge-limits.conf").read_text())
@@ -66,6 +119,7 @@ def main():
     parser.add_argument("--host-ip", default="192.168.10.1")
     parser.add_argument("--upstream-ip", default="192.168.20.10")
     parser.add_argument("--lan-ip", help="Optional existing LAN IPv4 on Defender")
+    add_egress_arguments(parser)
     parser.add_argument("--tls-cert")
     parser.add_argument("--tls-key")
     parser.add_argument("--output", type=Path, required=True, help="New/reusable staging directory, NOT /etc")
@@ -75,7 +129,7 @@ def main():
     output = args.output.resolve()
     if output == Path("/etc") or Path("/etc") in output.parents:
         parser.error("Output must be a staging directory outside /etc")
-    site, formats = render(args.host_ip, args.upstream_ip, args.lan_ip, args.tls_cert, args.tls_key)
+    site, formats = render(args.host_ip, args.upstream_ip, args.lan_ip, args.tls_cert, args.tls_key, select_egress(args))
     output.mkdir(parents=True, exist_ok=True)
     for name, content in [("pbl4-proxy", site), ("pbl4-ai-shadow.conf", formats)]:
         target = output / name

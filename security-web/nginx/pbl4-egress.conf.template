@@ -1,0 +1,37 @@
+# PBL4 TLS EGRESS: loopback ACL is NOT process authentication.
+server {
+    listen 127.77.0.2:18080;
+    server_name _;
+    allow 127.77.0.1;
+    deny all;
+    access_log off;
+    error_log /dev/null crit;
+    client_max_body_size 1m;
+    client_header_timeout 10s;
+    client_body_timeout 10s;
+    keepalive_timeout 15s;
+    if ($http_x_request_id !~ "^[a-f0-9]{32}$") { return 400; }
+    if ($http_x_forwarded_proto !~ "^(http|https)$") { return 400; }
+    if ($http_x_forwarded_for = "") { return 400; }
+    location / {
+        proxy_pass https://@UPSTREAM@:@PORT@;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $http_x_real_ip;
+        proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Request-Id $http_x_request_id;
+        proxy_set_header Forwarded "";
+        proxy_ssl_server_name on;
+        proxy_ssl_name @NAME@;
+        proxy_ssl_trusted_certificate @CA@;
+        proxy_ssl_verify on;
+        proxy_ssl_verify_depth 2;
+        proxy_ssl_protocols TLSv1.2 TLSv1.3;
+        proxy_connect_timeout 2s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+        proxy_next_upstream off;
+    }
+}
