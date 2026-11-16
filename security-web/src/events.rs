@@ -567,7 +567,7 @@ pub fn parse_with_origin(
             // Only HTTP transaction records may feed the supplemental URI rules.
             detect_request = value["event_type"] == "http"
                 && value["proto"] == "TCP"
-                && value["app_proto"] == "http"
+                && suricata_origin::http_context(&value)
                 && value["flow_id"].as_u64().is_some()
                 && value["tx_id"].as_u64().is_some()
                 && event.http_method.as_deref().is_some_and(|m| !m.is_empty())
@@ -805,7 +805,20 @@ mod tests {
             assert!(native.canonical.suricata_origin.unwrap().client_ip_verified);
             v["event_type"] = serde_json::json!("http");
             assert!(parse(&v).detections.iter().any(|d| d.rule_id == rule));
-            for field in ["tx_id", "flow_id", "app_proto", "proto", "in_iface"] {
+            let mut without_protocol = v.clone();
+            without_protocol
+                .as_object_mut()
+                .unwrap()
+                .remove("app_proto");
+            assert!(
+                parse(&without_protocol)
+                    .detections
+                    .iter()
+                    .any(|d| d.rule_id == rule)
+            );
+            without_protocol["app_proto"] = serde_json::json!("tls");
+            assert!(parse(&without_protocol).detections.is_empty());
+            for field in ["tx_id", "flow_id", "proto", "in_iface"] {
                 let mut incomplete = v.clone();
                 incomplete.as_object_mut().unwrap().remove(field);
                 assert!(parse(&incomplete).detections.is_empty(), "missing {field}");

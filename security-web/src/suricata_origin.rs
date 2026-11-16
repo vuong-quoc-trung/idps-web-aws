@@ -2,6 +2,28 @@
 use crate::*;
 use serde_json::Value;
 
+/// EVE HTTP transaction records may omit app_proto (Suricata 8.0.3).
+/// Native alerts still require explicit HTTP protocol classification.
+pub fn http_context(v: &Value) -> bool {
+    if v["proto"] != "TCP"
+        || v["flow_id"].as_u64().is_none()
+        || v["tx_id"].as_u64().is_none()
+        || !v.get("direction").is_none_or(|d| d == "to_server")
+    {
+        return false;
+    }
+    match v["event_type"].as_str() {
+        Some("alert") => v["app_proto"] == "http",
+        Some("http") => {
+            v.get("app_proto").is_none_or(|p| p == "http")
+                && v["http"]["http_method"].as_str().is_some_and(|m| {
+                    !m.is_empty() && m.bytes().all(|c| c.is_ascii_uppercase() || c == b'-')
+                })
+        }
+        _ => false,
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Origin {
@@ -90,10 +112,15 @@ impl Policy {
             _ => &Value::Null,
         };
         let client = xff.as_str().and_then(|s| s.parse::<IpAddr>().ok());
-        let valid = self.post_proxy && self.trusted_edge && network == Some(self.proxy_ip)
+        // A current nft snapshot cannot prove the trust state when a delayed EVE
+        // event was generated. Never enable loopback attribution with a static
+        // flag, even after a policy has been restored. Preserve native alerts.
+        let local_boundary =
+            self.proxy_ip.is_loopback() || self.server_ip.is_loopback() || self.interface == "lo";
+        let valid = !local_boundary && self.post_proxy && self.trusted_edge && network == Some(self.proxy_ip)
             && v["dest_ip"].as_str().and_then(|s|s.parse::<IpAddr>().ok()) == Some(self.server_ip)
             && v["dest_port"].as_u64() == Some(self.server_port)
-            && v["proto"] == "TCP" && v["app_proto"] == "http"
+            && http_context(v)
             && v["in_iface"].as_str() == Some(self.interface.as_str())
             && o.tx_id.is_some() && v["flow_id"].as_u64().is_some()
             && client.is_some_and(|ip| !ip.is_unspecified() && !ip.is_multicast() && !ip.is_loopback() && ip != self.proxy_ip && ip != self.server_ip)
@@ -184,6 +211,80 @@ mod tests {
         assert!(!legacy.suricata_origin.unwrap().client_ip_verified);
     }
     #[test]
+    fn captured_local_egress_eve_remains_unverified_without_trust() {
+        let p = Policy {
+            post_proxy: true,
+            trusted_edge: false,
+            proxy_ip: "127.77.0.1".parse().unwrap(),
+            server_ip: "127.77.0.2".parse().unwrap(),
+            server_port: 18080,
+            interface: "lo".into(),
+        };
+        let mut alerts = 0;
+        let mut http = 0;
+        for line in include_str!("../tests/fixtures/local-egress-capture/eve.jsonl").lines() {
+            let raw: Value = serde_json::from_str(line).unwrap();
+            let parsed = events::parse_with_origin("SURICATA", line, &p).unwrap();
+            assert!(parsed.canonical.client_ip.is_none());
+            let origin = parsed.canonical.suricata_origin.unwrap();
+            assert!(!origin.client_ip_verified);
+            assert_eq!(origin.network_src_ip, Some(p.proxy_ip));
+            assert_eq!(origin.tx_id, raw["tx_id"].as_u64());
+            assert_eq!(parsed.canonical.dest_ip, Some(p.server_ip));
+            assert!(parsed.canonical.flow_id.is_some());
+            if raw["event_type"] == "alert" {
+                alerts += 1;
+                assert_eq!(
+                    parsed.native_alert.unwrap().sid.map(u64::from),
+                    raw["alert"]["signature_id"].as_u64()
+                );
+            } else {
+                http += 1;
+                // Actual 8.0.3 HTTP records lack app_proto; do not silently synthesize it.
+                assert!(raw.get("app_proto").is_none());
+                assert!(parsed.native_alert.is_none());
+            }
+            assert!(parsed.detections.is_empty());
+        }
+        assert_eq!((alerts, http), (4, 5));
+    }
+
+    #[test]
+    fn local_egress_without_proven_trust_keeps_identity_unknown() {
+        // Synthetic EVE: parser test only, not evidence of live AF_PACKET capture.
+        let p = Policy {
+            post_proxy: true,
+            trusted_edge: false,
+            proxy_ip: "127.77.0.1".parse().unwrap(),
+            server_ip: "127.77.0.2".parse().unwrap(),
+            server_port: 18080,
+            interface: "lo".into(),
+        };
+        for claimed_client in ["192.168.10.10", "192.168.10.99"] {
+            let mut v = eve(0, claimed_client);
+            v["src_ip"] = json!("127.77.0.1");
+            v["dest_ip"] = json!("127.77.0.2");
+            v["dest_port"] = json!(18080);
+            v["in_iface"] = json!("lo");
+            v["http"]["url"] = json!("/api/probe?q=%3Cscript%3Ealert(1)%3C/script%3E");
+            for kind in ["alert", "http", "fileinfo"] {
+                v["event_type"] = json!(kind);
+                v["http"]["xff"] = json!(claimed_client);
+                let parsed = events::parse_with_origin("SURICATA", &v.to_string(), &p).unwrap();
+                assert!(parsed.canonical.client_ip.is_none());
+                let origin = parsed.canonical.suricata_origin.unwrap();
+                assert!(!origin.client_ip_verified);
+                assert_eq!(origin.network_src_ip, Some(p.proxy_ip));
+                assert_eq!(origin.tx_id, Some(0));
+                assert_eq!(parsed.native_alert.is_some(), kind == "alert");
+                if kind != "http" {
+                    assert!(parsed.detections.is_empty());
+                }
+            }
+        }
+    }
+
+    #[test]
     fn http_extra_data_and_non_http_alerts() {
         let p = policy();
         let mut v = eve(0, "192.168.10.10");
@@ -195,5 +296,33 @@ mod tests {
         );
         v["event_type"] = json!("flow");
         assert_eq!(p.resolve(&v, Some(p.proxy_ip)).0, None);
+    }
+    #[test]
+    fn local_static_trust_cannot_verify_even_after_policy_restore() {
+        let mut p = policy();
+        p.proxy_ip = "127.77.0.1".parse().unwrap();
+        p.server_ip = "127.77.0.2".parse().unwrap();
+        p.interface = "lo".into();
+        p.server_port = 18080;
+        let mut v = eve(0, "192.168.10.10");
+        v["src_ip"] = json!("127.77.0.1");
+        v["dest_ip"] = json!("127.77.0.2");
+        v["dest_port"] = json!(18080);
+        v["in_iface"] = json!("lo");
+        assert!(p.trusted_edge);
+        assert_eq!(p.resolve(&v, Some(p.proxy_ip)).0, None);
+    }
+    #[test]
+    fn http_without_protocol_is_type_scoped() {
+        let mut v = eve(0, "192.168.10.10");
+        v.as_object_mut().unwrap().remove("app_proto");
+        assert!(!http_context(&v));
+        v["event_type"] = json!("http");
+        assert!(http_context(&v));
+        v["app_proto"] = json!("tls");
+        assert!(!http_context(&v));
+        v.as_object_mut().unwrap().remove("app_proto");
+        v["http"]["http_method"] = json!("");
+        assert!(!http_context(&v));
     }
 }
