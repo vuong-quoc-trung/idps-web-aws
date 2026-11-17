@@ -11,6 +11,7 @@ import hashlib
 import http.client
 import json
 import os
+import re
 from pathlib import Path
 import secrets
 import signal
@@ -32,6 +33,121 @@ def load(name, filename):
 
 njs = load('live_njs', 'test-njs-proof.py')
 bridge = load('live_bridge', 'proof-chain-offline.py')
+generation_launcher = load('live_generation', 'run-suricata-generation.py')
+candidate = load('live_candidate', 'prepare-proof-egress.py')
+
+def parse_evidence(line):
+    fields = line.split('\t')
+    if len(fields) != 9:
+        raise ValueError('Lua evidence requires nine fields (including generation)')
+    if not fields[0].isdigit() or not fields[1].isdigit() or not re.fullmatch('[a-f0-9]{32}', fields[8]):
+        raise ValueError('Invalid Lua transaction metadata')
+    return fields
+
+
+def find_baseline(lines, request_id, generation):
+    for line in lines:
+        try:
+            fields = parse_evidence(line)
+        except ValueError:
+            continue  # Diagnostics report malformed/legacy rows; never accept them.
+        if fields[5] == request_id and fields[8] == generation and fields[2] and fields[3]:
+            return fields
+    return None
+
+
+def capture_diagnostics(work, request_id=None, case=None, error=None):
+    """Allowlisted counters/metadata only. Never print raw log lines or headers."""
+    work = Path(work)
+    report = {'logs': {}, 'http_events': 0, 'lua_rows': 0, 'field_counts': {},
+              'baseline_rows': 0, 'baseline_correlated': 0, 'baseline_missing_receipt': 0,
+              'baseline_wrong_generation': 0, 'malformed_eve': 0}
+    for name in ('sensor-console.log', 'suricata.log'):
+        path = work/name
+        text = path.read_text(errors='replace') if path.exists() else ''
+        report['logs'][name] = {'exists': path.exists(), 'bytes': path.stat().st_size if path.exists() else 0,
+            'engine_started': 'Engine started' in text,
+            'lua_error_lines': sum('lua' in line.lower() and any(v in line.lower() for v in ('error', 'failed', 'exception')) for line in text.splitlines()),
+            'permission_errors': text.lower().count('permission denied')}
+    events = set()
+    path = work/'live-eve.json'
+    for line in path.read_text().splitlines() if path.exists() else []:
+        try: event = json.loads(line)
+        except ValueError:
+            report['malformed_eve'] += 1
+            continue
+        if event.get('event_type') == 'http':
+            report['http_events'] += 1
+            events.add((str(event.get('flow_id')), str(event.get('tx_id'))))
+    path = work/'chain.tsv'
+    report['lua_file_exists'] = path.exists()
+    if path.exists(): report['lua_file_mode'] = oct(path.stat().st_mode & 0o777)
+    marker = work/'proof-generation'
+    generation = marker.read_text().strip() if marker.exists() else ''
+    report['generation_valid'] = bool(re.fullmatch('[a-f0-9]{32}', generation))
+    for line in path.read_text().splitlines() if path.exists() else []:
+        report['lua_rows'] += 1
+        count = str(len(line.split('\t')))
+        report['field_counts'][count] = report['field_counts'].get(count, 0)+1
+        try: row = parse_evidence(line)
+        except ValueError: continue
+        if request_id and row[5] == request_id:
+            report['baseline_rows'] += 1
+            report['baseline_missing_receipt'] += int(not row[3])
+            report['baseline_wrong_generation'] += int(row[8] != generation)
+            report['baseline_correlated'] += int((row[0], row[1]) in events)
+    report['case'] = case
+    report['exception_type'] = type(error).__name__ if error else None
+    if case in ('nginx_crash', 'nginx_restart'):
+        report['classification'] = 'NGINX_RECOVERY_FAILED'
+    elif error is not None and isinstance(error, (ConnectionResetError, ConnectionRefusedError)):
+        report['classification'] = 'TRANSPORT_FAILURE'
+    elif case not in (None, 'baseline_capture'):
+        report['classification'] = 'NON_BASELINE_CASE_FAILED'
+    else:
+        report['classification'] = ('NO_LUA_ROWS_AT_DEADLINE' if not report['lua_rows'] else
+            'BASELINE_PRESENT_PARSER_OR_MATCH_FAILURE' if report['baseline_rows'] else
+            'BASELINE_NOT_OBSERVED_OR_FORMAT_MISMATCH')
+    return report
+
+
+def wait_replay_denied(probe, check_invariants, timeout=5, clock=time.monotonic, sleep=time.sleep):
+    """Only recovery transport faults are transient; explicit 403 is mandatory."""
+    deadline = clock() + timeout
+    outcomes = Counter()
+    while True:
+        check_invariants()
+        try:
+            status, receipt = probe()
+        except (ConnectionResetError, ConnectionRefusedError) as error:
+            outcomes[type(error).__name__] += 1
+            check_invariants()
+            if clock() >= deadline:
+                raise TimeoutError('NGINX recovery never reached explicit replay denial') from error
+            sleep(.05)
+            continue
+        check_invariants()
+        assert status == 403, 'Recovered Egress did not reject replay'
+        assert receipt is None, 'Rejected replay returned receipt'
+        assert clock() <= deadline, 'Recovery exceeded deadline'
+        return dict(outcomes)
+
+
+def wait_workers_exited(pids, timeout=5):
+    deadline = time.monotonic() + timeout
+    while True:
+        alive = []
+        for pid in pids:
+            try:
+                # An orphan zombie cannot own a listening socket.
+                state = Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()[0]
+                if state != 'Z': alive.append(pid)
+            except FileNotFoundError:
+                pass
+        if not alive: return
+        assert time.monotonic() < deadline, 'Old NGINX workers still alive'
+        time.sleep(.01)
+
 
 def index_http(events):
     result = {}
@@ -49,7 +165,7 @@ REQUIRED_CASES = (
     'key_dac', 'baseline_capture', 'guard_deletion_under_load',
     'fake_after_deletion', 'replay_after_deletion', 'aborted_headers',
     'incomplete_response', 'missing_receipt', 'nginx_restart', 'nginx_crash',
-    'restart_key_rotation', 'crash_key_rotation', 'rust_verification', 'passive_stop',
+    'restart_key_rotation', 'crash_key_rotation', 'rust_verification', 'passive_stop', 'ai_telemetry_unique',
 )
 
 class Results:
@@ -96,17 +212,28 @@ class Stack(njs.Stack):
 
     @classmethod
     def config_snippet(cls):
-        text = super().config_snippet()
-        text = text.replace(f'127.77.0.2:{cls.egress_port}', '127.77.0.2:18080')
+        # Existing fixture provisions only TLS mock, certificates and free ports.
+        # The actual routing/proof configuration comes from the deployment renderer.
+        njs.egress.EgressTests.config_snippet.__func__(cls)
         cls.egress_port = 18080
+        cls.keyfile = cls.work / 'key.json'
+        cls.rotate()
+        js = cls.work / 'proof.js'
+        js.write_text((HERE.parent / 'tests/njs/proof-probe.js').read_text())
+        site, formats = candidate.render(str(cls.cert), str(cls.work/'upstream.key'),
+            str(cls.cert), 'student.test', str(js), str(cls.keyfile), 65534)
+        site = site.replace('192.168.10.1:80;', f'127.0.0.1:{cls.port};')
+        site = site.replace('192.168.10.1:443 ssl;', f'127.0.0.1:{cls.tls_port} ssl;')
+        site = site.replace('192.168.20.10:443;', f'127.0.0.1:{cls.upstream.server_port};')
+        site = site.replace('syslog:server=unix:/run/pbl4-ai-shadow/nginx.sock,tag=ai_shadow,nohostname', str(cls.work/'telemetry.log'))
         if cls.guarded:
             cls.work.chmod(0o750)
             os.chown(cls.work, 0, 65534)
-            text = text.replace('js_var $probe_key_gid;', 'js_var $probe_key_gid 65534;')
-        # Test upstream pool forces real Edge->Egress keepalive transactions.
-        text = 'upstream proof_capture { server 127.77.0.2:18080; keepalive 16; }\n' + text
-        text = text.replace('proxy_pass http://127.77.0.2:18080;', 'proxy_pass http://proof_capture;')
-        text = text.replace('proxy_set_header Host $http_host;', 'proxy_set_header Host $http_host;\n proxy_set_header Connection "";')
+        else:
+            formats = formats.replace('js_var $probe_key_gid 65534;', 'js_var $probe_key_gid;')
+        text = formats + '\n' + site
+        cls.candidate_sha256 = hashlib.sha256(text.encode()).hexdigest()
+        # One intentional fault overlay: suppress the receipt only at this URI.
         text = 'map $request_uri $live_receipt { default $probe_receipt; /api/no-receipt ""; }\n' + text
         text = text.replace('add_header X-WS-Receipt $probe_receipt always;', 'add_header X-WS-Receipt $live_receipt always;')
         return text
@@ -198,8 +325,11 @@ def main():
             else:
                 original_get(self)
         handler.do_GET = fault_response
-        generation = secrets.token_hex(16)  # Fresh generation per actual sensor invocation.
+        generation = None  # Loaded from the actual Lua logger instance below.
         bridge.write_lua(Stack.work)
+        lua_source = (HERE.parent/'config/suricata/transaction-evidence.lua').read_bytes()
+        assert (Stack.work/'chain.lua').read_bytes() == lua_source
+        print(json.dumps({'lua_source_sha256': hashlib.sha256(lua_source).hexdigest()}), flush=True)
         config = njs.egress.sensor.render(yaml.safe_load((HERE.parent / 'config/suricata/suricata.yaml').read_text()), 'local-egress')
         config.pop('run-as', None)
         config.update({'unix-command': {'enabled': False}, 'default-log-dir': str(Stack.work),
@@ -215,7 +345,8 @@ def main():
                    '-l', str(Stack.work), '--pidfile', str(Stack.work / 'sensor.pid')]
         subprocess.run(command + ['-T'], check=True, capture_output=True, timeout=30)
         console = (Stack.work / 'sensor-console.log').open('w')
-        sensor = subprocess.Popen(command + ['--af-packet=lo', '--runmode', 'single'], stdout=console, stderr=console)
+        live_command, live_env = generation_launcher.launch_spec(command[1:] + ['--af-packet=lo', '--runmode', 'single'])
+        sensor = subprocess.Popen(live_command, env=live_env, stdout=console, stderr=console)
         deadline = time.monotonic() + 20
         while True:
             logs = ''.join(p.read_text() for p in [Stack.work / 'sensor-console.log', Stack.work / 'suricata.log'] if p.exists())
@@ -314,17 +445,26 @@ def main():
         assert all(not any(k.lower() in ('x-ws-proof', 'x-ws-receipt') for k in h) for h in Stack.upstream_headers)
         if guard: results.passed('fake_after_deletion', http_status=r.status, mock_delta=0, receipt=False)
         # Replay only a real Edge-issued proof observed by Lua; never synthesize a MAC.
-        deadline = time.monotonic() + 5
+        baseline_poll_started = time.monotonic()
+        deadline = baseline_poll_started + 5
+        baseline_poll = {'first_lua_row_ms': None, 'matched_ms': None}
         captured = None
         while time.monotonic() < deadline:
             chain = Stack.work / 'chain.tsv'
-            for line in chain.read_text().splitlines() if chain.exists() else []:
-                fields = line.split('\t')
-                if len(fields) == 8 and fields[5] == ids[0]: captured = fields
-            if captured: break
+            marker = Stack.work/'proof-generation'
+            generation = marker.read_text().strip() if marker.exists() else ''
+            lines = chain.read_text().splitlines() if chain.exists() else []
+            elapsed_ms = round((time.monotonic()-baseline_poll_started)*1000)
+            if lines and baseline_poll['first_lua_row_ms'] is None:
+                baseline_poll['first_lua_row_ms'] = elapsed_ms
+            captured = find_baseline(lines, ids[0], generation)
+            if captured:
+                baseline_poll['matched_ms'] = elapsed_ms
+                break
             time.sleep(.1)
-        assert captured is not None, 'Lua did not emit baseline transaction'
-        _, _, token, _, client, rid, scheme, host = captured
+        print(json.dumps({'baseline_poll': baseline_poll}), flush=True)
+        assert captured is not None, 'No matching nine-field Lua baseline with proof/receipt at deadline; see capture diagnostics'
+        _, _, token, _, client, rid, scheme, host, baseline_generation = captured
         results.start('replay_after_deletion')
         for label, proof, changes in [
             ('replay', token, {}),
@@ -348,9 +488,16 @@ def main():
             lifecycle_case = 'nginx_crash' if crash else 'nginx_restart'
             rotation_case = 'crash_key_rotation' if crash else 'restart_key_rotation'
             results.start(lifecycle_case)
+            lifecycle_started = time.monotonic()
+            def lifecycle_phase(phase):
+                print(json.dumps({'case': lifecycle_case, 'phase': phase,
+                                  'elapsed_ms': round((time.monotonic()-lifecycle_started)*1000),
+                                  'master_alive': Stack.process.poll() is None,
+                                  'sensor_alive': sensor.poll() is None}), flush=True)
+            lifecycle_phase('before_stop')
             previous_material = dict(Stack.material)
+            children = Path(f'/proc/{Stack.process.pid}/task/{Stack.process.pid}/children').read_text().split()
             if crash:
-                children = Path(f'/proc/{Stack.process.pid}/task/{Stack.process.pid}/children').read_text().split()
                 assert children, 'crash test requires observed worker processes'
                 Stack.process.kill(); Stack.process.wait(timeout=5)
                 for pid in children:
@@ -359,28 +506,43 @@ def main():
             else:
                 Stack.process.terminate()
                 Stack.process.wait(timeout=5)
+            wait_workers_exited(children)
+            lifecycle_phase('old_processes_exited')
+            assert sensor.poll() is None
+            if guard: assert not guard.ready(), 'Guard unexpectedly restored after deletion'
             Stack.rotate()
             assert Stack.material['key'] != previous_material['key']
             assert Stack.material['epoch'] != previous_material['epoch']
             Stack.process = popen(Stack.command + ['-g', 'daemon off; master_process on;'],
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            deadline = time.monotonic() + 5
-            while True:
-                c = http.client.HTTPConnection('127.77.0.2', 18080, source_address=('127.77.0.1', 0), timeout=1)
+            lifecycle_phase('new_master_spawned')
+            def recovery_invariants():
+                assert Stack.process.poll() is None, 'New NGINX master exited'
+                assert sensor.poll() is None, 'Sensor exited during recovery'
+                assert len(Stack.upstream_headers) == before, 'Replay reached Student mock'
+
+            def replay_probe():
+                c = http.client.HTTPConnection('127.77.0.2', 18080,
+                    source_address=('127.77.0.1', 0), timeout=1)
                 try:
                     c.request('GET', '/api/probe', headers={'Host': host, 'X-WS-Proof': token,
                         'X-Forwarded-For': client, 'X-Real-IP': client, 'X-Request-Id': rid,
                         'X-Forwarded-Proto': scheme})
-                    r = c.getresponse(); r.read()
+                    r = c.getresponse()
+                    # Check headers before reading, so reset cannot hide an acceptance.
                     assert r.status == 403 and r.getheader('X-WS-Receipt') is None
-                    break
-                except ConnectionRefusedError:
-                    if time.monotonic() > deadline: raise
-                    time.sleep(.05)
-                finally: c.close()
-            assert len(Stack.upstream_headers) == before
-            assert sensor.poll() is None
-            results.passed(lifecycle_case, http_status=403, mock_delta=0, sensor_alive=True)
+                    r.read()
+                    return r.status, r.getheader('X-WS-Receipt')
+                finally:
+                    c.close()
+
+            transients = wait_replay_denied(replay_probe, recovery_invariants)
+            lifecycle_phase('socket_ready_replay_denied')
+            if guard: assert not guard.ready(), 'Guard unexpectedly restored after recovery'
+            results.passed(lifecycle_case, http_status=403, mock_delta=0, sensor_alive=True,
+                           receipt=False, old_workers_exited=True, master_alive=True,
+                           recovery_transport_outcomes=transients,
+                           guard_state='absent_after_deletion' if guard else 'not_configured')
             results.passed(rotation_case, epoch_changed=True, key_changed=True)
         results.start('baseline_capture')
         time.sleep(2)
@@ -390,14 +552,17 @@ def main():
         http_events = index_http(events)
         evidence, observations = [], []
         rejected, rejected_observations = [], []
+        generation = (Stack.work / 'proof-generation').read_text().strip()
         for line in (Stack.work / 'chain.tsv').read_text().splitlines():
-            flow, tx, proof, receipt, client, rid, scheme, host = line.split('\t')
+            flow, tx, proof, receipt, client, rid, scheme, host, row_generation = parse_evidence(line)
+            assert row_generation == generation
             if rid not in ids and rid not in rejected_ids:
                 assert not receipt  # Rejected direct traffic never gains acceptance evidence.
                 continue
             if rid in ids and not receipt:
                 continue  # Captured replay rejection; original acceptance is counted separately.
             event = http_events[(flow, int(tx))]
+            assert event.get('host') == 'ws-generation-' + row_generation
             assert event['src_ip'] == '127.77.0.1' and event['dest_ip'] == '127.77.0.2'
             assert event['in_iface'] == 'lo'
             assert client == '192.0.2.10' and proof
@@ -420,6 +585,11 @@ def main():
         sids = Counter(e['alert']['signature_id'] for e in events if e.get('event_type') == 'alert')
         assert all(sids[sid] == 1 for sid in (1000002, 1000003, 1000004)), sids
         results.passed('baseline_capture', transactions=len(ids), sids=dict(sids))
+        results.start('ai_telemetry_unique')
+        telemetry = [json.loads(line) for line in (Stack.work/'telemetry.log').read_text().splitlines()]
+        counts = Counter(row.get('request_id') for row in telemetry)
+        assert all(counts[rid] == 1 for rid in ids + rejected_ids)
+        results.passed('ai_telemetry_unique', checked_requests=len(ids)+len(rejected_ids))
         results.start('rust_verification')
         fixture = Stack.work / 'live-rust.json'
         with os.fdopen(os.open(fixture, os.O_WRONLY|os.O_CREAT|os.O_EXCL, 0o600), 'w') as f:
@@ -440,6 +610,7 @@ def main():
         results.passed('passive_stop', http_status=204)
         summary = results.summary()
         summary.update({'transport': 'live AF_PACKET', 'transactions': len(ids),
+                        'renderer': 'prepare-proof-egress.py', 'candidate_sha256': Stack.candidate_sha256,
                         'sensor_generation': generation,
                         'runtime_readiness': 'NOT_ACCEPTED',
                         'limitations': ['timing unverified', 'journal rollback/revocation unresolved',
@@ -448,6 +619,10 @@ def main():
         print(json.dumps(summary), flush=True)
         if summary['result'] != 'PASS': raise RuntimeError('Required acceptance cases incomplete')
     except BaseException as error:
+        try:
+            print(json.dumps({'capture_diagnostics': capture_diagnostics(Stack.work, ids[0] if 'ids' in locals() and ids else None, results.active, error)}), flush=True)
+        except Exception:
+            print('{"capture_diagnostics":"unavailable"}', flush=True)
         results.failed(error)
         print(json.dumps(results.summary()), flush=True)
         raise

@@ -13,23 +13,7 @@ HERE=Path(__file__).resolve().parent
 
 def write_lua(work):
     lua=work/'chain.lua'
-    lua.write_text('''local http=require("suricata.http")
-local flow=require("suricata.flow")
-local config=require("suricata.config")
-function init(args) return {protocol="http"} end
-function setup(args) file=assert(io.open(config.log_path().."/chain.tsv","a")) end
-function safe(v) if not v or #v>4096 or string.find(v,"[%c]") then return "" end return v end
-function log(args)
- local tx=http.get_tx()
- if not args.tx_id or args.tx_id>9007199254740991 then return end
- local fields={tostring(flow.get():id()),string.format("%.0f",args.tx_id),
- safe(tx:request_header("X-WS-Proof")),safe(tx:response_header("X-WS-Receipt")),
- safe(tx:request_header("X-Forwarded-For")),safe(tx:request_header("X-Request-Id")),
- safe(tx:request_header("X-Forwarded-Proto")),safe(tx:request_header("Host"))}
- file:write(table.concat(fields,"\\t").."\\n");file:flush()
-end
-function deinit(args) file:close() end
-''')
+    lua.write_text((HERE.parent/'config/suricata/transaction-evidence.lua').read_text())
 
 
 def verify(work, material, pairs):
@@ -55,7 +39,7 @@ def verify(work, material, pairs):
     rows=[];observations=[]
     import base64
     for line in lines:
-        flow,tx,proof,receipt,client,rid,scheme,host=line.split('\t')
+        flow,tx,proof,receipt,client,rid,scheme,host,generation=line.split('\t')
         event=next(e for e in eve if str(e['flow_id'])==flow and e['tx_id']==int(tx))
         key={'generation':generation,'flow_id':flow,'tx_id':int(tx)}
         rows.append({'tx':key,'proof':proof,'receipt':receipt})
