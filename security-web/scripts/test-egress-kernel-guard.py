@@ -155,7 +155,11 @@ def main():
     parser.add_argument('--with-nginx-suricata', action='store_true', help='Run existing NGINX/TLS + actual Suricata harness with guard')
     parser.add_argument('--namespace', nargs=2, metavar=('CGROUP', 'HOST_NETNS'), help=argparse.SUPPRESS)
     parser.add_argument('--probe', nargs=2, help=argparse.SUPPRESS)
+    parser.add_argument('--live-proof-module', type=Path)
+    parser.add_argument('--rust-test-binary', type=Path)
     args = parser.parse_args()
+    if args.live_proof_module and not args.rust_test_binary:
+        parser.error('--rust-test-binary required for live proof')
     if args.probe:
         probe(args.probe[0], int(args.probe[1])); return
     if args.namespace:
@@ -172,9 +176,14 @@ def main():
         command = [sys.executable, str(SELF), '--namespace', str(root), os.readlink('/proc/self/ns/net')]
         if args.with_nginx_suricata:
             command = [sys.executable, str(SELF.with_name('test-local-egress-capture.py')), '--kernel-cgroup', str(root)]
+        if args.live_proof_module:
+            command = [sys.executable, str(SELF.with_name('test-live-transaction-proof.py')),
+                       '--isolated-root', '--kernel-cgroup', str(root),
+                       '--module', str(args.live_proof_module.resolve()),
+                       '--rust-test-binary', str(args.rust_test_binary.resolve())]
         child = subprocess.Popen(['unshare', '--net', '--'] + command, start_new_session=True)
         try:
-            code = child.wait(timeout=90)
+            code = child.wait(timeout=180)
         except (KeyboardInterrupt, subprocess.TimeoutExpired):
             os.killpg(child.pid, signal.SIGTERM)
             child.wait(timeout=10)

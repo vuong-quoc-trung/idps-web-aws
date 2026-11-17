@@ -13,6 +13,8 @@ mod operations;
 mod security_detection;
 mod suricata_origin;
 mod three_source;
+#[cfg(test)]
+mod transaction_proof;
 mod triage;
 use anyhow::{Context, Result, bail};
 use axum::{
