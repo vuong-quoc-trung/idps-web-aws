@@ -1,0 +1,70 @@
+{
+  "version": "idps-r25-source-review-v1",
+  "review_date": "2026-11-17",
+  "new_eligible_dual_class_source": false,
+  "protected_payloads_read": false,
+  "sources": [
+    {
+      "name": "WAF Data v2",
+      "url": "https://huggingface.co/datasets/puyang2025/waf_data_v2",
+      "revision": "b035dc17f875f1f732c10654709abed66a4e9742",
+      "train_sha256": "3e1f8bc6e3acfccf87218fc9e5272ff2218e808d7686c6ce461335c00a7a3fd6",
+      "role": "REUSE_EXISTING_PUBLISHER_DEVELOPMENT_FIT_TUNING",
+      "raw_publisher_train_rows": 1924461,
+      "selected_distinct_original_fit": 400000,
+      "selected_tuning": 6042,
+      "labels": ["normal", "anomalous"],
+      "permission_basis": "Existing pinned MIT publisher TRAIN development grant and R19 role manifest",
+      "not_native_verified": true,
+      "new_fit_originals": 0
+    },
+    {
+      "name": "CSIC 2010 normal TRAIN via WebRequests",
+      "url": "https://redata.anii.org.uy/dataset.xhtml?persistentId=doi:10.60895/redata/RWUUSV",
+      "attribution": "Biardo, Deborah; Gonzalez, Guzman; Lanzotti, Sabrina (2024), WebRequests, Repositorio ANII, V1",
+      "repository_license": "CC BY 4.0",
+      "original_publisher_license_lineage": "Not independently recovered; preserve existing research-only restrictions",
+      "file_id": 389,
+      "filename": "csic_2010_normalTrafficTraining.txt",
+      "sha256": "d3344377d4721b03b906ca232ab44bfd81b9c1356f967ec9d348532ec420f000",
+      "role": "REUSE_BENIGN_SOURCE_DISJOINT_STRESS_ONLY",
+      "raw_records": 36000,
+      "projectable": 36000,
+      "exact_request_identity_digests": 9644,
+      "uri100_vectors": 2743,
+      "label": "publisher normal, not independently reviewed native benign",
+      "new_fit_originals": 0,
+      "not_independent_final_test": true,
+      "protected_test_files": "No payload, model scores or labels reopened"
+    },
+    {
+      "name": "PKDD TRAIN via WebRequests",
+      "url": "https://redata.anii.org.uy/dataset.xhtml?persistentId=doi:10.60895/redata/RWUUSV",
+      "file_id": 386,
+      "filename": "xml_train.txt",
+      "sha256": "b4e85e85a315eb522f5175e11ed0d35d0e0aab5cd41c4618102b624772692a86",
+      "repository_license": "CC BY 4.0",
+      "role": "REUSE_PUBLISHER_VALID_TRAIN_STRESS_ONLY",
+      "raw_records": 24504,
+      "projectable": 24070,
+      "unsupported_envelope": 434,
+      "uri100_vectors": 23428,
+      "label": "publisher Valid, not independent native review",
+      "physical_request_identity": "Not established by synthetic record IDs",
+      "new_fit_originals": 0,
+      "not_independent_final_test": true,
+      "protected_test_files": "xml_test.txt remains unopened"
+    },
+    {
+      "name": "WebRequests derived unigrams",
+      "role": "EXCLUDE_FROM_TRAINING_AND_INDEPENDENT_EVALUATION",
+      "reason": "Publisher fits the 500-token TF-IDF vocabulary across the entire merged corpus; includes CSIC/PKDD and protected evaluation derivatives"
+    },
+    {
+      "name": "WebRequests goodqueries/badqueries",
+      "role": "REVERIFY_NOT_ACQUIRED_OR_COUNTED",
+      "reason": "URI-only Malicious-URLs inputs do not establish an observed HTTP method or raw request, and offer no independent native semantic review. Do not impute GET."
+    }
+  ],
+  "remaining_requirement": "A fresh permitted dual-class request cohort with lineage, method/target visibility and adequate POST/OTHER support; publisher labels remain separate from reviewed native labels."
+}
