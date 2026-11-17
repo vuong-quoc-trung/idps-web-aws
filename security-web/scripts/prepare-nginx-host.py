@@ -63,6 +63,8 @@ def add_egress_arguments(parser):
 
 
 def select_egress(args, current=''):
+    if '# PBL4 TRANSACTION PROOF CANDIDATE' in current or 'X-WS-Proof' in current or '$probe_verified' in current:
+        raise ValueError('Proof-enabled site requires the proof-aware rollout; refusing to strip transaction protection')
     supplied = any(v is not None for v in (args.egress_ca, args.egress_name, args.egress_port))
     if args.disable_egress:
         if supplied:
