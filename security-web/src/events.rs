@@ -527,16 +527,21 @@ pub fn parse_with_origin(
             }
             // Top-level host is Suricata sensor-name, not HTTP Host.
             // Opt-in only for a reviewed generation launcher; no current-file lookup.
-            if policy.generation_host && value.get("adapter_version").is_none() {
-                if let Some(generation) = value["host"].as_str()
+            if policy.generation_host
+                && value.get("adapter_version").is_none()
+                && let Some(generation) = value["host"]
+                    .as_str()
                     .and_then(|h| h.strip_prefix("ws-generation-"))
-                    .filter(|g| g.len() == 32 && g.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
-                {
-                    use sha2::{Digest, Sha256};
-                    event.source_instance = format!("suricata-{generation}");
-                    event.event_id = format!("{:x}", Sha256::digest(serde_json::to_vec(&value)?));
-                    sensor_tx_id = value["tx_id"].as_u64().and_then(|n| i64::try_from(n).ok());
-                }
+                    .filter(|g| {
+                        g.len() == 32
+                            && g.bytes()
+                                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+                    })
+            {
+                use sha2::{Digest, Sha256};
+                event.source_instance = format!("suricata-{generation}");
+                event.event_id = format!("{:x}", Sha256::digest(serde_json::to_vec(&value)?));
+                sensor_tx_id = value["tx_id"].as_u64().and_then(|n| i64::try_from(n).ok());
             }
             event.event_type = match value["event_type"]
                 .as_str()
@@ -770,19 +775,25 @@ mod tests {
             "host":format!("ws-generation-{}","a".repeat(32)),
             "alert":{"signature_id":1000003,"severity":2},
             "http":{"hostname":"attacker-host","http_method":"GET","url":"/"}});
-        let untagged = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
-        assert_eq!(untagged.canonical.source_instance,"local");
+        let untagged = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_eq!(untagged.canonical.source_instance, "local");
         policy.generation_host = true;
-        let first = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
-        assert_eq!(first.canonical.source_instance,format!("suricata-{}","a".repeat(32)));
-        assert_eq!(first.sensor_tx_id,Some(0));
-        v["host"] = serde_json::json!(format!("ws-generation-{}","b".repeat(32)));
-        let second = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
-        assert_ne!(first.canonical.source_instance,second.canonical.source_instance);
-        assert_ne!(first.canonical.event_id,second.canonical.event_id);
+        let first = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_eq!(
+            first.canonical.source_instance,
+            format!("suricata-{}", "a".repeat(32))
+        );
+        assert_eq!(first.sensor_tx_id, Some(0));
+        v["host"] = serde_json::json!(format!("ws-generation-{}", "b".repeat(32)));
+        let second = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_ne!(
+            first.canonical.source_instance,
+            second.canonical.source_instance
+        );
+        assert_ne!(first.canonical.event_id, second.canonical.event_id);
         v.as_object_mut().unwrap().remove("host");
-        let stale = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
-        assert_eq!(stale.canonical.source_instance,"local");
+        let stale = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_eq!(stale.canonical.source_instance, "local");
         assert!(stale.canonical.client_ip.is_none());
         assert!(!first.canonical.suricata_origin.unwrap().client_ip_verified);
     }

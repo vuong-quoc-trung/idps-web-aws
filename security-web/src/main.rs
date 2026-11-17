@@ -6,8 +6,8 @@ mod detection;
 mod events;
 mod firewall;
 mod ingest;
-mod metrics;
 mod lua_shadow;
+mod metrics;
 mod network;
 mod nginx_detection;
 mod operations;
@@ -244,7 +244,11 @@ async fn main() -> Result<()> {
     if let Ok(path) = env::var("SURICATA_LUA_PATH")
         && !path.trim().is_empty()
     {
-        anyhow::ensure!(env::var("AUTO_BLOCK").unwrap_or("false".into()) == "false" && env::var("ENFORCEMENT_MODE").unwrap_or("OFF".into()) == "OFF", "Lua shadow requires enforcement OFF");
+        anyhow::ensure!(
+            env::var("AUTO_BLOCK").unwrap_or("false".into()) == "false"
+                && env::var("ENFORCEMENT_MODE").unwrap_or("OFF".into()) == "OFF",
+            "Lua shadow requires enforcement OFF"
+        );
         sources.push(("SURICATA_LUA", path));
     }
     if let Ok(path) = env::var("STUDENT_AUDIT_LOG_PATH")

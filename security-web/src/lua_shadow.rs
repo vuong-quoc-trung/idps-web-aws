@@ -22,7 +22,7 @@ fn parse(raw: &[u8]) -> Result<Record> {
     );
     let flow = f[0].parse::<u64>()?;
     let tx = f[1].parse::<i64>()?;
-    anyhow::ensure!(tx >= 0 && tx <= 9007199254740991, "Invalid transaction");
+    anyhow::ensure!((0..=9007199254740991).contains(&tx), "Invalid transaction");
     anyhow::ensure!(
         f[8].len() == 32
             && f[8]

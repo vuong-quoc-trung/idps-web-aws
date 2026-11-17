@@ -1253,25 +1253,50 @@ async fn checkpoint_restart_rotation_partial_and_conflict(pool: PgPool) {
     let s = state(pool.clone());
     let temp = TempLog::new();
     let path = temp.file();
-    let line = format!("123\t0\tproof\treceipt\t192.0.2.1\trid\thttps\tlab\t{}\n", "a".repeat(32));
+    let line = format!(
+        "123\t0\tproof\treceipt\t192.0.2.1\trid\thttps\tlab\t{}\n",
+        "a".repeat(32)
+    );
     std::fs::write(&path, line.trim_end()).unwrap();
-    ingest::scan(&s,"SURICATA_LUA",path.to_str().unwrap()).await.unwrap();
-    let count: i64 = sqlx::query_scalar("SELECT count(*) FROM suricata_lua_shadow").fetch_one(&pool).await.unwrap();
-    assert_eq!(count,0);
-    std::fs::write(&path,&line).unwrap();
-    ingest::scan(&s,"SURICATA_LUA",path.to_str().unwrap()).await.unwrap();
+    ingest::scan(&s, "SURICATA_LUA", path.to_str().unwrap())
+        .await
+        .unwrap();
+    let count: i64 = sqlx::query_scalar("SELECT count(*) FROM suricata_lua_shadow")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(count, 0);
+    std::fs::write(&path, &line).unwrap();
+    ingest::scan(&s, "SURICATA_LUA", path.to_str().unwrap())
+        .await
+        .unwrap();
     let restarted = state(pool.clone());
-    ingest::scan(&restarted,"SURICATA_LUA",path.to_str().unwrap()).await.unwrap();
-    let n: i64 = sqlx::query_scalar("SELECT duplicate_count FROM suricata_lua_shadow").fetch_one(&pool).await.unwrap();
-    assert_eq!(n,0);
-    std::fs::rename(&path,path.with_extension("json.1")).unwrap();
-    std::fs::write(&path,&line).unwrap();
-    ingest::scan(&restarted,"SURICATA_LUA",path.to_str().unwrap()).await.unwrap();
-    let n: i64 = sqlx::query_scalar("SELECT duplicate_count FROM suricata_lua_shadow").fetch_one(&pool).await.unwrap();
-    assert_eq!(n,1);
-    std::fs::write(&path,line.replace("receipt","conflicting")).unwrap();
-    ingest::scan(&restarted,"SURICATA_LUA",path.to_str().unwrap()).await.unwrap();
-    let bad: bool = sqlx::query_scalar("SELECT mismatched FROM suricata_lua_shadow").fetch_one(&pool).await.unwrap();
+    ingest::scan(&restarted, "SURICATA_LUA", path.to_str().unwrap())
+        .await
+        .unwrap();
+    let n: i64 = sqlx::query_scalar("SELECT duplicate_count FROM suricata_lua_shadow")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(n, 0);
+    std::fs::rename(&path, path.with_extension("json.1")).unwrap();
+    std::fs::write(&path, &line).unwrap();
+    ingest::scan(&restarted, "SURICATA_LUA", path.to_str().unwrap())
+        .await
+        .unwrap();
+    let n: i64 = sqlx::query_scalar("SELECT duplicate_count FROM suricata_lua_shadow")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(n, 1);
+    std::fs::write(&path, line.replace("receipt", "conflicting")).unwrap();
+    ingest::scan(&restarted, "SURICATA_LUA", path.to_str().unwrap())
+        .await
+        .unwrap();
+    let bad: bool = sqlx::query_scalar("SELECT mismatched FROM suricata_lua_shadow")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
     assert!(bad);
 }
 
@@ -1280,36 +1305,79 @@ async fn lua_shadow_rollback_and_generation_view(pool: PgPool) {
     let generation = "a".repeat(32);
     let row = format!("123\t0\tproof\treceipt\t192.0.2.1\trid\thttps\tlab\t{generation}\n");
     let mut tx = pool.begin().await.unwrap();
-    crate::lua_shadow::ingest(&mut tx,"rolled-back",row.as_bytes()).await.unwrap();
+    crate::lua_shadow::ingest(&mut tx, "rolled-back", row.as_bytes())
+        .await
+        .unwrap();
     tx.rollback().await.unwrap();
-    for table in ["suricata_lua_shadow","suricata_lua_seen"] {
-        let count: i64 = sqlx::query_scalar(&format!("SELECT count(*) FROM {table}")).fetch_one(&pool).await.unwrap();
-        assert_eq!(count,0);
+    for table in ["suricata_lua_shadow", "suricata_lua_seen"] {
+        let count: i64 = sqlx::query_scalar(&format!("SELECT count(*) FROM {table}"))
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(count, 0);
     }
     let mut tx = pool.begin().await.unwrap();
-    crate::lua_shadow::ingest(&mut tx,"committed",row.as_bytes()).await.unwrap();
+    crate::lua_shadow::ingest(&mut tx, "committed", row.as_bytes())
+        .await
+        .unwrap();
     tx.commit().await.unwrap();
     let id: i64 = sqlx::query_scalar("INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,severity,action,evidence) VALUES(now(),'SURICATA','alert','test',2,'ALERT','{}') RETURNING id").fetch_one(&pool).await.unwrap();
     sqlx::query("INSERT INTO detector_alert_links(alert_id,source_instance,flow_id,tx_id,request_id,link_basis) VALUES($1,'local','123',0,'rid','SENSOR_TRANSACTION')").bind(id).execute(&pool).await.unwrap();
-    async fn status(pool: &PgPool,id: i64) -> String {
-        sqlx::query_scalar("SELECT status FROM suricata_lua_alert_status WHERE alert_id=$1").bind(id).fetch_one(pool).await.unwrap()
+    async fn status(pool: &PgPool, id: i64) -> String {
+        sqlx::query_scalar("SELECT status FROM suricata_lua_alert_status WHERE alert_id=$1")
+            .bind(id)
+            .fetch_one(pool)
+            .await
+            .unwrap()
     }
-    assert_eq!(status(&pool,id).await,"PENDING_GENERATION");
-    sqlx::query("UPDATE detector_alert_links SET source_instance=$2 WHERE alert_id=$1").bind(id).bind(format!("suricata-{}","b".repeat(32))).execute(&pool).await.unwrap();
-    assert_eq!(status(&pool,id).await,"PENDING_EVIDENCE");
-    sqlx::query("UPDATE detector_alert_links SET source_instance=$2 WHERE alert_id=$1").bind(id).bind(format!("suricata-{generation}")).execute(&pool).await.unwrap();
-    assert_eq!(status(&pool,id).await,"MATCHED_SHADOW");
-    sqlx::query("UPDATE detector_alert_links SET request_id='other' WHERE alert_id=$1").bind(id).execute(&pool).await.unwrap();
-    assert_eq!(status(&pool,id).await,"MISMATCHED");
-    sqlx::query("UPDATE detector_alert_links SET request_id='rid' WHERE alert_id=$1").bind(id).execute(&pool).await.unwrap();
+    assert_eq!(status(&pool, id).await, "PENDING_GENERATION");
+    sqlx::query("UPDATE detector_alert_links SET source_instance=$2 WHERE alert_id=$1")
+        .bind(id)
+        .bind(format!("suricata-{}", "b".repeat(32)))
+        .execute(&pool)
+        .await
+        .unwrap();
+    assert_eq!(status(&pool, id).await, "PENDING_EVIDENCE");
+    sqlx::query("UPDATE detector_alert_links SET source_instance=$2 WHERE alert_id=$1")
+        .bind(id)
+        .bind(format!("suricata-{generation}"))
+        .execute(&pool)
+        .await
+        .unwrap();
+    assert_eq!(status(&pool, id).await, "MATCHED_SHADOW");
+    sqlx::query("UPDATE detector_alert_links SET request_id='other' WHERE alert_id=$1")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .unwrap();
+    assert_eq!(status(&pool, id).await, "MISMATCHED");
+    sqlx::query("UPDATE detector_alert_links SET request_id='rid' WHERE alert_id=$1")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .unwrap();
     let mut tx = pool.begin().await.unwrap();
-    crate::lua_shadow::ingest(&mut tx,"copy",row.as_bytes()).await.unwrap();
+    crate::lua_shadow::ingest(&mut tx, "copy", row.as_bytes())
+        .await
+        .unwrap();
     tx.commit().await.unwrap();
-    assert_eq!(status(&pool,id).await,"DUPLICATE_SHADOW");
+    assert_eq!(status(&pool, id).await, "DUPLICATE_SHADOW");
     let mut tx = pool.begin().await.unwrap();
-    crate::lua_shadow::ingest(&mut tx,"conflict",row.replace("receipt","changed").as_bytes()).await.unwrap();
+    crate::lua_shadow::ingest(
+        &mut tx,
+        "conflict",
+        row.replace("receipt", "changed").as_bytes(),
+    )
+    .await
+    .unwrap();
     tx.commit().await.unwrap();
-    assert_eq!(status(&pool,id).await,"MISMATCHED");
-    let verified: bool = sqlx::query_scalar("SELECT client_ip_verified FROM suricata_lua_alert_status WHERE alert_id=$1").bind(id).fetch_one(&pool).await.unwrap();
+    assert_eq!(status(&pool, id).await, "MISMATCHED");
+    let verified: bool = sqlx::query_scalar(
+        "SELECT client_ip_verified FROM suricata_lua_alert_status WHERE alert_id=$1",
+    )
+    .bind(id)
+    .fetch_one(&pool)
+    .await
+    .unwrap();
     assert!(!verified);
 }

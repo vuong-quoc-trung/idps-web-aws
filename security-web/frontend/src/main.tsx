@@ -1748,123 +1748,125 @@ function App() {
                 </p>
               </article>
               <div className="source-health-grid">
-                {["NGINX", "SURICATA", "SURICATA_LUA", "STUDENT_AUDIT"].map((name) => {
-                  const watcher = health?.watchers[name];
-                  const collection = health?.collection?.[name];
-                  const time = (value: string | null | undefined) =>
-                    value
-                      ? new Date(value).toLocaleString("vi-VN", {
-                          hour12: false,
-                        })
-                      : "Chưa ghi nhận";
-                  return (
-                    <article
-                      className={`panel source-health source-${name}`}
-                      key={name}
-                    >
-                      <h3 className="source-label">
-                        {name === "STUDENT_AUDIT"
-                          ? "Student Audit — Tầng ứng dụng"
-                          : name}
-                      </h3>
-                      <p
-                        className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
+                {["NGINX", "SURICATA", "SURICATA_LUA", "STUDENT_AUDIT"].map(
+                  (name) => {
+                    const watcher = health?.watchers[name];
+                    const collection = health?.collection?.[name];
+                    const time = (value: string | null | undefined) =>
+                      value
+                        ? new Date(value).toLocaleString("vi-VN", {
+                            hour12: false,
+                          })
+                        : "Chưa ghi nhận";
+                    return (
+                      <article
+                        className={`panel source-health source-${name}`}
+                        key={name}
                       >
-                        {watcher?.state === "error"
-                          ? "Lỗi đọc / xử lý nguồn log"
-                          : watcher?.state === "watching"
-                            ? "Đọc log thành công"
-                            : name === "STUDENT_AUDIT" && health && !watcher
-                              ? "Chưa cấu hình nguồn log"
-                              : "Chưa có kết quả kiểm tra"}
-                      </p>
-                      {name === "STUDENT_AUDIT" && (
-                        <p className="muted">
-                          {health && !watcher
-                            ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
-                            : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                        <h3 className="source-label">
+                          {name === "STUDENT_AUDIT"
+                            ? "Student Audit — Tầng ứng dụng"
+                            : name}
+                        </h3>
+                        <p
+                          className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
+                        >
+                          {watcher?.state === "error"
+                            ? "Lỗi đọc / xử lý nguồn log"
+                            : watcher?.state === "watching"
+                              ? "Đọc log thành công"
+                              : name === "STUDENT_AUDIT" && health && !watcher
+                                ? "Chưa cấu hình nguồn log"
+                                : "Chưa có kết quả kiểm tra"}
                         </p>
-                      )}
-                      {watcher?.error && (
-                        <p className="error">{watcher.error}</p>
-                      )}
-                      <p role="status">
-                        {freshness(watcher?.last_data_at, health?.checked_at)}
-                      </p>
-                      <p className="muted">
-                        Im lặng không đồng nghĩa mất kết nối. Tạo một request
-                        kiểm thử rồi đối chiếu mốc nhận và lưu dữ liệu.
-                      </p>
-                      <dl className="detail-fields">
-                        <div>
-                          <dt>Lần lưu sự kiện vào DB</dt>
-                          <dd>{time(collection?.last_ingested_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Thời gian sự kiện vừa lưu</dt>
-                          <dd>{time(collection?.last_ingested_event_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Lần đọc thành công</dt>
-                          <dd>{time(watcher?.last_success_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Lần thấy dữ liệu mới</dt>
-                          <dd>{time(watcher?.last_data_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Lần lưu cảnh báo</dt>
-                          <dd>{time(collection?.last_alert_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Log còn chờ</dt>
-                          <dd>
-                            {watcher?.pending_bytes == null
-                              ? "Chưa xác định"
-                              : `${fmt(watcher.pending_bytes)} byte`}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Dòng sai định dạng</dt>
-                          <dd>
-                            {collection
-                              ? fmt(collection.error_count)
-                              : "Chưa tải được"}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Lỗi phân tích gần nhất</dt>
-                          <dd>
-                            {collection?.last_error ? (
-                              <>
-                                {time(collection.last_error.at)}
-                                <br />
-                                {collection.last_error.reason}
-                              </>
-                            ) : collection ? (
-                              "Chưa ghi nhận"
-                            ) : (
-                              "Chưa tải được"
-                            )}
-                          </dd>
-                        </div>
-                      </dl>
-                      {!watcher?.last_data_at &&
-                        watcher?.state === "watching" && (
+                        {name === "STUDENT_AUDIT" && (
                           <p className="muted">
-                            Đọc được file nhưng chưa quan sát thấy dữ liệu trong
-                            phiên backend này.
+                            {health && !watcher
+                              ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
+                              : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
                           </p>
                         )}
-                      <p className="muted">
-                        Mốc đọc và nhận dữ liệu tính từ lần khởi động backend;
-                        dữ liệu sẵn có khi mở file cũng được tính là lần quan
-                        sát. Cảnh báo và lỗi lấy từ lịch sử DB. Byte chờ gồm cả
-                        dòng chưa kết thúc, không gồm file .gz.
-                      </p>
-                    </article>
-                  );
-                })}
+                        {watcher?.error && (
+                          <p className="error">{watcher.error}</p>
+                        )}
+                        <p role="status">
+                          {freshness(watcher?.last_data_at, health?.checked_at)}
+                        </p>
+                        <p className="muted">
+                          Im lặng không đồng nghĩa mất kết nối. Tạo một request
+                          kiểm thử rồi đối chiếu mốc nhận và lưu dữ liệu.
+                        </p>
+                        <dl className="detail-fields">
+                          <div>
+                            <dt>Lần lưu sự kiện vào DB</dt>
+                            <dd>{time(collection?.last_ingested_at)}</dd>
+                          </div>
+                          <div>
+                            <dt>Thời gian sự kiện vừa lưu</dt>
+                            <dd>{time(collection?.last_ingested_event_at)}</dd>
+                          </div>
+                          <div>
+                            <dt>Lần đọc thành công</dt>
+                            <dd>{time(watcher?.last_success_at)}</dd>
+                          </div>
+                          <div>
+                            <dt>Lần thấy dữ liệu mới</dt>
+                            <dd>{time(watcher?.last_data_at)}</dd>
+                          </div>
+                          <div>
+                            <dt>Lần lưu cảnh báo</dt>
+                            <dd>{time(collection?.last_alert_at)}</dd>
+                          </div>
+                          <div>
+                            <dt>Log còn chờ</dt>
+                            <dd>
+                              {watcher?.pending_bytes == null
+                                ? "Chưa xác định"
+                                : `${fmt(watcher.pending_bytes)} byte`}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Dòng sai định dạng</dt>
+                            <dd>
+                              {collection
+                                ? fmt(collection.error_count)
+                                : "Chưa tải được"}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Lỗi phân tích gần nhất</dt>
+                            <dd>
+                              {collection?.last_error ? (
+                                <>
+                                  {time(collection.last_error.at)}
+                                  <br />
+                                  {collection.last_error.reason}
+                                </>
+                              ) : collection ? (
+                                "Chưa ghi nhận"
+                              ) : (
+                                "Chưa tải được"
+                              )}
+                            </dd>
+                          </div>
+                        </dl>
+                        {!watcher?.last_data_at &&
+                          watcher?.state === "watching" && (
+                            <p className="muted">
+                              Đọc được file nhưng chưa quan sát thấy dữ liệu
+                              trong phiên backend này.
+                            </p>
+                          )}
+                        <p className="muted">
+                          Mốc đọc và nhận dữ liệu tính từ lần khởi động backend;
+                          dữ liệu sẵn có khi mở file cũng được tính là lần quan
+                          sát. Cảnh báo và lỗi lấy từ lịch sử DB. Byte chờ gồm
+                          cả dòng chưa kết thúc, không gồm file .gz.
+                        </p>
+                      </article>
+                    );
+                  },
+                )}
               </div>
             </section>
             <section className="panel">
