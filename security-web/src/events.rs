@@ -525,6 +525,19 @@ pub fn parse_with_origin(
                 event.source_instance = format!("suricata-{}", instance);
                 event.event_id = id.into();
             }
+            // Top-level host is Suricata sensor-name, not HTTP Host.
+            // Opt-in only for a reviewed generation launcher; no current-file lookup.
+            if policy.generation_host && value.get("adapter_version").is_none() {
+                if let Some(generation) = value["host"].as_str()
+                    .and_then(|h| h.strip_prefix("ws-generation-"))
+                    .filter(|g| g.len() == 32 && g.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
+                {
+                    use sha2::{Digest, Sha256};
+                    event.source_instance = format!("suricata-{generation}");
+                    event.event_id = format!("{:x}", Sha256::digest(serde_json::to_vec(&value)?));
+                    sensor_tx_id = value["tx_id"].as_u64().and_then(|n| i64::try_from(n).ok());
+                }
+            }
             event.event_type = match value["event_type"]
                 .as_str()
                 .context("Missing EVE event_type")?
@@ -748,6 +761,31 @@ pub fn parse_with_origin(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn native_generation_is_opt_in_per_record_not_current_epoch() {
+        let mut policy = crate::suricata_origin::Policy::default();
+        let mut v = serde_json::json!({"timestamp":"2026-11-17T00:00:00Z","event_type":"alert",
+            "src_ip":"127.77.0.1","dest_ip":"127.77.0.2","proto":"TCP","flow_id":123,"tx_id":0,
+            "host":format!("ws-generation-{}","a".repeat(32)),
+            "alert":{"signature_id":1000003,"severity":2},
+            "http":{"hostname":"attacker-host","http_method":"GET","url":"/"}});
+        let untagged = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
+        assert_eq!(untagged.canonical.source_instance,"local");
+        policy.generation_host = true;
+        let first = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
+        assert_eq!(first.canonical.source_instance,format!("suricata-{}","a".repeat(32)));
+        assert_eq!(first.sensor_tx_id,Some(0));
+        v["host"] = serde_json::json!(format!("ws-generation-{}","b".repeat(32)));
+        let second = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
+        assert_ne!(first.canonical.source_instance,second.canonical.source_instance);
+        assert_ne!(first.canonical.event_id,second.canonical.event_id);
+        v.as_object_mut().unwrap().remove("host");
+        let stale = parse_with_origin("SURICATA",&v.to_string(),&policy).unwrap();
+        assert_eq!(stale.canonical.source_instance,"local");
+        assert!(stale.canonical.client_ip.is_none());
+        assert!(!first.canonical.suricata_origin.unwrap().client_ip_verified);
+    }
 
     #[test]
     fn sensitive_proxy_paths_have_named_alerts() {

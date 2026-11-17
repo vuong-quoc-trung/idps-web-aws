@@ -7,6 +7,7 @@ import {
 import { applicationEvidence } from "./applicationEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
+  lua_shadow?: {status: string; client_ip_verified: false; duplicate_count: number} | null;
   triage_history: TriageHistory[];
   alert: TriageAlert & {
     id: number;
@@ -141,6 +142,7 @@ export function AlertDetail({
               "Thời gian": `${new Date(a.occurred_at).toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
               UTC: new Date(a.occurred_at).toISOString(),
               Nguồn: a.source,
+              "Lua Shadow (không xác minh IP)": data.lua_shadow?.status ?? "Chưa có",
               "Mức độ": `Severity ${a.severity}`,
               "IP nguồn": sourceIpLabel(a),
               "Network Source IP":

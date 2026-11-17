@@ -314,6 +314,9 @@ async fn ingest_line(
     physical_key: &str,
     raw: &[u8],
 ) -> Result<()> {
+    if source == "SURICATA_LUA" {
+        return crate::lua_shadow::ingest(tx, physical_key, raw).await;
+    }
     if source == "AI_SHADOW" {
         return ai_shadow::ingest(tx, physical_key, raw).await;
     }
@@ -417,8 +420,8 @@ async fn ingest_line(
             keys.push(format!("{key}:SURICATA"));
         }
         for alert_key in keys {
-            sqlx::query("UPDATE detector_alert_links l SET tx_id=$2,request_id=NULL,link_basis=CASE WHEN $2::bigint IS NULL THEN 'FLOW_CONTEXT' ELSE 'SENSOR_TRANSACTION' END FROM security_alerts a WHERE a.id=l.alert_id AND a.event_key=$1")
-                .bind(alert_key).bind(parsed.sensor_tx_id).execute(&mut **tx).await?;
+            sqlx::query("UPDATE detector_alert_links l SET tx_id=$2,request_id=$3,link_basis=CASE WHEN $2::bigint IS NULL THEN 'FLOW_CONTEXT' ELSE 'SENSOR_TRANSACTION' END FROM security_alerts a WHERE a.id=l.alert_id AND a.event_key=$1")
+                .bind(alert_key).bind(parsed.sensor_tx_id).bind(&event.request_id).execute(&mut **tx).await?;
         }
     }
     if auth_failure(tx, state, event, &key).await? && source != "STUDENT_AUDIT" {

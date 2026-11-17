@@ -34,6 +34,7 @@ pub struct Origin {
 }
 #[derive(Clone, Debug)]
 pub struct Policy {
+    pub generation_host: bool,
     pub post_proxy: bool,
     pub trusted_edge: bool,
     pub proxy_ip: IpAddr,
@@ -44,6 +45,7 @@ pub struct Policy {
 impl Default for Policy {
     fn default() -> Self {
         Self {
+            generation_host: false,
             post_proxy: false,
             trusted_edge: false,
             proxy_ip: "192.168.20.1".parse().unwrap(),
@@ -56,6 +58,9 @@ impl Default for Policy {
 impl Policy {
     pub fn from_env() -> Result<Self> {
         let mut p = Self::default();
+        if let Ok(v) = env::var("SURICATA_EVE_GENERATION_HOST") {
+            p.generation_host = v.parse()?;
+        }
         if let Ok(v) = env::var("SURICATA_CAPTURE_MODE") {
             anyhow::ensure!(
                 matches!(v.as_str(), "pre-proxy" | "post-proxy"),
@@ -95,7 +100,9 @@ impl Policy {
     }
     pub fn resolve(&self, v: &Value, network: Option<IpAddr>) -> (Option<IpAddr>, Origin) {
         // Also suppress the known proxy when a post-proxy file is accidentally read in pre mode.
-        let post = self.post_proxy || network == Some(self.proxy_ip);
+        let post = self.post_proxy
+            || network == Some(self.proxy_ip)
+            || network.is_some_and(|ip| ip.is_loopback());
         let mut o = Origin {
             network_src_ip: network,
             client_ip_verified: false,
@@ -146,6 +153,18 @@ mod tests {
     pub fn eve(tx: u64, client: &str) -> Value {
         json!({"timestamp":"2026-11-15T00:00:00Z","event_type":"alert","src_ip":"192.168.20.1","dest_ip":"192.168.20.10","src_port":40000,"dest_port":80,"proto":"TCP","app_proto":"http","in_iface":"vmnet3","flow_id":123,"tx_id":tx,"alert":{"signature_id":1000002,"signature":"SQLi","severity":1,"xff":client},"http":{"url":"/api/probe","http_method":"GET"}})
     }
+    #[test]
+    fn loopback_is_never_a_client_even_with_legacy_policy() {
+        for address in ["127.77.0.1", "127.77.0.2", "::1"] {
+            let network = Some(address.parse().unwrap());
+            let (client, origin) = Policy::default().resolve(&json!({}), network);
+            assert_eq!(client, None);
+            assert_eq!(origin.network_src_ip, network);
+            assert!(!origin.client_ip_verified);
+            assert!(origin.post_proxy);
+        }
+    }
+
     #[test]
     fn keepalive_reverse_order_and_replay_are_transaction_local() {
         for tx in [3, 0, 2, 1, 0] {
@@ -213,6 +232,7 @@ mod tests {
     #[test]
     fn captured_local_egress_eve_remains_unverified_without_trust() {
         let p = Policy {
+            generation_host: false,
             post_proxy: true,
             trusted_edge: false,
             proxy_ip: "127.77.0.1".parse().unwrap(),
@@ -253,6 +273,7 @@ mod tests {
     fn local_egress_without_proven_trust_keeps_identity_unknown() {
         // Synthetic EVE: parser test only, not evidence of live AF_PACKET capture.
         let p = Policy {
+            generation_host: false,
             post_proxy: true,
             trusted_edge: false,
             proxy_ip: "127.77.0.1".parse().unwrap(),

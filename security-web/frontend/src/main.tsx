@@ -1748,7 +1748,7 @@ function App() {
                 </p>
               </article>
               <div className="source-health-grid">
-                {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
+                {["NGINX", "SURICATA", "SURICATA_LUA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
                   const collection = health?.collection?.[name];
                   const time = (value: string | null | undefined) =>
