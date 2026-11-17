@@ -1,0 +1,75 @@
+{
+  "version": "idps-r24-r25-readiness-v1",
+  "decision": "PREPARED_PUBLISHER_DEVELOPMENT_CANDIDATE_FINAL_TRAINING_BLOCKED",
+  "final_training_authorized_by_readiness": false,
+  "release_ready": false,
+  "serving_model": "request-intelligence-v2-frozen-step3072",
+  "active_shadow": "R20_ISOTONIC_ON_R19_FROZEN_CHECKPOINT",
+  "research_candidate": {
+    "kind": "residual_glu",
+    "input_width": 100,
+    "hidden_width": 204,
+    "parameters": 400256,
+    "input_order": "URI76 unchanged, then 24 R23 path/query structure counts capped at 31 and divided by 31",
+    "preprocessing_version": "idps-request-time-uri76-shape-r23-v1",
+    "pilot_onnx_sha256": "627344cac341ec13c1a9c8a822edddec9112388a9ba874d2a60f16055d151103",
+    "pilot_checkpoint_manifest_sha256": "1e6e77938b6de1b451faba39a7af4a33330f560f7a3294191a46e35252b82fe1",
+    "warm_start": {
+      "r19_step": 55,
+      "checkpoint_manifest_sha256": "0ed456322141181d93b068e2555285f6455e6cad45c9c4856f1bb01b0bd296c0",
+      "semantics": "Copy parameters, zero 24 added input rows, initialize Adam state and global step from zero"
+    }
+  },
+  "publisher_data": {
+    "task": "WAF_NORMAL_ANOMALOUS",
+    "fit_originals": 400000,
+    "fit_uri100_vectors": 17164,
+    "fit_vector_label_cells": 17570,
+    "tuning_originals": 6042,
+    "tuning_scope": "EXPOSED_COMPONENT_GROUPED_DEVELOPMENT_ONLY",
+    "manifest_path": "ai-training/.artifacts/t09-r24-readiness-msurbJkS/dataset-manifest.json",
+    "manifest_sha256": "e4aaef3bf64097a46a922b7aff1a96df032d22bb320e1748e259181319dcf5cb",
+    "numeric_dataset_sha256": "249f7810b3bbdfef2e898bac120b42ef9857c3da6cf35b8302092e996114a4f5",
+    "cal_fit": null,
+    "cal_op": null,
+    "test_shadow": null
+  },
+  "proposed_optimization_if_readiness_passes": {
+    "seed": 2401,
+    "optimizer": "AdamW",
+    "betas": [0.9, 0.999],
+    "epsilon": 1e-8,
+    "weight_decay": 0.001,
+    "dropout": 0.15,
+    "binary_label_smoothing": 0.005,
+    "family_loss_weight": 0.0,
+    "loss_mass": "Use fit_cell_mass from the URI100 NPZ and binary_class_weights in the objective. Retain both labels in mixed groups and conserve mass from the parent URI76.",
+    "max_batch_cells": 2048,
+    "max_epochs": 12,
+    "steps_per_full_epoch": 9,
+    "schedule": "warmup_cosine",
+    "peak_lr": 0.00015,
+    "warmup_steps": 5,
+    "planned_total_steps": 108,
+    "min_lr_ratio": 0.1,
+    "early_stopping_patience_epochs": 3,
+    "checkpoint_selection": "On approved grouped development only, prioritize transferred effective recall within request and vector FPR budgets, stability across components, then AP, then earlier checkpoint",
+    "resume": "Commit immutable checkpoint per completed epoch. Bind feature code, manifests, sampler seed/permutation, optimizer and config before resuming. Re-evaluate the selected epoch with independent calibration."
+  },
+  "limits": {
+    "per_worker_cpu_percent_of_one_core": 100,
+    "per_worker_mib": 4096,
+    "total_max_cpu": 8,
+    "total_max_mib": 16384,
+    "max_wall_seconds": 21600,
+    "automatic_resume_after_terminal_safety": false
+  },
+  "required_before_final_training_lock": [
+    "Acquire a fresh component-disjoint development evaluation frame with source/label rights and trusted lineage. Compare URI100 and the frozen R20 at the same FP budgets without post-test threshold selection.",
+    "Require stability across independent groups and method/profile strata, including mixed components and POST support. The exposed WAF pilot does not establish a release threshold.",
+    "Register independent native CAL_FIT, CAL_OP and TEST_SHADOW according to T07, pin custody and no-overlap proofs before opening any protected evaluation artifacts."
+  ],
+  "required_before_release": [
+    "After training and independent calibration, require T07 quality, the 90% recall project objective, adjusted FPR bound at most 1%, Python/ONNX and deployed Rust parity, cutoff availability, Local shadow and rollback before release."
+  ]
+}
