@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
 # Read-only bounded requests. Explicit operator run; never disables TLS verification.
 set -euo pipefail
-[[ $# -eq 1 ]] || { echo 'Usage: bash verify-from-defender.sh TRUSTED_CA_CERT' >&2; exit 2; }
+[[ $# -ge 1 && $# -le 2 ]] || { echo 'Usage: bash verify-from-defender.sh TRUSTED_CA_CERT [EXPECTED_DNS_SAN]' >&2; exit 2; }
 WS_CA=$1
 for WS_URL in https://192.168.20.10/ https://192.168.20.10/api/auth/me; do
   curl --noproxy '*' --connect-timeout 5 --max-time 15 --cacert "$WS_CA" \
     -o /dev/null -w 'TLS verified; HTTP=%{http_code}\n' "$WS_URL"
 done
-curl --noproxy '*' --connect-timeout 5 --max-time 15 --cacert "$WS_CA" \
-  --resolve student.lab:443:192.168.20.10 -o /dev/null \
-  -w 'DNS SAN verified; HTTP=%{http_code}\n' https://student.lab/api/auth/me
+if [[ $# -eq 2 ]]; then
+  [[ "$2" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || exit 2
+  curl --noproxy '*' --connect-timeout 5 --max-time 15 --cacert "$WS_CA" \
+    --resolve "$2:443:192.168.20.10" -o /dev/null \
+    -w 'DNS SAN verified; HTTP=%{http_code}\n' "https://$2/api/auth/me"
+else
+  echo 'DNS SAN check NOT_RUN: only IP SAN confirmed; pass DNS name explicitly if present.'
+fi
+
 set +e
 curl --noproxy '*' --connect-timeout 5 --max-time 15 --cacert "$WS_CA" \
   --resolve wrong-student.invalid:443:192.168.20.10 -o /dev/null -sS https://wrong-student.invalid/
