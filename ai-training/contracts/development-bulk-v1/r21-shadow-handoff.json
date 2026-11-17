@@ -1,0 +1,43 @@
+{
+  "version": "idps-r21-shadow-handoff-v1",
+  "decision": "RETAIN_R20_FOR_ISOLATED_LOCAL_SHADOW",
+  "new_model_nominated": false,
+  "release_ready": false,
+  "hybrid_allowed": false,
+  "candidate": {
+    "model_version": "uri76-swiglu-dev-v1",
+    "variant": "R20_ISOTONIC_ON_R19_FROZEN_CHECKPOINT",
+    "parameters": 395360,
+    "scope": "WAF_PUBLISHER_ANOMALY_RESEARCH_ONLY",
+    "input_schema": "idps-request-time-uri76-v1",
+    "transform_sha256": "47f86f97bcf5b6947ef7144a0fc0439457b49d808bbeac5390d695a8fba71115",
+    "manifest": {
+      "path": "ai-training/.artifacts/t09-r20-quality-OktqJbDt/bundle/model-scope.json",
+      "sha256": "4969c162ccf1dcfb10c56c6a9f9f16b45b01475e32c6938ec3e194a9396a57b0"
+    },
+    "onnx": {
+      "path": "ai-training/.artifacts/t09-r20-quality-OktqJbDt/bundle/swiglu.onnx",
+      "sha256": "1a709dcf1ccfa880c3b4b55b77c0699ac10c27fd4ecdd2839bedeb99e1987525"
+    },
+    "checkpoint": {
+      "global_step": 55,
+      "path": "ai-training/.artifacts/t09-r19-waf-vhrrfJw8/training/model/checkpoints/step-000000000055-e0eccd7bd125/manifest.json",
+      "sha256": "0ed456322141181d93b068e2555285f6455e6cad45c9c4856f1bb01b0bd296c0"
+    },
+    "threshold": {
+      "scope": "Development benchmark only",
+      "comparator": "strict_gt",
+      "value": 0.9633333086967468
+    }
+  },
+  "serving_model": {
+    "model_version": "request-intelligence-v2-frozen-step3072",
+    "manifest_sha256": "b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f6b9ecc0ae96c",
+    "profile": "selected_headers_no_body"
+  },
+  "r22_checks": [
+    "Verify artifact digests, URI76 transform and the existing Rust manifest gate before isolated shadow use.",
+    "Keep RI v2 as serving and Hybrid input. Measure scorer availability, parity, latency and rollback independently of research scores.",
+    "Require independently reviewed common native roster, disjoint CAL_FIT/CAL_OP, sealed TEST_SHADOW and passing T07 gates before any promotion."
+  ]
+}
