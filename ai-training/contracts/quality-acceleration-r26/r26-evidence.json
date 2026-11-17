@@ -1,0 +1,188 @@
+{
+  "version": "idps-r26-handoff-1",
+  "run_id": "t09-r26-acceleration-zfyPqyt3",
+  "result": "BLOCKED_RELEASE_AND_HOST_SAFETY",
+  "report": "docs/108_T09_R26_FINAL_AI_QUALITY_ACCELERATION.md",
+  "completed_research_model": {
+    "RI_v2_R20_artifacts_preserved": true,
+    "calibrated_file": "bundle/r26_swiglu-calibrated.onnx",
+    "calibrated_sha256": "67814a37f3a7de586a0d64a2085aee252153e77e840118472ecc7e271fbff69e",
+    "calibration": {
+      "intercept": -0.8326680630579593,
+      "kind": "platt",
+      "slope": 1.4350251689984286
+    },
+    "candidate": "R26A_SwiGLU_URI100",
+    "checkpoint": {
+      "global_step": 110,
+      "manifest_sha256": "007ece541ca5d1d3fd81df0a5d112b5ef5daa8559c0c619aaf1cd7bc0a74135f",
+      "path": "checkpoints/step-000000000110-13d9f31fe8a9"
+    },
+    "comparator": ">",
+    "default_model_changed": false,
+    "feature_schema_sha256": "36afcf016563071b69890be5db1bde863e7b700f93f33f35426e085aab388235",
+    "fit_originals": 401745,
+    "fit_unique_uri100": 18714,
+    "hybrid_allowed": false,
+    "kish_equal_source_original_weight": 4913.818620400407,
+    "native_attack_verified": 0,
+    "native_train_dev_cal_test": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "new_http_shadow": "NOT_RUN_QUALITY_AND_HOST_SAFETY_BLOCKED",
+    "parameters": 400256,
+    "preprocessing_and_runtime": {
+      "binary_sha256": "e9c600c793e20a75f4e2984500d44118443cd7a86075d6fd0eed611e0e34bcc4",
+      "ort_library_sha256": "fc44112fbe06d7d689c57e11d3862031f64711007e4ee020f8eed5185fd2c1d3",
+      "scope_limit": "Raw URI and its three-round percent-decoded form must be ASCII. Unicode/invalid UTF8 is explicit ABSTAIN, not a fabricated vector."
+    },
+    "promotion_ready": false,
+    "publisher_counts": {
+      "CAL_FIT": 224,
+      "CAL_OP": 438,
+      "FIT": 401745,
+      "RESEARCH_TEST": 271,
+      "TUNING": 6316
+    },
+    "raw_file": "bundle/swiglu.onnx",
+    "raw_sha256": "0183cd4e3b14d7ff4868d66e1056477cec07a8f420498b696ee37a6f2c6ef107",
+    "release_ready": false,
+    "rollback": "R26 is a separate offline scorer, never activated; retain existing RI v2 and R20 manifests",
+    "run_id": "t09-r26-acceleration-zfyPqyt3",
+    "schema": "idps-uri100-raw-ascii-r26-v1",
+    "threshold": 0.8816564083099365,
+    "threshold_float32_le_hex": "3cb4613f",
+    "version": "idps-r26-research-candidate-v1"
+  },
+  "publisher_research_test": {
+    "confusion_tn_fp_fn_tp": [
+      227,
+      0,
+      7,
+      37
+    ],
+    "recall": 0.8409090909090909,
+    "fpr": 0.0,
+    "precision": 1.0,
+    "ap": 0.9452710959842107,
+    "threshold": 0.8816564083099365
+  },
+  "calibration": {
+    "brier": 0.017995018336602154,
+    "ece_equal_width_10": 0.015301492170464441,
+    "log_loss": 0.10175433920398844
+  },
+  "test_scope": "271 synthetic publisher originals, 44 positive, 227 normal; no native reviewed ground truth; POST positive support zero",
+  "python_tests": 14,
+  "python_onnx": {
+    "max_abs": 1.1920928955078125e-07,
+    "state": "PASS"
+  },
+  "raw_rust_python": {
+    "cases_total": 1391,
+    "scored_per_process": 1368,
+    "fresh_processes": 3,
+    "max_feature_abs_error": 0.0,
+    "max_score_abs_error": 0.0,
+    "combined_ns_p50_p95": [
+      336970.5,
+      605960.2999999999
+    ],
+    "inference_ns_p50_p95": [
+      189069.0,
+      250788.4999999996
+    ],
+    "unsupported_decoded_unicode_per_process": 23
+  },
+  "epoch_resume": {
+    "binding": "b09c1ade0459da09d628e7fdc2a4dcf7055c92fa528fc47919091f5a1f8b043d",
+    "from_epoch": 15,
+    "global_step": 160,
+    "mid_batch_resume": "NOT_CLAIMED",
+    "new_worker_pid": 32124,
+    "optimizer_parameters_sampler_loss": "BIT_EXACT",
+    "previous_manifest_sha256": "a5916d6d5adb6f964d38eacb0c4eea8c967aebf056369c04eb6724f6fa945ab6",
+    "state": "PASS",
+    "to_epoch": 16
+  },
+  "resource_cleanup": {
+    "attempts": 19,
+    "state": "PASS"
+  },
+  "local_service_health": {
+    "collector": {
+      "ActiveState": "active",
+      "MainPID": "3521",
+      "NRestarts": "0",
+      "SubState": "running"
+    },
+    "receiver": {
+      "ActiveState": "active",
+      "MainPID": "3524",
+      "NRestarts": "0",
+      "SubState": "running"
+    },
+    "ri": {
+      "ActiveState": "failed",
+      "MainPID": "0",
+      "NRestarts": "4",
+      "SubState": "failed"
+    },
+    "scorer": {
+      "ActiveState": "failed",
+      "MainPID": "0",
+      "NRestarts": "4",
+      "SubState": "failed"
+    }
+  },
+  "terminal_safety": {
+    "recovery_training": {
+      "auto_restart": false,
+      "cleanup_verified": true,
+      "guardian_service_result": "watchdog",
+      "reason": "GUARDIAN_EXIT_WITHOUT_RESULT"
+    },
+    "read_only_probe": {
+      "event": "READ_START",
+      "path": "/sys/class/thermal/thermal_zone0/temp",
+      "monotonic": 9283.449348818
+    },
+    "probe_PID_absent": true,
+    "probe_cgroup_absent": true
+  },
+  "historical_serving_code_models_roles_preserved": true,
+  "new_native_train_dev_cal_test": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "new_live_application_http_requests": 0,
+  "promotion_ready": false,
+  "background_running": false,
+  "artifacts": {
+    "acceptance.json": "8166b80d3135b7e7d0bdc686957eedb8c024019faca885fa4573b995ae51a924",
+    "artifact-index.json": "7d355727f36e8ff4e21f2011834fc563a8d64d968b63deb44b75a03c8499a564",
+    "model-manifest.json": "e60f7c4d3fe3eb975245fc57010b6c6bc503916b65533a1b5445549d547c4a3e",
+    "feature-schema.json": "36afcf016563071b69890be5db1bde863e7b700f93f33f35426e085aab388235",
+    "source-ledger.json": "01b1e02c1d28db92e9a32608fcf0ce918555e775c5cc252e251201430e7bc47f",
+    "resource-acceptance.json": "5acd6dbb68a6bd3e154fc83c5d7af33ef2130defdbbc5a1552e7b36ecb3cc752",
+    "regression.xml": "f09401db814f7180abe8b0ec62b2be7e3f341d44d6d88fff529cb98965eaf99e",
+    "evaluation-lock.json": "f952a6689730c767ba2925b5890520a78ff82fd206538a0d9b2a663c72eadc65",
+    "evaluation.json": "68e50c3ba2ccfbd60f9281bfc7592dc8c62f1bd0dca9914cb8ee69e8553cc52c",
+    "runtime.json": "e200c2e2ab4bd8dbcbd3f889f22b925a00bd40337c836115e73ad6c053e32664",
+    "verification.json": "f47e3ce6d66b9deeaa3f2efb7193f02d6b5fce639429264b07889317ec2ec5ac",
+    "source2-recovery/pilot.json": "9e7c503ebb8f9ed0459b2c33320a33cc53650c2ef2acd94feee26d3f8366ac05",
+    "augmentation-b/training/model/best.json": "7701fdf2bbcb389a67464cb037f3becbab96bea3fee6dfa5005ff336084b022b",
+    "host-safety/diagnosis.json": "54a72b81476bd2212d9cb39d6165948b13181e8b6ffe0048175758950601e1c7"
+  },
+  "commits": {
+    "data_features": "53ccaa3",
+    "training_evaluation": "680a10f",
+    "rust_preprocessing_runtime": "9b38884"
+  },
+  "next_task": "Restore bounded valid ACPI sensor reads and unchanged Local RI/scorer services; review terminal stop before any checkpoint continuation. Then evaluate the committed three-source candidate without reopening R26A research TEST."
+}
