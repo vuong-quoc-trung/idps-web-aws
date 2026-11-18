@@ -1,0 +1,64 @@
+# T09 R32 — Thông tin request và khả năng tổng quát hóa
+
+**Giữ B16 làm ứng viên nghiên cứu. RI v2 tiếp tục phục vụ, R20 chạy shadow.** Ứng viên R32 tốt nhất tăng macro recall từ **77,54% lên 78,50%** trên ba nguồn TUNING. Trên corpus HTTP bên ngoài, ở **18.126** dòng mang ID duy nhất, ngưỡng B16 đã công bố cho **21,11% recall và 0,21% FPR**. Với biểu diễn đã thử, ngay cả cận trên hồi cứu cũng chỉ đạt **69,80% recall tại 1% FPR** trên roster này. R32 chưa đạt 90%/1% và chưa đủ điều kiện phát hành.
+
+Run **t09-r32-information-TIu0kTGQ**. Trạng thái chiến dịch **RESEARCH_BUDGET_EXHAUSTED**. Ngân sách được tính theo số thí nghiệm đã chốt, gồm bốn phương án ở vòng đầu, ba lần fit loại hẳn một nguồn, hai phương án dùng láng giềng ở vòng sau và một lượt đánh giá bên ngoài hoàn thành sau khi khóa lựa chọn. Điều kiện chấp nhận độc lập theo T07 còn **BLOCKED_NO_VERIFIED_DATA**. [Evidence tổng hợp](../ai-training/contracts/information-r32/r32-evidence.json) · [T07](53_T07_EVALUATION_PROTOCOL_AND_COVERAGE_GATES.md)
+
+## Dữ liệu, quyền sử dụng và phép so sánh
+
+| Nguồn publisher | FIT dùng trong pilot | TUNING | Cơ sở nhãn |
+|---|---:|---:|---|
+| WAF Data v2 TRAIN | 12.456 đại diện có trọng số từ 400.000 original FIT | 6.042 | normal/anomalous của publisher |
+| Notes TRAIN | 1.745 | 274 | benign/malicious do publisher sinh |
+| SR-BH | 31.516 | 4.766 | CAPEC/normal trong phần FIT lịch sử được phép |
+| Tổng | **45.717** | **11.082** | 56.799 tọa độ được đối chiếu với SHA nguồn và tạo lại URI76 |
+
+Các model dùng cùng ID, nhãn, trọng số nguồn/lớp và các partition đã khóa. Đối soát exact URI100 trên toàn bộ FIT pilot và TUNING cho giao rỗng giữa hai role. Cân vector ở các bảng so sánh dùng chung URI100 tham chiếu để mẫu số ổn định khi feature mới tách một vector thành nhiều view. WAF, Notes và SR-BH đều hiện diện trong FIT của B16. CAL/TEST được bảo vệ và PKDD stress giữ nguyên. Notes CAL_OP recall **28,13%** và PKDD FPR **10,69%** là kết quả lịch sử. [Plan và SHA đầu vào](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/plan.json) · [B16 và calibration](109_T09_R261_AUTONOMOUS_RECOVERY_AND_MODEL_QUALITY.md)
+
+R32 tải corpus testbed v1.0.0 của Abibulaiev và cộng sự để đánh giá chuyển nguồn trên bản phát hành đóng băng. Archive **1.135.743 byte**, SHA-256 **9126e43da413bee16cb543a8d0b9187819d312303f83c83e57d8bda3b1ecfd86**, khớp release. Publisher gán nhãn theo campaign, nguồn và cửa sổ thời gian. R32 dùng dữ liệu này cho đánh giá nghiên cứu, không fitting, phân phối lại raw hay cấp nhãn native. Quyền MIT được README mô tả cho code. Hai nguồn khác được sàng lọc qua metadata. MicroData kế thừa CSIC/Notes và các biến thể tổng hợp. Archive Zenodo 23108590 ghi traffic của 18 tác vụ công cụ lập trình, thiếu nhãn xâm nhập hai lớp. [Testbed release](https://github.com/aziz-abibulaiev/web-attack-detector/releases/tag/v1.0.0) · [Nguồn nhãn và phạm vi license](https://github.com/aziz-abibulaiev/web-attack-detector/tree/b0cc45b33b640dc061aaeda5a47751f678e7c26c) · [MicroData](https://huggingface.co/datasets/neuroX3/MicroData) · [Zenodo](https://zenodo.org/records/23108590)
+
+## Hai vòng nghiên cứu
+
+Vòng đầu thử giữ thứ tự ký hiệu trong từng đoạn path, giá trị query và phần body đã sàng lọc. Mỗi ký hiệu và cặp liền kề có một chỉ số riêng theo trường. Không lưu literal HTTP, định danh, giá trị header hoặc kết quả ứng dụng trong ma trận. Nhánh body chỉ đóng góp khi có nội dung đủ điều kiện. Dữ liệu publisher không có collector receipt để chứng minh chính body đó đến trước 999 ms trên Local. Thử một logistic độc lập, hai hiệu chỉnh log-odds trên B16 với L2 và một ensemble B16 với 96 cây ExtraTrees, độ sâu tối đa 14. Các fit logistic hội tụ trong ngân sách. [Projector](../ai-training/contracts/information-r32/symbols.py) · [Thí nghiệm và checkpoint](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/pilot-result.json)
+
+Vòng hai thử hiệu chỉnh cục bộ theo các FIT request gần nhau trong không gian URI100. Mỗi nguồn cần ba component phân biệt ở trong bán kính học từ FIT. Chỉ dịch điểm khi ít nhất hai nguồn đồng thuận. Một biến thể cho phép dịch cả hai chiều, biến thể còn lại chỉ giảm điểm bởi đồng thuận benign. Chỉ **3,14%** WAF TUNING và **2,92%** Notes TUNING có đồng thuận khác 0. [Kế hoạch vòng hai](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/neighbors-plan.json) · [Kết quả](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/neighbors-pilot.json)
+
+| Mô hình trên publisher TUNING | Recall WAF | Recall Notes | Recall SR-BH | Macro theo request | Macro cân vector | FPR xấu nhất khi chuyển ngưỡng |
+|---|---:|---:|---:|---:|---:|---:|
+| B16 | 54,33% | 89,29% | 89,00% | **77,54%** | 89,60% | 3,91% |
+| Logistic chỉ dùng ký hiệu | 43,21% | 51,79% | 80,56% | 58,52% | 68,05% | 26,61% |
+| B16 + ký hiệu URI | **55,10%** | 89,29% | 90,51% | 78,30% | 90,62% | 2,88% |
+| B16 + ký hiệu URI/body | 54,85% | 89,29% | **91,37%** | **78,50%** | **90,84%** | **2,63%** |
+| B16 + ExtraTrees | 54,36% | 87,50% | 89,32% | 77,06% | 89,30% | 5,69% |
+| B16 + đồng thuận hai chiều | 54,50% | 89,29% | 89,58% | 77,79% | 89,91% | 3,65% |
+| B16 + chỉ giảm điểm | 54,33% | 89,29% | 88,85% | 77,49% | 89,55% | 3,91% |
+
+Mỗi arm có một ngưỡng TUNING toàn cục dùng strict `>`, giới hạn FPR thực nghiệm 1% ở từng nguồn theo cả request và vector. Ở WAF, B16 và arm URI/body cùng báo sai **11/2.385** request benign, FPR **0,46%** theo request và **0,84%** theo vector. Arm mới lấy lại 45 positive và mất 26 positive cũ. Gain WAF **+0,52 điểm**, bootstrap 95% theo component tại cutoff cố định **[−0,36; +1,66] điểm**. Trên SR-BH lấy lại 105, mất 8, gain **+2,37 điểm [0,50; 5,43]**. SR-BH không có body trong dataset này. Chênh lệch ở SR-BH phát sinh từ việc học hệ số chung và thay ngưỡng, chưa chứng minh lợi ích body của SR-BH.
+
+Khi chuyển cutoff từ hai nguồn sang nguồn thứ ba, arm URI/body vẫn có **2,63% FPR cân vector trên WAF**. Trong phép thử khó hơn, bỏ hẳn nguồn đích khỏi cả FIT và chọn cutoff của logistic ký hiệu độc lập, recall/FPR theo request là **33,06%/3,73%** trên WAF, **30,36%/18,35%** trên Notes và **67,46%/0,44%** trên SR-BH. Không arm nào đạt quy tắc mở rộng R31 gồm gain macro ≥5 điểm, giới hạn giảm theo nguồn và transfer FPR ≤1%. **Full FIT mới 0 lượt.** [So sánh, support và khoảng bất định](../ai-training/contracts/information-r32/r32-evidence.json)
+
+## Dữ liệu mới cho biết điều gì
+
+Ở WAF FIT pilot, URI100 có 9.367 view; nhánh URI/body tạo 9.626 view. Số request thuộc lớp thiểu số trong mỗi nhóm mixed cộng lại giảm từ **96 xuống 90**. Ở WAF TUNING con số này giữ ở **13**, dù số view tăng từ 2.086 lên 2.174. Chỉ **1 benign và 26 anomalous** WAF TUNING có feature body khác rỗng sau sàng lọc. Notes TUNING có **3 benign và 0 anomalous** như vậy. Chưa đủ support để kết luận body tổng quát hóa giữa nguồn.
+
+Corpus bên ngoài có **21.136 dòng**, 10.908 benign và 10.228 attack theo publisher, từ 58 campaign và hai ứng dụng. Bước kiểm integrity ban đầu dừng trước khi xuất score do capture ID lặp. Sau đối soát có **1.505 ID lặp**, **606 ID mang hai nhãn**. Cách ly toàn bộ **3.010 dòng** thuộc các ID đó. Roster còn **8.504 benign + 9.622 attack = 18.126 ID duy nhất**. Có **97 attack** ngoài ABI ASCII đã khóa. Trong **18.029** request được chấm, chỉ 49 trùng exact URI100 với FIT/TUNING của ba nguồn. Near-duplicate và độc lập về custody chưa được xác nhận. [Danh sách điều kiện đã khóa trước scoring](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/external-lock.json) · [Kết quả external](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/external-result.json)
+
+| Operating point khóa trước scoring | TP / FP | Recall trên 9.622 attack | FPR trên 8.504 benign | Precision | AP / Brier / ECE10 trên phần có score |
+|---|---:|---:|---:|---:|---:|
+| B16, ngưỡng công bố 0,942026 | 2.031 / 18 | **21,11%** | **0,21%** | 99,12% | 0,7510 / 0,3679 / 0,3838 |
+| B16, ngưỡng TUNING 0,910657 | 2.286 / 946 | 23,76% | 11,12% | 70,73% | 0,7510 / 0,3679 / 0,3838 |
+| URI/body, ngưỡng TUNING 0,922918 | 2.298 / 946 | 23,88% | 11,12% | 70,84% | 0,7525 / 0,3699 / 0,3848 |
+
+Coverage **99,46%** trên roster ID duy nhất và **85,30%** trên toàn bộ dòng gốc. Nếu tính cả các dòng cách ly vào mẫu số publisher, B16 công bố có effective recall **19,86%** và tỷ lệ false alert **0,165%**. Theo vector trên phần được chấm, B16 công bố đạt recall **43,11%** và FPR **0,97%**. Bảng theo request ở trên phù hợp để đọc tác động theo lưu lượng. Chỉ sáu campaign có benign exposure. Toàn bộ phần crAPI bị cách ly do ID lặp, nên số liệu có score ở đây chỉ phản ánh VAmPI. B16 không flag positive POST nào trên roster toàn nguồn; số liệu theo method và mẫu số nằm trong evidence.
+
+**Cận trên hồi cứu cho thấy giới hạn thông tin thực sự.** Trên roster ID duy nhất, ngân sách FPR cho phép 85 false positive. Cho một bộ phân loại lý tưởng biết trước phân bố nhãn của từng vector, lấy tất cả nhóm chỉ có positive và cho phép chọn cả phần lẻ của nhóm mixed cuối theo tỷ số positive/benign tối ưu. Cận trên recall là **69,80%**, FPR tối thiểu để đạt 90% recall ít nhất **4,84%**. Kết quả bằng nhau với URI100 và URI/body, dù số view tăng **3.441 → 3.511**. Cả hai còn bốn nhóm mixed với tổng minority mass **1.261**. Cận này áp dụng cho nhãn campaign, ABI, roster và hai biểu diễn đã đo. Không dùng kết quả external để fit, chọn lại checkpoint hay đổi ngưỡng. [Phép tính và đối chiếu mẫu số](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/verification.json)
+
+## Runtime, integrity và khả năng tiếp tục
+
+- B16 400.256 tham số, checkpoint step 400 SHA `0f0b0d8ab173d8c7ff0dba43809837d240c5dd307f75c340b6706fda9593d6e7`, ONNX SHA `fdff05ee91f181268121ee7c72e573a4b2d771c3a8ee60cfa28e9d11860f2271`. Arm R32 có macro recall cao nhất dùng checkpoint hệ số SHA `e960a82b9f15081a6bc80e81e1723e33fd42ed9074fe44734d4d7cc4e9d76b64`. Các checkpoint và SHA đủ để chấm lại trên workspace hiện hành. [Chỉ mục artifact private](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/artifact-index.json)
+- Python từ checkpoint, ONNX và Rust của **B16** có sai số score tối đa **0** trên 26 frame lành tính qua mỗi trong hai tiến trình Rust mới. Khởi động lại khớp bit, sai SHA bị từ chối, frame lỗi ABSTAIN rồi phục hồi. Warm inference CPU p50/p95 **0,169/0,210 ms**, preprocessing **0,124/0,161 ms**, hai lần nạp **99,15/79,01 ms**. Đây là replay offline single-process với 50 phép đo warm. Chưa benchmark AWS, tải đồng thời hay xuất ONNX cho arm R32. [CPU verification](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/verification.json)
+- Có hai lần sửa trong chiến dịch. Lần đầu external dừng ở ID lặp trước khi có kết quả. Rà lại projector phát hiện cần thêm alias nhạy cảm và giá trị opaque theo privacy policy. Đã bổ sung bộ lọc, chạy lại ETL và cả hai vòng nghiên cứu trên cùng partition, rồi khóa lại comparator trước scoring. Dữ liệu thô mới ở thư mục private; Git chỉ chứa mã và tổng hợp. **19 regression PASS** gồm 14 ca R32. [JUnit](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/verified/final-tests.xml)
+- **9 Adapter attempts, 8 COMPLETED và 1 WORKER_FAILED**, cả chín có exit proof và cleanup xác minh qua unit inactive/cgroup không còn. Năm phase cuối đều COMPLETED. CPU cơ sở 90% một core, RAM 1.024–1.536 MiB theo phase. Guardian giảm quota kernel từ `90000 100000` xuống `45000 100000` ở các mẫu 95–96°C. Bốn dịch vụ Local giữ PID và restart count, không còn worker R32. HTTP mới 0. Bảo toàn 34 file sửa sẵn và kiểm lại 21 mục trong index R31. [Acceptance và journal theo unit](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/acceptance.json)
+- Commit kỹ thuật `bb1e220` trên `feature/ai-idps-shadow-integration`. Báo cáo và evidence tổng hợp nằm trong commit bàn giao kế tiếp. Index SHA `d99e1d890f222bd3395efc4a608d229326e402bcbbf8c169810bf8bb00525816` bao phủ 168 file private. Tái lập trên máy khác cần các source/checkpoint đã pin cùng một số helper lịch sử trong workspace. Clean-checkout release packaging chưa được chứng nhận. [Đối chiếu Git sau push](../ai-training/.artifacts/t09-r32-information-TIu0kTGQ/git-push.json)
+
+**Điều kiện để tiến tiếp** là một cohort phòng thủ mới có benign exposure đại diện, attack outcome được duyệt độc lập, trusted request ID và lineage không giao nhau. Trên các request có cùng URI, cần đo thêm giá trị của quan hệ quyền và lịch sử phiên có proof trước cutoff. Các ca policy hẹp của R26.2 đã chứng minh khả năng thu một phần context đó. Handoff mới chưa xuất hiện; native **TRAIN/DEV/CAL_FIT/CAL_OP/TEST_SHADOW = 0/0/0/0/0**. Khi có cohort này, có thể so ngay với B16 và rule trên cùng request. Corpus testbed đã được chấm ở R32 cần giữ vai trò đánh giá đã exposed. [Contract context và kết quả Local](110_T09_R262_CONTEXT_AWARE_NATIVE_AI_QUALITY.md) · [Điều kiện độc lập của T07](53_T07_EVALUATION_PROTOCOL_AND_COVERAGE_GATES.md)
