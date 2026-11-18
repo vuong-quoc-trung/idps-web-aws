@@ -11,6 +11,7 @@ mod metrics;
 mod network;
 mod nginx_detection;
 mod operations;
+mod prevention;
 mod security_detection;
 mod suricata_origin;
 mod three_source;
@@ -304,10 +305,22 @@ fn router(state: AppState) -> Router {
         .route("/api/alerts/search", get(search_alerts))
         .route("/api/alerts/{id}", get(alert_detail))
         .route("/api/alerts/{id}/triage", post(triage::update))
+        .route(
+            "/api/alerts/{id}/block-eligibility",
+            get(prevention::evaluate),
+        )
         .route("/api/stats", get(metrics::stats))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
         .route("/api/rules", get(api_rules))
+        .route(
+            "/api/prevention/proposals",
+            get(prevention::proposals).post(prevention::propose),
+        )
+        .route(
+            "/api/prevention/proposals/{id}/review",
+            post(prevention::review),
+        )
         .route("/api/blocked-ips", get(firewall::list).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))
         .route("/api/audit", get(firewall::audit))
@@ -388,6 +401,7 @@ async fn block_ip(
     Extension(actor): Extension<auth::Identity>,
     Json(req): Json<BlockRequest>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
+    prevention::require_execution().map_err(bad_request)?;
     let ip = firewall::validate(&state, &req.ip).map_err(bad_request)?;
     if req.reason.trim().is_empty() || req.reason.len() > 500 {
         return Err(bad_request("Reason must contain 1–500 characters"));
@@ -425,6 +439,7 @@ async fn unblock_ip(
     Extension(actor): Extension<auth::Identity>,
     Path(ip): Path<String>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
+    prevention::require_execution().map_err(bad_request)?;
     let ip = network::Safety::parse_host(&ip).map_err(bad_request)?;
     let id = firewall::enqueue(
         &state.pool,

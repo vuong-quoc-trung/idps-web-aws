@@ -429,7 +429,7 @@ async fn application_audit_request_id_correlation_is_bounded(pool: PgPool) {
     .await;
     assert_eq!(page["total"], 13);
 }
-fn state(pool: PgPool) -> AppState {
+pub(crate) fn state(pool: PgPool) -> AppState {
     AppState {
         pool,
         ingestion: Arc::new(ingest::Config::default()),
@@ -556,19 +556,20 @@ async fn authentication_roles_and_audit(pool: PgPool) {
         )
         .await
         .0,
-        StatusCode::ACCEPTED
+        StatusCode::BAD_REQUEST
     );
-    firewall::process_one(&state, |_, _, _| async {
-        anyhow::bail!("simulated firewall failure")
-    })
-    .await
-    .unwrap();
-    let (actor, status): (String, String) =
-        sqlx::query_as("SELECT actor,status FROM firewall_actions")
-            .fetch_one(&state.pool)
-            .await
-            .unwrap();
-    assert_eq!((actor.as_str(), status.as_str()), ("admin", "ERROR"));
+    assert!(
+        !firewall::process_one(&state, |_, _, _| async {
+            panic!("C2 legacy route must never execute")
+        })
+        .await
+        .unwrap()
+    );
+    let count: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions")
+        .fetch_one(&state.pool)
+        .await
+        .unwrap();
+    assert_eq!(count, 0);
     request(
         app.clone(),
         "POST",
@@ -663,48 +664,39 @@ async fn ingestion_rotation_restart_partial_and_dedup(pool: PgPool) {
             .await
             .unwrap();
     assert_eq!(pending, 3);
-    firewall::process_one(&s, |_, _, _| async { Ok(()) })
-        .await
-        .unwrap();
+    assert!(
+        !firewall::process_one(&s, |_, _, _| async { panic!("legacy auto job bypass") })
+            .await
+            .unwrap()
+    );
     let actions: Vec<String> = sqlx::query_scalar("SELECT action FROM security_alerts ORDER BY id")
         .fetch_all(&s.pool)
         .await
         .unwrap();
-    assert_eq!(actions, ["AUTO-BLOCK", "ALERT", "ALERT"]);
-    firewall::process_one(&s, |_, _, _| async { anyhow::bail!("kernel failure") })
-        .await
-        .unwrap();
-    assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT action FROM security_alerts ORDER BY id OFFSET 1 LIMIT 1"
+    assert_eq!(actions, ["ALERT", "ALERT", "ALERT"]);
+    assert!(
+        firewall::enqueue(
+            &s.pool,
+            "192.168.10.10".parse().unwrap(),
+            "UNBLOCK",
+            "admin",
+            "test",
+            None
         )
+        .await
+        .is_err()
+    );
+    let blocks: i64 = sqlx::query_scalar("SELECT count(*) FROM blocked_ips")
         .fetch_one(&s.pool)
         .await
-        .unwrap(),
-        "ALERT"
-    );
-    firewall::enqueue(
-        &s.pool,
-        "192.168.10.10".parse().unwrap(),
-        "UNBLOCK",
-        "admin",
-        "test",
-        None,
-    )
-    .await
-    .unwrap();
-    firewall::process_one(&s, |_, _, _| async { Ok(()) })
-        .await
-        .unwrap(); // remaining auto job
-    firewall::process_one(&s, |_, _, _| async { Ok(()) })
-        .await
         .unwrap();
-    assert!(
-        !sqlx::query_scalar::<_, bool>("SELECT active FROM blocked_ips WHERE ip='192.168.10.10'")
+    assert_eq!(blocks, 0);
+    let pending: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='PENDING'")
             .fetch_one(&s.pool)
             .await
-            .unwrap()
-    );
+            .unwrap();
+    assert_eq!(pending, 3);
 }
 #[sqlx::test(migrations = "./migrations")]
 async fn database_failure_retains_cursor_and_retries(pool: PgPool) {
@@ -763,16 +755,19 @@ async fn restore_does_not_override_pending_unblock(pool: PgPool) {
         .execute(&s.pool)
         .await
         .unwrap();
-    firewall::enqueue(
-        &s.pool,
-        "192.168.10.10".parse().unwrap(),
-        "UNBLOCK",
-        "admin",
-        "test",
-        None,
-    )
-    .await
-    .unwrap();
+    assert!(
+        firewall::enqueue(
+            &s.pool,
+            "192.168.10.10".parse().unwrap(),
+            "UNBLOCK",
+            "admin",
+            "test",
+            None
+        )
+        .await
+        .is_err()
+    );
+    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor) VALUES('192.168.10.10','UNBLOCK','API','legacy rollback','PENDING','admin')").execute(&s.pool).await.unwrap();
     firewall::restore_jobs(&s.pool).await.unwrap();
     assert_eq!(
         sqlx::query_scalar::<_, i64>("SELECT count(*) FROM firewall_actions")
@@ -781,15 +776,22 @@ async fn restore_does_not_override_pending_unblock(pool: PgPool) {
             .unwrap(),
         1
     );
-    firewall::process_one(&s, |_, _, _| async { Ok(()) })
-        .await
-        .unwrap();
     assert!(
-        !sqlx::query_scalar::<_, bool>("SELECT active FROM blocked_ips")
+        !firewall::process_one(&s, |_, _, _| async { panic!("unblock bypass") })
+            .await
+            .unwrap()
+    );
+    assert!(
+        sqlx::query_scalar::<_, bool>("SELECT active FROM blocked_ips")
             .fetch_one(&s.pool)
             .await
             .unwrap()
     );
+    let action: String = sqlx::query_scalar("SELECT action FROM firewall_actions")
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(action, "UNBLOCK");
 }
 
 #[sqlx::test(migrations = "./migrations")]
@@ -1380,4 +1382,79 @@ async fn lua_shadow_rollback_and_generation_view(pool: PgPool) {
     .await
     .unwrap();
     assert!(!verified);
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn c2_http_roles_and_closed_legacy_routes(pool: PgPool) {
+    let app = router(state(pool.clone()));
+    let viewer = login(app.clone(), "viewer").await;
+    let admin = login(app.clone(), "admin").await;
+    for (method, path, body) in [
+        (
+            "POST",
+            "/api/prevention/proposals",
+            serde_json::json!({"alert_id":1,"reason":"test","idempotency_key":"http","ttl_seconds":60}),
+        ),
+        (
+            "POST",
+            "/api/prevention/proposals/1/review",
+            serde_json::json!({"approve":true,"reason":"test"}),
+        ),
+        (
+            "POST",
+            "/api/blocked-ips",
+            serde_json::json!({"ip":"8.8.8.8","reason":"test"}),
+        ),
+        (
+            "DELETE",
+            "/api/blocked-ips/8.8.8.8",
+            serde_json::Value::Null,
+        ),
+    ] {
+        assert_eq!(
+            request(app.clone(), method, path, None, body.clone())
+                .await
+                .0,
+            StatusCode::UNAUTHORIZED
+        );
+        assert_eq!(
+            request(app.clone(), method, path, Some(&viewer), body.clone())
+                .await
+                .0,
+            StatusCode::FORBIDDEN
+        );
+        let status = request(app.clone(), method, path, Some(&admin), body)
+            .await
+            .0;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+    }
+    assert_eq!(
+        request(
+            app.clone(),
+            "GET",
+            "/api/prevention/proposals",
+            Some(&viewer),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::FORBIDDEN
+    );
+    assert_eq!(
+        request(
+            app,
+            "GET",
+            "/api/prevention/proposals",
+            Some(&admin),
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    let jobs: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(jobs, 0);
 }

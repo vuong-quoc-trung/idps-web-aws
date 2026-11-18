@@ -249,16 +249,20 @@ async fn authentication_counter_correlates_two_sources_and_resets_on_success(poo
 async fn off_switch_blocks_pending_work_and_expired_blocks_are_not_restored(pool: PgPool) {
     let mut s = state(pool, false);
     Arc::make_mut(&mut s.safety).mode = "OFF".into();
-    firewall::enqueue(
-        &s.pool,
-        "192.168.1.50".parse().unwrap(),
-        "BLOCK",
-        "admin",
-        "test",
-        None,
-    )
-    .await
-    .unwrap();
+    assert!(
+        firewall::enqueue(
+            &s.pool,
+            "192.168.1.50".parse().unwrap(),
+            "BLOCK",
+            "admin",
+            "test",
+            None
+        )
+        .await
+        .is_err()
+    );
+    // Simulate a pre-C2 persisted job; the closed worker must leave it untouched.
+    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor) VALUES('192.168.1.50','BLOCK','API','legacy','PENDING','admin')").execute(&s.pool).await.unwrap();
     assert!(
         !firewall::process_one(&s, |_, _, _| async { panic!("OFF must never execute") })
             .await
@@ -332,26 +336,25 @@ async fn extended_sensor_rules_use_audited_bounded_response_only_when_enabled(po
     Arc::make_mut(&mut s.safety).mode = "ENFORCE".into();
     for _ in 0..6 {
         assert!(
-            firewall::process_one(&s, |_, _, ttl| async move {
-                assert!(ttl.is_some_and(|seconds| (1..=300).contains(&seconds)));
-                Ok(()) // Mock actuator: never invokes the real helper or kernel.
+            !firewall::process_one(&s, |_, _, _| async {
+                panic!("C2 must not execute even in ENFORCE")
             })
             .await
             .unwrap()
         );
     }
-    let successful: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='SUCCESS' AND actor='system' AND event_id IS NOT NULL")
-        .fetch_one(&s.pool).await.unwrap();
-    assert_eq!(successful, 6);
-    assert_eq!(
-        sqlx::query_scalar::<_, i64>(
-            "SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'"
-        )
-        .fetch_one(&s.pool)
-        .await
-        .unwrap(),
-        6
-    );
+    let pending: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='PENDING'")
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+    assert_eq!(pending, 6);
+    let blocked: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'")
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+    assert_eq!(blocked, 0);
 }
 
 #[sqlx::test(migrations = "./migrations")]
@@ -372,7 +375,7 @@ async fn historical_alerts_and_expired_pending_jobs_never_enforce(pool: PgPool) 
         .await
         .unwrap();
     assert!(
-        firewall::process_one(&s, |_, _, _| async {
+        !firewall::process_one(&s, |_, _, _| async {
             panic!("expired job must not execute")
         })
         .await
@@ -383,7 +386,7 @@ async fn historical_alerts_and_expired_pending_jobs_never_enforce(pool: PgPool) 
             .fetch_one(&s.pool)
             .await
             .unwrap(),
-        "ERROR"
+        "PENDING"
     );
 }
 #[sqlx::test(migrations = "./migrations")]
@@ -689,7 +692,7 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
     )
     .await;
     assert!(result.is_err());
-    let _ = block_ip(
+    let result = block_ip(
         State(s.clone()),
         Extension(actor),
         Json(BlockRequest {
@@ -698,27 +701,20 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
             event_id: Some(id),
         }),
     )
-    .await
-    .unwrap();
+    .await;
+    assert!(result.is_err());
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
     assert!(
-        firewall::process_one(&s, |_, _, _| async { Ok(()) })
+        !firewall::process_one(&s, |_, _, _| async { panic!("manual bypass") })
             .await
             .unwrap()
     );
-    let row: (String, String, String, i64) =
-        sqlx::query_as("SELECT actor,source,status,event_id FROM firewall_actions")
-            .fetch_one(&s.pool)
-            .await
-            .unwrap();
-    assert_eq!(row, ("admin".into(), "API".into(), "SUCCESS".into(), id));
-    assert_eq!(
-        sqlx::query_scalar::<_, String>("SELECT action FROM security_alerts WHERE id=$1")
-            .bind(id)
-            .fetch_one(&s.pool)
-            .await
-            .unwrap(),
-        "BLOCK"
-    );
+    let action: String = sqlx::query_scalar("SELECT action FROM security_alerts WHERE id=$1")
+        .bind(id)
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(action, "ALERT");
 }
 
 #[sqlx::test(migrations = "./migrations")]

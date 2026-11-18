@@ -18,6 +18,9 @@ pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
     Ok(ip)
 }
 pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<String> {
+    if matches!(action, "block" | "unblock" | "add" | "delete") {
+        prevention::require_execution()?;
+    }
     let mut command = Command::new("sudo");
     command.arg("-n").arg(cmd).arg(action);
     if let Some(ip) = ip {
@@ -114,6 +117,7 @@ pub async fn enqueue(
     reason: &str,
     event: Option<i64>,
 ) -> Result<i64> {
+    prevention::require_execution()?;
     Ok(sqlx::query_scalar("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,event_id) VALUES($1::inet,$2,$3,$4,'PENDING',$5,$6) RETURNING id")
         .bind(ip.to_string()).bind(action).bind("API").bind(reason).bind(actor).bind(event).fetch_one(pool).await?)
 }
@@ -132,7 +136,7 @@ where
     F: FnOnce(String, IpAddr, Option<u64>) -> Fut,
     Fut: std::future::Future<Output = Result<()>>,
 {
-    if state.safety.mode == "OFF" {
+    if !prevention::execution_enabled() || state.safety.mode == "OFF" {
         return Ok(false);
     }
     let mut tx = state.pool.begin().await?;
