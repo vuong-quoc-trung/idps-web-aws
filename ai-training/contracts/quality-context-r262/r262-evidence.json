@@ -1,0 +1,143 @@
+{
+  "artifact_root": "ai-training/.artifacts/t09-r262-context-yaqvp710",
+  "base_HEAD": "b3f54e32f7982cd9daf8c4ff7365ac9b1e772089",
+  "branch": "feature/ai-idps-shadow-integration",
+  "context_information": {
+    "actual_encoding_before_cutoff": true,
+    "control_panel": {
+      "authorization_violation_attempts": 3,
+      "benign_controls": 5,
+      "deterministic_policy_TN_FP_FN_TP": [
+        5,
+        0,
+        0,
+        3
+      ],
+      "is_ML_quality_claim": false,
+      "requests": 8
+    },
+    "cutoff_ns": 1000000000,
+    "guard_ns": 1000000,
+    "native_Rust_context_replay": "10 frames, offline parity; not persistent context scorer",
+    "role_only_and_URI_only_inadequate_at_zero_FP": true,
+    "same_URI100_different_trusted_role_context_pairs": 3
+  },
+  "decision": "CONTEXT_PROOF_PASS_DATA_INSUFFICIENT",
+  "evidence_sha256": {
+    "acceptance.json": "ec5f2c4b410b28814c77ef9210e821c6b84a9b9ea8f20451bb006e0989fdb9cf",
+    "artifact-index.json": "396892e17c46977c832a1c5e2856de002dc77009eb45c4f7347eeb75943338dd",
+    "context-tests.xml": "9dc6861742dc94c48f25a31673070cf22045e1478ebd06510067bbccf1af8655",
+    "final-checks/context-runtime.json": "a249fd98dbdd6948e356efb53b88b48805c63c15183e823026ac4a483589b644",
+    "native-reconciliation.json": "ccbcc96577ba6f6d416f2174e6b62c292bdcfaa5c48a5aa9b1a7deb96fe7bd0e",
+    "trusted-producer.json": "7d2919df589eba071e9aa0aa834bb4eb0fc3a586fdc8c912319e138b6f5319bc"
+  },
+  "functional_commits": [
+    "07ac1e1",
+    "cc8beba"
+  ],
+  "git_push_receipt": "ai-training/.artifacts/t09-r262-context-yaqvp710/git-push.json",
+  "model_decision": {
+    "R20_existing_shadow": true,
+    "RI_v2_default": true,
+    "authorization_control": "DETERMINISTIC_POLICY_NOT_ML",
+    "new_context_model_trained": false,
+    "publisher_best": "B16_URI100_RESEARCH_ONLY_UNCHANGED",
+    "release_ready": false,
+    "target_90_recall_1_FPR": "NOT_DEMONSTRATED_T07_BLOCKED"
+  },
+  "native": {
+    "HTTP_dispatched": 37,
+    "Oracle_verified": 36,
+    "all_new_examples_exposed_research": true,
+    "all_new_record_witnesses": {
+      "ATTACK_VERIFIED": 6,
+      "BENIGN_VERIFIED": 9
+    },
+    "candidate_views_pending": 10,
+    "canonical_TRAIN_DEV_CAL_FIT_CAL_OP_TEST": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "human_review_fabricated": false,
+    "identity_verified_physical_requests": 37,
+    "independent_two_class_components": 1,
+    "masks_at_cutoff": {
+      "NONE": 1,
+      "NSA": 36
+    },
+    "observed_method_target_signatures": 6,
+    "old_101_receipts_unchanged": true,
+    "old_candidates_pending_unchanged": 74,
+    "raw_observations": {
+      "A": 37,
+      "N": 37,
+      "S": 37
+    },
+    "strict_URI100_context_unique_vectors": 6,
+    "strict_context_unique_vectors": 4,
+    "strict_context_views": 10,
+    "strict_record_ATTACK_VERIFIED": 3,
+    "strict_record_BENIGN_VERIFIED": 3
+  },
+  "next_task": "R27: preregister and acquire independent policy/actor/resource cohorts with fresh context custody; compare deterministic control against ML only where it adds information. Keep URI100 publisher shift track separate.",
+  "operations": {
+    "Local_services_active": [
+      "idps-r22-local-ri.service",
+      "idps-r22-local-scorer.service",
+      "idps-r22-local-collector.service",
+      "idps-r22-local-receiver.service"
+    ],
+    "background_job_remaining": null,
+    "cleanup_verified": true,
+    "kernel_quota_readbacks": [
+      {
+        "count": 2,
+        "cpu.max": "50000 100000",
+        "state": "THROTTLE"
+      },
+      {
+        "count": 35,
+        "cpu.max": "100000 100000",
+        "state": "NORMAL"
+      }
+    ],
+    "linger": "yes",
+    "original_dirty_files_preserved": 34,
+    "real_dispatch_temperatures_C": [
+      56,
+      95
+    ],
+    "resource_attempts": 10,
+    "thermal_policy_changed": false,
+    "training_run": null
+  },
+  "report": "docs/110_T09_R262_CONTEXT_AWARE_NATIVE_AI_QUALITY.md",
+  "run_id": "t09-r262-context-yaqvp710",
+  "schema": {
+    "URI100_baseline_unchanged": true,
+    "dimensions": 20,
+    "not_inline_pre_authorization": true,
+    "owner_relationship": "GROUND_TRUTH_ONLY",
+    "phase": "AUDIT_CURRENT_REQUEST_COMPLETION_PROTECTED_GET",
+    "session_history": "WITHHELD",
+    "sha256": "705946bd81a40ae1a945008695cb9b6784fc694d27a67f74de2c2fef8d9c2cf0",
+    "version": "idps-trusted-context20-r262-v1"
+  },
+  "tests": {
+    "ABSTAIN_recovery": true,
+    "Python": 43,
+    "Rust_binary_sha256": "d519e397828a6574db3898a86eaf09f6ebe7d7556579222f2be1837e05d79974",
+    "Rust_unit": 3,
+    "fresh_processes": 3,
+    "max_vector_error": 0,
+    "projection_IPC_p50_ms": 0.0559495,
+    "projection_IPC_p95_ms": 0.509382,
+    "restart_determinism": true,
+    "synthetic_parity_inputs": 985,
+    "unchanged_ONNX_parity_reused_from_R261": true
+  },
+  "version": "idps-r262-handoff-v1"
+}
