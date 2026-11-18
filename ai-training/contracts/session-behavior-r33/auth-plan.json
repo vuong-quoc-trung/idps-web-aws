@@ -1,0 +1,12 @@
+{
+  "task": "Positive-unlabelled LANL authentication event-group retrieval, research only",
+  "source": "https://lanl.ma.ic.ac.uk/data/cyber1/auth.txt.gz",
+  "positive": "https://lanl.ma.ic.ac.uk/data/cyber1/redteam.txt.gz",
+  "positive_sha256": "e8ffba5383035389b0de67ccbe8ec61ba10d3cb4467e754cb9f5188b3d7a4aff",
+  "auth_etag": "\"1c6933bcf-5c12b8d5d26c0\"",
+  "auth_total_bytes": 7626505167,
+  "compressed_budget_bytes": 402653184,
+  "source_scope": "CC0, A. D. Kent, 2015, doi:10.17021/1179829. Clock in relative seconds. No authentication outcomes as features.",
+  "scope": "One group per second, human-form source principal, source device and destination device. All eligible orientations included. Apply all updates after scoring entire second; quarantine last incomplete second of a truncated prefix. Warm up through second 43199, choose fixed strict cutoff at <=1% unlabelled-reference alert volume on [43200,86400), score [86400,259200) or available complete prefix. No identity or literals in persisted feature data. Evaluate separate resource-popularity, first actor-target and context-conditioned destination surprisal. No negative labels. No HTTP equivalence.",
+  "conditional": "Empirical Bayes destination estimate: equal mixture of actor and source-machine histories, each shrunk by 8 observations to globally smoothed destination frequency. Pre-score counts are strictly historical. Compare with ablated global destination probability and novel actor-target rule. Quantize surprisal to 0.01 bits. No tuning on redteam labels."
+}
