@@ -189,6 +189,7 @@ def run(out):
     checkpoint = json.loads((out / "checkpoint.json").read_text())
     checkpoint.update(
         state="COMPLETED",
+        phase="FINALIZED",
         admission_sha256=file_sha256(out / "admission.json"),
         role_registry_sha256=file_sha256(out / "native-source-role-registry.json"),
         HTTP_committed=len(receipts),

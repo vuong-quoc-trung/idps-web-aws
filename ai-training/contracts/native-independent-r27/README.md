@@ -67,6 +67,13 @@ collector custody. No new model, ONNX or enforcement is deployed.
 `supervisor.py` serializes build, parity and the three bounded captures through
 the existing Resource Adapter. It checkpoints family completion and refuses
 redispatch of an attempted directory. Global Adapter allocation is serial.
+It now automatically continues to admission, information census and finalizer.
+`--finalize-existing` validates committed receipts/admission/role-registry hashes
+and runs only offline finalization, without a route to capture or worker dispatch.
+That recovery path was executed under a real Resource Adapter: zero additional
+HTTP, unchanged receipt SHAs, completion and cleanup verified. The initial R27
+acquisition used the earlier capture-only supervisor, followed by managed admission;
+the final recovery path completes that same committed namespace.
 Safety/ownership/watchdog errors do not auto-restart. KVM has `-nic none` and
 the H2 database is guest-owned and disposable. BCrypt cost, actual authentication,
 CSRF, session rotation and application policies are unchanged.
