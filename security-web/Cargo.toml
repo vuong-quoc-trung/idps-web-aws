@@ -23,8 +23,9 @@ argon2 = "0.5"
 rand = "0.8"
 sha2 = "0.10"
 
-[dev-dependencies]
 hmac = "0.12"
+
+[dev-dependencies]
 base64 = "0.22"
 tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1"

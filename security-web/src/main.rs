@@ -1,7 +1,10 @@
 mod ai_shadow;
+#[cfg(test)]
+mod ai_verdict_contract;
 mod application_audit;
 mod application_detection;
 mod auth;
+mod controlled_prevention;
 mod detection;
 mod events;
 mod firewall;
@@ -12,6 +15,8 @@ mod network;
 mod nginx_detection;
 mod operations;
 mod prevention;
+#[cfg(test)]
+mod prevention_simulation;
 mod security_detection;
 mod suricata_origin;
 mod three_source;
@@ -320,6 +325,10 @@ fn router(state: AppState) -> Router {
         .route(
             "/api/prevention/proposals/{id}/review",
             post(prevention::review),
+        )
+        .route(
+            "/api/prevention/ai-verdict",
+            post(controlled_prevention::intake),
         )
         .route("/api/blocked-ips", get(firewall::list).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))

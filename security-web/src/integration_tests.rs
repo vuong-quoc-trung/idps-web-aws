@@ -1458,3 +1458,47 @@ async fn c2_http_roles_and_closed_legacy_routes(pool: PgPool) {
         .unwrap();
     assert_eq!(jobs, 0);
 }
+
+#[sqlx::test(migrations = "./migrations")]
+async fn c3_ai_intake_http_auth_closed_without_key(pool: PgPool) {
+    let app = router(state(pool));
+    let viewer = login(app.clone(), "viewer").await;
+    let admin = login(app.clone(), "admin").await;
+    let body = serde_json::json!({"payload":"{}","mac":"00"});
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            "/api/prevention/ai-verdict",
+            None,
+            body.clone()
+        )
+        .await
+        .0,
+        StatusCode::UNAUTHORIZED
+    );
+    assert_eq!(
+        request(
+            app.clone(),
+            "POST",
+            "/api/prevention/ai-verdict",
+            Some(&viewer),
+            body.clone()
+        )
+        .await
+        .0,
+        StatusCode::FORBIDDEN
+    );
+    assert_eq!(
+        request(
+            app,
+            "POST",
+            "/api/prevention/ai-verdict",
+            Some(&admin),
+            body
+        )
+        .await
+        .0,
+        StatusCode::BAD_REQUEST
+    );
+}
