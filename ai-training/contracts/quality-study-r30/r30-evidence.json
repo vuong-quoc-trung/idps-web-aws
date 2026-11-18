@@ -1,0 +1,533 @@
+{
+  "artifact_root": "ai-training/.artifacts/t09-r30-quality-kdnKN1kc",
+  "base_sha": "da39905eaa58b06543906a874a3a26982783e065",
+  "calibration_pilot": {
+    "TUNING_held_source_threshold_transfer": {
+      "B16": {
+        "NOTES": {
+          "original_request": {
+            "AP": 0.9325606426451244,
+            "FPR": 0.0,
+            "confusion": [
+              218.0,
+              0.0,
+              6.0,
+              50.0
+            ],
+            "precision": 1.0,
+            "recall": 0.8928571428571429
+          },
+          "vector_balanced": {
+            "AP": 0.9624599839935976,
+            "FPR": 0.0,
+            "confusion": [
+              144.0,
+              0.0,
+              4.0,
+              48.0
+            ],
+            "precision": 1.0,
+            "recall": 0.9230769230769231
+          }
+        },
+        "SRBH": {
+          "original_request": {
+            "AP": 0.9995487126836126,
+            "FPR": 0.0,
+            "confusion": [
+              676.0,
+              0.0,
+              450.0,
+              3640.0
+            ],
+            "precision": 1.0,
+            "recall": 0.8899755501222494
+          },
+          "vector_balanced": {
+            "AP": 0.9995487126836126,
+            "FPR": 0.0,
+            "confusion": [
+              676.0,
+              0.0,
+              450.0,
+              3640.0
+            ],
+            "precision": 1.0,
+            "recall": 0.8899755501222494
+          }
+        },
+        "WAF": {
+          "original_request": {
+            "AP": 0.89006660862463,
+            "FPR": 0.009643605870020965,
+            "confusion": [
+              2362.0,
+              23.0,
+              1541.0,
+              2116.0
+            ],
+            "precision": 0.989247311827957,
+            "recall": 0.5786163522012578
+          },
+          "vector_balanced": {
+            "AP": 0.9975118206459602,
+            "FPR": 0.0390533242118444,
+            "confusion": [
+              376.12051282051283,
+              15.285714285714286,
+              113.87948717948711,
+              1580.7142857142858
+            ],
+            "precision": 0.9904224847833871,
+            "recall": 0.9327983561600012
+          }
+        }
+      },
+      "METHOD_TAIL": {
+        "NOTES": {
+          "original_request": {
+            "AP": 0.9325606426451244,
+            "FPR": 0.0,
+            "confusion": [
+              218.0,
+              0.0,
+              6.0,
+              50.0
+            ],
+            "precision": 1.0,
+            "recall": 0.8928571428571429
+          },
+          "vector_balanced": {
+            "AP": 0.9624599839935976,
+            "FPR": 0.0,
+            "confusion": [
+              144.0,
+              0.0,
+              4.0,
+              48.0
+            ],
+            "precision": 1.0,
+            "recall": 0.9230769230769231
+          }
+        },
+        "SRBH": {
+          "original_request": {
+            "AP": 0.9995487126836126,
+            "FPR": 0.0,
+            "confusion": [
+              676.0,
+              0.0,
+              450.0,
+              3640.0
+            ],
+            "precision": 1.0,
+            "recall": 0.8899755501222494
+          },
+          "vector_balanced": {
+            "AP": 0.9995487126836126,
+            "FPR": 0.0,
+            "confusion": [
+              676.0,
+              0.0,
+              450.0,
+              3640.0
+            ],
+            "precision": 1.0,
+            "recall": 0.8899755501222494
+          }
+        },
+        "WAF": {
+          "original_request": {
+            "AP": 0.89006660862463,
+            "FPR": 0.009643605870020965,
+            "confusion": [
+              2362.0,
+              23.0,
+              1541.0,
+              2116.0
+            ],
+            "precision": 0.989247311827957,
+            "recall": 0.5786163522012578
+          },
+          "vector_balanced": {
+            "AP": 0.9975118206459602,
+            "FPR": 0.0390533242118444,
+            "confusion": [
+              376.12051282051283,
+              15.285714285714286,
+              113.87948717948711,
+              1580.7142857142858
+            ],
+            "precision": 0.9904224847833871,
+            "recall": 0.9327983561600012
+          }
+        }
+      }
+    },
+    "TUNING_matched_fpr": {
+      "B16": {
+        "sources": {
+          "NOTES": {
+            "original_request": {
+              "AP": 0.9325606426451244,
+              "FPR": 0.0,
+              "confusion": [
+                218.0,
+                0.0,
+                6.0,
+                50.0
+              ],
+              "precision": 1.0,
+              "recall": 0.8928571428571429
+            },
+            "vector_balanced": {
+              "AP": 0.9624599839935976,
+              "FPR": 0.0,
+              "confusion": [
+                144.0,
+                0.0,
+                4.0,
+                48.0
+              ],
+              "precision": 1.0,
+              "recall": 0.9230769230769231
+            }
+          },
+          "SRBH": {
+            "original_request": {
+              "AP": 0.9995487126836126,
+              "FPR": 0.0,
+              "confusion": [
+                676.0,
+                0.0,
+                450.0,
+                3640.0
+              ],
+              "precision": 1.0,
+              "recall": 0.8899755501222494
+            },
+            "vector_balanced": {
+              "AP": 0.9995487126836126,
+              "FPR": 0.0,
+              "confusion": [
+                676.0,
+                0.0,
+                450.0,
+                3640.0
+              ],
+              "precision": 1.0,
+              "recall": 0.8899755501222494
+            }
+          },
+          "WAF": {
+            "original_request": {
+              "AP": 0.89006660862463,
+              "FPR": 0.004612159329140462,
+              "confusion": [
+                2374.0,
+                11.0,
+                1670.0,
+                1987.0
+              ],
+              "precision": 0.9944944944944945,
+              "recall": 0.5433415367787804
+            },
+            "vector_balanced": {
+              "AP": 0.9975118206459602,
+              "FPR": 0.008394639783854402,
+              "confusion": [
+                388.12051282051283,
+                3.2857142857142856,
+                211.8794871794871,
+                1482.7142857142858
+              ],
+              "precision": 0.9977888867525476,
+              "recall": 0.874967387129205
+            }
+          }
+        },
+        "threshold_experiment_only": 2.32168328222689
+      },
+      "METHOD_TAIL": {
+        "sources": {
+          "NOTES": {
+            "original_request": {
+              "AP": 0.9325606426451244,
+              "FPR": 0.0,
+              "confusion": [
+                218.0,
+                0.0,
+                6.0,
+                50.0
+              ],
+              "precision": 1.0,
+              "recall": 0.8928571428571429
+            },
+            "vector_balanced": {
+              "AP": 0.9624599839935976,
+              "FPR": 0.0,
+              "confusion": [
+                144.0,
+                0.0,
+                4.0,
+                48.0
+              ],
+              "precision": 1.0,
+              "recall": 0.9230769230769231
+            }
+          },
+          "SRBH": {
+            "original_request": {
+              "AP": 0.9995487126836126,
+              "FPR": 0.0,
+              "confusion": [
+                676.0,
+                0.0,
+                450.0,
+                3640.0
+              ],
+              "precision": 1.0,
+              "recall": 0.8899755501222494
+            },
+            "vector_balanced": {
+              "AP": 0.9995487126836126,
+              "FPR": 0.0,
+              "confusion": [
+                676.0,
+                0.0,
+                450.0,
+                3640.0
+              ],
+              "precision": 1.0,
+              "recall": 0.8899755501222494
+            }
+          },
+          "WAF": {
+            "original_request": {
+              "AP": 0.89006660862463,
+              "FPR": 0.004612159329140462,
+              "confusion": [
+                2374.0,
+                11.0,
+                1670.0,
+                1987.0
+              ],
+              "precision": 0.9944944944944945,
+              "recall": 0.5433415367787804
+            },
+            "vector_balanced": {
+              "AP": 0.9975118206459602,
+              "FPR": 0.008394639783854402,
+              "confusion": [
+                388.12051282051283,
+                3.2857142857142856,
+                211.8794871794871,
+                1482.7142857142858
+              ],
+              "precision": 0.9977888867525476,
+              "recall": 0.874967387129205
+            }
+          }
+        },
+        "threshold_experiment_only": 2.32168328222689
+      }
+    },
+    "URI100_collision_diagnostics": {
+      "NOTES": {
+        "hindsight_fractional_upper_bound_at_1pct_FPR": 1.0,
+        "hindsight_zero_FPR_URI100_recall_ceiling": 1.0,
+        "mixed_label_vectors": 0,
+        "positive_in_mixed_vectors": 0,
+        "unique_vectors": 196
+      },
+      "SRBH": {
+        "hindsight_fractional_upper_bound_at_1pct_FPR": 1.0,
+        "hindsight_zero_FPR_URI100_recall_ceiling": 1.0,
+        "mixed_label_vectors": 0,
+        "positive_in_mixed_vectors": 0,
+        "unique_vectors": 4766
+      },
+      "WAF": {
+        "hindsight_fractional_upper_bound_at_1pct_FPR": 0.9996718621821166,
+        "hindsight_zero_FPR_URI100_recall_ceiling": 0.9931637954607602,
+        "mixed_label_vectors": 6,
+        "positive_in_mixed_vectors": 25,
+        "unique_vectors": 2086
+      }
+    },
+    "external_unlabeled_profile": {
+      "exact_uri100_overlap_with_tuning": 1,
+      "frozen_B16_flag_rate_by_log_observation": 0.12427637196123137,
+      "frozen_B16_flag_rate_by_view": 0.04236718224613315,
+      "scope": "UNLABELED_NOT_FPR_OR_RECALL",
+      "uri100_views_outside_tuning": 7434
+    },
+    "held_source_macro_recall_gain": 0.0,
+    "macro_recall_gain": 0.0,
+    "method_offset_fit": {
+      "GET": {
+        "fallback_to_pooled": false,
+        "groups": 158,
+        "logit_offset": 0.0,
+        "support_distinct_benign_views": 837
+      },
+      "OTHER": {
+        "fallback_to_pooled": true,
+        "groups": 9,
+        "logit_offset": 0.0,
+        "support_distinct_benign_views": 14
+      },
+      "POST": {
+        "fallback_to_pooled": true,
+        "groups": 12,
+        "logit_offset": 0.0,
+        "support_distinct_benign_views": 23
+      }
+    },
+    "plan_sha256": "4b684bdb5b2bd4807904dc84249fc9e05712654bf4ae262dc1942c7041fdea28",
+    "rows_by_source": {
+      "NOTES": [
+        218,
+        56
+      ],
+      "SRBH": [
+        676,
+        4090
+      ],
+      "WAF": [
+        2385,
+        3657
+      ]
+    },
+    "scope": "PUBLISHER_DEVELOPMENT_ONLY",
+    "worst_candidate_held_source_fpr": 0.0390533242118444
+  },
+  "decision": {
+    "calibration": "RETAIN_B16_REJECT_METHOD_TAIL",
+    "native": "BLOCKED_NO_VERIFIED_DATA",
+    "release_ready": false
+  },
+  "evidence_sha256": {
+    "acceptance.json": "8ac51c2dbff54072a19c946499c1beafd9d6a3f4e01da7fb0967c9fb5c85e1b8",
+    "artifact-index.json": "d66d4e7379d6fc1e73fd3d84ae9901c37770a130c2a5814a6d70713080908ebf",
+    "calibration-pilot.json": "412d41cdd154c0663673a1d5bdf721cd72d017583f77832dd42a9d84e27db4ea",
+    "calibration-plan.json": "4b684bdb5b2bd4807904dc84249fc9e05712654bf4ae262dc1942c7041fdea28",
+    "forensic-census.json": "2f92f91423a50afb30017f12fbf9614360bf3689c40c2a7e9c905919a51b282b",
+    "fpad-census.json": "2d9f822e62a1afa039b14f665577282a66f925efaa80b733a5d1c105ec587921",
+    "tests.xml": "743587dc37357d05cdf7c4035f91383e0f3dc8b1338522f19f716cfb72c6c6fc"
+  },
+  "implementation_sha": "2187d28abeeb34805cb0418e2d66e2727cd1845f",
+  "native_AI_vs_rules_metrics": null,
+  "native_TRAIN_DEV_CAL_FIT_CAL_OP_TEST_SHADOW": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "new_sources": {
+    "webspotter_fpad_publisher_train": {
+      "artifact_DOI": "10.5281/zenodo.16978408",
+      "artifact_metadata_sha256": "d97ad837ddbcbf611a22bd6a192e0b142762c2c8277c157b31a50d0070c67df3",
+      "body_type_and_capture_receipts_available": false,
+      "canonically_admitted": 0,
+      "class_totals": {
+        "publisher_attack": 24739,
+        "publisher_normal": 13040
+      },
+      "data_sha256": "e450fd0a0de45e5ce29053b82573e703be5e30cf8e29f02a770fa27f60fef908",
+      "decision": "EXCLUDE_TARGET_FORMAT_PERFECTLY_CONFOUNDED_WITH_PUBLISHER_CLASS",
+      "directory_metadata_sha256": "b14316da074faf404a650348bc62ea12d73c23c10b216c35d5b9ae5c46f611a2",
+      "exact_representations_by_class": {
+        "publisher_attack": 24739,
+        "publisher_normal": 13040
+      },
+      "git_blob": "0419804566d46c4ed0a79d348d7a4f4d202baef4",
+      "nonempty_body_strings_by_class": {
+        "publisher_attack": 11869,
+        "publisher_normal": 6489
+      },
+      "normalizable_request_target_by_class": {
+        "publisher_attack": 0,
+        "publisher_normal": 13040
+      },
+      "observed_artifact_license": "mit-license",
+      "opposite_label_exact_representation_conflicts": 0,
+      "protected_split_downloaded": false,
+      "publisher": "https://github.com/Sec-AI-research/WebSpotter",
+      "publisher_labels": {
+        "0": 13040,
+        "1": 4794,
+        "2": 1965,
+        "3": 12889,
+        "4": 5091
+      },
+      "scope": "PUBLISHER_TRAIN_ONLY_METADATA_AND_TARGET_COMPATIBILITY",
+      "version": "idps-r30-fpad-train-preflight-v1"
+    },
+    "zenodo_20001206_organization_x": {
+      "access_members": 17,
+      "authoritative_physical_request_ids_proven": 0,
+      "census": {
+        "access_log_lines": 213205,
+        "expanded_access_bytes": 43910608,
+        "parseable_request_lines": 213182,
+        "projected_rows": 213162,
+        "query_present": 16519,
+        "unparsed_request_line": 23,
+        "unsupported_projection_rows": 20
+      },
+      "decision_time_availability_witnesses": 0,
+      "evidence_scope": "UNLABELED_FORENSIC_OBSERVABILITY_ONLY",
+      "exact_distinct_log_lines": 211178,
+      "exact_distinct_method_targets": 13999,
+      "formal_admission": 0,
+      "license_id": "mit-license",
+      "metadata_sha256": "a93e97ec4b076832cbf0324d930d8da808c74a41a00a40e788699da21d94f2ce",
+      "methods": {
+        "DELETE": 9,
+        "GET": 162763,
+        "HEAD": 30563,
+        "OPTIONS": 18,
+        "OTHER": 6,
+        "POST": 19777,
+        "PUT": 46
+      },
+      "observed_log_days": 15,
+      "organization_count": 1,
+      "projectable_distinct_method_targets": 13994,
+      "publisher_archive_checksum": "md5:b4bf79effa6f3ee1b9e53f278d916620",
+      "request_level_label_table_present": false,
+      "rule_definitions": 39,
+      "source": "10.5281/zenodo.20001206",
+      "source_archive_bytes": 2135289,
+      "source_archive_sha256": "1429caba2803c3e8c90e9fb287bc04f6f8249f8bb34712b39127044e134d631f",
+      "train_permission_under_project_protocol": false,
+      "unique_uri100_unlabeled": 7435,
+      "unlabeled_numeric_derivative_sha256": "9080b611747583060463a7fe5ca217376083187f7f6bf079717c041fdc2a7176",
+      "verified_native_benign_or_attack": 0,
+      "version": "idps-r30-forensic-http-profile-v1"
+    }
+  },
+  "new_training_runs": 0,
+  "report": "docs/114_T09_R30_DATA_AND_MODEL_QUALITY_BREAKTHROUGH.md",
+  "run_id": "t09-r30-quality-kdnKN1kc",
+  "serving": {
+    "default": "RI v2",
+    "frozen_model_sha256": {
+      "B16": "fdff05ee91f181268121ee7c72e573a4b2d771c3a8ee60cfa28e9d11860f2271",
+      "R20": "1a709dcf1ccfa880c3b4b55b77c0699ac10c27fd4ecdd2839bedeb99e1987525"
+    },
+    "research": "B16",
+    "shadow": "R20"
+  },
+  "verification": {
+    "adapter_attempts_completed": 3,
+    "cleanup": "PASS",
+    "hardware_throttle_readback": "PASS",
+    "indexed_artifacts": 50,
+    "preserved_dirty_files": 34,
+    "tests_passed": 3
+  },
+  "version": "idps-r30-handoff-v1"
+}
