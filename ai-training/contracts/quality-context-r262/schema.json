@@ -1,0 +1,106 @@
+{
+  "version": "idps-trusted-context20-r262-v1",
+  "dtype": "float32",
+  "dimensions": 20,
+  "ordering": [
+    "authentication_known",
+    "authenticated",
+    "role_admin",
+    "role_staff",
+    "role_student",
+    "role_other",
+    "actor_session_bound",
+    "resource_student_directory",
+    "resource_self_principal",
+    "resource_authentication",
+    "resource_other",
+    "state_available_before_cutoff",
+    "state_observed_late",
+    "state_missing",
+    "state_withheld",
+    "state_untrusted",
+    "state_ground_truth_only",
+    "source_n",
+    "source_s",
+    "source_a"
+  ],
+  "values": "0 or 1, exactly representable float32",
+  "base_uri_lane": "idps-uri100-raw-ascii-r26-v1 unchanged; separate lane, no model ABI overwrite",
+  "states": [
+    "AVAILABLE_BEFORE_CUTOFF",
+    "OBSERVED_LATE",
+    "MISSING",
+    "WITHHELD",
+    "UNTRUSTED",
+    "GROUND_TRUTH_ONLY"
+  ],
+  "role_categories": [
+    "ADMIN",
+    "STAFF",
+    "STUDENT",
+    "OTHER"
+  ],
+  "resource_categories": [
+    "STUDENT_DIRECTORY",
+    "SELF_PRINCIPAL",
+    "AUTHENTICATION",
+    "OTHER"
+  ],
+  "cutoff_ns": 1000000000,
+  "guard_ns": 1000000,
+  "request_role_binding": "Current request only; no cached session state; A proof resolved against trusted local registry",
+  "supported_context": "Protected GET /api/students/{id}, GET /api/auth/me; not inline pre-authorization",
+  "absent_semantics": "Unavailable core fields zero, explicit state, ABSTAIN; zero is not observed benign",
+  "field_provenance": {
+    "authentication_known_authenticated_role_actor_session_bound": {
+      "producer": "Student SecurityContext -> current Audit event",
+      "trust": "Private owned file, scope/event ID, trusted NGINX request binding, collector proof; HMAC identity checked then discarded",
+      "event_time": "Audit producer_time, bounds in source fact",
+      "receipt_time": "Actual Reader poll monotonic receipt",
+      "availability": "After actual encoding in parallel collector, before 999000000ns; late versions retained",
+      "privacy": "Role/category/booleans only; no literal IDs or tokens",
+      "missing": "State + ABSTAIN"
+    },
+    "resource_category": {
+      "producer": "Pinned route classification of identity-verified request; independent of response or label",
+      "same_for_authorized_and_unauthorized": true
+    },
+    "source_presence": {
+      "producer": "Existing T04 causal cutoff view; no fabricated or structural-only sources",
+      "native_verified_here": [
+        "NSA",
+        "NONE"
+      ],
+      "other_masks": "fixture only"
+    },
+    "owner_relationship": {
+      "state": "GROUND_TRUTH_ONLY",
+      "not_in_vector": true
+    },
+    "session_age_history": {
+      "state": "WITHHELD",
+      "reason": "No trusted freshness/revocation evidence, no stale snapshot fallback",
+      "not_in_vector": true
+    }
+  },
+  "excluded": [
+    "username",
+    "actor_id",
+    "resource_id",
+    "session_hmac",
+    "cookie",
+    "credential",
+    "client-role/header identity",
+    "current authorization decision",
+    "HTTP response status",
+    "outcome",
+    "Oracle label",
+    "late evidence"
+  ],
+  "policy_control": "Separate deterministic advisory output; not feature or ML score; no enforcement",
+  "observation_profiles": {
+    "local_disposable_KVM": "Real acceptance only; authenticated context from current Audit completion",
+    "persistent_Local": "Not deployed; registry/custody and observation profile needed",
+    "AWS": "Unverified; capture after termination, private context delivery and clock verification required"
+  }
+}
