@@ -1,0 +1,13 @@
+{
+  "version": "idps-navigation-prefix-r33-v1",
+  "task": "Publisher annotated human versus automated navigation. Offline noncommercial behavioral research only.",
+  "source": "https://m4d.iti.gr/wp-content/uploads/2024/04/web_bot_detection_dataset.zip",
+  "license": "CC BY-NC-SA 2.0; Iliou et al., 2021, doi:10.1145/3447815. No deployment or redistribution of derived weights in this study.",
+  "archive_sha256": "6df794c274120d2503d496ca88dc4fce17d75b3d8d3be55b2c91011a347b239e",
+  "input": "Query-free GET document navigations only. For the archive: / or simple ASCII path components ending in .php. Backend route allowlist in the Local lab. Five earlier same-session documents, strictly increasing seconds. Withhold tied, regressing or stale (>1800s gap) windows. No URL literal, cookie, status, response, UA or activity after anchor in history features.",
+  "roles": "Only BOTH phase1 publisher TRAIN rosters for fitting and tuning. Sort salted session hashes within each publisher class, every fourth session to tuning. Deduplicate common human sessions. Exclude all phase1 TEST annotation files. After checkpoint lock, score phase2 three-class publisher roster once for cross-phase research transfer; never use it for fitting, tuning, reselection or official T07 acceptance.",
+  "arms": ["B16", "URI100_LOGISTIC", "MEDIAN_GAP_RULE", "ROUTE_HISTORY", "CADENCE", "JOINT_HISTORY"],
+  "design": "One regularized logistic regression per learned arm, C=0.5, standardized inputs; equal total FIT weight per session and binary class. Common eligible anchors for paired comparisons; report whole-roster recall, false alert and abstention too. B16 uses its published cutoff. Each other cutoff is the most permissive strict threshold permitting at most floor(1% of eligible tuning negatives) false positives; ties stay together. Select history arm by effective tuning recall, AP, then fewer features. Direct rule and URI comparator do not enter arm selection. No phase2-dependent reruns or architecture changes.",
+  "stats": "Session block bootstrap 95% conditional intervals at fixed cutoff, class stratified. Also group by exact history vector; separate publisher bot families and one first eligible anchor per session. Actor IDs, bot generator independence and collector SLA unavailable offline.",
+  "release": "No promotion. Native attack acceptance needs independent reviewed incidents, matched human exposure, cutoff and lineage under T07. Publisher, local engineering and native counts stay separate."
+}
