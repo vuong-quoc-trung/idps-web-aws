@@ -1,0 +1,154 @@
+{
+  "artifact_root": "ai-training/.artifacts/t09-r27-native-q6u9j3bg",
+  "base_HEAD": "b95bd72cfbeb6233456053433c9fea37e0ef389b",
+  "branch": "feature/ai-idps-shadow-integration",
+  "decision": "NATIVE_RESEARCH_ADMISSION_IMPROVED_FINAL_QUALITY_BLOCKED",
+  "evidence_sha256": {
+    "acceptance.json": "5738a34fcfb1b451ebfcef423db263c967e3a000845c9d9c5af1f6b41bb2333f",
+    "admission.json": "170e6bfa32e2c72fea6b435c4ad3d2622df31939190e42ffae7b2af51b8f768d",
+    "artifact-index.json": "2833799aa26cb025f70d14a6597665654a4283574cb7d0a217553d959537f3ab",
+    "compatibility-tests.xml": "e938907afa2aa9df1b64ac87674b0125e1f3f0427a3e5c94535e294eac3c4023",
+    "lineage-graph.json": "335a68ab21e8108e54948068933b54f75c3da9ac62e8672a735c4366ada74843",
+    "native-source-role-registry.json": "872735a63c15f09f8b6bdaee94f0b420c3b478a43d72925b85ee7d9c6daec9e7",
+    "offline-resume-proof.json": "31fcbd10a850344b1d7dca8d67d7e4d85c656e27988a52b65fca193d1b5180bc"
+  },
+  "feature": {
+    "Context20_unchanged": true,
+    "URI100_unchanged": true,
+    "cutoff_ns": 1000000000,
+    "dimensions": 22,
+    "guard_ns": 1000000,
+    "owner_outcome_JDBC": "GROUND_TRUTH_ONLY_NOT_FEATURES",
+    "primary_ABI": "idps-uri100-context22-r27-v1",
+    "primary_dimensions": 122,
+    "real_target_encoding_ms": [
+      402.728826,
+      417.190505,
+      449.527351,
+      520.896126,
+      518.338938,
+      436.491117
+    ],
+    "schema": "idps-trusted-context22-r27-v1",
+    "schema_sha256": "89fa009e741e4cc2520d97c6e01d7b65ea1d951a1ac14d36e4cc20750d0ff4bf"
+  },
+  "formal_blockers": "R27 admits the narrow AUTHORIZATION_POLICY_VIOLATION_ATTEMPT research task, not a global ATTACK_INTENT corpus or representative independent T07 evaluation. Legacy v1 task serialization is not certified; do not silently relabel or promote these research rows.",
+  "functional_commits": [
+    "876417b",
+    "bb2d4db",
+    "087c858"
+  ],
+  "git_push_receipt": "ai-training/.artifacts/t09-r27-native-q6u9j3bg/git-push.json",
+  "model": {
+    "B16_TN_FP_FN_TP": [
+      3,
+      0,
+      3,
+      0
+    ],
+    "ML_added_value_demonstrated": false,
+    "Notes_CAL_OP_recall": 0.28125,
+    "PKDD_benign_FPR": 0.10689655,
+    "R20_TN_FP_FN_TP": [
+      3,
+      0,
+      3,
+      0
+    ],
+    "R20_shadow": true,
+    "RI_v2_default": true,
+    "authorization_choice": "Deterministic current application policy; control only, not ML performance",
+    "comparison_execution": "OFFLINE_FROZEN_MODEL_REPLAY_ON_CAUSAL_FEATURES; no live B16/R20 score-availability claim",
+    "new_training": false,
+    "policy_TN_FP_FN_TP": [
+      3,
+      0,
+      0,
+      3
+    ],
+    "publisher_research_best": "B16_URI100_UNCHANGED",
+    "quality_scope": "Tiny task-transfer research panel, not independent final evaluation",
+    "reference_AP": {
+      "B16": 0.5,
+      "R20": 0.5
+    },
+    "release_ready": false,
+    "target90recall_1FPR": "NOT_ESTABLISHED"
+  },
+  "native_counts": {
+    "ATTACK_VERIFIED_for_declared_task": 3,
+    "BENIGN_VERIFIED_for_declared_task": 3,
+    "HTTP": 26,
+    "Oracle_verified": 26,
+    "count_scope": "Do not promote narrow task-specific research admission into the formal global ATTACK_INTENT corpus or final T07 evidence",
+    "formal_global_T07_ATTACK_INTENT_TRAIN_DEV_CAL_TEST": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "native_masks": {
+      "NSA": 26
+    },
+    "physical_requests": 26,
+    "representative_independent_final_anchors": 0,
+    "research_canonical_TRAIN_DEV_CAL_TEST": [
+      2,
+      4,
+      0,
+      0
+    ],
+    "security_task": "AUTHORIZATION_POLICY_VIOLATION_ATTEMPT",
+    "session_setup_controls": 20,
+    "source_observations": {
+      "A": 26,
+      "N": 26,
+      "S": 26
+    },
+    "structural_material_components": 3,
+    "target_requests": 6,
+    "unique_URI100": 3,
+    "unique_URI100_context22": 6
+  },
+  "next_task": "Acquire an outcome-verified payload/behavior cohort beyond the three known authorization lookups, with representative sampling/custody and formal contract export; use that new information to justify ML and independent CAL/TEST.",
+  "operations": {
+    "Local_services_active": 4,
+    "acquisition_seconds": 154.04033745800007,
+    "all_completed_and_cleanup": true,
+    "background_job_remaining": null,
+    "dispatch_cpu_max": "100000 100000",
+    "dispatch_temperature_C": [
+      54,
+      90
+    ],
+    "initial_PID": 22301,
+    "linger": "yes",
+    "resource_attempts": 8,
+    "resume_additional_HTTP": 0,
+    "supervisor_unit": "idps-r27-native-q6u9j3bg.service",
+    "thermal_policy_unchanged": true
+  },
+  "preservation": {
+    "R261_artifacts_verified": 266,
+    "R262_artifacts_verified": 193,
+    "changed": 0,
+    "original_dirty_files": 34,
+    "protected_payloads_opened": false
+  },
+  "report": "docs/111_T09_R27_INDEPENDENT_NATIVE_AI_QUALITY.md",
+  "run_id": "t09-r27-native-q6u9j3bg",
+  "verification": {
+    "Rust_binary_sha256": "79003ed422e46b0a674163ed8c61da1c297e986549aed5e025e67e36ea14c27e",
+    "Rust_unit_tests": 3,
+    "combined_ABI_compatibility_tests": 79,
+    "fresh_workers": 3,
+    "max_vector_error": 0,
+    "new_ONNX_export": "NOT_APPLICABLE_NO_NEW_MODEL",
+    "new_Python_tests": 36,
+    "projection_IPC_p50_ms": 0.040877,
+    "projection_IPC_p95_ms": 0.287732,
+    "real_target_context_parity": 6,
+    "synthetic_context_frames": 1480
+  },
+  "version": "idps-r27-handoff-v1"
+}
