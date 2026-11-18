@@ -1,0 +1,212 @@
+{
+  "version": "idps-r261-handoff-v1",
+  "run_id": "t09-r261-recovery-drliluc_",
+  "decision": "QUALITY_IMPROVED_NATIVE_BLOCKED",
+  "report": "docs/109_T09_R261_AUTONOMOUS_RECOVERY_AND_MODEL_QUALITY.md",
+  "branch": "feature/ai-idps-shadow-integration",
+  "research_model": {
+    "active_default": false,
+    "best_checkpoint": {
+      "global_step": 400,
+      "manifest_sha256": "0f0b0d8ab173d8c7ff0dba43809837d240c5dd307f75c340b6706fda9593d6e7",
+      "path": "checkpoints/step-000000000400-fead25dafe62"
+    },
+    "best_epoch": 16,
+    "calibration": {
+      "intercept": -0.3784720549041733,
+      "kind": "platt",
+      "slope": 1.0006241879759792
+    },
+    "comparator": ">",
+    "continuation_completed_epoch": 21,
+    "counts": {
+      "CAL_FIT": 11354,
+      "CAL_OP": 3901,
+      "FIT": 433261,
+      "SOURCE2_RESEARCH_TEST": 3750,
+      "TUNING": 11082
+    },
+    "equal_source_original_Kish": 10256.730508520777,
+    "feature_schema_sha256": "36afcf016563071b69890be5db1bde863e7b700f93f33f35426e085aab388235",
+    "fit_originals": 433261,
+    "fit_unique_uri100": 50230,
+    "hybrid_allowed": false,
+    "model": "B16_URI100_SWIGLU",
+    "model_sha256": "fdff05ee91f181268121ee7c72e573a4b2d771c3a8ee60cfa28e9d11860f2271",
+    "parameters": 400256,
+    "raw_model_sha256": "02bdfa4e3587b05940381561bdd9401321387fc00ce5934e5dac9229374562bd",
+    "release_ready": false,
+    "research_only": true,
+    "rollback": "No cutover performed; RI v2 default and existing R20 shadow artifacts/units remain unchanged",
+    "schema": "idps-uri100-raw-ascii-r26-v1",
+    "source2_holdout_independence": "Research subrole of exposed historical R13 FIT, not pristine TEST",
+    "threshold": 0.9420260190963745,
+    "threshold_float32_le_hex": "9e28713f",
+    "validated_runtime_scope": "Raw URI and its three-round percent-decoded form must be ASCII. Unicode/invalid UTF8 is explicit ABSTAIN, not a fabricated vector.",
+    "version": "idps-r261-research-model-v1"
+  },
+  "source2_research_metrics": {
+    "confusion_tn_fp_fn_tp": [
+      1083,
+      0,
+      433,
+      2234
+    ],
+    "recall": 0.8376452943382077,
+    "precision": 1.0,
+    "fpr": 0.0,
+    "ap": 0.998989973519762,
+    "threshold": 0.9420260190963745
+  },
+  "calibration_diagnostics": {
+    "brier": 0.025650711735791292,
+    "ece_equal_width_10": 0.03963270486657663,
+    "log_loss": 0.08601485734314085
+  },
+  "independent_native_TEST_metrics": null,
+  "paired_gain": {
+    "FPR_delta": -0.0110803324099723,
+    "component_bootstrap_95pct_recall_delta": [
+      0.03744757053537352,
+      0.20532053115255375
+    ],
+    "recall_delta": 0.10348706411698538,
+    "scope": "Previously exposed publisher FIT research groups; not native independent acceptance"
+  },
+  "CAL_OP": {
+    "NOTES": {
+      "recall": 0.28125,
+      "fpr": 0.00267379679144385,
+      "precision": 0.9473684210526315,
+      "ap": 0.6893094667626724
+    },
+    "SRBH": {
+      "recall": 0.8302881236823612,
+      "fpr": 0.0016207455429497568,
+      "precision": 0.9995769881556683,
+      "ap": 0.9980743336587501
+    }
+  },
+  "external_frozen_FPR": {
+    "csic_2010_normalTrafficTraining.txt": {
+      "B_FINAL": 0.0,
+      "R20": 0.0,
+      "R25": 0.0,
+      "R26A": 0.0002777777777777778
+    },
+    "xml_train.txt": {
+      "B_FINAL": 0.10689655172413794,
+      "R20": 0.0,
+      "R25": 0.05218113834648941,
+      "R26A": 0.17810552555047776
+    }
+  },
+  "native_live": {
+    "URI100_at_cutoff": 12,
+    "URI100_mixed_authorization_vectors": 2,
+    "first_HTTP": 8,
+    "first_campaign": "BLOCKED",
+    "independent_human_review_claimed": false,
+    "native_TRAIN_DEV_CAL_TEST": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "repair_HTTP": 12,
+    "repair_campaign": "PASS",
+    "semantic_label_counts_repair": {
+      "ATTACK_VERIFIED": 3,
+      "BENIGN_VERIFIED": 3
+    },
+    "task": "AUTHORIZATION_POLICY_VIOLATION_ATTEMPT",
+    "total_HTTP": 20
+  },
+  "runtime": {
+    "max_feature_abs_error": 0.0,
+    "max_score_abs_error": 0.0,
+    "combined_ns_p50_p95": [
+      658879.0,
+      936053.0499999999
+    ],
+    "inference_ns_p50_p95": [
+      375237.0,
+      420568.25
+    ],
+    "cases_total": 1391,
+    "fresh_processes": 3,
+    "scope_limit": "Raw URI and its three-round percent-decoded form must be ASCII. Unicode/invalid UTF8 is explicit ABSTAIN, not a fabricated vector."
+  },
+  "epoch_resume": {
+    "from_epoch": 20,
+    "global_step": 525,
+    "mid_batch_claimed": false,
+    "parameters_adam_sampler_loss": "BIT_EXACT",
+    "state": "PASS",
+    "threads": 1,
+    "to_epoch": 21
+  },
+  "regression": {
+    "python": 157,
+    "Rust": 2,
+    "state": "PASS"
+  },
+  "local_services": {
+    "collector": {
+      "ActiveState": "active",
+      "MainPID": "4205",
+      "NRestarts": "0"
+    },
+    "receiver": {
+      "ActiveState": "active",
+      "MainPID": "4206",
+      "NRestarts": "0"
+    },
+    "ri": {
+      "ActiveState": "active",
+      "MainPID": "4207",
+      "NRestarts": "0"
+    },
+    "scorer": {
+      "ActiveState": "active",
+      "MainPID": "4208",
+      "NRestarts": "0"
+    }
+  },
+  "cleanup_attempts": 17,
+  "background_jobs_running": false,
+  "original_dirty_tracked_preserved": 34,
+  "release_ready": false,
+  "model_promoted": false,
+  "artifact_paths_and_sha256": {
+    "acceptance.json": "9a98d322c37d047484c3e3c332dc7a7b028ccfee20bd67ba3bd7df5b2f19bd09",
+    "artifact-index.json": "10073875702251f4e97158c1a934e869bf554bf2aa8b997e109ccaa110b17b2d",
+    "research-bundle/manifest.json": "f6a0e8c527f253337dd8b4c4489ef7b06c68c0778330705bd987b4838b13cd7e",
+    "research-bundle/model.onnx": "fdff05ee91f181268121ee7c72e573a4b2d771c3a8ee60cfa28e9d11860f2271",
+    "research-bundle/feature-schema.json": "36afcf016563071b69890be5db1bde863e7b700f93f33f35426e085aab388235",
+    "model-selection.json": "680dfa1bcaddc8233ac047a25313fd0199299bd4cb35e05c79ac6fb433a67fd4",
+    "checkpoint-audit.json": "9280f063fc815b54a2424e5a8db99e7af77b310e62baca547e15cc3c41966bed",
+    "continuation-replay.json": "fa4dd018ea29aae735f6a43d505c34dea366a6118e5803d7bf5b18a283822d89",
+    "evaluation-lock.json": "6e3b8d4f9e7d907324a33cbeeedcab64a8db2bd26675d47ef8871fdba972cde8",
+    "evaluation.json": "8ae8cdca08c5f6de23da99ff35c6a450cf18bf909d76b8a97ec723350a308315",
+    "diagnosis.json": "5055d195b938f8f91ff36bc38c9d813ffbb0bdca2235d400354fff496d7394cb",
+    "paired-comparison.json": "de570ec00e3391a22926a7cbe1650c02b9181f15fc27267949421b0649a362b9",
+    "verification.json": "892c3cd89df1b5bcb6c6a0593b459de3d8c5cf2e3a94e19e1e96cd67f64ba698",
+    "resource-acceptance.json": "a7d8b4848f933c5ffcf98539ae9f347c64de202b107dd1e34626d5f5a535e79e",
+    "final-allocation.json": "0c753018f830e3b414fb96546d8ffd057f297ed0fa122e48d2198662a13c0824",
+    "thermal-boundary-kernel.json": "6092c83979a02105455eb6711822b5ae952b8b4781e6b22dfa1004de9a336bd4",
+    "final-tests.xml": "b99b40dc102214ef08e90182c474b9ff49cdaf0327c992140e011a7a36a8193f",
+    "native-recovery-plan.json": "a6957b3115afb128bf087eef29ee089d576551cef34a1c6dc6a9e99c2f7aed7a",
+    "native-live-v2/summary.json": "9c866e0ceb8d2c3c1b5016f20b39de7f919bd783450a7f9402150ce3aa5d7ea3",
+    "native-live-v2/checkpoint.json": "f3b8325cc69973ac7c05cf0a620670c38e1f235db853ae345714c24ff0749329",
+    "native-live-v2/campaign-1-a1/adapter/guest/receipt-ledger.jsonl": "d8f0c38a85691de636ef8a972319d3dfbef41007941c60fd6b2f56c6ecfee34c",
+    "interruption-recovery.json": "4b5d0c066d3c62cf5d6b510ea010262a206bcc86bd084b254a4551093b1840cb",
+    "health-after-interruption/sensor-health.json": "f857de765ac87e7e036d6db68be032b2b89c2e934034894478f84a3dd55adbcb"
+  },
+  "source_commits": {
+    "resource_integration": "824f03d",
+    "checkpoint_quality_runtime": "b3c5ecb",
+    "native_ground_truth": "48cf9cd"
+  },
+  "next_task": "Project trusted authorization/session context before cutoff on the independently witnessed task, collect independent lineage cohorts, and evaluate against URI-only and deterministic policy controls. Do not retrain URI100 blindly."
+}
