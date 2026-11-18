@@ -1,0 +1,61 @@
+{
+  "version": "idps-r29-defensive-source-decisions-v1",
+  "as_of": "2026-11-18",
+  "decision": "BLOCKED_NO_VERIFIED_DATA",
+  "preferred_handoff": {
+    "source": "Defensive application custodian and incident-response archive",
+    "access": "No pinned manifest in the local intake directory",
+    "missing": [
+      "Trusted request ID linking each adjudicated outcome to capture receipts",
+      "Representative benign sampling frame and campaign/session/alias lineage",
+      "Decision-time availability and collector clock proof for model inputs",
+      "Restricted rights, source roles, and a separate custodian for protected evaluation"
+    ],
+    "automation": "Ingest trusted local metadata with R11 then validate the R29 envelope and run R28 closure."
+  },
+  "external": [
+    {
+      "source": "Web Server Log Dataset",
+      "publisher": "https://zenodo.org/records/20001206",
+      "rights_metadata": "https://zenodo.org/api/records/20001206",
+      "rights_observed": "MIT, open record",
+      "role": "METADATA_ONLY_FORENSIC_LEAD",
+      "missing": "Independent request-bound outcomes and a verified benign exposure denominator. Publisher assigns labels using patterns and treats unmatched lines as benign.",
+      "automation": "Public metadata retrievable. A case-owner evidence mapping is required before any native intake."
+    },
+    {
+      "source": "SecAlertBench",
+      "publisher": "https://github.com/Dxsssu/SecAlertBench/blob/main/README.md",
+      "role": "METADATA_ONLY_ALERT_TRIAGE",
+      "missing": "The public normalized release omits timestamps and provides alerted cases, not a sampled request roster or collector receipts.",
+      "automation": "Public metadata retrievable. Native intake requires the original custodian and a separate request-exposure dataset."
+    },
+    {
+      "source": "Biblio-US17",
+      "publisher": "https://idus.us.es/items/53034f60-d215-44b0-a198-eb8a5229218e",
+      "methods": "https://doi.org/10.1186/s42400-024-00336-3",
+      "rights_metadata": "https://idus.us.es/server/api/core/items/53034f60-d215-44b0-a198-eb8a5229218e",
+      "rights_observed": "CC BY-NC-ND 4.0 in current idUS metadata",
+      "role": "PENDING_AUTHORIZED_URI_RESEARCH_ONLY",
+      "missing": "An authorized RAW/LABEL copy with permitted use and a checked row-level benign and attack basis. Documented URI records do not carry local cutoff or native source proofs.",
+      "automation": "Metadata HTTP 200. No known authorized archive locally. Prior archive denial remains recorded; no content request made in R29."
+    },
+    {
+      "source": "SOC-MLD v2",
+      "publisher": "https://zenodo.org/records/23116148",
+      "rights_observed": "CC BY 4.0",
+      "role": "QUARANTINED_LABEL_EVIDENCE_RESEARCH",
+      "missing": "64 local dossiers remain pending. A request-to-incident/outcome map and safe split are missing; 38 attack instance IDs span the published split in the local audit.",
+      "automation": "Request locators and dossier pins can be checked. A publisher or owner must supply the semantic map."
+    },
+    {
+      "source": "ModSec-WP",
+      "publisher": "https://zenodo.org/records/21872151",
+      "rights_observed": "CC BY 4.0 in the project source ledger",
+      "role": "QUARANTINED_PUBLISHER_LABELS",
+      "missing": "Request-level semantic provenance and independent campaign links. Existing audit records 20 conflicting transaction IDs.",
+      "automation": "Source metadata and historical audit can be checked. Labels require a scoped evidence release before native intake."
+    }
+  ],
+  "frozen_publisher_uses": "WAF, SR-BH and WAMM retain their approved development or auxiliary roles; PKDD stress and existing evaluation roles remain protected."
+}

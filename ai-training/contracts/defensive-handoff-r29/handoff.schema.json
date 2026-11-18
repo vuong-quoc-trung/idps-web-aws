@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "R29 restricted defensive evidence handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "scope", "plan", "lineage", "rights", "intake", "protected_partitions"],
+  "properties": {
+    "version": {"const": "idps-r29-defensive-handoff-v1"},
+    "scope": {"const": "EXISTING_DEFENSIVE_CAPTURE"},
+    "plan": {"$ref": "#/$defs/file_pin"},
+    "lineage": {"$ref": "#/$defs/file_pin"},
+    "rights": {"$ref": "#/$defs/file_pin"},
+    "intake": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/file_pin"}
+    },
+    "protected_partitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CAL_FIT": {"$ref": "#/$defs/partition_pin"},
+        "CAL_OP": {"$ref": "#/$defs/partition_pin"},
+        "TEST_SHADOW": {"$ref": "#/$defs/partition_pin"},
+        "TEST_BLOCK": {"$ref": "#/$defs/partition_pin"}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$", "minLength": 64, "maxLength": 64},
+    "file_pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "sha256"],
+      "properties": {
+        "file": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,110}\\.json$", "maxLength": 116},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "partition_pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_sha256", "custody_record_sha256", "sealed"],
+      "properties": {
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "custody_record_sha256": {"$ref": "#/$defs/sha256"},
+        "sealed": {"const": true}
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "plan_sha256", "grants"],
+      "properties": {
+        "version": {"const": "idps-r29-defensive-rights-v1"},
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "grants": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["manifest_sha256", "role", "permission_ref_sha256", "approved_use"],
+            "properties": {
+              "manifest_sha256": {"$ref": "#/$defs/sha256"},
+              "role": {"enum": ["TRAIN", "DEV"]},
+              "permission_ref_sha256": {"$ref": "#/$defs/sha256"},
+              "approved_use": {"const": "RESTRICTED_NATIVE_RESEARCH"}
+            }
+          }
+        }
+      }
+    }
+  }
+}
