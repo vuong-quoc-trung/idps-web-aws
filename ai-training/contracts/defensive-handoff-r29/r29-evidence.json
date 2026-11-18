@@ -1,0 +1,124 @@
+{
+  "artifact_root": "ai-training/.artifacts/t09-r29-recovery-fmU84Wik",
+  "base_sha": "872b762b3b81592f9f9cfd4efa6cbec190eaf8f3",
+  "decision": "BLOCKED_NO_VERIFIED_DATA",
+  "evidence_sha256": {
+    "acceptance.json": "20251a59406b53974bdd9ebcaf6a91ae729fd0c6d4994ae732f1c536ccde67f9",
+    "adapter-test-retry/result.json": "07cddcb90b347fd3ab71f1577bdf30da90ae9d930034e3bafbc0832445b629a8",
+    "adapter/result.json": "de71377b71f885c40773310f28cc84742de157cbfd491a2f4e5edee6d9ca49b4",
+    "artifact-index.json": "b23f754604660a4f7ba44d8e4b45729e39922c4e649cf0af3a99aa6f1ceb8a63",
+    "handoff-tests-retry.xml": "5d65d5b3de48ccd2d0199f7b7ad22d9911627a14b0eef9cdbf236d42efc4b684",
+    "handoff-tests.xml": "4257c99e91e3821ca7a0bb26ac450caf4ceb2668f39db4c166fd884ac72c3917",
+    "reconcile.json": "20611d5176ae1b043c95c9059af6e8ff1dee52011ea20e9e4a8fe231853e7eb5"
+  },
+  "formal_canonical_counts": {
+    "CAL_FIT": 0,
+    "CAL_OP": 0,
+    "DEV": 0,
+    "TEST_SHADOW": 0,
+    "TRAIN": 0
+  },
+  "handoff_schema_sha256": "9d9f4aec8f090cebb7d27dcdca692d22da3c3c6db3b0df325a57fa47975c20d1",
+  "implementation_sha": "da5d466c953c50b6beadd7786291fe609aac52d6",
+  "model_sha256": {
+    "B16": "fdff05ee91f181268121ee7c72e573a4b2d771c3a8ee60cfa28e9d11860f2271",
+    "R20": "1a709dcf1ccfa880c3b4b55b77c0699ac10c27fd4ecdd2839bedeb99e1987525"
+  },
+  "new_native_eligible": {
+    "attack": 0,
+    "benign": 0,
+    "independent_lineage": 0
+  },
+  "new_quality_metrics": {
+    "FPR": null,
+    "incremental_TP_vs_rules": null,
+    "recall": null
+  },
+  "pending_resolved_to_formal_labels": 0,
+  "reconciled_sources": {
+    "SOC_MLD": {
+      "approved_labels": 0,
+      "campaign_overlap_ids_in_publisher_split": 38,
+      "dossiers_sha_and_unique_locator_verified": 64,
+      "state": "PENDING_REQUEST_LEVEL_OUTCOME_AND_CAMPAIGN_JOIN"
+    },
+    "T06_grounded": {
+      "TRAIN_metadata_rows_bound": 48,
+      "direct_archived_oracle_receipts_bound": 5,
+      "direct_archived_outcomes": {
+        "BENIGN_SUCCESS": 4,
+        "VERIFIED_EXPLOIT_SUCCESS": 1
+      },
+      "independent_review_pending": 48,
+      "legacy_distinct_views": 42,
+      "legacy_outcomes": {
+        "BENIGN_SUCCESS": 27,
+        "UNSAFE_REFLECTION": 10,
+        "VERIFIED_EXPLOIT_SUCCESS": 11
+      },
+      "parent_metadata_records_bound": 43,
+      "state": "RESEARCH_ONLY_NATIVE_MASK_AND_CAUSAL_TIMING_UNPROVEN"
+    },
+    "native_archives": {
+      "R26_2": {
+        "candidate_views_pending": 10,
+        "exposed_authorization_cohort": true,
+        "state": "CONTEXT_PROOF_PASS_DATA_INSUFFICIENT"
+      },
+      "R27": {
+        "research_counts": [
+          2,
+          4,
+          0,
+          0
+        ],
+        "task": "AUTHORIZATION_POLICY_VIOLATION_ATTEMPT"
+      },
+      "T08_R72": {
+        "canonical_train": 0,
+        "native_views_ready": 0,
+        "pending_candidates": 74
+      },
+      "legacy_handoffs": [
+        {
+          "profile": "safe_query_numeric_v1",
+          "scenario_labels_in_legacy_scope": 46134,
+          "state": "SCENARIO_LABELS_AND_COMPLETED_FLOW_CONTEXT"
+        },
+        {
+          "profile": "safe_query_numeric_v2",
+          "scenario_labels_in_legacy_scope": 69345,
+          "state": "SCENARIO_LABELS_AND_COMPLETED_FLOW_CONTEXT"
+        }
+      ]
+    },
+    "review_queue": {
+      "independent_labels": 0,
+      "record_pairs_verified": 162,
+      "semantic_oracle_labels": 0,
+      "source_counts": {
+        "eve_first": 54,
+        "eve_novel": 54,
+        "two_source": 54
+      },
+      "state": "PENDING_REQUEST_BOUND_SEMANTIC_EVIDENCE",
+      "triage_disagreement_counts": {
+        "no_syntax_cue_on_collector_attack_claim": 22,
+        "syntax_cue_on_collector_benign_claim": 7
+      }
+    }
+  },
+  "release_ready": false,
+  "report": "docs/113_T09_R29_DATA_RECOVERY_AND_AI_QUALITY.md",
+  "run_id": "t09-r29-recovery-fmU84Wik",
+  "source_decisions_sha256": "9c8bf68392e754f9fd2ea93b335d5f315456e2ca77ad89f4da5d6f681c48b2ec",
+  "verification": {
+    "artifact_count": 30,
+    "cleanup": "PASS_BOTH_ATTEMPTS",
+    "new_tests_passed": 5,
+    "preserved_dirty_files": 34,
+    "reconcile_output_present": true,
+    "test_adapter_status": "COMPLETED_AFTER_IMPORT_FIX"
+  },
+  "version": "idps-r29-evidence-v1"
+}
