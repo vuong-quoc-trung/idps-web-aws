@@ -1,0 +1,30 @@
+{
+  "version": "idps-r27-native-task-admission-v1",
+  "permission": "INTERNAL_SUPERVISED_RESEARCH_ONLY",
+  "task": "AUTHORIZATION_POLICY_VIOLATION_ATTEMPT",
+  "not_equivalent_to": ["MALICIOUS_INTENT", "PUBLISHER_ANOMALOUS", "EXPLOIT_SUCCESS"],
+  "basis": "Pinned application policy + actual principal/session Audit + JDBC state + application response semantics",
+  "feature_ABI": "idps-uri100-context22-r27-v1",
+  "primary_shape": [122],
+  "cutoff_ns": 1000000000,
+  "guard_ns": 1000000,
+  "scope": "Protected target requests in three preregistered lab policy families, not their session setup controls",
+  "required": [
+    "Verified physical request identity and source correlation",
+    "No clock conflict, false join, duplicate request, missing ownership or privacy violation",
+    "Source receipt <= proof availability <= actual feature encoding completion <= cutoff - guard",
+    "URI100 raw/Python reference and Context22 Python/Rust equivalence",
+    "Native Audit event/scope/proof references close to principal and target",
+    "Machine Oracle label is independent of runner intent and input feature construction",
+    "Actual JDBC before/after hashes resolve against pinned quiescent seed; committed mutation or absence independently verified",
+    "Exhaustive bounded exact/near census and alias/campaign/session/material-family closure retain rejected target bridges",
+    "One connected component has exactly one preassigned role",
+    "Compatible-label canonicalization within task/ABI/profile; no protected native role promotion"
+  ],
+  "setup": "Retain raw custody, session and campaign edges. Do not manufacture target-task feature views from unsupported setup, coarse baseline vectors or absent context.",
+  "human_review": "Never fabricated; machine semantic research eligibility does not claim independent human attestation.",
+  "Data_Contract_v1": "Additive T09 task/representation profile preserving T02 identity, provenance, missingness, label and protection semantics. No claim of serialization acceptance by the unchanged legacy task enum/schema.",
+  "T07": "Unchanged final quality/calibration/coverage/confidence gates. Structural task-component disjointness is not representative independent sampling.",
+  "CAL_TEST": "Not acquired or unsealed. DEV stays protected from future TRAIN reuse.",
+  "production_release_permission": false
+}
