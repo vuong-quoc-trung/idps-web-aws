@@ -1,0 +1,187 @@
+{
+  "adapter_final": {
+    "auto_restart": false,
+    "cleanup_verified": true,
+    "exit_proof": {
+      "exit_code_kind": 1,
+      "exit_status": 0,
+      "exited_at_monotonic_us": 4191141471,
+      "invocation": "b293dd177c4d42c49fcadbb7ca434e6a",
+      "missing_cgroup_file": null,
+      "started_at_monotonic_us": 4190195277,
+      "systemd_result": "success",
+      "worker_pid": 43804,
+      "worker_start_ticks": 419019
+    },
+    "reason": "COMPLETED"
+  },
+  "adapter_first_fit_end": {
+    "auto_restart": false,
+    "cleanup_error": "Worker ownership could not be established",
+    "cleanup_verified": true,
+    "detail": "Runtime containment verification failed",
+    "guardian_service_result": "exit-code",
+    "reason": "RUNTIME_CONTROL_FAILURE"
+  },
+  "boundaries": {
+    "aws_deploy": false,
+    "continuous_sensor_daemon_acceptance": false,
+    "independent_quality_evaluation": false,
+    "live_host_enforcement": false,
+    "real_ban_actuation": false
+  },
+  "contract": "schema.json",
+  "engineering_requests": {
+    "final": 2,
+    "in_total": 4,
+    "initial": 2,
+    "structural_NSA_final": 2,
+    "time_valid_final_masks": {
+      "NONE": 1,
+      "NSA": 1
+    },
+    "unique_final_URI100": 1
+  },
+  "evaluation_protocol_sha256": "ce14bdb6d10ef3c324839e6635d3c6e7fdd062a74de4eb03a1db4cb63fa5fd9d",
+  "initial_parity": {
+    "final": "PASS",
+    "reason": "Python and Rust vector numerically equal but signed-zero encoding changed SHA",
+    "status": "FAIL"
+  },
+  "merge_commit": "ee2c984e05b2218d214a02665578a68ce9e64721",
+  "model_manifest_sha256": "7bfcb1e46ec3c9e041f7d919510622a35979c9eef3b64e180760f224e1fff392",
+  "preserved_services": {
+    "idps-r22-local-collector.service": {
+      "active": "active",
+      "pid": 4247,
+      "restarts": 0
+    },
+    "idps-r22-local-receiver.service": {
+      "active": "active",
+      "pid": 4249,
+      "restarts": 0
+    },
+    "idps-r22-local-ri.service": {
+      "active": "active",
+      "pid": 4250,
+      "restarts": 0
+    },
+    "idps-r22-local-scorer.service": {
+      "active": "active",
+      "pid": 4252,
+      "restarts": 0
+    }
+  },
+  "runtime_sha256": {
+    "h2_jar": "29b70e427cc1c40cdc376283adbb0cc62853073797bb5fe5761f81fe73d57ce0",
+    "nginx": "f2e466b8fff91f4251684cfa4b0017a2963701fb66585c8e7fcaef7cc7fb307f",
+    "njs_module": "efb8f6a06d1b8776f2a8d7b1a1fab8b12a65a873bedb86bf164fbc240f528579",
+    "onnxruntime": "fc44112fbe06d7d689c57e11d3862031f64711007e4ee020f8eed5185fd2c1d3",
+    "rust_policy_test": "edf5575b11f33c13f8486350535e2194a13c0be96a045c9d0a45c1ad8d92ae27",
+    "rust_proof_test": "3fc746aa4994c03d8441390a53305e9d1b0d1389ee5ca86efb0d08776c511439",
+    "rust_scorer": "8ea5cda9ee3bad9bdcd32639d8b7e7e94343ba536d58580e68604f405c451626",
+    "student_jar": "56dc8f62b4a358f3538d16b6967052f2ba9588bad3c8056b3068f3e4cdf505e9",
+    "suricata": "6ebe94439533bedac44ec8dc6ab634a061ca4d874101252364f4d7907187ca27"
+  },
+  "same_request_replay": {
+    "field_coverage": "Passive local benign canary; no attack label or automatic action",
+    "hybrid": [
+      {
+        "ai": {
+          "feature_contract": "selected_headers_no_body",
+          "latency_ms": 165.110844,
+          "model_id": "request-intelligence-v2-frozen-step3072",
+          "score": 0.00370931625366211,
+          "signal": "BELOW_THRESHOLD_UNCALIBRATED",
+          "status": "SCORED",
+          "threshold": 0.8826237916946411,
+          "timestamp": null
+        },
+        "execution": false,
+        "failover": "AI_UNAVAILABLE",
+        "policy": "ALERT",
+        "request_id": "9fd06b1000e9acc00eab18a950288d2a"
+      },
+      {
+        "ai": {
+          "feature_contract": "selected_headers_no_body",
+          "latency_ms": 10.318592,
+          "model_id": "request-intelligence-v2-frozen-step3072",
+          "score": 0.00370931625366211,
+          "signal": "BELOW_THRESHOLD_UNCALIBRATED",
+          "status": "SCORED",
+          "threshold": 0.8826237916946411,
+          "timestamp": null
+        },
+        "execution": false,
+        "failover": "AI_UNAVAILABLE",
+        "policy": "LOG_ONLY",
+        "request_id": "ea0e76a637073aaa4e089dedc78936f9"
+      }
+    ],
+    "parity": [
+      {
+        "malformed": "ABSTAIN",
+        "max_score_error": 0.0,
+        "projection_equal": true,
+        "request_id": "9fd06b1000e9acc00eab18a950288d2a",
+        "ri_replay_ms": 165.110844,
+        "ri_v2_score": 0.0037093162536621094,
+        "score": 0.4998559057712555,
+        "scorer_restart": "PASS"
+      },
+      {
+        "malformed": "ABSTAIN",
+        "max_score_error": 0.0,
+        "projection_equal": true,
+        "request_id": "ea0e76a637073aaa4e089dedc78936f9",
+        "ri_replay_ms": 10.318592,
+        "ri_v2_score": 0.0037093162536621094,
+        "score": 0.4998559057712555,
+        "scorer_restart": "PASS"
+      }
+    ],
+    "scope": "POST_OBSERVATION_REPLAY"
+  },
+  "scope": "Local isolated engineering acceptance and same-request post-observation policy replay",
+  "source_files_sha256": {
+    "ai-training/contracts/development-bulk-v1/r23_features.py": "4406f71e4cdfdc9387b7a473ecf2a1b3bd30ea16e32790d59cb7a191e15845a1",
+    "ai-training/contracts/evaluation-v1/protocol.json": "ce14bdb6d10ef3c324839e6635d3c6e7fdd062a74de4eb03a1db4cb63fa5fd9d",
+    "ai-training/contracts/quality-acceleration-r26/r26_rust/src/features.rs": "ec1fe7589aec678ae6f9eb0f58b43eb97a682550c486d000377b89e564e79145",
+    "ai-training/contracts/quality-acceleration-r26/r26_rust/src/main.rs": "48ffbbe77e671c08bc507061041f5f9218125d5732807d352dbacc57e8b809c2",
+    "ai-training/contracts/quality-acceleration-r26/r26_rust/uri76-columns.json": "25daf068396877b1863f5cad0fb6b4e14893c9f66f1669cf1b25bb77fbee7f31",
+    "ai-training/scripts/integration-request-infer.py": "d2f9f4074a364f9161249b238f3f23512718078f4fc121aea74b08db498c1d73",
+    "ai-training/src/idps_ai/features/request_time.py": "cf0abcbc3b58828c7b4c55c1a7d8dc817c48760adf80b2d11d19165ed8b413d5",
+    "ai-training/src/idps_ai/training/delegated_guard.py": "d48c7c06cca26d4f8ac990bf9b82ce0b3833ad2677a9abc828ea4ecd0678e0ec",
+    "ai-training/src/idps_ai/training/resource_adapter.py": "b9cc8b43d7fa101912aa87eedf2b9370eeb3db653db174abe3536bf69be5d110",
+    "scripts/ai-shadow-worker.py": "26c2c492cfdb8ad94bb83ecc149a380529b79ff8c1b8a0154e292e940216524f",
+    "security-web/nginx/https-shadow-mirror.conf": "780338f617af018689be407e68ce0d35bf6a829c07f9b950aee6d951de906f03",
+    "security-web/scripts/deploy-proof-host.py": "f45d960e998650e945544dfcccedec89ac3c4180cb2847cc14b3b5642dcef7d9",
+    "security-web/scripts/prepare-proof-egress.py": "59e6dcc2a6bd9ff88abb075bebf6a2eae849c0e7b3c747394ebbfd80f703cc91",
+    "security-web/scripts/rekey-ai-hybrid-migration.sql": "90d46a1c43894bc4d429e590d79411d05157f389b971245cfbf1cc25b8077e67",
+    "security-web/scripts/run-suricata-generation.py": "77ad6f3e33afdcc9d82bb81c1a540b8e0ef5948648486c3786179a9248ca9e6d",
+    "security-web/scripts/stage-proof-host.py": "84348cd511083d4ea266c20d0c210f15593247bcf8b437ed95ec8eca2ef83133",
+    "security-web/src/firewall.rs": "cbc62c5dd7bd34dd754a3554d5eda97f74e472b9fbc918ab6195e36d6c8fe349",
+    "security-web/src/hybrid.rs": "098740c64460a26933e5a3fff9b2b33d3ddb350c6f563e4350981b4998fe9346",
+    "security-web/src/suricata_origin.rs": "5a239063d63f6b8687ce4a06c4e9bb2df6c11408f0bf589a12e633c5575223db",
+    "security-web/tests/njs/proof-probe.js": "52b750e7e06560f3ae71200a8d7864828cb2f0e64afee968d93596fffc534d82"
+  },
+  "source_heads": {
+    "ai": "0cde3f0bc86cbb677554e7143ac45c6f699a0767",
+    "https": "39945a4814248851c717e93a81373fbc9d98967a"
+  },
+  "task": "T09-R35",
+  "training": {
+    "checkpoint_before_after_sha256": "566fdf08d738cc3dba344ba0ad7ca6560c0edbdbae9d378812078eb475b263bd",
+    "checkpoint_unchanged_on_resume": true,
+    "native_https": "TRAINING_BLOCKED",
+    "native_split": {
+      "CAL": 0,
+      "DEV": 0,
+      "TEST": 0,
+      "TRAIN": 0
+    },
+    "production_promotion": "BLOCKED",
+    "publisher": "TRAINING_READY"
+  }
+}

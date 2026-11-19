@@ -1,0 +1,5 @@
+running 2 tests
+test features::tests::envelope_and_privacy ... ok
+test features::tests::raw_value_masking_and_python_control_whitespace ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s

@@ -1,0 +1,1 @@
+{"auto_restart":false,"cleanup_verified":true,"exit_proof":{"exit_code_kind":1,"exit_status":0,"exited_at_monotonic_us":4191141471,"invocation":"b293dd177c4d42c49fcadbb7ca434e6a","missing_cgroup_file":null,"started_at_monotonic_us":4190195277,"systemd_result":"success","worker_pid":43804,"worker_start_ticks":419019},"reason":"COMPLETED"}

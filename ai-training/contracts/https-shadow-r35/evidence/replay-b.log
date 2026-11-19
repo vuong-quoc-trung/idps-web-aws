@@ -1,0 +1,68 @@
+Running as unit: idps-r35-07f46a744dda4ab1a6ba15fc1d902efe.service; invocation ID: 0ed5b43b35eb4ff290eb4325571cbc67
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 52.0}
+{
+  "parity": [
+    {
+      "request_id": "9fd06b1000e9acc00eab18a950288d2a",
+      "projection_equal": true,
+      "max_score_error": 0.0,
+      "score": 0.4998559057712555,
+      "ri_v2_score": 0.0037093162536621094,
+      "ri_replay_ms": 165.110844,
+      "scorer_restart": "PASS",
+      "malformed": "ABSTAIN"
+    },
+    {
+      "request_id": "ea0e76a637073aaa4e089dedc78936f9",
+      "projection_equal": true,
+      "max_score_error": 0.0,
+      "score": 0.4998559057712555,
+      "ri_v2_score": 0.0037093162536621094,
+      "ri_replay_ms": 10.318592,
+      "scorer_restart": "PASS",
+      "malformed": "ABSTAIN"
+    }
+  ],
+  "hybrid": [
+    {
+      "ai": {
+        "feature_contract": "selected_headers_no_body",
+        "latency_ms": 165.110844,
+        "model_id": "request-intelligence-v2-frozen-step3072",
+        "score": 0.00370931625366211,
+        "signal": "BELOW_THRESHOLD_UNCALIBRATED",
+        "status": "SCORED",
+        "threshold": 0.8826237916946411,
+        "timestamp": null
+      },
+      "execution": false,
+      "failover": "AI_UNAVAILABLE",
+      "policy": "ALERT",
+      "request_id": "9fd06b1000e9acc00eab18a950288d2a"
+    },
+    {
+      "ai": {
+        "feature_contract": "selected_headers_no_body",
+        "latency_ms": 10.318592,
+        "model_id": "request-intelligence-v2-frozen-step3072",
+        "score": 0.00370931625366211,
+        "signal": "BELOW_THRESHOLD_UNCALIBRATED",
+        "status": "SCORED",
+        "threshold": 0.8826237916946411,
+        "timestamp": null
+      },
+      "execution": false,
+      "failover": "AI_UNAVAILABLE",
+      "policy": "LOG_ONLY",
+      "request_id": "ea0e76a637073aaa4e089dedc78936f9"
+    }
+  ],
+  "scope": "POST_OBSERVATION_REPLAY",
+  "field_coverage": "Passive local benign canary; no attack label or automatic action"
+}
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 1.397s
+             CPU time consumed: 1.108s
+                   Memory peak: 117.4M (swap: 0B)
