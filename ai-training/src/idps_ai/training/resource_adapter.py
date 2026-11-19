@@ -514,8 +514,13 @@ def reconcile_cgroup_read_exit(error, worker, pid, started_at):
         or (root in path.parents and path.name == "cgroup.procs")
     ):
         return None
+    return reclaimed_exit(worker, pid, started_at)
+
+
+def reclaimed_exit(worker, pid, started_at):
+    """An already reaped worker must still match its pinned systemd invocation."""
     try:
-        root.stat()
+        worker.path.stat()
     except FileNotFoundError:
         info = worker.exit_info(pid, started_at)
         # With the final counters gone, systemd must report an OOM kill as a
@@ -715,8 +720,17 @@ def guard_locked(attempt, token, spec, guardian, manager, guardian_limits):
                 if counters(worker.path / "cgroup.events")["frozen"] != int(paused):
                     raise PipelineError("Unexpected kernel freeze state")
                 members = worker.members()
-                if verify_containment(plan, [limits], members):
-                    raise PipelineError("Runtime containment verification failed")
+                errors = verify_containment(plan, [limits], members)
+                if errors:
+                    # A disappearing process inventory can be empty without raising ENOENT.
+                    # Retain all other containment errors and the existing exit/safety gates.
+                    if errors == ["EMPTY_CONTAINMENT_INVENTORY"] and not paused and controller.terminal is None:
+                        exit_info = reclaimed_exit(worker, pid, started_at)
+                        if exit_info is not None:
+                            record_exit(exit_info)
+                            result["exit_proof"]["inventory"] = "RECLAIMED_CGROUP"
+                            break
+                    raise PipelineError("Runtime containment verification failed: " + ", ".join(errors))
                 sample = telemetry.sample(worker, attempt)
             except FileNotFoundError as exc:
                 if paused or controller.terminal is not None:
