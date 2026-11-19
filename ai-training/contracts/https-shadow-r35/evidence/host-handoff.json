@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-11-19T16:43:21.542808+07:00",
+  "boot_time_local": "2026-11-19 16:32:22",
+  "scope": "Host handover snapshot after the isolated acceptance window",
+  "units": [
+    {
+      "Id": "idps-r22-local-collector.service",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Thu 2026-11-19 16:32:35 +07",
+      "MainPID": "4242",
+      "NRestarts": "0"
+    },
+    {
+      "Id": "idps-r22-local-receiver.service",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Thu 2026-11-19 16:32:35 +07",
+      "MainPID": "4243",
+      "NRestarts": "0"
+    },
+    {
+      "Id": "idps-r22-local-ri.service",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Thu 2026-11-19 16:32:35 +07",
+      "MainPID": "4244",
+      "NRestarts": "0"
+    },
+    {
+      "Id": "idps-r22-local-scorer.service",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Thu 2026-11-19 16:32:35 +07",
+      "MainPID": "4245",
+      "NRestarts": "0"
+    }
+  ]
+}
