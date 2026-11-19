@@ -47,9 +47,11 @@ Replay đưa input RI v2 đã redacted và rule gắn đúng transaction vào co
 | Rollback và guard triển khai | 15 test staging/rollback, 7 + 3 test guard đạt. Chưa áp dụng nftables theo UID trên host. Bỏ tùy chọn mirror và dùng bundle HTTPS/backup đã xác minh để hoàn nguyên staging. |
 | AI và phục hồi | 2 test projector Rust, 67 test Python resource/thermal/receiver/native. Restart scorer giữ digest và score, input malformed trả ABSTAIN. Phép so sánh Rust và Python ONNX trên từng GET có sai số 0. |
 | Tài nguyên | Mỗi unit acceptance tối đa 1 CPU, 2 GiB, swap 0 và 240 giây. Lượt HTTPS cuối chạy 26,423 giây, CPU 24,748 giây, peak 362,1 MiB theo systemd. Smoke training chạy 1,193 giây, CPU 0,867 giây, peak 116,1 MiB. |
-| Thermal và cleanup | Khi chạy test Student, kernel quota từ `100000 100000` về `50000 100000` ở 94°C, phục hồi ở 88°C. Unit live exit 0, cleanup xác minh. Bốn service R22 RI/scorer/receiver/collector active, PID giống trước và sau, restart count 0. |
+| Thermal và cleanup | Khi chạy test Student, kernel quota từ `100000 100000` về `50000 100000` ở 94°C, phục hồi ở 88°C. Unit live exit 0, cleanup xác minh. Bốn service R22 RI/scorer/receiver/collector active, PID giống nhau ngay trước và sau lượt test, restart count 0. |
 
 Một lượt chạy training ghi bundle rồi Adapter trả RUNTIME_CONTROL_FAILURE khi kiểm containment lúc kết thúc. Evidence cũ không đủ xác định chính xác counter gây lỗi ở lượt đó. Bản sửa chỉ xử lý trường hợp toàn bộ cgroup đã bị thu hồi với xác nhận exit, invocation, identity, trạng thái systemd và cleanup. Kiểm thử fail-closed được giữ lại. Lượt kiểm định Adapter thật sau đó trả COMPLETED, exit 0, cleanup verified. [Kết quả Adapter](../ai-training/contracts/https-shadow-r35/evidence/adapter-result.json) · [Student và CPU readback](../ai-training/contracts/https-shadow-r35/evidence/student.json) · [Rollback](../ai-training/contracts/https-shadow-r35/evidence/rollback-stage.log)
+
+Khi bàn giao, host có thời điểm boot 16:32 ngày 19/11/2026 (UTC+7), sau cửa sổ test. Cả bốn service R22 đã active từ 16:32:35 với PID mới, mỗi service có NRestarts=0 trong lần boot hiện tại. Kết quả này áp dụng cho các service R22 đang phục vụ. [Trạng thái khi bàn giao](../ai-training/contracts/https-shadow-r35/evidence/host-handoff.json)
 
 ## Dataset, model và kết quả training
 
