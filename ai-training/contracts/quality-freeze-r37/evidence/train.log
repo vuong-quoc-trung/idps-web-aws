@@ -1,0 +1,16 @@
+Running as unit: idps-r35-766cc8a6308d4239a2afaec0ae4c131d.service; invocation ID: 8131c16491f145c4b367008c1c50133e
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 56.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 94.0}
+{"resource_guardian": "runtime", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 66.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 92.0}
+{"resource_guardian": "runtime", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 60.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 94.0}
+{"resource_guardian": "runtime", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 60.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 91.0}
+LOCKED HGB HGB {'select_budget': True, 'three_point_gain': True, 'positive_paired_recall_lower': True, 'no_extra_fpr': True, 'comparable_control': True, 'operating_point_has_sensitivity': True}
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 8.128s
+             CPU time consumed: 6.030s
+                   Memory peak: 159.2M (swap: 0B)

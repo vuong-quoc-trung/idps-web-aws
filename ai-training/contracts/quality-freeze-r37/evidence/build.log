@@ -1,0 +1,10 @@
+Running as unit: idps-r35-1524b6276488436e8a558482f1d6dc8d.service; invocation ID: 198a87085f0a49fa8e2baa09eadd1d47
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 58.0}
+   Compiling pbl4-security-demo v0.1.0 (/home/trung/projects/idps-r35/security-web)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.26s
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 6.490s
+             CPU time consumed: 6.360s
+                   Memory peak: 792.8M (swap: 0B)

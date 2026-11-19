@@ -1,0 +1,8 @@
+Running as unit: idps-r35-7cd04ad3bd69493094f0c2afbbd045ed.service; invocation ID: fb8a266add2f4d739e6f4e14ae1702b4
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 56.0}
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 1.140s
+             CPU time consumed: 1.027s
+                   Memory peak: 136.2M (swap: 0B)
