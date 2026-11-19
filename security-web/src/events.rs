@@ -40,6 +40,8 @@ pub struct SecuritySignals {
 #[serde(deny_unknown_fields)]
 pub struct CanonicalEvent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub suricata_origin: Option<crate::suricata_origin::Origin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub security: Option<SecuritySignals>,
     pub schema_version: String,
     pub event_id: String,
@@ -88,6 +90,7 @@ pub struct CanonicalEvent {
 impl CanonicalEvent {
     pub fn new(source: &str, timestamp: DateTime<Utc>) -> Self {
         Self {
+            suricata_origin: None,
             security: None,
             schema_version: SCHEMA_VERSION.into(),
             event_id: String::new(),
@@ -131,6 +134,10 @@ impl CanonicalEvent {
         anyhow::ensure!(
             matches!(self.source.as_str(), "STUDENT_AUDIT" | "NGINX" | "SURICATA"),
             "Invalid source"
+        );
+        anyhow::ensure!(
+            self.suricata_origin.is_none() || self.source == "SURICATA",
+            "Suricata origin is source-specific"
         );
         for id in [&self.event_id, &self.source_instance] {
             anyhow::ensure!(
@@ -415,8 +422,18 @@ fn query_features(target: &str) -> Option<QueryFeatures> {
     })
 }
 
+#[cfg(test)]
 pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
+    parse_with_origin(source, line, &crate::suricata_origin::Policy::default())
+}
+
+pub fn parse_with_origin(
+    source: &str,
+    line: &str,
+    policy: &crate::suricata_origin::Policy,
+) -> Result<ParsedEvent> {
     let mut event;
+    let mut detect_request = source != "SURICATA";
     let target;
     let mut native_alert = None;
     let mut signals = None;
@@ -508,6 +525,24 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
                 event.source_instance = format!("suricata-{}", instance);
                 event.event_id = id.into();
             }
+            // Top-level host is Suricata sensor-name, not HTTP Host.
+            // Opt-in only for a reviewed generation launcher; no current-file lookup.
+            if policy.generation_host
+                && value.get("adapter_version").is_none()
+                && let Some(generation) = value["host"]
+                    .as_str()
+                    .and_then(|h| h.strip_prefix("ws-generation-"))
+                    .filter(|g| {
+                        g.len() == 32
+                            && g.bytes()
+                                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+                    })
+            {
+                use sha2::{Digest, Sha256};
+                event.source_instance = format!("suricata-{generation}");
+                event.event_id = format!("{:x}", Sha256::digest(serde_json::to_vec(&value)?));
+                sensor_tx_id = value["tx_id"].as_u64().and_then(|n| i64::try_from(n).ok());
+            }
             event.event_type = match value["event_type"]
                 .as_str()
                 .context("Missing EVE event_type")?
@@ -521,6 +556,9 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
             }
             .into();
             event.client_ip = ip(&value, "src_ip")?;
+            let (client, origin) = policy.resolve(&value, event.client_ip);
+            event.client_ip = client;
+            event.suricata_origin = Some(origin);
             event.dest_ip = ip(&value, "dest_ip")?;
             event.src_port = value["src_port"].as_u64().map(u16::try_from).transpose()?;
             event.dest_port = value["dest_port"].as_u64().map(u16::try_from).transpose()?;
@@ -542,6 +580,22 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
             } else {
                 target = None;
             }
+            // EVE alert records already have a native SID. Other EVE records may
+            // repeat a request URI while describing a response (notably fileinfo).
+            // Only HTTP transaction records may feed the supplemental URI rules.
+            detect_request = value["event_type"] == "http"
+                && value["proto"] == "TCP"
+                && suricata_origin::http_context(&value)
+                && value["flow_id"].as_u64().is_some()
+                && value["tx_id"].as_u64().is_some()
+                && event.http_method.as_deref().is_some_and(|m| !m.is_empty())
+                && target.as_deref().is_some_and(|u| !u.is_empty())
+                && value.get("direction").is_none_or(|d| d == "to_server")
+                && (!policy.post_proxy
+                    || (ip(&value, "src_ip")? == Some(policy.proxy_ip)
+                        && event.dest_ip == Some(policy.server_ip)
+                        && value["dest_port"].as_u64() == Some(policy.server_port)
+                        && value["in_iface"].as_str() == Some(policy.interface.as_str())));
             if let Some(flow) = value.get("flow") {
                 event.flow = Some(FlowFeatures {
                     duration_seconds: flow["age"].as_f64(),
@@ -646,10 +700,14 @@ pub fn parse(source: &str, line: &str) -> Result<ParsedEvent> {
         }
         _ => bail!("Unsupported source"),
     }
-    let mut detections = detection::detect(
-        target.as_deref().unwrap_or_default(),
-        event.user_agent.as_deref(),
-    );
+    let mut detections = if detect_request {
+        detection::detect(
+            target.as_deref().unwrap_or_default(),
+            event.user_agent.as_deref(),
+        )
+    } else {
+        Vec::new()
+    };
     if source == "NGINX" && crate::nginx_detection::unexpected_method(event.http_method.as_deref())
     {
         detections.push(Detection {
@@ -710,6 +768,37 @@ mod tests {
     use super::*;
 
     #[test]
+    fn native_generation_is_opt_in_per_record_not_current_epoch() {
+        let mut policy = crate::suricata_origin::Policy::default();
+        let mut v = serde_json::json!({"timestamp":"2026-11-17T00:00:00Z","event_type":"alert",
+            "src_ip":"127.77.0.1","dest_ip":"127.77.0.2","proto":"TCP","flow_id":123,"tx_id":0,
+            "host":format!("ws-generation-{}","a".repeat(32)),
+            "alert":{"signature_id":1000003,"severity":2},
+            "http":{"hostname":"attacker-host","http_method":"GET","url":"/"}});
+        let untagged = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_eq!(untagged.canonical.source_instance, "local");
+        policy.generation_host = true;
+        let first = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_eq!(
+            first.canonical.source_instance,
+            format!("suricata-{}", "a".repeat(32))
+        );
+        assert_eq!(first.sensor_tx_id, Some(0));
+        v["host"] = serde_json::json!(format!("ws-generation-{}", "b".repeat(32)));
+        let second = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_ne!(
+            first.canonical.source_instance,
+            second.canonical.source_instance
+        );
+        assert_ne!(first.canonical.event_id, second.canonical.event_id);
+        v.as_object_mut().unwrap().remove("host");
+        let stale = parse_with_origin("SURICATA", &v.to_string(), &policy).unwrap();
+        assert_eq!(stale.canonical.source_instance, "local");
+        assert!(stale.canonical.client_ip.is_none());
+        assert!(!first.canonical.suricata_origin.unwrap().client_ip_verified);
+    }
+
+    #[test]
     fn sensitive_proxy_paths_have_named_alerts() {
         for path in [
             "/.env",
@@ -727,6 +816,80 @@ mod tests {
             );
         }
     }
+    #[test]
+    fn eve_response_metadata_never_creates_request_alerts() {
+        let policy = || crate::suricata_origin::Policy {
+            post_proxy: true,
+            trusted_edge: true,
+            ..Default::default()
+        };
+        let eve = |tx: u64, client: &str| {
+            serde_json::json!({
+                "timestamp":"2026-11-15T00:00:00Z", "event_type":"alert",
+                "src_ip":"192.168.20.1", "dest_ip":"192.168.20.10",
+                "dest_port":80, "proto":"TCP", "app_proto":"http",
+                "in_iface":"vmnet3", "flow_id":123, "tx_id":tx,
+                "alert":{"signature_id":1000003,"severity":2,"xff":client},
+                "http":{"http_method":"GET"}
+            })
+        };
+        for (uri, rule) in [
+            ("/api/probe?q=%3Cscript%3Ealert(1)%3C/script%3E", "XSS"),
+            ("/api/probe?q=1%27%20union%20select%201", "SQLI"),
+            ("/../../etc/passwd", "PATH_TRAVERSAL"),
+        ] {
+            let mut v = eve(0, "192.168.10.1");
+            v["http"]["url"] = serde_json::json!(uri);
+            v["http"]["xff"] = serde_json::json!("192.168.10.1");
+            let parse =
+                |v: &Value| parse_with_origin("SURICATA", &v.to_string(), &policy()).unwrap();
+            let native = parse(&v);
+            assert_eq!(native.native_alert.as_ref().unwrap().sid, Some(1000003));
+            assert_eq!(native.canonical.flow_id.as_deref(), Some("123"));
+            assert_eq!(
+                native.canonical.suricata_origin.as_ref().unwrap().tx_id,
+                Some(0)
+            );
+            assert!(native.detections.is_empty());
+            assert!(native.canonical.suricata_origin.unwrap().client_ip_verified);
+            v["event_type"] = serde_json::json!("http");
+            assert!(parse(&v).detections.iter().any(|d| d.rule_id == rule));
+            let mut without_protocol = v.clone();
+            without_protocol
+                .as_object_mut()
+                .unwrap()
+                .remove("app_proto");
+            assert!(
+                parse(&without_protocol)
+                    .detections
+                    .iter()
+                    .any(|d| d.rule_id == rule)
+            );
+            without_protocol["app_proto"] = serde_json::json!("tls");
+            assert!(parse(&without_protocol).detections.is_empty());
+            for field in ["tx_id", "flow_id", "proto", "in_iface"] {
+                let mut incomplete = v.clone();
+                incomplete.as_object_mut().unwrap().remove(field);
+                assert!(parse(&incomplete).detections.is_empty(), "missing {field}");
+            }
+            v["direction"] = serde_json::json!("to_client");
+            assert!(parse(&v).detections.is_empty());
+            v.as_object_mut().unwrap().remove("direction");
+            for kind in ["fileinfo", "flow", "tls"] {
+                v["event_type"] = serde_json::json!(kind);
+                let parsed = parse(&v);
+                assert!(parsed.detections.is_empty(), "{kind}: {rule}");
+                assert!(parsed.native_alert.is_none());
+                assert_eq!(parsed.canonical.flow_id.as_deref(), Some("123"));
+                assert!(parsed.canonical.uri_path.is_some());
+            }
+            v["event_type"] = serde_json::json!("http");
+            v["src_ip"] = serde_json::json!("192.168.20.10");
+            v["dest_ip"] = serde_json::json!("192.168.20.1");
+            assert!(parse(&v).detections.is_empty());
+        }
+    }
+
     #[test]
     fn custom_http_methods_never_persist_arbitrary_header_text() {
         let parsed = parse("NGINX", r#"{"timestamp":"2026-10-26T00:00:00Z","http_method":"CANARY_SECRET","uri_path":"/api/faculties","status":405}"#).unwrap();
@@ -833,8 +996,23 @@ mod contract_tests {
         ))
         .unwrap();
         let value = serde_json::to_value(event).unwrap();
-        let actual: std::collections::BTreeSet<_> =
+        let mut actual: std::collections::BTreeSet<_> =
             value.as_object().unwrap().keys().cloned().collect();
+        // Source-specific optional metadata must not be attached to Student Audit.
+        let suricata = parse(
+            "SURICATA",
+            r#"{"timestamp":"2026-11-15T00:00:00Z","event_type":"flow","src_ip":"192.0.2.1"}"#,
+        )
+        .unwrap()
+        .canonical;
+        actual.extend(
+            serde_json::to_value(suricata)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .keys()
+                .cloned(),
+        );
         let expected: std::collections::BTreeSet<_> = schema["properties"]
             .as_object()
             .unwrap()

@@ -1,3 +1,4 @@
+import { sourceIpLabel } from "./sourceIp";
 import {
   AlertTriage,
   type TriageAlert,
@@ -6,6 +7,11 @@ import {
 import { applicationEvidence } from "./applicationEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
+  lua_shadow?: {
+    status: string;
+    client_ip_verified: false;
+    duplicate_count: number;
+  } | null;
   triage_history: TriageHistory[];
   alert: TriageAlert & {
     id: number;
@@ -13,6 +19,10 @@ export type Detail = {
     source: string;
     severity: number;
     src_ip: string | null;
+    client_ip?: string | null;
+    network_src_ip?: string | null;
+    client_ip_verified?: boolean | null;
+    suricata_post_proxy?: boolean | null;
     dest_ip: string | null;
     proto: string | null;
     rule_name: string;
@@ -136,8 +146,18 @@ export function AlertDetail({
               "Thời gian": `${new Date(a.occurred_at).toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
               UTC: new Date(a.occurred_at).toISOString(),
               Nguồn: a.source,
+              "Lua Shadow (không xác minh IP)":
+                data.lua_shadow?.status ?? "Chưa có",
               "Mức độ": `Severity ${a.severity}`,
-              "IP nguồn": a.src_ip,
+              "IP nguồn": sourceIpLabel(a),
+              "Network Source IP":
+                a.network_src_ip ?? (a.source === "SURICATA" ? a.src_ip : null),
+              "Xác minh Client IP":
+                a.source === "SURICATA"
+                  ? a.client_ip_verified
+                    ? "Đã xác minh từ proxy tin cậy"
+                    : "Chưa xác minh"
+                  : "Theo nguồn ứng dụng",
               "IP đích": a.dest_ip,
               "Giao thức": a.proto,
               Rule: a.rule_name,

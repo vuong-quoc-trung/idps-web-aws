@@ -1,3 +1,5 @@
+> NGINX Host → Web VM + AI Shadow: dùng [NGINX_HOST_SYNC.md](NGINX_HOST_SYNC.md). Không copy cấu hình local demo lên host.
+
 # Nghiệm thu Security trên Ubuntu host
 
 > Bộ rule hiện hành có 18 SID, bổ sung HTTP flood, Time/Blind SQLi URI/body, web shell

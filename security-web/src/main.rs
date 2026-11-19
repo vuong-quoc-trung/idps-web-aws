@@ -1,18 +1,28 @@
 mod ai_shadow;
+#[cfg(test)]
+mod ai_verdict_contract;
 mod application_audit;
 mod application_detection;
 mod auth;
+mod controlled_prevention;
 mod detection;
 mod events;
 mod firewall;
 mod hybrid;
 mod ingest;
+mod lua_shadow;
 mod metrics;
 mod network;
 mod nginx_detection;
 mod operations;
+mod prevention;
+#[cfg(test)]
+mod prevention_simulation;
 mod security_detection;
+mod suricata_origin;
 mod three_source;
+#[cfg(test)]
+mod transaction_proof;
 mod triage;
 use anyhow::{Context, Result, bail};
 use axum::{
@@ -238,6 +248,16 @@ async fn main() -> Result<()> {
             env::var("NGINX_ACCESS_PATH").unwrap_or("/var/log/nginx/access.log".into()),
         ),
     ];
+    if let Ok(path) = env::var("SURICATA_LUA_PATH")
+        && !path.trim().is_empty()
+    {
+        anyhow::ensure!(
+            env::var("AUTO_BLOCK").unwrap_or("false".into()) == "false"
+                && env::var("ENFORCEMENT_MODE").unwrap_or("OFF".into()) == "OFF",
+            "Lua shadow requires enforcement OFF"
+        );
+        sources.push(("SURICATA_LUA", path));
+    }
     if let Ok(path) = env::var("STUDENT_AUDIT_LOG_PATH")
         && !path.trim().is_empty()
     {
@@ -292,10 +312,26 @@ fn router(state: AppState) -> Router {
         .route("/api/alerts/search", get(search_alerts))
         .route("/api/alerts/{id}", get(alert_detail))
         .route("/api/alerts/{id}/triage", post(triage::update))
+        .route(
+            "/api/alerts/{id}/block-eligibility",
+            get(prevention::evaluate),
+        )
         .route("/api/stats", get(metrics::stats))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
         .route("/api/rules", get(api_rules))
+        .route(
+            "/api/prevention/proposals",
+            get(prevention::proposals).post(prevention::propose),
+        )
+        .route(
+            "/api/prevention/proposals/{id}/review",
+            post(prevention::review),
+        )
+        .route(
+            "/api/prevention/ai-verdict",
+            post(controlled_prevention::intake),
+        )
         .route("/api/blocked-ips", get(firewall::list).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))
         .route("/api/audit", get(firewall::audit))
@@ -378,6 +414,7 @@ async fn block_ip(
     Extension(actor): Extension<auth::Identity>,
     Json(req): Json<BlockRequest>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
+    prevention::require_execution().map_err(bad_request)?;
     let ip = firewall::validate(&state, &req.ip).map_err(bad_request)?;
     if req.reason.trim().is_empty() || req.reason.len() > 500 {
         return Err(bad_request("Reason must contain 1–500 characters"));
@@ -415,6 +452,7 @@ async fn unblock_ip(
     Extension(actor): Extension<auth::Identity>,
     Path(ip): Path<String>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
+    prevention::require_execution().map_err(bad_request)?;
     let ip = network::Safety::parse_host(&ip).map_err(bad_request)?;
     let id = firewall::enqueue(
         &state.pool,

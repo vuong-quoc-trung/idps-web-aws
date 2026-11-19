@@ -249,16 +249,20 @@ async fn authentication_counter_correlates_two_sources_and_resets_on_success(poo
 async fn off_switch_blocks_pending_work_and_expired_blocks_are_not_restored(pool: PgPool) {
     let mut s = state(pool, false);
     Arc::make_mut(&mut s.safety).mode = "OFF".into();
-    firewall::enqueue(
-        &s.pool,
-        "192.168.1.50".parse().unwrap(),
-        "BLOCK",
-        "admin",
-        "test",
-        None,
-    )
-    .await
-    .unwrap();
+    assert!(
+        firewall::enqueue(
+            &s.pool,
+            "192.168.1.50".parse().unwrap(),
+            "BLOCK",
+            "admin",
+            "test",
+            None
+        )
+        .await
+        .is_err()
+    );
+    // Simulate a pre-C2 persisted job; the closed worker must leave it untouched.
+    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor) VALUES('192.168.1.50','BLOCK','API','legacy','PENDING','admin')").execute(&s.pool).await.unwrap();
     assert!(
         !firewall::process_one(&s, |_, _, _| async { panic!("OFF must never execute") })
             .await
@@ -332,26 +336,25 @@ async fn extended_sensor_rules_use_audited_bounded_response_only_when_enabled(po
     Arc::make_mut(&mut s.safety).mode = "ENFORCE".into();
     for _ in 0..6 {
         assert!(
-            firewall::process_one(&s, |_, _, ttl| async move {
-                assert!(ttl.is_some_and(|seconds| (1..=300).contains(&seconds)));
-                Ok(()) // Mock actuator: never invokes the real helper or kernel.
+            !firewall::process_one(&s, |_, _, _| async {
+                panic!("C2 must not execute even in ENFORCE")
             })
             .await
             .unwrap()
         );
     }
-    let successful: i64 = sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='SUCCESS' AND actor='system' AND event_id IS NOT NULL")
-        .fetch_one(&s.pool).await.unwrap();
-    assert_eq!(successful, 6);
-    assert_eq!(
-        sqlx::query_scalar::<_, i64>(
-            "SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'"
-        )
-        .fetch_one(&s.pool)
-        .await
-        .unwrap(),
-        6
-    );
+    let pending: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='PENDING'")
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+    assert_eq!(pending, 6);
+    let blocked: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'")
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+    assert_eq!(blocked, 0);
 }
 
 #[sqlx::test(migrations = "./migrations")]
@@ -372,7 +375,7 @@ async fn historical_alerts_and_expired_pending_jobs_never_enforce(pool: PgPool) 
         .await
         .unwrap();
     assert!(
-        firewall::process_one(&s, |_, _, _| async {
+        !firewall::process_one(&s, |_, _, _| async {
             panic!("expired job must not execute")
         })
         .await
@@ -383,7 +386,7 @@ async fn historical_alerts_and_expired_pending_jobs_never_enforce(pool: PgPool) 
             .fetch_one(&s.pool)
             .await
             .unwrap(),
-        "ERROR"
+        "PENDING"
     );
 }
 #[sqlx::test(migrations = "./migrations")]
@@ -689,7 +692,7 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
     )
     .await;
     assert!(result.is_err());
-    let _ = block_ip(
+    let result = block_ip(
         State(s.clone()),
         Extension(actor),
         Json(BlockRequest {
@@ -698,27 +701,20 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
             event_id: Some(id),
         }),
     )
-    .await
-    .unwrap();
+    .await;
+    assert!(result.is_err());
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
     assert!(
-        firewall::process_one(&s, |_, _, _| async { Ok(()) })
+        !firewall::process_one(&s, |_, _, _| async { panic!("manual bypass") })
             .await
             .unwrap()
     );
-    let row: (String, String, String, i64) =
-        sqlx::query_as("SELECT actor,source,status,event_id FROM firewall_actions")
-            .fetch_one(&s.pool)
-            .await
-            .unwrap();
-    assert_eq!(row, ("admin".into(), "API".into(), "SUCCESS".into(), id));
-    assert_eq!(
-        sqlx::query_scalar::<_, String>("SELECT action FROM security_alerts WHERE id=$1")
-            .bind(id)
-            .fetch_one(&s.pool)
-            .await
-            .unwrap(),
-        "BLOCK"
-    );
+    let action: String = sqlx::query_scalar("SELECT action FROM security_alerts WHERE id=$1")
+        .bind(id)
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(action, "ALERT");
 }
 
 #[sqlx::test(migrations = "./migrations")]
@@ -832,4 +828,93 @@ async fn app_new_behavior_rules_thresholds_and_sources(pool: PgPool) {
         .await
         .unwrap();
     assert_eq!(actions, 0);
+}
+
+// Requires an isolated SQLx test database, never the deployment DATABASE_URL.
+#[sqlx::test(migrations = "./migrations")]
+async fn post_proxy_origin_persists_replay_restart_search_and_stats(pool: PgPool) {
+    let mut s = state(pool, true);
+    // Defense in depth even if a caller bypasses the startup OFF-only config gate.
+    s.policy = PolicyEngine::new(true, vec![1000002], false);
+    s.ingestion = Arc::new(ingest::Config {
+        collect_all: true,
+        suricata_origin: suricata_origin::Policy {
+            post_proxy: true,
+            trusted_edge: true,
+            ..Default::default()
+        },
+        ..Default::default()
+    });
+    let logs = Logs::new();
+    let path = logs.path("eve.json");
+    for tx in [2, 0, 1, 0] {
+        let mut value = json!({"timestamp":Utc::now(),"adapter_version":"suricata-shadow-1","sensor_instance":"a".repeat(32),"sensor_event_id":format!("{tx:064x}"),"event_type":"alert","src_ip":"192.168.20.1","dest_ip":"192.168.20.10","src_port":40000,"dest_port":80,"proto":"TCP","app_proto":"http","in_iface":"vmnet3","flow_id":100,"tx_id":tx,"alert":{"signature_id":1000002,"signature":"SQLi","severity":1,"xff":format!("192.168.10.{}",10+tx)},"http":{"url":"/api/probe","http_method":"GET"}});
+        if tx == 2 {
+            value.as_object_mut().unwrap().remove("tx_id");
+        }
+        append(&s, "SURICATA", &path, &(value.to_string() + "\n")).await;
+    }
+    // Recreate watcher state, re-read the file; persisted offset + event identity remain authoritative.
+    let mut restarted = s.clone();
+    restarted.watchers = Default::default();
+    ingest::process_file(&restarted, "SURICATA", &path)
+        .await
+        .unwrap();
+    assert_eq!(count(&s.pool, "security_alerts").await, 3);
+    assert_eq!(count(&s.pool, "firewall_actions").await, 0);
+    assert!(firewall::validate(&s, "192.168.20.1").is_err());
+    let rows:Vec<(Option<String>,String,bool)>=sqlx::query_as("SELECT host(client_ip),host(network_src_ip),client_ip_verified FROM security_alerts ORDER BY client_ip NULLS LAST").fetch_all(&s.pool).await.unwrap();
+    assert_eq!(
+        rows[0],
+        (Some("192.168.10.10".into()), "192.168.20.1".into(), true)
+    );
+    assert_eq!(rows[2], (None, "192.168.20.1".into(), false));
+    for search in ["192.168.10.10", "192.168.20.1"] {
+        let result: serde_json::Value = sqlx::query_scalar(include_str!("alert_search.sql"))
+            .bind(20_i64)
+            .bind(0_i64)
+            .bind(search)
+            .bind(None::<i16>)
+            .bind(None::<DateTime<Utc>>)
+            .bind(None::<DateTime<Utc>>)
+            .bind(None::<String>)
+            .bind(None::<String>)
+            .bind(None::<String>)
+            .bind(None::<String>)
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+        assert_eq!(
+            result["total"],
+            if search == "192.168.20.1" { 3 } else { 1 }
+        );
+        assert_eq!(result["items"][0]["network_src_ip"], "192.168.20.1");
+    }
+    let stats: serde_json::Value = sqlx::query_scalar(include_str!("overview.sql"))
+        .bind(86400_i64)
+        .bind(24_i64)
+        .bind(0_i64)
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(stats["unique_sources"], 2);
+    assert!(
+        stats["source_ips"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|v| v["ip"] != "192.168.20.1" && v["ip_kind"] == "client")
+    );
+    let id: i64 =
+        sqlx::query_scalar("SELECT min(id) FROM security_alerts WHERE client_ip_verified")
+            .fetch_one(&s.pool)
+            .await
+            .unwrap();
+    let detail: serde_json::Value = sqlx::query_scalar(include_str!("alert_detail.sql"))
+        .bind(id)
+        .fetch_one(&s.pool)
+        .await
+        .unwrap();
+    assert_eq!(detail["alert"]["client_ip_verified"], true);
+    assert_eq!(detail["alert"]["network_src_ip"], "192.168.20.1");
 }

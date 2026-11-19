@@ -276,6 +276,7 @@ pub async fn approve(
             "Manual mode, admin approval and bounded TTL required",
         ));
     }
+    prevention::require_execution().map_err(api_error)?;
     let mut tx = state.pool.begin().await.map_err(api_error)?;
     let proposed_rid: Option<String> =
         sqlx::query_scalar("SELECT request_id FROM hybrid_proposals WHERE id=$1")
