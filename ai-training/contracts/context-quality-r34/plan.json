@@ -1,0 +1,41 @@
+{
+  "version": "idps-r34-research-v1",
+  "HTTP": {
+    "sources": [
+      "WAF",
+      "NOTES",
+      "SRBH"
+    ],
+    "roster": "R32 pilot FIT/TUNING, exact original coordinate and URI76 readback; never read R32 external or CAL/TEST. Same original and reference-vector weights as R32.",
+    "information": "Finite per-field type compatibility, shape, repetitions, nested structure and multiplicity in query/form/JSON. Known public parameter roles only. Never emit names or literals. Reject sensitive fields and untrusted representations; identity causal timing on publisher data is unproven.",
+    "arms": [
+      "B16",
+      "R20",
+      "SCHEMA_RULE",
+      "SCHEMA_LR",
+      "B16_SCHEMA_RESIDUAL",
+      "B16_SCHEMA_TREE"
+    ],
+    "rounds": "Verify mixed-label census first. Compare direct schema rule and logistic; compare residual and bounded boosted tree when any FIT mixed minority falls or a mixed group splits. One full fit only if the existing R31 improvement, per-source and held-source-cutoff gates all pass. No threshold changes from exposed tests.",
+    "cutoff": "Same strict > 1% budget on source and reference-vector weighted TUNING. Report leave-source threshold transfer separately from unseen-source model fitting."
+  },
+  "RBA": {
+    "source": "Wiefling, Jørgensen, Thunem and Lo Iacono (2022), 10.5281/zenodo.6782156, CC BY 4.0, synthesized login data. Research only per publisher. ATO column is a publisher incident flag. False means no flag, not independently verified benign.",
+    "pins": {
+      "size": 1093700330,
+      "md5": "cc1b1078b3929650e6c08678caffcc57"
+    },
+    "unit": "One publisher indexed login. No status, Attack-IP, RTT (synthesized conditional on success), raw account, IP, time of day, geography or device literals enter model. Up to five strictly prior observations from the same pseudonymous account inside 30 days. Reject ambiguous historical ties, use a shared prefix for concurrent anchors. No history ABSTAIN.",
+    "split": "Immutable SplitMix64 over publisher pseudonym, 100 buckets. 0-49 FIT, 50-64 SELECT, 65-71 probability calibration, 72-79 operating calibration (research), 80-99 held actors. FIT/SELECT/CAL anchors before 75% of dataset timestamp span, transfer on previously untouched actors during final 25%. History may warm within same actor/role only. Never select or re-fit on transfer.",
+    "sampling": "For training and selection retain every flagged event and a fixed 1/32 sample of unflagged logins based on publisher row index, with inverse probability weights. CAL and transfer report every eligible and unsupported event. UTC calendar is not a model feature.",
+    "rounds": [
+      "constant login-route control and new-ASN rule",
+      "history-support control, network-only, device-only, joint class-balanced logistic",
+      "bounded boosted depth-3 joint learner and unsupervised joint novelty for scarce positives"
+    ],
+    "selection": "Most effective SELECT recall under strict empirical 0.5% reference-negative alert cap, tie by AP then simpler arm. If SELECT has no scored positives use predeclared joint unsupervised novelty. If FIT has fewer than two scored positive accounts skip all supervised fitting. Freeze coefficients, bins and ordering before consulting held actor metrics. Fit monotonic sigmoid on CAL_FIT if at least two scored flagged accounts and two reference accounts; otherwise report raw research scores. Threshold from CAL_OP only. Report coverage, request and vector metrics, session/account uncertainty; native FPR is undefined.",
+    "cold_start_amendment": "Frozen before ETL/labels/model selection. Fit an unsupervised peer frequency snapshot from FIT actors only during the first 25% of the source timestamp span. Only anchors strictly after this window can use rarity of observed current categories and safe pairs. Online features expose bounded surprisal and availability, no raw values, no account-specific or label-dependent priors. Compare peer novelty, peer-only logistic and history+peer logistic for cold-start coverage on the same roster. Learned heads require >=2 supported flagged FIT actors. Candidate selection uses SELECT only; with no supported SELECT positives prefer the predeclared history heuristic. Never update the peer table from held actors."
+  },
+  "bounded_compute": "One Resource Adapter allocation at a time. Download cap 1.1 GB, ETL once, bounded research models. No acquisition of exploit payloads for execution. No affected production services. No release without independent T07.",
+  "native": "Check incoming R29 manifest existence, do not reread historical SOC or review queues without a new delivery."
+}
