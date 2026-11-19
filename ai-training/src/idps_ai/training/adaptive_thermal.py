@@ -4,6 +4,7 @@ import math
 from pathlib import Path
 
 from idps_ai.common import PipelineError, digest
+from idps_ai.training.thermal_policy import HARDWARE_MARGIN_C, STOP_C, cpu_state, quota_for_state
 
 
 def hardware_snapshot(sysroot=Path("/sys"), cpuinfo=Path("/proc/cpuinfo")):
@@ -75,7 +76,8 @@ def hardware_snapshot(sysroot=Path("/sys"), cpuinfo=Path("/proc/cpuinfo")):
         if z["type"] in {"TCPU", "x86_pkg_temp", "TCPU_PCI"}
         for trip in z["limits"]
     ]
-    effective = min(96.0, limit - 1, *(v - 1 for v in cpu_zones))
+    hardware_stop = min([limit - HARDWARE_MARGIN_C] + [v - HARDWARE_MARGIN_C for v in cpu_zones])
+    effective = min(STOP_C, hardware_stop)
     if effective <= 0:
         raise PipelineError("Invalid platform thermal limits")
     result = {
@@ -83,7 +85,8 @@ def hardware_snapshot(sysroot=Path("/sys"), cpuinfo=Path("/proc/cpuinfo")):
         "cpu_sensors": sensors,
         "platform_zones": zones,
         "auxiliary_sensors": auxiliary,
-        "requested_emergency_C": 96,
+        "requested_emergency_C": STOP_C,
+        "hardware_protection_C": hardware_stop,
         "effective_emergency_C": effective,
         "lowest_coretemp_critical_C": limit,
         "sensor_scope": "coretemp cores/package for CPU; other thermal domains retain own hot/critical limits",
@@ -112,9 +115,11 @@ class SensorReader:
             critical = int(p.with_name(p.name.replace("_input", "_crit")).read_text()) / 1000
             if not 0 < v < 130 or not math.isfinite(v):
                 raise PipelineError("CPU sensor unavailable or unreliable")
-            if critical < self.snapshot["effective_emergency_C"]:
+            if not 40 <= critical <= 130 or critical < s.get("critical_C", self.snapshot["effective_emergency_C"]):
                 raise PipelineError("CPU critical limit now below configured emergency")
             alarm = int(Path(s["alarm"]).read_text())
+            if alarm not in (0, 1):
+                raise PipelineError("Unreliable CPU hardware alarm")
             values.append({"path": s["path"], "label": s["label"], "C": v, "alarm": alarm})
         if now - self.last_platform >= 1 or not self.platform:
             self.platform = []
@@ -142,7 +147,8 @@ class SensorReader:
                 )
             self.last_platform = now
         maximum = max(values, key=lambda x: x["C"])
-        emergency = any(v["alarm"] for v in values) or any(
+        hardware_stop = self.snapshot.get("hardware_protection_C")
+        emergency = (hardware_stop is not None and maximum["C"] >= hardware_stop) or any(v["alarm"] for v in values) or any(
             z["C"] >= z["limit_C"] or z.get("alarm", 0) for z in self.platform
         )
         return {
@@ -151,131 +157,64 @@ class SensorReader:
             "readings": values,
             "platform": self.platform,
             "hardware_emergency": emergency,
+            "hardware_protection_C": hardware_stop,
             "sampled_monotonic": now,
         }
 
 
 class ThermalMachine:
-    def __init__(
-        self,
-        *,
-        emergency=100,
-        warning=100,
-        throttle=100,
-        strong=100,
-        ceiling=20,
-        minimum=1,
-        cooldown=15,
-        ramp_seconds=5,
-        cooling_timeout=300,
-    ):
-        if not 0 < minimum <= ceiling <= 20 or not 0 < emergency <= 100:
-            raise PipelineError("Unsafe thermal configuration")
-        if not 0 < warning <= throttle <= strong <= 100:
-            raise PipelineError("Invalid adaptive temperature bands")
-        self.warning, self.throttle, self.strong = warning, throttle, strong
-        self.emergency, self.ceiling, self.minimum = emergency, ceiling, minimum
-        self.cooldown, self.ramp_seconds, self.cooling_timeout = (
-            cooldown,
-            ramp_seconds,
-            cooling_timeout,
-        )
-        self.quota, self.paused = ceiling, False
-        self.cool_since = self.pause_since = self.last = None
-        self.last_ramp = 0
-        self.band, self.band_since = "NORMAL", 0
+    """Thermal quota and independent memory-pressure freeze for an owned job."""
+
+    def __init__(self, *, ceiling=20, maximum_ceiling=20, cooldown=15, cooling_timeout=300):
+        values = ceiling, maximum_ceiling, cooldown, cooling_timeout
+        if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in values):
+            raise PipelineError("Invalid thermal configuration")
+        if ceiling > maximum_ceiling:
+            raise PipelineError("Unsafe quota")
+        self.ceiling = ceiling
+        self.emergency = STOP_C
+        self.cooldown, self.cooling_timeout = cooldown, cooling_timeout
+        self.pause_since = self.clear_since = self.last = None
+        self.band = "NORMAL"
         self.terminal = None
 
-    def update(
-        self,
-        now,
-        temperature,
-        *,
-        supervisor_healthy=True,
-        memory_pressure=False,
-        hardware_emergency=False,
-    ):
-        rate = 0
-        if temperature is None or not math.isfinite(temperature) or not 0 < temperature < 130:
-            return self.stop("SENSOR_FAILURE")
-        if temperature >= self.emergency or hardware_emergency:
-            return self.stop("THERMAL_EMERGENCY")
-        if not supervisor_healthy:
-            return self.stop("SUPERVISOR_HEARTBEAT_LOST")
-        if self.last is not None:
-            dt = now - self.last[0]
-            if not 0 < dt <= 2:
-                return self.stop("SENSOR_SAMPLING_STALE")
-            rate = (temperature - self.last[1]) / dt
-        self.last = (now, temperature)
+    def update(self, now, temperature, *, supervisor_healthy=True,
+               memory_pressure=False, hardware_emergency=False):
         if self.terminal:
             return self.stop(self.terminal)
-        band = (
-            "STRONG_THROTTLE"
-            if temperature >= self.strong
-            else "THROTTLE"
-            if temperature >= self.throttle
-            else "WARNING"
-            if temperature >= self.warning
-            else "NORMAL"
-        )
-        changed = band != self.band
-        if changed:
-            self.band, self.band_since = band, now
-        if temperature >= self.warning or memory_pressure:
-            self.cool_since = None
-        elif self.cool_since is None:
-            self.cool_since = now
+        if type(now) not in (int, float) or not math.isfinite(now) or now < 0:
+            return self.stop("SENSOR_SAMPLING_STALE")
+        band = cpu_state(temperature, hardware_emergency)
+        if band in {"SENSOR_FAILURE", "THERMAL_EMERGENCY"}:
+            return self.stop(band)
+        if supervisor_healthy is not True:
+            return self.stop("SUPERVISOR_HEARTBEAT_LOST")
+        if self.last is not None and not 0 < now - self.last <= 2:
+            return self.stop("SENSOR_SAMPLING_STALE")
+        self.last = now
+        self.band = band
         if memory_pressure:
-            self.paused = True
-        elif band == "STRONG_THROTTLE":
-            self.quota = self.minimum
-            if (
-                rate > 0.5
-                or temperature >= min(self.strong + 2, self.emergency - 0.5)
-                or now - self.band_since >= 2
-            ):
-                self.paused = True
-        elif band == "THROTTLE":
-            if changed:
-                self.quota = max(self.minimum, self.quota / 2)
-        elif band == "WARNING" and rate > 0:
-            self.quota = min(self.quota, max(self.minimum, self.ceiling / 2))
-        # Proactive response to a fast rise even before WARNING.
-        elif band == "NORMAL" and temperature >= 100 and rate >= 10:
-            self.quota = min(self.quota, max(self.minimum, self.ceiling / 2))
-        cool = self.cool_since is not None and now - self.cool_since >= self.cooldown
-        if self.paused:
+            self.clear_since = None
             if self.pause_since is None:
                 self.pause_since = now
-            if now - self.pause_since >= self.cooling_timeout:
-                return self.stop("COOLING_TIMEOUT")
-            if cool and not memory_pressure:
-                self.paused = False
-                self.quota = self.minimum
-                self.last_ramp = now
+        elif self.pause_since is not None:
+            if self.clear_since is None:
+                self.clear_since = now
+            if now - self.clear_since >= self.cooldown:
                 self.pause_since = None
-        elif band == "NORMAL" and cool and now - self.last_ramp >= self.ramp_seconds:
-            self.quota = min(self.ceiling, self.quota + 2)
-            self.last_ramp = now
+        paused = self.pause_since is not None
+        if paused and now - self.pause_since >= self.cooling_timeout:
+            return self.stop("COOLING_TIMEOUT")
         return {
-            "state": "THERMAL_COOLDOWN" if self.paused else band,
+            "state": "MEMORY_PRESSURE_PAUSE" if paused else band,
             "band": band,
-            "paused": self.paused,
-            "quota": self.quota,
+            "paused": paused,
+            "quota": quota_for_state(self.ceiling, band),
             "stop": False,
             "reason": None,
-            "rise_C_per_second": rate,
         }
 
     def stop(self, reason):
         self.terminal = reason
-        return {
-            "state": reason,
-            "band": self.band,
-            "paused": True,
-            "quota": self.minimum,
-            "stop": True,
-            "reason": reason,
-            "rise_C_per_second": None,
-        }
+        return {"state": reason, "band": self.band, "paused": True, "quota": 0,
+                "stop": True, "reason": reason}

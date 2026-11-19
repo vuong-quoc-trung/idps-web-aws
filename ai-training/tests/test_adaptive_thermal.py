@@ -22,53 +22,40 @@ def module(name):
     "temperature,state",
     [
         (80, "NORMAL"),
-        (88, "WARNING"),
+        (89, "NORMAL"),
         (91, "THROTTLE"),
-        (94, "STRONG_THROTTLE"),
-        (96, "THERMAL_EMERGENCY"),
+        (100, "THROTTLE"),
+        (100.1, "THERMAL_EMERGENCY"),
     ],
 )
 def test_requested_bands(temperature, state):
     m = ThermalMachine()
     r = m.update(1, temperature)
     assert r["state"] == state
-    assert r["stop"] == (temperature >= 96)
+    assert r["stop"] == (temperature > 100)
     if temperature == 91:
         assert r["quota"] == 10
-    if temperature == 94:
-        assert r["quota"] == 1
+    if temperature == 100:
+        assert r["quota"] == 10
 
 
-def test_spike_cooldown_hysteresis_and_gradual_resume():
+def test_thermal_throttle_holds_half_and_recovers_base_quota():
     m = ThermalMachine()
-    assert m.update(0, 63)["state"] == "NORMAL"
-    r = m.update(0.1, 92)
-    assert r["state"] == "THROTTLE" and not r["stop"] and r["quota"] == 10
-    r = m.update(0.2, 95)
-    assert r["state"] == "THERMAL_COOLDOWN" and r["paused"] and not r["stop"]
-    assert m.update(0.3, 84)["paused"]
-    for i in range(1, 15):
-        assert m.update(0.3 + i, 84)["paused"]
-    r = m.update(15.3, 84)
-    assert not r["paused"] and r["quota"] == 1
-    for i in range(1, 5):
-        assert m.update(15.3 + i, 83)["quota"] == 1
-    assert m.update(20.3, 83)["quota"] == 3
-    assert m.update(20.4, 88)["quota"] <= 3
-    # Cooling stability resets after a high sample; no immediate full restore.
-    assert m.update(20.5, 84)["quota"] <= 3
-    assert m.update(20.6, 96)["state"] == "THERMAL_EMERGENCY"
-    assert m.update(20.7, 40)["stop"]  # no automatic restart
+    assert m.update(0, 63)["quota"] == 20
+    for i, sample in enumerate((90.1, 95, 100), 1):
+        result = m.update(i, sample)
+        assert result["state"] == "THROTTLE" and not result["paused"]
+        assert result["quota"] == 10
+    assert m.update(4, 90)["quota"] == 20
+    assert m.update(5, 100.1)["state"] == "THERMAL_EMERGENCY"
+    assert m.update(6, 40)["stop"]
 
 
-def test_sustained_strong_heat_and_failed_cooling():
+def test_sustained_memory_pressure_has_a_bounded_pause():
     m = ThermalMachine(cooling_timeout=4)
-    assert not m.update(0, 94)["paused"]
-    assert not m.update(1, 94)["paused"]
-    assert m.update(2, 94)["paused"]
-    for i in [3, 4, 5]:
-        assert m.update(i, 94)["paused"]
-    assert m.update(6, 94)["state"] == "COOLING_TIMEOUT"
+    for i in range(4):
+        assert m.update(i, 94, memory_pressure=True)["paused"]
+    assert m.update(4, 94, memory_pressure=True)["state"] == "COOLING_TIMEOUT"
 
 
 def test_sensor_monitor_failure_and_lower_limit():
@@ -76,12 +63,11 @@ def test_sensor_monitor_failure_and_lower_limit():
     assert ThermalMachine().update(0, float("nan"))["state"] == "SENSOR_FAILURE"
     assert ThermalMachine().update(0, 60, supervisor_healthy=False)["stop"]
     assert ThermalMachine().update(0, 60, hardware_emergency=True)["state"] == "THERMAL_EMERGENCY"
-    assert ThermalMachine(emergency=92).update(0, 92)["state"] == "THERMAL_EMERGENCY"
     m = ThermalMachine()
     m.update(0, 60)
     assert m.update(3, 60)["state"] == "SENSOR_SAMPLING_STALE"
-    with pytest.raises(PipelineError):
-        ThermalMachine(emergency=100)
+    with pytest.raises(TypeError):
+        ThermalMachine(emergency=96)
 
 
 def test_pause_does_not_require_worker_heartbeat(tmp_path):
@@ -93,7 +79,7 @@ def test_pause_does_not_require_worker_heartbeat(tmp_path):
     assert not guard.heartbeat_healthy(supervisor, supervisor.stat().st_mtime + 4)
     m = ThermalMachine()
     m.update(0, 60)
-    assert m.update(0.1, 95)["paused"]
+    assert m.update(0.1, 95, memory_pressure=True)["paused"]
     # No worker-heartbeat input: intentional cgroup freeze cannot stale the supervisor.
     assert m.update(0.2, 94, supervisor_healthy=guard.heartbeat_healthy(supervisor))["paused"]
 
@@ -216,7 +202,7 @@ def test_watchdog_process_loss_stops_only_worker(tmp_path, monkeypatch):
 def test_real_control_probe_accepts_intentional_cool_pause():
     g = module("adaptive-thermal-guard.py")
     assert g.probe_safe(55, False, "NORMAL")
-    assert not g.probe_safe(80, False, "NORMAL")
+    assert g.probe_safe(90, False, "NORMAL")
     assert not g.probe_safe(55, True, "NORMAL")
     assert not g.probe_safe(91, False, "THROTTLE")
 

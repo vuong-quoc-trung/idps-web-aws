@@ -14,6 +14,7 @@ import psutil
 
 from idps_ai.common import PipelineError, atomic_json, canonical_bytes
 from idps_ai.training.adaptive_thermal import SensorReader, ThermalMachine
+from idps_ai.training.thermal_policy import cpu_state
 from idps_ai.training.heartbeat import HeartbeatMonitor
 
 
@@ -102,7 +103,7 @@ def heartbeat_healthy(path, now=None):
 
 def probe_safe(temperature, pressure, band):
     # An intentional freeze changes state to COOLDOWN, not the measured heat band.
-    return temperature < 75 and not pressure and band == "NORMAL"
+    return not pressure and cpu_state(temperature) == band == "NORMAL"
 
 
 def publish_stop(attempt, state):
@@ -125,17 +126,12 @@ def watch(attempt, unit, probe=False):
     reader = SensorReader(hardware)
     policy = json.loads((attempt / "recovery-plan.json").read_text())
     machine = ThermalMachine(
-        emergency=hardware["effective_emergency_C"],
-        warning=policy["warning_C"],
-        throttle=policy["throttle_C"],
-        strong=policy["strong_throttle_C"],
         cooldown=policy["cooldown_seconds"],
         cooling_timeout=policy["maximum_cooldown_seconds"],
     )
     supervisor_pid = json.loads((attempt / "services.json").read_text())["supervisor_pid"]
     heartbeat = HeartbeatMonitor(attempt / "supervisor-heartbeat.json", supervisor_pid)
     control = CgroupControl(unit)
-    control.quota_set(20)
     started = time.monotonic()
     previous = None
     peak = 0
@@ -227,8 +223,9 @@ def watch(attempt, unit, probe=False):
                     publish_stop(attempt, terminal)
                     control.stop()
                 else:
-                    control.quota_set(result["quota"])
-                    control.freeze(result["paused"])
+                    if not probe or probe_phase == 0 or (attempt / "control-probe.json").exists():
+                        control.quota_set(result["quota"])
+                        control.freeze(result["paused"])
                     # Preflight only: exercise real kernel quota/freeze/readback at cool temperatures.
                     # No fake temperature is ever supplied to the live safety controller.
                     if probe and not (attempt / "control-probe.json").exists():
@@ -247,17 +244,11 @@ def watch(attempt, unit, probe=False):
                                 control.quota_set(value)
                             else:
                                 control.freeze(value)
-                            # Keep machine state consistent so the next tick does not undo the probe.
-                            machine.quota = control.quota
-                            machine.paused = control.paused
-                            if not control.paused:
-                                machine.pause_since = None
+
                             probe_seen.append({"action": action, "value": value, "at": time.time()})
                             probe_phase += 1
                             next_probe = now + 1
                             if probe_phase == len(actions):
-                                machine.quota = 20
-                                machine.paused = False
                                 atomic_json(
                                     attempt / "control-probe.json",
                                     {
