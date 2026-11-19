@@ -102,7 +102,7 @@ ExecStart=/usr/bin/suricata -D --af-packet -c /etc/suricata/pbl4/local-egress.ya
     for name, data in files.items():
         (output/name).write_text(data)
     (output/'edge-ca.crt').write_bytes(a.edge_ca.read_bytes())
-    slot_registry = HERE.parents[1]/'ai-training/contracts/https-model-r36/slots.json'
+    slot_registry = HERE.parents[1]/'ai-training/contracts/quality-freeze-r37/slots.json'
     local_model = None
     if a.https_ml_shadow:
         registry = json.loads(slot_registry.read_bytes())

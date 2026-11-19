@@ -19,15 +19,18 @@ sys.path.insert(0, str(HERE.parent / "https-shadow-r35"))
 from receiver import Scorer, serve, SCHEMA, initialize
 
 
+SLOT_ROOT = HERE.parent / "quality-freeze-r37"
+
+
 def digest(p):
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
 def slot(which):
-    registry = json.loads((HERE / "slots.json").read_text())
+    registry = json.loads((SLOT_ROOT / "slots.json").read_text())
     s = registry["slots"][which or registry["default"]]
-    evidence = HERE / s["manifest"]
-    model = HERE / s["model"]
+    evidence = SLOT_ROOT / s["manifest"]
+    model = SLOT_ROOT / s["model"]
     if (
         registry["abi"] != SCHEMA
         or registry["schema_sha256"] != digest(HERE.parent / "https-shadow-r35/schema.json")
@@ -36,7 +39,11 @@ def slot(which):
     ):
         raise ValueError("Release pin mismatch")
     m = json.loads(evidence.read_text())
-    if m["model_sha256"] != s["sha256"] or m["enforcement_allowed"] is not False:
+    if (
+        m["model_sha256"] != s["sha256"]
+        or m["enforcement_allowed"] is not False
+        or m["threshold"] != s["threshold"]
+    ):
         raise ValueError("Invalid research slot")
     return s
 
@@ -129,9 +136,9 @@ def main():
     os.umask(0o077)
     selected = slot(args.slot)
     registry = {
-        v["sha256"]: v for v in json.loads((HERE / "slots.json").read_text())["slots"].values()
+        v["sha256"]: v for v in json.loads((SLOT_ROOT / "slots.json").read_text())["slots"].values()
     }
-    scorer = Scorer(args.binary, HERE / selected["model"], selected["sha256"], args.ort)
+    scorer = Scorer(args.binary, SLOT_ROOT / selected["model"], selected["sha256"], args.ort)
     stopping = False
 
     def terminate(*_):
