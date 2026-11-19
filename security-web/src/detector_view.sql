@@ -1,9 +1,10 @@
 WITH ids AS (
  SELECT request_id FROM request_correlations
+ UNION SELECT request_id FROM https_research_observations
  UNION SELECT request_id FROM ai_shadow_results
  UNION SELECT request_id FROM normalized_events WHERE request_id IS NOT NULL
 ), selected AS (
- SELECT i.request_id, COALESCE(c.observed_at,(SELECT max(a.observed_at) FROM ai_shadow_results a WHERE a.request_id=i.request_id),(SELECT max(n.occurred_at) FROM normalized_events n WHERE n.request_id=i.request_id)) AS observed_at,c.result AS correlation
+ SELECT i.request_id, COALESCE(c.observed_at,(SELECT max(a.observed_at) FROM ai_shadow_results a WHERE a.request_id=i.request_id),(SELECT max(n.occurred_at) FROM normalized_events n WHERE n.request_id=i.request_id),(SELECT h.received_at FROM https_research_observations h WHERE h.request_id=i.request_id)) AS observed_at,c.result AS correlation
  FROM ids i LEFT JOIN request_correlations c USING(request_id)
  WHERE ($1::text IS NULL OR i.request_id=$1)
  ORDER BY observed_at DESC LIMIT $2
@@ -14,6 +15,7 @@ SELECT jsonb_build_object(
  'rules',COALESCE(r.alerts,'[]'::jsonb),
  'flow_context',COALESCE(f.alerts,'[]'::jsonb),
  'request_ai',ai.result,
+ 'https_research',CASE WHEN h.conflicted THEN jsonb_build_object('status','CONFLICT','version',h.observation->'version','request_id',s.request_id) ELSE h.observation END,
  'glu',CASE WHEN s.correlation->>'status'='MATCHED' AND s.correlation->>'late_event'='false' THEN g.result->'glu' ELSE NULL END,
  'glu_observed_at',g.result->>'observed_at',
  'rule_observation','ALERTS_ONLY; empty list is not proof all rules observed the request',
@@ -27,6 +29,7 @@ SELECT jsonb_build_object(
  'dependency','GLU207 uses Suricata-derived metadata; not independent detector votes'
 )
 FROM selected s
+LEFT JOIN https_research_observations h USING(request_id)
 LEFT JOIN LATERAL (
  SELECT result FROM ai_shadow_results a WHERE a.request_id=s.request_id ORDER BY a.observed_at DESC,a.id DESC LIMIT 1
 ) ai ON true

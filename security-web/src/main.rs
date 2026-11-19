@@ -8,6 +8,7 @@ mod controlled_prevention;
 mod detection;
 mod events;
 mod firewall;
+mod https_research;
 mod hybrid;
 mod ingest;
 mod lua_shadow;
@@ -262,6 +263,11 @@ async fn main() -> Result<()> {
         && !path.trim().is_empty()
     {
         sources.push(("STUDENT_AUDIT", path));
+    }
+    if let Ok(path) = env::var("AI_HTTPS_RESULTS_PATH")
+        && !path.trim().is_empty()
+    {
+        sources.push(("HTTPS_RESEARCH", path));
     }
     if let Ok(path) = env::var("AI_SHADOW_RESULTS_PATH")
         && !path.trim().is_empty()

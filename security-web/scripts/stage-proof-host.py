@@ -102,11 +102,19 @@ ExecStart=/usr/bin/suricata -D --af-packet -c /etc/suricata/pbl4/local-egress.ya
     for name, data in files.items():
         (output/name).write_text(data)
     (output/'edge-ca.crt').write_bytes(a.edge_ca.read_bytes())
+    slot_registry = HERE.parents[1]/'ai-training/contracts/https-model-r36/slots.json'
+    local_model = None
+    if a.https_ml_shadow:
+        registry = json.loads(slot_registry.read_bytes())
+        selected = registry['slots'][registry['default']]
+        local_model = {'registry_sha256': hashlib.sha256(slot_registry.read_bytes()).hexdigest(),
+            'version': selected['version'], 'model_sha256': selected['sha256'],
+            'mode': 'HTTPS_LOCAL_OBSERVATION_ONLY', 'enforcement': False}
     (output/'manifest.json').write_text(json.dumps({'sha256': {
         name: hashlib.sha256((output/name).read_bytes()).hexdigest() for name in files},
         'edge_ca_sha256': hashlib.sha256((output/'edge-ca.crt').read_bytes()).hexdigest(),
         'ai_worker': 'DEFERRED' if a.ai_mode == 'deferred' else 'ENABLED_NOT_ACCEPTED',
-        'ai_mode': a.ai_mode, 'https_ml_shadow': a.https_ml_shadow, 'verified': False, 'apply_approved': False}, indent=2))
+        'https_local_model': local_model, 'ai_mode': a.ai_mode, 'https_ml_shadow': a.https_ml_shadow, 'verified': False, 'apply_approved': False}, indent=2))
     print('Staged bundle; review effective module/unit/include configuration before apply.')
 
 if __name__ == '__main__': main()

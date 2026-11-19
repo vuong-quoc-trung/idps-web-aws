@@ -150,7 +150,20 @@ pub fn evaluate(
     if !matched {
         reasons.push("INCOMPLETE_OR_LATE_SENSOR_EVIDENCE");
     }
-    json!({"request_id":row["request_id"],"policy_version":format!("{}-{}",VERSION,&hash(&json!(config))[..12]),"policy_config":config,"policy_action":action,"rule_risk_component":rule_risk,"ai_risk_component":ai_risk,"other_evidence_component":other,"final_risk":final_risk,"risk_semantics":"POLICY_RISK_NOT_ATTACK_PROBABILITY","policy_reason":reasons,"evidence_ids":ids,"rule_sources":sources,"ai":{"model_id":ai["model_version"],"feature_contract":ai["feature_profile"],"score":ai["score"],"threshold":ai["threshold"],"signal":if above {"ABOVE_THRESHOLD_UNCALIBRATED"} else if compatible {"BELOW_THRESHOLD_UNCALIBRATED"} else {"AI_UNAVAILABLE"},"status":ai["status"],"timestamp":ai["observed_at"],"latency_ms":ai["latency_ms"]},"correlation_confidence":if ambiguous {"AMBIGUOUS"} else if matched {"REQUEST_TRANSACTION_MATCHED"} else {"PARTIAL"},"independent_support":"AI_AND_PAYLOAD_RULES_DEPENDENT; separate application-denial behavior only","application_denials_distinct_requests":denials,"trusted_client_ip":ip,"protected_ip":protected,"fresh":fresh,"automatic_block":false,"http_timing":"POST_OBSERVATION; no retroactive HTTP blocking"})
+    let research = crate::https_research::advisory(row);
+    let action =
+        if action == "LOG_ONLY" && research.as_ref().is_some_and(|r| r["action"] == "ALERT") {
+            "ALERT"
+        } else {
+            action
+        };
+    let mut decision = json!({"request_id":row["request_id"],"policy_version":format!("{}-{}",VERSION,&hash(&json!(config))[..12]),"policy_config":config,"policy_action":action,"rule_risk_component":rule_risk,"ai_risk_component":ai_risk,"other_evidence_component":other,"final_risk":final_risk,"risk_semantics":"POLICY_RISK_NOT_ATTACK_PROBABILITY","policy_reason":reasons,"evidence_ids":ids,"rule_sources":sources,"ai":{"model_id":ai["model_version"],"feature_contract":ai["feature_profile"],"score":ai["score"],"threshold":ai["threshold"],"signal":if above {"ABOVE_THRESHOLD_UNCALIBRATED"} else if compatible {"BELOW_THRESHOLD_UNCALIBRATED"} else {"AI_UNAVAILABLE"},"status":ai["status"],"timestamp":ai["observed_at"],"latency_ms":ai["latency_ms"]},"correlation_confidence":if ambiguous {"AMBIGUOUS"} else if matched {"REQUEST_TRANSACTION_MATCHED"} else {"PARTIAL"},"independent_support":"AI_AND_PAYLOAD_RULES_DEPENDENT; separate application-denial behavior only","application_denials_distinct_requests":denials,"trusted_client_ip":ip,"protected_ip":protected,"fresh":fresh,"automatic_block":false,"http_timing":"POST_OBSERVATION; no retroactive HTTP blocking"});
+    if let Some(primary) = research {
+        decision["control_ai"] = decision["ai"].take();
+        decision["https_research"] = primary.clone();
+        decision["ai"] = primary;
+    }
+    decision
 }
 
 async fn refresh(state: &AppState, config: &Config) -> Result<()> {

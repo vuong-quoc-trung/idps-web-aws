@@ -80,6 +80,17 @@ def validate(bundle):
         expected = (Path(__file__).resolve().parents[1]/'nginx/https-shadow-mirror.conf').read_text()
         if mode != 'enabled' or expected.replace('__SOCKET__','/run/websentinel-edge-shadow/receiver.sock') not in site:
             raise ValueError('HTTPS shadow requires the reviewed private receiver and enabled telemetry')
+    if 'https_local_model' in manifest:
+        expected = None
+        if shadow:
+            registry_file = Path(__file__).resolve().parents[2]/'ai-training/contracts/https-model-r36/slots.json'
+            content = registry_file.read_bytes()
+            registry = json.loads(content)
+            slot = registry['slots'][registry['default']]
+            expected = {'registry_sha256': hashlib.sha256(content).hexdigest(), 'version': slot['version'],
+                        'model_sha256': slot['sha256'], 'mode': 'HTTPS_LOCAL_OBSERVATION_ONLY', 'enforcement': False}
+        if manifest['https_local_model'] != expected:
+            raise ValueError('HTTPS research profile differs from pinned Local slot')
     if mode == 'deferred' and '# AI DEFERRED:' not in site:
         raise ValueError('Deferred telemetry must retain explicit restore marker')
     main = (bundle/'nginx.conf').read_text()
