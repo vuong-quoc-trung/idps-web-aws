@@ -98,6 +98,9 @@ impl Policy {
         }
         Ok(p)
     }
+    pub fn local_egress(&self) -> bool {
+        self.proxy_ip.is_loopback() || self.server_ip.is_loopback() || self.interface == "lo"
+    }
     pub fn resolve(&self, v: &Value, network: Option<IpAddr>) -> (Option<IpAddr>, Origin) {
         // Also suppress the known proxy when a post-proxy file is accidentally read in pre mode.
         let post = self.post_proxy
@@ -122,8 +125,7 @@ impl Policy {
         // A current nft snapshot cannot prove the trust state when a delayed EVE
         // event was generated. Never enable loopback attribution with a static
         // flag, even after a policy has been restored. Preserve native alerts.
-        let local_boundary =
-            self.proxy_ip.is_loopback() || self.server_ip.is_loopback() || self.interface == "lo";
+        let local_boundary = self.local_egress();
         let valid = !local_boundary && self.post_proxy && self.trusted_edge && network == Some(self.proxy_ip)
             && v["dest_ip"].as_str().and_then(|s|s.parse::<IpAddr>().ok()) == Some(self.server_ip)
             && v["dest_port"].as_u64() == Some(self.server_port)

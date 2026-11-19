@@ -166,7 +166,10 @@ async fn refresh(state: &AppState, config: &Config) -> Result<()> {
         };
         let ips:Vec<String>=sqlx::query_scalar("SELECT DISTINCT host(client_ip) FROM normalized_events WHERE source IN ('NGINX','STUDENT_AUDIT') AND request_id=$1 AND client_ip IS NOT NULL").bind(rid).fetch_all(&state.pool).await?;
         let proxy_present:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM normalized_events WHERE source='NGINX' AND request_id=$1 AND client_ip IS NOT NULL)").bind(rid).fetch_one(&state.pool).await?;
-        let ip = if proxy_present && ips.len() == 1 {
+        // Transaction correlation can inform detection on the decrypted hop.
+        // It grants no client attribution on a loopback sensor.
+        let origin = &state.ingestion.suricata_origin;
+        let ip = if proxy_present && ips.len() == 1 && !origin.local_egress() {
             Some(ips[0].as_str())
         } else {
             None

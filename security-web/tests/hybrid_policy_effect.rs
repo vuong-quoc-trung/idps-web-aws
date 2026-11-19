@@ -97,3 +97,29 @@ fn policy_fixture_all_required_safety_scenarios() {
         "POST_OBSERVATION; no retroactive HTTP blocking"
     );
 }
+
+#[test]
+#[ignore = "requires bounded HTTPS receipt and pinned RI v2 replay"]
+fn r35_observed_https_policy() {
+    let read = std::fs::read(std::env::var_os("R35_POLICY_INPUT").unwrap()).unwrap();
+    let rows: Vec<serde_json::Value> = serde_json::from_slice(&read).unwrap();
+    assert!(!rows.is_empty());
+    let decisions: Vec<_> = rows
+        .iter()
+        .map(|row| {
+            assert_eq!(row["request_id"], row["request_ai"]["record_id"]);
+            let decision =
+                hybrid::evaluate(row, &hybrid::Config::default(), true, None, 0, 0, true);
+            assert_ne!(decision["ai"]["signal"], "AI_UNAVAILABLE");
+            assert_eq!(decision["automatic_block"], false);
+            assert_ne!(decision["policy_action"], "PROPOSE_BLOCK");
+            let degraded =
+                hybrid::evaluate(row, &hybrid::Config::default(), true, None, 0, 0, false);
+            assert_eq!(degraded["ai"]["signal"], "AI_UNAVAILABLE");
+            serde_json::json!({"request_id":row["request_id"],"policy":decision["policy_action"],
+            "ai":decision["ai"],"failover":degraded["ai"]["signal"],"execution":false})
+        })
+        .collect();
+    let out = std::env::var_os("R35_POLICY_OUTPUT").unwrap();
+    std::fs::write(out, serde_json::to_vec_pretty(&decisions).unwrap()).unwrap();
+}

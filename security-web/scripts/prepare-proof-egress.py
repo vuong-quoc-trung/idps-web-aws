@@ -6,6 +6,7 @@ import argparse
 import importlib.util
 from pathlib import Path
 import json
+import re
 
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('host', HERE / 'prepare-nginx-host.py')
@@ -14,7 +15,7 @@ spec.loader.exec_module(host)
 MARKER = '# PBL4 TRANSACTION PROOF CANDIDATE v1'
 
 
-def render(cert, key, ca, name, js, keyfile, gid, ai_mode="enabled"):
+def render(cert, key, ca, name, js, keyfile, gid, ai_mode="enabled", shadow_socket=None):
     if ai_mode not in ('enabled', 'deferred'):
         raise ValueError('Unknown AI telemetry mode')
     for value in (cert, key, ca, js, keyfile): host.certificate_path(value)
@@ -48,6 +49,21 @@ def render(cert, key, ca, name, js, keyfile, gid, ai_mode="enabled"):
                 'js_shared_dict_zone zone=nonces:1m timeout=65s;\n'
                 f'js_var $probe_key_gid {gid};\njs_var $probe_receipt;\n'
                 'js_set $probe_signed proof.sign;\njs_set $probe_verified proof.verify;\n')
+    if shadow_socket is not None:
+        if ai_mode != "enabled" or not re.fullmatch(r"/[A-Za-z0-9_./-]+", shadow_socket):
+            raise ValueError("Shadow requires enabled telemetry and an absolute Unix socket path")
+        if ".." in Path(shadow_socket).parts or len(shadow_socket.encode()) >= 108:
+            raise ValueError("Invalid shadow socket path")
+        marker = "    location / {\n        proxy_bind 127.77.0.1;"
+        if site.count(marker) != 1:
+            raise ValueError("Cannot identify the unique edge location")
+        mirror = (HERE.parent / "nginx/https-shadow-mirror.conf").read_text().replace("__SOCKET__", shadow_socket)
+        site = site.replace(marker, mirror + "    location / {\n"
+            "        set $r35_id $request_id;\n        set $r35_method $request_method;\n"
+            "        set $r35_target $request_uri;\n        set $r35_dispatch $msec;\n"
+            "        mirror /_idps_https_projection;\n        mirror_request_body off;\n"
+            "        proxy_bind 127.77.0.1;")
+        formats += '\nmap "$scheme:$request_uri" $r35_api { default 0; ~^https:/api/ 1; }\n'
     if ai_mode == 'deferred':
         lines = site.splitlines()
         matched = [i for i, line in enumerate(lines) if 'access_log syslog:' in line and 'tag=ai_shadow' in line]
@@ -64,13 +80,14 @@ if __name__ == '__main__':
     for flag in ('cert', 'key', 'ca', 'tls-name', 'js', 'keyfile'):
         p.add_argument('--' + flag, required=True)
     p.add_argument('--ai-mode', choices=['enabled', 'deferred'], default='enabled')
+    p.add_argument('--shadow-socket', help='Optional private HTTPS research receiver Unix socket')
     p.add_argument('--gid', type=int, required=True)
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
     output = a.output.resolve()
     if output == Path('/etc') or Path('/etc') in output.parents:
         p.error('Staging must be outside /etc')
-    site, formats = render(a.cert, a.key, a.ca, a.tls_name, a.js, a.keyfile, a.gid, a.ai_mode)
+    site, formats = render(a.cert, a.key, a.ca, a.tls_name, a.js, a.keyfile, a.gid, a.ai_mode, a.shadow_socket)
     output.mkdir(mode=0o700, parents=False, exist_ok=False)
     (output / 'pbl4-proxy').write_text(site)
     (output / 'pbl4-http.conf').write_text(formats)

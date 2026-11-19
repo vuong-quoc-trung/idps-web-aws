@@ -194,6 +194,14 @@ class Tests(unittest.TestCase):
             '--edge-key', '/tmp/key', '--module', '/tmp/module.so', '--gid', '991'],
             check=True, capture_output=True)
         m.validate(staged)
+        shadow = self.work/'shadow-staged'
+        subprocess.run([sys.executable, str(HERE/'stage-proof-host.py'),
+            '--output', str(shadow), '--nginx-base', str(main), '--suricata-base', str(suri),
+            '--student-ca', str(ca), '--edge-ca', str(ca), '--edge-cert', '/tmp/cert',
+            '--edge-key', '/tmp/key', '--module', '/tmp/module.so', '--gid', '991','--https-ml-shadow'],
+            check=True, capture_output=True)
+        self.assertTrue(m.validate(shadow)['https_ml_shadow'])
+        self.assertFalse(m.validate(staged)['https_ml_shadow'])
         output = subprocess.run([sys.executable, str(HERE/'deploy-proof-host.py'), 'dry-run',
             '--bundle', str(staged), '--backup', str(self.work/'not-created')],
             check=True, capture_output=True, text=True)

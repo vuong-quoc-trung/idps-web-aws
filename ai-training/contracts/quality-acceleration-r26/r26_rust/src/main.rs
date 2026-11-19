@@ -25,7 +25,13 @@ struct Frame {
 }
 
 fn main() -> Result<()> {
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut cli = std::env::args().skip(1).peekable();
+    let mode = if cli.next_if(|arg| arg == "--https-shadow").is_some() {
+        "HTTPS_EDGE_SHADOW"
+    } else {
+        "OFFLINE_RAW_REQUEST_REPLAY"
+    };
+    let args: Vec<_> = cli.collect();
     let project_only = args == ["--project-only"];
     ensure!(
         project_only || args.len() == 3,
@@ -73,7 +79,7 @@ fn main() -> Result<()> {
         }
         let frame = serde_json::from_slice::<Frame>(&line)
             .ok()
-            .filter(|f| f.schema == SCHEMA && f.mode == "OFFLINE_RAW_REQUEST_REPLAY");
+            .filter(|f| f.schema == SCHEMA && f.mode == mode);
         let Some(frame) = frame else {
             println!(
                 "{}",
@@ -109,7 +115,7 @@ fn main() -> Result<()> {
             "{}",
             json!({"status":"SCORED","schema":SCHEMA,"features":vector,"score":score,
             "preprocessing_ns":preprocessing_ns,"inference_ns":inference_ns,"model_load_ns":load_ns,
-            "model_sha256":model_sha,"hybrid_allowed":false,"mode":"OFFLINE_RAW_REQUEST_REPLAY"})
+            "model_sha256":model_sha,"hybrid_allowed":false,"mode":mode})
         );
     }
     Ok(())
