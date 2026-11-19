@@ -5,7 +5,7 @@ use std::sync::LazyLock;
 
 static SLOTS: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!(
-        "../../ai-training/contracts/https-model-r36/slots.json"
+        "../../ai-training/contracts/quality-freeze-r37/slots.json"
     ))
     .expect("compiled release registry")
 });

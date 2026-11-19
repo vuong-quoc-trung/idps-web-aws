@@ -21,19 +21,18 @@ sys.path[:0] = [
 from idps_ai.features.request_time import from_request
 from r23_features import sketch, describe_lane
 from receiver import vector_sha, MODE, SCHEMA
-from serve import slot
+from serve import SLOT_ROOT, slot
 
 
 def run(a):
     live = json.loads((a.live / "live.json").read_text())
-    cp = HERE / "release/R36-ExtraTrees.joblib"
-    if (
-        hashlib.sha256(cp.read_bytes()).hexdigest()
-        != json.loads(cp.with_suffix(".checkpoint.json").read_text())["sha"]
-    ):
+    selected = slot(None)
+    manifest = json.loads((SLOT_ROOT / selected["manifest"]).read_text())
+    cp = SLOT_ROOT / manifest["checkpoint"]
+    if hashlib.sha256(cp.read_bytes()).hexdigest() != manifest["checkpoint_sha256"]:
         raise ValueError("Untrusted checkpoint")
     model = joblib.load(cp)
-    met = json.loads((HERE / "evidence/metrics.json").read_text())["arms"]["R36-ExtraTrees"]
+    met = manifest["calibration"]
     slots = {v["sha256"]: v for v in (slot(None), slot("rollback"))}
     summary = []
     opts = ort.SessionOptions()
@@ -49,7 +48,7 @@ def run(a):
         x = np.r_[from_request(path, method), shape].astype("float32")[None, :]
         assert vector_sha(x[0]) == row["vector_sha256"]
         sess = ort.InferenceSession(
-            str(HERE / s["model"]), opts, providers=["CPUExecutionProvider"]
+            str(SLOT_ROOT / s["model"]), opts, providers=["CPUExecutionProvider"]
         )
         score = sess.run(["score"], {"input": x})[0].item()
         assert abs(row["score"] - score) < 2e-5
@@ -76,7 +75,7 @@ def run(a):
         )
     s = slot(None)
     input_frame = json.dumps(dict(schema=SCHEMA, mode=MODE, method="GET", target="/api/auth/me"))
-    cli = [a.scorer, "--https-shadow", HERE / s["model"], s["sha256"], a.ort]
+    cli = [a.scorer, "--https-shadow", SLOT_ROOT / s["model"], s["sha256"], a.ort]
     fail = subprocess.run(
         [*cli[:3], "0" * 64, a.ort], input="", capture_output=True, text=True, timeout=10
     )

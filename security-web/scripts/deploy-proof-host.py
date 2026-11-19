@@ -83,7 +83,7 @@ def validate(bundle):
     if 'https_local_model' in manifest:
         expected = None
         if shadow:
-            registry_file = Path(__file__).resolve().parents[2]/'ai-training/contracts/https-model-r36/slots.json'
+            registry_file = Path(__file__).resolve().parents[2]/'ai-training/contracts/quality-freeze-r37/slots.json'
             content = registry_file.read_bytes()
             registry = json.loads(content)
             slot = registry['slots'][registry['default']]

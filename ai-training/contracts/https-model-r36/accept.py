@@ -48,7 +48,9 @@ def run(a):
     if a.out.exists():
         raise ValueError("Use a fresh run directory")
     a.out.mkdir()
-    slots = json.loads((HERE / "slots.json").read_text())
+    from serve import SLOT_ROOT
+
+    slots = json.loads((SLOT_ROOT / "slots.json").read_text())
     previous = a.asset_root / "ai-training/.artifacts/t09-r35-HXrqHh86"
     pg = a.pg / "usr/lib/postgresql/18/bin"
     with (
@@ -243,6 +245,7 @@ def run(a):
                 )
             assert {r["request_id"] for r in summary} == set(roster) == set(journal)
             assert sum(r["model"] == slots["slots"]["candidate"]["version"] for r in summary) == 5
+            assert decisions and journal[list(roster)[3]]["version"] == slots["slots"]["rollback"]["version"]
             assert sql("select count(*) from hybrid_proposals") == "0"
             assert sql("select count(*) from https_research_observations where conflicted") == "0"
             errors = sql("select count(*) from ingestion_errors where source='HTTPS_RESEARCH'")
