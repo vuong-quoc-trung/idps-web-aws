@@ -59,8 +59,11 @@ def main():
                             'policy_fixture_', 'authentication_roles_and_audit', 'post_proxy_origin_persists']
         if args.c2_regression: tests=['']
         for test in tests:
-            run(['cargo','test','--offline','--manifest-path',str(HERE.parent/'Cargo.toml'),test,'--','--nocapture'],env=env)
-            print(json.dumps({'test':test,'status':'PASS'}),flush=True)
+            result=run(['cargo','test','--offline','--manifest-path',str(HERE.parent/'Cargo.toml'),test,'--','--nocapture'],env=env)
+            passed = sum(int(n) for n in re.findall(rb'test result: ok\. (\d+) passed', result))
+            if not passed:
+                raise RuntimeError('Test filter selected no passing test: '+test)
+            print(json.dumps({'test':test,'status':'PASS','executions':passed}),flush=True)
         if args.c2 or args.c2_regression or args.r35: return
         # Restore smoke check against schema through 0014 then additive 0015.
         run(['docker','exec',name,'createdb','-U','postgres','restore_source'])
