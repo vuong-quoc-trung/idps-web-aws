@@ -1,0 +1,29 @@
+{
+  "version": "R36-WAF-URI100-v1",
+  "task": "WAF_PUBLISHER_NORMAL_ANOMALOUS",
+  "input": "idps-uri100-raw-ascii-r26-v1",
+  "fit": "R24 weighted exact URI100 cells from 400000 WAF TRAIN originals. Reserve SHA256('r36-holdout:'+decimal R26 component) first 8 bytes big-endian modulo 10 == 0 for a one-time R36 development holdout. Legacy checkpoints previously saw that subset.",
+  "development": "Use WAF historic TUNING (publisher TRAIN); assign SHA256('r36-select:'+component) first 8 bytes big-endian modulo 4. Buckets 0,1 SELECT; 2 CAL_FIT; 3 CAL_OP. Historically exposed development only. Fit positive Platt on CAL_FIT, strict threshold on CAL_OP with <=1% empirical request FPR.",
+  "candidates": [
+    "R35-logistic",
+    "R25-SwiGLU",
+    "R36-HistGradientBoosting",
+    "R36-ExtraTrees"
+  ],
+  "training": "Fit the two new arms once on all eligible FIT cells, cap prolific URI mass with frozen R24 weights and balance both classes. HGB 140 iterations, learning rate .08, max 15 leaves, L2 2; ExtraTrees 48 depth 9, min_samples_leaf 3, max_features .8. Seed 36.",
+  "selection": "Max recall among candidates meeting SELECT FPR <= .01 at their fixed CAL_OP threshold, then AP, then smaller artifact. If none meet budget, minimize excess FPR then maximize recall. No threshold reselection.",
+  "transfer": "After model/threshold lock, score Notes and SR-BH historical development TUNING separately, remove exact views used by any WAF role including legacy FIT. No TEST or native release claim.",
+  "target": {
+    "recall": 0.85,
+    "fpr": 0.01
+  },
+  "waf_cells_sha256": "249f7810b3bbdfef2e898bac120b42ef9857c3da6cf35b8302092e996114a4f5",
+  "waf_lineage_sha256": "82baf9d2a75e2219e731bdf11b22f9649a2580783ffc35df30fe851c8c3a5417",
+  "r25_onnx_sha256": "9933a43d1ff7c8eef7667164750d7d7977ab35695d236d996c4980570580c987",
+  "r35_onnx_sha256": "4777557bdb0307b09dcac8caec01e0b49c4181bb834cd1630aeb21f0a35f9137",
+  "transfer_sha256": {
+    "NOTES": "492dda435cb1a5fcba2de286c4a35322634981a7e7ba05b6aa848b5bef6244b0",
+    "SRBH": "fb8cf80dd12fd1685fb32f1197db3455b0a52b723fec19cf771bb7ad0180b54b"
+  },
+  "numeric_recovery": "The first export saturated a monotone float32 probability at 1. Strict alert threshold and AP use the original ONNX ranking score. Return the monotone probability as a separate output. Reject an operating point with zero sensitivity on CAL_OP. Same split, threshold rule, FPR budget and winner ordering. Already evaluated R36 holdout/transfer v1 are disclosed."
+}

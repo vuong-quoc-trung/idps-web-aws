@@ -1,0 +1,51 @@
+{
+  "limitation": "Independent of this WAF fit/selection. Publisher semantics and historical development use preclude a T07 release claim.",
+  "selection_sha256": "6c0f9ea938fda26cf6276cfdcc790c1b734c28f242716fa985ccb8d620287bc2",
+  "sources": {
+    "NOTES": {
+      "embargoed_components": 0,
+      "embargoed_rows": 0,
+      "groups": 720,
+      "metrics": {
+        "accuracy": 0.7404011461318052,
+        "ap": 0.5549789251513146,
+        "balanced_accuracy": 0.7370916162489196,
+        "brier": 0.3753313720226288,
+        "coverage": 1.0,
+        "fn": 120,
+        "fp": 333,
+        "fpr": 0.2561538461538462,
+        "n": 1745,
+        "precision": 0.4939209726443769,
+        "recall": 0.7303370786516854,
+        "tn": 967,
+        "tp": 325
+      },
+      "role": "historical publisher FIT, transfer only for R36 WAF model",
+      "support": 1745
+    },
+    "SRBH": {
+      "embargoed_components": 0,
+      "embargoed_rows": 0,
+      "groups": 2305,
+      "metrics": {
+        "accuracy": 0.7068155857342302,
+        "ap": 0.9919764349250753,
+        "balanced_accuracy": 0.8224154236204078,
+        "brier": 0.06408586353063583,
+        "coverage": 1.0,
+        "fn": 9175,
+        "fp": 65,
+        "fpr": 0.014078405891271389,
+        "n": 31516,
+        "precision": 0.9963460565518016,
+        "recall": 0.6589092531320867,
+        "tn": 4552,
+        "tp": 17724
+      },
+      "role": "historical publisher FIT, transfer only for R36 WAF model",
+      "support": 31516
+    }
+  },
+  "threshold": 0.5138319730758667
+}
