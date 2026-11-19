@@ -1,0 +1,96 @@
+{
+  "run": "r36/handoff",
+  "scope": "isolated localhost HTTPS research profile",
+  "states": {
+    "LOCAL_AI_INTEGRATED": "PASS",
+    "T07_PRODUCTION_QUALITY": "BLOCKED"
+  },
+  "on_disk_model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+  "unique_bound_request_ids": 6,
+  "unique_sensor_transactions": 6,
+  "unique_audit_event_ids": 6,
+  "unique_uri100_vectors": 5,
+  "model_counts": {
+    "r36-extratrees-uri100-v1": 5,
+    "r35-logistic-uri100-smoke": 1
+  },
+  "masks_at_cutoff": {
+    "NA": 1,
+    "NSA": 5
+  },
+  "structural_NSA": 6,
+  "policy_counts": {
+    "LOG_ONLY": 5,
+    "ALERT": 1
+  },
+  "block_proposals": 0,
+  "ingestion_errors": 0,
+  "request_sequence": [
+    {
+      "index": 1,
+      "request_id": "787933b274b303826e85a43db46246d4",
+      "method": "GET",
+      "http_status": 200,
+      "version": "r36-extratrees-uri100-v1",
+      "mask": "NA"
+    },
+    {
+      "index": 2,
+      "request_id": "5f0c3d61f0a10703da34b0f261131646",
+      "method": "GET",
+      "http_status": 401,
+      "version": "r36-extratrees-uri100-v1",
+      "mask": "NSA"
+    },
+    {
+      "index": 3,
+      "request_id": "0e3d4bb0e9f9a8171ae67fdfdc9b4879",
+      "method": "GET",
+      "http_status": 200,
+      "version": "r36-extratrees-uri100-v1",
+      "mask": "NSA"
+    },
+    {
+      "index": 4,
+      "request_id": "7a9f091dcebae0df022d40b4cfcab0fe",
+      "method": "HEAD",
+      "http_status": 401,
+      "version": "r35-logistic-uri100-smoke",
+      "mask": "NSA"
+    },
+    {
+      "index": 5,
+      "request_id": "2a02c04d08bc41a905d737b54fc4f8c1",
+      "method": "POST",
+      "http_status": 204,
+      "version": "r36-extratrees-uri100-v1",
+      "mask": "NSA"
+    },
+    {
+      "index": 6,
+      "request_id": "eef87d96ccbd83b635664781b8e5c442",
+      "method": "GET",
+      "http_status": 200,
+      "version": "r36-extratrees-uri100-v1",
+      "mask": "NSA"
+    }
+  ],
+  "runtime": {
+    "rust_error_vs_python_onnx_max": 0.0,
+    "guard_log": "handoff.log",
+    "cleanup": "cleanup.json",
+    "host_units_at_handoff": {
+      "idps-r22-local-collector.service": "active",
+      "idps-r22-local-receiver.service": "active",
+      "idps-r22-local-ri.service": "active",
+      "idps-r22-local-scorer.service": "active"
+    }
+  },
+  "native_admitted": {
+    "TRAIN": 0,
+    "DEV": 0,
+    "CAL": 0,
+    "TEST": 0
+  },
+  "production_limit": "No independent two-class native acceptance; WAF development holdout missed joint recall/FPR target."
+}
