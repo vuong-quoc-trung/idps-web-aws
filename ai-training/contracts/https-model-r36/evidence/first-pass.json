@@ -1,0 +1,254 @@
+{
+  "arms": {
+    "R25-SwiGLU": {
+      "bias": 7.280634751799682,
+      "bytes": 1608872,
+      "cal_op": {
+        "accuracy": 0.8981651376146789,
+        "ap": 0.9954891594275873,
+        "balanced_accuracy": 0.9228275118035335,
+        "brier": 0.02723241038620472,
+        "coverage": 1.0,
+        "fn": 108,
+        "fp": 3,
+        "fpr": 0.008595988538681949,
+        "n": 1090,
+        "precision": 0.9952830188679245,
+        "recall": 0.854251012145749,
+        "tn": 346,
+        "tp": 633
+      },
+      "calibration_parity_error": 2.3312393288010824e-07,
+      "native_export_error": null,
+      "select": {
+        "accuracy": 0.7720754716981132,
+        "ap": 0.9827411908948032,
+        "balanced_accuracy": 0.8430298913994833,
+        "brier": 0.07474630326032639,
+        "coverage": 1.0,
+        "fn": 292,
+        "fp": 10,
+        "fpr": 0.03690036900369004,
+        "n": 1325,
+        "precision": 0.9870466321243523,
+        "recall": 0.7229601518026565,
+        "tn": 261,
+        "tp": 762
+      },
+      "slope": 3.337169114772029,
+      "threshold": 0.9999990463256836
+    },
+    "R35-logistic": {
+      "bias": -2.9738900106186317,
+      "bytes": 983,
+      "cal_op": {
+        "accuracy": 0.7963302752293578,
+        "ap": 0.9818032934626286,
+        "balanced_accuracy": 0.8479287263784323,
+        "brier": 0.0999642014503479,
+        "coverage": 1.0,
+        "fn": 219,
+        "fp": 3,
+        "fpr": 0.008595988538681949,
+        "n": 1090,
+        "precision": 0.9942857142857143,
+        "recall": 0.7044534412955465,
+        "tn": 346,
+        "tp": 522
+      },
+      "calibration_parity_error": 1.2740834132163315e-07,
+      "native_export_error": null,
+      "select": {
+        "accuracy": 0.6724528301886793,
+        "ap": 0.95362542789166,
+        "balanced_accuracy": 0.7762993901286261,
+        "brier": 0.17480000853538513,
+        "coverage": 1.0,
+        "fn": 421,
+        "fp": 13,
+        "fpr": 0.04797047970479705,
+        "n": 1325,
+        "precision": 0.9798761609907121,
+        "recall": 0.6005692599620494,
+        "tn": 258,
+        "tp": 633
+      },
+      "slope": 3.8147618453902643,
+      "threshold": 0.9913748502731323
+    },
+    "R36-ExtraTrees": {
+      "bias": 23.63516207194414,
+      "bytes": 215593,
+      "cal_op": {
+        "accuracy": 0.3201834862385321,
+        "ap": 0.98807610354326,
+        "balanced_accuracy": 0.5,
+        "brier": 0.05081462487578392,
+        "coverage": 1.0,
+        "fn": 741,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 1090,
+        "precision": null,
+        "recall": 0.0,
+        "tn": 349,
+        "tp": 0
+      },
+      "calibration_parity_error": 8.541862384636723e-07,
+      "native_export_error": 4.348942862497651e-07,
+      "select": {
+        "accuracy": 0.20452830188679244,
+        "ap": 0.9787868638115631,
+        "balanced_accuracy": 0.5,
+        "brier": 0.08255386352539062,
+        "coverage": 1.0,
+        "fn": 1054,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 1325,
+        "precision": null,
+        "recall": 0.0,
+        "tn": 271,
+        "tp": 0
+      },
+      "slope": 21.47267479281783,
+      "threshold": 1.0
+    },
+    "R36-HistGradientBoosting": {
+      "bias": 1.857965711603429,
+      "bytes": 121507,
+      "cal_op": {
+        "accuracy": 0.9825688073394495,
+        "ap": 0.997335381686757,
+        "balanced_accuracy": 0.9849057844081219,
+        "brier": 0.013651714660227299,
+        "coverage": 1.0,
+        "fn": 16,
+        "fp": 3,
+        "fpr": 0.008595988538681949,
+        "n": 1090,
+        "precision": 0.9958791208791209,
+        "recall": 0.9784075573549258,
+        "tn": 346,
+        "tp": 725
+      },
+      "calibration_parity_error": 1.1770833518998103e-07,
+      "native_export_error": 1.3854039382366068e-07,
+      "select": {
+        "accuracy": 0.9713207547169811,
+        "ap": 0.9967717428392654,
+        "balanced_accuracy": 0.9614139073079535,
+        "brier": 0.023913739249110222,
+        "coverage": 1.0,
+        "fn": 23,
+        "fp": 15,
+        "fpr": 0.055350553505535055,
+        "n": 1325,
+        "precision": 0.98565965583174,
+        "recall": 0.9781783681214421,
+        "tn": 256,
+        "tp": 1031
+      },
+      "slope": 5.681875635406593,
+      "threshold": 0.8892173767089844
+    }
+  },
+  "binding": {
+    "plan": "84a9984cf13187535e2d3f5efe75644135c851fbcb3965fcaacbf2a325245bda",
+    "schema": "5ef6c5a80c47e0243337ca6c6dadc737c6b07d0805a051a5ef8c1a78e4fdc675",
+    "study": "0ca212393e3a7880341aea13be5142ebdcbb33b9b25748837712ff7e9c13985b"
+  },
+  "counts": {
+    "cal_fit": {
+      "anomalous": 1862,
+      "groups": 166,
+      "normal": 1765,
+      "vectors": 407
+    },
+    "cal_op": {
+      "anomalous": 741,
+      "groups": 193,
+      "normal": 349,
+      "vectors": 727
+    },
+    "fit": {
+      "anomalous": 31791,
+      "groups": 3060,
+      "normal": 367228,
+      "vectors": 16453
+    },
+    "new_model_holdout": {
+      "anomalous": 738,
+      "groups": 319,
+      "normal": 243,
+      "vectors": 711
+    },
+    "select": {
+      "anomalous": 1054,
+      "groups": 354,
+      "normal": 271,
+      "vectors": 952
+    }
+  },
+  "holdout": {
+    "accuracy": 0.24770642201834864,
+    "ap": 0.9735790134032584,
+    "balanced_accuracy": 0.5,
+    "brier": 0.06992309540510178,
+    "coverage": 1.0,
+    "fn": 738,
+    "fp": 0,
+    "fpr": 0.0,
+    "n": 981,
+    "precision": null,
+    "recall": 0.0,
+    "tn": 243,
+    "tp": 0
+  },
+  "holdout_valid_for_winner": true,
+  "native": {
+    "cal": 0,
+    "test": 0,
+    "train": 0
+  },
+  "selected": "R36-ExtraTrees",
+  "threshold": 1.0,
+  "transfer": {
+    "NOTES": {
+      "exact_overlap_excluded": 0,
+      "metrics": {
+        "accuracy": 0.7956204379562044,
+        "ap": 0.43545286166755837,
+        "balanced_accuracy": 0.5,
+        "brier": 0.3159230053424835,
+        "coverage": 1.0,
+        "fn": 56,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 274,
+        "precision": null,
+        "recall": 0.0,
+        "tn": 218,
+        "tp": 0
+      }
+    },
+    "SRBH": {
+      "exact_overlap_excluded": 0,
+      "metrics": {
+        "accuracy": 0.14183801930339907,
+        "ap": 0.9839023315543302,
+        "balanced_accuracy": 0.5,
+        "brier": 0.09526406973600388,
+        "coverage": 1.0,
+        "fn": 4090,
+        "fp": 0,
+        "fpr": 0.0,
+        "n": 4766,
+        "precision": null,
+        "recall": 0.0,
+        "tn": 676,
+        "tp": 0
+      }
+    }
+  }
+}

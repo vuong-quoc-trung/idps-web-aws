@@ -1,0 +1,24 @@
+{
+  "default": "candidate",
+  "abi": "idps-uri100-raw-ascii-r26-v1",
+  "schema_sha256": "5ef6c5a80c47e0243337ca6c6dadc737c6b07d0805a051a5ef8c1a78e4fdc675",
+  "mode": "HTTPS_LOCAL_OBSERVATION_ONLY",
+  "slots": {
+    "candidate": {
+      "version": "r36-extratrees-uri100-v1",
+      "model": "release/candidate.onnx",
+      "sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "threshold": 0.5138319730758667,
+      "manifest": "release/selection.json",
+      "manifest_sha256": "6c0f9ea938fda26cf6276cfdcc790c1b734c28f242716fa985ccb8d620287bc2"
+    },
+    "rollback": {
+      "version": "r35-logistic-uri100-smoke",
+      "model": "../https-shadow-r35/bundle/publisher.onnx",
+      "sha256": "4777557bdb0307b09dcac8caec01e0b49c4181bb834cd1630aeb21f0a35f9137",
+      "threshold": 0.8689403533935547,
+      "manifest": "../https-shadow-r35/bundle/manifest.json",
+      "manifest_sha256": "7bfcb1e46ec3c9e041f7d919510622a35979c9eef3b64e180760f224e1fff392"
+    }
+  }
+}

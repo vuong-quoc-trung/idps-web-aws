@@ -1,0 +1,17 @@
+{
+  "binding": {
+    "plan": "ebf4c98aef54839fbcb434009a71e20ffae5672608d059a1b58cb56ab9b6465e",
+    "schema": "5ef6c5a80c47e0243337ca6c6dadc737c6b07d0805a051a5ef8c1a78e4fdc675",
+    "study": "4d41f2d0e48b0afcd9c0091ea55c63ef5ab0d1f26b40ec01ce1750031cb55fd3"
+  },
+  "calibration": "publisher_probability output only; strict threshold on score",
+  "enforcement_allowed": false,
+  "feature_abi": "idps-uri100-raw-ascii-r26-v1",
+  "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+  "operator": ">",
+  "schema_sha256": "5ef6c5a80c47e0243337ca6c6dadc737c6b07d0805a051a5ef8c1a78e4fdc675",
+  "task": "WAF_PUBLISHER_NORMAL_ANOMALOUS",
+  "threshold": 0.5138319730758667,
+  "version": "r36-extratrees-uri100-v1",
+  "winner": "R36-ExtraTrees"
+}
