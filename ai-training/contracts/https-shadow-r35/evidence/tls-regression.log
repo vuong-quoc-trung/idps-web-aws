@@ -1,0 +1,7 @@
+test_tls_versions_and_ip_validation (__main__.HTTPSConfigTests.test_tls_versions_and_ip_validation) ... ok
+test_http_retained_without_redirect (__main__.HTTPSConfigTests.test_http_retained_without_redirect) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.619s
+
+OK

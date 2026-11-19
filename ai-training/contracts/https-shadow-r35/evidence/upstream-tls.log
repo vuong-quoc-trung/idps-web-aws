@@ -1,0 +1,7 @@
+test_wrong_tls_identity_fails_closed (__main__.EgressTests.test_wrong_tls_identity_fails_closed) ... ok
+test_https_both_segments (__main__.EgressTests.test_https_both_segments) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.625s
+
+OK

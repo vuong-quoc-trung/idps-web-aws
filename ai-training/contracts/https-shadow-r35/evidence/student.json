@@ -1,0 +1,39 @@
+{
+  "cases": [
+    "studentAcademicPageOnlyExposesOwnClassAndPublicNames",
+    "realSessionLoginCsrfLogoutAndSafeAccountResponse"
+  ],
+  "errors": "0",
+  "failures": "0",
+  "guardian": [
+    {
+      "cpu_max": "100000 100000",
+      "resource_guardian": "launch",
+      "state": "NORMAL",
+      "temperature_c": 50.0
+    },
+    {
+      "cpu_max": "50000 100000",
+      "resource_guardian": "runtime",
+      "state": "THROTTLE",
+      "temperature_c": 94.0
+    },
+    {
+      "cpu_max": "100000 100000",
+      "resource_guardian": "runtime",
+      "state": "NORMAL",
+      "temperature_c": 88.0
+    },
+    {
+      "resource_guardian": "cleanup",
+      "verified": true
+    }
+  ],
+  "jar_compatibility": {
+    "application_yaml_files_identical": 2,
+    "compiled_class_files_identical": 184
+  },
+  "skipped": "0",
+  "tests": "2",
+  "time": "26.488"
+}

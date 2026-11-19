@@ -1,0 +1,9 @@
+Running as unit: idps-r35-46bad6d358624430a051b1fff2495d00.service; invocation ID: c96fbc545350436db2728fa982550731
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 52.0}
+{"cal": 0, "data_sha256": "57960dea5e8a15110d51abb1c342d577d7b1a45b4cdf38577f1a3224495579f3", "development_only": true, "effective_fit_weight": 9766.1221883976, "enforcement_allowed": false, "fit": 12456, "fit_normal": 2756, "fit_unique_vectors": 9367, "group_overlap": 0, "max_python_onnx_error": 2.682209014892578e-07, "model_sha256": "4777557bdb0307b09dcac8caec01e0b49c4181bb834cd1630aeb21f0a35f9137", "native_train": 0, "runtime_contract_sha256": {"receiver.py": "ebf708dca17999b3aa63346bd42ae128db591536608423702e859e8dc549e71b"}, "schema": "idps-uri100-raw-ascii-r26-v1", "source": "WAF Data v2 TRAIN / R32 pilot", "task": "WAF_PUBLISHER_NORMAL_ANOMALOUS", "test": 0, "trainer_sha256": "1c63498fef659bf9d66fc22870892beef7be3b7564ccc66223475f433620fc5a", "tuning": 6042, "tuning_metrics": {"ap": 0.9238793326086063, "brier": 0.1821940690279007, "fn": 2155, "fp": 23, "fpr": 0.009643605870020965, "precision": 0.9849180327868853, "recall": 0.410719168717528, "threshold": 0.8689403533935547, "tn": 2362, "tp": 1502}, "tuning_normal": 2385, "vector_overlap": 0}
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 1.193s
+             CPU time consumed: 867ms
+                   Memory peak: 116.1M (swap: 0B)
