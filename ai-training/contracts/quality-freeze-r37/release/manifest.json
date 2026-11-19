@@ -1,0 +1,20 @@
+{
+  "calibration": {
+    "bias": 1.857965711603429,
+    "operating_output": "score",
+    "output": "publisher_probability",
+    "slope": 5.681875635406593
+  },
+  "checkpoint": "release/finalist.joblib",
+  "checkpoint_sha256": "400e92ec5c523e903ad0b895c664250aafcb2887495f4950ecc54bccf500af61",
+  "enforcement_allowed": false,
+  "feature_abi": "idps-uri100-raw-ascii-r26-v1",
+  "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+  "operator": ">",
+  "protocol_sha256": "02b2c9d421fe4b40189bcc6baf8e356d7fdc5593d3a3322f9625a04c409eeae5",
+  "schema_sha256": "5ef6c5a80c47e0243337ca6c6dadc737c6b07d0805a051a5ef8c1a78e4fdc675",
+  "selection_sha256": "9d8df4bc7e5009a67bcf343654b91dc08fea74286fd6c19f4661078f41a5e8c3",
+  "task": "WAF_PUBLISHER_NORMAL_ANOMALOUS",
+  "threshold": 0.7664756774902344,
+  "version": "r37-hgb-uri100-v1"
+}

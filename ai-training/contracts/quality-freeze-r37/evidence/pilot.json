@@ -1,0 +1,104 @@
+{
+  "arms": {
+    "ET": {
+      "best_recall_at_1pct_ranking_only": 0.19484297194695066,
+      "mining": {},
+      "threshold": 0.8817470669746399,
+      "validation": {
+        "accuracy": 0.9496773824118104,
+        "ap": 0.25047366138977756,
+        "balanced_accuracy": 0.5239293519964232,
+        "brier": 0.08346861600875854,
+        "coverage": 1.0,
+        "fn": 19311,
+        "fp": 23,
+        "fpr": 6.320105078616612e-05,
+        "n": 384201,
+        "precision": 0.9768844221105528,
+        "recall": 0.0479219050436326,
+        "tn": 363895,
+        "tp": 972
+      }
+    },
+    "HGB": {
+      "best_recall_at_1pct_ranking_only": 0.09835823103091258,
+      "mining": {},
+      "threshold": 0.9037407636642456,
+      "validation": {
+        "accuracy": 0.9508382331123553,
+        "ap": 0.28792837594177056,
+        "balanced_accuracy": 0.5352031078264746,
+        "brier": 0.05598355829715729,
+        "coverage": 1.0,
+        "fn": 18853,
+        "fp": 35,
+        "fpr": 9.617551206590496e-05,
+        "n": 384201,
+        "precision": 0.9761092150170648,
+        "recall": 0.07050239116501504,
+        "tn": 363883,
+        "tp": 1430
+      }
+    },
+    "HGB_HARD": {
+      "best_recall_at_1pct_ranking_only": 0.07415076665187595,
+      "mining": {
+        "mining_score_cut": 0.4333934894454247,
+        "negative_cells": 1050,
+        "upweighted_cells": 105,
+        "upweighted_negative_originals": 165
+      },
+      "threshold": 0.8810696601867676,
+      "validation": {
+        "accuracy": 0.9507549433759933,
+        "ap": 0.24963028030725898,
+        "balanced_accuracy": 0.5343909926335341,
+        "brier": 0.05546381697058678,
+        "coverage": 1.0,
+        "fn": 18886,
+        "fp": 34,
+        "fpr": 9.342764029259339e-05,
+        "n": 384201,
+        "precision": 0.976240391334731,
+        "recall": 0.06887541290736085,
+        "tn": 363884,
+        "tp": 1397
+      }
+    }
+  },
+  "binding": {
+    "cohort": "4828f527e267d665a90760574cbb9e583d919b675a573fcab9139e369c78eb57",
+    "protocol": "02b2c9d421fe4b40189bcc6baf8e356d7fdc5593d3a3322f9625a04c409eeae5",
+    "r36_data_plan": "ebf4c98aef54839fbcb434009a71e20ffae5672608d059a1b58cb56ab9b6465e",
+    "r36_registry": "bfe8abb603246f54f16dd74bbd761eae73acc58cfbbe49d66e0339e0165dff0a",
+    "r36_study": "4d41f2d0e48b0afcd9c0091ea55c63ef5ab0d1f26b40ec01ce1750031cb55fd3",
+    "runner": "15aa18bc3c7dd111b115b5afe01dcfda98fb3ebb3e3b46a4ac80a8e050b86e4e"
+  },
+  "finalist": "HGB",
+  "roles": {
+    "cal": {
+      "groups": 654,
+      "originals": [
+        1715,
+        2736
+      ],
+      "views": 1756
+    },
+    "fit": {
+      "groups": 1797,
+      "originals": [
+        1595,
+        8772
+      ],
+      "views": 5209
+    },
+    "val": {
+      "groups": 609,
+      "originals": [
+        363918,
+        20283
+      ],
+      "views": 9488
+    }
+  }
+}
