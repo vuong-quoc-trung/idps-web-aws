@@ -1,0 +1,350 @@
+{
+  "fit_class_counts": [
+    367228,
+    31791
+  ],
+  "fit_minority_error_floor": 12366,
+  "fit_mixed": 405,
+  "fit_mixed_class_counts": [
+    255485,
+    14671
+  ],
+  "models": {
+    "R36-ExtraTrees": {
+      "CAL_OP": {
+        "ap": 0.9926033428343652,
+        "collision": {
+          "distinct": 727,
+          "in_mixed_by_label": [
+            84,
+            3
+          ],
+          "minority_conflict_floor": 3,
+          "mixed_vectors": 3
+        },
+        "error": {
+          "FN": {
+            "components": 49,
+            "method": {
+              "GET": 102,
+              "OTHER": 11,
+              "POST": 13
+            },
+            "n": 126,
+            "top_components": [
+              [
+                354,
+                31
+              ],
+              [
+                22,
+                8
+              ],
+              [
+                627,
+                6
+              ],
+              [
+                2274,
+                6
+              ],
+              [
+                5300,
+                6
+              ]
+            ]
+          },
+          "FP": {
+            "components": 3,
+            "method": {
+              "GET": 3,
+              "OTHER": 0,
+              "POST": 0
+            },
+            "n": 3,
+            "top_components": [
+              [
+                58,
+                1
+              ],
+              [
+                2575,
+                1
+              ],
+              [
+                11038,
+                1
+              ]
+            ]
+          },
+          "benign": {
+            "components": 49,
+            "effective_components": 4.9728902135303965,
+            "largest_component": 146,
+            "n": 349,
+            "score_q50_q95_q99_max": [
+              0.23373468220233917,
+              0.2649005353450775,
+              0.4475242614746069,
+              0.8265339136123657
+            ]
+          }
+        }
+      },
+      "SELECT": {
+        "ap": 0.9835127424692061,
+        "collision": {
+          "distinct": 952,
+          "in_mixed_by_label": [
+            13,
+            21
+          ],
+          "minority_conflict_floor": 9,
+          "mixed_vectors": 2
+        },
+        "error": {
+          "FN": {
+            "components": 74,
+            "method": {
+              "GET": 257,
+              "OTHER": 4,
+              "POST": 37
+            },
+            "n": 298,
+            "top_components": [
+              [
+                430,
+                46
+              ],
+              [
+                2028,
+                34
+              ],
+              [
+                595,
+                31
+              ],
+              [
+                667,
+                24
+              ],
+              [
+                1618,
+                20
+              ]
+            ]
+          },
+          "FP": {
+            "components": 4,
+            "method": {
+              "GET": 4,
+              "OTHER": 0,
+              "POST": 0
+            },
+            "n": 4,
+            "top_components": [
+              [
+                1381,
+                1
+              ],
+              [
+                1610,
+                1
+              ],
+              [
+                3488,
+                1
+              ],
+              [
+                4706,
+                1
+              ]
+            ]
+          },
+          "benign": {
+            "components": 91,
+            "effective_components": 23.836741317753976,
+            "largest_component": 36,
+            "n": 271,
+            "score_q50_q95_q99_max": [
+              0.23380857706069946,
+              0.3791920244693756,
+              0.6176723957061792,
+              0.8488171696662903
+            ]
+          }
+        }
+      }
+    },
+    "R36-HistGradientBoosting": {
+      "CAL_OP": {
+        "ap": 0.998653917127132,
+        "collision": {
+          "distinct": 727,
+          "in_mixed_by_label": [
+            84,
+            3
+          ],
+          "minority_conflict_floor": 3,
+          "mixed_vectors": 3
+        },
+        "error": {
+          "FN": {
+            "components": 10,
+            "method": {
+              "GET": 12,
+              "OTHER": 2,
+              "POST": 2
+            },
+            "n": 16,
+            "top_components": [
+              [
+                5414,
+                4
+              ],
+              [
+                1093,
+                2
+              ],
+              [
+                2741,
+                2
+              ],
+              [
+                3692,
+                2
+              ],
+              [
+                1156,
+                1
+              ]
+            ]
+          },
+          "FP": {
+            "components": 3,
+            "method": {
+              "GET": 3,
+              "OTHER": 0,
+              "POST": 0
+            },
+            "n": 3,
+            "top_components": [
+              [
+                2575,
+                1
+              ],
+              [
+                7202,
+                1
+              ],
+              [
+                11038,
+                1
+              ]
+            ]
+          },
+          "benign": {
+            "components": 49,
+            "effective_components": 4.9728902135303965,
+            "largest_component": 146,
+            "n": 349,
+            "score_q50_q95_q99_max": [
+              0.025192558765411377,
+              0.21175620555877667,
+              0.4962878608703608,
+              0.9482907056808472
+            ]
+          }
+        }
+      },
+      "SELECT": {
+        "ap": 0.9976664286497754,
+        "collision": {
+          "distinct": 952,
+          "in_mixed_by_label": [
+            13,
+            21
+          ],
+          "minority_conflict_floor": 9,
+          "mixed_vectors": 2
+        },
+        "error": {
+          "FN": {
+            "components": 16,
+            "method": {
+              "GET": 15,
+              "OTHER": 2,
+              "POST": 6
+            },
+            "n": 23,
+            "top_components": [
+              [
+                1616,
+                4
+              ],
+              [
+                1096,
+                3
+              ],
+              [
+                142,
+                2
+              ],
+              [
+                7783,
+                2
+              ],
+              [
+                356,
+                1
+              ]
+            ]
+          },
+          "FP": {
+            "components": 7,
+            "method": {
+              "GET": 5,
+              "OTHER": 0,
+              "POST": 10
+            },
+            "n": 15,
+            "top_components": [
+              [
+                1618,
+                8
+              ],
+              [
+                2527,
+                2
+              ],
+              [
+                1381,
+                1
+              ],
+              [
+                1610,
+                1
+              ],
+              [
+                2496,
+                1
+              ]
+            ]
+          },
+          "benign": {
+            "components": 91,
+            "effective_components": 23.836741317753976,
+            "largest_component": 36,
+            "n": 271,
+            "score_q50_q95_q99_max": [
+              0.06368032097816467,
+              0.5171936750411987,
+              0.7563096880912781,
+              0.9541236162185669
+            ]
+          }
+        }
+      }
+    }
+  }
+}
