@@ -29,6 +29,7 @@ def main():
     p.add_argument('--edge-key', required=True)
     p.add_argument('--module', required=True, help='Reviewed installed module path; does not install module')
     p.add_argument('--ai-mode', choices=['enabled', 'deferred'], default='enabled')
+    p.add_argument('--https-ml-shadow', action='store_true', help='Stage the optional private HTTPS URI100 mirror')
     p.add_argument('--gid', type=int, required=True)
     a = p.parse_args()
     output = a.output.resolve()
@@ -63,7 +64,8 @@ def main():
         p.error('Expected exactly one http context')
     site, formats = renderer.render(a.edge_cert, a.edge_key,
         '/etc/nginx/pbl4-proof/student-ca.crt', 'student.lab',
-        '/etc/nginx/pbl4-proof/proof.js', '/etc/nginx/pbl4-proof/key.json', a.gid, a.ai_mode)
+        '/etc/nginx/pbl4-proof/proof.js', '/etc/nginx/pbl4-proof/key.json', a.gid, a.ai_mode,
+        "/run/websentinel-edge-shadow/receiver.sock" if a.https_ml_shadow else None)
     suri = load('suri_stage', 'prepare-suricata-post-proxy.py').render(
         yaml.safe_load(a.suricata_base.read_text()), 'local-egress')
     suri['outputs'] = [entry for entry in suri.get('outputs', []) if 'lua' not in entry]
@@ -104,7 +106,7 @@ ExecStart=/usr/bin/suricata -D --af-packet -c /etc/suricata/pbl4/local-egress.ya
         name: hashlib.sha256((output/name).read_bytes()).hexdigest() for name in files},
         'edge_ca_sha256': hashlib.sha256((output/'edge-ca.crt').read_bytes()).hexdigest(),
         'ai_worker': 'DEFERRED' if a.ai_mode == 'deferred' else 'ENABLED_NOT_ACCEPTED',
-        'ai_mode': a.ai_mode, 'verified': False, 'apply_approved': False}, indent=2))
+        'ai_mode': a.ai_mode, 'https_ml_shadow': a.https_ml_shadow, 'verified': False, 'apply_approved': False}, indent=2))
     print('Staged bundle; review effective module/unit/include configuration before apply.')
 
 if __name__ == '__main__': main()

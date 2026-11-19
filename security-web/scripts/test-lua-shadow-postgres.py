@@ -28,6 +28,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--c2', action='store_true', help='Run only controlled prevention isolated DB tests')
     parser.add_argument('--c2-regression',action='store_true',help='Run complete Rust regression against disposable PostgreSQL')
+    parser.add_argument('--r35', action='store_true', help='Integrated migration and benign ingestion/regression cases')
     args=parser.parse_args()
     image='postgres:17-alpine'
     run(['docker','image','inspect',image])  # No network pull or fallback to production.
@@ -53,11 +54,14 @@ def main():
                'lua_shadow_rollback_and_generation_view',
                'rust_idps_database_upgrades_to_ai_without_rewriting_history']
         if args.c2: tests=['c2_', 'c3_', 'ai_verdict_contract::', 'prevention_simulation::']
+        if args.r35: tests=['r35_legacy_ai_history', 'rust_idps_database_upgrades_to_ai', 'checkpoint_restart_rotation_partial',
+                            'captures_benign_audit_nginx_and_eve', 'restore_does_not_override_pending_unblock',
+                            'policy_fixture_', 'authentication_roles_and_audit', 'post_proxy_origin_persists']
         if args.c2_regression: tests=['']
         for test in tests:
             run(['cargo','test','--offline','--manifest-path',str(HERE.parent/'Cargo.toml'),test,'--','--nocapture'],env=env)
             print(json.dumps({'test':test,'status':'PASS'}),flush=True)
-        if args.c2 or args.c2_regression: return
+        if args.c2 or args.c2_regression or args.r35: return
         # Restore smoke check against schema through 0014 then additive 0015.
         run(['docker','exec',name,'createdb','-U','postgres','restore_source'])
         for migration in sorted((HERE.parent/'migrations').glob('*.sql')):

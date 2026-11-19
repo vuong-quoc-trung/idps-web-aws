@@ -72,6 +72,14 @@ def validate(bundle):
     mode = manifest.get('ai_mode', 'enabled')
     if mode not in ('enabled', 'deferred') or len(sinks) != (1 if mode == 'enabled' else 0):
         raise ValueError('AI mode and active telemetry configuration disagree')
+    shadow = manifest.get('https_ml_shadow', False)
+    mirror = [line for line in active_lines if line.startswith('mirror ')]
+    if type(shadow) is not bool or mirror != (['mirror /_idps_https_projection;'] if shadow else []):
+        raise ValueError('HTTPS shadow declaration and edge mirror disagree')
+    if shadow:
+        expected = (Path(__file__).resolve().parents[1]/'nginx/https-shadow-mirror.conf').read_text()
+        if mode != 'enabled' or expected.replace('__SOCKET__','/run/websentinel-edge-shadow/receiver.sock') not in site:
+            raise ValueError('HTTPS shadow requires the reviewed private receiver and enabled telemetry')
     if mode == 'deferred' and '# AI DEFERRED:' not in site:
         raise ValueError('Deferred telemetry must retain explicit restore marker')
     main = (bundle/'nginx.conf').read_text()

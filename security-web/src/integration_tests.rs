@@ -1502,3 +1502,47 @@ async fn c3_ai_intake_http_auth_closed_without_key(pool: PgPool) {
         StatusCode::BAD_REQUEST
     );
 }
+
+#[sqlx::test(migrations = false)]
+async fn r35_legacy_ai_history_rekey_then_apply_https(pool: PgPool) {
+    let full = sqlx::migrate!("./migrations");
+    let old = sqlx::migrate::Migrator {
+        migrations: std::borrow::Cow::Owned(
+            full.iter()
+                .filter(|m| m.version <= 13 || m.version == 18)
+                .cloned()
+                .map(|mut m| {
+                    if m.version == 18 {
+                        m.version = 14;
+                    }
+                    m
+                })
+                .collect(),
+        ),
+        ..sqlx::migrate::Migrator::DEFAULT
+    };
+    old.run(&pool).await.unwrap();
+    sqlx::query("INSERT INTO hybrid_incidents(request_id,evidence_fingerprint,policy_version,observed_at,decision) VALUES('retained','sha','v1',now(),'{}')")
+        .execute(&pool).await.unwrap();
+    assert!(full.run(&pool).await.is_err());
+    sqlx::raw_sql(include_str!("../scripts/rekey-ai-hybrid-migration.sql"))
+        .execute(&pool)
+        .await
+        .unwrap();
+    full.run(&pool).await.unwrap();
+    full.run(&pool).await.unwrap();
+    assert_eq!(
+        sqlx::query_scalar::<_, String>("SELECT request_id FROM hybrid_incidents")
+            .fetch_one(&pool)
+            .await
+            .unwrap(),
+        "retained"
+    );
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT count(*) FROM _sqlx_migrations")
+            .fetch_one(&pool)
+            .await
+            .unwrap(),
+        full.iter().count() as i64
+    );
+}
