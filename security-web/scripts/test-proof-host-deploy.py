@@ -208,6 +208,9 @@ class Tests(unittest.TestCase):
         self.assertFalse(json.loads(output.stdout)['writes'])
         self.assertFalse((self.work/'not-created').exists())
         self.assertIn('proxy_ssl_name student.lab;', (staged/'site').read_text())
+        selected = json.loads((shadow/'manifest.json').read_text())['https_local_model']
+        self.assertEqual(selected['version'], 'r36-extratrees-uri100-v1')
+        self.assertIs(selected['enforcement'], False)
 
     def test_bundle_hash_mismatch_refused(self):
         (self.bundle/'manifest.json').write_text(json.dumps({'sha256': dict.fromkeys(m.TARGETS, 'wrong')}))

@@ -317,6 +317,9 @@ async fn ingest_line(
     if source == "SURICATA_LUA" {
         return crate::lua_shadow::ingest(tx, physical_key, raw).await;
     }
+    if source == "HTTPS_RESEARCH" {
+        return crate::https_research::ingest(tx, physical_key, raw).await;
+    }
     if source == "AI_SHADOW" {
         return ai_shadow::ingest(tx, physical_key, raw).await;
     }
