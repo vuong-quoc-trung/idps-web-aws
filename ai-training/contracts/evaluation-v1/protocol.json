@@ -1,0 +1,120 @@
+{
+  "version": "idps-evaluation-1.0.0",
+  "status": "LOCKED_BEFORE_INDEPENDENT_EVALUATION",
+  "date_ICT": "2026-11-15",
+  "primary_task": "ATTACK_INTENT",
+  "masks": [
+    "N",
+    "S",
+    "A",
+    "NS",
+    "NA",
+    "SA",
+    "NSA"
+  ],
+  "partitions": {
+    "TRAIN": "Fit normalization, models, sampler and auxiliary objectives on task-eligible canonical records only.",
+    "DEV": "Select features, architecture, stopping checkpoint, seed policy and the strongest simple comparator. Used for design only.",
+    "CAL_FIT": "Fit a positive-slope logistic sigmoid on frozen attack scores using independent CAL components. Clip probability input to [1e-6,1-1e-6] before logit if the score is on that scale; unrestricted logits enter directly. Fixed L2=1e-4 on slope with mean log loss; intercept unpenalized. Weight components equally within the preregistered target population, using its frozen prevalence weights when sampled by design. If target prevalence is unknown for an enriched frame, probability claims are blocked.",
+    "CAL_OP": "Use a disjoint CAL component set to choose a strict greater-than operating point. Enumerate distinct finite score values and an all-positive lower sentinel. Require empirical effective recall >=0.8, benign false-alert rate <=0.005 and score coverage >=0.95 in each requested clean CAL stratum. Among eligible global thresholds maximize campaign-macro effective recall, then select the highest threshold on a tie. No feasible point means blocked, never all-abstain as a threshold. v1 uses a single point per arm, no TEST tuning.",
+    "TEST_SHADOW": "Independent blinded campaign and environment holdout. One submission of frozen candidate, comparators, calibrators, thresholds, masks and evaluation manifest to custodian.",
+    "TEST_BLOCK": "Separate sealed safety panel and representative benign exposure packages, prepared independently of TEST_SHADOW and CAL. Used only in a separately authorized later task."
+  },
+  "lineage": {
+    "split_before_fit": true,
+    "same_component_one_role": true,
+    "whole_campaign_one_role": true,
+    "components": [
+      "physical_request",
+      "canonical_sample",
+      "representations",
+      "exact_feature_view",
+      "source_alias",
+      "session",
+      "campaign",
+      "material_workflow_or_template",
+      "verified_near_relation"
+    ],
+    "unseen_environment_claim": "Hold out the entire preregistered deployment/observation environment from TRAIN, DEV and both CAL slices and enforce this against all tested artifact lineage. For a legacy arm with unknown overlap in scope, report compatibility/reference only.",
+    "boundary": "Audit exact, verified near and protected links across prior admitted assets and both current and frozen cohorts. Resolve scopes and known aliases across HMAC domains under custodian access. Unknown key mapping or unbounded/saturated near search is BLOCKED. A similarity match is a review link, never a new physical identity. Whole lineage-connected groups inherit existing protection. Unknown or exposed heldout evidence cannot become independent TEST.",
+    "history": "Rebuild causal history within each partition, deployment and observed profile from available, completed, deduplicated events. Apply an embargo at least the maximum feature window plus declared lateness and clock uncertainty across boundaries of shared producers. No history may cross TRAIN/DEV/CAL/TEST, or persist suppressed source evidence after dropout.",
+    "counting": "One physical request per primary outcome per panel. Canonical representatives and aliases are tracked separately. Dropouts, retries and revisions inherit role and independence group and add zero native support. Publisher content does not enter native targets or denominators.",
+    "historic_protection": "Preserve historical locked roles in the source registry. Exposed legacy CAL/DEV/TEST remain protected and outside the new adaptive/independent evaluation panels. Use hashes and approved overlap metadata for protection without opening their payload."
+  },
+  "verification": {
+    "submission": [
+      "dataset_and_role_manifest",
+      "lineage_graph_and_unresolved_coverage",
+      "exact_representation_and_near_methods",
+      "score_model_and_encoder",
+      "policy_and_rule_versions",
+      "calibration_and_comparator_bits",
+      "metric_and_code_hashes",
+      "predeclared_population_and_claim_strata",
+      "resource_and_fault_schedule",
+      "blind_access_log"
+    ],
+    "change_control": "Pin SHA-256 before unseal. TEST is evaluated by the custodian, never used to fit or select. Publish the preregistered table and audit failures. Material post-unseal changes require a versioned amendment and an unused independent TEST. Same-cohort recovery is permitted only for verified infrastructure failure with identical pins and no metric-based tuning.",
+    "test_preregistration_order": "Write target populations, claim family, required vs descriptive cells, held deployment, sampling/weighting plan, provenance acceptance, selection tie rules and design assignment before admitting TEST campaign data. Before unseal add immutable payload hashes, lineage/role manifest, model/threshold pins and custodian signature. Missing mandatory cells cannot be removed after unseal."
+  },
+  "statistics": {
+    "alpha": 0.05,
+    "claim_family": "Before TEST, lock the complete family and its K non-descriptive endpoints, including all claimed mask/profile and family/environment safety comparisons. Use one-sided alpha/K per endpoint. For endpoints requiring lower and upper bounds, allocate them as separate ends in K. No removal of failed or unsupported cells from K.",
+    "exact_binomial_unit": "Independently sampled preregistered, comparable exposure clusters. Select one eligible benign anchor per cluster before any model output using a deterministic salted roster order. Estimand is equal-cluster anchor false-alert probability. Report request-weighted FPR separately, with cluster-aware uncertainty. If independent, comparable sampling is unsupported, exact bound cannot pass.",
+    "blocking_unit": "Each independently sampled benign exposure package is one Bernoulli unit: any false restriction during a fixed preregistered observation window is one failure. Include collateral legitimate requests and unavailable readback as safety faults. Applies only to the tested package mix and window.",
+    "paired_cluster_bootstrap": "Use preregistered dependence groups (campaign, or a broader group when shared app state, actor or template persists). Resample joint paired contributions of whole independent clusters within frozen design strata, 10000 replicates seeded 20261115. If adjusted tail probability needs more resolution, use max(10000,ceil(50/(0.05/K))) replicates. Conservative empirical quantiles; no independently resampled dropout variants. A degenerate distribution or insufficient support is INCONCLUSIVE.",
+    "support_per_cal_slice": {
+      "benign": 200,
+      "attack": 50,
+      "clusters_per_class": 10
+    },
+    "support_for_test_recall": {
+      "attack": 100,
+      "attack_clusters": 20
+    },
+    "support_for_family": {
+      "labelled_family_positives": 50,
+      "clusters": 10
+    },
+    "coverage_minimum": {
+      "clean_and_native": 0.95,
+      "degraded_but_profile_supported": 0.9
+    },
+    "zero_event_note": "n=ceil(log(alpha/K)/log(1-target)). For K=1, 299 anchors certify <=1% and 2995 packages certify <=0.1% with zero failures. K=7 requires 492 and 4940 respectively.",
+    "endpoint_interpretation": "For a required upper cap, PASS needs its adjusted upper bound within the cap. FAIL when a preregistered diagnostic lower bound demonstrably exceeds it; otherwise INCONCLUSIVE. Precommit both inferential tails as separate endpoints when both conclusions will be claimed. Adequately supported engineering point gates can fail directly.",
+    "binding_units": "Each eligible anchor is one unique independently sampled exposure cluster per cell. Repetition within a campaign, reused state/actors/template or same outage window cannot inflate trials; a separate placement, distinct ID or dropout mask alone does not create independence."
+  },
+  "gates": {
+    "shadow": {
+      "primary": "On native prespecified supported population, campaign-macro effective recall gain over strongest DEV-selected simple model >=0.05 and adjusted paired lower bound >0. Effective recall >=0.80 point estimate. Pass exact benign-anchor cap and no-regression claims for every primary profile/mask.",
+      "fpr_upper": 0.01,
+      "max_recall_regression": 0.02,
+      "guardrail": "Per preregistered mask, profile, major environment and critical family stratum, paired adjusted lower bound of effective recall difference >=-0.02. If the interval crosses -0.02 the claim is INCONCLUSIVE. An adequately sampled point violation of absolute targets is FAIL, insufficient support is INCONCLUSIVE.",
+      "families": "On known-intent requests with Oracle-supported family, report end-to-end macro-F1, per-family precision/recall/support and confusion including UNKNOWN/missed detection. To claim a family head: coverage >=0.90 on supported known families, macro-F1 >=0.70 and adjusted paired no-regression within 0.02 vs compatible frozen comparator if one exists. Unknown-family cases excluded from known-family denominator but measure incorrect forced-known assignment <=0.05 point; absent support is inconclusive. Unknown family stays UNKNOWN at serving.",
+      "calibration": "Per claimed probability stratum, use representative CAL and TEST with >=500 scored benign, >=100 scored attack and >=20 independent clusters per class. Report Brier, log loss, reliability and ECE with fixed 10 equal-width bins including empty counts. PASS if Brier skill >0 against CAL prevalence-only baseline and adjusted paired lower bound >0, ECE<=0.05 point and adjusted cluster upper <=0.10. Score coverage floor applies. If excluded/unsupported scores have known outcomes, report their class counts separately. Uncalibrated ranking scores remain scores.",
+      "abstention": "No score on ambiguous, late out-of-cutoff, unsupported, corrupt or NONE templates. If a supported residual mask exists, recompute from certified contributors only. All targeted attack outcomes remain in effective-recall denominator including unscored requests. Ground truth unknown stays unknown, report missing-label share and worst-case sensitivity.",
+      "primary_population": "Fix mandatory cells and operating weights before data collection for the independent holdout. Supported native masks are the sole basis of deployment coverage claims. A seven-mode claim requires all seven mandatory clean mask cells in the declared target profile(s) to pass."
+    },
+    "performance": {
+      "p95_model_ms": 10,
+      "p95_feature_queue_score_ms": 50,
+      "measurement": "Match host, workload order, input/profile/mask, one thread and signed Resource Contract envelope. Batch=1 online. Lock supported offered rate from measured target arrival trace before TEST. At least three 300s steady windows after warmup. Verify achieved rate >= offered rate, zero drops and zero safety trips. Time feature+queue+score from usable evidence arrival to verdict, correlation wait and arrival-to-decision separately. Collect cold start, P50/P95/P99, decision deadlines, peak cgroup RSS/memory, CPU time per scored and per targeted request, throughput and queue/backpressure counts.",
+      "efficiency": "No safety/resource violations and headroom under current approved cap. Compare matched arms using CPU-ms/request and peak memory, report cost per detected attack. If simpler arm meets all quality gates and larger arm has no preregistered quality gain, keep simpler. Report no sustained-rate claim when target workload is missing."
+    },
+    "block": {
+      "benign_false_block_upper": 0.001,
+      "zero_hard_violations": true,
+      "future_ttl_seconds": [
+        1,
+        300
+      ],
+      "scope": "Existing T07 eligibility is BLOCKED. Future separate quality/safety evaluation at fixed policies, trusted attribution and allowlisted lab scope, followed by authorized manual drill and bounded auto canary. Automatic blocking cannot be granted by shadow metrics, proposed actions or fixture results."
+    }
+  },
+  "result_states": {
+    "PASS": "All evidence and support requirements and declared criteria satisfied for the specific gate.",
+    "FAIL": "Integrity or safety violation, or an adequately covered hard criterion is demonstrably missed.",
+    "INCONCLUSIVE": "Authorized measurements exist but support, independence or precision is inadequate to conclude.",
+    "BLOCKED": "Missing prerequisite, preregistration, permission or qualifying evidence. No progression for the affected claim."
+  }
+}
