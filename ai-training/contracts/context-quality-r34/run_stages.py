@@ -16,7 +16,7 @@ STAGES = (
     ("local", "SERVE", 120, 75, 768, "local_probe.py", (), "local-readback.json"),
     ("download", "DATA", 3200, 75, 1536, "acquire.py", (), "source.json"),
     ("extract", "DATA", 1200, 90, 1536, "login_data.py", ("extract",), "raw-index.json"),
-    ("project", "DATA", 900, 90, 1536, "login_data.py", ("project",), "projection.json"),
+    ("project-bounded", "DATA", 900, 90, 1536, "bounded_project.py", (), "projection.json"),
     ("train", "TRAIN", 700, 85, 3072, "login_study.py", ("train",), "login-lock.json"),
     ("transfer", "EVALUATE", 480, 85, 3072, "login_study.py", ("transfer",), "login-transfer.json"),
 )
