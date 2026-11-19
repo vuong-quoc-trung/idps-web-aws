@@ -1,0 +1,11 @@
+Running as unit: idps-r35-25bd1ccc2ad3434287120abbd8c52bd7.service; invocation ID: fe189da695be4b30860ce17d5c183843
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 70.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 96.0}
+{"resource_guardian": "runtime", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 64.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 95.0}
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 23.109s
+             CPU time consumed: 20.897s
+                   Memory peak: 437.9M (swap: 0B)

@@ -1,0 +1,9 @@
+Running as unit: idps-r35-14ee815ee9944f6380368c3e165e76f0.service
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 90.0}
+RESUMED_LOCKED HGB
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 940ms
+             CPU time consumed: 647ms
+                   Memory peak: 102.4M (swap: 0B)

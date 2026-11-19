@@ -1,0 +1,178 @@
+{
+  "requests": {
+    "b757e0b66f6e0d2a2a36a41b7b796f35": {
+      "route": "/api/auth/csrf",
+      "method": "GET",
+      "status": 200,
+      "oracle": "CSRF_CONTENT_SESSION",
+      "http_ms": 512.755,
+      "sensor_rules": [
+        {
+          "source": "SURICATA",
+          "basis": "SENSOR_TRANSACTION",
+          "sid": 9100035,
+          "severity": 3
+        }
+      ],
+      "tx": {
+        "flow_id": "1983225683789510",
+        "tx_id": 0,
+        "generation": "aa34b5f54cf425e5409091d9152d99e6"
+      },
+      "audit_id": "afda7748-9a15-4ca1-bfc0-ca58f21c4742",
+      "dispatch_ns": 1795086487658000000,
+      "projection_ms": 117.976,
+      "score": 0.1253570318222046,
+      "vector_sha256": "9145cc26994a1a6b0110b1131a820f6783e8fc4914039917356ede6a5fbb8213",
+      "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+      "available_ns": 1795086487775976079,
+      "source_receipts_ns": {
+        "N": 1795086488171521130,
+        "A": 1795086488167372020,
+        "E": 1795086488175707393,
+        "S_verified": 1795086488857711439
+      },
+      "mask_at_cutoff": "NA"
+    },
+    "cb884adeff5cd8b94679a49cc79c7a14": {
+      "route": "/api/auth/me",
+      "method": "GET",
+      "status": 401,
+      "oracle": "ANONYMOUS_AUTH_CHALLENGE",
+      "http_ms": 12.66,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "1983225683789510",
+        "tx_id": 1,
+        "generation": "aa34b5f54cf425e5409091d9152d99e6"
+      },
+      "audit_id": "c1f2e4d0-587b-4087-a8b6-a4084656edb6",
+      "dispatch_ns": 1795086488169000000,
+      "projection_ms": 1.799,
+      "score": 0.1253570318222046,
+      "vector_sha256": "9145cc26994a1a6b0110b1131a820f6783e8fc4914039917356ede6a5fbb8213",
+      "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+      "available_ns": 1795086488170798544,
+      "source_receipts_ns": {
+        "N": 1795086488183970650,
+        "A": 1795086488179836229,
+        "E": 1795086488258354183,
+        "S_verified": 1795086488857711439
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "ebca5f72f2a930725383305fc49912ab": {
+      "route": "/api/auth/csrf?view=compact",
+      "method": "GET",
+      "status": 200,
+      "oracle": "CSRF_CONTENT_SESSION",
+      "http_ms": 58.934,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "1983225683789510",
+        "tx_id": 2,
+        "generation": "aa34b5f54cf425e5409091d9152d99e6"
+      },
+      "audit_id": "86060bd4-f7e0-482c-88ec-fcfd33f9cb4a",
+      "dispatch_ns": 1795086488316000000,
+      "projection_ms": 104.26,
+      "score": 0.06768181920051575,
+      "vector_sha256": "635b03c64bdc8b47a73f16061c51969bf845d2931d87bbed19edbcb7b3d3781b",
+      "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+      "available_ns": 1795086488420259624,
+      "source_receipts_ns": {
+        "N": 1795086488424405558,
+        "A": 1795086488366466038,
+        "E": 1795086488374775362,
+        "S_verified": 1795086488857711439
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "a3f571f4f089bd55e17916c2b24f9985": {
+      "route": "/api/profile-options",
+      "method": "HEAD",
+      "status": 401,
+      "oracle": "ANONYMOUS_AUTH_CHALLENGE",
+      "http_ms": 11.14,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "1983225683789510",
+        "tx_id": 3,
+        "generation": "aa34b5f54cf425e5409091d9152d99e6"
+      },
+      "audit_id": "36133f98-fda4-402b-bf35-0d66d4da9fe5",
+      "dispatch_ns": 1795086488534000000,
+      "projection_ms": 39.319,
+      "score": 0.24208317697048187,
+      "vector_sha256": "3e918d48c12567bb78cdc8612875fec3ff691c5457d22a9b9113c795714361be",
+      "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "available_ns": 1795086488573319278,
+      "source_receipts_ns": {
+        "N": 1795086488576873665,
+        "A": 1795086488543041150,
+        "E": 1795086488555748709,
+        "S_verified": 1795086488857711439
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "06c83e7fb807380b4622241a0e1ced1a": {
+      "route": "/api/auth/logout",
+      "method": "POST",
+      "status": 204,
+      "oracle": "SESSION_LOGOUT",
+      "http_ms": 14.874,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "1983225683789510",
+        "tx_id": 4,
+        "generation": "aa34b5f54cf425e5409091d9152d99e6"
+      },
+      "audit_id": "b9b7ed4a-e3b1-4a18-bc66-2207051965ec",
+      "dispatch_ns": 1795086488659000000,
+      "projection_ms": 69.481,
+      "score": 0.18109947443008423,
+      "vector_sha256": "ea69150b8502b4d00c2b31989da6ceea866203d2bbc946e51e333d582a6cb11b",
+      "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+      "available_ns": 1795086488728480938,
+      "source_receipts_ns": {
+        "N": 1795086488733380537,
+        "A": 1795086488671617690,
+        "E": 1795086488684465850,
+        "S_verified": 1795086488857711439
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "0910424e757990a7e55ae77b503428eb": {
+      "route": "/api/auth/csrf?locale=vi&page=2",
+      "method": "GET",
+      "status": 200,
+      "oracle": "CSRF_CONTENT_SESSION",
+      "http_ms": 47.606,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "1983225683789510",
+        "tx_id": 5,
+        "generation": "aa34b5f54cf425e5409091d9152d99e6"
+      },
+      "audit_id": "1b9f5f8b-9369-4ace-83e3-88a5434672aa",
+      "dispatch_ns": 1795086488674000000,
+      "projection_ms": 158.26,
+      "score": 0.07058122754096985,
+      "vector_sha256": "02618411a449f1bb8e048ff51cc27a71f68e4a9f80193db30b8769f4cee2bdf6",
+      "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+      "available_ns": 1795086488832259715,
+      "source_receipts_ns": {
+        "N": 1795086488834180569,
+        "A": 1795086488720615278,
+        "E": 1795086488763185724,
+        "S_verified": 1795086488857711439
+      },
+      "mask_at_cutoff": "NSA"
+    }
+  },
+  "structural_nsa": 6,
+  "rust_transaction_proof": "PASS",
+  "native_train": 0,
+  "protected_ip_verified": false,
+  "cleanup": "PASS"
+}

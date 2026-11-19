@@ -1,0 +1,67 @@
+{
+  "RESEARCH_MODEL_FROZEN": true,
+  "T07_PRODUCTION_QUALITY": "BLOCKED",
+  "block_proposals": 0,
+  "default": {
+    "manifest": "release/manifest.json",
+    "manifest_sha256": "eb19a3323d10b3aaf4bb00934f3f181b20b176e9907c3fb6fd70e015f46a3e2a",
+    "model": "release/finalist.onnx",
+    "sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "threshold": 0.7664756774902344,
+    "version": "r37-hgb-uri100-v1"
+  },
+  "environment": {
+    "packages": {
+      "joblib": "1.6.0",
+      "numpy": "2.5.4",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.31.1",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1"
+    },
+    "python": "3.12.14"
+  },
+  "masks": {
+    "NA": 1,
+    "NSA": 5
+  },
+  "native": {
+    "CAL": 0,
+    "DEV": 0,
+    "TEST": 0,
+    "TRAIN": 0
+  },
+  "policy": {
+    "LOG_ONLY": 6
+  },
+  "quality": "WAF historical publisher development point estimates meet 85%/1%; clustered intervals and cross-source transfer do not establish a release gate",
+  "request_count": 6,
+  "rollback": {
+    "manifest": "../https-model-r36/release/selection.json",
+    "manifest_sha256": "6c0f9ea938fda26cf6276cfdcc790c1b734c28f242716fa985ccb8d620287bc2",
+    "model": "../https-model-r36/release/candidate.onnx",
+    "sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+    "threshold": 0.5138319730758667,
+    "version": "r36-extratrees-uri100-v1"
+  },
+  "schema_sha256": "5ef6c5a80c47e0243337ca6c6dadc737c6b07d0805a051a5ef8c1a78e4fdc675",
+  "scope": "Local HTTPS research scoring, LOG/ALERT only",
+  "sha256": {
+    "evidence/cleanup.json": "36a04313f3b62392729164ecc94cd367807768d3444d2845672f6be120453a01",
+    "evidence/comparison.json": "ea6085bc048c113d6821364a97b998d639b41b14b9bd49d7412e3bb6c1f203b6",
+    "evidence/evaluation.json": "fce24d21f0d7dd5c8d5396efb38f7c8745b09d8d6eb5b0148c71ff2ccc36e996",
+    "evidence/https.json": "ba282f7659a01796cd871fcc66f2d65f47a4f64b40d73bca719013a90632fbec",
+    "evidence/hybrid.json": "34c07a8cab63b4445a75cac2b484fe2e26c79eb36ff1a51d95108ad48cf5102c",
+    "evidence/parity.json": "c7cc7d9441b10bc37af4b255d8790f9a78cf920025f7c3c84225c130d8d5a80b",
+    "evidence/selection.json": "9d8df4bc7e5009a67bcf343654b91dc08fea74286fd6c19f4661078f41a5e8c3",
+    "protocol.json": "02b2c9d421fe4b40189bcc6baf8e356d7fdc5593d3a3322f9625a04c409eeae5",
+    "release/finalist.joblib": "400e92ec5c523e903ad0b895c664250aafcb2887495f4950ecc54bccf500af61",
+    "release/finalist.onnx": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "release/manifest.json": "eb19a3323d10b3aaf4bb00934f3f181b20b176e9907c3fb6fd70e015f46a3e2a",
+    "slots.json": "8f9886f15385859f82784bf33c0ff44005ec0826bf57a78512b9c54fb7ef856d"
+  },
+  "strict_score_comparison": ">",
+  "structural_NSA": 6,
+  "unique_vectors": 5,
+  "version": "r37-hgb-uri100-v1"
+}

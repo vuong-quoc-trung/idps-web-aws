@@ -1,0 +1,60 @@
+{
+  "requests": [
+    {
+      "request_id": "b757e0b66f6e0d2a2a36a41b7b796f35",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "cb884adeff5cd8b94679a49cc79c7a14",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "ebca5f72f2a930725383305fc49912ab",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.142498530839255e-08
+    },
+    {
+      "request_id": "a3f571f4f089bd55e17916c2b24f9985",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": null
+    },
+    {
+      "request_id": "06c83e7fb807380b4622241a0e1ced1a",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.5742230014280665e-09
+    },
+    {
+      "request_id": "0910424e757990a7e55ae77b503428eb",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 6.90131625458168e-09
+    }
+  ],
+  "benchmark": "50 warm repeats of one allowed frame, one thread",
+  "warm_ns": {
+    "preprocessing_ns": {
+      "p50": 151044.5,
+      "p95": 207249.9
+    },
+    "inference_ns": {
+      "p50": 23227.5,
+      "p95": 34945.34999999999
+    }
+  },
+  "model_load_ms": 13.433216,
+  "invalid_sha_refused": true,
+  "malformed_then_recovery": true
+}
