@@ -378,6 +378,40 @@
           }
         }
       }
+    },
+    "suricata_origin": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "network_src_ip",
+        "client_ip_verified",
+        "post_proxy",
+        "tx_id"
+      ],
+      "properties": {
+        "network_src_ip": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "client_ip_verified": {
+          "type": "boolean"
+        },
+        "post_proxy": {
+          "type": "boolean"
+        },
+        "tx_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
     }
   }
 }

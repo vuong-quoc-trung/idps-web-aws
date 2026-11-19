@@ -35,7 +35,7 @@ def write_transactions(path, requests, keepalive=False):
     frames = []
     sequence = {}
     for index, item in enumerate(requests):
-        client, server = item["client"], "192.168.10.1"
+        client, server = item["client"], item.get("server", "192.168.10.1")
         sport = 40000 if keepalive else 40000 + index
         key = (client, sport)
         now = item["at"]

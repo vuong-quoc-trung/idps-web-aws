@@ -8,28 +8,21 @@ use tokio::{
 pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
     let ip = state.safety.validate(value)?;
     anyhow::ensure!(
+        ip != state.ingestion.suricata_origin.proxy_ip,
+        "Trusted proxy IP is protected"
+    );
+    anyhow::ensure!(
         !state.whitelist.contains(&ip),
         "IP is protected by whitelist"
     );
     Ok(ip)
 }
 pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<String> {
-    let mut command = if env::var("PBL4_DISPOSABLE_NAMESPACE_RESPONSE").as_deref() == Ok("true") {
-        // sudo cannot initialize inside this unprivileged user namespace. This
-        // opt-in is impossible in the initial/host user namespace: only a single
-        // non-root host UID mapped to namespace root is accepted.
-        let mapping = std::fs::read_to_string("/proc/self/uid_map")?;
-        anyhow::ensure!(
-            namespace_mapping_safe(&mapping),
-            "Direct response requires a disposable unprivileged user namespace"
-        );
-        Command::new(cmd)
-    } else {
-        let mut c = Command::new("sudo");
-        c.arg("-n").arg(cmd);
-        c
-    };
-    command.arg(action);
+    if action != "list-json" {
+        prevention::require_execution()?;
+    }
+    let mut command = Command::new("sudo");
+    command.arg("-n").arg(cmd).arg(action);
     if let Some(ip) = ip {
         command.arg(ip.to_string());
     }
@@ -46,13 +39,6 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
         String::from_utf8_lossy(&out.stderr)
     );
     Ok(String::from_utf8(out.stdout)?)
-}
-pub fn namespace_mapping_safe(mapping: &str) -> bool {
-    let values: Vec<_> = mapping.split_whitespace().collect();
-    values.len() == 3
-        && values[0] == "0"
-        && values[1].parse::<u32>().is_ok_and(|v| v > 0)
-        && values[2] == "1"
 }
 pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
     let value: serde_json::Value = serde_json::from_str(text)?;
@@ -131,6 +117,7 @@ pub async fn enqueue(
     reason: &str,
     event: Option<i64>,
 ) -> Result<i64> {
+    prevention::require_execution()?;
     let mut tx = pool.begin().await?;
     let id = enqueue_tx(&mut tx, ip, action, actor, reason, event, 300).await?;
     tx.commit().await?;
@@ -145,6 +132,7 @@ pub async fn enqueue_tx(
     event: Option<i64>,
     ttl: u64,
 ) -> Result<i64> {
+    prevention::require_execution()?;
     anyhow::ensure!(
         matches!(action, "BLOCK" | "UNBLOCK") && (1..=300).contains(&ttl),
         "Invalid response action/TTL"
@@ -176,7 +164,7 @@ where
     F: FnOnce(String, IpAddr, Option<u64>) -> Fut,
     Fut: std::future::Future<Output = Result<()>>,
 {
-    if state.safety.mode == "OFF" {
+    if !prevention::execution_enabled() || state.safety.mode == "OFF" {
         return Ok(false);
     }
     let mut tx = state.pool.begin().await?;
@@ -267,11 +255,17 @@ where
     Ok(true)
 }
 pub async fn restore_jobs(pool: &PgPool) -> Result<()> {
+    if !prevention::execution_enabled() {
+        return Ok(());
+    }
     sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,expires_at) SELECT b.ip,'BLOCK','RESTORE','Restore active block after backend restart','PENDING','system',b.expires_at FROM blocked_ips b WHERE b.active AND b.expires_at > now() AND NOT EXISTS (SELECT 1 FROM firewall_actions a WHERE a.ip=b.ip AND a.status='PENDING')")
         .execute(pool).await?;
     Ok(())
 }
 pub async fn worker(state: AppState) {
+    if !prevention::execution_enabled() {
+        return;
+    }
     loop {
         match restore_jobs(&state.pool).await {
             Ok(()) => break,
@@ -344,13 +338,6 @@ pub async fn audit(
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[test]
-    fn direct_response_never_allowed_in_host_user_namespace() {
-        assert!(!namespace_mapping_safe("0 0 4294967295"));
-        assert!(!namespace_mapping_safe("0 1000 65536"));
-        assert!(namespace_mapping_safe("0 1000 1"));
-        assert!(!namespace_mapping_safe("0 1000 1\n1 0 1"));
-    }
     #[test]
     fn empty_and_populated_sets() {
         assert!(

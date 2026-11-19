@@ -1,0 +1,16 @@
+# External Spring Boot overlay: NOT the prod profile.
+# Before use confirm whether VM port 80 is Spring Boot or a local reverse proxy.
+# Adds TLS to the selected Spring connector; does not add a second HTTP connector.
+server:
+  address: ${STUDENT_TLS_BIND_ADDRESS}
+  port: ${STUDENT_TLS_PORT:8443}
+  ssl:
+    enabled: true
+    key-store: ${STUDENT_TLS_KEY_STORE}
+    key-store-password: ${STUDENT_TLS_KEY_STORE_PASSWORD}
+    key-store-type: PKCS12
+    enabled-protocols: TLSv1.2,TLSv1.3
+  servlet:
+    session:
+      cookie:
+        secure: true
