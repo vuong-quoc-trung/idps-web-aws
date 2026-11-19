@@ -197,6 +197,19 @@ def verify(run):
         "technical_status": "RESEARCH_ONLY",
         "T07_RELEASE": "BLOCKED_NO_INDEPENDENT_NATIVE_FRAME",
     }
+    supplemental = run / "early-actors.json"
+    if supplemental.exists():
+        extra = load_json(supplemental)
+        spec = load_json(run / "early-actor-lock.json")
+        require(
+            extra["plan_sha"] == file_sha256(run / "early-actor-lock.json")
+            and spec["evaluator_sha"] == file_sha256(HERE / "early_actors.py")
+            and all(file_sha256(run / name) == sha for name, sha in spec["private_pins"].items())
+            and stages["adapter-early-actors"]["reason"] == "COMPLETED",
+            "supplemental frozen audit failed",
+        )
+        public["exploratory_early_actors"] = extra
+        public["exploratory_plan"] = spec
     # The index exposes relative file identifiers and digests only; never export source rows or session identities.
     shas = {
         str(p.relative_to(run)): file_sha256(p)
