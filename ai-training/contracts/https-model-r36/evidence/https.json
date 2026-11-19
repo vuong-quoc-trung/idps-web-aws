@@ -1,0 +1,178 @@
+{
+  "requests": {
+    "787933b274b303826e85a43db46246d4": {
+      "route": "/api/auth/csrf",
+      "method": "GET",
+      "status": 200,
+      "oracle": "CSRF_CONTENT_SESSION",
+      "http_ms": 436.966,
+      "sensor_rules": [
+        {
+          "source": "SURICATA",
+          "basis": "SENSOR_TRANSACTION",
+          "sid": 9100035,
+          "severity": 3
+        }
+      ],
+      "tx": {
+        "flow_id": "687461235408861",
+        "tx_id": 0,
+        "generation": "5c902cb2cca870793af0eb3fd0991d5d"
+      },
+      "audit_id": "4db4ab3c-bf69-4916-bc1a-3112d9102c53",
+      "dispatch_ns": 1795084986946000000,
+      "projection_ms": 171.389,
+      "score": 0.22355103492736816,
+      "vector_sha256": "9145cc26994a1a6b0110b1131a820f6783e8fc4914039917356ede6a5fbb8213",
+      "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "available_ns": 1795084987117388936,
+      "source_receipts_ns": {
+        "N": 1795084987381093090,
+        "A": 1795084987381125152,
+        "E": 1795084987389537948,
+        "S_verified": 1795084988097394280
+      },
+      "mask_at_cutoff": "NA"
+    },
+    "5f0c3d61f0a10703da34b0f261131646": {
+      "route": "/api/auth/me",
+      "method": "GET",
+      "status": 401,
+      "oracle": "ANONYMOUS_AUTH_CHALLENGE",
+      "http_ms": 37.439,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "687461235408861",
+        "tx_id": 1,
+        "generation": "5c902cb2cca870793af0eb3fd0991d5d"
+      },
+      "audit_id": "7adbbc28-b183-49c2-afa4-4f4c4eb7ff9f",
+      "dispatch_ns": 1795084987383000000,
+      "projection_ms": 2.348,
+      "score": 0.22355103492736816,
+      "vector_sha256": "9145cc26994a1a6b0110b1131a820f6783e8fc4914039917356ede6a5fbb8213",
+      "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "available_ns": 1795084987385348403,
+      "source_receipts_ns": {
+        "N": 1795084987418489927,
+        "A": 1795084987418512123,
+        "E": 1795084987459873170,
+        "S_verified": 1795084988097394280
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "0e3d4bb0e9f9a8171ae67fdfdc9b4879": {
+      "route": "/api/auth/csrf?view=compact",
+      "method": "GET",
+      "status": 200,
+      "oracle": "CSRF_CONTENT_SESSION",
+      "http_ms": 44.411,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "687461235408861",
+        "tx_id": 2,
+        "generation": "5c902cb2cca870793af0eb3fd0991d5d"
+      },
+      "audit_id": "9d72ede2-a790-42a3-b179-554bd619abc8",
+      "dispatch_ns": 1795084987536000000,
+      "projection_ms": 96.448,
+      "score": 0.22355103492736816,
+      "vector_sha256": "635b03c64bdc8b47a73f16061c51969bf845d2931d87bbed19edbcb7b3d3781b",
+      "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "available_ns": 1795084987632447744,
+      "source_receipts_ns": {
+        "N": 1795084987636833987,
+        "A": 1795084987580216403,
+        "E": 1795084987580252675,
+        "S_verified": 1795084988097394280
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "7a9f091dcebae0df022d40b4cfcab0fe": {
+      "route": "/api/profile-options",
+      "method": "HEAD",
+      "status": 401,
+      "oracle": "ANONYMOUS_AUTH_CHALLENGE",
+      "http_ms": 13.03,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "687461235408861",
+        "tx_id": 3,
+        "generation": "5c902cb2cca870793af0eb3fd0991d5d"
+      },
+      "audit_id": "379ed9df-8a70-4a20-aef7-4faeae89ef15",
+      "dispatch_ns": 1795084987796000000,
+      "projection_ms": 30.894,
+      "score": 0.9033128619194031,
+      "vector_sha256": "3e918d48c12567bb78cdc8612875fec3ff691c5457d22a9b9113c795714361be",
+      "model_sha256": "4777557bdb0307b09dcac8caec01e0b49c4181bb834cd1630aeb21f0a35f9137",
+      "available_ns": 1795084987826894195,
+      "source_receipts_ns": {
+        "N": 1795084987830935601,
+        "A": 1795084987805607426,
+        "E": 1795084987809880956,
+        "S_verified": 1795084988097394280
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "2a02c04d08bc41a905d737b54fc4f8c1": {
+      "route": "/api/auth/logout",
+      "method": "POST",
+      "status": 204,
+      "oracle": "SESSION_LOGOUT",
+      "http_ms": 16.257,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "687461235408861",
+        "tx_id": 4,
+        "generation": "5c902cb2cca870793af0eb3fd0991d5d"
+      },
+      "audit_id": "0f9e4258-f36f-44fe-925c-5f2b3e097da1",
+      "dispatch_ns": 1795084987924000000,
+      "projection_ms": 77.987,
+      "score": 0.22355103492736816,
+      "vector_sha256": "ea69150b8502b4d00c2b31989da6ceea866203d2bbc946e51e333d582a6cb11b",
+      "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "available_ns": 1795084988001987005,
+      "source_receipts_ns": {
+        "N": 1795084988005095430,
+        "A": 1795084987936572923,
+        "E": 1795084987940824376,
+        "S_verified": 1795084988097394280
+      },
+      "mask_at_cutoff": "NSA"
+    },
+    "eef87d96ccbd83b635664781b8e5c442": {
+      "route": "/api/auth/csrf?locale=vi&page=2",
+      "method": "GET",
+      "status": 200,
+      "oracle": "CSRF_CONTENT_SESSION",
+      "http_ms": 45.634,
+      "sensor_rules": [],
+      "tx": {
+        "flow_id": "687461235408861",
+        "tx_id": 5,
+        "generation": "5c902cb2cca870793af0eb3fd0991d5d"
+      },
+      "audit_id": "d57f7672-c802-4a72-b76f-84f712c0cbdc",
+      "dispatch_ns": 1795084987972000000,
+      "projection_ms": 84.351,
+      "score": 0.22355103492736816,
+      "vector_sha256": "02618411a449f1bb8e048ff51cc27a71f68e4a9f80193db30b8769f4cee2bdf6",
+      "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+      "available_ns": 1795084988056351313,
+      "source_receipts_ns": {
+        "N": 1795084988059467322,
+        "A": 1795084987984283377,
+        "E": 1795084988030367423,
+        "S_verified": 1795084988097394280
+      },
+      "mask_at_cutoff": "NSA"
+    }
+  },
+  "structural_nsa": 6,
+  "rust_transaction_proof": "PASS",
+  "native_train": 0,
+  "protected_ip_verified": false,
+  "cleanup": "PASS"
+}

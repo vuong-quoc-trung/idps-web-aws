@@ -1,0 +1,60 @@
+{
+  "requests": [
+    {
+      "request_id": "787933b274b303826e85a43db46246d4",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.8961283843331742e-08
+    },
+    {
+      "request_id": "5f0c3d61f0a10703da34b0f261131646",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.8961283843331742e-08
+    },
+    {
+      "request_id": "0e3d4bb0e9f9a8171ae67fdfdc9b4879",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.8961283843331742e-08
+    },
+    {
+      "request_id": "7a9f091dcebae0df022d40b4cfcab0fe",
+      "model": "r35-logistic-uri100-smoke",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": null
+    },
+    {
+      "request_id": "2a02c04d08bc41a905d737b54fc4f8c1",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.8961283843331742e-08
+    },
+    {
+      "request_id": "eef87d96ccbd83b635664781b8e5c442",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.8961283843331742e-08
+    }
+  ],
+  "benchmark": "50 warm repeats of one allowed frame, one thread",
+  "warm_ns": {
+    "preprocessing_ns": {
+      "p50": 122126.5,
+      "p95": 283473.05
+    },
+    "inference_ns": {
+      "p50": 23022.5,
+      "p95": 43139.049999999996
+    }
+  },
+  "model_load_ms": 16.146462,
+  "invalid_sha_refused": true,
+  "malformed_then_recovery": true
+}

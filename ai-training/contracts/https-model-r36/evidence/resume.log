@@ -1,0 +1,10 @@
+Running as unit: idps-r35-ed68ca5554ab4a88a7a03ea9b578e919.service; invocation ID: 0b96314fc542441f9b8dbcea7bade916
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 61.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 94.0}
+RESUMED_COMPLETED R36-ExtraTrees
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 912ms
+             CPU time consumed: 632ms
+                   Memory peak: 102.8M (swap: 0B)

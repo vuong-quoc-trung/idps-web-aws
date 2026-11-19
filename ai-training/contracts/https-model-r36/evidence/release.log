@@ -1,0 +1,11 @@
+Running as unit: idps-r35-7c3ec2b13b8f48c792861dd3aae0593c.service
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 51.0}
+{"resource_guardian": "runtime", "cpu_max": "50000 100000", "state": "THROTTLE", "temperature_c": 95.0}
+R36-ExtraTrees {'fit': {'normal': 367228, 'anomalous': 31791, 'vectors': 16453, 'groups': 3060}, 'new_model_holdout': {'normal': 243, 'anomalous': 738, 'vectors': 711, 'groups': 319}, 'select': {'normal': 271, 'anomalous': 1054, 'vectors': 952, 'groups': 354}, 'cal_fit': {'normal': 1765, 'anomalous': 1862, 'vectors': 407, 'groups': 166}, 'cal_op': {'normal': 349, 'anomalous': 741, 'vectors': 727, 'groups': 193}} {'n': 981, 'tp': 543, 'fp': 10, 'tn': 233, 'fn': 195, 'recall': 0.7357723577235772, 'fpr': 0.0411522633744856, 'accuracy': 0.7910295616717635, 'balanced_accuracy': 0.8473100471745458, 'precision': 0.9819168173598554, 'ap': 0.9874256128661276, 'brier': 0.06992309540510178, 'coverage': 1.0}
+{"resource_guardian": "runtime", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 58.0}
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 6.632s
+             CPU time consumed: 5.433s
+                   Memory peak: 306M (swap: 0B)
