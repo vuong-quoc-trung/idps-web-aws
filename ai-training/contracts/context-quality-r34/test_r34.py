@@ -146,7 +146,7 @@ def test_locked_held_actor_and_strong_rule_comparison(tmp_path):
         x[:, HISTORY_WIDTH] = 1
         f = folder / f"{j:02d}.npz"
         np.savez_compressed(f, x=x, u=u, y=y, valid=valid)
-        bins.append({"sha256": file_sha256(f)})
+        bins.append({"sha256": file_sha256(f), "sampled": len(y)})
     atomic_json(tmp_path / "projection.json", {"role_bins": bins})
     train(tmp_path)
     lock = load_json(tmp_path / "login-lock.json")
@@ -161,3 +161,24 @@ def test_locked_held_actor_and_strong_rule_comparison(tmp_path):
         transfer(tmp_path)
     with pytest.raises(ValueError, match="already"):
         train(tmp_path)
+
+
+def test_chunked_prefix_equals_complete_actor_sort():
+    from bounded_project import project_blocks
+    from login_data import NAMES
+
+    rng = np.random.default_rng(65)
+    a = history(np.repeat(np.arange(70), 2))
+    a["index"] = np.arange(len(a))
+    a["user"] = rng.integers(4, size=len(a))
+    a["ctx"] = rng.integers(0, 6, size=(len(a), 5))
+    ordered = a[np.lexsort((a["index"], a["ts"], a["user"]))]
+    expected, valid = features(ordered)
+    values = np.empty_like(expected)
+    coverage = np.empty_like(valid)
+    for b, h, v in project_blocks(a, size=9):
+        values[b["index"]] = h
+        coverage[b["index"]] = v
+    np.testing.assert_array_equal(values[ordered["index"]], expected)
+    np.testing.assert_array_equal(coverage[ordered["index"]], valid)
+    assert len(NAMES) > values.shape[1]

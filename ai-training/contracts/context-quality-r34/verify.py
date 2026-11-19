@@ -1,6 +1,7 @@
 """Reconcile R34 outputs, check isolated worker cleanup, publish aggregate evidence only."""
 
 import importlib.metadata
+import json
 import os
 import subprocess
 import sys
@@ -62,7 +63,22 @@ def verify(run):
             "worker cgroup remains",
         )
         proof = receipt.get("exit_proof", {})
+        accounting = {}
+        if (d / "worker-launch.json").exists():
+            unit = load_json(d / "worker-launch.json")["unit"]
+            lines = command(
+                "journalctl", "--user", "--no-pager", "-o", "json", "-u", unit, "-n", "12"
+            )
+            for line in lines.splitlines():
+                entry = json.loads(line)
+                if entry.get("USER_UNIT") == unit and "CPU_USAGE_NSEC" in entry:
+                    accounting = {
+                        k: int(entry[k])
+                        for k in ("CPU_USAGE_NSEC", "MEMORY_PEAK", "MEMORY_SWAP_PEAK")
+                        if k in entry
+                    }
         stages[d.name] = {
+            "worker_accounting": accounting,
             "reason": receipt["reason"],
             "cleanup": receipt["cleanup_verified"],
             "exit": proof.get("exit_status"),

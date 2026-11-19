@@ -1,5 +1,6 @@
 """Actor-disjoint fitting, selection, calibration and one frozen temporal transfer on RBA."""
 
+import hashlib
 import sys
 import time
 from pathlib import Path
@@ -32,15 +33,39 @@ COLUMNS = {
 }
 
 
-def read(run, role):
+def blocks(run, role):
     meta = load_json(run / "projection.json")
-    rows = []
+    root = run / "login-inputs"
     for j in BLOCKS[role]:
-        path = run / "login-inputs" / f"{j:02d}.npz"
-        if file_sha256(path) != meta["role_bins"][j]["sha256"]:
+        index = meta["role_bins"][j]
+        path = root / f"{j:02d}.npz"
+        if file_sha256(path) != index["sha256"]:
             raise ValueError("projected observations changed")
-        with np.load(path, allow_pickle=False) as a:
-            rows.append({k: a[k] for k in ("x", "u", "valid", "y")})
+        if "parts" in index:
+            parts = index["parts"]
+            with np.load(path, allow_pickle=False) as entry:
+                if (
+                    list(entry["part_names"]) != [e["file"] for e in parts]
+                    or list(entry["part_shas"]) != [e["sha256"] for e in parts]
+                    or sum(e["rows"] for e in parts) != index["sampled"]
+                ):
+                    raise ValueError("large partition index changed")
+        else:
+            parts = [{"file": path.name, "sha256": index["sha256"]}]
+        for part in parts:
+            src = (root / part["file"]).resolve()
+            if not src.is_relative_to(root.resolve()) or file_sha256(src) != part["sha256"]:
+                raise ValueError("changed role part")
+            with np.load(src, allow_pickle=False) as a:
+                d = {k: a[k] for k in ("x", "u", "valid", "y")}
+            if not np.all(d["u"] % 100 == j) or len(d["u"]) != part.get("rows", len(d["u"])):
+                raise ValueError("actor or row count outside role")
+            for lo in range(0, len(d["y"]), 65536):
+                yield {k: v[lo : lo + 65536] for k, v in d.items()}
+
+
+def read(run, role):
+    rows = list(blocks(run, role))
     out = {k: np.concatenate([r[k] for r in rows]) for k in rows[0]}
     out["w"] = np.where((out["y"] == 0) & (role in ("FIT", "SELECT")), 32.0, 1.0)
     return out
@@ -311,15 +336,38 @@ def transfer(run):
     if (run / "login-transfer.json").exists():
         raise ValueError("transfer result already committed")
     arms = joblib.load(path)
-    d = read(run, "TRANSFER")
-    y = d["y"]
-    n = len(y)
+    n = sum(
+        load_json(run / "projection.json")["role_bins"][j]["sampled"] for j in BLOCKS["TRANSFER"]
+    )
     if not n:
         raise ValueError("empty evaluation interval")
+    # Materialize scalar predictions and group fingerprints, never the entire dense held matrix.
     fixed = f["arms"]
-    ps = {a: apply(score(d, a, m), fixed[a]["sigmoid"]) for a, m in arms.items()}
-    x = np.ascontiguousarray(d["x"])
-    ids = x.view(np.dtype((np.void, x.dtype.itemsize * x.shape[1]))).ravel()
+    ps = {arm: np.empty(n, dtype=np.float64) for arm in arms}
+    y = np.empty(n, dtype=np.uint8)
+    actor = np.empty(n, dtype=np.uint64)
+    valid = np.empty(n, dtype=bool)
+    peer = np.empty(n, dtype=bool)
+    nprior = np.empty(n, dtype=np.uint8)
+    raw_scores = np.empty(n, dtype=np.float32)
+    ids = np.empty(n, dtype="V32")
+    pos = 0
+    for d in blocks(run, "TRANSFER"):
+        sl = slice(pos, pos + len(d["y"]))
+        x = np.ascontiguousarray(d["x"], dtype="<f4")
+        ids[sl] = np.fromiter(
+            (hashlib.sha256(row).digest() for row in x), dtype="V32", count=len(x)
+        )
+        y[sl], actor[sl], valid[sl] = d["y"], d["u"], d["valid"]
+        peer[sl] = supported(d, "PEER")
+        nprior[sl] = np.rint(x[:, 0] * 5).astype(np.uint8)
+        raw_scores[sl] = score(d, "NEW_ASN_RULE", None)
+        for arm, m in arms.items():
+            ps[arm][sl] = apply(score(d, arm, m), fixed[arm]["sigmoid"])
+        pos = sl.stop
+    if pos != n:
+        raise ValueError("held denominator changed")
+    d = {"u": actor, "valid": valid, "w": np.broadcast_to(1.0, (n,))}
     _, inv, count = np.unique(ids, return_inverse=True, return_counts=True)
     vw = 1 / count[inv.ravel()]
     metrics = {
@@ -333,7 +381,7 @@ def transfer(run):
     flag = ps[chosen] > fixed[chosen]["cutoff"]
     # The predeclared boolean novelty control may flag nobody at <=0.5%; also show its unthresholded burden.
     rule = ps["NEW_ASN_RULE"] > fixed["NEW_ASN_RULE"]["cutoff"]
-    raw = score(d, "NEW_ASN_RULE", None) > 0.5
+    raw = raw_scores > 0.5
     paired = {
         k: {
             "gained_positive": int(np.sum((y == 1) & flag & ~r)),
@@ -361,11 +409,21 @@ def transfer(run):
     # Diagnostic slices are descriptive and are never candidates for re-selection.
     support_groups = {
         "no_trustworthy_history": ~d["valid"],
-        "one_prior": d["valid"] & np.isclose(x[:, 0], 0.2),
-        "two_to_four_prior": d["valid"] & (x[:, 0] > 0.21) & (x[:, 0] < 0.99),
-        "five_prior": d["valid"] & np.isclose(x[:, 0], 1),
+        "one_prior": d["valid"] & (nprior == 1),
+        "two_to_four_prior": d["valid"] & (nprior >= 2) & (nprior <= 4),
+        "five_prior": d["valid"] & (nprior == 5),
+    }
+    actors, loads = np.unique(actor, return_counts=True)
+    other = actor != actors[loads.argmax()]
+    dominant = {
+        "largest_actor_rows": int(loads.max()),
+        "largest_actor_flags": int(y[~other].sum()),
+        "other_actors": measure(
+            y[other], ps[chosen][other], fixed[chosen]["cutoff"], d["w"][other]
+        ),
     }
     record = {
+        "largest_actor_sensitivity": dominant,
         "history_slices": {
             k: measure(y[sel], ps[chosen][sel], fixed[chosen]["cutoff"], d["w"][sel])
             for k, sel in support_groups.items()
@@ -378,9 +436,9 @@ def transfer(run):
         "distinct_reference_vectors": len(count),
         "mixed_reference_vectors": int(((rate > 0) & (rate < count)).sum()),
         "history_coverage_all": float(d["valid"].mean()),
-        "peer_coverage_all": float(supported(d, "PEER").mean()),
+        "peer_coverage_all": float(peer.mean()),
         "RBA_task": "synthesized publisher incident flag vs no flag; no independently verified native negatives",
-        "raw_rule": measure(y, score(d, "NEW_ASN_RULE", None), 0.5, d["w"]),
+        "raw_rule": measure(y, raw_scores, 0.5, d["w"]),
         "T07_RELEASE": False,
     }
     atomic_json(run / "login-transfer.json", record)
