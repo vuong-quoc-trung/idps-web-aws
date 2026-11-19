@@ -1,0 +1,126 @@
+{
+  "fit_fractional_oracle_max_recall_at_1pct": 0.6512830206037094,
+  "fit_resubstitution": {
+    "accuracy": 0.9422207965034246,
+    "ap": 0.5679639981263163,
+    "balanced_accuracy": 0.6373973766160235,
+    "brier": 0.06145136430859566,
+    "coverage": 1.0,
+    "fn": 23055,
+    "fp": 0,
+    "fpr": 0.0,
+    "n": 399019,
+    "precision": 1.0,
+    "recall": 0.27479475323204683,
+    "tn": 367228,
+    "tp": 8736
+  },
+  "selection_sha256": "9d8df4bc7e5009a67bcf343654b91dc08fea74286fd6c19f4661078f41a5e8c3",
+  "shift": {
+    "NOTES_TUNING": {
+      "largest_marginal_differences": [
+        {
+          "cal_median": 0.5161290168762207,
+          "feature": "path_symbol_transitions",
+          "ks_distance": 0.8395152688026428,
+          "panel_median": 0.19354838132858276
+        },
+        {
+          "cal_median": 0.29032257199287415,
+          "feature": "path_punctuation_symbols",
+          "ks_distance": 0.838371753692627,
+          "panel_median": 0.09677419066429138
+        },
+        {
+          "cal_median": 0.6605463624000549,
+          "feature": "slash_count",
+          "ks_distance": 0.8320496678352356,
+          "panel_median": 0.5234946608543396
+        },
+        {
+          "cal_median": 0.4093838930130005,
+          "feature": "dot_count",
+          "ks_distance": 0.8165663480758667,
+          "panel_median": 0.0
+        },
+        {
+          "cal_median": 0.19354838132858276,
+          "feature": "path_part_count",
+          "ks_distance": 0.8091533184051514,
+          "panel_median": 0.06451612710952759
+        }
+      ],
+      "normal": 218
+    },
+    "SRBH_TUNING": {
+      "largest_marginal_differences": [
+        {
+          "cal_median": 0.32258063554763794,
+          "feature": "path_max_part_length",
+          "ks_distance": 0.4408496022224426,
+          "panel_median": 0.5806451439857483
+        },
+        {
+          "cal_median": 0.5806451439857483,
+          "feature": "path_lowercase_symbols",
+          "ks_distance": 0.4199402928352356,
+          "panel_median": 0.9032257795333862
+        },
+        {
+          "cal_median": 0.0,
+          "feature": "method_TRACE",
+          "ks_distance": 0.4183381199836731,
+          "panel_median": 0.0
+        },
+        {
+          "cal_median": 0.12903225421905518,
+          "feature": "path_last_part_length",
+          "ks_distance": 0.4158203601837158,
+          "panel_median": 0.22580644488334656
+        },
+        {
+          "cal_median": 0.0,
+          "feature": "quote_double",
+          "ks_distance": 0.4034053087234497,
+          "panel_median": 0.0
+        }
+      ],
+      "normal": 676
+    },
+    "WAF_SELECT": {
+      "largest_marginal_differences": [
+        {
+          "cal_median": 0.25806450843811035,
+          "feature": "path_digit_symbols",
+          "ks_distance": 0.47287455201148987,
+          "panel_median": 0.06451612710952759
+        },
+        {
+          "cal_median": 0.25,
+          "feature": "digit_ratio",
+          "ks_distance": 0.41126465797424316,
+          "panel_median": 0.14388489723205566
+        },
+        {
+          "cal_median": 0.0,
+          "feature": "method_TRACE",
+          "ks_distance": 0.3814377784729004,
+          "panel_median": 0.0
+        },
+        {
+          "cal_median": 0.4093838930130005,
+          "feature": "encoding_rounds",
+          "ks_distance": 0.3592129349708557,
+          "panel_median": 0.4093838930130005
+        },
+        {
+          "cal_median": 0.044247787445783615,
+          "feature": "encoding_contraction_ratio",
+          "ks_distance": 0.35552290081977844,
+          "panel_median": 0.12987013161182404
+        }
+      ],
+      "normal": 271
+    }
+  }
+}

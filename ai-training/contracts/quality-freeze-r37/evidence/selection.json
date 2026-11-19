@@ -1,0 +1,19 @@
+{
+  "binding": {
+    "cohort": "4828f527e267d665a90760574cbb9e583d919b675a573fcab9139e369c78eb57",
+    "protocol": "02b2c9d421fe4b40189bcc6baf8e356d7fdc5593d3a3322f9625a04c409eeae5",
+    "r36_data_plan": "ebf4c98aef54839fbcb434009a71e20ffae5672608d059a1b58cb56ab9b6465e",
+    "r36_registry": "bfe8abb603246f54f16dd74bbd761eae73acc58cfbbe49d66e0339e0165dff0a",
+    "r36_study": "4d41f2d0e48b0afcd9c0091ea55c63ef5ab0d1f26b40ec01ce1750031cb55fd3",
+    "runner": "15aa18bc3c7dd111b115b5afe01dcfda98fb3ebb3e3b46a4ac80a8e050b86e4e"
+  },
+  "files": {
+    "comparison.json": "ea6085bc048c113d6821364a97b998d639b41b14b9bd49d7412e3bb6c1f203b6",
+    "finalist.joblib": "400e92ec5c523e903ad0b895c664250aafcb2887495f4950ecc54bccf500af61",
+    "finalist.onnx": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "pilot.json": "dea88de68c715a5b1e08e89d5de8ebae7328838b256030310febf0a364d352f7"
+  },
+  "finalist": "HGB",
+  "threshold": 0.7664756774902344,
+  "winner": "HGB"
+}
