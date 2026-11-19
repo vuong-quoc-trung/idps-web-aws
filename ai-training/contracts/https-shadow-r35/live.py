@@ -101,10 +101,22 @@ def main(a, out):
     subprocess.run(["ip", "addr", "add", "192.0.2.10/32", "dev", "lo"], check=True)
     a.output.mkdir(mode=0o700, exist_ok=False)
     with (
-        tempfile.TemporaryDirectory(prefix="idps-r35-") as temporary,
+        (
+            contextlib.nullcontext(a.delivery)
+            if a.delivery
+            else tempfile.TemporaryDirectory(prefix="idps-r35-")
+        ) as temporary,
         contextlib.ExitStack() as cleanup,
     ):
         w = Path(temporary)
+        if a.delivery:
+            need(
+                w.is_dir()
+                and not w.is_symlink()
+                and not (w.stat().st_mode & 0o077)
+                and not any(w.iterdir()),
+                "Private empty delivery directory required",
+            )
 
         def start(name, cmd, env=None):
             log = cleanup.enter_context((w / (name + ".log")).open("wb"))
@@ -116,27 +128,42 @@ def main(a, out):
 
         try:
             socket_path = w / "edge.sock"
-            model_json = json.loads((a.bundle / "manifest.json").read_text())
-            cmd = [
-                sys.executable,
-                str(HERE / "receiver.py"),
-                "--socket",
-                socket_path,
-                "--database",
-                w / "evidence.db",
-                "--model",
-                a.bundle / "publisher.onnx",
-                "--model-sha",
-                model_json["model_sha256"],
-                "--ort",
-                a.ort,
-                "--binary",
-                a.scorer,
-                "--lineage",
-                a.output.name,
-            ]
-            receiver = start("receiver", cmd)
-            eventually(socket_path.is_socket, receiver, 5)
+            local = a.bundle is None
+            r36 = HERE.parent / "https-model-r36"
+
+            def start_receiver(slot=None):
+                cmd = [
+                    sys.executable,
+                    "-B",
+                    str(r36 / "serve.py" if local else HERE / "receiver.py"),
+                    "--socket",
+                    socket_path,
+                    "--database",
+                    w / "evidence.db",
+                    "--ort",
+                    a.ort,
+                    "--binary",
+                    a.scorer,
+                    "--lineage",
+                    a.output.name,
+                ]
+                if local:
+                    cmd += ["--journal", a.output / "https-research.jsonl"]
+                    if slot:
+                        cmd += ["--slot", slot]
+                else:
+                    model_json = json.loads((a.bundle / "manifest.json").read_text())
+                    cmd += [
+                        "--model",
+                        a.bundle / "publisher.onnx",
+                        "--model-sha",
+                        model_json["model_sha256"],
+                    ]
+                proc = start("receiver", cmd)
+                eventually(socket_path.is_socket, proc, 5)
+                return proc
+
+            receiver = start_receiver()
             cert, key = w / "cert.pem", w / "tls.key"
             subprocess.run(
                 [
@@ -352,13 +379,31 @@ def main(a, out):
             cleanup.callback(halt.set)
             ctx = ssl.create_default_context(cafile=str(cert))
             requests = {}
-            for route, expected in (("/api/auth/csrf", 200), ("/api/auth/me", 401)):
+            roster = [("GET", "/api/auth/csrf", 200), ("GET", "/api/auth/me", 401)]
+            if local:
+                roster += [
+                    ("GET", "/api/auth/csrf?view=compact", 200),
+                    ("HEAD", "/api/profile-options", 401),
+                    ("POST", "/api/auth/logout", 204),
+                    ("GET", "/api/auth/csrf?locale=vi&page=2", 200),
+                ]
+            auth_headers = {}
+            for seq, (method, route, expected) in enumerate(roster):
+                if local and seq in (2, 3, 4):
+                    stop(receiver)
+                    receiver = start_receiver("rollback" if seq == 3 else None)
                 c = http.client.HTTPSConnection(
                     "127.0.0.1", 18443, context=ctx, source_address=("192.0.2.10", 0), timeout=10
                 )
                 with contextlib.closing(c):
                     t = time.monotonic_ns()
-                    c.request("GET", route)
+                    c.request(
+                        method,
+                        route,
+                        headers=auth_headers
+                        if method == "POST"
+                        else ({"Cookie": auth_headers["Cookie"]} if local and seq == 5 else {}),
+                    )
                     res = c.getresponse()
                     body = res.read(16384)
                     elapsed = (time.monotonic_ns() - t) / 1e6
@@ -370,24 +415,48 @@ def main(a, out):
                         and not res.getheader("X-WS-Receipt"),
                         "HTTP identity/status",
                     )
-                    oracle = csrf(body, res.headers) if expected == 200 else res.status == 401
-                    need(oracle, "Student response contract")
+                    if expected == 200:
+                        oracle = csrf(body, res.headers)
+                        previous_cookie = auth_headers.get("Cookie")
+                        auth_headers = {
+                            "X-CSRF-TOKEN": json.loads(body)["token"],
+                            "Cookie": res.getheader("Set-Cookie").split(";", 1)[0],
+                        }
+                        if local and seq == 5:
+                            oracle = (
+                                oracle
+                                and previous_cookie is not None
+                                and previous_cookie != auth_headers["Cookie"]
+                            )
+                    elif expected == 204:
+                        # Final CSRF GET presents this same cookie and must get a new session.
+                        oracle = not body
+                    else:
+                        oracle = res.status == 401
+                    need(oracle, f"Student response contract {seq + 1} {method} {res.status}")
                     requests[rid] = dict(
                         route=route,
+                        method=method,
                         status=res.status,
                         oracle="CSRF_CONTENT_SESSION"
                         if expected == 200
-                        else "ANONYMOUS_AUTH_CHALLENGE",
+                        else ("SESSION_LOGOUT" if expected == 204 else "ANONYMOUS_AUTH_CHALLENGE"),
                         http_ms=round(elapsed, 3),
                     )
 
             def complete():
                 return (
-                    len(jsonlines(w / "audit.jsonl")) >= 2
+                    all(("N", rid) in observed and ("A", rid) in observed for rid in requests)
+                    and len(
+                        {r.get("request_id") for r in jsonlines(w / "ri-input")} & requests.keys()
+                    )
+                    == len(roster)
+                    and len([key for key in observed if key[0] == "E"]) >= len(roster)
+                    and len(jsonlines(w / "audit.jsonl")) >= len(roster)
                     and len([e for e in jsonlines(w / "eve.json") if e.get("event_type") == "http"])
-                    >= 2
+                    >= len(roster)
                     and (w / "chain.tsv").exists()
-                    and len((w / "chain.tsv").read_text().splitlines()) >= 2
+                    and len((w / "chain.tsv").read_text().splitlines()) >= len(roster)
                 )
 
             eventually(complete, sensor, 20)
@@ -428,7 +497,7 @@ def main(a, out):
                 need(
                     e["http"]["url"] == row["route"]
                     and e["http"]["status"] == row["status"]
-                    and e["http"]["http_method"] == "GET",
+                    and e["http"]["http_method"] == row["method"],
                     "Transaction outcome",
                 )
                 need(
@@ -448,7 +517,7 @@ def main(a, out):
                         request_id=rid,
                         scheme=scheme,
                         host=host,
-                        method="GET",
+                        method=row["method"],
                         target_sha256=hashlib.sha256(row["route"].encode()).hexdigest(),
                         observed_ms=int(datetime.fromisoformat(e["timestamp"]).timestamp() * 1000),
                         response_complete=True,
@@ -503,7 +572,7 @@ def main(a, out):
                 == len(ri)
                 == len(audit)
                 == len(edges)
-                == 2,
+                == len(roster),
                 "Roster mismatch",
             )
             fixture = w / "proof.json"
@@ -538,7 +607,7 @@ def main(a, out):
                 len(jsonlines(w / "access"))
                 == len(jsonlines(w / "audit.jsonl"))
                 == len(jsonlines(w / "ri-input"))
-                == 2,
+                == len(roster),
                 "Duplicate event in the physical roster",
             )
             for row in requests.values():
@@ -574,7 +643,7 @@ def main(a, out):
             (a.output / "ri-input.json").write_text(json.dumps(list(ri.values())))
             out.update(
                 requests=requests,
-                structural_nsa=2,
+                structural_nsa=len(roster),
                 rust_transaction_proof="PASS",
                 native_train=0,
                 protected_ip_verified=False,
@@ -603,12 +672,21 @@ if __name__ == "__main__":
         "student",
         "h2",
         "sensor-prefix",
-        "bundle",
         "ort",
         "scorer",
         "proof-binary",
     ):
         ap.add_argument("--" + opt, type=Path, required=True)
+    ap.add_argument(
+        "--delivery",
+        type=Path,
+        help="Private empty run directory owned and removed by the Local acceptance controller",
+    )
+    ap.add_argument(
+        "--bundle",
+        type=Path,
+        help="Explicit historical R35 bundle. Default uses the Local release slot.",
+    )
     ap.add_argument("--owner-uid", type=int, required=True)
     ap.add_argument("--host-netns", required=True)
     args = ap.parse_args()
