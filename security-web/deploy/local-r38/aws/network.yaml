@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Private R38 staging ingress and egress for a co-located edge and Student tier
+Parameters:
+  Vpc:
+    Type: AWS::EC2::VPC::Id
+  TesterPrefixList:
+    Type: String
+    AllowedPattern: 'pl-[0-9a-f]+'
+    Description: Reviewed private tester networks reachable through the staging VPC
+  DatabaseGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Dedicated group on the private PostgreSQL database
+  EndpointGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Dedicated group on the private SSM, Secrets Manager and monitoring endpoints
+Rules:
+  SeparateEndpointAndDatabase:
+    Assertions:
+      - Assert:
+          Fn::Not:
+            - Fn::Equals: [{Ref: DatabaseGroup}, {Ref: EndpointGroup}]
+        AssertDescription: Database and interface endpoints must have different security groups
+Resources:
+  Application:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: HTTPS from authorized testers only
+      VpcId: {Ref: Vpc}
+      SecurityGroupIngress:
+        - {IpProtocol: tcp, FromPort: 443, ToPort: 443, SourcePrefixListId: {Ref: TesterPrefixList}}
+      SecurityGroupEgress:
+        - {IpProtocol: tcp, FromPort: 5432, ToPort: 5432, DestinationSecurityGroupId: {Ref: DatabaseGroup}}
+        - {IpProtocol: tcp, FromPort: 443, ToPort: 443, DestinationSecurityGroupId: {Ref: EndpointGroup}}
+  DatabaseIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {Ref: DatabaseGroup}
+      IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      SourceSecurityGroupId: {Ref: Application}
+  EndpointIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {Ref: EndpointGroup}
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      SourceSecurityGroupId: {Ref: Application}
+Outputs:
+  ApplicationSecurityGroup:
+    Value: {Ref: Application}
