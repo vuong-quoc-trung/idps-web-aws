@@ -7,7 +7,7 @@
     "LOCAL_BETA_READY": "BLOCKED",
     "AI_RUNTIME_READY": "PASS",
     "GITHUB_RELEASE_INSTALLABLE": "PASS_SMOKE_SCOPE",
-    "GITHUB_RELEASE_PUBLISHED": "PENDING",
+    "GITHUB_RELEASE_PUBLISHED": "PASS",
     "HYBRID_ENFORCEMENT_READY": "BLOCKED",
     "T07_PRODUCTION_QUALITY": "BLOCKED",
     "INSTALL_SMOKE": "PASS",
@@ -57,10 +57,47 @@
     "device_login": "VERIFIED",
     "api_repository_push": true,
     "api_repository_admin": true,
-    "tag": null,
-    "release_url": null,
-    "upload_receipts": [],
-    "download_verification": "NOT_RUN"
+    "tag": "v0.1.0-beta.1",
+    "release_url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/tag/v0.1.0-beta.1",
+    "upload_receipts": [
+      {
+        "browser_download_url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/v0.1.0-beta.1/idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz",
+        "digest": "sha256:cc2f927e53a1c7d3a49d342f9f2a00796f4078b8243259c682e199d3174c3d31",
+        "id": 771635058,
+        "name": "idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz",
+        "size": 29711577,
+        "state": "uploaded"
+      },
+      {
+        "browser_download_url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/v0.1.0-beta.1/INSTALL.md",
+        "digest": "sha256:dbc15a578ae28f08ec8060bd574f5b43a5e9b88a2a2096198d8b47a8409d9e34",
+        "id": 771635054,
+        "name": "INSTALL.md",
+        "size": 5947,
+        "state": "uploaded"
+      },
+      {
+        "browser_download_url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/v0.1.0-beta.1/RELEASE_NOTES.md",
+        "digest": "sha256:7830c4d1cbb46a343467317194780903036c86079294fb881a61dcd91318eb60",
+        "id": 771635056,
+        "name": "RELEASE_NOTES.md",
+        "size": 1206,
+        "state": "uploaded"
+      },
+      {
+        "browser_download_url": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/download/v0.1.0-beta.1/SHA256SUMS",
+        "digest": "sha256:c265bd08b1ea01efa7805190c13bdac7242f90260ca819ad503e811ad105fc90",
+        "id": 771635057,
+        "name": "SHA256SUMS",
+        "size": 282,
+        "state": "uploaded"
+      }
+    ],
+    "download_verification": "PASS_ANONYMOUS_BYTE_MATCH_AND_SHA256",
+    "release_id": 452630186,
+    "published_at": "2026-11-20T11:50:48Z",
+    "annotated_tag_sha": "454605d9302030f3b42bd80e5fcab71fcff4ed7d",
+    "tagged_commit": "6d6f0c672f39371ba75adc0bc46be09953d2d00b"
   },
   "license_audit": "R40 archive bytes unchanged",
   "r37_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
