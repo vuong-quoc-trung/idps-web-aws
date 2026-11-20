@@ -4,6 +4,7 @@ Bundle files are explicit; no account/module provisioning, no arbitrary shell ho
 """
 import argparse
 import hashlib
+import ipaddress
 import importlib.util
 import json
 import os
@@ -57,11 +58,26 @@ def read_bundle(bundle):
     return manifest
 
 
+def topology(manifest):
+    values = manifest.get('topology', {'edge_ip':'192.168.10.1', 'student_ip':'192.168.20.10', 'student_tls_name':'student.lab'})
+    if not isinstance(values, dict) or set(values) != {'edge_ip', 'student_ip', 'student_tls_name'}:
+        raise ValueError('Invalid deployment topology')
+    for key in ('edge_ip', 'student_ip'):
+        ip = ipaddress.IPv4Address(values[key])
+        if str(ip) != values[key] or ip.is_unspecified or ip.is_multicast:
+            raise ValueError('Specific unicast endpoint required')
+    if not re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?', values['student_tls_name']):
+        raise ValueError('Invalid upstream certificate name')
+    return values
+
+
 def validate(bundle):
     manifest = read_bundle(bundle)
     site = (bundle/'site').read_text()
+    endpoints = topology(manifest)
     for marker in ('PBL4 TRANSACTION PROOF CANDIDATE v1', 'proxy_ssl_verify on;',
-                   'proxy_ssl_name student.lab;', 'https://192.168.20.10:443',
+                   f"proxy_ssl_name {endpoints['student_tls_name']};", f"proxy_pass https://{endpoints['student_ip']}:443;",
+                   f"listen {endpoints['edge_ip']}:443 ssl;", f"listen {endpoints['edge_ip']}:80;",
                    '$probe_verified', '$probe_signed', 'tag=ai_shadow'):
         if marker not in site:
             raise ValueError('Candidate invariant missing: ' + marker)
@@ -80,7 +96,7 @@ def validate(bundle):
         expected = (Path(__file__).resolve().parents[1]/'nginx/https-shadow-mirror.conf').read_text()
         if mode != 'enabled' or expected.replace('__SOCKET__','/run/websentinel-edge-shadow/receiver.sock') not in site:
             raise ValueError('HTTPS shadow requires the reviewed private receiver and enabled telemetry')
-    if 'https_local_model' in manifest:
+    if shadow or 'https_local_model' in manifest:
         expected = None
         if shadow:
             registry_file = Path(__file__).resolve().parents[2]/'ai-training/contracts/quality-freeze-r37/slots.json'
@@ -89,7 +105,7 @@ def validate(bundle):
             slot = registry['slots'][registry['default']]
             expected = {'registry_sha256': hashlib.sha256(content).hexdigest(), 'version': slot['version'],
                         'model_sha256': slot['sha256'], 'mode': 'HTTPS_LOCAL_OBSERVATION_ONLY', 'enforcement': False}
-        if manifest['https_local_model'] != expected:
+        if manifest.get('https_local_model') != expected:
             raise ValueError('HTTPS research profile differs from pinned Local slot')
     if mode == 'deferred' and '# AI DEFERRED:' not in site:
         raise ValueError('Deferred telemetry must retain explicit restore marker')
@@ -235,6 +251,9 @@ class Deployment:
         if index['active']['nginx']:
             self.await_health(self.restored_http_health)
 
+    def edge_ip(self):
+        return topology(read_bundle(self.bundle))['edge_ip']
+
     def restored_http_health(self):
         for scheme in ('http', 'https'):
             for path, expected in (('/', '200'), ('/api/auth/me', '401')):
@@ -242,7 +261,7 @@ class Deployment:
                         '--output', '/dev/null', '--write-out', '%{http_code}']
                 if scheme == 'https':
                     argv += ['--cacert', str(self.bundle/'edge-ca.crt')]
-                if self.runner(argv + [scheme+'://192.168.10.1'+path]).strip() != expected:
+                if self.runner(argv + [scheme+'://'+self.edge_ip()+path]).strip() != expected:
                     raise RuntimeError('Restored HTTP/HTTPS checkpoint failed')
 
     def capture_health(self):
@@ -262,7 +281,7 @@ class Deployment:
         started = time.time()
         response = self.runner(['curl', '--noproxy', '*', '--silent', '--show-error', '--max-time', '10',
             '--cacert', str(self.bundle/'edge-ca.crt'), '--dump-header', '-', '--output', '/dev/null',
-            'https://192.168.10.1'+target])
+            'https://'+self.edge_ip()+target])
         ids = re.findall(r'(?im)^X-Request-Id:\s*([a-f0-9]{32})\s*$', response)
         if len(ids) != 1 or not re.search(r'^HTTP/\S+ 401\b', response):
             raise RuntimeError('Canary status/request ID invalid')
@@ -318,7 +337,7 @@ class Deployment:
                     '--output', '/dev/null', '--write-out', '%{http_code}']
                 if scheme == 'https':
                     argv += ['--cacert', str(self.bundle/'edge-ca.crt')]
-                code = self.runner(argv + [scheme+'://192.168.10.1'+path]).strip()
+                code = self.runner(argv + [scheme+'://'+self.edge_ip()+path]).strip()
                 if code != expected:
                     raise RuntimeError(scheme+' NGINX checkpoint status mismatch')
 

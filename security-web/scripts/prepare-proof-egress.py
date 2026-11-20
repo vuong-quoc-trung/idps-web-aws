@@ -15,19 +15,20 @@ spec.loader.exec_module(host)
 MARKER = '# PBL4 TRANSACTION PROOF CANDIDATE v1'
 
 
-def render(cert, key, ca, name, js, keyfile, gid, ai_mode="enabled", shadow_socket=None):
+def render(cert, key, ca, name, js, keyfile, gid, ai_mode="enabled", shadow_socket=None, *,
+           edge_ip="192.168.10.1", student_ip="192.168.20.10"):
     if ai_mode not in ('enabled', 'deferred'):
         raise ValueError('Unknown AI telemetry mode')
     for value in (cert, key, ca, js, keyfile): host.certificate_path(value)
     if not isinstance(gid, int) or gid <= 0:
         raise ValueError('Dedicated non-root worker group required')
-    site, formats = host.render(tls_cert=cert, tls_key=key,
+    site, formats = host.render(host=edge_ip, upstream=student_ip, tls_cert=cert, tls_key=key,
                                egress=host.egress_options(ca, name, 443))
     site = site.replace('proxy_pass http://127.77.0.2:18080;',
                         'proxy_pass http://pbl4_proof_egress;')
     site = site.replace('proxy_set_header Host $host;',
                         'proxy_set_header Connection "";\n    proxy_set_header Host $host;')
-    formats += '\nupstream pbl4_proof_egress { server 127.77.0.2:18080; keepalive 16; }\n'
+    formats += '\nupstream pbl4_proof_egress { server 127.77.0.2:18080; keepalive 16; keepalive_timeout 2s; }\n'
     # Contract binds the original Host, including a port if supplied.
     site = site.replace('proxy_set_header Host $host;', 'proxy_set_header Host $http_host;')
     edge = 'proxy_set_header X-Request-Id $request_id;'

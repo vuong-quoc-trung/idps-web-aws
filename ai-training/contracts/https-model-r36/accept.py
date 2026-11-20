@@ -3,6 +3,7 @@
 import argparse
 import contextlib
 import json
+import http.client
 import os
 from pathlib import Path
 import secrets
@@ -41,6 +42,29 @@ def stop(proc, graceful=False):
         except sp.TimeoutExpired:
             proc.kill()
             proc.wait()
+
+
+def backend_health(proc):
+    # Discover the dynamically assigned loopback listener from the owned process.
+    sockets = set()
+    for fd in Path(f"/proc/{proc.pid}/fd").iterdir():
+        try:
+            sockets.add(os.readlink(fd))
+        except FileNotFoundError:
+            continue
+    for entry in Path(f"/proc/{proc.pid}/net/tcp").read_text().splitlines()[1:]:
+        cols = entry.split()
+        ip, port = cols[1].split(":")
+        if cols[3] == "0A" and ip == "0100007F" and f"socket:[{cols[9]}]" in sockets:
+            with contextlib.closing(
+                http.client.HTTPConnection("127.0.0.1", int(port, 16), timeout=1)
+            ) as client:
+                client.request("GET", "/health")
+                response = client.getresponse()
+                return response.status == 200 and json.loads(response.read(1024)) == {
+                    "status": "alive"
+                }
+    return False
 
 
 def run(a):
@@ -154,6 +178,7 @@ def run(a):
             SECURITY_SENSOR_ID="local-r36",
             NGINX_ACCESS_PATH=str(delivery / "access"),
             STUDENT_AUDIT_LOG_PATH=str(delivery / "audit.jsonl"),
+            SURICATA_LUA_PATH=str(delivery / "chain.tsv"),
             SURICATA_EVE_PATH=str(delivery / "eve.json"),
             AI_HTTPS_RESULTS_PATH=str(lab / "https-research.jsonl"),
             SURICATA_CAPTURE_MODE="post-proxy",
@@ -204,6 +229,8 @@ def run(a):
                 "--host-netns",
                 os.readlink("/proc/self/ns/net"),
             ]
+            if a.extended:
+                args.append("--extended")
             sp.run(args, check=True, timeout=180)
             live = json.loads((lab / "live.json").read_text())
             roster = live["requests"]
@@ -244,8 +271,14 @@ def run(a):
                     )
                 )
             assert {r["request_id"] for r in summary} == set(roster) == set(journal)
-            assert sum(r["model"] == slots["slots"]["candidate"]["version"] for r in summary) == 5
-            assert decisions and journal[list(roster)[3]]["version"] == slots["slots"]["rollback"]["version"]
+            assert (
+                sum(r["model"] == slots["slots"]["candidate"]["version"] for r in summary)
+                == len(roster) - 1
+            )
+            assert (
+                decisions
+                and journal[list(roster)[3]]["version"] == slots["slots"]["rollback"]["version"]
+            )
             assert sql("select count(*) from hybrid_proposals") == "0"
             assert sql("select count(*) from https_research_observations where conflicted") == "0"
             errors = sql("select count(*) from ingestion_errors where source='HTTPS_RESEARCH'")
@@ -262,6 +295,90 @@ def run(a):
                 )
                 + "\n"
             )
+            if a.extended:
+                # Stop writers before the consistency comparison. Reuse the exact DB flags and app env.
+                stop(backend, graceful=True)
+                assert not backend.returncode
+                tables = [
+                    "https_research_observations",
+                    "hybrid_incidents",
+                    "log_cursors",
+                    "suricata_lua_shadow",
+                    "_sqlx_migrations",
+                ]
+
+                def snapshot(database):
+                    result = {}
+                    args = list(psql)
+                    args[args.index("-d") + 1] = database
+                    for table in tables:
+                        q = (
+                            f"select count(*),md5(string_agg(to_jsonb(t)::text,'' order by to_jsonb(t)::text)) "
+                            f"from {table} t"
+                        )
+                        result[table] = cmd(args + [q]).decode().strip()
+                    return result
+
+                before = snapshot("postgres")
+                assert (
+                    int(before["suricata_lua_shadow"].split("|")[0])
+                    == live["native_sensor_transactions"]
+                )
+                backup = w / "security.dump"
+                begin = time.monotonic()
+                cmd([pg / "pg_dump", "-Fc", "-h", w, "-U", "postgres", "-f", backup, "postgres"])
+                dump_ms = (time.monotonic() - begin) * 1000
+                stop(db, graceful=True)
+                begin = time.monotonic()
+                db = spawn("db", db.args, os.environ.copy())
+                wait(
+                    lambda: (
+                        sp.run(
+                            [pg / "pg_isready", "-h", w, "-U", "postgres"], capture_output=True
+                        ).returncode
+                        == 0
+                    ),
+                    db,
+                    15,
+                )
+                restart_ms = (time.monotonic() - begin) * 1000
+                assert snapshot("postgres") == before
+                begin = time.monotonic()
+                cmd([pg / "createdb", "-h", w, "-U", "postgres", "restored"])
+                cmd(
+                    [
+                        pg / "pg_restore",
+                        "--exit-on-error",
+                        "-h",
+                        w,
+                        "-U",
+                        "postgres",
+                        "-d",
+                        "restored",
+                        backup,
+                    ]
+                )
+                assert snapshot("restored") == before
+                restore_ms = (time.monotonic() - begin) * 1000
+                backend = spawn("backend", [a.server], env)
+                wait(lambda: backend_health(backend), backend, 15)
+                assert int(sql("select count(*) from https_research_observations")) == len(roster)
+                (a.out / "database.json").write_text(
+                    json.dumps(
+                        dict(
+                            snapshot=before,
+                            restored_match=True,
+                            restarted_match=True,
+                            restarted_backend_health=True,
+                            backup_bytes=backup.stat().st_size,
+                            dump_ms=dump_ms,
+                            postgres_restart_ms=restart_ms,
+                            restore_ms=restore_ms,
+                        ),
+                        indent=2,
+                    )
+                    + "\n"
+                )
             regression = {}
             for pattern in [
                 "c2_",
@@ -314,6 +431,7 @@ def run(a):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
+    p.add_argument("--extended", action="store_true")
     for k in ["pg", "out", "asset-root", "server", "scorer", "proof", "ort"]:
         p.add_argument("--" + k, type=Path, required=True)
     run(p.parse_args())

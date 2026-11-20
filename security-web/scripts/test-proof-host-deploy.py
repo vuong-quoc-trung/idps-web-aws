@@ -198,9 +198,23 @@ class Tests(unittest.TestCase):
         subprocess.run([sys.executable, str(HERE/'stage-proof-host.py'),
             '--output', str(shadow), '--nginx-base', str(main), '--suricata-base', str(suri),
             '--student-ca', str(ca), '--edge-ca', str(ca), '--edge-cert', '/tmp/cert',
-            '--edge-key', '/tmp/key', '--module', '/tmp/module.so', '--gid', '991','--https-ml-shadow'],
+            '--edge-key', '/tmp/key', '--module', '/tmp/module.so', '--gid', '991','--https-ml-shadow',
+            '--edge-ip','10.24.2.7','--student-ip','10.24.3.8','--student-tls-name','student.internal'],
             check=True, capture_output=True)
         self.assertTrue(m.validate(shadow)['https_ml_shadow'])
+        site = (shadow/'site').read_text()
+        self.assertIn('listen 10.24.2.7:443 ssl;', site)
+        self.assertIn('proxy_pass https://10.24.3.8:443;', site)
+        self.assertIn('proxy_ssl_name student.internal;', site)
+        self.assertEqual(m.Deployment(shadow, self.work/'unused').edge_ip(), '10.24.2.7')
+        metadata = shadow/'manifest.json'
+        original = metadata.read_text()
+        wrong = json.loads(original)
+        wrong['topology']['student_ip'] = '10.24.3.9'
+        metadata.write_text(json.dumps(wrong))
+        with self.assertRaises(ValueError):
+            m.validate(shadow)
+        metadata.write_text(original)
         self.assertFalse(m.validate(staged)['https_ml_shadow'])
         output = subprocess.run([sys.executable, str(HERE/'deploy-proof-host.py'), 'dry-run',
             '--bundle', str(staged), '--backup', str(self.work/'not-created')],
@@ -211,6 +225,12 @@ class Tests(unittest.TestCase):
         selected = json.loads((shadow/'manifest.json').read_text())['https_local_model']
         self.assertEqual(selected['version'], 'r37-hgb-uri100-v1')
         self.assertIs(selected['enforcement'], False)
+        path = shadow/'manifest.json'
+        manifest = json.loads(path.read_text())
+        del manifest['https_local_model']
+        path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, 'pinned Local slot'):
+            m.validate(shadow)
 
     def test_bundle_hash_mismatch_refused(self):
         (self.bundle/'manifest.json').write_text(json.dumps({'sha256': dict.fromkeys(m.TARGETS, 'wrong')}))

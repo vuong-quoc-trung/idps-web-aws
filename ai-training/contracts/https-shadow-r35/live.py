@@ -8,6 +8,7 @@ import http.client
 import importlib.util
 import json
 import os
+import re
 import secrets
 import socket
 import sqlite3
@@ -204,6 +205,12 @@ def main(a, out):
                 AUDIT_INCLUDE_SUCCESSFUL_READS="true",
                 AUDIT_RETENTION_ENABLED="false",
             )
+            if a.extended:
+                env.update(
+                    BOOTSTRAP_ADMIN_ENABLED="true",
+                    BOOTSTRAP_ADMIN_USERNAME="local-acceptance",
+                    BOOTSTRAP_ADMIN_PASSWORD=secrets.token_urlsafe(24),
+                )
             java = start(
                 "student",
                 [
@@ -244,11 +251,13 @@ def main(a, out):
                 str(keyfile),
                 991,
                 shadow_socket=str(socket_path),
+                edge_ip="127.0.0.1",
+                student_ip="127.0.0.3",
             )
-            site = site.replace("192.168.10.1:443 ssl", "127.0.0.1:18443 ssl").replace(
-                "192.168.10.1:80;", "127.0.0.1:18082;"
+            site = site.replace("127.0.0.1:443 ssl", "127.0.0.1:18443 ssl").replace(
+                "127.0.0.1:80;", "127.0.0.1:18082;"
             )
-            site = site.replace("192.168.20.10:443;", "127.0.0.3:18444;").replace(
+            site = site.replace("127.0.0.3:443;", "127.0.0.3:18444;").replace(
                 "/var/log/nginx/access.log", str(w / "access")
             )
             site = site.replace(
@@ -357,7 +366,7 @@ def main(a, out):
                             rid = (
                                 event.get("request_id")
                                 if src != "E"
-                                else (str(event["flow_id"]), event["tx_id"])
+                                else (event.get("host"), str(event["flow_id"]), event["tx_id"])
                             )
                             if src == "N" and (
                                 event.get("source") != "nginx_access"
@@ -444,6 +453,45 @@ def main(a, out):
                         http_ms=round(elapsed, 3),
                     )
 
+            extended = {}
+            if a.extended:
+                from extended_https import exercise
+
+                def restart_sensor():
+                    nonlocal sensor
+                    begin = time.monotonic()
+                    launch = load(SCRIPTS / "run-suricata-generation.py")
+                    fresh, variables = launch.launch_spec(cmd[1:-2])
+                    fresh[0] = cmd[0]
+                    variables["LD_LIBRARY_PATH"] = senv["LD_LIBRARY_PATH"]
+                    sensor = start("sensor-recovery", fresh, variables)
+                    eventually(
+                        lambda: b"Engine started" in (w / "sensor-recovery.log").read_bytes(),
+                        sensor,
+                        20,
+                    )
+                    engine_ms = round((time.monotonic() - begin) * 1000, 3)
+                    flow = load(SCRIPTS / "proof-flow-readiness.py")
+                    # No requests are dispatched in this planned rotation window. A
+                    # sensor starting mid-stream did not see the original TCP handshake.
+                    drain = flow.wait_for_rotation(flow.current(), 5)
+                    return dict(
+                        sensor_engine_ms=engine_ms,
+                        **drain,
+                        sensor_ready_ms=round((time.monotonic() - begin) * 1000, 3),
+                    )
+
+                extended = exercise(
+                    ctx,
+                    requests,
+                    env["BOOTSTRAP_ADMIN_USERNAME"],
+                    env["BOOTSTRAP_ADMIN_PASSWORD"],
+                    lambda: stop(sensor),
+                    restart_sensor,
+                )
+                roster = list(requests)
+            expected_sensor = len(roster) - int(a.extended)
+
             def complete():
                 return (
                     all(("N", rid) in observed and ("A", rid) in observed for rid in requests)
@@ -451,19 +499,56 @@ def main(a, out):
                         {r.get("request_id") for r in jsonlines(w / "ri-input")} & requests.keys()
                     )
                     == len(roster)
-                    and len([key for key in observed if key[0] == "E"]) >= len(roster)
+                    and len([key for key in observed if key[0] == "E"]) >= expected_sensor
                     and len(jsonlines(w / "audit.jsonl")) >= len(roster)
                     and len([e for e in jsonlines(w / "eve.json") if e.get("event_type") == "http"])
-                    >= len(roster)
+                    >= expected_sensor
                     and (w / "chain.tsv").exists()
-                    and len((w / "chain.tsv").read_text().splitlines()) >= len(roster)
+                    and len((w / "chain.tsv").read_text().splitlines()) >= expected_sensor
                 )
 
-            eventually(complete, sensor, 20)
+            try:
+                eventually(complete, sensor, 8 if a.extended else 20)
+            except RuntimeError:
+                if a.extended:
+
+                    def ids(name):
+                        return {r.get("request_id") for r in jsonlines(w / name)}
+
+                    counts = dict(
+                        total=len(requests),
+                        access=len(ids("access")),
+                        audit=len(ids("audit.jsonl")),
+                        ri=len(ids("ri-input")),
+                        eve=len(
+                            [r for r in jsonlines(w / "eve.json") if r.get("event_type") == "http"]
+                        ),
+                        missing_audit=[
+                            v["oracle"] for k, v in requests.items() if k not in ids("audit.jsonl")
+                        ],
+                        missing_edge=[
+                            v["oracle"] for k, v in requests.items() if k not in ids("access")
+                        ],
+                        chain_by_generation={},
+                        expected_sensor=expected_sensor,
+                    )
+                    for line in (w / "chain.tsv").read_text().splitlines():
+                        gen = line.rsplit("\t", 1)[-1]
+                        if re.fullmatch(r"[0-9a-f]{32}", gen):
+                            counts["chain_by_generation"][gen] = (
+                                counts["chain_by_generation"].get(gen, 0) + 1
+                            )
+                    (a.output / "readiness-diagnosis.json").write_text(json.dumps(counts, indent=2))
+                if not (
+                    a.extended
+                    and counts["access"] == counts["audit"] == counts["ri"] == len(roster)
+                    and len(counts["chain_by_generation"]) == 2
+                ):
+                    raise
             halt.set()
             collector.join(2)
             eve = {
-                (str(e["flow_id"]), e["tx_id"]): e
+                (e.get("host"), str(e["flow_id"]), e["tx_id"]): e
                 for e in jsonlines(w / "eve.json")
                 if e.get("event_type") == "http"
             }
@@ -477,13 +562,25 @@ def main(a, out):
                         "SELECT request_id,data FROM receipts WHERE conflicted=0"
                     )
                 }
+            seen_transactions = set()
+            seen_sensor_ids = set()
             proofrows = []
             observations = []
             for line in (w / "chain.tsv").read_text().splitlines():
                 flow, tx, proof, receipt, client, rid, scheme, host, generation = line.split("\t")
-                key = (flow, int(tx))
+                key = ("ws-generation-" + generation, flow, int(tx))
+                need(key not in seen_transactions, "Duplicate native transaction")
+                seen_transactions.add(key)
                 e = eve[key]
+                if a.extended and not rid and not proof and not receipt:
+                    continue
+                need(
+                    rid not in seen_sensor_ids and rid in requests,
+                    "Unexpected or ambiguous sensor identity",
+                )
+                seen_sensor_ids.add(rid)
                 row = requests[rid]
+                need("tx" not in row, "Duplicate transaction for request")
                 need(
                     e["host"] == "ws-generation-" + generation
                     and e["in_iface"] == "lo"
@@ -494,6 +591,9 @@ def main(a, out):
                     and client == "192.0.2.10",
                     "Sensor scope",
                 )
+                if a.extended and (not receipt or e["http"].get("status") is None):
+                    row["sensor_absence"] = "incomplete_sensor_response"
+                    continue
                 need(
                     e["http"]["url"] == row["route"]
                     and e["http"]["status"] == row["status"]
@@ -528,7 +628,7 @@ def main(a, out):
                     for v in jsonlines(w / "eve.json")
                     if v.get("event_type") == "alert"
                     and v.get("host") == "ws-generation-" + generation
-                    and (str(v.get("flow_id")), v.get("tx_id")) == key
+                    and (v.get("host"), str(v.get("flow_id")), v.get("tx_id")) == key
                     and v.get("in_iface") == "lo"
                     and v.get("src_ip") == "127.77.0.1"
                     and v.get("dest_ip") == "127.77.0.2"
@@ -560,19 +660,51 @@ def main(a, out):
                     vector_sha256=projection["vector_sha256"],
                     model_sha256=projection["model_sha256"],
                     available_ns=projection["available_ns"],
+                    scorer_timing=projection.get("scorer_timing", {}),
                     source_receipts_ns={
                         s: observed.get((s, rid if s != "E" else key)) for s in ("N", "A", "E")
                     },
                 )
+            if a.extended:
+                rid = extended["sensor_unavailable_request"]
+                need("tx" not in requests[rid], "Invalid sensor attribution while offline")
+                for missing_id, row in requests.items():
+                    if "tx" in row:
+                        continue
+                    pr = records[missing_id]
+                    need(
+                        pr["status"] == "SCORED"
+                        and ri[missing_id]["schema_version"] == "nginx-ai-1"
+                        and uuid.UUID(audit[missing_id]["event_id"])
+                        and edges[missing_id]["status"]
+                        == audit[missing_id]["status_code"]
+                        == row["status"],
+                        "Partial observation integrity",
+                    )
+                    row.update(
+                        tx=None,
+                        audit_id=audit[missing_id]["event_id"],
+                        dispatch_ns=pr["dispatch_ns"],
+                        available_ns=pr["available_ns"],
+                        model_sha256=pr["model_sha256"],
+                        score=pr["score"],
+                        vector_sha256=pr["vector_sha256"],
+                        scorer_timing=pr.get("scorer_timing", {}),
+                        sensor_absence=row.get(
+                            "sensor_absence", "offline" if missing_id == rid else "unobserved"
+                        ),
+                        source_receipts_ns={s: observed.get((s, missing_id)) for s in ("N", "A")},
+                    )
+                need(
+                    len({k["tx"]["generation"] for k in proofrows}) == 2,
+                    "Sensor generation did not rotate",
+                )
             need(
-                len(requests)
-                == len(records)
-                == len(proofrows)
-                == len(eve)
-                == len(ri)
-                == len(audit)
-                == len(edges)
-                == len(roster),
+                seen_transactions == set(eve) and (a.extended or len(proofrows) == expected_sensor),
+                "Sensor proof roster mismatch",
+            )
+            need(
+                len(requests) == len(records) == len(ri) == len(audit) == len(edges) == len(roster),
                 "Roster mismatch",
             )
             fixture = w / "proof.json"
@@ -612,7 +744,7 @@ def main(a, out):
             )
             for row in requests.values():
                 times = row["source_receipts_ns"]
-                times["S_verified"] = verified
+                times["S_verified"] = verified if row["tx"] is not None else None
                 row["mask_at_cutoff"] = (
                     "".join(
                         s
@@ -631,7 +763,7 @@ def main(a, out):
                         projection,
                         route_class="AUTH_API",
                         source_mask_at_cutoff=evidence["mask_at_cutoff"],
-                        structural_mask="NSA",
+                        structural_mask="NSA" if evidence["tx"] is not None else "NA",
                         source_receipts_ns=evidence["source_receipts_ns"],
                         tx=evidence["tx"],
                         audit_event_id=evidence["audit_id"],
@@ -643,7 +775,9 @@ def main(a, out):
             (a.output / "ri-input.json").write_text(json.dumps(list(ri.values())))
             out.update(
                 requests=requests,
-                structural_nsa=len(roster),
+                structural_nsa=len(proofrows),
+                native_sensor_transactions=len(seen_transactions),
+                extended=extended,
                 rust_transaction_proof="PASS",
                 native_train=0,
                 protected_ip_verified=False,
@@ -665,6 +799,7 @@ def main(a, out):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--extended", action="store_true")
     for opt in (
         "output",
         "nginx",
