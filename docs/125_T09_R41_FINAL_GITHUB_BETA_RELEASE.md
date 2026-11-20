@@ -8,4 +8,4 @@ Request CSRF khớp bản ghi NGINX, chain Suricata, Student Audit và journal R
 
 Archive 29.711.577 byte có SHA-256 `cc2f927e53a1c7d3a49d342f9f2a00796f4078b8243259c682e199d3174c3d31`. License và dependency audit kế thừa R40 trên cùng bytes. Giữ R37 mặc định và R36 rollback. Recall 86,04% và FPR 0,41% áp dụng cho WAF development. [SHA-256](../security-web/deploy/local-r41/evidence/ASSET_SHA256SUMS) · [Audit R40](124_T09_R40_FINAL_BETA_RELEASE_PUBLICATION.md)
 
-GitHub device login và quyền ghi đã xác minh. Tag và phát hành là bước tiếp theo sau lần commit evidence này.
+GitHub prerelease công khai `v0.1.0-beta.1` đã xuất bản. Annotated tag trỏ đến commit `6d6f0c672f39371ba75adc0bc46be09953d2d00b`. Đã tải lại cả bốn assets bằng URL công khai và đối chiếu byte, cùng SHA-256 cho archive, INSTALL.md và RELEASE_NOTES.md. [Bản phát hành](https://github.com/vuong-quoc-trung/idps-web-aws/releases/tag/v0.1.0-beta.1) · [API receipt](../security-web/deploy/local-r41/evidence/github-release.json)
