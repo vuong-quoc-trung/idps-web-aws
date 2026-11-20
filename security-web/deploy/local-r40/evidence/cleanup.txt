@@ -1,0 +1,8 @@
+{"resource_guardian": "launch", "cpu_max": "250000 100000", "state": "NORMAL", "temperature_c": 55.0}
+{"resource_guardian": "runtime", "cpu_max": "125000 100000", "state": "THROTTLE", "temperature_c": 92.0}
+{"resource_guardian": "runtime", "cpu_max": "250000 100000", "state": "NORMAL", "temperature_c": 56.0}
+{"resource_guardian": "cleanup", "verified": true}
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 2min 44.809s
+             CPU time consumed: 37.202s
+                   Memory peak: 2.5G (swap: 0B)

@@ -1,0 +1,58 @@
+{
+  "candidate": {
+    "version": "0.1.0-beta.1",
+    "name": "idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz",
+    "bytes": 29711577,
+    "sha256": "cc2f927e53a1c7d3a49d342f9f2a00796f4078b8243259c682e199d3174c3d31"
+  },
+  "gates": {
+    "LOCAL_BETA_READY": "BLOCKED",
+    "AI_RUNTIME_READY": "PASS",
+    "GITHUB_RELEASE_INSTALLABLE": "BLOCKED",
+    "GITHUB_RELEASE_PUBLISHED": "BLOCKED",
+    "HYBRID_ENFORCEMENT_READY": "BLOCKED",
+    "T07_PRODUCTION_QUALITY": "BLOCKED"
+  },
+  "ai_runtime": {
+    "basis": "R39 archive projection and R36 runtime checks plus byte-verified identical scorer tree",
+    "r37_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "r36_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0"
+  },
+  "host": {
+    "physical_policy_probe": "PASS",
+    "unattended_system_privileges": "UNAVAILABLE",
+    "new_system_install": "NOT_RUN"
+  },
+  "guest": {
+    "preflight": "REFUSED_NO_VERIFIED_PACKAGE_CORE_SENSOR_MAPPING",
+    "system_units_written": false,
+    "suricata_config": "PASS",
+    "student_component_http": "PASS",
+    "flyway_migrations": 2,
+    "same_host_https_r37_hybrid": "NOT_RUN",
+    "cutoff_nsa": "NOT_MEASURED",
+    "component_cleanup": "PASS"
+  },
+  "r39_https_backup_restore": "HISTORICAL_SCOPE_ONLY",
+  "publication": {
+    "version_exists": false,
+    "tag": null,
+    "url": null,
+    "upload_receipts": [],
+    "download_verification": "NOT_RUN",
+    "public_api_read": "PASS",
+    "release_api_write_authorization": "UNAVAILABLE"
+  },
+  "runtime_regression": {
+    "host_deploy": 15,
+    "sensor_flow_readiness": 2
+  },
+  "r40_changes_since_notice_audit": [
+    "SHA256SUMS",
+    "beta_profile.py",
+    "student/student.jar"
+  ],
+  "student_jar_entry_content_identical": true,
+  "c2_execution_enabled": false,
+  "auto_block": false
+}

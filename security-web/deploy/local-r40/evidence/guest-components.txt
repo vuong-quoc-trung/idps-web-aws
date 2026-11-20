@@ -1,0 +1,15 @@
+idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz: OK
+{"version": "0.1.0-beta.1", "build_source": "3cda364e0025985a8557c67a9e3c5b0c8e5be7cd", "platform": "Ubuntu 26.04 amd64", "mode": "LOCAL_MONITORING", "security_prevention_execution": false, "postgresql": 18}
+Beta RuntimeError: Scorer hardware refused: No verified package/core sensor mapping
+Beta RuntimeError: Scorer hardware refused: No verified package/core sensor mapping
+R40_PREFLIGHT_REFUSED_WITH_NO_SYSTEM_UNIT_WRITES=true
+i: suricata: This is Suricata version 8.0.3 RELEASE running in SYSTEM mode
+i: mpm-hs: Rule group caching - loaded: 0 newly cached: 2 total cacheable: 2
+i: suricata: Configuration provided was successfully loaded. Exiting.
+i: device: lo: packets: 0, drops: 0 (0.00%), invalid chksum: 0
+R40_SURICATA_CONFIG=PASS
+Running as unit: websentinel-r40-student-probe.service; invocation ID: 903dadeaaed34323806ee317b482b493
+STUDENT_COMPONENT_HTTP=200 CSRF_CONTENT=PASS
+STUDENT_FLYWAY_MIGRATIONS=2
+R40_GUEST_COMPONENT_CLEANUP=true
+Connection to 127.0.0.1 closed by remote host.
