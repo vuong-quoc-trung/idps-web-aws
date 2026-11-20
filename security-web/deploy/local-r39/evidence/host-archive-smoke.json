@@ -1,0 +1,9 @@
+{
+  "scope": "host user cgroup, freshly extracted archive, private socket projection fixture",
+  "http_health": 200,
+  "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+  "receipt_status": "SCORED",
+  "score": 0.1253570318222046,
+  "projection_ms": 3.261016,
+  "enforcement_allowed": false
+}

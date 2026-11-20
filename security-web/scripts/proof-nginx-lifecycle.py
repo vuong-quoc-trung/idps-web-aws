@@ -86,9 +86,10 @@ def run(args):
     secure_directory(key.parent, account.pw_gid, 0o750)
     lock = os.open(state/'lock', os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    nginx = ['/usr/sbin/nginx', '-c', args.config]
     group = next(line[3:] for line in Path('/proc/self/cgroup').read_text().splitlines()
                  if line.startswith('0::')).lstrip('/')
-    if not group or not group.endswith('/nginx.service'):
+    if not group or not group.endswith('/' + args.unit):
         raise RuntimeError('Must run in dedicated nginx.service cgroup v2')
     guard = guard_module.Guard(group, account.pw_uid)
     recovery = state/'deny.json'
@@ -118,14 +119,14 @@ def run(args):
         recovery.unlink(missing_ok=True)
         rotate(key, account.pw_gid)
         expected = hashlib.sha256(key.read_bytes()).digest()
-        effective = subprocess.run(['/usr/sbin/nginx', '-T'], check=True, timeout=30,
+        effective = subprocess.run(nginx + ['-T'], check=True, timeout=30,
                                    text=True, capture_output=True).stdout
         if not re.search(r'(?m)^user\s+' + re.escape(args.user) + r'\s+' + re.escape(args.user) + r'\s*;', effective):
             raise RuntimeError('Effective NGINX identity differs from guard UID/GID')
         if 'PBL4 TRANSACTION PROOF CANDIDATE v1' not in effective:
             raise RuntimeError('Proof site is not included in effective configuration')
         guard.grant()
-        process = subprocess.Popen(['/usr/sbin/nginx', '-g', 'daemon off;'])
+        process = subprocess.Popen(nginx + ['-g', 'daemon off;'])
         while not stopping:
             st = key.lstat()
             good_key = (not key.is_symlink() and st.st_uid == 0 and
@@ -157,6 +158,8 @@ def run(args):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--config', default='/etc/nginx/nginx.conf')
+    p.add_argument('--unit', choices=['nginx.service', 'websentinel-beta-edge.service'], default='nginx.service')
     p.add_argument('--user', default='websentinel-edge')
     p.add_argument('--key', default='/etc/nginx/pbl4-proof/key.json')
     p.add_argument('--state', default='/var/lib/websentinel-egress')

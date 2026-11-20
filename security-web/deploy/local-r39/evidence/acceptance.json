@@ -1,0 +1,63 @@
+{
+  "version_candidate": "0.1.0-beta.1",
+  "target_platform": "Ubuntu 26.04 amd64 with supported CPU hardware telemetry",
+  "application_source_commit": "3cda364e0025985a8557c67a9e3c5b0c8e5be7cd",
+  "release": {
+    "tag": null,
+    "url": null,
+    "published": false,
+    "asset_sha256": "b610bfc41ffc206e845ac752a454586dd77c217354c8de262309f25fc63da64f",
+    "asset": "idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz",
+    "asset_bytes": 84327963,
+    "api_access": {
+      "public_release_list": "PASS",
+      "release_write_token": "UNAVAILABLE",
+      "git_ssh": "AVAILABLE"
+    }
+  },
+  "gates": {
+    "LOCAL_BETA_READY": "BLOCKED",
+    "AI_RUNTIME_READY": "PASS",
+    "HYBRID_ENFORCEMENT_READY": "BLOCKED",
+    "GITHUB_RELEASE_INSTALLABLE": "BLOCKED",
+    "GITHUB_RELEASE_PUBLISHED": "BLOCKED",
+    "T07_PRODUCTION_QUALITY": "BLOCKED"
+  },
+  "clean_guest": {
+    "image": "Ubuntu 26.04.1 LTS cloud image, signed checksum verified",
+    "virtualization": "KVM",
+    "installer": "BLOCKED",
+    "archive_integrity": "PASS",
+    "tls_student": "PASS",
+    "tls_dashboard": "PASS",
+    "trusted_request_id": "249eb149a57af0ec4a82ae53f92f3bc4",
+    "edge_sensor_audit_structural_join": "PASS",
+    "request_time_nsa": "NOT_MEASURED",
+    "hybrid": "LOG_ONLY",
+    "score_at_ingestion": null,
+    "student_migrations": 2,
+    "security_migrations": 19,
+    "pg_restore_two_databases": "PASS",
+    "nginx_restart": "PASS",
+    "removal": "PASS",
+    "scorer_system_unit_exit": 78,
+    "scorer_refusal": "No verified package/core sensor mapping"
+  },
+  "archive_scoring": {
+    "scope": "host user cgroup, freshly extracted archive, private socket projection fixture",
+    "http_health": 200,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "receipt_status": "SCORED",
+    "score": 0.1253570318222046,
+    "projection_ms": 3.261016,
+    "enforcement_allowed": false
+  },
+  "rollback_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+  "r38_firewall_evidence": "../../local-r38/evidence/firewall.json",
+  "limits": [
+    "Existing production systems are outside this Beta profile.",
+    "No system install with physical hardware telemetry has been verified for this archive.",
+    "C2 execution remains disabled. Guest tested Hybrid monitoring.",
+    "Bundled frontend, JVM and Rust dependency notices are pending a final distribution review."
+  ]
+}

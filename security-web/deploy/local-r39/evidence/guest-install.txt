@@ -1,0 +1,27 @@
+idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz: OK
+{"version": "0.1.0-beta.1", "build_source": "3cda364e0025985a8557c67a9e3c5b0c8e5be7cd", "platform": "Ubuntu 26.04 amd64", "mode": "LOCAL_MONITORING", "security_prevention_execution": false, "postgresql": 18}
+..+..+.........+.......+..+.+..+...............+...+.+.........+..+...++++++++++++++++++++++++++++++++++++++++++*...................++++++++++++++++++++++++++++++++++++++++++*.+...+.......+..+............+.............+.....+.+......+...+......+........................+...+..+.+......+.....+...+......+.+.....+......+...+.+.....+....+.........+..+++++
+Beta RuntimeError: Scorer safety refusal (exit 78). See the system journal for the admission predicate.
+INSTALL_EXIT=1
+Id=websentinel-https-scorer.service
+LoadState=loaded
+SubState=failed
+Result=exit-code
+ExecMainStatus=78
+Id=websentinel-beta-student.service
+LoadState=loaded
+SubState=running
+Result=success
+ExecMainStatus=0
+Id=websentinel-beta-security.service
+LoadState=loaded
+SubState=running
+Result=success
+ExecMainStatus=0
+Id=websentinel-beta-sensor.service
+LoadState=loaded
+SubState=running
+Result=success
+ExecMainStatus=0
+{"resource_guardian": "unverified", "error": "PipelineError", "detail": "No verified package/core sensor mapping"}
+i: threads: Threads created -> W: 1 FM: 1 FR: 1   Engine started.
