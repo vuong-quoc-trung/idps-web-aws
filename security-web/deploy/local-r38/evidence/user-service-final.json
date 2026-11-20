@@ -1,0 +1,54 @@
+{
+  "unit": "idps-r38-https-scorer.service",
+  "before": {
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled",
+    "InvocationID": "fcc5ddfc620c40d29adc0f4c845a8193",
+    "MainPID": "18045",
+    "NRestarts": "1",
+    "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-r38-https-scorer.service",
+    "MemoryCurrent": "40169472"
+  },
+  "after": {
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled",
+    "InvocationID": "93a67a83d117438a9bd7e13e0d940b3d",
+    "MainPID": "21040",
+    "NRestarts": "2",
+    "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/idps-r38-https-scorer.service",
+    "MemoryCurrent": "27242496"
+  },
+  "before_health_ms": [
+    2.274,
+    1.912,
+    1.519,
+    1.323,
+    1.314,
+    2.29,
+    1.855,
+    1.683
+  ],
+  "first_healthy_probe_after_crash_ms": 69.281,
+  "elapsed_to_recovery_ms": 2630.34,
+  "previous_worker_pids": [
+    18047,
+    18050
+  ],
+  "killed_receiver_pid": 18047,
+  "old_worker_pids_gone": true,
+  "receipts_before": 0,
+  "receipts_after": 0,
+  "quota": {
+    "cpu.max": "100000 100000",
+    "memory.max": "536870912",
+    "memory.high": "402653184",
+    "memory.swap.max": "0",
+    "pids.max": "48"
+  },
+  "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+  "release_sha256": "8713fc007e7425a37ef5f106303a659a510231e586e819ca0f9a38b06527b1f6",
+  "linger": "yes",
+  "socket_mode": "0o600"
+}

@@ -1,0 +1,61 @@
+{
+  "scope": "R38 final bounded Local HTTPS acceptance; no AWS deployment",
+  "baseline": "58006801d513889edf7f2e4b8f6ec09c87766861",
+  "original_tracked_diff_sha256": "1f145523851a18310fafc73273e8c8fc7a1f18569bec65cad1771c94260c708f",
+  "run": "sensor-drain",
+  "systemd_invocation": "eceb75e0f9ed4479ae04650ad4fae497",
+  "gates": {
+    "LOCAL_ENGINEERING_READY": "BLOCKED",
+    "AI_RUNTIME_READY": "PASS",
+    "HYBRID_ENFORCEMENT_READY": "BLOCKED",
+    "AWS_STAGING_PREPARED": "BLOCKED",
+    "T07_PRODUCTION_QUALITY": "BLOCKED"
+  },
+  "evidence": {
+    "http": "requests.json",
+    "http_metrics": "metrics.json",
+    "hybrid": "hybrid.json",
+    "staging_health": "user-service-final.json",
+    "service_accounts": "uid-acl.json",
+    "actuator": "firewall.json",
+    "postgresql": "database.json",
+    "cleanup": "cleanup.json"
+  },
+  "reasons": {
+    "local": "Official system identities/units, target TLS material and production-format DB restore/cutover not verified on the target host.",
+    "enforcement": "C2 execution_enabled is false; kernel packet loss was verified using the independent restricted actuator.",
+    "aws": "Private SG template validated offline. The staging image still needs approved CPU/hardware-alarm telemetry and full-stack dependencies, TLS and DB restore evidence.",
+    "quality": "Independent native two-class cohorts, representative benign exposure, calibration and protected evaluation remain insufficient."
+  },
+  "tests": {
+    "proof_egress_render": {
+      "exit": 0,
+      "output": "test_deferred_ai_retains_restore_path_without_active_sink (__main__.CandidateTests.test_deferred_ai_retains_restore_path_without_active_sink) ... ok\ntest_legacy_sync_cannot_remove_proof (__main__.CandidateTests.test_legacy_sync_cannot_remove_proof) ... ok\ntest_proof_and_tls_and_identity_preserved (__main__.CandidateTests.test_proof_and_tls_and_identity_preserved) ... ok\ntest_unsafe_paths_and_identity_refused (__main__.CandidateTests.test_unsafe_paths_and_identity_refused) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.002s\n\nOK"
+    },
+    "system_unit_syntax": {
+      "exit": 0,
+      "output": ""
+    },
+    "user_unit_syntax": {
+      "exit": 0,
+      "output": "/usr/lib/systemd/user/spice-vdagent.service:23: Unknown key 'StandardError' in section [Install], ignoring."
+    },
+    "aws_network_template": {
+      "exit": 0,
+      "output": "",
+      "tool": "cfn-lint 1.38.1"
+    },
+    "sysusers_isolated_dry_run": {
+      "exit": 0,
+      "output": "Creating group 'websentinel-evidence' with GID 999.\nCreating group 'websentinel-edge' with GID 998.\nCreating user 'websentinel-edge' (NGINX proof worker) with UID 998 and GID 998.\nCreating group 'websentinel-scorer' with GID 997.\nCreating user 'websentinel-scorer' (HTTPS research scorer) with UID 997 and GID 997.\nWould write /etc/group\u2026\nWould write /etc/gshadow\u2026\nWould write /etc/passwd\u2026\nWould write /etc/shadow\u2026"
+    },
+    "flow_rotation_unit": {
+      "exit": 0,
+      "output": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.051s\n\nOK"
+    }
+  },
+  "online_service": "idps-r38-https-scorer.service",
+  "default_slot": "r37-hgb-uri100-v1",
+  "restore_slot": "r36-extratrees-uri100-v1",
+  "native_train": 0
+}
