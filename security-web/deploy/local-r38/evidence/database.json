@@ -1,0 +1,16 @@
+{
+  "snapshot": {
+    "https_research_observations": "30|e546a58151ca7c68001f89cad7245517",
+    "hybrid_incidents": "30|2242aeca6bb81e4bee37281142387887",
+    "log_cursors": "5|4b2654326366934e879b0c2128285424",
+    "suricata_lua_shadow": "29|706bfd99cd833c6117e345fa6420a489",
+    "_sqlx_migrations": "19|dd4495f06d3da03653b551da282be602"
+  },
+  "restored_match": true,
+  "restarted_match": true,
+  "restarted_backend_health": true,
+  "backup_bytes": 114658,
+  "dump_ms": 91.76373200000398,
+  "postgres_restart_ms": 224.10353300006136,
+  "restore_ms": 209.57945899999686
+}

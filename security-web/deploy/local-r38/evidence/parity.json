@@ -1,0 +1,228 @@
+{
+  "requests": [
+    {
+      "request_id": "4c5d10c6f8786e78145d7141932abbeb",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "06b2ad00d474158aa96920d4a5b62972",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "73d3c0c1ed38ec3946acfd25cdbf2e17",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.142498530839255e-08
+    },
+    {
+      "request_id": "94106c706d3ae899e98523a84e92fed5",
+      "model": "r36-extratrees-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": null
+    },
+    {
+      "request_id": "3f43f777d0009f85314ab7928f93d72d",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.5742230014280665e-09
+    },
+    {
+      "request_id": "30e5aaf79bffc1c949fcfd5695c12769",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 6.90131625458168e-09
+    },
+    {
+      "request_id": "6419329878ea5ca72fa773013b26e977",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "f65a1e4f8d6be62bee72047281c81d9a",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.5742230014280665e-09
+    },
+    {
+      "request_id": "9543e575f2ad8dd016d892332ff6f6a4",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "cac5896b80dbae40b51c15448ade8b4c",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 4.950819909588233e-08
+    },
+    {
+      "request_id": "b550b87d527885784660e530a70334c0",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "c27bd007953220a71bbc02e3a75d3616",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 2.5742230014280665e-09
+    },
+    {
+      "request_id": "6452a044d8a112e3b2c387dbbf9bbb5f",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.9943056678295434e-08
+    },
+    {
+      "request_id": "55934bba18604e59172490564d0e950f",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.142498530839255e-08
+    },
+    {
+      "request_id": "4f59764f66927235b21d9228b3f28b2f",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "371602bef582e61762774442abde34b9",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "d65b7fcec1e47bd27f64aa15afca49d8",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "53828517cca063fc6b4922d807541283",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "dcb6828d2befb3f670b7d5817f72c04f",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "9f6c5a27680e9179aad0a5775a31ff6b",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "1c386109df27e723b4d3458068e29f70",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "b9ddbd75fae0f6b8c7fca992410064d2",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "5e746ac2c3071021296a4ebe07041e9f",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "ecfc0dcafbceb4070564f1a70d553b03",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "a2ca6f6a31def9e0888e9ce57488be14",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "693de3bd3160f178d3161188a457ec79",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 3.6283043791662806e-09
+    },
+    {
+      "request_id": "2d387e24923da28c8f712d523d661c7b",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "4d635b083ba1c6a00e7503ce4819905d",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "bb4674e2e94eca8d2c5216bcf71dbe76",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    },
+    {
+      "request_id": "1891040c9013ed9b31a2fde55c90bb0f",
+      "model": "r37-hgb-uri100-v1",
+      "feature_parity": true,
+      "python_rust_error": 0.0,
+      "estimator_error": 1.5112618934054467e-08
+    }
+  ],
+  "benchmark": "50 warm repeats of one allowed frame, one thread",
+  "warm_ns": {
+    "preprocessing_ns": {
+      "p50": 250582.5,
+      "p95": 268556.6
+    },
+    "inference_ns": {
+      "p50": 38485.0,
+      "p95": 47904.29999999998
+    }
+  },
+  "model_load_ms": 25.466535,
+  "invalid_sha_refused": true,
+  "malformed_then_recovery": true
+}

@@ -1,0 +1,119 @@
+{
+  "physical": 30,
+  "unique_vectors": 11,
+  "methods": {
+    "GET": 17,
+    "HEAD": 10,
+    "POST": 3
+  },
+  "http": {
+    "200": 6,
+    "401": 20,
+    "204": 3,
+    "403": 1
+  },
+  "model_versions": {
+    "r37-hgb-uri100-v1": 29,
+    "r36-extratrees-uri100-v1": 1
+  },
+  "policy": {
+    "LOG_ONLY": 30
+  },
+  "observation": {
+    "LOG_ONLY": 30
+  },
+  "structural": {
+    "NSA": 29,
+    "NA": 1
+  },
+  "at_cutoff": {
+    "NA": 14,
+    "NSA": 16
+  },
+  "oracles": {
+    "CSRF_CONTENT_SESSION": 3,
+    "ANONYMOUS_AUTH_CHALLENGE": 2,
+    "SESSION_LOGOUT": 1,
+    "SESSION_CSRF": 1,
+    "SESSION_LOGIN_ROTATION": 1,
+    "PRINCIPAL_ADMIN": 1,
+    "ROLE_DENIED": 1,
+    "AUTHENTICATED_CSRF": 1,
+    "AUTHENTICATED_LOGOUT": 1,
+    "SESSION_REVOKED": 1,
+    "ANONYMOUS_SENSOR_OFFLINE": 1,
+    "ANONYMOUS_CHALLENGE": 16
+  },
+  "scorer": {
+    "SCORED": 30
+  },
+  "distinct_audits": 30,
+  "distinct_sensor_transactions": 29,
+  "raw_eve_at_cutoff": 29,
+  "projection_at_cutoff": 30,
+  "quantile_method": "nearest rank",
+  "https_ms": {
+    "p50": 100.649,
+    "p95": 976.5,
+    "p99": 1003.435
+  },
+  "projection_ms": {
+    "p50": 130.515133,
+    "p95": 233.520068,
+    "p99": 367.068938
+  },
+  "rust_inference_ms": {
+    "p50": 0.256144,
+    "p95": 0.521178,
+    "p99": 0.749381
+  },
+  "preprocessing_ms": {
+    "p50": 0.692867,
+    "p95": 66.495156,
+    "p99": 189.578044
+  },
+  "receipt_ms": {
+    "N": {
+      "p50": 145.109913,
+      "p95": 931.826506,
+      "p99": 974.483002
+    },
+    "A": {
+      "p50": 34.125236,
+      "p95": 896.897665,
+      "p99": 927.328961
+    },
+    "E": {
+      "p50": 97.546818,
+      "p95": 936.67368,
+      "p99": 974.766687
+    },
+    "S_verified": {
+      "p50": 860.911061,
+      "p95": 6759.911061,
+      "p99": 7735.911061
+    }
+  },
+  "extended": {
+    "concurrent_clients": 4,
+    "burst_requests": 16,
+    "reused_client_connections": 4,
+    "burst_seconds": 0.606128038999941,
+    "burst_requests_per_second": 26.397062947951753,
+    "sensor_unavailable_request": "55934bba18604e59172490564d0e950f",
+    "sensor_engine_ms": 279.412,
+    "old_connections": 1,
+    "remaining_old_connections": 0,
+    "old_flow_drain_ms": 1732.953,
+    "sensor_ready_ms": 2016.749
+  },
+  "python_rust_max_error": 0.0,
+  "native_train": 0,
+  "post_proxy_client_verified": false,
+  "input_sha256": {
+    "live/live.json": "7cf535b856f9e54286559961df1289347d07a9a9993b81548b137b0b32372c36",
+    "live/observations.jsonl": "c23296c9f38796302e5cfc4cf991358846e69894d457071d52673a976de4dcbd",
+    "parity.json": "a79f641fc60fde822b5875460429f6c46e9d8a8a78524ecea201d83f43253def",
+    "hybrid.json": "8d4a9b1f8f19f2a65b4de8f0f66003e7e78481df14be087e41b68df0c809cd74"
+  }
+}

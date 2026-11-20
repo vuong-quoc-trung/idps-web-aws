@@ -1,0 +1,80 @@
+{
+  "user": [
+    {
+      "Id": "idps-r22-local-ri.service",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "InvocationID": "692e61fdfb4a43bcaf3b5f2cb194a67b",
+      "MainPID": "4301",
+      "NRestarts": "0",
+      "MemoryCurrent": "165392384"
+    },
+    {
+      "Id": "idps-r22-local-scorer.service",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "InvocationID": "8a4df89bad7044b0b0c98f54a4fe131e",
+      "MainPID": "4302",
+      "NRestarts": "0",
+      "MemoryCurrent": "81543168"
+    },
+    {
+      "Id": "idps-r22-local-receiver.service",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "InvocationID": "a84b59097a984b55a84be462ea880751",
+      "MainPID": "4300",
+      "NRestarts": "0",
+      "MemoryCurrent": "26902528"
+    },
+    {
+      "Id": "idps-r22-local-collector.service",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "InvocationID": "926bdf85b9964cd9815749fb424dc954",
+      "MainPID": "4299",
+      "NRestarts": "0",
+      "MemoryCurrent": "27922432"
+    },
+    {
+      "Id": "idps-r38-https-scorer.service",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "InvocationID": "93a67a83d117438a9bd7e13e0d940b3d",
+      "MainPID": "21040",
+      "NRestarts": "2",
+      "MemoryCurrent": "40714240"
+    }
+  ],
+  "host_system_units": {
+    "nginx": {
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    },
+    "suricata": {
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    },
+    "pbl4-security": {
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    },
+    "websentinel-https-scorer": {
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    },
+    "postgresql": {
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    }
+  },
+  "linger": "",
+  "platform": "x86_64",
+  "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+  "release_sha256": "8713fc007e7425a37ef5f106303a659a510231e586e819ca0f9a38b06527b1f6"
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "rootless user/network namespaces, three mapped UIDs",
+  "edge": {
+    "journal_read": false,
+    "journal_write": false,
+    "edge_key_read": true,
+    "database_read": false,
+    "http": 200,
+    "sha": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff"
+  },
+  "scorer_has_edge_key": false,
+  "journal_reader": {
+    "journal_read": true,
+    "journal_write": false,
+    "edge_key_read": false,
+    "database_read": false,
+    "http": null
+  },
+  "unrelated_uid": {
+    "journal_read": false,
+    "journal_write": false,
+    "edge_key_read": false,
+    "database_read": false,
+    "http": null
+  },
+  "release_sha256": "8713fc007e7425a37ef5f106303a659a510231e586e819ca0f9a38b06527b1f6",
+  "scorer_exit": 0,
+  "socket_removed": true,
+  "scratch_removed": true
+}

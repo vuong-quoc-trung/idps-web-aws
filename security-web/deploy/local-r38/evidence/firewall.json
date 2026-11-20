@@ -1,0 +1,16 @@
+{
+  "scope": "two fresh rootless network namespaces, no default routes",
+  "policy": "shipped pbl4.nft and pbl4-firewall-policy.py",
+  "connect_before": true,
+  "peer_blocked": true,
+  "kernel_dropped_packets": 1,
+  "duplicate_one_element": true,
+  "protected_server_denied": true,
+  "double_unblock_pass": true,
+  "connect_after_unblock": true,
+  "ttl_expired": true,
+  "connect_after_expiry": true,
+  "table_removed": true,
+  "peer_reaped": true,
+  "hybrid_originated": false
+}

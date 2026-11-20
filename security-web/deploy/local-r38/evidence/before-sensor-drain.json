@@ -1,0 +1,115 @@
+{
+  "physical": 30,
+  "unique_vectors": 11,
+  "methods": {
+    "GET": 17,
+    "HEAD": 10,
+    "POST": 3
+  },
+  "http": {
+    "200": 6,
+    "401": 20,
+    "204": 3,
+    "403": 1
+  },
+  "model_versions": {
+    "r37-hgb-uri100-v1": 29,
+    "r36-extratrees-uri100-v1": 1
+  },
+  "policy": {
+    "LOG_ONLY": 30
+  },
+  "observation": {
+    "LOG_ONLY": 30
+  },
+  "structural": {
+    "NSA": 24,
+    "NA": 6
+  },
+  "at_cutoff": {
+    "NONE": 1,
+    "NA": 29
+  },
+  "oracles": {
+    "CSRF_CONTENT_SESSION": 3,
+    "ANONYMOUS_AUTH_CHALLENGE": 2,
+    "SESSION_LOGOUT": 1,
+    "SESSION_CSRF": 1,
+    "SESSION_LOGIN_ROTATION": 1,
+    "PRINCIPAL_ADMIN": 1,
+    "ROLE_DENIED": 1,
+    "AUTHENTICATED_CSRF": 1,
+    "AUTHENTICATED_LOGOUT": 1,
+    "SESSION_REVOKED": 1,
+    "ANONYMOUS_SENSOR_OFFLINE": 1,
+    "ANONYMOUS_CHALLENGE": 16
+  },
+  "scorer": {
+    "SCORED": 30
+  },
+  "distinct_audits": 30,
+  "distinct_sensor_transactions": 24,
+  "raw_eve_at_cutoff": 23,
+  "projection_at_cutoff": 30,
+  "quantile_method": "nearest rank",
+  "https_ms": {
+    "p50": 73.123,
+    "p95": 1018.087,
+    "p99": 1277.784
+  },
+  "projection_ms": {
+    "p50": 117.412161,
+    "p95": 336.878245,
+    "p99": 680.614838
+  },
+  "rust_inference_ms": {
+    "p50": 0.276535,
+    "p95": 2.281657,
+    "p99": 13.560769
+  },
+  "preprocessing_ms": {
+    "p50": 0.738831,
+    "p95": 177.942013,
+    "p99": 194.412715
+  },
+  "receipt_ms": {
+    "N": {
+      "p50": 162.041012,
+      "p95": 967.326396,
+      "p99": 1271.956347
+    },
+    "A": {
+      "p50": 43.444586,
+      "p95": 967.495469,
+      "p99": 1201.52402
+    },
+    "E": {
+      "p50": 100.108141,
+      "p95": 967.659812,
+      "p99": 1276.798718
+    },
+    "S_verified": {
+      "p50": 8675.745737,
+      "p95": 12659.745737,
+      "p99": 13934.745737
+    }
+  },
+  "extended": {
+    "concurrent_clients": 4,
+    "burst_requests": 16,
+    "reused_client_connections": 4,
+    "burst_seconds": 0.5516458959999682,
+    "burst_requests_per_second": 29.00411317480539,
+    "sensor_unavailable_request": "335b2dc985dd1b8b57a613fa8465a792",
+    "sensor_ready_ms": 356.432
+  },
+  "python_rust_max_error": 0.0,
+  "native_train": 0,
+  "post_proxy_client_verified": false,
+  "input_sha256": {
+    "live/live.json": "967e9288150c8086244e2478add71291d579a1427322572deae452e9dacc65ab",
+    "live/observations.jsonl": "8ca7472c8c49847caf95b5a9fd24a556574679c54e5d15e5fce3edfc8d4dde27",
+    "parity.json": "ea46b423e3221e2c386b6caa6d941f563894b67f93a8c1ec437c2265d6addb7c",
+    "hybrid.json": "02126881e310d2a2a886aeb08f3bb7005a02b55f6b8946abc13345a6fd78b771"
+  }
+}
