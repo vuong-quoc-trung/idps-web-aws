@@ -1,0 +1,13 @@
+{
+  "files": 73,
+  "private_key_text_hits": 0,
+  "forbidden_archive_paths": 0,
+  "includes_ort_license_and_notice": true,
+  "applied_checks": [
+    "explicit package payload allowlist",
+    "filename denylist",
+    "private key and GitHub token signatures in text files",
+    "packaged Student application config uses environment for DB password"
+  ],
+  "final_redistribution_review": "PENDING bundled frontend, JAR and Rust dependency notices"
+}
