@@ -1,0 +1,3 @@
+u websentinel-edge - "NGINX proof worker" /nonexistent /usr/sbin/nologin
+u websentinel-scorer - "HTTPS research scorer" /nonexistent /usr/sbin/nologin
+g websentinel-evidence -

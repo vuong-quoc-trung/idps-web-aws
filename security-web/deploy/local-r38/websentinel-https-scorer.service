@@ -1,0 +1,39 @@
+[Unit]
+Description=WebSentinel HTTPS research scorer under the CPU thermal guardian
+StartLimitIntervalSec=120
+StartLimitBurst=3
+
+[Service]
+Type=exec
+User=websentinel-scorer
+Group=websentinel-scorer
+SupplementaryGroups=websentinel-evidence
+EnvironmentFile=/etc/websentinel/https-scorer.env
+ExecStart=/usr/bin/python3 -IB /opt/websentinel/https/current/launch.py
+RuntimeDirectory=websentinel-edge-shadow
+RuntimeDirectoryMode=0711
+StateDirectory=websentinel-https
+StateDirectoryMode=0711
+UMask=0077
+Delegate=cpu memory pids
+DelegateSubgroup=ai-guardian
+NotifyAccess=main
+WatchdogSec=3s
+KillMode=control-group
+Restart=on-failure
+RestartPreventExitStatus=78
+RestartSec=2s
+TimeoutStopSec=8s
+CPUQuota=100%
+MemoryHigh=384M
+MemoryMax=512M
+MemorySwapMax=0
+TasksMax=48
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
