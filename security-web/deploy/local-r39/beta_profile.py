@@ -5,6 +5,8 @@ from pathlib import Path
 
 import yaml
 
+import student_deps
+
 ROOT = Path(__file__).resolve().parent
 LIVE = "/opt/websentinel-beta/current"
 CONFIG = "/etc/websentinel-beta"
@@ -95,13 +97,14 @@ http {{
 
 
 def sensor():
-    template = ROOT / "support/security-web/config/suricata/suricata.yaml"
+    template = Path("/etc/suricata/suricata.yaml")
     config = load("prepare-suricata-post-proxy.py").render(
         yaml.safe_load(template.read_text()), "local-egress"
     )
     config.pop("run-as", None)
     config["default-log-dir"] = STATE + "/sensor"
     config["default-rule-path"] = SUPPORT + "/suricata"
+    config["rule-files"] = ["pbl4.rules"]
     config["unix-command"] = {"enabled": False}
     config["outputs"] = [
         entry for entry in config["outputs"] if entry.get("eve-log", {}).get("enabled")
@@ -129,12 +132,19 @@ PrivateTmp=yes
 UMask=0027
 """
     db = "Requires=postgresql.service\nAfter=postgresql.service\n"
+    jars = student_deps.rows(ROOT / "student/dependencies.json")
+    classpath = ":".join(
+        [
+            LIVE + "/student/student.jar",
+            *(STATE + "/java/lib/" + row["name"] for row in jars),
+        ]
+    )
     student = f"""User=websentinel-student
 Group=websentinel-evidence
 EnvironmentFile={CONFIG}/student.env
 WorkingDirectory={STATE}/student
 ReadWritePaths={STATE}/student
-ExecStart=/usr/bin/java -XX:ActiveProcessorCount=2 -Xmx512m -jar {LIVE}/student/student.jar
+ExecStart=/usr/bin/java -XX:ActiveProcessorCount=2 -Xmx512m -cp {classpath} com.pbl4.studentweb.StudentWebApplication
 MemoryMax=1G
 CPUQuota=200%
 """

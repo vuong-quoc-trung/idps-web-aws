@@ -1,0 +1,45 @@
+{
+  "npm": 12,
+  "rust_binary_dependency_records": 213,
+  "rust_distinct_crates": 185,
+  "maven_publisher_artifacts_verified": 82,
+  "bundled_java_dependencies": false,
+  "bundled_files": 477,
+  "exact_maven_fetch_sha256": true,
+  "frontend_mark": [
+    {
+      "frontend": "security",
+      "bundled_image": "beta-mark.svg"
+    },
+    {
+      "frontend": "student",
+      "bundled_image": "beta-mark.svg"
+    }
+  ],
+  "native_dependency_notices": "ONNX Runtime 1.31.1 LICENSE and ThirdPartyNotices",
+  "licenses": [
+    "(MIT OR Apache-2.0) AND Unicode-3.0",
+    "Apache-2.0",
+    "Apache-2.0 AND ISC",
+    "Apache-2.0 OR BSL-1.0",
+    "Apache-2.0 OR BSL-1.0 OR MIT",
+    "Apache-2.0 OR ISC OR MIT",
+    "Apache-2.0 OR MIT",
+    "BSD-2-Clause OR Apache-2.0 OR MIT",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "MIT AND BSD-3-Clause",
+    "MIT OR Apache-2.0",
+    "MIT/Apache-2.0",
+    "Unicode-3.0",
+    "Unlicense OR MIT",
+    "Zlib",
+    "Zlib OR Apache-2.0 OR MIT"
+  ],
+  "archive_private_key_or_token_signature_hits": 0,
+  "archive_sensitive_file_hits": 0,
+  "pinned_scorer_manifest_bytes_match": true,
+  "suricata_base_yaml": "Ubuntu distribution package"
+}

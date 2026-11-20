@@ -1,0 +1,2 @@
+{"version": "0.1.0-beta.1", "build_source": "3cda364e0025985a8557c67a9e3c5b0c8e5be7cd", "platform": "Ubuntu 26.04 amd64", "mode": "LOCAL_MONITORING", "security_prevention_execution": false, "postgresql": 18}
+{"processor": "Intel(R) Core(TM) Ultra 9 285H", "sensor": "idps_ai.training.adaptive_thermal.SensorReader", "sensor_count": 17, "temperature_C": 54.0, "state": "NORMAL", "decision": "ACCEPT", "policy": "idps-host-thermal-2.0.0"}

@@ -18,6 +18,7 @@ import time
 
 sys.dont_write_bytecode = True
 import beta_profile as profile
+import student_deps
 
 SOURCE = Path(__file__).resolve().parent
 BASE = Path("/opt/websentinel-beta")
@@ -115,7 +116,33 @@ def require_root():
         )
 
 
+def hardware_check():
+    # Use the same pinned reader and admission predicate as the installed guardian.
+    sys.path.insert(0, str(SOURCE / "scorer/ai-training/src"))
+    from idps_ai.common import PipelineError
+    from idps_ai.training.adaptive_thermal import SensorReader, hardware_snapshot
+    from idps_ai.training.thermal_policy import admission
+
+    try:
+        snapshot = hardware_snapshot()
+        result = admission(SensorReader(snapshot), "BETA_INSTALL_PREFLIGHT")
+    except (OSError, ValueError, StopIteration, PipelineError) as exc:
+        raise RuntimeError(f"Scorer hardware refused: {exc}") from exc
+    if result["decision"] != "ACCEPT":
+        raise RuntimeError(f"Scorer hardware refused: {result['state']}")
+    return {
+        "processor": snapshot["processor"],
+        "sensor": result["sensor_source"],
+        "sensor_count": len(snapshot["cpu_sensors"]),
+        "temperature_C": result["reading"]["temperature_C"],
+        "state": result["state"],
+        "decision": result["decision"],
+        "policy": result["policy"],
+    }
+
+
 def preflight():
+    hardware_check()
     identifiers = dict(
         line.split("=", 1)
         for line in Path("/etc/os-release").read_text().splitlines()
@@ -246,6 +273,7 @@ def current_slot():
 def install(args):
     meta = verify(SOURCE)
     preflight()
+    student_deps.verify(SOURCE / "student/dependencies.json", args.student_cache)
     check_tls(args.cert, args.key, args.ca)
     if (
         any(
@@ -285,7 +313,8 @@ def install(args):
     BASE.mkdir(mode=0o755)
     (BASE / "releases").mkdir(mode=0o755)
     destination = BASE / "releases" / version
-    shutil.copytree(SOURCE, destination)
+    shutil.copytree(SOURCE, destination, symlinks=True)
+    verify(destination)
     for path in (BASE, BASE / "releases", destination, *destination.rglob("*")):
         executable = (
             path == destination / "security/pbl4-security-demo"
@@ -319,6 +348,13 @@ def install(args):
         directory.mkdir(mode=0o750)
         os.chown(directory, owner, gid)
         directory.chmod(0o750)
+    java_dir = STATE / "java"
+    java_dir.mkdir(mode=0o700)
+    runtime = java_dir / "lib"
+    student_deps.install(
+        SOURCE / "student/dependencies.json", args.student_cache, runtime
+    )
+    java_dir.chmod(0o755)
     access = STATE / "edge/access.jsonl"
     access.touch(mode=0o640)
     os.chown(access, 0, gid)
@@ -542,7 +578,10 @@ def main():
         "uninstall",
     ):
         sub.add_parser(name)
+    sub.add_parser("hardware-check")
+    sub.add_parser("fetch-student-deps").add_argument("directory", type=Path)
     stage = sub.add_parser("install")
+    stage.add_argument("--student-cache", type=Path, required=True)
     for name in ("cert", "key", "ca"):
         stage.add_argument("--" + name, type=Path, required=True)
     for name in ("student-password-file", "security-password-file"):
@@ -556,6 +595,14 @@ def main():
     args = cli.parse_args()
     if args.action == "verify":
         print(json.dumps(verify(SOURCE)))
+        return
+    if args.action == "hardware-check":
+        verify(SOURCE)
+        print(json.dumps(hardware_check()))
+        return
+    if args.action == "fetch-student-deps":
+        verify(SOURCE)
+        student_deps.fetch(SOURCE / "student/dependencies.json", args.directory)
         return
     require_root()
     if args.action == "preflight":

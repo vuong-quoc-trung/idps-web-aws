@@ -4,7 +4,7 @@ Gói cài Local dành cho máy Ubuntu 26.04 amd64 riêng. Hai ứng dụng phụ
 
 ## Yêu cầu
 
-- Ubuntu 26.04 amd64, systemd, cgroup v2, CPU x86-64 có telemetry `coretemp` hợp lệ theo Resource Contract. Mục tiêu 2 vCPU, 4 GiB RAM, 10 GiB trống. Cấu hình đề xuất 4 vCPU, 8 GiB RAM và dung lượng log/backup riêng. KVM thông thường có thể thiếu telemetry phần cứng để AI khởi chạy.
+- Ubuntu 26.04 amd64, systemd, cgroup v2, CPU Intel Core Ultra 9 285H có telemetry package/core `coretemp` hợp lệ theo Resource Contract. Mục tiêu 2 vCPU, 4 GiB RAM, 10 GiB trống. Cấu hình đề xuất 4 vCPU, 8 GiB RAM và dung lượng log/backup riêng. Scorer KVM thiếu mapping cảm biến sẽ bị từ chối. Dùng `python3 manage.py hardware-check` từ gói đã xác minh để kiểm tra trước khi cấp root.
 - Quyền root để tạo service accounts cục bộ, system units, hai database PostgreSQL 18, ACL Unix socket và một nftables table bảo vệ leg giải mã. Sử dụng máy riêng cho Beta. Cluster PostgreSQL mặc định cần nghe IPv4 loopback 5432 với SCRAM. Dành riêng cổng 443, 9443, 3000, 8080 và loopback 127.77.0.2:18080.
 - Cài packages Ubuntu cùng repository phát hành và security updates. Nhật ký nghiệm thu ghi phiên bản cụ thể đã giải được.
 
@@ -25,12 +25,15 @@ sha256sum -c SHA256SUMS
 tar -xzf idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz
 cd idps-local-monitoring-0.1.0-beta.1-linux-amd64
 python3 manage.py verify
+python3 manage.py hardware-check
+python3 manage.py fetch-student-deps "$STUDENT_JAR_CACHE"
 sudo python3 manage.py preflight
-sudo python3 manage.py install --cert "$EDGE_CERT" --key "$EDGE_KEY" --ca "$EDGE_CA"
+sudo python3 manage.py install --cert "$EDGE_CERT" --key "$EDGE_KEY" --ca "$EDGE_CA" \
+  --student-cache "$STUDENT_JAR_CACHE"
 sudo python3 manage.py health
 ```
 
-Installer hỏi hai mật khẩu khác nhau và tạo mật khẩu DB ngẫu nhiên. Máy đầu tiên dùng tài khoản `admin` riêng cho mỗi ứng dụng. Model load được kiểm qua Unix socket dưới UID của NGINX. Health trả SHA mặc định `91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff`.
+Maven Central cung cấp các JAR đúng phiên bản đã pin. Chạy bước tải bằng user thường. Installer đối chiếu SHA-256 trước khi nhập JAR vào thư mục do root sở hữu. Installer hỏi hai mật khẩu khác nhau và tạo mật khẩu DB ngẫu nhiên. Máy đầu tiên dùng tài khoản `admin` riêng cho mỗi ứng dụng. Model load được kiểm qua Unix socket dưới UID của NGINX. Health trả SHA mặc định `91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff`.
 
 Dùng `curl --cacert "$EDGE_CA" -i https://127.0.0.1/api/auth/csrf` để gửi một request kiểm thử. Dùng header `X-Request-Id` từ response để tra `sudo python3 manage.py request ID`, hoặc mở Hybrid trong Security Web sau đăng nhập. Dòng observation đến sau response theo cursor ingest. Nếu model hoặc proof chưa sẵn sàng, giữ trạng thái thiếu nguồn, ABSTAIN hoặc kết quả trễ theo thông tin đã commit. Journal service dùng `journalctl -u websentinel-https-scorer.service`, `journalctl -u websentinel-beta-edge.service` và các unit `websentinel-beta-{student,security,sensor}.service`.
 
