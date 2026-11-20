@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sqlite3
 import sys
+import subprocess
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "https-shadow-r35"))
@@ -161,6 +162,19 @@ def main():
             if args.peer_gid is not None:
                 os.chown(args.socket, -1, args.peer_gid)
                 os.chmod(args.socket, 0o660)
+            elif args.peer_uid != os.geteuid():
+                # The edge's exclusive primary group can read its HMAC key. Only
+                # grant the edge UID socket access, never share that group with AI.
+                subprocess.run(
+                    [
+                        "/usr/bin/setfacl",
+                        "-m",
+                        f"u:{args.peer_uid}:rw,g::---,m::rw,o::---",
+                        str(args.socket),
+                    ],
+                    check=True,
+                    timeout=2,
+                )
             server.timeout = 0.25
             while not stopping:
                 server.handle_request()

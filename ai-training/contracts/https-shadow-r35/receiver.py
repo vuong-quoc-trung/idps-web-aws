@@ -75,6 +75,31 @@ class Scorer:
             self.worker.communicate(timeout=2)
             self.worker = None
 
+    def exchange(self, payload):
+        # One deadline covers pipe backpressure, first byte and the terminating newline.
+        deadline = time.monotonic() + 0.9
+        writer, reader = self.worker.stdin.fileno(), self.worker.stdout.fileno()
+        os.set_blocking(writer, False)
+        os.set_blocking(reader, False)
+        remaining = memoryview(payload)
+        while remaining:
+            if not select.select([], [writer], [], max(0, deadline - time.monotonic()))[1]:
+                raise TimeoutError("Scorer write deadline")
+            remaining = remaining[os.write(writer, remaining) :]
+        reply = bytearray()
+        while len(reply) < 16384:
+            if not select.select([reader], [], [], max(0, deadline - time.monotonic()))[0]:
+                raise TimeoutError("Scorer response deadline")
+            part = os.read(reader, 16384 - len(reply))
+            if not part:
+                raise ValueError("Incomplete scorer response")
+            reply.extend(part)
+            if b"\n" in part:
+                if reply.count(b"\n") != 1 or reply[-1:] != b"\n":
+                    raise ValueError("Unexpected scorer frames")
+                return json.loads(reply)
+        raise ValueError("Scorer frame too large")
+
     def score(self, method, target):
         try:
             if not self.worker or self.worker.poll() is not None:
@@ -87,10 +112,7 @@ class Scorer:
                     bufsize=0,
                 )
             frame = dict(schema=SCHEMA, mode=MODE, method=method, target=target)
-            self.worker.stdin.write(json.dumps(frame).encode() + b"\n")
-            if not select.select([self.worker.stdout], [], [], 0.9)[0]:
-                raise TimeoutError
-            row = json.loads(self.worker.stdout.readline(16384))
+            row = self.exchange(json.dumps(frame).encode() + b"\n")
             if row.get("status") == "ABSTAIN":
                 return None
             vector = row["features"]
@@ -104,7 +126,15 @@ class Scorer:
                 or row["hybrid_allowed"] is not False
             ):
                 raise ValueError("ABI or model mismatch")
-            return vector, row["score"]
+            return (
+                vector,
+                row["score"],
+                {
+                    k: row[k]
+                    for k in ("inference_ns", "preprocessing_ns", "model_load_ns")
+                    if type(row.get(k)) is int and row[k] >= 0
+                },
+            )
         except (OSError, ValueError, KeyError, TypeError):
             self.close()
             return None
@@ -115,6 +145,15 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
     def do_GET(self):
+        if self.path == "/healthz":
+            # Private SO_PEERCRED-gated inference probe. Never create a request receipt.
+            scorer = self.server.scorer
+            result = scorer.score("GET", "/api/health")
+            self.send_response(200 if result else 503)
+            self.send_header("Content-Length", "0")
+            self.send_header("X-Model-SHA256", scorer.sha)
+            self.end_headers()
+            return
         received = time.time_ns()
         start = time.monotonic_ns()
         h = self.headers
@@ -157,7 +196,8 @@ class Handler(BaseHTTPRequestHandler):
             hybrid_allowed=False,
         )
         if result:
-            vector, score = result
+            vector, score, timing = result
+            row["scorer_timing"] = timing
             row["vector_sha256"] = vector_sha(vector)
             row["features"] = vector
             if state == "AVAILABLE":
