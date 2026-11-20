@@ -1,0 +1,12 @@
+Running as unit: websentinel-r41-owned-probe.service; invocation ID: 709fc458908842bb8f76c8a7cc37d72e
+{"resource_guardian": "launch", "cpu_max": "100000 100000", "state": "NORMAL", "temperature_c": 48.0}
+R41_NESTED_CONTAINMENT_PROBE=PASS
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 1.187s
+             CPU time consumed: 141ms
+                   Memory peak: 14.6M (swap: 0B)
+14 checks passed: own leaf, descendants, parent, sibling and unrelated paths.
+.............................................................            [100%]
+61 passed in 0.08s

@@ -1,9 +1,23 @@
-{"resource_guardian": "launch", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 51.0}
-ubuntu-base-26.04.1-base-amd64.tar.gz: OK
-postgresql-18 is already the newest version (18.6-0ubuntu0.26.04.1).
-Setting up postgresql-18 (18.6-0ubuntu0.26.04.1) ...
-Created symlink '/var/tmp/websentinel-r41-root.UQug1rcQ/root/etc/systemd/system/multi-user.target.wants/websentinel-r41-acceptance.service' → '/etc/systemd/system/websentinel-r41-acceptance.service'.
+R41 attempt 14: excerpt of isolated Ubuntu 26.04.1 staging on physical coretemp host
+{"resource_guardian": "launch", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 50.0}
+{"resource_guardian": "runtime", "cpu_max": "150000 100000", "state": "THROTTLE", "temperature_c": 94.0}
+{"resource_guardian": "runtime", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 84.0}
+{"version": "0.1.0-beta.1", "build_source": "3cda364e0025985a8557c67a9e3c5b0c8e5be7cd", "platform": "Ubuntu 26.04 amd64", "mode": "LOCAL_MONITORING", "security_prevention_execution": false, "postgresql": 18}
+{"processor": "Intel(R) Core(TM) Ultra 9 285H", "sensor": "idps_ai.training.adaptive_thermal.SensorReader", "sensor_count": 17, "temperature_C": 76.0, "state": "NORMAL", "decision": "ACCEPT", "policy": "idps-host-thermal-2.0.0"}
+{"status": "HEALTHY", "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff"}
+{"status": "HEALTHY", "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff"}
+R41_SYSTEM_INSTALL=PASS
+R41_STUDENT_UPSTREAM_READY_WAIT_S=3.508
+R41_ACCEPTANCE_EXIT=1
 {"resource_guardian": "cleanup", "verified": true}
-          Finished with result: success
-Main processes terminated with: code=exited, status=0/SUCCESS
-               Service runtime: 35.639s
+var/lib/websentinel-beta/edge/access.jsonl bytes=1198; uid=0; gid=996; mode=640; lines=3; request_matches=1
+var/lib/websentinel-beta/sensor/chain.tsv bytes=2506; uid=992; gid=996; mode=640; lines=3; request_matches=1
+var/lib/websentinel-beta/sensor/eve.json bytes=22402; uid=992; gid=996; mode=640; lines=10; request_matches=0
+var/lib/websentinel-beta/student/audit.jsonl bytes=773; uid=993; gid=996; mode=600; lines=1; request_matches=1
+var/lib/websentinel-https/observations.jsonl bytes=451; uid=994; gid=996; mode=640; lines=1; request_matches=1
+{'request_id': '177c2e3749eb2c7f6667054031d255c4', 'status': 'SCORED', 'version': 'r37-hgb-uri100-v1', 'dispatch_ns': 1795175182409000000, 'receipt_ns': 1795175182410605096, 'available_ns': 1795175182412717161, 'cutoff_ns': 1795175183409000000, 'threshold': 0.7664756774902344}
+Hybrid record: request_id=177c2e3749eb2c7f6667054031d255c4, policy=LOG_ONLY, research=null, automatic_block=false
+HTTPS_RESEARCH: Permission denied (os error 13), 12 watcher reports
+STUDENT_AUDIT: Permission denied (os error 13), 7 watcher reports
+Scorer journal watcher lists the parent directory. Student Audit file is mode 0600.
+Root scratch retained for diagnosis. Transient unit and owned cgroup cleaned up.

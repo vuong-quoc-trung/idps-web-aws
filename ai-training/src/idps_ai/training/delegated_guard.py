@@ -44,7 +44,11 @@ def evidence(phase, **data):
     print(json.dumps({"resource_guardian": phase, **data}), flush=True)
 
 
-def run(command, *, health=None, reader=None):
+def owns_worker_path(path, worker, *, allow_subgroups):
+    return path == worker or (allow_subgroups and path.is_relative_to(worker))
+
+
+def run(command, *, health=None, reader=None, allow_subgroups=False):
     """Run a trusted worker and its descendants under the unit's existing envelope."""
     root = unit_root()
     amount, period = map(int, (root / "cpu.max").read_text().split())
@@ -110,7 +114,9 @@ def run(command, *, health=None, reader=None):
                 return child.returncode if child.returncode >= 0 else 128 - child.returncode
             else:
                 try:
-                    if membership(child.pid) != worker or (root / "cpu.max").read_text().strip() != f"{amount} {period}":
+                    if not owns_worker_path(
+                        membership(child.pid), worker, allow_subgroups=allow_subgroups
+                    ) or (root / "cpu.max").read_text().strip() != f"{amount} {period}":
                         raise PipelineError("Worker escaped its resource envelope")
                 except FileNotFoundError:
                     if child.poll() is None:
@@ -137,6 +143,10 @@ def run(command, *, health=None, reader=None):
                 if time.monotonic() >= deadline:
                     raise PipelineError("Worker cgroup did not empty")
                 time.sleep(0.02)
+            if allow_subgroups:
+                descendants = [path for path in worker.rglob("*") if path.is_dir()]
+                for descendant in sorted(descendants, key=lambda path: len(path.parts), reverse=True):
+                    descendant.rmdir()
             worker.rmdir()
             evidence("cleanup", verified=not worker.exists())
         finally:
@@ -146,14 +156,17 @@ def run(command, *, health=None, reader=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--allow-owned-subgroups", action="store_true",
+                        help="Allow supervisor movement only within its kernel-limited worker cgroup")
     parser.add_argument("command", nargs=argparse.REMAINDER)
-    command = parser.parse_args().command
+    args = parser.parse_args()
+    command = args.command
     if command[:1] == ["--"]:
         command = command[1:]
     if not command:
         parser.error("Supply a worker command")
     try:
-        return run(command)
+        return run(command, allow_subgroups=args.allow_owned_subgroups)
     except (OSError, ValueError, subprocess.SubprocessError, PipelineError) as exc:
         evidence("unverified", error=type(exc).__name__, detail=str(exc))
         return 78
