@@ -1,0 +1,9 @@
+{"resource_guardian": "launch", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 51.0}
+ubuntu-base-26.04.1-base-amd64.tar.gz: OK
+postgresql-18 is already the newest version (18.6-0ubuntu0.26.04.1).
+Setting up postgresql-18 (18.6-0ubuntu0.26.04.1) ...
+Created symlink '/var/tmp/websentinel-r41-root.UQug1rcQ/root/etc/systemd/system/multi-user.target.wants/websentinel-r41-acceptance.service' → '/etc/systemd/system/websentinel-r41-acceptance.service'.
+{"resource_guardian": "cleanup", "verified": true}
+          Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+               Service runtime: 35.639s
