@@ -1,16 +1,69 @@
 {
-  "version":"0.1.0-beta.1",
-  "release_sha256":"cc2f927e53a1c7d3a49d342f9f2a00796f4078b8243259c682e199d3174c3d31",
-  "source_commit_at_start":"0d37f302df574798b042e52489f0da3af0d5c048",
-  "rootfs":"Ubuntu Base 26.04.1 amd64, Canonical signature and SHA verified",
-  "gates":{"LOCAL_BETA_READY":"BLOCKED","AI_RUNTIME_READY":"PASS","GITHUB_RELEASE_INSTALLABLE":"BLOCKED",
-           "GITHUB_RELEASE_PUBLISHED":"BLOCKED","HYBRID_ENFORCEMENT_READY":"BLOCKED","T07_PRODUCTION_QUALITY":"BLOCKED"},
-  "physical_host":{"hardware_preflight":"PASS","coretemp_sensors":17,"sudo_interaction":"VERIFIED"},
-  "staging":{"dependency_installation":"PASS","runner_exit":0,"runner_cleanup":"PASS","system_install":"UNVERIFIED",
-             "same_host_https_r37_hybrid":"UNVERIFIED","restart_slot_rollback_backup_restore_uninstall":"UNVERIFIED"},
-  "github":{"repository":"vuong-quoc-trung/idps-web-aws","device_login":"VERIFIED","api_repository_push":true,
-            "api_repository_admin":true,"tag":null,"release_url":null,"upload_receipts":[],"download_verification":"NOT_RUN"},
-  "license_audit":"R40 archive bytes unchanged",
-  "r37_sha256":"91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
-  "c2_execution_enabled":false,"ai_auto_block":false
+  "version": "0.1.0-beta.1",
+  "release_sha256": "cc2f927e53a1c7d3a49d342f9f2a00796f4078b8243259c682e199d3174c3d31",
+  "source_commit_at_start": "0d37f302df574798b042e52489f0da3af0d5c048",
+  "rootfs": "Ubuntu Base 26.04.1 amd64, Canonical signature and SHA verified",
+  "gates": {
+    "LOCAL_BETA_READY": "BLOCKED",
+    "AI_RUNTIME_READY": "PASS",
+    "GITHUB_RELEASE_INSTALLABLE": "PASS_SMOKE_SCOPE",
+    "GITHUB_RELEASE_PUBLISHED": "PENDING",
+    "HYBRID_ENFORCEMENT_READY": "BLOCKED",
+    "T07_PRODUCTION_QUALITY": "BLOCKED",
+    "INSTALL_SMOKE": "PASS",
+    "SAME_DEPLOYMENT_HTTPS_R37_HYBRID": "BLOCKED"
+  },
+  "physical_host": {
+    "hardware_preflight": "PASS",
+    "coretemp_sensors": 17,
+    "sudo_interaction": "VERIFIED"
+  },
+  "staging": {
+    "attempt": 14,
+    "dependency_installation": "PASS",
+    "system_install": "PASS",
+    "https_trusted_certificate_and_csrf_body": "PASS",
+    "scorer_health_and_sha": "PASS",
+    "request_id": "177c2e3749eb2c7f6667054031d255c4",
+    "request_r37_observation": {
+      "status": "SCORED",
+      "dispatch_ns": 1795175182409000000,
+      "receipt_ns": 1795175182410605096,
+      "available_ns": 1795175182412717161,
+      "cutoff_ns": 1795175183409000000
+    },
+    "hybrid": {
+      "policy": "LOG_ONLY",
+      "research": null,
+      "automatic_block": false
+    },
+    "log_watcher_eacces_counts": {
+      "HTTPS_RESEARCH": 12,
+      "STUDENT_AUDIT": 7
+    },
+    "source_artifacts_present": [
+      "NGINX",
+      "Suricata chain",
+      "Student Audit"
+    ],
+    "source_proof_nsa_at_cutoff": "NOT_VERIFIED",
+    "postgresql": "ONLINE_STUDENT_FLYWAY_LOG_OBSERVED",
+    "restart_rollback_backup_restore_uninstall": "NOT_RUN_R41",
+    "runner_exit": 1,
+    "runner_cleanup": "PASS"
+  },
+  "github": {
+    "repository": "vuong-quoc-trung/idps-web-aws",
+    "device_login": "VERIFIED",
+    "api_repository_push": true,
+    "api_repository_admin": true,
+    "tag": null,
+    "release_url": null,
+    "upload_receipts": [],
+    "download_verification": "NOT_RUN"
+  },
+  "license_audit": "R40 archive bytes unchanged",
+  "r37_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+  "c2_execution_enabled": false,
+  "ai_auto_block": false
 }
