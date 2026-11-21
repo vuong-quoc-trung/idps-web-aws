@@ -49,7 +49,7 @@ Dùng `curl --cacert "$EDGE_CA" -i https://127.0.0.1/api/auth/csrf` để gửi 
 ## Chẩn đoán và nâng cấp
 
 - Nếu hệ thống chưa healthy, kiểm Student Web đã mở cổng backend 8080 và đã hoàn tất Flyway. Đối chiếu `journalctl -u websentinel-beta-student.service` trước khi thử lại.
-- Nếu điểm R37 hoặc Student Audit thiếu, dùng `sudo python3 manage.py health` kiểm mức truy cập của UID Rust. Thư mục journal scorer cấp đọc/liệt kê cho UID Security Web. SQLite vẫn ở thư mục riêng. Audit dùng thư mục setgid và journal 0640 dành cho nhóm evidence. Khi xoay Audit, đổi tên file cũ và để exporter tạo file mới cùng group.
+- Nếu điểm R37 hoặc Student Audit thiếu, dùng `sudo python3 manage.py health` kiểm mức truy cập của UID Rust. Thư mục journal scorer cấp quyền đọc và liệt kê cho group riêng của scorer và Security Web. SQLite vẫn ở thư mục riêng. Audit dùng thư mục setgid và journal 0640 dành cho nhóm evidence. Khi xoay Audit, đổi tên file cũ và để exporter tạo file mới cùng group.
 - Installer dành cho máy riêng và yêu cầu profile sạch. Để chuyển từ Beta.1, sao lưu cả database, SQLite và cấu hình trước, thử restore trong staging mới rồi chuyển sang máy đã nghiệm thu.
 
 ## Phạm vi thử nghiệm

@@ -260,13 +260,25 @@ def health():
     with socket.create_connection(("127.0.0.1", 8080), timeout=1):
         pass
     run(*args, "-o", "/dev/null", "https://127.0.0.1/")
-    reader = ("runuser", "-u", "websentinel-security", "-g", "websentinel-evidence", "--")
+    reader = (
+        "runuser", "-u", "websentinel-security", "-g", "websentinel-evidence",
+        "-G", "websentinel-https-readers", "--",
+    )
     for path in (STATE / "student/audit.jsonl", Path(profile.SCORER_STATE) / "observations.jsonl"):
-        run(*reader, "test", "-r", path.parent)
-        run(*reader, "test", "-x", path.parent)
-        run(*reader, "test", "-r", path)
-        run(*reader, "test", "!", "-w", path)
-        run(*reader, "test", "!", "-w", path.parent)
+        try:
+            run(*reader, "/usr/bin/python3", "-IB", "-c", """
+import os, sys
+from pathlib import Path
+log = Path(sys.argv[1])
+with os.scandir(log.parent) as entries:
+    if not any(entry.name == log.name for entry in entries):
+        sys.exit(1)
+with log.open("rb"):
+    if os.access(log, os.W_OK) or os.access(log.parent, os.W_OK):
+        sys.exit(1)
+""", path)
+        except subprocess.CalledProcessError as exc:
+            raise subprocess.CalledProcessError(exc.returncode, ("verify log-reader access", str(path))) from exc
     run(*reader, "test", "!", "-x", Path(profile.SCORER_STATE) / "private")
     print(json.dumps({"status": "HEALTHY", "model_sha256": expected}))
 
@@ -340,6 +352,7 @@ def install(args):
         + "\n",
     )
     sysusers = (destination / "support/websentinel-https.sysusers").read_text()
+    sysusers += "g websentinel-https-readers -\n"
     for name in ("student", "sensor", "security"):
         sysusers += f'u websentinel-{name} - "WebSentinel Beta {name}" /nonexistent /usr/sbin/nologin\n'
     SYSUSERS.parent.mkdir(mode=0o755, exist_ok=True)
@@ -363,12 +376,6 @@ def install(args):
     audit.touch()
     os.chown(audit, shutil._get_uid("websentinel-student"), gid)
     audit.chmod(0o640)
-    # The Rust watcher enumerates rotations. Only its UID may list this directory.
-    # The scorer's SQLite state remains in its private 0700 child.
-    scorer_state = Path(profile.SCORER_STATE)
-    scorer_state.mkdir(mode=0o750)
-    os.chown(scorer_state, shutil._get_uid("websentinel-scorer"), shutil._get_gid("websentinel-scorer"))
-    run("setfacl", "-m", "g::---,u:websentinel-security:r-x", scorer_state)
     java_dir = STATE / "java"
     java_dir.mkdir(mode=0o700)
     runtime = java_dir / "lib"
