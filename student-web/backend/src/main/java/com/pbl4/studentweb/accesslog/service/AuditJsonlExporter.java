@@ -17,7 +17,6 @@ import tools.jackson.databind.json.JsonMapper;
 @Component
 public class AuditJsonlExporter {
     public static final int MAX_LINE_BYTES = 16 * 1024;
-    private static final Set<PosixFilePermission> FILE_MODE = PosixFilePermissions.fromString("rw-------");
     private static final Set<PosixFilePermission> DIR_MODE = PosixFilePermissions.fromString("rwx------");
     private final boolean enabled;
     private final Path path;
@@ -25,18 +24,23 @@ public class AuditJsonlExporter {
     private final byte[] key;
     private final long maxFileBytes;
     private final JsonMapper mapper;
+    private final boolean groupReadable;
+    private final Set<PosixFilePermission> fileMode;
 
     public AuditJsonlExporter(JsonMapper mapper, @Value("${app.audit.file.enabled:false}") boolean enabled,
             @Value("${app.audit.file.path:./logs/audit.log}") String path,
             @Value("${app.audit.source-instance:student-web}") String sourceInstance,
             @Value("${app.audit.file.hmac-key:}") String hmacKey,
-            @Value("${app.audit.file.max-bytes:67108864}") long maxFileBytes) {
+            @Value("${app.audit.file.max-bytes:67108864}") long maxFileBytes,
+            @Value("${app.audit.file.group-readable:false}") boolean groupReadable) {
         this.mapper = mapper;
         this.enabled = enabled;
         this.path = Path.of(path).toAbsolutePath().normalize();
         this.sourceInstance = sourceInstance;
         this.key = hmacKey.getBytes(StandardCharsets.UTF_8);
         this.maxFileBytes = maxFileBytes;
+        this.groupReadable = groupReadable;
+        this.fileMode = PosixFilePermissions.fromString(groupReadable ? "rw-r-----" : "rw-------");
         if (enabled && (key.length < 32 || maxFileBytes < MAX_LINE_BYTES
                 || !sourceInstance.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")))
             throw new IllegalArgumentException("Audit JSONL requires a >=32-byte HMAC key, valid source instance and file limit >=16384");
@@ -50,7 +54,7 @@ public class AuditJsonlExporter {
         if (json.length + 1 > MAX_LINE_BYTES) throw new IOException("Audit JSONL line exceeds configured safety limit");
         Path parent = path.getParent();
         Files.createDirectories(parent, PosixFilePermissions.asFileAttribute(DIR_MODE));
-        // Private directory prevents replacement of the target while applying permissions/opening.
+        // Only the application may replace files while this writer validates them.
         var directory = Files.readAttributes(parent, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
         var owner = parent.getFileSystem().getUserPrincipalLookupService()
                 .lookupPrincipalByName(System.getProperty("user.name"));
@@ -58,16 +62,23 @@ public class AuditJsonlExporter {
                 || directory.permissions().contains(PosixFilePermission.GROUP_WRITE)
                 || directory.permissions().contains(PosixFilePermission.OTHERS_WRITE))
             throw new IOException("Audit JSONL parent directory must be owned by the application and not shared-writable");
+        if (groupReadable && (!directory.permissions().contains(PosixFilePermission.GROUP_READ)
+                || !directory.permissions().contains(PosixFilePermission.GROUP_EXECUTE)
+                || directory.permissions().contains(PosixFilePermission.OTHERS_READ)
+                || directory.permissions().contains(PosixFilePermission.OTHERS_EXECUTE)
+                || ((Integer) Files.getAttribute(parent, "unix:mode", LinkOption.NOFOLLOW_LINKS) & 02000) == 0))
+            throw new IOException("Shared audit JSONL requires a setgid directory with group-only read access");
         boolean existed = Files.exists(path, LinkOption.NOFOLLOW_LINKS);
         if (existed) {
             var attributes = Files.readAttributes(path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            if (!attributes.isRegularFile() || !attributes.owner().equals(owner))
+            if (!attributes.isRegularFile() || !attributes.owner().equals(owner)
+                    || (groupReadable && !attributes.group().equals(directory.group())))
                 throw new IOException("Audit JSONL target must be an application-owned regular file");
-            Files.setPosixFilePermissions(path, FILE_MODE);
+            Files.setPosixFilePermissions(path, fileMode);
         }
         try (var channel = FileChannel.open(path,
                 Set.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND, LinkOption.NOFOLLOW_LINKS),
-                PosixFilePermissions.asFileAttribute(FILE_MODE)); var lock = channel.lock()) {
+                PosixFilePermissions.asFileAttribute(fileMode)); var lock = channel.lock()) {
             long originalSize = channel.size();
             if (originalSize + json.length + 1 > maxFileBytes)
                 throw new IOException("Audit JSONL file limit reached; rotation is required");
