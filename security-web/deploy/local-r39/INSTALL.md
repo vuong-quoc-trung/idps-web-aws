@@ -1,4 +1,4 @@
-# WebSentinel AI-IDPS 0.1.0-beta.1 · Local Monitoring
+# WebSentinel AI-IDPS 0.1.0-beta.2 · Local Monitoring
 
 Gói cài Local dành cho máy Ubuntu 26.04 amd64 riêng. Hai ứng dụng phục vụ trên loopback qua HTTPS. Khi cài xong, mở Student Web ở `https://127.0.0.1/` và Security Web ở `https://127.0.0.1:9443/`. Scorer dùng R37 HGB/URI100 đã huấn luyện, với R36 ExtraTrees làm rollback.
 
@@ -22,8 +22,8 @@ Tải archive và `SHA256SUMS` từ **cùng prerelease**. Đối chiếu checksu
 
 ```sh
 sha256sum -c SHA256SUMS
-tar -xzf idps-local-monitoring-0.1.0-beta.1-linux-amd64.tar.gz
-cd idps-local-monitoring-0.1.0-beta.1-linux-amd64
+tar -xzf idps-local-monitoring-0.1.0-beta.2-linux-amd64.tar.gz
+cd idps-local-monitoring-0.1.0-beta.2-linux-amd64
 python3 manage.py verify
 python3 manage.py hardware-check
 python3 manage.py fetch-student-deps "$STUDENT_JAR_CACHE"
@@ -45,6 +45,12 @@ Dùng `curl --cacert "$EDGE_CA" -i https://127.0.0.1/api/auth/csrf` để gửi 
 - `sudo python3 manage.py restore-test /PATH/backup-moi rehearsal` kiểm checksum và phục hồi vào hai database mới. Thực hiện cutover DB sau đối chiếu riêng trên host có bản ghi phục hồi đã kiểm.
 - `sudo python3 manage.py model rollback` chuyển sang R36. `model candidate` quay về R37. `health` xác minh SHA hoạt động. Đây là bản cài đầu tiên của profile. Nâng cấp DB từ triển khai cũ cần rehearsal và snapshot riêng.
 - `sudo python3 manage.py uninstall` dừng và gỡ system units Beta. Trạng thái PostgreSQL, release, cấu hình và guard deny-only được giữ cho phục hồi. Khi gỡ toàn bộ máy Beta, quản trị viên có thể lưu snapshot và xử lý các thư mục/DB riêng đã ghi trong manifest triển khai.
+
+## Chẩn đoán và nâng cấp
+
+- Nếu hệ thống chưa healthy, kiểm Student Web đã mở cổng backend 8080 và đã hoàn tất Flyway. Đối chiếu `journalctl -u websentinel-beta-student.service` trước khi thử lại.
+- Nếu điểm R37 hoặc Student Audit thiếu, dùng `sudo python3 manage.py health` kiểm mức truy cập của UID Rust. Thư mục journal scorer cấp đọc/liệt kê cho UID Security Web. SQLite vẫn ở thư mục riêng. Audit dùng thư mục setgid và journal 0640 dành cho nhóm evidence. Khi xoay Audit, đổi tên file cũ và để exporter tạo file mới cùng group.
+- Installer dành cho máy riêng và yêu cầu profile sạch. Để chuyển từ Beta.1, sao lưu cả database, SQLite và cấu hình trước, thử restore trong staging mới rồi chuyển sang máy đã nghiệm thu.
 
 ## Phạm vi thử nghiệm
 

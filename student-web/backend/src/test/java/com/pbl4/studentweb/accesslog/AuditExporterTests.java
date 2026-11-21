@@ -2,6 +2,7 @@ package com.pbl4.studentweb.accesslog;
 
 import com.pbl4.studentweb.accesslog.service.*;
 import java.nio.file.*;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -18,7 +19,7 @@ class AuditExporterTests {
             "Bearer CANARY_HEADER", false);
     }
     private AuditJsonlExporter exporter(Path path, long max) {
-        return new AuditJsonlExporter(json,true,path.toString(),"student-web","test-only-hmac-key-at-least-32-bytes",max);
+        return new AuditJsonlExporter(json,true,path.toString(),"student-web","test-only-hmac-key-at-least-32-bytes",max,false);
     }
     @Test void writesCanonicalUtcJsonlWithoutSecretsAndWithPseudonyms() throws Exception {
         Path path=directory.resolve("student-audit.log"); exporter(path,65536).append(event());
@@ -40,10 +41,24 @@ class AuditExporterTests {
         Files.writeString(path,"X".repeat(16384));assertThatThrownBy(()->writer.append(event())).isInstanceOf(java.io.IOException.class);
         assertThat(Files.size(path)).isEqualTo(16384);
     }
+    @Test void sharesOnlyReadAccessWithTheEvidenceGroupAcrossRotation() throws Exception {
+        Path path = directory.resolve("audit.log");
+        var writer = new AuditJsonlExporter(json, true, path.toString(), "student-web",
+            "test-only-hmac-key-at-least-32-bytes", 65536, true);
+        assertThatThrownBy(() -> writer.append(event())).isInstanceOf(java.io.IOException.class);
+        Files.setAttribute(directory, "unix:mode", 02750);
+        writer.append(event());
+        Path rotated = Files.move(path, directory.resolve("audit.log.1"));
+        writer.append(event());
+        for (Path file : new Path[]{rotated, path}) {
+            assertThat(Files.getPosixFilePermissions(file)).isEqualTo(PosixFilePermissions.fromString("rw-r-----"));
+            assertThat(Files.readAttributes(file, java.nio.file.attribute.PosixFileAttributes.class).group()).isEqualTo(Files.readAttributes(directory, java.nio.file.attribute.PosixFileAttributes.class).group());
+        }
+    }
     @Test void rejectsSymlinkAndWeakKeyAndStillExportsWhenDatabaseFails() throws Exception {
         Path target=directory.resolve("target");Files.writeString(target,"unchanged");Path link=directory.resolve("audit.log");Files.createSymbolicLink(link,target);
         assertThatThrownBy(()->exporter(link,65536).append(event())).isInstanceOf(java.io.IOException.class);assertThat(Files.readString(target)).isEqualTo("unchanged");
-        assertThatThrownBy(()->new AuditJsonlExporter(json,true,target.toString(),"student-web","short",65536)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(()->new AuditJsonlExporter(json,true,target.toString(),"student-web","short",65536,false)).isInstanceOf(IllegalArgumentException.class);
         var db=mock(AuditDatabaseWriter.class);var file=mock(AuditJsonlExporter.class);doThrow(new IllegalStateException("CANARY_DB_SECRET")).when(db).record(any());
         var e=event();new SecurityAuditService(db,file).record(e);verify(file).append(e, null);
     }

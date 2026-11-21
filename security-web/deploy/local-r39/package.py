@@ -13,7 +13,7 @@ import release_inputs
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-VERSION = "0.1.0-beta.1"
+VERSION = "0.1.0-beta.2"
 
 
 def sha(path):

@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import secrets
 import shutil
+import socket
 import sqlite3
 import subprocess
 import sys
@@ -224,7 +225,7 @@ def cgroup_wait(check, sec):
         try:
             if check():
                 return
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, ConnectionError, TimeoutError):
             pass
         time.sleep(0.75)
     raise RuntimeError("Service health deadline exceeded")
@@ -256,7 +257,17 @@ def health():
     args = ("curl", "-fsS", "--max-time", "3", "--cacert", CONFIG / "edge-ca.crt")
     if json.loads(run(*args, "https://127.0.0.1:9443/health")) != {"status": "alive"}:
         raise RuntimeError("Security Web health response mismatch")
+    with socket.create_connection(("127.0.0.1", 8080), timeout=1):
+        pass
     run(*args, "-o", "/dev/null", "https://127.0.0.1/")
+    reader = ("runuser", "-u", "websentinel-security", "-g", "websentinel-evidence", "--")
+    for path in (STATE / "student/audit.jsonl", Path(profile.SCORER_STATE) / "observations.jsonl"):
+        run(*reader, "test", "-r", path.parent)
+        run(*reader, "test", "-x", path.parent)
+        run(*reader, "test", "-r", path)
+        run(*reader, "test", "!", "-w", path)
+        run(*reader, "test", "!", "-w", path.parent)
+    run(*reader, "test", "!", "-x", Path(profile.SCORER_STATE) / "private")
     print(json.dumps({"status": "HEALTHY", "model_sha256": expected}))
 
 
@@ -347,7 +358,17 @@ def install(args):
         directory = STATE / kind
         directory.mkdir(mode=0o750)
         os.chown(directory, owner, gid)
-        directory.chmod(0o750)
+        directory.chmod(0o2750 if kind == "student" else 0o750)
+    audit = STATE / "student/audit.jsonl"
+    audit.touch()
+    os.chown(audit, shutil._get_uid("websentinel-student"), gid)
+    audit.chmod(0o640)
+    # The Rust watcher enumerates rotations. Only its UID may list this directory.
+    # The scorer's SQLite state remains in its private 0700 child.
+    scorer_state = Path(profile.SCORER_STATE)
+    scorer_state.mkdir(mode=0o750)
+    os.chown(scorer_state, shutil._get_uid("websentinel-scorer"), shutil._get_gid("websentinel-scorer"))
+    run("setfacl", "-m", "g::---,u:websentinel-security:r-x", scorer_state)
     java_dir = STATE / "java"
     java_dir.mkdir(mode=0o700)
     runtime = java_dir / "lib"
@@ -412,6 +433,7 @@ BOOTSTRAP_ADMIN_USERNAME=admin
 BOOTSTRAP_ADMIN_PASSWORD={student_pw}
 STUDENT_SOURCE_INSTANCE={lineage}
 STUDENT_AUDIT_LOG_PATH={STATE}/student/audit.jsonl
+STUDENT_AUDIT_LOG_GROUP_READABLE=true
 STUDENT_AUDIT_HMAC_KEY={secrets.token_hex(32)}
 """,
     )

@@ -61,6 +61,7 @@ app:
       path: ${STUDENT_AUDIT_LOG_PATH:./logs/student-audit.log}
       hmac-key: ${STUDENT_AUDIT_HMAC_KEY:}
       max-bytes: ${STUDENT_AUDIT_MAX_BYTES:67108864}
+      group-readable: ${STUDENT_AUDIT_LOG_GROUP_READABLE:false}
     retention:
       enabled: ${AUDIT_RETENTION_ENABLED:true}
       initial-delay-ms: 60000
