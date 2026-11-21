@@ -1,0 +1,24 @@
+{"resource_guardian": "launch", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 50.0}
+R42_STAGING_DELEGATE=cpu memory pids
+{"resource_guardian": "runtime", "cpu_max": "150000 100000", "state": "THROTTLE", "temperature_c": 92.0}
+{"resource_guardian": "runtime", "cpu_max": "150000 100000", "state": "THROTTLE", "temperature_c": 91.0}
+{"resource_guardian": "runtime", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 58.0}
+{"resource_guardian": "runtime", "cpu_max": "150000 100000", "state": "THROTTLE", "temperature_c": 92.0}
+{"resource_guardian": "runtime", "cpu_max": "300000 100000", "state": "NORMAL", "temperature_c": 89.0}
+{"resource_guardian": "cleanup", "verified": true}
+R42_SYSTEM_INSTALL=PASS
+R42_HTTP_AND_RECOVERY=PASS
+R42_EVIDENCE_PERMISSIONS=PASS
+R42_UNINSTALL=PASS
+student/flyway_schema_history 2|06349c1913dd6a8c2d12014681c69844
+security/_sqlx_migrations 19|ab785d6b0fd9ed5a5a70f5f3aa9c0212
+security/normalized_events 100|2060769878179f97c8c28aad7a9745f3
+security/hybrid_incidents 22|1858a3b3e50bd163b2ac95092e3e18eb
+security/https_research_observations 14|72f9baf4d7579f2afd8f3530cb937df9
+security/log_cursors 6|b10c93c6fc89eb63bebecaa0adc1853d
+Running as unit: websentinel-r42-staging-2.service; invocation ID: d9a6e2c199f6481eb7331c15660bafb8
+Finished with result: success
+Service runtime: 3min 2.113s
+CPU time consumed: 1min 12.551s
+Memory peak: 1.5G (swap: 0B)
+R42_ACCEPTANCE_EXIT=0

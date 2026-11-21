@@ -1,0 +1,46 @@
+{
+  "archive_sha256": "7cd56aab50f744f7ce94e460aa4d86fbae6af1b02a66a95b59fba11fcf7cb061",
+  "archive_build_source": "12b1d3f61a518bada81d784b22648e9f8c344e6c",
+  "same_deployment": true,
+  "hardware": "Intel Core Ultra 9 285H, mapped coretemp, Ubuntu Base 26.04.1 amd64",
+  "runtime_sudo_and_cleanup": "PASS",
+  "gates": {
+    "LOCAL_ENGINEERING_READY": "PASS",
+    "AI_RUNTIME_READY": "PASS",
+    "HTTPS_AI_HYBRID_READY": "PASS",
+    "LOCAL_BETA_READY": "PASS",
+    "GITHUB_RELEASE_INSTALLABLE": "PASS",
+    "AWS_MIGRATION_HANDOFF_READY": "PASS",
+    "GITHUB_RELEASE_PUBLISHED": "PENDING",
+    "HYBRID_ENFORCEMENT_READY": "BLOCKED",
+    "T07_PRODUCTION_QUALITY": "BLOCKED"
+  },
+  "http_requests": 15,
+  "verified_sensor_transactions": 14,
+  "hybrid_r37_scored": 13,
+  "hybrid_r36_scored": 1,
+  "hybrid_no_score": 1,
+  "collector_masks_at_cutoff": {
+    "NSA": 13,
+    "NA": 1,
+    "UNMEASURED_NO_SCORE": 1
+  },
+  "hybrid_is_post_observation": true,
+  "http_latency_ms": {
+    "p50": 35.456,
+    "p95_nearest_rank": 429.764
+  },
+  "postgres_restore_matching_tables": [
+    "student/flyway_schema_history 2|06349c1913dd6a8c2d12014681c69844",
+    "security/_sqlx_migrations 19|ab785d6b0fd9ed5a5a70f5f3aa9c0212",
+    "security/normalized_events 100|2060769878179f97c8c28aad7a9745f3",
+    "security/hybrid_incidents 22|1858a3b3e50bd163b2ac95092e3e18eb",
+    "security/https_research_observations 14|72f9baf4d7579f2afd8f3530cb937df9",
+    "security/log_cursors 6|b10c93c6fc89eb63bebecaa0adc1853d"
+  ],
+  "protected_constraints": {
+    "ai_auto_ban": false,
+    "cutoff_ms": 1000,
+    "clock_guard_ms": 1
+  }
+}

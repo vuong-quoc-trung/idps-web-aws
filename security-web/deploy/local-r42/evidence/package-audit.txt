@@ -1,0 +1,4 @@
+Pinned inventory, ONNX slots, dependency hashes and notices byte-identical to Beta.1
+Changed archive entries: INSTALL.md, RELEASE_NOTES.md, beta_profile.py, manage.py, release.json, student/student.jar
+Changed Java entries: application.yaml, com/pbl4/studentweb/accesslog/service/AuditJsonlExporter.class
+Package text and membership secret scan PASS
