@@ -150,6 +150,7 @@ CPUQuota=200%
 """
     security = f"""User=websentinel-security
 Group=websentinel-evidence
+SupplementaryGroups=websentinel-https-readers
 EnvironmentFile={CONFIG}/security.env
 WorkingDirectory={LIVE}/security
 ExecStart={LIVE}/security/pbl4-security-demo
@@ -178,6 +179,7 @@ TimeoutStopSec=30
         .read_text()
         .replace("/etc/websentinel/https-scorer.env", CONFIG + "/scorer.env")
         .replace("/opt/websentinel/https/current", LIVE + "/scorer")
+        .replace("\nGroup=websentinel-scorer\n", "\nGroup=websentinel-https-readers\n")
         .replace("StateDirectoryMode=0711", "StateDirectoryMode=0750"),
         UNITS[1]: service("Student Web", db, student + common),
         UNITS[2]: service("Security Web", db, security + common),
