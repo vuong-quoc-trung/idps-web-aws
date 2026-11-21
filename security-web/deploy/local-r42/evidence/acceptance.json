@@ -11,7 +11,7 @@
     "LOCAL_BETA_READY": "PASS",
     "GITHUB_RELEASE_INSTALLABLE": "PASS",
     "AWS_MIGRATION_HANDOFF_READY": "PASS",
-    "GITHUB_RELEASE_PUBLISHED": "PENDING",
+    "GITHUB_RELEASE_PUBLISHED": "PASS",
     "HYBRID_ENFORCEMENT_READY": "BLOCKED",
     "T07_PRODUCTION_QUALITY": "BLOCKED"
   },
@@ -42,5 +42,14 @@
     "ai_auto_ban": false,
     "cutoff_ms": 1000,
     "clock_guard_ms": 1
+  },
+  "github": {
+    "release": "https://github.com/vuong-quoc-trung/idps-web-aws/releases/tag/v0.1.0-beta.2",
+    "tag": "v0.1.0-beta.2",
+    "published_at": "2026-11-21T00:26:37Z",
+    "annotated_tag_sha": "320c1756cdad4186d138b6d6e7333cc87f7a71ab",
+    "tagged_commit": "3f65f68a6e886d01ee43d300aef51b32e9a796d2",
+    "upload_and_public_byte_match": "PASS",
+    "download_archive_internal_verify": "PASS"
   }
 }

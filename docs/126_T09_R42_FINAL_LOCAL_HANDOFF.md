@@ -21,7 +21,7 @@ Mặc định là `r37-hgb-uri100-v1` SHA-256 `91fe8bad280f7c103adc3601579e350fc
 
 - Installer chờ backend Java nhận kết nối và kiểm truy cập thực tế dưới đúng UID và groups của Rust.
 - Student Audit chỉ bật group-read ở Beta. File mới và file sau rotation dùng `0640` trong thư mục setgid do Student sở hữu. ACL socket edge và private SQLite của scorer tách riêng khỏi log reader.
-- Rust watcher cần cả quyền liệt kê thư mục và mở journal. Unit scorer cấp quyền qua group riêng; Rust nhận supplementary group. Health kiểm mở file và xác minh quyền ghi bị từ chối. Publish package chỉ dùng archive đã qua acceptance.
+- Rust watcher cần cả quyền liệt kê thư mục và mở journal. Lượt đầu giữ được ACL có tên nhưng probe `test -r` chưa chấp nhận đường dẫn journal. Unit scorer ở lượt đạt cấp quyền qua group riêng; Rust nhận supplementary group. Health kiểm mở file và xác minh quyền ghi bị từ chối. Publish package chỉ dùng archive đã qua acceptance.
 - 7 kiểm thử Student Audit đạt, gồm scope group và rotation. Các dependency pin, notices, assets frontend và hai ONNX giữ nguyên SHA so với Beta.1. Bản cài sạch giữ yêu cầu Ubuntu 26.04 amd64, PostgreSQL 18 và Intel Core Ultra 9 285H với mapping `coretemp` hợp lệ.
 
 ## Vận hành
@@ -46,9 +46,9 @@ Staging Ubuntu 26.04.1 amd64 dùng Ubuntu Base đã xác minh chữ ký Canonica
 | HTTPS_AI_HYBRID_READY | PASS cho Beta post-observation |
 | LOCAL_BETA_READY | PASS trên cấu hình staging hỗ trợ |
 | GITHUB_RELEASE_INSTALLABLE | PASS với archive đã nghiệm thu |
-| GITHUB_RELEASE_PUBLISHED | PENDING |
+| GITHUB_RELEASE_PUBLISHED | PASS |
 | HYBRID_ENFORCEMENT_READY | BLOCKED do C2 production đóng |
 | AWS_MIGRATION_HANDOFF_READY | PASS cho kế hoạch |
 | T07_PRODUCTION_QUALITY | BLOCKED do thiếu independent native HTTPS TEST |
 
-Gói `0.1.0-beta.2` build tại `12b1d3f61a518bada81d784b22648e9f8c344e6c`, SHA-256 `7cd56aab50f744f7ce94e460aa4d86fbae6af1b02a66a95b59fba11fcf7cb061`. Chuẩn bị archive, INSTALL.md, RELEASE_NOTES.md và SHA256SUMS cho prerelease. [Checksum](../security-web/deploy/local-r42/evidence/ASSET_SHA256SUMS) · [Acceptance JSON](../security-web/deploy/local-r42/evidence/acceptance.json) · [Bàn giao AWS](127_T09_AWS_MIGRATION_HANDOFF.md)
+Gói `0.1.0-beta.2` build tại `12b1d3f61a518bada81d784b22648e9f8c344e6c`, SHA-256 `7cd56aab50f744f7ce94e460aa4d86fbae6af1b02a66a95b59fba11fcf7cb061`. Prerelease công khai có archive, INSTALL.md, RELEASE_NOTES.md và SHA256SUMS. Đã tải lại bốn tệp qua URL công khai, đối chiếu byte và chạy verify từ archive đã tải. Annotated tag trỏ đến commit `3f65f68a6e886d01ee43d300aef51b32e9a796d2`. Git diff của checkout gốc giữ SHA `1f145523851a18310fafc73273e8c8fc7a1f18569bec65cad1771c94260c708f`. [GitHub Release](https://github.com/vuong-quoc-trung/idps-web-aws/releases/tag/v0.1.0-beta.2) · [GitHub API receipt](../security-web/deploy/local-r42/evidence/github-release.json) [Checksum](../security-web/deploy/local-r42/evidence/ASSET_SHA256SUMS) · [Acceptance JSON](../security-web/deploy/local-r42/evidence/acceptance.json) · [Bàn giao AWS](127_T09_AWS_MIGRATION_HANDOFF.md)
