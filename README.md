@@ -2,6 +2,8 @@
 A comprehensive monitoring, early warning, and attack prevention system for AWS web infrastructure.
 
 
+[Chỉ mục dự án](docs/PROJECT_INDEX.md) · [Local Beta R42](docs/126_T09_R42_FINAL_LOCAL_HANDOFF.md) · [Bàn giao AWS](docs/127_T09_AWS_MIGRATION_HANDOFF.md)
+
 ## AI offline và bàn giao nhóm
 
 Frozen Research MVP v1.0 gồm GLU207 và Request Intelligence v2. Xem
