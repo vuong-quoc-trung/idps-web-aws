@@ -1,0 +1,416 @@
+[
+  {
+    "request_id": "1fda46b590e09c2f4e5eaa74f02ed7cc",
+    "oracle": "CSRF_ISSUED",
+    "method": "GET",
+    "status": 200,
+    "http_ms": 80.572,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "cadadcbf-6409-445d-8ae4-ea9e0ea1cc06",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 2
+    },
+    "source_observed_ns": {
+      "N": 1795220509345266201,
+      "A": 1795220509345306877,
+      "AI": 1795220509345336055,
+      "S": 1795220509370828786
+    },
+    "cutoff_ns": 1795220510266000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220510005885421
+  },
+  {
+    "request_id": "474635ef59d9c315c39eda8a0feef23f",
+    "oracle": "LOGIN_SESSION_ROTATED",
+    "method": "POST",
+    "status": 204,
+    "http_ms": 429.764,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.18109947443008423,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "7b167a31-b8d8-41ee-a00f-543f883beab3",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 3
+    },
+    "source_observed_ns": {
+      "N": 1795220510436055872,
+      "A": 1795220510436128287,
+      "AI": 1795220510436176678,
+      "S": 1795220510461920421
+    },
+    "cutoff_ns": 1795220511006000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220510937630885
+  },
+  {
+    "request_id": "793f772d009b51dbbf85b903fcdcb7c6",
+    "oracle": "PRINCIPAL_ADMIN",
+    "method": "GET",
+    "status": 200,
+    "http_ms": 31.235,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "0d0e2df0-1303-40e9-959c-5414168da1a3",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 4
+    },
+    "source_observed_ns": {
+      "A": 1795220510969164044,
+      "N": 1795220510994486031,
+      "AI": 1795220510994522770,
+      "S": 1795220510994722726
+    },
+    "cutoff_ns": 1795220511937000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220511951664034
+  },
+  {
+    "request_id": "6fdbd1c7f10b97cb761b48211363708e",
+    "oracle": "AUTHENTICATED_CSRF",
+    "method": "GET",
+    "status": 200,
+    "http_ms": 16.242,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "0f836bbb-4749-469c-a827-b80408a77197",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 5
+    },
+    "source_observed_ns": {
+      "N": 1795220511968166503,
+      "A": 1795220511968213698,
+      "AI": 1795220511968247357,
+      "S": 1795220511993651663
+    },
+    "cutoff_ns": 1795220512951000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220512974343356
+  },
+  {
+    "request_id": "61f020ef3d74d4c68f3c65d8c3a54be2",
+    "oracle": "LOGOUT",
+    "method": "POST",
+    "status": 204,
+    "http_ms": 57.36,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.18109947443008423,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "e49e9dd6-9e41-4818-92eb-7a72031b6699",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 6
+    },
+    "source_observed_ns": {
+      "A": 1795220513032003035,
+      "N": 1795220513057240433,
+      "AI": 1795220513057268157,
+      "S": 1795220513057548919
+    },
+    "cutoff_ns": 1795220513974000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220514045007116
+  },
+  {
+    "request_id": "0b48455c15193d9250f52baa7297b5a6",
+    "oracle": "SESSION_REVOKED",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 37.332,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "ed7b8e1e-b232-478f-9121-9a6175cc55b2",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 7
+    },
+    "source_observed_ns": {
+      "N": 1795220514082804370,
+      "A": 1795220514082927429,
+      "AI": 1795220514083003457,
+      "S": 1795220514109027628
+    },
+    "cutoff_ns": 1795220515045000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220515083109863
+  },
+  {
+    "request_id": "97d823f07218b65bfd6c6d633282e3ed",
+    "oracle": "AUDIT_ROTATION",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 27.651,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "014973fc-2512-4ded-97c2-facf33be0fe9",
+    "sensor_transaction": {
+      "generation": "7e06181582fb5ff614cdb4ddb2685b3e",
+      "flow_id": "1276236314474120",
+      "tx_id": 8
+    },
+    "source_observed_ns": {
+      "N": 1795220515111362902,
+      "A": 1795220515111423274,
+      "AI": 1795220515111497374,
+      "S": 1795220515137474294
+    },
+    "cutoff_ns": 1795220516086000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220516110186779
+  },
+  {
+    "request_id": "5ff733261e0913c4342c41d1a8a7f02d",
+    "oracle": "SENSOR_UNAVAILABLE",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 25.87,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "dd3e5b57-c5a2-4f6c-be51-04ec65066521",
+    "sensor_transaction": null,
+    "source_observed_ns": {
+      "N": 1795220516438231982,
+      "A": 1795220516438418316,
+      "AI": 1795220516438641549
+    },
+    "cutoff_ns": 1795220517418000000,
+    "collector_mask_at_cutoff": "NA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220517047315059
+  },
+  {
+    "request_id": "7f76e753f27e70ec26cca44e70da10dd",
+    "oracle": "SENSOR_RECOVERED",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 20.634,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "583ccf07-0868-4479-aca4-3c10e1b8c0a5",
+    "sensor_transaction": {
+      "generation": "7daadbe4ae7f8c27ae92891849636175",
+      "flow_id": "2146070171422895",
+      "tx_id": 0
+    },
+    "source_observed_ns": {
+      "A": 1795220519452750766,
+      "N": 1795220519478151535,
+      "AI": 1795220519478203078,
+      "S": 1795220519478608125
+    },
+    "cutoff_ns": 1795220520433000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220520277278338
+  },
+  {
+    "request_id": "afb58be10cd3db648f8006deae9eb10e",
+    "oracle": "SCORER_UNAVAILABLE",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 16.909,
+    "model_sha256": null,
+    "score": null,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "950ac442-d84a-405d-be1a-e3afb4a4454f",
+    "sensor_transaction": {
+      "generation": "7daadbe4ae7f8c27ae92891849636175",
+      "flow_id": "2146070171422895",
+      "tx_id": 1
+    },
+    "source_observed_ns": {
+      "N": 1795220520586324024,
+      "A": 1795220520586603101,
+      "S": 1795220520614292413
+    },
+    "cutoff_ns": null,
+    "collector_mask_at_cutoff": null,
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "UNAVAILABLE_NO_SCORE",
+    "adjudicated_ns": 1795220521253539820
+  },
+  {
+    "request_id": "0381ddb31987f75a90ad6aef450a3a64",
+    "oracle": "SCORER_RECOVERED",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 41.419,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "2b280dc0-c187-4538-bd8b-926397024292",
+    "sensor_transaction": {
+      "generation": "7daadbe4ae7f8c27ae92891849636175",
+      "flow_id": "2146070171422895",
+      "tx_id": 3
+    },
+    "source_observed_ns": {
+      "A": 1795220521642843207,
+      "AI": 1795220521642895831,
+      "N": 1795220521668197841,
+      "S": 1795220521668620501
+    },
+    "cutoff_ns": 1795220522605000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220522469722377
+  },
+  {
+    "request_id": "d373ddab1a2c05ec665bb6601639326b",
+    "oracle": "SYSTEM_RESTART",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 82.534,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "d2562745-7aea-46ee-832c-f63eec1f5bc9",
+    "sensor_transaction": {
+      "generation": "73f5f40e451b4f8534fd7c0b183e3b7d",
+      "flow_id": "2182640975336953",
+      "tx_id": 1
+    },
+    "source_observed_ns": {
+      "N": 1795220527648823816,
+      "A": 1795220527648878464,
+      "AI": 1795220527648929700,
+      "S": 1795220527674603350
+    },
+    "cutoff_ns": 1795220528569000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220528637936949
+  },
+  {
+    "request_id": "2c372e028ad58e5f3be687d9f5ae7564",
+    "oracle": "POSTGRES_RESTART",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 35.456,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "cd97e732-eac8-4299-a20c-47f216cbeef5",
+    "sensor_transaction": {
+      "generation": "73f5f40e451b4f8534fd7c0b183e3b7d",
+      "flow_id": "894669103886772",
+      "tx_id": 1
+    },
+    "source_observed_ns": {
+      "N": 1795220532008050436,
+      "A": 1795220532008110797,
+      "AI": 1795220532008166442,
+      "S": 1795220532033953033
+    },
+    "cutoff_ns": 1795220532974000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220533072966288
+  },
+  {
+    "request_id": "3c9d7b4cbb1d1fbc29743a8558df79a6",
+    "oracle": "ROLLBACK_R36",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 18.025,
+    "model_sha256": "d4797584ab7eb243725329f08acf160122bf1da27a9fb128850f333fd0ce4bd0",
+    "score": 0.22355103492736816,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "0df5d907-dd36-4548-b7c2-cdd8ab1308f7",
+    "sensor_transaction": {
+      "generation": "73f5f40e451b4f8534fd7c0b183e3b7d",
+      "flow_id": "1445868738891912",
+      "tx_id": 1
+    },
+    "source_observed_ns": {
+      "A": 1795220645986928952,
+      "N": 1795220646012272546,
+      "AI": 1795220646012323696,
+      "S": 1795220646013795443
+    },
+    "cutoff_ns": 1795220646970000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220646815582218
+  },
+  {
+    "request_id": "1be7c7cc3931d1e1c491a5468e7a7b3a",
+    "oracle": "RESTORE_R37",
+    "method": "GET",
+    "status": 401,
+    "http_ms": 39.377,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "score": 0.1253570318222046,
+    "policy": "LOG_ONLY",
+    "automatic_block": false,
+    "audit_id": "28e0eb10-2d61-4410-9686-151f4a3410bb",
+    "sensor_transaction": {
+      "generation": "73f5f40e451b4f8534fd7c0b183e3b7d",
+      "flow_id": "1445868738891912",
+      "tx_id": 3
+    },
+    "source_observed_ns": {
+      "A": 1795220648021105033,
+      "N": 1795220648046426131,
+      "AI": 1795220648046478035,
+      "S": 1795220648048180650
+    },
+    "cutoff_ns": 1795220648984000000,
+    "collector_mask_at_cutoff": "NSA",
+    "policy_scope": "POST_OBSERVATION",
+    "scorer_status": "SCORED",
+    "adjudicated_ns": 1795220649004067005
+  }
+]
