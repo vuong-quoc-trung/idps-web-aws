@@ -1,0 +1,206 @@
+# AWS staging — Vận hành và bàn giao
+
+Bắt đầu với [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
+
+## Kiến trúc
+
+```mermaid
+flowchart LR
+    subgraph existing["AWS staging hiện có hoặc đã ghi nhận qua telemetry"]
+        op["Operator Websecurity"] --> ssm["SSM Session Manager"]
+        ssm --> ec2["EC2 m7i-flex.large<br/>Ubuntu 26.04 amd64"]
+        net["Internet Gateway và security group TCP 80/443"] --> eip["Elastic IP 13.229.169.1"]
+        eip --> ec2
+        ec2 --- disk["Root EBS gp3 40 GiB mã hóa"]
+        schedule["Scheduler default/websentinel-autostop-check-15m<br/>Theo bàn giao Console"] -.-> fn["Lambda websentinel-autostop-8h<br/>CloudWatch có invocation"]
+        fn -.->|"StopInstances chưa nghiệm thu"| ec2
+    end
+    subgraph pending["Dự kiến trên EC2 · chưa triển khai"]
+        domain["Hai domain DuckDNS"] -->|"HTTPS 443"| edge["NGINX TLS và trusted request ID"]
+        edge -->|"HTTP nội bộ"| student["Java Student Web"]
+        edge --> security["Rust Security Web"]
+        edge -.->|"Decrypted leg cùng kernel"| sensor["Suricata Lua/AF_PACKET"]
+        student --> audit["Student Audit"]
+        edge --> correlation["Rust correlation"]
+        sensor --> correlation
+        audit --> correlation
+        correlation --> hybrid["Rust Hybrid · auto-ban OFF · C2 đóng"]
+        edge --> model["R37 URI100 ONNX qua Unix socket"]
+        model --> hybrid
+        hybrid --> security
+        student --> pg["PostgreSQL cùng host · loopback · role riêng"]
+        security --> pg
+    end
+    ec2 -.-> edge
+```
+
+Local Beta đã kiểm tra HTTPS, correlation ba nguồn, R37 và Hybrid post-observation trên topology Local. R36 là slot rollback. Bản cài Local đòi phần cứng và thermal sensor đã xác minh. Chọn đúng artifact từ registry, loại bỏ việc copy dữ liệu nghiệp vụ Local sang staging và giữ T07 CAL/TEST độc lập. [Evidence Local R42](../security-web/deploy/local-r42/evidence/acceptance.json) · [Model slots](../ai-training/contracts/quality-freeze-r37/slots.json) · [T07 protocol](../ai-training/contracts/evaluation-v1/protocol.json)
+
+## 1. Phiên thao tác và inventory
+
+Trong Console chọn account `680480584595`, IAM `Websecurity` và region `Asia Pacific (Singapore)`. CLI dùng AWS CLI v2 và Session Manager plugin cho phiên tương tác. Trước mỗi thao tác ghi, xác nhận contract không đổi và hồ sơ trả đúng account/ARN. Các block dưới đây dùng Bash và `jq` để đọc JSON khi cần.
+
+```bash
+profile=websecurity-staging
+region=ap-southeast-1
+instance=i-0b6f2e4f3ed32f514
+volume=vol-06f41700f2be0f4c3
+allocation=eipalloc-0ac40a8944068063a
+fn=websentinel-autostop-8h
+schedule=websentinel-autostop-check-15m
+group=default
+
+aws_staging() { aws --profile "$profile" --region "$region" --no-cli-pager "$@"; }
+
+check_identity() {
+  local identity
+  identity=$(aws_staging sts get-caller-identity --query Arn --output text) || return 1
+  if [[ "$identity" != arn:aws:iam::680480584595:user/Websecurity ]]; then
+    printf 'Unexpected AWS caller: %s\n' "$identity" >&2
+    return 1
+  fi
+}
+
+check_identity &&
+aws_staging ec2 describe-instances --instance-ids "$instance" --query \
+  'Reservations[0].Instances[0].{State:State.Name,Type:InstanceType,AMI:ImageId,LaunchTime:LaunchTime,EIP:PublicIpAddress,PrivateIP:PrivateIpAddress,Profile:IamInstanceProfile.Arn,IMDS:MetadataOptions.HttpTokens,Tags:Tags}'
+
+aws_staging ec2 describe-volumes --volume-ids "$volume" --query \
+  'Volumes[0].{Type:VolumeType,GiB:Size,Encrypted:Encrypted,AttachedTo:Attachments[0].InstanceId,DeleteOnTermination:Attachments[0].DeleteOnTermination}'
+aws_staging ec2 describe-addresses --allocation-ids "$allocation" --query \
+  'Addresses[0].{PublicIP:PublicIp,PrivateIP:PrivateIpAddress,Instance:InstanceId}'
+aws_staging ec2 describe-instance-attribute --instance-id "$instance" --attribute disableApiTermination
+aws_staging ec2 describe-instance-attribute --instance-id "$instance" --attribute disableApiStop
+aws_staging ssm describe-sessions --state Active --filters "key=Target,value=$instance" \
+  --query 'Sessions[].{Status:Status,StartDate:StartDate}'
+```
+
+Dùng các IDs VPC, route, IGW, subnet và SG trong [inventory R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md#infrastructure-inventory) cho lệnh Describe cùng tên. Đối chiếu route `0.0.0.0/0` và EIP/ENI nếu SSM không kết nối. Tách kết quả kiểm tra API khỏi kết quả trong guest.
+
+## 2. Vận hành EC2
+
+**Start thủ công trong cửa sổ vận hành đã thống nhất.** Lệnh `--dry-run` là phép thử quyền an toàn. Thông báo `DryRunOperation` có exit status khác 0 và xác nhận AWS sẽ cho phép request, vì vậy chạy riêng. Sau start, tách trạng thái `running`, system/instance/EBS checks và SSM online.
+
+```bash
+check_identity && aws_staging ec2 start-instances --instance-ids "$instance" --dry-run
+```
+
+```bash
+check_identity && aws_staging ec2 start-instances --instance-ids "$instance" &&
+aws_staging ec2 wait instance-running --instance-ids "$instance" &&
+aws_staging ec2 wait instance-status-ok --instance-ids "$instance"
+aws_staging ec2 describe-instance-status --instance-ids "$instance" --include-all-instances
+aws_staging ssm get-connection-status --target "$instance"
+check_identity && aws_staging ssm start-session --target "$instance"
+```
+
+Trong SSM, đọc cấu hình và xác nhận các phiên đang hoạt động trước khi kết thúc cửa sổ. Kiểm DNS/outbound theo endpoint AWS cần dùng. Một HTTP status 4xx từ endpoint AWS có thể xác nhận kết nối TLS, còn trạng thái registration cần kiểm riêng qua SSM.
+
+```bash
+cat /etc/os-release
+uname -m
+nproc
+free -h
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+stat -fc %T /sys/fs/cgroup
+uptime
+who
+systemctl --no-pager --type=service --state=running
+systemctl --no-pager list-timers --all
+ss -lnt
+getent ahostsv4 ssm.ap-southeast-1.amazonaws.com
+curl -sS -o /dev/null -w 'HTTP %{http_code}\n' --connect-timeout 5 \
+  https://ssm.ap-southeast-1.amazonaws.com/
+```
+
+**Stop thủ công chỉ khi xác nhận staging rảnh.** Trao đổi với người giữ cửa sổ, đối chiếu SSM active sessions, user/process/timer trong guest và trạng thái ghi dữ liệu. Danh sách SSM rỗng chỉ chứng minh không thấy phiên SSM, vẫn có thể có workload. Thoát phiên của chính mình, stop thường để guest có thể shutdown, đợi `stopped` rồi xác nhận EIP và EBS. Giữ termination protection và tránh `TerminateInstances` vì root EBS có `DeleteOnTermination=true`. [Vòng đời EC2 và dữ liệu giữ lại](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-stop-start-works.html)
+
+```bash
+check_identity && aws_staging ec2 stop-instances --instance-ids "$instance" --dry-run
+```
+
+```bash
+check_identity && aws_staging ec2 stop-instances --instance-ids "$instance" &&
+aws_staging ec2 wait instance-stopped --instance-ids "$instance" &&
+aws_staging ec2 describe-addresses --allocation-ids "$allocation" &&
+aws_staging ec2 describe-volumes --volume-ids "$volume"
+```
+
+| Triệu chứng | Kiểm tra và xử lý |
+|---|---|
+| `TargetNotConnected` / `notconnected` | Kiểm region, EC2 state/status và đúng instance profile. Đọc role cho quyền `AmazonSSMManagedInstanceCore` hoặc tương đương. Khi có kênh được phép, kiểm unit/agent logs và outbound 443 tới `ssm` và `ssmmessages`. Không mở SSH Internet để khắc phục SSM. |
+| `AccessDenied` | Chạy `check_identity`, ghi action/ARN và thời gian, kiểm trust, identity policy, permission boundary/SCP nếu có. Chỉ cấp đúng read/action thiếu. Quyền operator, EC2 role, Lambda role và Scheduler role có phạm vi khác nhau. |
+| Guest không ra Internet hoặc DNS lỗi | Kiểm EIP association, egress SG, subnet ACL, effective route tới IGW và DNS của VPC. Trong guest kiểm resolver, interface, route và TLS theo từng endpoint như trên. Không tạo NAT hoặc gắn EIP thứ hai để thử. |
+
+[SSM prerequisites](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-prerequisites.html) · [Role cho EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
+
+## 3. Auto-stop tám giờ
+
+Scheduler dự kiến kiểm mỗi 15 phút và chỉ gọi Lambda. Người dùng Start EC2 theo nhu cầu. Hàm chỉ xử lý đúng instance `i-0b6f2e4f3ed32f514` tại Singapore, kiểm `running`, ID và tag `Project=WebSentinel`, rồi tính tuổi phiên dựa trên `LaunchTime`. AWS cập nhật trường này sau stop/start. Nghĩa của 480 phút là một phiên chạy liên tục. Chu kỳ 15 phút, flexible window, delivery/retry và graceful shutdown có thể làm thời điểm `stopped` muộn hơn mốc tám giờ. Auto-stop không quản lý tổng giờ/tháng. [LaunchTime](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html) · [Scheduler timing](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html)
+
+### Đọc cấu hình và log
+
+Các get Lambda/Scheduler sau hiện cần quyền bổ sung hẹp. Câu lệnh chỉ truy xuất các trường vận hành cần đối chiếu. Duyệt code tải qua `lambda:GetFunction` trong thư mục bảo mật, tính SHA-256 Base64 đối chiếu `CodeSha256` và giữ backup ngoài repo. URL tải code có thời hạn và không được đưa vào terminal transcript. Tuân thủ cùng nguyên tắc với payload, env đầy đủ và output chứa bí mật.
+
+```bash
+aws_staging lambda get-function-configuration --function-name "$fn" --query \
+  '{Runtime:Runtime,Handler:Handler,Memory:MemorySize,Timeout:Timeout,Role:Role,SHA:CodeSha256,Revision:RevisionId,Update:LastUpdateStatus,MaxMinutes:Environment.Variables.MAX_SESSION_MINUTES,DryRun:Environment.Variables.DRY_RUN}'
+aws_staging scheduler get-schedule --name "$schedule" --group-name "$group" --query \
+  '{State:State,Expression:ScheduleExpression,Window:FlexibleTimeWindow,Target:Target.Arn,Role:Target.RoleArn,Retry:Target.RetryPolicy,DLQ:Target.DeadLetterConfig.Arn}'
+aws_staging logs describe-log-streams --log-group-name "/aws/lambda/$fn" \
+  --order-by LastEventTime --descending --max-items 5
+aws_staging logs tail "/aws/lambda/$fn" --since 1h --format short
+```
+
+Trong CloudWatch, chọn `AWS/Lambda` theo `FunctionName` và đọc `Invocations`, `Errors`, `Duration`. Xem `AWS/Scheduler` theo `ScheduleGroup` với `InvocationAttemptCount`, `TargetErrorCount`, `InvocationDroppedCount`. Metric group có thể gom nhiều schedule. Ưu tiên log từ handler chứa schedule ARN, scheduled time, execution ID, request ID Lambda, state, tuổi phiên và outcome. Có thể truyền các context attributes qua `Target.Input` sau khi kiểm code chấp nhận schema, phân biệt chúng với invocation thủ công. Chỉ log metadata qua allowlist. [Bằng chứng CloudWatch R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md#bằng-chứng-cloudwatch) · [Scheduler context](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-context-attributes.html)
+
+### Quyền tối thiểu và acceptance
+
+| Principal | Phạm vi cần xác nhận hoặc cấp khi tái tạo |
+|---|---|
+| Operator `Websecurity` | Describe cần thiết, EC2 Start/Stop giới hạn đúng instance/tag staging, SSM StartSession trên đúng instance và session document cần dùng. Điều tra R45 cần `lambda:GetFunction`, `lambda:GetFunctionConfiguration`, `scheduler:GetSchedule` trên resource cụ thể, đọc trust/policy của đúng roles và CloudWatch. `lambda:InvokeFunction`, `lambda:UpdateFunctionConfiguration` hoặc `scheduler:UpdateSchedule` chỉ cấp cho người chạy bài test và khôi phục. |
+| EC2 role `WebSentinel-Staging-EC2-Role` | Trust `ec2.amazonaws.com`, profile cùng tên. Attach `AmazonSSMManagedInstanceCore` hoặc policy tương đương đã kiểm. |
+| Lambda role `websentinel-autostop-8h-role-4h86gnbd` | Trust `lambda.amazonaws.com`. `ec2:DescribeInstances` dùng Resource `*` vì action này không hỗ trợ instance ARN. `ec2:StopInstances` dùng instance ARN `arn:aws:ec2:ap-southeast-1:680480584595:instance/i-0b6f2e4f3ed32f514`, thêm điều kiện tag `Project=WebSentinel` và `Environment=Staging`. Quyền log chỉ trong group/function cần dùng. Audit `WebSentinel-AutoStop-EC2Policy` và cả policy đính kèm, để phát hiện đường stop rộng, quyền terminate hoặc start. |
+| Scheduler execution role | Trust `scheduler.amazonaws.com`. Giới hạn confused deputy bằng `aws:SourceAccount` và `aws:SourceArn` theo group đã chọn, đồng thời kiểm chỉ schedule được quản lý có quyền dùng role. Cho phép `lambda:InvokeFunction` đúng function ARN hoặc alias đã pin. Operator `iam:PassRole` chỉ trên role và service cần dùng. |
+
+[EC2 IAM actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html) · [Scheduler execution role và confused deputy](https://docs.aws.amazon.com/scheduler/latest/UserGuide/cross-service-confused-deputy-prevention.html)
+
+1. Ghi cấu hình đã đọc của EC2, EIP, EBS, Lambda và Scheduler, commit/digest triển khai, Lambda `RevisionId`, toàn bộ env và Scheduler `Target`, flexible window, retry/DLQ, timezone, trạng thái. Lưu phục hồi ở thư mục ngoài Git, quyền `0700` và file `0600`. Xác minh đủ quyền khôi phục trước khi thay bất kỳ biến nào.
+2. Review code đúng SHA. Test offline các nhánh stopped, running chưa đủ 480 phút, tới ngưỡng, clock âm/sai, thiếu tag/sai ID, config lỗi, lệnh Stop bị từ chối và retry/duplicate. Fake EC2 client để xác minh nhánh lỗi, không gọi API ghi. Xác nhận code re-read trạng thái và chỉ phát lệnh stop khi guard đạt, với timestamp hiện hành.
+3. Khi đã audit scope, test thủ công `stopped` để thấy `SKIPPED`. Đặt ngưỡng ngắn 1–2 phút và `DRY_RUN=true` trong cửa sổ staged maintenance. Dùng `UpdateFunctionConfiguration` với map env đầy đủ và `--revision-id`. Đợi `lambda wait function-updated-v2` và đọc lại. Khi EC2 rảnh, start một lần và xác minh SSM/users/workload. Thấy `running` chưa đủ ngưỡng được skip và sau ngưỡng có bằng chứng dự kiến stop trong dry-run. EC2 phải còn running, vì app `DRY_RUN` khác AWS API `DryRun`.
+4. Chỉ khi staging rảnh, IAM scope đã xác minh và có quyền khôi phục, đặt `DRY_RUN=false` cho ngưỡng ngắn. Quan sát một tick Scheduler thật, lưu correlation schedule → Lambda → `StopInstances` outcome, và state `stopping/stopped` của đúng instance. Chờ `instance-stopped`, đọc lại EIP allocation/association, volume và tags.
+5. Khôi phục env bằng revision mới và config đã sao lưu. Nếu có thay đổi đồng thời, dừng việc ghi và đối chiếu revision. Chỉ sau nghiệm thu Stop mới chốt `MAX_SESSION_MINUTES=480`, `DRY_RUN=false` và đọc lại Scheduler `ENABLED`, `rate(15 minutes)`, target/window không bị đổi. Nếu fail trước khi xác lập trạng thái chính thức, khôi phục nguyên trạng và để gate BLOCKED/FAIL tương ứng.
+
+**Bật/tắt hoặc đổi kỳ hạn.** Dùng `GetSchedule` ngay trước `UpdateSchedule` và giữ tất cả thuộc tính ghi được, đặc biệt `Target` gồm role, input, retry/DLQ, flexible window và timezone. API dùng giá trị mặc định cho thuộc tính bỏ trống. Để tạm tắt, đổi `State=DISABLED`, đọc lại và tính tới sự kiện đã giao hoặc đang retry. Để bật, dùng `State=ENABLED` sau khi đủ điều kiện nghiệm thu. Để đổi tuổi phiên, cập nhật `MAX_SESSION_MINUTES` cùng toàn bộ env có backup/revision, không đổi chu kỳ nếu chỉ cần đổi tuổi phiên. Hai thao tác có thể ảnh hưởng EC2 đang chạy. [UpdateSchedule](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_UpdateSchedule.html) · [UpdateFunctionConfiguration](https://docs.aws.amazon.com/lambda/latest/api/API_UpdateFunctionConfiguration.html)
+
+## 4. Chi phí và Billing
+
+Dự toán Singapore tháng 31 ngày của R45 khoảng **7,56 USD** cho EBS/EIP kể cả khi EC2 dừng, chưa tính lưu log, snapshots và auto-stop. 80/100/110/160 giờ lần lượt khoảng **18,98 / 21,38 / 22,57 / 28,56 USD** theo kịch bản gross. Bắt đầu ở **100 giờ/tháng**, kiểm budget trước mỗi cửa sổ kéo dài. `Free / Active` còn **139,999863 USD** tại lần đọc R45. Hạn plan 18/04/2027 giờ Việt Nam, hạn từng credit và thông tin 35 USD chưa xác minh do giới hạn Billing. Budget alert quan sát chứ không tự stop. [Chi tiết phép tính và ngưỡng R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md#billing-và-ngưỡng-chi-phí)
+
+Trong Console mở Billing → Credits để xem từng credit, expiry và eligible services, rồi chọn Budgets và Cost Explorer để xem actual/forecast theo dịch vụ. Nếu operator bị từ chối quyền Billing, dùng bản kết quả đã lọc từ người có quyền hiện hữu. Hai lệnh dưới kiểm được bằng profile R45.
+
+```bash
+aws --profile "$profile" --region us-east-1 freetier get-account-plan-state
+aws --profile "$profile" --region us-east-1 budgets describe-notifications-for-budget \
+  --account-id 680480584595 --budget-name WebSentinel-Monthly-Budget
+```
+
+## 5. Tái tạo môi trường tương đương
+
+Đây là thứ tự chuẩn bị cho account được phép và một cửa sổ đã phê duyệt. Tra cứu theo region, ID và tags trước mỗi Create. Một EC2, một gp3 và một IPv4 là cấu hình dự toán.
+
+1. Kiểm đúng identity/region, plan, budget và quota `L-1216C47A`. Chốt AMI Ubuntu Server x86-64 chính thức của Canonical trong AZ, 2 vCPU/8 GiB, và khả năng dùng SSM. Ghi nguồn AMI, price và quyết định EIP cố định.
+2. Kiểm VPC, subnet và effective route tới IGW đang có. Tạo staging SG riêng nếu chưa có, giữ ingress đóng cho tới khi cần HTTP/HTTPS. Chỉ mở 80/443 theo kế hoạch TLS. Egress đủ SSM TLS, DNS và nguồn package đã duyệt. Không mở SSH, DB hoặc backend công khai.
+3. Tạo hoặc dùng lại IAM profile EC2, kiểm trust và SSM. Tạo một EC2 với IMDSv2 Required, 40 GiB gp3 mã hóa, termination protection, stop protection phù hợp auto-stop và tags `Project=WebSentinel`, `Environment=Staging`. Xác nhận có phương án backup trước khi chấp nhận root disk xóa khi terminate. Đối chiếu EIP theo allocation/association hiện có trước khi cấp mới.
+4. Chạy operator Start/SSM/Stop acceptance và xác minh EIP/EBS. Tạo hoặc dùng lại Lambda và Scheduler với roles tối thiểu. Bắt đầu DRY_RUN, nghiệm thu theo mục 3 rồi mới chốt cấu hình thực. Xác nhận không có lịch Start, scope/DLQ/retry đúng và budget alerts hiện hữu.
+5. Không tự động clone ứng dụng, chuẩn bị DNS/TLS, mở public listener hoặc bật nhiều dịch vụ trong bootstrap chưa được nghiệm thu. Duyệt giá trước khi áp dụng snapshot retention, log export hay tài nguyên quản lý mới.
+
+## 6. R46 — Checklist theo cổng
+
+| Nhóm | Điều kiện bắt đầu và nghiệm thu |
+|---|---|
+| A. Domain, DNS, NGINX và HTTPS | Xác nhận quyền với `student-dut.duckdns.org` và `websentinal.duckdns.org`, EIP ổn định và cửa sổ staging được phép. DNS hiện NXDOMAIN theo R45. Chọn record trỏ đúng EIP, kiểm DNS từ resolver độc lập, cấp TLS theo quy trình được phê duyệt, kiểm SAN/chain, renewal, HTTPS và redirect 80 → 443. Xác minh listener công khai ở edge, không publish upstream. |
+| B. AI-IDPS | Phê duyệt AWS Resource Safety Profile dành riêng EC2. Xác minh instance identity, cgroup v2, top-level quota riêng cho stack, kernel readback, PSI/OOM, guardian watchdog, disk/log bounds, fault cleanup và ABSTAIN. EC2 status/CPU metrics không được dùng làm nhiệt độ vật lý. Điểm bắt đầu để đo sau khi profile được phê duyệt là slice ứng dụng 150% CPU và 6 GiB RAM, scorer 50% CPU và 512 MiB, swap 0, PID giới hạn. Các mức này là đề xuất R44, cần đo headroom và latency toàn stack trên EC2. Tái dùng R37 URI100 và R36 rollback kèm SHA, setup PostgreSQL roles/database và bind loopback, kiểm NGINX/njs và Suricata Lua/AF_PACKET trên decrypted leg, đưa stack systemd lên đúng host. C2 đóng, AI auto-ban OFF. |
+| C. Acceptance, monitoring, backup, rollback | Trước mở traffic, chứng minh end-to-end HTTPS trên đúng host và cùng trusted request ID qua NGINX, Suricata, Student Audit, R37 và Rust Hybrid. Ghi masks, cutoff 1.000 ms, guard 1 ms, ABSTAIN, parity, cold/warm latency và quota thực. Kiểm tài nguyên trong hạn 2 vCPU/8 GiB, log rotation, restore DB đã diễn tập, rollback R36 và graceful stop. T07 independent evaluation vẫn ràng buộc việc phát hành model mới. |
+
+Công việc đầu tiên của phiên tiếp theo là đọc [gate auto-stop R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md#auto-stop-tám-giờ), xác minh quyền đọc hẹp hoặc export đúng revision và hoàn tất bài test chỉ khi staging rảnh. Sau đó chuyển sang nhóm A.
