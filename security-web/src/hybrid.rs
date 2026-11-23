@@ -362,7 +362,7 @@ pub async fn approve(
 mod tests {
     use super::*;
     fn row() -> Value {
-        json!({"request_id":"a".repeat(32),"rules":[],"request_ai":{"status":"SCORED","model_version":"request-intelligence-v2-frozen-step3072","manifest_sha256":"b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f6b9ecc0ae96c","feature_profile":"selected_headers_no_body","score":0.99,"threshold":0.8826237916946411,"event_id":"b".repeat(32)},"correlation":{"status":"MATCHED","late_event":false}})
+        json!({"request_id":"a".repeat(32),"rules":[],"request_ai":{"status":"SCORED","model_version":"request-intelligence-v2-frozen-step3072","manifest_sha256":"b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c","feature_profile":"selected_headers_no_body","score":0.99,"threshold":0.8826237916946411,"event_id":"b".repeat(32)},"correlation":{"status":"MATCHED","late_event":false}})
     }
     #[test]
     fn ai_and_payload_rule_are_not_independent_block_votes() {
