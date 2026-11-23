@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { lookupHybrid } from "./hybridLookup";
+
 type Score = {
   event_id: string;
   request_id: string;
@@ -99,6 +101,59 @@ type Report = {
   } | null;
 };
 
+function HybridLookup({
+  api,
+  requestId,
+}: {
+  api: (path: string, options?: RequestInit) => Promise<unknown>;
+  requestId: string;
+}) {
+  const [result, setResult] =
+    useState<Awaited<ReturnType<typeof lookupHybrid>>>();
+  useEffect(() => {
+    if (!requestId) return;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    async function refresh() {
+      try {
+        const next = await lookupHybrid(api, requestId, controller.signal);
+        if (!controller.signal.aborted) setResult(next);
+      } catch {
+        if (!controller.signal.aborted)
+          setResult({ message: "Không tải được quyết định Hybrid." });
+      } finally {
+        if (!controller.signal.aborted) timer = setTimeout(refresh, 3000);
+      }
+    }
+    void refresh();
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [api, requestId]);
+  return (
+    <section aria-labelledby="hybrid-title">
+      <h3 id="hybrid-title">HTTPS AI R37 / Hybrid</h3>
+      {result?.fields ? (
+        <dl>
+          {result.fields.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd style={{ overflowWrap: "anywhere" }}>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p role="status">
+          {requestId
+            ? (result?.message ?? "Đang tra cứu Hybrid…")
+            : "Nhập Request ID để xem điểm HTTPS và quyết định Hybrid."}
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function AiShadow({
   api,
 }: {
@@ -139,15 +194,44 @@ export function AiShadow({
   return (
     <section className="panel" aria-labelledby="ai-title">
       <div className="panel-heading">
-        <h2 id="ai-title">AI shadow · Request Intelligence v2</h2>
+        <h2 id="ai-title">AI Shadow</h2>
         <span className="badge">Enforcement: DISABLED</span>
       </div>
+      <form
+        className="filters"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setFilter(requestId.trim());
+        }}
+      >
+        <label>
+          Request ID (32 ký tự hex)
+          <input
+            value={requestId}
+            onChange={(event) => setRequestId(event.target.value)}
+            pattern="[a-f0-9]{32}"
+            placeholder="X-Request-Id từ Nginx"
+          />
+        </label>
+        <button type="submit">Tra cứu</button>
+        <button
+          type="button"
+          onClick={() => {
+            setRequestId("");
+            setFilter("");
+          }}
+        >
+          Xem mới nhất
+        </button>
+      </form>
+      <HybridLookup key={filter} requestId={filter} api={api} />
+      <h3>AI Shadow v2 / GLU207</h3>
       <p className="muted">
         Score nghiên cứu, không phải xác suất tấn công hoặc Ground Truth. Cảnh
         báo AI mang nguồn AI_SHADOW; Suricata là nguồn phát hiện riêng.
       </p>
       <p role="status">
-        Worker:{" "}
+        Worker v2:{" "}
         <strong>
           {!worker
             ? "Chưa nhận heartbeat"
@@ -189,33 +273,7 @@ export function AiShadow({
           {error}
         </p>
       )}
-      <form
-        className="filters"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setFilter(requestId.trim());
-        }}
-      >
-        <label>
-          Request ID (32 ký tự hex)
-          <input
-            value={requestId}
-            onChange={(event) => setRequestId(event.target.value)}
-            pattern="[a-f0-9]{32}"
-            placeholder="X-Request-Id từ Nginx"
-          />
-        </label>
-        <button type="submit">Tra cứu</button>
-        <button
-          type="button"
-          onClick={() => {
-            setRequestId("");
-            setFilter("");
-          }}
-        >
-          Xem mới nhất
-        </button>
-      </form>
+
       {report?.detectors && (
         <>
           <h3>Rules và AI trên cùng transaction</h3>
