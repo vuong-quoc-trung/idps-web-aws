@@ -1,0 +1,48 @@
+%YAML 1.1
+---
+# Smoke profile for one synthetic conversation on the R42 plaintext leg.
+# Run only for the test window with a separate private -l directory and no alert rules.
+vars:
+  address-groups:
+    HOME_NET: "[127.77.0.2/32]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+af-packet:
+  - interface: lo
+    threads: 1
+    cluster-id: 198
+    cluster-type: cluster_flow
+    defrag: yes
+    use-mmap: yes
+    bpf-filter: "tcp and ((src host 127.77.0.1 and dst host 127.77.0.2 and dst port 18080) or (src host 127.77.0.2 and src port 18080 and dst host 127.77.0.1))"
+
+stream:
+  inline: no
+  checksum-validation: yes
+
+stats:
+  enabled: no
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      filemode: 600
+      types:
+        - http:
+            extended: yes
+            dump-all-headers: none
+  - lua:
+      enabled: yes
+      scripts-dir: /etc/suricata/websentinel-staging
+      scripts:
+        - transaction-evidence.lua
+
+app-layer:
+  protocols:
+    http:
+      enabled: yes
+
+unix-command:
+  enabled: no
