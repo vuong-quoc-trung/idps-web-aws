@@ -143,6 +143,7 @@ type Health = {
   healthy: boolean;
   database: boolean;
   firewall: boolean;
+  firewall_status?: string;
   firewall_in_sync: boolean;
   watchers: Record<
     string,
@@ -182,6 +183,12 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
     );
   }
 }
+function firewallMessage(code?: string | null) {
+  if (code === "ACTUATOR_OFFLINE") return "Actuator chưa hoạt động";
+  if (code === "FIREWALL_UNINITIALIZED") return "Chưa khởi tạo bảng chặn";
+  return code;
+}
+
 function App() {
   // Session token is memory-only: never localStorage or an automatically sent cookie.
   const [session, setSession] = useState<{ token: string; user: User } | null>(
@@ -884,7 +891,8 @@ function App() {
                       className={`badge ${w?.state === "error" ? "danger" : ""}`}
                     >
                       {w?.state === "watching"
-                        ? "Đọc được file"
+                        ? (w.last_data_at ? "Đọc được file" : "Chưa có dữ liệu")
+                        : w?.state === "NOT_STARTED" ? "NGINX Edge chưa khởi động"
                         : w?.state === "error"
                           ? "Lỗi đọc log"
                           : "Chưa xác định"}
@@ -1304,7 +1312,7 @@ function App() {
               <p className={blocked?.in_sync ? "notice" : "error"}>
                 {blocked?.in_sync
                   ? "Database khớp với nftables."
-                  : (blocked?.error ??
+                  : (firewallMessage(blocked?.error) ??
                     "Database và nftables chưa đồng bộ. Kiểm tra danh sách thực tế trước khi thao tác.")}
               </p>
               <p>
@@ -1669,7 +1677,7 @@ function App() {
                     "Kết nối được",
                     "Chưa sẵn sàng",
                   ],
-                  ["Firewall", health?.firewall, "Đọc được", "Chưa sẵn sàng"],
+                  ["Firewall", health?.firewall, "Đọc được", firewallMessage(health?.firewall_status) ?? "Chưa sẵn sàng"],
                   [
                     "DB / firewall",
                     health?.firewall_in_sync,
@@ -1774,7 +1782,8 @@ function App() {
                           {watcher?.state === "error"
                             ? "Lỗi đọc / xử lý nguồn log"
                             : watcher?.state === "watching"
-                              ? "Đọc log thành công"
+                              ? (watcher.last_data_at ? "Đọc log thành công" : "Chưa có dữ liệu")
+                              : watcher?.state === "NOT_STARTED" ? "NGINX Edge chưa khởi động"
                               : name === "STUDENT_AUDIT" && health && !watcher
                                 ? "Chưa cấu hình nguồn log"
                                 : "Chưa có kết quả kiểm tra"}

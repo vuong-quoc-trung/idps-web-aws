@@ -125,6 +125,19 @@ pub async fn scan(state: &AppState, source: &str, path: &str) -> Result<()> {
 }
 async fn scan_source(state: &AppState, source: &str, path: &str) -> Result<()> {
     let path = FsPath::new(path);
+    if source == "NGINX" && path == FsPath::new("/var/lib/ws-native/edge/access.jsonl") {
+        let active = tokio::process::Command::new("systemctl")
+            .args(["show", "--value", "-p", "ActiveState", "ws-native-edge.service"])
+            .output().await?;
+        if active.status.success() && active.stdout == b"inactive\n" {
+            let mut statuses = state.watchers.write().await;
+            let status = statuses.entry(source.into()).or_default();
+            status.state = "NOT_STARTED".into();
+            status.error = None;
+            status.pending_bytes = None;
+            return Ok(());
+        }
+    }
     let parent = path.parent().context("Log directory missing")?;
     let name = path
         .file_name()
@@ -156,7 +169,7 @@ async fn scan_source(state: &AppState, source: &str, path: &str) -> Result<()> {
         pending = pending.saturating_add(meta.len().saturating_sub(offset as u64));
         observed.insert(key, (meta.len(), meta.mtime(), meta.mtime_nsec()));
     }
-    anyhow::ensure!(path.exists(), "Active log file is missing");
+    fs::metadata(path).await.context("LOG_MISSING or unreadable active file")?;
     let mut statuses = state.watchers.write().await;
     let status = statuses.entry(source.into()).or_default();
     if observed

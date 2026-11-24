@@ -21,6 +21,24 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
     if action != "list-json" {
         prevention::require_execution()?;
     }
+    if action == "list-json" {
+        anyhow::ensure!(action == "list-json", "BLOCK_IP requires approved cutover");
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        return timeout(Duration::from_secs(4), async {
+            let mut stream = tokio::net::UnixStream::connect("/run/ws-native-fw-status.sock")
+                .await.context("ACTUATOR_OFFLINE")?;
+            stream.write_all(b"STATUS\n").await?;
+            stream.shutdown().await?;
+            let mut reply = String::new();
+            stream.take(262145).read_to_string(&mut reply).await?;
+            anyhow::ensure!(reply.len() <= 262144, "ACTUATOR_ERROR");
+            match reply.trim() {
+                "UNINITIALIZED" => bail!("FIREWALL_UNINITIALIZED"),
+                _ if !reply.starts_with('{') => bail!("ACTUATOR_ERROR"),
+                _ => Ok(reply),
+            }
+        }).await.context("ACTUATOR_TIMEOUT")?;
+    }
     let mut command = Command::new("sudo");
     command.arg("-n").arg(cmd).arg(action);
     if let Some(ip) = ip {

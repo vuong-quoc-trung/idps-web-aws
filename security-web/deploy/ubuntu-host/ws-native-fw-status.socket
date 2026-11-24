@@ -1,0 +1,9 @@
+[Unit]
+Description=Native prevention status, Security Backend only
+[Socket]
+ListenStream=/run/ws-native-fw-status.sock
+SocketUser=ws-native-security
+SocketMode=0600
+Accept=yes
+[Install]
+WantedBy=sockets.target

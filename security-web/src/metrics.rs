@@ -175,7 +175,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
             StatusCode::SERVICE_UNAVAILABLE
         },
         Json(
-            json!({"checked_at":Utc::now(),"operations":operations,"healthy":healthy,"database":database,"firewall":fw.is_ok(),"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
+            json!({"checked_at":Utc::now(),"operations":operations,"healthy":healthy,"database":database,"firewall":fw.is_ok(),"firewall_status":fw.as_ref().err().map(|e|e.to_string()).unwrap_or_else(||"READY".into()),"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
         ),
     )
 }
