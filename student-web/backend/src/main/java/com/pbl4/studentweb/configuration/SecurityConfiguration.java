@@ -27,6 +27,8 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, UserRepository users, UserAccountService accounts, SensitiveRequestLimiter limiter,
             com.pbl4.studentweb.accesslog.service.SecurityAuditService audit, RequestAttribution attribution,
+            com.pbl4.studentweb.accesslog.service.AuditJsonlExporter exporter,
+            org.springframework.core.env.Environment environment,
             @org.springframework.beans.factory.annotation.Value("${app.audit.include-successful-reads:true}") boolean includeReads) throws Exception {
         // Default session-backed CSRF tokens are obtained from /api/auth/csrf and sent in the returned header.
         http.authorizeHttpRequests(auth -> auth
@@ -41,8 +43,33 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/api/faculties/**", "/api/majors/**", "/api/classes/**", "/api/training-programs/**").authenticated()
                 .requestMatchers("/api/faculties/**", "/api/majors/**", "/api/classes/**", "/api/training-programs/**").hasAnyRole("ADMIN", "STAFF")
                 .anyRequest().denyAll());
+        var leasePath = environment.getProperty("app.dev.session-lease-dir", "");
+        var leases = environment.matchesProfiles("ws-i5-development") && !leasePath.isBlank()
+                ? new DevSessionLease(leasePath, exporter, environment.getProperty("app.dev.account-locks", Boolean.class, false)) : null;
+        var nativeDirectory = environment.getProperty("app.native.session-lease-dir", "");
+        final DevSessionLease selected;
+        if (!nativeDirectory.isBlank()) {
+            if (leases != null) throw new IllegalStateException("Conflicting lease modes");
+            var ids = java.util.Arrays.stream(environment.getRequiredProperty("app.native.lab-user-ids").split(","))
+                    .map(String::trim).map(Long::valueOf).collect(java.util.stream.Collectors.toUnmodifiableSet());
+            selected = new DevSessionLease(nativeDirectory, exporter, true, ids);
+        } else selected = leases;
         http.formLogin(form -> form.loginProcessingUrl("/api/auth/login")
                 .successHandler((request, response, auth) -> {
+                    if (selected != null && auth.getPrincipal() instanceof AccountPrincipal actor) {
+                        try {
+                            var locked = selected.accountDecision(actor);
+                            if (locked.isPresent()) {
+                                new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler().logout(request, response, auth);
+                                ActiveAccountFilter.accountDenied(request, response, locked.get());
+                                return;
+                            }
+                        } catch (java.io.IOException e) {
+                            new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler().logout(request, response, auth);
+                            error(response, 503, "Account check unavailable");
+                            return;
+                        }
+                    }
                     accounts.recordLogin(auth.getName());
                     response.setStatus(204);
                 })
@@ -76,7 +103,7 @@ public class SecurityConfiguration {
         http.sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId()));
         http.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'")));
         http.requestCache(cache -> cache.disable());
-        http.addFilterBefore(new ActiveAccountFilter(users), AuthorizationFilter.class);
+        http.addFilterBefore(new ActiveAccountFilter(users, selected), AuthorizationFilter.class);
         return http.build();
     }
     private static void decisionMetadata(jakarta.servlet.http.HttpServletRequest request, HttpServletResponse response, int status) {

@@ -22,6 +22,13 @@ public class AuditJsonlExporter {
     private final Path path;
     private final String sourceInstance;
     private final byte[] key;
+    private byte[] sessionKey;
+    @Value("${app.native.session-key:}")
+    void configureSessionKey(String secret) {
+        if (secret.isEmpty()) return;
+        if (!secret.matches("[0-9a-f]{64}")) throw new IllegalArgumentException("Invalid native session key");
+        this.sessionKey = secret.getBytes(StandardCharsets.US_ASCII);
+    }
     private final long maxFileBytes;
     private final JsonMapper mapper;
     private final boolean groupReadable;
@@ -142,11 +149,22 @@ public class AuditJsonlExporter {
         return result;
     }
 
+    public String accountLeaseSelector(long userId) {
+        if (!enabled || key.length < 32) throw new IllegalStateException("Authenticated audit pseudonyms required");
+        return "account-" + pseudonym("user_id", Long.toString(userId)).substring("hmac-sha256:".length());
+    }
+
+    public String sessionLeaseSelector(long userId, String sessionId) {
+        if (!enabled || key.length < 32) throw new IllegalStateException("Authenticated audit pseudonyms required");
+        return pseudonym("user_id", Long.toString(userId)).substring("hmac-sha256:".length())
+            + "." + pseudonym("session", sessionId).substring("hmac-sha256:".length());
+    }
+
     private String pseudonym(String purpose, String value) {
         if (value == null) return null;
         try {
             var mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(key, "HmacSHA256"));
+            mac.init(new SecretKeySpec("session".equals(purpose) && sessionKey != null ? sessionKey : key, "HmacSHA256"));
             return "hmac-sha256:" + HexFormat.of().formatHex(mac.doFinal((purpose + ":" + value).getBytes(StandardCharsets.UTF_8)));
         } catch (java.security.GeneralSecurityException e) {
             throw new IllegalStateException("Audit pseudonymization is unavailable");
