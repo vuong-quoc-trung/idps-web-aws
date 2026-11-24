@@ -143,6 +143,26 @@ def publish(plan, rid, action, directory, gid, cancel=False, *, state, auto_wind
         target = directory / selector
         current = target.read_text() if target.exists() else None
         record = lease_record(plan)
+        if auto_window and auto_window[1] is None:
+            if not native or directory != Path("/run/ws-native-leases"):
+                deny("Continuous authorization requires native actuator")
+            from native_policy import current as current_policy, require_ready
+            policy = current_policy()
+            require_ready(policy)
+            cfg = policy["actions"].get(action, {})
+            if (policy.get("mode") != "CONTINUOUS" or policy["start"] != auto_window[0]
+                    or native["action"] != action or any(native[k] != cfg.get(k) for k in
+                    ("events","window_seconds","ttl","source_instance","cooldown"))):
+                deny("Continuous authorization changed")
+            evidence = plan["evidence"]
+            if (len(set(evidence)) != len(evidence) or rid not in evidence or len(evidence) < cfg["events"]
+                    or not all(re.fullmatch("[0-9a-f]{32}", e) for e in evidence)
+                    or not policy["start"] <= plan["oldest"] <= issued
+                    or now-plan["oldest"] > cfg["window_seconds"] or end-issued > cfg["ttl"]):
+                deny("Insufficient fresh independent evidence")
+            if ((action == "BLOCK_ACCOUNT" and selector != "account-"+cfg["lab_actor"])
+                    or (action == "BLOCK_SESSION" and not selector.startswith(cfg["lab_actor"]+"."))):
+                deny("Outside approved actor scope")
         if row:
             if row[0] == encoded and current == record:
                 return audit("ALREADY_ACTIVE")
@@ -150,7 +170,7 @@ def publish(plan, rid, action, directory, gid, cancel=False, *, state, auto_wind
         if auto_window:
             start, until = auto_window
             if ((native is None and action != "BLOCK_REQUEST") or (native and action != native["action"]) or not start <= plan["oldest"] <= issued
-                    or end > until or until-start > 900 or end-issued > (native["ttl"] if native else 15)):
+                    or (until is None and not native) or (until is not None and (end > until or until-start > 900)) or end-issued > (native["ttl"] if native else 15)):
                 deny("Outside automatic canary authorization")
             # Journal is locked across this check and reservation. Revocation never
             # erases previous consumption, and retries cannot extend cooldown.

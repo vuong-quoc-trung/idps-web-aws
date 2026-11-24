@@ -10,6 +10,7 @@ import sys
 import time
 import sqlite3
 import subprocess
+from native_policy import check_scope, limits, require_ready
 from vm_transport import deliver
 from direct_peer import check_listener_name, scope, verify, ip_actuate
 
@@ -77,9 +78,10 @@ def main():
     if CONFIG.resolve() != CONFIG or CONFIG.stat().st_uid != 0 or CONFIG.stat().st_mode & 0o022:
         sys.exit("Unsafe operator policy")
     policy = json.loads(CONFIG.read_text())
-    start, end = policy["start"], policy["end"]
-    if not start <= time.time() < end or not 0 < end-start <= 600:
+    start, end = limits(policy)
+    if time.time() < start or (end is not None and time.time() >= end):
         return
+    require_ready(policy)
     if not set(policy["actions"]) <= set(ACTIONS):
         sys.exit("Unsupported action in native policy")
     for action in ACTIONS:
@@ -91,19 +93,20 @@ def main():
             sys.exit("Invalid authorization")
         threshold = {k:cfg[k] for k in ("events","window_seconds","ttl","source_instance")}
         threshold["action"] = action
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as peer:
-            peer.settimeout(7)
-            peer.connect("/run/ws-native-plan.sock")
-            peer.sendall(action.encode("ascii"))
-            peer.shutdown(socket.SHUT_WR)
-            with peer.makefile("rb") as stream:
-                payload = stream.read(65537)
-        if len(payload)>65536:
-            raise ValueError("Oversized native plan")
-        plan=json.loads(payload)
-        if plan is None:
-            continue
+        plan = None
         try:
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as peer:
+                peer.settimeout(7)
+                peer.connect("/run/ws-native-plan.sock")
+                peer.sendall(action.encode("ascii"))
+                peer.shutdown(socket.SHUT_WR)
+                with peer.makefile("rb") as stream:
+                    payload = stream.read(65537)
+            if len(payload)>65536:
+                raise ValueError("Oversized native plan")
+            plan=json.loads(payload)
+            if plan is None:
+                continue
             if action in ("BLOCK_ACCOUNT","BLOCK_SESSION"):
                 actor = cfg.get("lab_actor","")
                 if not re.fullmatch("[0-9a-f]{64}",actor) or not (
@@ -111,15 +114,18 @@ def main():
                         else plan["selector"].startswith(actor+".")):
                     raise ValueError("Outside operator-verified VM lab identity")
             if action == "BLOCK_IP":
+                check_scope(policy)
                 direct = scope()
                 check_listener_name(direct)
                 verify(plan, direct)
                 plan["selector"] = "ip-" + direct["exclusive_lab_peer"]
+            if end is None and action in ("BLOCK_SESSION", "BLOCK_ACCOUNT"):
+                deliver("ready")
             outcome = publish(plan,plan["request_id"],action,RUN,gid,
                   state=BASE,auto_window=(start,end),native=threshold|{"cooldown":cfg["cooldown"]})
-            if action == "BLOCK_IP" and outcome == "ALREADY_ACTIVE":
+            if action != "BLOCK_REQUEST" and outcome == "ALREADY_ACTIVE":
                 with sqlite3.connect(BASE / "approvals.sqlite3") as db:
-                    ack = db.execute("SELECT 1 FROM audit WHERE action=? AND rid=? AND operator='kernel-actuator' AND outcome='APPLIED' LIMIT 1",
+                    ack = db.execute("SELECT 1 FROM audit WHERE action=? AND rid=? AND outcome='APPLIED' LIMIT 1",
                                      (action,plan["request_id"])).fetchone()
                 if ack:
                     continue  # Kernel expiry or manual withdrawal cannot re-arm this evidence.
@@ -131,15 +137,15 @@ def main():
                         (int(time.time()), ("kernel-actuator" if action == "BLOCK_IP" else "student-vm"), action, plan["request_id"], outcome, action, plan["request_id"], outcome))
             print(action,plan["request_id"],outcome)
         except (ValueError, OSError, RuntimeError, subprocess.SubprocessError) as exc:
-            if action != "BLOCK_IP" and not isinstance(exc, ValueError):
+            if end is not None and action != "BLOCK_IP" and not isinstance(exc, ValueError):
                 raise
-            if action == "BLOCK_IP":
+            if isinstance(plan, dict) and (end is None or action == "BLOCK_IP"):
                 with sqlite3.connect(BASE / "approvals.sqlite3") as db:
                     db.execute("""INSERT INTO audit(at,operator,action,rid,outcome)
                         SELECT ?,'native-worker',?,?,'REVIEW' WHERE NOT EXISTS
                         (SELECT 1 FROM audit WHERE action=? AND rid=? AND outcome='REVIEW')""",
                         (int(time.time()),action,plan["request_id"],action,plan["request_id"]))
-            print("REVIEW" if action=="BLOCK_IP" else "SKIPPED",action,plan["request_id"],str(exc))
+            print("REVIEW" if action=="BLOCK_IP" else "SKIPPED",action,plan.get("request_id","-") if isinstance(plan,dict) else "-",str(exc))
             continue
         # publish() atomically rejects cross-action reuse of consumed evidence.
 

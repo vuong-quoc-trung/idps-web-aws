@@ -66,7 +66,7 @@ def prepare(archive, out):
         shutil.copy2(src,lib/row["name"])
     shutil.copy2(SEC/"deploy/dev-i5/adaptive/restore_fingerprint.py",out)
     shutil.copy2(SEC/"deploy/dev-i5/adaptive/preflight_guest.py",out/"restore_compare.py")
-    for name in ("stage-db-config.py","docker_pg.py","vm_transport.py","direct_peer.py","worker.py","control.sh","db_check.py","preflight.py","install-first.sh"):
+    for name in ("stage-db-config.py","docker_pg.py","native_policy.py","vm_transport.py","direct_peer.py","worker.py","control.sh","db_check.py","preflight.py","install-first.sh"):
         shutil.copy2(HERE/name,out/name)
     shutil.copy2(SEC/"deploy/dev-i5/adaptive/approve_session.py",out)
     migrations = sorted((SEC/"migrations").glob("*.sql"))

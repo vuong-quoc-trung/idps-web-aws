@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 
+from native_policy import check_scope, current as current_policy, limits, require_ready
 from direct_peer import scope, verify, check_table
 
 def nft(*args):
@@ -26,6 +27,7 @@ with socket.socket(fileno=os.dup(0)) as sock:
     if msg == {"op":"readiness"}:
         stage = "direct-peer"
         try:
+            check_scope(current_policy())
             cfg=scope(require_neighbor=False)
             stage = "nftables"
             check_table(cfg,nft("-st","list","table","inet","ws_native_lab_peer"))
@@ -65,9 +67,12 @@ with socket.socket(fileno=os.dup(0)) as sock:
     if msg["op"]=="apply":
         p=Path("/etc/ws-native/approval.json")
         if p.resolve()!=p or p.stat().st_uid or p.stat().st_mode & 0o022: raise ValueError("Untrusted window")
-        policy=json.loads(p.read_bytes())
+        policy=current_policy()
+        require_ready(policy)
+        check_scope(policy)
+        start, end = limits(policy)
         ttl=int(plan["expires"]-time.time())
-        if not (1<=ttl<=15 and 0<policy["end"]-policy["start"]<=600 and policy["start"]<=plan["oldest"]<=plan["issued"]<=time.time()<plan["expires"]<=policy["end"] and "BLOCK_IP" in policy["actions"]):
+        if not (1<=ttl<=15 and start<=plan["oldest"]<=plan["issued"]<=time.time()<plan["expires"] and (end is None or plan["expires"] <= end) and "BLOCK_IP" in policy["actions"]):
             raise ValueError("Outside authorization")
         # Independently re-read Rust's decision across the service credential boundary.
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as planner:
@@ -85,6 +90,9 @@ with socket.socket(fileno=os.dup(0)) as sock:
         ttl=int(plan["expires"]-time.time())
         if ttl < 1: raise ValueError("Expired during verification")
         if probe.returncode and b"No such file or directory" not in probe.stderr: raise ValueError("Cannot read current set")
+        if current_policy() != policy:
+            raise ValueError("Operator authorization changed before apply")
+        require_ready(policy)
         if probe.returncode: nft("create",*key[:-1],"timeout",f"{ttl}s","comment",f'"{rid}"',"}")
         elif tag not in probe.stdout: raise ValueError("Existing unrelated lease")
     elif msg["op"]=="revoke":
