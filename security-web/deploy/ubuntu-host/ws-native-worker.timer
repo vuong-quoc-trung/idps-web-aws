@@ -1,0 +1,7 @@
+[Unit]
+Description=Poll the authorized native prevention window
+[Timer]
+OnActiveSec=1
+OnUnitInactiveSec=3
+AccuracySec=1
+Unit=ws-native-worker.service

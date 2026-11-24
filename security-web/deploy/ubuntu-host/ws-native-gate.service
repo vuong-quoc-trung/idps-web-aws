@@ -1,0 +1,22 @@
+[Unit]
+Description=WebSentinel native scoped request gate
+[Service]
+Type=exec
+User=ws-native-gate
+EnvironmentFile=/etc/ws-native/gate.env
+Group=ws-native-evidence
+UMask=0027
+RuntimeDirectory=ws-native-gate
+RuntimeDirectoryMode=0750
+LoadCredential=session.key:/etc/ws-native/session.key
+Environment=WS_NATIVE_SESSION_KEY_FILE=%d/session.key
+Environment=WS_DEV_GATE_DIR=/run/ws-native-gate
+Environment=WS_DEV_GATE_LEASE_DIR=/run/ws-native-leases
+ExecStartPre=/usr/bin/rm -f /run/ws-native-gate/gate.sock
+ExecStart=/opt/ws-native/current/security/pbl4-security-demo --dev-edge-gate
+ExecStartPost=+/bin/bash -ec 'for i in {1..100}; do test -S /run/ws-native-gate/gate.sock && break; sleep 0.05; done; setfacl -m u:ws-native-edge:--x /run/ws-native-gate; setfacl -m u:ws-native-edge:rw /run/ws-native-gate/gate.sock'
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadOnlyPaths=/run/ws-native-leases
+ProtectHome=yes
+Restart=on-failure
