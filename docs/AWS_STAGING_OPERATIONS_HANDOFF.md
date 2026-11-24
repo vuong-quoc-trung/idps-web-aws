@@ -1,6 +1,6 @@
 # AWS staging — Vận hành và bàn giao
 
-Bắt đầu với [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
+Bắt đầu với [kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) và [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
 
 ## Kiến trúc
 
@@ -9,7 +9,7 @@ flowchart LR
     subgraph existing["AWS staging hiện có hoặc đã ghi nhận qua telemetry"]
         op["Operator Websecurity"] --> ssm["SSM Session Manager"]
         ssm --> ec2["EC2 m7i-flex.large<br/>Ubuntu 26.04 amd64"]
-        net["Internet Gateway và security group TCP 80/443"] --> eip["Elastic IP 13.229.169.1"]
+        net["Internet Gateway và security group TCP 80/443"] --> eip["Elastic IP staging"]
         eip --> ec2
         ec2 --- disk["Root EBS gp3 40 GiB mã hóa"]
         schedule["Scheduler default/websentinel-autostop-check-15m<br/>Theo bàn giao Console"] -.-> fn["Lambda websentinel-autostop-8h<br/>CloudWatch có invocation"]
@@ -38,14 +38,15 @@ Local Beta đã kiểm tra HTTPS, correlation ba nguồn, R37 và Hybrid post-ob
 
 ## 1. Phiên thao tác và inventory
 
-Trong Console chọn account `680480584595`, IAM `Websecurity` và region `Asia Pacific (Singapore)`. CLI dùng AWS CLI v2 và Session Manager plugin cho phiên tương tác. Trước mỗi thao tác ghi, xác nhận contract không đổi và hồ sơ trả đúng account/ARN. Các block dưới đây dùng Bash và `jq` để đọc JSON khi cần.
+Trong Console chọn account staging đã bàn giao, IAM `Websecurity` và region `Asia Pacific (Singapore)`. CLI dùng AWS CLI v2 và Session Manager plugin cho phiên tương tác. Trước mỗi thao tác ghi, xác nhận contract không đổi và hồ sơ trả đúng account/ARN. Các block dưới đây dùng Bash và `jq` để đọc JSON khi cần. Đặt các biến inventory từ cấu hình staging đã được bàn giao trước khi chạy.
 
 ```bash
 profile=websecurity-staging
 region=ap-southeast-1
-instance=i-0b6f2e4f3ed32f514
-volume=vol-06f41700f2be0f4c3
-allocation=eipalloc-0ac40a8944068063a
+account="${WEBSENTINEL_AWS_ACCOUNT_ID:?Set WEBSENTINEL_AWS_ACCOUNT_ID from staging inventory}"
+instance="${WEBSENTINEL_STAGING_INSTANCE_ID:?Set WEBSENTINEL_STAGING_INSTANCE_ID from staging inventory}"
+volume="${WEBSENTINEL_STAGING_ROOT_VOLUME_ID:?Set WEBSENTINEL_STAGING_ROOT_VOLUME_ID from staging inventory}"
+allocation="${WEBSENTINEL_STAGING_EIP_ALLOCATION_ID:?Set WEBSENTINEL_STAGING_EIP_ALLOCATION_ID from staging inventory}"
 fn=websentinel-autostop-8h
 schedule=websentinel-autostop-check-15m
 group=default
@@ -55,7 +56,7 @@ aws_staging() { aws --profile "$profile" --region "$region" --no-cli-pager "$@";
 check_identity() {
   local identity
   identity=$(aws_staging sts get-caller-identity --query Arn --output text) || return 1
-  if [[ "$identity" != arn:aws:iam::680480584595:user/Websecurity ]]; then
+  if [[ ! "$account" =~ ^[0-9]{12}$ || "$identity" != "arn:aws:iam::$account:user/Websecurity" ]]; then
     printf 'Unexpected AWS caller: %s\n' "$identity" >&2
     return 1
   fi
@@ -136,7 +137,7 @@ aws_staging ec2 describe-volumes --volume-ids "$volume"
 
 ## 3. Auto-stop tám giờ
 
-Scheduler dự kiến kiểm mỗi 15 phút và chỉ gọi Lambda. Người dùng Start EC2 theo nhu cầu. Hàm chỉ xử lý đúng instance `i-0b6f2e4f3ed32f514` tại Singapore, kiểm `running`, ID và tag `Project=WebSentinel`, rồi tính tuổi phiên dựa trên `LaunchTime`. AWS cập nhật trường này sau stop/start. Nghĩa của 480 phút là một phiên chạy liên tục. Chu kỳ 15 phút, flexible window, delivery/retry và graceful shutdown có thể làm thời điểm `stopped` muộn hơn mốc tám giờ. Auto-stop không quản lý tổng giờ/tháng. [LaunchTime](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html) · [Scheduler timing](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html)
+Scheduler dự kiến kiểm mỗi 15 phút và chỉ gọi Lambda. Người dùng Start EC2 theo nhu cầu. Thiết kế yêu cầu hàm chỉ xử lý đúng instance staging tại Singapore, kiểm `running`, ID và tag `Project=WebSentinel`, rồi tính tuổi phiên dựa trên `LaunchTime`. AWS cập nhật trường này sau stop/start. Nghĩa của 480 phút là một phiên chạy liên tục. Chu kỳ 15 phút, flexible window, delivery/retry và graceful shutdown có thể làm thời điểm `stopped` muộn hơn mốc tám giờ. Auto-stop không quản lý tổng giờ/tháng. [LaunchTime](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html) · [Scheduler timing](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html)
 
 ### Đọc cấu hình và log
 
@@ -160,7 +161,7 @@ Trong CloudWatch, chọn `AWS/Lambda` theo `FunctionName` và đọc `Invocation
 |---|---|
 | Operator `Websecurity` | Describe cần thiết, EC2 Start/Stop giới hạn đúng instance/tag staging, SSM StartSession trên đúng instance và session document cần dùng. Điều tra R45 cần `lambda:GetFunction`, `lambda:GetFunctionConfiguration`, `scheduler:GetSchedule` trên resource cụ thể, đọc trust/policy của đúng roles và CloudWatch. `lambda:InvokeFunction`, `lambda:UpdateFunctionConfiguration` hoặc `scheduler:UpdateSchedule` chỉ cấp cho người chạy bài test và khôi phục. |
 | EC2 role `WebSentinel-Staging-EC2-Role` | Trust `ec2.amazonaws.com`, profile cùng tên. Attach `AmazonSSMManagedInstanceCore` hoặc policy tương đương đã kiểm. |
-| Lambda role `websentinel-autostop-8h-role-4h86gnbd` | Trust `lambda.amazonaws.com`. `ec2:DescribeInstances` dùng Resource `*` vì action này không hỗ trợ instance ARN. `ec2:StopInstances` dùng instance ARN `arn:aws:ec2:ap-southeast-1:680480584595:instance/i-0b6f2e4f3ed32f514`, thêm điều kiện tag `Project=WebSentinel` và `Environment=Staging`. Quyền log chỉ trong group/function cần dùng. Audit `WebSentinel-AutoStop-EC2Policy` và cả policy đính kèm, để phát hiện đường stop rộng, quyền terminate hoặc start. |
+| Lambda role `<LAMBDA_EXECUTION_ROLE>` | Trust `lambda.amazonaws.com`. `ec2:DescribeInstances` dùng Resource `*` vì action này không hỗ trợ instance ARN. `ec2:StopInstances` dùng instance ARN `arn:aws:ec2:ap-southeast-1:<ACCOUNT_ID>:instance/<INSTANCE_ID>`, thêm điều kiện tag `Project=WebSentinel` và `Environment=Staging`. Quyền log chỉ trong group/function cần dùng. Audit `WebSentinel-AutoStop-EC2Policy` và cả policy đính kèm, để phát hiện đường stop rộng, quyền terminate hoặc start. |
 | Scheduler execution role | Trust `scheduler.amazonaws.com`. Giới hạn confused deputy bằng `aws:SourceAccount` và `aws:SourceArn` theo group đã chọn, đồng thời kiểm chỉ schedule được quản lý có quyền dùng role. Cho phép `lambda:InvokeFunction` đúng function ARN hoặc alias đã pin. Operator `iam:PassRole` chỉ trên role và service cần dùng. |
 
 [EC2 IAM actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html) · [Scheduler execution role và confused deputy](https://docs.aws.amazon.com/scheduler/latest/UserGuide/cross-service-confused-deputy-prevention.html)
@@ -182,7 +183,7 @@ Trong Console mở Billing → Credits để xem từng credit, expiry và eligi
 ```bash
 aws --profile "$profile" --region us-east-1 freetier get-account-plan-state
 aws --profile "$profile" --region us-east-1 budgets describe-notifications-for-budget \
-  --account-id 680480584595 --budget-name WebSentinel-Monthly-Budget
+  --account-id "$account" --budget-name WebSentinel-Monthly-Budget
 ```
 
 ## 5. Tái tạo môi trường tương đương
@@ -199,8 +200,92 @@ aws --profile "$profile" --region us-east-1 budgets describe-notifications-for-b
 
 | Nhóm | Điều kiện bắt đầu và nghiệm thu |
 |---|---|
-| A. Domain, DNS, NGINX và HTTPS | Xác nhận quyền với `student-dut.duckdns.org` và `websentinal.duckdns.org`, EIP ổn định và cửa sổ staging được phép. DNS hiện NXDOMAIN theo R45. Chọn record trỏ đúng EIP, kiểm DNS từ resolver độc lập, cấp TLS theo quy trình được phê duyệt, kiểm SAN/chain, renewal, HTTPS và redirect 80 → 443. Xác minh listener công khai ở edge, không publish upstream. |
+| A. Domain, DNS, NGINX và HTTPS | Xác nhận quyền với `student-dut.duckdns.org` và `websentinal.duckdns.org`, EIP ổn định và cửa sổ staging được phép. DNS đã trỏ đúng EIP theo hai resolver ở R46. Đọc lại EIP mapping qua API, cấp TLS theo quy trình được phê duyệt, kiểm SAN/chain, renewal, HTTPS và redirect 80 → 443. Xác minh listener công khai ở edge, không publish upstream. |
 | B. AI-IDPS | Phê duyệt AWS Resource Safety Profile dành riêng EC2. Xác minh instance identity, cgroup v2, top-level quota riêng cho stack, kernel readback, PSI/OOM, guardian watchdog, disk/log bounds, fault cleanup và ABSTAIN. EC2 status/CPU metrics không được dùng làm nhiệt độ vật lý. Điểm bắt đầu để đo sau khi profile được phê duyệt là slice ứng dụng 150% CPU và 6 GiB RAM, scorer 50% CPU và 512 MiB, swap 0, PID giới hạn. Các mức này là đề xuất R44, cần đo headroom và latency toàn stack trên EC2. Tái dùng R37 URI100 và R36 rollback kèm SHA, setup PostgreSQL roles/database và bind loopback, kiểm NGINX/njs và Suricata Lua/AF_PACKET trên decrypted leg, đưa stack systemd lên đúng host. C2 đóng, AI auto-ban OFF. |
 | C. Acceptance, monitoring, backup, rollback | Trước mở traffic, chứng minh end-to-end HTTPS trên đúng host và cùng trusted request ID qua NGINX, Suricata, Student Audit, R37 và Rust Hybrid. Ghi masks, cutoff 1.000 ms, guard 1 ms, ABSTAIN, parity, cold/warm latency và quota thực. Kiểm tài nguyên trong hạn 2 vCPU/8 GiB, log rotation, restore DB đã diễn tập, rollback R36 và graceful stop. T07 independent evaluation vẫn ràng buộc việc phát hành model mới. |
 
 Công việc đầu tiên của phiên tiếp theo là đọc [gate auto-stop R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md#auto-stop-tám-giờ), xác minh quyền đọc hẹp hoặc export đúng revision và hoàn tất bài test chỉ khi staging rảnh. Sau đó chuyển sang nhóm A.
+
+## 7. NGINX và HTTPS R46
+
+R46 kiểm thử cả hai gateway template trên NGINX Ubuntu. Cả hai domain đã có A record đúng EIP và không có AAAA tại lần kiểm R46. Chỉ deploy template sau khi SSM đọc được trạng thái guest và xác nhận cửa sổ staging. [Kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) · [HTTP](../security-web/deploy/aws-r46/nginx-http.conf) · [HTTPS](../security-web/deploy/aws-r46/nginx-https.conf)
+
+1. Qua SSM, kiểm `ss -lnt`, `systemctl is-active nginx`, package candidate qua `apt-cache policy nginx certbot python3-certbot-nginx`, disk và các vhost hiện có. Dùng Ubuntu APT đã xác minh và chỉ cài package cần thiết. Không đổi SG khi 80/443 đã sẵn sàng. Nếu có service khác hoặc config ngoài R46 đang dùng 80/443, giữ nguyên và kiểm quyền sở hữu trước khi chuyển.
+2. Sao lưu `/etc/nginx` vào thư mục root-only trên EBS với timestamp, ghi lại các file và symlink sẽ thay. Chỉ bỏ symlink `sites-enabled/default` nếu đúng cấu hình mặc định của package và chưa được dùng. Không ghi đè site ngoài R46. Đặt một file do R46 sở hữu tại `/etc/nginx/conf.d/websentinel-staging.conf`, bắt đầu bằng mẫu HTTP. Tạo webroot `/var/lib/websentinel/acme/.well-known/acme-challenge` có quyền đọc cho worker. Chạy `nginx -t` rồi reload. Nếu lỗi, khôi phục riêng file và symlink vừa thay, chạy `nginx -t` trước reload. Kiểm nginx enabled và active trước khi kết thúc.
+3. Từ ngoài EC2, thử `curl -fsS http://student-dut.duckdns.org/` và host Security để phân biệt nội dung. IP trực tiếp/default host trả 421. Tạo một file probe không nhạy cảm ở webroot rồi đọc qua cả hai hostname, xóa file sau test. Khi domain đổi, cập nhật DNS, `server_name`, SAN và test hostname/SNI trước cutover.
+4. Cài `certbot` và `python3-certbot-nginx` nếu guest chưa có. Dùng HTTP-01 `webroot` để giữ quyền kiểm soát vhost rõ ràng. Người vận hành trực tiếp đăng ký account Let's Encrypt và đồng ý điều khoản nếu cần. Sau đó chạy cấp cert một lần, dùng đúng lineage và hai SAN. Không dùng khóa thử nghiệm cho public. [HTTP-01](https://letsencrypt.org/docs/challenge-types/) · [Certbot](https://eff-certbot.readthedocs.io/en/stable/using.html)
+
+```bash
+sudo certbot certonly --webroot --webroot-path /var/lib/websentinel/acme \
+  --cert-name websentinel-staging \
+  -d student-dut.duckdns.org -d websentinal.duckdns.org
+sudo certbot certificates
+sudo openssl x509 -in /etc/letsencrypt/live/websentinel-staging/fullchain.pem \
+  -noout -issuer -dates -ext subjectAltName
+sudo stat -L -c '%U:%G %a %n' \
+  /etc/letsencrypt/live/websentinel-staging/privkey.pem
+```
+
+5. Chỉ sau khi verify cả hai SAN và quyền private key, thay file gateway bằng mẫu HTTPS, `nginx -t` và reload. Xác minh `curl -fsS` dùng trust store hệ thống cho hai URL HTTPS, `curl -sSI` trên HTTP trả 308 đúng hostname, HTTP-01 vẫn phục vụ file, direct IP/unknown SNI bị từ chối. Dùng `openssl s_client -verify_return_error -verify_hostname` với đúng `-servername` nếu cần tách lỗi DNS/SNI/chain.
+6. Xác minh `certbot.timer` hoặc lịch tương đương, dùng deploy hook root-only chạy `nginx -t && systemctl reload nginx` khi renew thành công. Sau khi port 80 và challenge đạt, chạy `sudo certbot renew --dry-run` và kiểm journal. Timer không làm việc trong lúc EC2 Stopped. Kiểm thời hạn mỗi lần start, kiểm `Persistent` của timer và chủ động chạy renewal khi đến hạn trong một cửa sổ EC2 running.
+7. Giữ access log staging `/var/log/nginx/websentinel-staging-access.log` với định dạng chỉ gồm thời gian, server name, method, status và duration. Kiểm `/etc/logrotate.d/nginx` quản lý file, đề xuất xoay hằng ngày/giữ 7 bản. Dùng `journalctl -u nginx` và error log để xử lý lỗi mà không xuất cookie / body / credential. Chỉ đưa upstream thật vào khi health ở loopback và auth Security Web đã kiểm chứng.
+
+## 8. Suricata R46
+
+Bản thử dùng Ubuntu Suricata `1:8.0.3-1`, đúng version của Local Beta, EVE JSON HTTP cùng output Lua trên `lo`. Interface public chỉ dùng để đối chiếu route. R46 chuẩn bị một sensor thụ động hữu hạn trên leg tổng hợp `127.77.0.1 → 127.77.0.2:18080`. Trước khi chạy, xác nhận `lo`, port fixture và các endpoint thật bằng `ip -br addr` và `ss -lnt`. Không copy `eth0`/`vmnet3` từ cấu hình cũ, không bật inline, không capture ngoài leg đã giới hạn. [Mẫu sensor](../security-web/deploy/aws-r46/suricata-smoke.yaml) · [Lua Local](../security-web/config/suricata/transaction-evidence.lua)
+
+- Khi cài lần đầu trên guest, kiểm unit hiện có trước. Ngăn auto-start mặc định của package cho sensor chưa nghiệm thu. Nếu unit đã có và thuộc người khác, dừng bước cài thay vì đổi trạng thái. Kiểm `suricata --build-info` có AF_PACKET và HAVE_LUA. Stage mẫu và Lua được pin tại `/etc/suricata/websentinel-staging` bằng quyền root, giữ config hệ thống cũ để rollback.
+- Chạy `suricata -T --disable-detection --af-packet --runmode single -c PROFILE -l PRIVATE_DIR`. Sau đó chạy một transient unit hữu hạn, dùng `--disable-detection` và cùng profile. Khi chưa có Student backend, chỉ dùng một loopback fixture do nhóm sở hữu, cấp request ID ở proxy và kiểm đúng một HTTP transaction cho một GET. Tạo thư mục log riêng `0700`, `UMask=0077`, request ID tổng hợp. Dùng tối đa một thread capture, CPUQuota 100%, MemoryMax 768 MiB của profile Local làm giới hạn trên cho smoke. Đọc quota/RSS peak và disk từ cgroup thuộc unit.
+- Kiểm mode `0600` cho EVE và Lua, khớp `flow_id`, `tx_id`, generation, request ID và địa chỉ/cổng. Đọc journal, kernel drops, memory và CPU trên đúng EC2. Dừng unit thử khi xong và xác minh không có sensor tạm còn chạy. Sensor package nên idle/disabled khi chưa có tải mục tiêu. Với vận hành dài hạn, chuyển về profile release đã duyệt và xác minh rotation, cursor, disk upper bound, privacy và scope trước khi bật.
+- Với production request correlation, R42 yêu cầu proof/receipt ký, nguồn Student Audit, trusted ID, generation và cutoff. Giữ Security Web xác thực và upstream loopback. Một fixture EVE/Lua không chứng minh native NSA hay hiệu lực Hybrid trên AWS.
+
+## 9. Quyền nghiệm thu auto-stop R46
+
+Chỉ sử dụng khi người quản trị đã xác nhận ARN mục tiêu. Trước hết gắn quyền đọc cho operator. Vào IAM → Users hoặc Role của operator → Permissions → Add permissions → Create inline policy → JSON, thay placeholders và review Resource trước khi lưu. `REGION` của staging là `ap-southeast-1`. Tìm tên Scheduler role qua `GetSchedule` rồi thêm role thực vào scope đọc. Với managed policies được liệt kê, bổ sung `iam:GetPolicy` và `iam:GetPolicyVersion` theo từng ARN nếu cần đọc nội dung. Các policy mẫu dưới đây dùng cho principal nghiệm thu, không gắn vào execution roles. [Lambda actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html) · [Scheduler actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoneventbridgescheduler.html) · [IAM actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsidentityandaccessmanagementiam.html)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetFunction", "lambda:GetFunctionConfiguration", "lambda:GetPolicy"
+      ],
+      "Resource": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:<FUNCTION_NAME>"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "scheduler:GetSchedule",
+      "Resource": "arn:aws:scheduler:<REGION>:<ACCOUNT_ID>:schedule/default/<SCHEDULE_NAME>"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole", "iam:GetRolePolicy", "iam:ListRolePolicies", "iam:ListAttachedRolePolicies"
+      ],
+      "Resource": [
+        "arn:aws:iam::<ACCOUNT_ID>:role/<LAMBDA_ROLE_PATH_AND_NAME>",
+        "arn:aws:iam::<ACCOUNT_ID>:role/<SCHEDULER_ROLE_PATH_AND_NAME>"
+      ]
+    }
+  ]
+}
+```
+
+Sau khi audit code và có cửa sổ bảo trì, dùng quyền tạm riêng sau cho invoke thủ công và đổi/khôi phục env. Nếu cần `UpdateSchedule` để điều phối chính schedule hiện có, chỉ cấp trên đúng ARN schedule đó và kiểm dependency `iam:PassRole` cho đúng execution role với `iam:PassedToService=scheduler.amazonaws.com`. Thu hồi quyền tạm sau readback rollback. Chưa có bằng chứng cần cấp quyền update code.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["lambda:InvokeFunction", "lambda:UpdateFunctionConfiguration"],
+      "Resource": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:<FUNCTION_NAME>"
+    }
+  ]
+}
+```
+
+Mục tiêu cuối cùng là `480` phút, `DRY_RUN=false`, `ENABLED`, `rate(15 minutes)` và flexible window `OFF`. Phân biệt app dry run và AWS DryRun. Chỉ thử stop rút ngắn khi đã hoàn tất setup R46, người dùng xác nhận cửa sổ và staging rảnh. Sau test, đối chiếu CloudWatch/Scheduler context, lệnh Stop và state, EBS/EIP. Khôi phục ngay cấu hình chính thức khi PASS, hoặc cấu hình ban đầu đã sao lưu khi có lỗi. Xem [trình tự an toàn](#3-auto-stop-tám-giờ).
