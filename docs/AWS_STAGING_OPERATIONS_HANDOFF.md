@@ -38,7 +38,7 @@ Local Beta đã kiểm tra HTTPS, correlation ba nguồn, R37 và Hybrid post-ob
 
 ## 1. Phiên thao tác và inventory
 
-Trong Console chọn account staging đã bàn giao, IAM `Websecurity` và region `Asia Pacific (Singapore)`. CLI dùng AWS CLI v2 và Session Manager plugin cho phiên tương tác. Trước mỗi thao tác ghi, xác nhận contract không đổi và hồ sơ trả đúng account/ARN. Các block dưới đây dùng Bash và `jq` để đọc JSON khi cần. Đặt các biến inventory từ cấu hình staging đã được bàn giao trước khi chạy.
+Trong Console chọn account staging đã bàn giao, IAM `Websecurity` và region `Asia Pacific (Singapore)`. CLI dùng AWS CLI v2 và Session Manager plugin cho phiên tương tác. Nếu phiên CLI hết hạn, chạy `aws login --profile websecurity-staging`, hoàn tất xác thực trình duyệt và đọc lại caller identity trước khi thao tác. Trước mỗi thao tác ghi, xác nhận contract không đổi và hồ sơ trả đúng account/ARN. Các block dưới đây dùng Bash và `jq` để đọc JSON khi cần. Đặt các biến inventory từ cấu hình staging đã được bàn giao trước khi chạy.
 
 ```bash
 profile=websecurity-staging
@@ -200,15 +200,15 @@ aws --profile "$profile" --region us-east-1 budgets describe-notifications-for-b
 
 | Nhóm | Điều kiện bắt đầu và nghiệm thu |
 |---|---|
-| A. Domain, DNS, NGINX và HTTPS | Xác nhận quyền với `student-dut.duckdns.org` và `websentinal.duckdns.org`, EIP ổn định và cửa sổ staging được phép. DNS, EIP và vhost HTTP đã được kiểm chứng ở R46. Thực hiện bước còn lại là cấp TLS theo quy trình được phê duyệt, kiểm SAN/chain, renewal, HTTPS và redirect 80 → 443. Xác minh listener công khai ở edge, không publish upstream. |
+| A. Domain, DNS, NGINX và HTTPS | Xác nhận quyền với `student-dut.duckdns.org` và `websentinal.duckdns.org`, EIP ổn định và cửa sổ staging được phép. DNS, EIP, vhost, TLS public, renewal mô phỏng và redirect 80 → 443 đã qua nghiệm thu R46. Xác minh listener công khai ở edge, không publish upstream. |
 | B. AI-IDPS | Phê duyệt AWS Resource Safety Profile dành riêng EC2. Xác minh instance identity, cgroup v2, top-level quota riêng cho stack, kernel readback, PSI/OOM, guardian watchdog, disk/log bounds, fault cleanup và ABSTAIN. EC2 status/CPU metrics không được dùng làm nhiệt độ vật lý. Điểm bắt đầu để đo sau khi profile được phê duyệt là slice ứng dụng 150% CPU và 6 GiB RAM, scorer 50% CPU và 512 MiB, swap 0, PID giới hạn. Các mức này là đề xuất R44, cần đo headroom và latency toàn stack trên EC2. Tái dùng R37 URI100 và R36 rollback kèm SHA, setup PostgreSQL roles/database và bind loopback, kiểm NGINX/njs và Suricata Lua/AF_PACKET trên decrypted leg, đưa stack systemd lên đúng host. C2 đóng, AI auto-ban OFF. |
 | C. Acceptance, monitoring, backup, rollback | Trước mở traffic, chứng minh end-to-end HTTPS trên đúng host và cùng trusted request ID qua NGINX, Suricata, Student Audit, R37 và Rust Hybrid. Ghi masks, cutoff 1.000 ms, guard 1 ms, ABSTAIN, parity, cold/warm latency và quota thực. Kiểm tài nguyên trong hạn 2 vCPU/8 GiB, log rotation, restore DB đã diễn tập, rollback R36 và graceful stop. T07 independent evaluation vẫn ràng buộc việc phát hành model mới. |
 
-Tiếp tục HTTPS theo mục 7 khi người vận hành đăng ký ACME xong. Nghiệm thu Auto-stop theo mục 9 trong cửa sổ staging rảnh sau khi SSM và quyền audit đã xác minh.
+Vận hành HTTPS đã nghiệm thu theo mục 7. Nghiệm thu Auto-Stop theo mục 9 trong cửa sổ staging rảnh sau khi SSM và quyền audit đã xác minh.
 
 ## 7. NGINX và HTTPS R46
 
-R46 đã cài NGINX trên EC2 và kiểm HTTP công khai cho cả hai hostname. Cả hai A record trỏ đúng EIP và không có AAAA. Khởi động lại NGINX hiện dùng cấu hình đã ghi tại `/etc/nginx/conf.d/websentinel-staging.conf`. Xem kết quả live để biết bước ACME và chứng thư còn lại. [Kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) · [HTTP](../security-web/deploy/aws-r46/nginx-http.conf) · [HTTPS](../security-web/deploy/aws-r46/nginx-https.conf)
+R46 đã cài NGINX trên EC2, cấp chứng thư Let’s Encrypt hai SAN và kiểm HTTPS công khai cho cả hai hostname. Cả hai A record trỏ đúng EIP và không có AAAA. Khởi động lại NGINX hiện dùng cấu hình đã ghi tại `/etc/nginx/conf.d/websentinel-staging.conf`. Lineage `websentinel-staging` dùng webroot `/var/lib/websentinel/acme`. Hạn chứng thư hiện tại **10:57:30 ngày 22/02/2027 giờ Việt Nam**. Dùng `certbot certificates` để lấy hạn mới sau mỗi lần renew. [Kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) · [HTTP](../security-web/deploy/aws-r46/nginx-http.conf) · [HTTPS](../security-web/deploy/aws-r46/nginx-https.conf)
 
 1. Qua SSM, kiểm `ss -lnt`, `systemctl is-active nginx`, package candidate qua `apt-cache policy nginx certbot python3-certbot-nginx`, disk và các vhost hiện có. Dùng Ubuntu APT đã xác minh và chỉ cài package cần thiết. Không đổi SG khi 80/443 đã sẵn sàng. Nếu có service khác hoặc config ngoài R46 đang dùng 80/443, giữ nguyên và kiểm quyền sở hữu trước khi chuyển.
 2. Sao lưu `/etc/nginx` vào thư mục root-only trên EBS với timestamp, ghi lại các file và symlink sẽ thay. Chỉ bỏ symlink `sites-enabled/default` nếu đúng cấu hình mặc định của package và chưa được dùng. Không ghi đè site ngoài R46. Đặt một file do R46 sở hữu tại `/etc/nginx/conf.d/websentinel-staging.conf`, bắt đầu bằng mẫu HTTP. Tạo webroot `/var/lib/websentinel/acme/.well-known/acme-challenge` có quyền đọc cho worker. Chạy `nginx -t` rồi reload. Nếu lỗi, khôi phục riêng file và symlink vừa thay, chạy `nginx -t` trước reload. Kiểm nginx enabled và active trước khi kết thúc.
@@ -227,7 +227,7 @@ sudo stat -L -c '%U:%G %a %n' \
 ```
 
 5. Chỉ sau khi verify cả hai SAN và quyền private key, thay file gateway bằng mẫu HTTPS, `nginx -t` và reload. Xác minh `curl -fsS` dùng trust store hệ thống cho hai URL HTTPS, `curl -sSI` trên HTTP trả 308 đúng hostname, HTTP-01 vẫn phục vụ file, direct IP/unknown SNI bị từ chối. Dùng `openssl s_client -verify_return_error -verify_hostname` với đúng `-servername` nếu cần tách lỗi DNS/SNI/chain.
-6. Xác minh `certbot.timer` hoặc lịch tương đương, dùng deploy hook root-only chạy `nginx -t && systemctl reload nginx` khi renew thành công. Sau khi port 80 và challenge đạt, chạy `sudo certbot renew --dry-run` và kiểm journal. Timer không làm việc trong lúc EC2 Stopped. R46 đọc thấy `Persistent=true`, lịch 00:00 và 12:00 theo giờ guest, `RandomizedDelaySec=43200`. Kiểm thời hạn mỗi lần Start và chủ động renew trong cửa sổ running khi đến hạn, vì độ trễ ngẫu nhiên có thể dài hơn phiên ngắn.
+6. Xác minh `certbot.timer` hoặc lịch tương đương, dùng deploy hook root-only chạy `nginx -t && systemctl reload nginx` khi renew thành công. Sau khi port 80 và challenge đạt, dùng `sudo certbot renew --cert-name websentinel-staging --dry-run --run-deploy-hooks` và kiểm `journalctl -t websentinel-certbot`. Đã xác minh CA staging và hook reload giữ leaf production. Khi cert đến cửa sổ renew, chạy `sudo certbot renew --cert-name websentinel-staging`. Timer không làm việc trong lúc EC2 Stopped. R46 đọc thấy `Persistent=true`, lịch 00:00 và 12:00 theo giờ guest, `RandomizedDelaySec=43200`. Kiểm thời hạn mỗi lần Start và chủ động renew trong cửa sổ running khi đến hạn, vì độ trễ ngẫu nhiên có thể dài hơn phiên ngắn.
 7. Giữ access log staging `/var/log/nginx/websentinel-staging-access.log` với định dạng chỉ gồm thời gian, server name, method, status và duration. Kiểm `/etc/logrotate.d/nginx` quản lý file, đề xuất xoay hằng ngày/giữ 7 bản. Dùng `journalctl -u nginx` và error log để xử lý lỗi mà không xuất cookie / body / credential. Chỉ đưa upstream thật vào khi health ở loopback và auth Security Web đã kiểm chứng.
 
 ## 8. Suricata R46
@@ -241,7 +241,7 @@ Smoke đã đạt trên EC2 với Ubuntu Suricata `1:8.0.3-1`, đúng version c�
 
 ## 9. Quyền nghiệm thu auto-stop R46
 
-Phép kiểm live R46 xác nhận quyền đọc Lambda, Scheduler và role inspection còn thiếu. Trước hết gắn quyền đọc cho operator sau khi xác nhận ARN mục tiêu. Policy kiểm thử và thay đổi Lambda là quyền riêng, cấp tạm sau audit. Vào IAM → Users hoặc Role của operator → Permissions → Add permissions → Create inline policy → JSON, thay placeholders và review Resource trước khi lưu. `REGION` của staging là `ap-southeast-1`. Tìm tên Scheduler role qua `GetSchedule` rồi thêm role thực vào scope đọc. Với managed policies được liệt kê, bổ sung `iam:GetPolicy` và `iam:GetPolicyVersion` theo từng ARN nếu cần đọc nội dung. Các policy mẫu dưới đây dùng cho principal nghiệm thu, không gắn vào execution roles. [Lambda actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html) · [Scheduler actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoneventbridgescheduler.html) · [IAM actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsidentityandaccessmanagementiam.html)
+Đã xác minh quyền đọc Lambda, Scheduler và execution roles của operator ở R46. Policy kiểm thử và thay đổi Lambda là quyền riêng, cấp tạm sau audit. Các mẫu dưới là tham chiếu khi tái tạo môi trường. Vào IAM → Users hoặc Role của operator → Permissions → Add permissions → Create inline policy → JSON, thay placeholders và review Resource trước khi lưu. `REGION` của staging là `ap-southeast-1`. Tìm tên Scheduler role qua `GetSchedule` rồi thêm role thực vào scope đọc. Với managed policies được liệt kê, bổ sung `iam:GetPolicy` và `iam:GetPolicyVersion` theo từng ARN nếu cần đọc nội dung. Các policy mẫu dưới đây dùng cho principal nghiệm thu, không gắn vào execution roles. [Lambda actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html) · [Scheduler actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoneventbridgescheduler.html) · [IAM actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsidentityandaccessmanagementiam.html)
 
 ```json
 {
@@ -289,6 +289,9 @@ Sau khi audit code và có cửa sổ bảo trì, dùng quyền tạm riêng sau
 ```
 
 Mục tiêu cuối cùng là `480` phút, `DRY_RUN=false`, `ENABLED`, `rate(15 minutes)` và flexible window `OFF`. Phân biệt app dry run và AWS DryRun. Chỉ thử stop rút ngắn khi đã hoàn tất setup R46, người dùng xác nhận cửa sổ và staging rảnh. Sau test, đối chiếu CloudWatch/Scheduler context, lệnh Stop và state, EBS/EIP. Khôi phục ngay cấu hình chính thức khi PASS, hoặc cấu hình ban đầu đã sao lưu khi có lỗi. Xem [trình tự an toàn](#3-auto-stop-tám-giờ).
+
+Thu hồi quyền thử nghiệm trong IAM → Users → Websecurity → Permissions. Tìm inline policy `WebSentinel-AutoStop-TemporaryTestPolicy` và chọn Remove/Delete. Giữ quyền chỉ đọc để tiếp tục đối soát. Nếu cửa sổ thử dừng thật còn pending, thu hồi quyền tạm lúc không dùng và cấp lại trên đúng function khi cửa sổ được phê duyệt.
+
 
 ## 10. Cloud Resource Safety Profile
 
