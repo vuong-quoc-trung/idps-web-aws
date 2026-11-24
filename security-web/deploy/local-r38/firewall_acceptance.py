@@ -21,7 +21,7 @@ def run(*argv, check=True):
     return sp.run(argv, check=check, capture_output=True, text=True, timeout=6)
 
 
-def acceptance(host_ns, output):
+def acceptance(host_ns, output, *, review_block=None):
     if (
         os.geteuid() != 0
         or os.readlink("/proc/self/ns/net") == host_ns
@@ -80,7 +80,16 @@ def acceptance(host_ns, output):
                 == 0
             )
 
+        decisions = []
+        observed_peer = None
+
         def actuator(*args, check=True):
+            if review_block and args[:2] == ("block", CLIENT):
+                decision = review_block(observed_peer, CLIENT)
+                if decision["action"] != "WOULD_BLOCK" or decision["target"] != CLIENT:
+                    raise RuntimeError("Development policy denied the namespace peer")
+                decisions.append(decision | {"requested_ttl": int(args[2])})
+
             return run(
                 sys.executable, SCRIPTS / "pbl4-firewall-policy.py", *args, check=check
             )
@@ -107,6 +116,13 @@ def acceptance(host_ns, output):
         run("nft", "-f", SCRIPTS / "pbl4.nft")
         try:
             assert connects() and not elements()
+            if review_block:
+                listener.settimeout(2)
+                accepted, endpoint = listener.accept()
+                accepted.close()
+                observed_peer = endpoint[0]
+                if observed_peer != CLIENT:
+                    raise RuntimeError("Unexpected direct peer in private test namespace")
             assert (
                 actuator("block", SERVER, "10", check=False).returncode
                 and not elements()
@@ -146,6 +162,7 @@ def acceptance(host_ns, output):
                 table_removed=True,
                 peer_reaped=True,
                 hybrid_originated=False,
+                **({"dev_fixture_decisions": decisions} if review_block else {}),
             ),
             indent=2,
         )
