@@ -9,7 +9,7 @@ if (( EUID != 0 )); then
     (cd "$repo/security-web/frontend" && npm run build)
     test -x "$repo/security-web/target/release/pbl4-security-demo"
     test -s "$repo/security-web/frontend/dist/index.html"
-    exec sudo bash "$src/apply-runtime-fix.sh" "$ca"
+    exec sudo bash "$src/apply-runtime-fix.sh" "${1:-$ca}"
 fi
 ca=${1:-$ca}
 live=/opt/ws-native/current
@@ -18,6 +18,49 @@ etc=/etc/ws-native
 units=/etc/systemd/system
 exec 9>/run/lock/ws-native-dashboard-repair
 flock -n 9
+if [[ ${1:-} == --monitoring ]]; then
+    pid=$(systemctl show ws-native-security -p MainPID --value)
+    test "$(readlink "/proc/$pid/exe")" = "$fix/security"
+    test "$(readlink "/proc/$pid/cwd")" = "$fix"
+    grep -zFxq 'WS_NATIVE_SCHEMA_CHECK_ONLY=1' "/proc/$pid/environ"
+    grep -zFxq 'WS_NATIVE_FIREWALL_SOCKET=1' "/proc/$pid/environ"
+    systemctl is-active --quiet ws-native-fw-status.socket
+    backup=$(mktemp -d /var/backups/ws-native-monitoring.XXXXXXXX)
+    cp -a "$fix/security" "$fix/fw-status.py" "$fix/frontend/dist" "$backup/"
+    echo "Backup: $backup"
+    # Replace executables by rename; never truncate the running binary.
+    replace() {
+        install -m "$3" "$1" "$2.monitor-next"
+        mv -fT "$2.monitor-next" "$2"
+    }
+    restore_monitoring() {
+        trap - ERR
+        echo "Checkpoint failed at line $1. Restoring Dashboard from $backup" >&2
+        replace "$backup/security" "$fix/security" 0755
+        replace "$backup/fw-status.py" "$fix/fw-status.py" 0644
+        cp -aT "$backup/dist" "$fix/frontend/dist"
+        systemctl restart ws-native-security
+        exit 1
+    }
+    trap 'restore_monitoring "$LINENO"' ERR
+    replace "$src/fw-status.py" "$fix/fw-status.py" 0644
+    cp -rT "$repo/security-web/frontend/dist/assets" "$fix/frontend/dist/assets"
+    chmod -R a+rX "$fix/frontend/dist/assets"
+    replace "$repo/security-web/frontend/dist/index.html" "$fix/frontend/dist/index.html" 0644
+    candidate="$repo/security-web/target/release/pbl4-security-demo"
+    if ! cmp -s "$candidate" "/proc/$pid/exe"; then
+        replace "$candidate" "$fix/security" 0755
+        systemctl restart ws-native-security
+    fi
+    for ((i=0;i<30;i++)); do
+        if curl --noproxy '*' -fsS --max-time 2 http://127.0.0.1:23000/health >/dev/null 2>&1; then break; fi
+        sleep 1
+    done
+    pid=$(systemctl show ws-native-security -p MainPID --value)
+    cmp "$candidate" "/proc/$pid/exe"
+    python3 -B "$src/check-runtime-fix.py" --monitoring
+    exit 0
+fi
 for u in ws-native-edge.service ws-native-worker.service ws-native-worker.timer; do
     case $(systemctl show -p ActiveState --value "$u") in inactive|failed) ;; *) echo "BLOCKED: $u"; exit 1;; esac
 done
