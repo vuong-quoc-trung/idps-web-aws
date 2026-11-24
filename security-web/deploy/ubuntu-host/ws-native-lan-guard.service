@@ -1,0 +1,14 @@
+[Unit]
+Description=Restore the reviewed native LAN input guard before Edge binds
+Wants=network-online.target
+After=network-online.target nftables.service
+Before=ws-native-edge.service
+ConditionPathExists=/etc/ws-native/direct-peer.json
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/python3 -EB /opt/ws-native/runtime-fix/continuous.py guard
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_NET_ADMIN
+ProtectSystem=strict
+ProtectHome=yes

@@ -1,0 +1,17 @@
+[Unit]
+Description=Start the native worker after continuous-policy readiness
+Wants=ws-native-security.service ws-native-edge.service ws-native-sensor.service ws-native-scorer.service ws-native-gate.service ws-native-plan.socket ws-native-peer-plan.socket ws-native-peer.socket
+After=network-online.target ws-native-edge.service ws-native-security.service ws-native-sensor.service ws-native-scorer.service ws-native-gate.service ws-native-plan.socket ws-native-peer-plan.socket ws-native-peer.socket
+ConditionPathExists=/etc/ws-native/approval.json
+StartLimitIntervalSec=0
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/ws-native/runtime-fix/native-auto.sh continuous-check
+ExecStartPost=/usr/bin/python3 -EB /opt/ws-native/runtime-fix/continuous.py mark-ready
+ExecStopPost=/usr/bin/rm -f /run/ws-native-continuous.ready
+ExecStartPost=/usr/bin/systemctl start ws-native-worker.timer
+Restart=on-failure
+RestartSec=20s
+[Install]
+WantedBy=multi-user.target

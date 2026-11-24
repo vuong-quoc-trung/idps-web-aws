@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 umask 077
 mode=${1:-stage}
-case $mode in stage|full|lan|lan-full|renew-full|ip-window|lan-rollback|status|rollback) ;; *) exit 2;; esac
+case $mode in continuous-enable|continuous-disable|continuous-status|continuous-check|stage|full|lan|lan-full|renew-full|ip-window|lan-rollback|status|rollback) ;; *) exit 2;; esac
 src=$(dirname "$(realpath "$0")")
 repo=$(realpath "$src/../../..")
 if [[ $mode == lan || $mode == lan-full ]]; then
@@ -79,7 +79,30 @@ else:
     raise SystemExit("BLOCKED readiness: malformed actuator response; see instance journal")
 PY_READY
 }
-if [[ $mode == status ]]; then
+if [[ $mode == continuous-check ]]; then
+    python3 -B "$fix/continuous.py" check
+    for unit in ws-native-security ws-native-edge ws-native-sensor ws-native-scorer ws-native-gate; do
+        systemctl is-active --quiet "$unit" || { echo "BLOCKED: $unit inactive"; exit 1; }
+    done
+    runuser -u ws-native-actuator -- python3 -IB -c "exec(__import__('sys').stdin.read());deliver('ready')" < "$fix/vm_transport.py"
+    test "$(curl --noproxy '*' --resolve student.lab:443:192.168.20.10 --cacert "$etc/student-ca.crt" --max-time 5 -sS -o /dev/null -w '%{http_code}' https://student.lab/api/auth/me)" = 401
+    ip_readiness before-worker
+    exit
+fi
+if [[ $mode == status || $mode == continuous-status ]]; then
+    if [[ $mode == continuous-status ]]; then
+        systemctl show ws-native-continuous.service ws-native-worker.timer -p Id -p ActiveState -p Result
+        if runuser -u ws-native-actuator -- python3 -IB -c "exec(__import__('sys').stdin.read());deliver('ready')" < "$fix/vm_transport.py"; then
+            echo "Student VM receiver: READY (SSH)"
+        else
+            echo "Student VM receiver: UNAVAILABLE"
+        fi
+        if [[ ! -f $etc/approval.json ]] || ! python3 -c 'import sys,json; sys.exit(json.load(open(sys.argv[1])).get("mode")!="CONTINUOUS")' "$etc/approval.json"; then
+            echo "CONTINUOUS OFF: BLOCK_REQUEST, BLOCK_SESSION, BLOCK_ACCOUNT, BLOCK_IP"
+            exit 0
+        fi
+        python3 -B "$fix/continuous.py" outcomes
+    fi
     for unit in ws-native-edge.service ws-native-plan.socket ws-native-worker.timer; do
         systemctl show "$unit" -p Id -p LoadState -p ActiveState -p SubState
     done
@@ -95,7 +118,23 @@ path = Path(sys.argv[1])
 actions = {}
 if path.exists():
     policy = json.loads(path.read_bytes())
-    if policy["start"] <= time.time() < policy["end"] <= policy["start"] + 600:
+    if policy.get("mode") == "CONTINUOUS":
+        sys.path.insert(0, "/opt/ws-native/runtime-fix")
+        from native_policy import current, require_ready
+        import sqlite3
+        try:
+            require_ready(current())
+            with sqlite3.connect("file:/var/lib/ws-native/approval/approvals.sqlite3?mode=ro",uri=True) as db:
+                if db.execute("select stopped from control").fetchall() != [(0,)]:
+                    raise ValueError("emergency stop latched")
+        except (OSError,ValueError,sqlite3.Error) as exc:
+            print(f"CONTINUOUS BLOCKED: {exc}")
+            for action in policy["actions"]:
+                print(action, "BLOCKED")
+            sys.exit(1)
+        print("CONTINUOUS authorized; no authorization deadline")
+        actions = policy["actions"]
+    elif policy["start"] <= time.time() < policy["end"] <= policy["start"] + 600:
         actions = policy["actions"]
 print("BLOCK_REQUEST:", "authorized window; execution unverified" if "BLOCK_REQUEST" in actions else "no current authorization")
 for action in ("BLOCK_SESSION","BLOCK_ACCOUNT"):
@@ -134,6 +173,14 @@ stop_worker() {
     [[ -f $worker ]] || worker="$live/worker.py"
     runuser -u ws-native-actuator -g ws-native-evidence -- python3 -B "$worker" stop
 }
+case "$mode" in
+continuous-enable|continuous-disable)
+    exec bash "$src/continuous.sh" "$mode" ;;
+esac
+if [[ -f $etc/approval.json ]] && python3 -c 'import json,sys;sys.exit(json.load(open(sys.argv[1])).get("mode")!="CONTINUOUS")' "$etc/approval.json"; then
+    echo "Use continuous-disable before changing the approved scope." >&2
+    exit 1
+fi
 if [[ $mode == lan-rollback ]]; then
     if [[ -e $etc/approval.json ]]; then
         # Pause publication until the IP capability is removed. Preserve all other grants and deadlines.
@@ -264,7 +311,7 @@ assert db.execute("select stopped from control").fetchall()==[(0,)], "Emergency 
 PY
 backup=$(mktemp -d /var/backups/ws-native-auto.XXXXXXXX)
 echo "Backup: $backup"
-targets=("$etc/suricata.yaml" "$etc/approved-location.inc" "$fix/security" "$fix/worker.py" "$fix/vm_transport.py" "$fix/direct_peer.py" "$fix/ip-actuator.py" "$units/ws-native-peer.socket" "$units/ws-native-peer-plan.socket" "$units/ws-native-peer-plan@.service" "$units/ws-native-peer@.service" "$fix/approve_session.py" "$fix/native-plan.py" "$fix/request-policy.env" "$units/ws-native-security.service.d/80-request-policy.conf" "$units/ws-native-worker.service" "$units/ws-native-plan.socket" "$units/ws-native-plan@.service")
+targets=("$etc/suricata.yaml" "$etc/approved-location.inc" "$fix/security" "$fix/worker.py" "$fix/vm_transport.py" "$fix/direct_peer.py" "$fix/ip-actuator.py" "$units/ws-native-peer.socket" "$units/ws-native-peer-plan.socket" "$units/ws-native-peer-plan@.service" "$units/ws-native-peer@.service" "$fix/approve_session.py" "$fix/native-plan.py" "$fix/native_policy.py" "$fix/request-policy.env" "$units/ws-native-security.service.d/80-request-policy.conf" "$units/ws-native-worker.service" "$units/ws-native-plan.socket" "$units/ws-native-plan@.service")
 for p in "${targets[@]}"; do if [[ -f $p ]]; then cp -a --parents "$p" "$backup"; fi; done
 edge_was=$(systemctl is-active ws-native-edge || :)
 sensor_was=$(systemctl is-active ws-native-sensor || :)
@@ -301,7 +348,7 @@ if ! cmp -s "$candidate" "$fix/security"; then
     install -m0755 "$candidate" "$fix/security.next"
     mv -T "$fix/security.next" "$fix/security"
 fi
-for f in native-plan.py worker.py vm_transport.py direct_peer.py ip-actuator.py; do install -m0644 "$src/$f" "$fix/$f"; done
+for f in native_policy.py native-plan.py worker.py vm_transport.py direct_peer.py ip-actuator.py; do install -m0644 "$src/$f" "$fix/$f"; done
 install -m0644 "$src/../dev-i5/adaptive/approve_session.py" "$fix/approve_session.py"
 install -m0644 "$src"/ws-native-plan{.socket,@.service} "$src/ws-native-worker.service" "$units/"
 printf '%s\n' 'WS_DEV_HYBRID_MODE=REVIEW' 'WS_DEV_HYBRID_POLICY={"rules":[{"source":"STUDENT_AUDIT","rule":"APP-1012","weight":80,"standalone":false,"max_severity":2},{"source":"STUDENT_AUDIT","rule":"APP-1013","weight":80,"standalone":false,"max_severity":2}],"combined":200,"standalone":100,"fresh_seconds":60,"r37_weight":0}' > "$fix/request-policy.env"
