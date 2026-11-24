@@ -80,6 +80,11 @@ def secure_directory(path, gid, mode):
 def run(args):
     if os.geteuid() != 0:
         raise RuntimeError('Lifecycle requires root inside the reviewed nginx.service')
+    if args.unit == "ws-native-edge.service":
+        if args.user != "ws-native-edge":
+            raise ValueError("Native guard requires its dedicated worker")
+        guard_module.TABLE = "ws_native_egress"
+        guard_module.SOURCE, guard_module.DEST, guard_module.PORT = "127.78.0.1", "127.78.0.2", 28080
     account = identity(args.user)
     state, key = Path(args.state), Path(args.key)
     secure_directory(state, 0, 0o700)
@@ -159,7 +164,7 @@ def run(args):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', default='/etc/nginx/nginx.conf')
-    p.add_argument('--unit', choices=['nginx.service', 'websentinel-beta-edge.service'], default='nginx.service')
+    p.add_argument('--unit', choices=['nginx.service', 'websentinel-beta-edge.service', 'ws-native-edge.service'], default='nginx.service')
     p.add_argument('--user', default='websentinel-edge')
     p.add_argument('--key', default='/etc/nginx/pbl4-proof/key.json')
     p.add_argument('--state', default='/var/lib/websentinel-egress')

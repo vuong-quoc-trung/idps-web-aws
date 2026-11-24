@@ -8,6 +8,9 @@ import re
 import subprocess
 
 TABLE = 'pbl4_local_egress'
+SOURCE = '127.77.0.1'
+DEST = '127.77.0.2'
+PORT = 18080
 
 
 def render(group, uid, allow=False):
@@ -16,12 +19,12 @@ def render(group, uid, allow=False):
         raise ValueError('Invalid cgroup path')
     if not isinstance(uid, int) or uid <= 0:
         raise ValueError('Dedicated non-root worker UID required')
-    grant = (f'ip saddr 127.77.0.1 meta skuid {uid} '
+    grant = (f'ip saddr {SOURCE} meta skuid {uid} '
              f'socket cgroupv2 level {len(parts)} "{group}" counter accept') if allow else ''
     return f'''table inet {TABLE} {{
  chain output {{
   type filter hook output priority -150; policy accept;
-  ip daddr 127.77.0.2 tcp dport 18080 jump egress
+  ip daddr {DEST} tcp dport {PORT} jump egress
  }}
  chain egress {{
   {grant}
