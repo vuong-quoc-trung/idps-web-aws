@@ -1,0 +1,9 @@
+[Unit]
+Description=Native prevention status, Security Backend only
+[Socket]
+ListenStream=/run/ws-native-peer.sock
+SocketUser=ws-native-actuator
+SocketMode=0600
+Accept=yes
+[Install]
+WantedBy=sockets.target

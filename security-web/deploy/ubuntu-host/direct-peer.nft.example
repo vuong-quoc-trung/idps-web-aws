@@ -1,0 +1,11 @@
+# Render reviewed literal interface, listener and exclusive test peer before installation.
+table inet ws_native_lab_peer {
+    set edge_peers { type ipv4_addr; flags timeout; timeout 15s; }
+    chain input {
+        type filter hook input priority filter; policy accept;
+        ip daddr LISTENER_IPV4 tcp dport 24443 ct status dnat drop
+        ip daddr LISTENER_IPV4 tcp dport 24443 iifname != "LAB_INTERFACE" drop
+        ip daddr LISTENER_IPV4 tcp dport 24443 ip saddr != EXCLUSIVE_TEST_IPV4 drop
+        iifname "LAB_INTERFACE" ip daddr LISTENER_IPV4 tcp dport 24443 ip saddr EXCLUSIVE_TEST_IPV4 ip saddr @edge_peers drop
+    }
+}

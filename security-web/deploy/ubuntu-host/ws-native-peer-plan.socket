@@ -1,0 +1,5 @@
+[Socket]
+ListenStream=/run/ws-native-peer-plan.sock
+SocketGroup=ws-native-evidence
+SocketMode=0660
+Accept=yes

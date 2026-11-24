@@ -1,0 +1,4 @@
+# http context, in a separately reviewed direct HTTPS listener deployment.
+log_format ws_direct escape=json '{"at":"$msec","rid":"$request_id","peer":"$realip_remote_addr","listener":"$server_addr","port":"$server_port"}';
+# Attach the following access_log to the direct Edge only, alongside existing logs.
+# access_log /var/lib/ws-native/edge/direct-peer.jsonl ws_direct;
