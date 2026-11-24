@@ -6,6 +6,11 @@ def run(*args): subprocess.run(args,check=True)
 def main():
     p=argparse.ArgumentParser();p.add_argument('role',choices=['sender','receiver']);p.add_argument('--install-packages',action='store_true');p.add_argument('--backend-user',default='dinh-huynh-nguyen-khang');a=p.parse_args()
     if os.geteuid()!=0: sys.exit('Run with sudo; no files changed.')
+    # Provision endpoint identities before installing a fresh encrypted transport.
+    tls=pathlib.Path('/etc/pbl4/audit/mtls')
+    for name in ('ca.crt',a.role+'.crt',a.role+'.key'):
+        if not (tls/name).is_file():
+            sys.exit('Missing Audit mTLS identity: '+str(tls/name)+'; use audit-mtls.sh for an existing deployment.')
     user=pwd.getpwnam('khang1901' if a.role=='sender' else a.backend_user)
     needed=['rsyslog','rsyslog-relp','logrotate']
     missing=[]
@@ -56,6 +61,7 @@ def main():
         if 'include if exists <rsyslog.d>' not in profile.read_text():
             sys.exit('AppArmor profile lacks rsyslog.d include; needs reviewed local policy before proceeding.')
         policy=f"/etc/pbl4/audit/{a.role}.conf r,\n/var/lib/pbl4-audit-{a.role}/ r,\n/var/lib/pbl4-audit-{a.role}/** rwk,\n/run/pbl4-audit-{a.role}/ r,\n/run/pbl4-audit-{a.role}/** rwk,\n"
+        policy+=''.join(f"{tls/name} r,\n" for name in ('ca.crt',a.role+'.crt',a.role+'.key'))
         if a.role=='sender':
             policy+='/home/khang1901/idps-web-aws/student-web/backend/logs/ r,\n/home/khang1901/idps-web-aws/student-web/backend/logs/student-audit.log* r,\n'
         put('/etc/apparmor.d/rsyslog.d/pbl4-audit-'+a.role,policy)
