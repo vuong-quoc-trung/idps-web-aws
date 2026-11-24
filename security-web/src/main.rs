@@ -10,6 +10,8 @@ mod events;
 mod firewall;
 mod https_research;
 mod hybrid;
+#[cfg(feature = "dev-hybrid-review")]
+mod hybrid_review;
 mod ingest;
 mod lua_shadow;
 mod metrics;
@@ -203,6 +205,67 @@ async fn main() -> Result<()> {
     if env::args().any(|a| a == "--hash-password") {
         return auth::print_password_hash();
     }
+    #[cfg(feature = "dev-hybrid-review")]
+    if env::args().nth(1).as_deref() == Some("--dev-edge-gate") {
+        return hybrid_review::serve_edge_gate().await;
+    }
+    #[cfg(feature = "dev-hybrid-review")]
+    if matches!(
+        env::args().nth(1).as_deref(),
+        Some("--dev-auto-canary" | "--native-adaptive-plan")
+    ) {
+        let rules = |i| {
+            env::args()
+                .nth(i)
+                .unwrap_or_default()
+                .split(',')
+                .filter(|s| !s.is_empty())
+                .map(String::from)
+                .collect::<Vec<_>>()
+        };
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&env::var("DATABASE_URL")?)
+            .await?;
+        println!(
+            "{}",
+            if env::args().nth(1).as_deref() == Some("--native-adaptive-plan") {
+                let policy =
+                    serde_json::from_str(&env::args().nth(4).context("Missing native threshold")?)?;
+                serde_json::to_string(
+                    &hybrid_review::adaptive_plan(&pool, &rules(2), &rules(3), Some(&policy))
+                        .await?,
+                )?
+            } else {
+                serde_json::to_string(
+                    &hybrid_review::auto_canary(&pool, &rules(2), &rules(3)).await?,
+                )?
+            }
+        );
+        return Ok(());
+    }
+    #[cfg(feature = "dev-hybrid-review")]
+    if matches!(
+        env::args().nth(1).as_deref(),
+        Some("--dev-session-plan" | "--dev-action-plan")
+    ) {
+        let rid = env::args().nth(2).context("request ID required")?;
+        anyhow::ensure!(events::valid_request_id(&rid), "invalid request ID");
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&env::var("DATABASE_URL")?)
+            .await?;
+        let action = if env::args().nth(1).as_deref() == Some("--dev-session-plan") {
+            "BLOCK_SESSION".into()
+        } else {
+            env::args().nth(3).context("action required")?
+        };
+        println!(
+            "{}",
+            hybrid_review::action_plan(&pool, &rid, &action).await?
+        );
+        return Ok(());
+    }
     dotenvy::dotenv().ok();
     tracing_subscriber::fmt()
         .with_env_filter(env::var("RUST_LOG").unwrap_or("info".into()))
@@ -216,7 +279,18 @@ async fn main() -> Result<()> {
         .max_connections(10)
         .connect(&env::var("DATABASE_URL")?)
         .await?;
-    sqlx::migrate!("./migrations").run(&pool).await?;
+    let migrations = sqlx::migrate!("./migrations");
+    if env::var("WS_NATIVE_SCHEMA_CHECK_ONLY").as_deref() == Ok("1") {
+        let applied: Vec<(i64, Vec<u8>, bool)> = sqlx::query_as(
+            "SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version",
+        ).fetch_all(&pool).await?;
+        anyhow::ensure!(applied.len() == migrations.iter().count()
+            && applied.iter().zip(migrations.iter()).all(|((v, c, ok), m)|
+                *ok && *v == m.version && c.as_slice() == m.checksum.as_ref()),
+            "Native database migration checksum mismatch");
+    } else {
+        migrations.run(&pool).await?;
+    }
     let whitelist = env::var("IP_WHITELIST")
         .unwrap_or("127.0.0.1,192.168.10.1,192.168.20.1,192.168.20.10".into())
         .split(',')
