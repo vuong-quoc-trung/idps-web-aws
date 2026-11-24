@@ -1,3 +1,4 @@
+import { FirewallSync, type SyncReport } from "./FirewallSync";
 import { sourceIpLabel } from "./sourceIp";
 import {
   freshness,
@@ -89,9 +90,9 @@ type Stats = {
   };
 };
 type Blocked = {
-  database: { ip: string; reason: string; blocked_at: string }[];
+  database: { ip: string; reason: string; blocked_at: string }[] | null;
   kernel: string[] | null;
-  in_sync: boolean;
+  sync?: SyncReport;
   error: string | null;
 };
 function auditSource(source: string) {
@@ -136,6 +137,7 @@ type Health = {
   checked_at?: string;
   dataset_collection?: boolean;
   operations?: {
+    native_authorization?: string | null;
     sampled_at?: string;
     receiver?: { active: string; load: string; sub: string };
     suricata?: { active: string; load: string; sub: string };
@@ -143,8 +145,9 @@ type Health = {
   healthy: boolean;
   database: boolean;
   firewall: boolean;
+  kernel_blocked_count?: number | null;
   firewall_status?: string;
-  firewall_in_sync: boolean;
+  sync?: SyncReport;
   watchers: Record<
     string,
     {
@@ -184,6 +187,8 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   }
 }
 function firewallMessage(code?: string | null) {
+  if (code === "FIREWALL_SCOPE_UNVERIFIED") return "Bảng đã khởi tạo, chưa xác minh cấu hình";
+  if (code === "FIREWALL_SCOPE_MISMATCH") return "Bảng đã khởi tạo, cấu hình khác phạm vi đã duyệt";
   if (code === "ACTUATOR_OFFLINE") return "Actuator chưa hoạt động";
   if (code === "FIREWALL_UNINITIALIZED") return "Chưa khởi tạo bảng chặn";
   return code;
@@ -694,6 +699,7 @@ function App() {
         {tab === "overview" && (
           <div className="overview-layout">
             <section className="panel overview-toolbar">
+              <span>DB / Firewall <FirewallSync compact report={health?.sync} /></span>
               <label>
                 Khoảng thời gian
                 <select
@@ -1312,12 +1318,8 @@ function App() {
                 <Icon name="blocked" />
                 Trạng thái firewall
               </h2>
-              <p className={blocked?.in_sync ? "notice" : "error"}>
-                {blocked?.in_sync
-                  ? "Database khớp với nftables."
-                  : (firewallMessage(blocked?.error) ??
-                    "Database và nftables chưa đồng bộ. Kiểm tra danh sách thực tế trước khi thao tác.")}
-              </p>
+              <FirewallSync report={blocked?.sync} />
+              {blocked?.error && <p>{firewallMessage(blocked.error)}</p>}
               <p>
                 IP thực tế:{" "}
                 {blocked?.kernel?.join(", ") ||
@@ -1360,13 +1362,15 @@ function App() {
                 <Icon name="network" />
                 Danh sách từ DB và kernel
               </h2>
+              {blocked?.sync?.scope === "inet ws_native_lab_peer/edge_peers" && <p>PostgreSQL: blocked_ips còn hiệu lực. Kernel: edge_peers cho BLOCK_IP tại Edge LAN. Hai danh sách có phạm vi riêng.</p>}
+              {blocked && !blocked.database && <p>Chưa đọc được danh sách DB.</p>}
               {Array.from(
                 new Set([
-                  ...(blocked?.database.map((b) => b.ip) ?? []),
+                  ...(blocked?.database?.map((b) => b.ip) ?? []),
                   ...(blocked?.kernel ?? []),
                 ]),
               ).map((address) => {
-                const row = blocked?.database.find((b) => b.ip === address);
+                const row = blocked?.database?.find((b) => b.ip === address);
                 return (
                   <div className="type-row blocked-row" key={address}>
                     <div>
@@ -1374,6 +1378,8 @@ function App() {
                       <p>
                         {blocked?.kernel == null
                           ? "Có trong DB · Chưa xác định trong kernel"
+                          : blocked.database == null
+                            ? "Có trong kernel · Chưa đọc được DB"
                           : row && blocked.kernel.includes(address)
                             ? "Có trong cả DB và kernel"
                             : row
@@ -1403,7 +1409,7 @@ function App() {
               })}
               {blocked?.kernel == null ? (
                 <p>Chưa xác định được trạng thái firewall.</p>
-              ) : !blocked.database.length && !blocked.kernel.length ? (
+              ) : blocked.database?.length === 0 && !blocked.kernel.length ? (
                 <EmptyState title="Chưa có IP bị chặn trong DB và kernel." />
               ) : null}
             </section>
@@ -1683,14 +1689,8 @@ function App() {
                   [
                     "Firewall",
                     health?.firewall,
-                    "Đọc được",
+                    `Sẵn sàng · ${health?.kernel_blocked_count ?? "?"} IP đang chặn`,
                     firewallMessage(health?.firewall_status) ?? "Chưa sẵn sàng",
-                  ],
-                  [
-                    "DB / firewall",
-                    health?.firewall_in_sync,
-                    "Đồng bộ",
-                    "Chưa đồng bộ",
                   ],
                 ].map(([label, ready, yes, no]) => (
                   <div className="service-item" key={String(label)}>
@@ -1700,7 +1700,13 @@ function App() {
                     </span>
                   </div>
                 ))}
+                <div className="service-item">
+                  <span>DB / Firewall</span><FirewallSync compact report={health?.sync} />
+                </div>
               </div>
+              {health?.operations?.native_authorization && (
+                <p>Chế độ cấp quyền Native: {health.operations.native_authorization}</p>
+              )}
               <p className="muted">
                 Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến trình
                 Nginx/Suricata/Student Web hoặc đường truyền RELP đang hoạt
@@ -1764,7 +1770,7 @@ function App() {
                 </p>
               </article>
               <div className="source-health-grid">
-                {["NGINX", "SURICATA", "SURICATA_LUA", "STUDENT_AUDIT"].map(
+                {["NGINX", "SURICATA_LUA", "STUDENT_AUDIT"].map(
                   (name) => {
                     const watcher = health?.watchers[name];
                     const collection = health?.collection?.[name];
@@ -1799,31 +1805,20 @@ function App() {
                                   ? "Chưa cấu hình nguồn log"
                                   : "Chưa có kết quả kiểm tra"}
                         </p>
-                        {name === "STUDENT_AUDIT" && (
-                          <p className="muted">
-                            {health && !watcher
-                              ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
-                              : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
-                          </p>
-                        )}
                         {watcher?.error && (
                           <p className="error">{watcher.error}</p>
                         )}
                         <p role="status">
                           {freshness(watcher?.last_data_at, health?.checked_at)}
                         </p>
-                        <p className="muted">
-                          Im lặng không đồng nghĩa mất kết nối. Tạo một request
-                          kiểm thử rồi đối chiếu mốc nhận và lưu dữ liệu.
-                        </p>
                         <dl className="detail-fields">
                           <div>
-                            <dt>Lần lưu sự kiện vào DB</dt>
+                            <dt>{name === "SURICATA_LUA" ? "Lần lưu bằng chứng Lua vào DB" : "Lần lưu sự kiện vào DB"}</dt>
                             <dd>{time(collection?.last_ingested_at)}</dd>
                           </div>
                           <div>
                             <dt>Thời gian sự kiện vừa lưu</dt>
-                            <dd>{time(collection?.last_ingested_event_at)}</dd>
+                            <dd>{name === "SURICATA_LUA" ? "Lua không cung cấp mốc này" : time(collection?.last_ingested_event_at)}</dd>
                           </div>
                           <div>
                             <dt>Lần đọc thành công</dt>
@@ -1877,17 +1872,23 @@ function App() {
                               trong phiên backend này.
                             </p>
                           )}
-                        <p className="muted">
-                          Mốc đọc và nhận dữ liệu tính từ lần khởi động backend;
-                          dữ liệu sẵn có khi mở file cũng được tính là lần quan
-                          sát. Cảnh báo và lỗi lấy từ lịch sử DB. Byte chờ gồm
-                          cả dòng chưa kết thúc, không gồm file .gz.
-                        </p>
+                        {name === "STUDENT_AUDIT" && (
+                          <p className="muted">
+                            {health && !watcher
+                              ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
+                              : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                          </p>
+                        )}
                       </article>
                     );
                   },
                 )}
               </div>
+              <p className="muted">
+                Mốc đọc và nhận dữ liệu tính từ lần khởi động backend, kể cả dữ liệu
+                đã có khi mở file. Cảnh báo và lỗi lấy từ lịch sử DB. Byte chờ
+                gồm cả dòng chưa kết thúc và loại trừ file .gz.
+              </p>
             </section>
             <section className="panel">
               <h2>Tài nguyên máy chạy backend</h2>

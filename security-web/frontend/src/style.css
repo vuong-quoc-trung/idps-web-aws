@@ -1246,7 +1246,9 @@ h2 {
   color: var(--source-color, var(--accent));
 }
 .source-health {
-  border-top: 3px solid var(--source-color);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  border-top: 3px solid var(--source-color, var(--accent));
 }
 .source-health-grid {
   display: grid;
@@ -1260,6 +1262,14 @@ h2 {
 .source-health .detail-fields > div {
   grid-template-columns: 1fr;
   gap: 4px;
+}
+.source-health .detail-fields {
+  gap: 0;
+}
+.source-health .badge {
+  max-width: 100%;
+  white-space: normal;
+  margin: 0;
 }
 .source-health dd {
   margin: 0;
