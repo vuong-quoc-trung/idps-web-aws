@@ -289,3 +289,35 @@ Sau khi audit code và có cửa sổ bảo trì, dùng quyền tạm riêng sau
 ```
 
 Mục tiêu cuối cùng là `480` phút, `DRY_RUN=false`, `ENABLED`, `rate(15 minutes)` và flexible window `OFF`. Phân biệt app dry run và AWS DryRun. Chỉ thử stop rút ngắn khi đã hoàn tất setup R46, người dùng xác nhận cửa sổ và staging rảnh. Sau test, đối chiếu CloudWatch/Scheduler context, lệnh Stop và state, EBS/EIP. Khôi phục ngay cấu hình chính thức khi PASS, hoặc cấu hình ban đầu đã sao lưu khi có lỗi. Xem [trình tự an toàn](#3-auto-stop-tám-giờ).
+
+## 10. Cloud Resource Safety Profile
+
+**Thiết kế đã chốt trong R46. Triển khai và nghiệm thu runtime thuộc giai đoạn ứng dụng.** Chọn profile tường minh lúc triển khai. Trước startup, xác minh môi trường EC2 và danh tính instance đối chiếu inventory staging từ control plane đã xác thực. Kiểm vị trí cgroup mà service thực sự thuộc về, controller delegation và các limit kernel. Khi profile không khớp môi trường hoặc thiếu telemetry bắt buộc, chặn startup hoặc chuyển ABSTAIN theo policy của đường inference.
+
+| Profile | Điều kiện và bảo vệ |
+|---|---|
+| `LOCAL_PROFILE` | Giữ nguyên Thermal Guardian, CPU platform binding, mapping `coretemp`, nhiệt độ và hardware alarm. Giữ nguyên giới hạn cgroup và các gate của Local Beta. |
+| `AWS_CLOUD_PROFILE` | Giám sát nhiệt vật lý **NOT_APPLICABLE** theo quyết định thiết kế staging. Dùng cgroup v2, CPU, RAM, swap, PID, PSI, OOM, disk, watchdog và inference deadline. Không giả lập `coretemp` hoặc giá trị nhiệt. Không vận hành scorer theo profile này cho đến khi implementation và acceptance đạt. |
+
+### Phân bổ khởi điểm để đo trên m7i-flex.large
+
+Đơn vị CPU là quota systemd, 100% tương ứng thời lượng của một vCPU. Đây là trần thử nghiệm, không phải sizing production. App slice dùng tối đa **150% CPU, 6.144 MiB RAM, swap 0, 512 tasks**. Giữ 50% CPU cho hệ điều hành và SSM. Với MemTotal đo được 7.775 MiB, ngoài trần app slice còn 1.631 MiB. Audit nằm chung tiến trình Student và dùng budget log riêng, không cộng trùng quota.
+
+| Thành phần | CPUQuota | MemoryMax MiB | TasksMax |
+|---|---:|---:|---:|
+| NGINX | 20% | 128 | 32 |
+| Student Web và Student Audit | 40% | 1.536 | 160 |
+| PostgreSQL | 25% | 1.536 | 96 |
+| Suricata passive | 25% | 768 | 64 |
+| Security Web / Rust Hybrid | 15% | 512 | 64 |
+| AI R37 scorer | 25% | 768 | 64 |
+| Tổng trần theo service | 150% | 5.248 | 480 |
+
+Cấu hình thử theo systemd với `MemoryHigh` dưới `MemoryMax`, swap hạn chế cho cả slice, và quyền chỉ đọc metrics cho supervisor. Giữ `MemoryHigh` linh hoạt sau đo startup JVM, PostgreSQL cache, cold load ONNX và Suricata. Không tăng quota bằng cách giảm headroom SSM hoặc thay đổi guard của Local. Lượt smoke R46 đã đọc quota 100% CPU/768 MiB của sensor thử riêng; bảng trên chưa được kiểm với workload đầy đủ.
+
+### Acceptance trước khi kích hoạt scorer
+
+1. Đối chiếu danh tính EC2, profile tường minh, cgroup v2 và placement của main PID cùng child. Đọc lại `cpu.max`, `memory.high`, `memory.max`, `memory.swap.max`, `pids.max` cho app slice và từng unit. Khi sai profile hoặc readback, chặn service và giữ gateway hoạt động an toàn.
+2. Đo cold/warm load và tải đồng thời benign có kiểm soát. Ghi CPU throttling, RSS, `memory.peak`, PSI CPU/memory/I/O, `memory.events`, OOM, p95/p99, free disk và log rate. Xác định ngưỡng admission disk/PSI theo baseline đo và restore budget, ưu tiên quota local cùng log rotation trước khi xuất log.
+3. Kiểm watchdog theo heartbeat thật của tiến trình và IPC timeout. Đặt timeout theo phần còn lại của cutoff 1.000 ms, giữ guard 1 ms. Kiểm scorer chậm, chết, restart, OOM và missing response đều cho ABSTAIN/fallback hợp lệ. Scorer failure không làm mất request ID hoặc cho phép vượt kiểm soát ứng dụng.
+4. Kiểm khả năng quản trị qua SSM trong các bài pressure có giới hạn. Diễn tập graceful Stop và khôi phục vị trí journal sau boot. Kiểm scoring shadow trên giao dịch benign trước khi mở rộng workload. Giữ C2 đóng, AI auto-ban OFF và registry R37/R36 theo R42.
