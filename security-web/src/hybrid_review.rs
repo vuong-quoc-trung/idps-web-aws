@@ -321,8 +321,10 @@ pub async fn adaptive_plan(
         "Invalid canary authorization"
     );
     if let Some(p) = native.filter(|p| p.action == "BLOCK_IP") {
-        anyhow::ensure!(critical.is_empty() && p.events >= 10 && p.ttl <= 15 && p.window_seconds <= 60,
-            "Unsafe IP authorization");
+        anyhow::ensure!(
+            critical.is_empty() && p.events >= 10 && p.ttl <= 15 && p.window_seconds <= 60,
+            "Unsafe IP authorization"
+        );
         // Application alerts can coalesce into episodes. Count authenticated server
         // decisions per transaction rather than multiplying (or losing) alert rows.
         let row: Option<(Vec<String>, i64, i64)> = sqlx::query_as(r#"
@@ -363,10 +365,12 @@ pub async fn adaptive_plan(
           ORDER BY max(occurred_at) DESC,actor,client_ip LIMIT 1
         "#).bind(&p.source_instance).bind(p.window_seconds).bind(p.events).bind(rules)
            .fetch_optional(pool).await?;
-        return Ok(row.map(|(ids, oldest, issued)| json!({"request_id":ids[0],"action":"BLOCK_IP",
+        return Ok(row.map(|(ids, oldest, issued)| {
+            json!({"request_id":ids[0],"action":"BLOCK_IP",
             "selector":"","reason":"DISTINCT_OPERATIONS","oldest":oldest,"issued":issued,
             "expires":(issued+p.ttl).min(oldest+i64::from(p.window_seconds)),
-            "rules":rules,"evidence":ids})));
+            "rules":rules,"evidence":ids})
+        }));
     }
     // A repeat with a new HTTP ID can still be a retry. In the absence of a trusted
     // operation ID count only distinct application decisions on distinct requests.

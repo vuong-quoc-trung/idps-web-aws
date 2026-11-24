@@ -283,11 +283,19 @@ async fn main() -> Result<()> {
     if env::var("WS_NATIVE_SCHEMA_CHECK_ONLY").as_deref() == Ok("1") {
         let applied: Vec<(i64, Vec<u8>, bool)> = sqlx::query_as(
             "SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version",
-        ).fetch_all(&pool).await?;
-        anyhow::ensure!(applied.len() == migrations.iter().count()
-            && applied.iter().zip(migrations.iter()).all(|((v, c, ok), m)|
-                *ok && *v == m.version && c.as_slice() == m.checksum.as_ref()),
-            "Native database migration checksum mismatch");
+        )
+        .fetch_all(&pool)
+        .await?;
+        anyhow::ensure!(
+            applied.len() == migrations.iter().count()
+                && applied
+                    .iter()
+                    .zip(migrations.iter())
+                    .all(|((v, c, ok), m)| *ok
+                        && *v == m.version
+                        && c.as_slice() == m.checksum.as_ref()),
+            "Native database migration checksum mismatch"
+        );
     } else {
         migrations.run(&pool).await?;
     }

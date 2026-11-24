@@ -891,11 +891,14 @@ function App() {
                       className={`badge ${w?.state === "error" ? "danger" : ""}`}
                     >
                       {w?.state === "watching"
-                        ? (w.last_data_at ? "Đọc được file" : "Chưa có dữ liệu")
-                        : w?.state === "NOT_STARTED" ? "NGINX Edge chưa khởi động"
-                        : w?.state === "error"
-                          ? "Lỗi đọc log"
-                          : "Chưa xác định"}
+                        ? w.last_data_at
+                          ? "Đọc được file"
+                          : "Chưa có dữ liệu"
+                        : w?.state === "NOT_STARTED"
+                          ? "NGINX Edge chưa khởi động"
+                          : w?.state === "error"
+                            ? "Lỗi đọc log"
+                            : "Chưa xác định"}
                     </span>
                     <small>
                       Dữ liệu gần nhất:{" "}
@@ -1677,7 +1680,12 @@ function App() {
                     "Kết nối được",
                     "Chưa sẵn sàng",
                   ],
-                  ["Firewall", health?.firewall, "Đọc được", firewallMessage(health?.firewall_status) ?? "Chưa sẵn sàng"],
+                  [
+                    "Firewall",
+                    health?.firewall,
+                    "Đọc được",
+                    firewallMessage(health?.firewall_status) ?? "Chưa sẵn sàng",
+                  ],
                   [
                     "DB / firewall",
                     health?.firewall_in_sync,
@@ -1782,11 +1790,14 @@ function App() {
                           {watcher?.state === "error"
                             ? "Lỗi đọc / xử lý nguồn log"
                             : watcher?.state === "watching"
-                              ? (watcher.last_data_at ? "Đọc log thành công" : "Chưa có dữ liệu")
-                              : watcher?.state === "NOT_STARTED" ? "NGINX Edge chưa khởi động"
-                              : name === "STUDENT_AUDIT" && health && !watcher
-                                ? "Chưa cấu hình nguồn log"
-                                : "Chưa có kết quả kiểm tra"}
+                              ? watcher.last_data_at
+                                ? "Đọc log thành công"
+                                : "Chưa có dữ liệu"
+                              : watcher?.state === "NOT_STARTED"
+                                ? "NGINX Edge chưa khởi động"
+                                : name === "STUDENT_AUDIT" && health && !watcher
+                                  ? "Chưa cấu hình nguồn log"
+                                  : "Chưa có kết quả kiểm tra"}
                         </p>
                         {name === "STUDENT_AUDIT" && (
                           <p className="muted">

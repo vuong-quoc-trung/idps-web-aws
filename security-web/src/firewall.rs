@@ -26,7 +26,8 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
         use tokio::io::{AsyncReadExt, AsyncWriteExt};
         return timeout(Duration::from_secs(4), async {
             let mut stream = tokio::net::UnixStream::connect("/run/ws-native-fw-status.sock")
-                .await.context("ACTUATOR_OFFLINE")?;
+                .await
+                .context("ACTUATOR_OFFLINE")?;
             stream.write_all(b"STATUS\n").await?;
             stream.shutdown().await?;
             let mut reply = String::new();
@@ -37,7 +38,9 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
                 _ if !reply.starts_with('{') => bail!("ACTUATOR_ERROR"),
                 _ => Ok(reply),
             }
-        }).await.context("ACTUATOR_TIMEOUT")?;
+        })
+        .await
+        .context("ACTUATOR_TIMEOUT")?;
     }
     let mut command = Command::new("sudo");
     command.arg("-n").arg(cmd).arg(action);
