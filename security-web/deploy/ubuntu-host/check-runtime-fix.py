@@ -37,13 +37,16 @@ try:
     if monitoring:
         lua = report["collection"]["SURICATA_LUA"]
         watcher = report["watchers"]["SURICATA_LUA"]
-        if (fw != "READY" or report.get("firewall_initialized") is not True
+        expected_initialized = {"READY": True, "FIREWALL_UNINITIALIZED": False, "ACTUATOR_OFFLINE": None}[fw]
+        if ("firewall_initialized" not in report or report["firewall_initialized"] is not expected_initialized
                 or not all(x.get("sync", {}).get("status") in ("SYNCED","OUT_OF_SYNC","UNVERIFIED") for x in (report,blocked))
                 or watcher["state"] != "watching"):
             raise RuntimeError("Native monitoring checkpoint failed: "+str((fw, watcher["state"])))
         for endpoint, payload, legacy in (("status",report,"firewall_in_sync"),("blocked-ips",blocked,"in_sync")):
             sync = payload["sync"]
             expected = {"SYNCED": True, "OUT_OF_SYNC": False, "UNVERIFIED": None}[sync["status"]]
+            if (fw != "READY" and sync["status"] != "UNVERIFIED"):
+                raise RuntimeError("Unavailable firewall must be UNVERIFIED on "+endpoint)
             if (legacy not in payload or payload[legacy] is not expected
                     or sync.get("scope") != "inet ws_native_lab_peer/edge_peers"
                     or bool(sync.get("differences")) != (expected is False)):
