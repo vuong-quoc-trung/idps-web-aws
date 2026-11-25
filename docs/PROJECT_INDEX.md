@@ -7,7 +7,7 @@
 | Mã ứng dụng | [Student backend](../student-web/backend/src/) · [Student frontend](../student-web/frontend/src/) · [Rust Security Web](../security-web/src/) · [Migrations](../security-web/migrations/) |
 | Edge và cảm biến | [NGINX](../security-web/nginx/) · [Suricata](../security-web/config/suricata/) |
 | AI và resource | [Registry R37 và rollback R36](../ai-training/contracts/quality-freeze-r37/slots.json) · [Code AI](../ai-training/src/idps_ai/) · [Protocol T07](../ai-training/contracts/evaluation-v1/protocol.json) |
-| AWS staging | [Gateway và Suricata R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) · [Nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) · [Runbook vận hành](AWS_STAGING_OPERATIONS_HANDOFF.md) · [Cloud Resource Safety Profile](AWS_STAGING_OPERATIONS_HANDOFF.md#10-cloud-resource-safety-profile) · [Preflight R44](129_T09_R44_AWS_PREFLIGHT.md) · [Thiết kế AWS](127_T09_AWS_MIGRATION_HANDOFF.md) · [Topology R38](../security-web/deploy/local-r38/aws/) |
+| AWS staging | [First AWS deployment R47](132_T09_R47_FIRST_AWS_DEPLOYMENT.md) · [Gateway và Suricata R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) · [Nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) · [Runbook vận hành](AWS_STAGING_OPERATIONS_HANDOFF.md) · [Cloud Resource Safety Profile](AWS_STAGING_OPERATIONS_HANDOFF.md#10-cloud-resource-safety-profile) · [Preflight R44](129_T09_R44_AWS_PREFLIGHT.md) · [Thiết kế AWS](127_T09_AWS_MIGRATION_HANDOFF.md) · [Topology R38](../security-web/deploy/local-r38/aws/) |
 | Nghiên cứu | [Báo cáo cũ trong docs](./) · [Chỉ mục evidence nghiên cứu](../release/research-history-index.json) · [Bàn giao nhóm](11_TEAM_RELEASE_20261105.md) |
 | Bảo trì | [Kết quả và phục hồi cache R43](128_T09_R43_SAFE_PROJECT_CLEANUP.md) |
 
