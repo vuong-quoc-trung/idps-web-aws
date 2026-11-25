@@ -1546,3 +1546,72 @@ async fn r35_legacy_ai_history_rekey_then_apply_https(pool: PgPool) {
         full.iter().count() as i64
     );
 }
+
+#[sqlx::test(migrations = "./migrations")]
+async fn realtime_committed_alert_reaches_two_viewers(pool: PgPool) {
+    use std::time::Duration;
+    let app = router(state(pool.clone()));
+    assert_eq!(
+        request(
+            app.clone(),
+            "GET",
+            "/api/events",
+            None,
+            serde_json::Value::Null
+        )
+        .await
+        .0,
+        StatusCode::UNAUTHORIZED
+    );
+    let token = login(app.clone(), "viewer").await;
+    let mut bodies = Vec::new();
+    for _ in 0..2 {
+        let response = app
+            .clone()
+            .oneshot(
+                Request::get("/api/events")
+                    .header("authorization", format!("Bearer {token}"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let mut body = response.into_body();
+        let first = body.frame().await.unwrap().unwrap().into_data().unwrap();
+        assert!(String::from_utf8_lossy(&first).contains("event: resync"));
+        bodies.push(body);
+    }
+    let worker = tokio::spawn(realtime::listen(pool.clone()));
+    for body in &mut bodies {
+        tokio::time::timeout(Duration::from_secs(4), body.frame())
+            .await
+            .unwrap()
+            .unwrap()
+            .unwrap();
+    }
+    let insert = "INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,severity,action,evidence) VALUES(now(),'SURICATA','alert','sse-test',2,'ALERT','{}') RETURNING id";
+    let mut tx = pool.begin().await.unwrap();
+    sqlx::query(insert).execute(&mut *tx).await.unwrap();
+    tx.rollback().await.unwrap();
+    let mut tx = pool.begin().await.unwrap();
+    let id: i64 = sqlx::query_scalar(insert)
+        .fetch_one(&mut *tx)
+        .await
+        .unwrap();
+    tx.commit().await.unwrap();
+    let since = std::time::Instant::now();
+    for body in &mut bodies {
+        let frame = tokio::time::timeout(Duration::from_secs(1), body.frame())
+            .await
+            .unwrap()
+            .unwrap()
+            .unwrap()
+            .into_data()
+            .unwrap();
+        let s = String::from_utf8_lossy(&frame);
+        assert!(s.contains("event: alert.created") && s.contains(&format!("data: {id}\n")));
+    }
+    eprintln!("commit return to two SSE readers: {:?}", since.elapsed());
+    worker.abort();
+}

@@ -1,3 +1,4 @@
+mod realtime;
 mod ai_shadow;
 #[cfg(test)]
 mod ai_verdict_contract;
@@ -378,6 +379,7 @@ async fn main() -> Result<()> {
     tokio::spawn(metrics::sample_resources());
     tokio::spawn(operations::monitor());
     tokio::spawn(firewall::worker(state.clone()));
+    tokio::spawn(realtime::listen(state.pool.clone()));
     tokio::spawn(hybrid::worker(state.clone()));
     let addr = env::var("APP_ADDR").unwrap_or("127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(&addr).await?;
@@ -405,6 +407,7 @@ fn router(state: AppState) -> Router {
             get(prevention::evaluate),
         )
         .route("/api/stats", get(metrics::stats))
+        .route("/api/events", get(realtime::events))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
         .route("/api/rules", get(api_rules))

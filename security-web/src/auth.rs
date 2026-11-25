@@ -65,7 +65,7 @@ impl Auth {
             attempts: Default::default(),
         })
     }
-    async fn identity(&self, token: &str) -> Option<Identity> {
+    pub(crate) async fn identity(&self, token: &str) -> Option<Identity> {
         let mut sessions = self.sessions.lock().await;
         sessions.retain(|_, s| s.expires > Instant::now());
         sessions.get(&token_hash(token)).map(|s| s.identity.clone())
