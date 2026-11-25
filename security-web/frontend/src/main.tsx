@@ -1,3 +1,5 @@
+import { RealtimeClock } from "./RealtimeClock";
+import { followAlerts, type StreamState } from "./alertStream";
 import { FirewallSync, type SyncReport } from "./FirewallSync";
 import { sourceIpLabel } from "./sourceIp";
 import {
@@ -187,8 +189,10 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   }
 }
 function firewallMessage(code?: string | null) {
-  if (code === "FIREWALL_SCOPE_UNVERIFIED") return "Bảng đã khởi tạo, chưa xác minh cấu hình";
-  if (code === "FIREWALL_SCOPE_MISMATCH") return "Bảng đã khởi tạo, cấu hình khác phạm vi đã duyệt";
+  if (code === "FIREWALL_SCOPE_UNVERIFIED")
+    return "Bảng đã khởi tạo, chưa xác minh cấu hình";
+  if (code === "FIREWALL_SCOPE_MISMATCH")
+    return "Bảng đã khởi tạo, cấu hình khác phạm vi đã duyệt";
   if (code === "ACTUATOR_OFFLINE") return "Actuator chưa hoạt động";
   if (code === "FIREWALL_UNINITIALIZED") return "Chưa khởi tạo bảng chặn";
   return code;
@@ -241,7 +245,7 @@ function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [updated, setUpdated] = useState<string | null>(null);
+  const [streamState, setStreamState] = useState<StreamState>("connecting");
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
   const tracker = useRef(createAlertTracker());
@@ -284,18 +288,100 @@ function App() {
     },
     [session],
   );
-  const refresh = useCallback(async () => {
-    if (!session || refreshing.current) return;
+  const refreshAlerts = useCallback(
+    async (liveIds: Set<number>) => {
+      if (!session) return;
+
+      try {
+        const results = await Promise.all([
+          api(
+            `/api/alerts/search?${extraFilters}&limit=25&offset=${page * 25}&search=${encodeURIComponent(filter)}${severity ? `&severity=${severity}` : ""}`,
+          ),
+          api(
+            `/api/stats?range=${range}${tracker.current.cursor() === null ? "" : `&after_alert_id=${tracker.current.cursor()}`}`,
+          ),
+        ]);
+        if (latestKey.current !== requestKey) return;
+        setAlerts(results[0].items);
+        setTotalAlerts(results[0].total);
+        setStats(results[1]);
+        const updates = results[1].alert_updates as AlertUpdates | undefined;
+        tracker.current.accept(updates);
+        const items = (updates?.items ?? []).filter((item) =>
+          liveIds.has(item.id),
+        );
+        const incoming = liveIds.size
+          ? {
+              watermark: updates?.watermark ?? 0,
+              count: liveIds.size,
+              severity: items.length
+                ? Math.min(...items.map((item) => item.severity))
+                : null,
+              items,
+            }
+          : null;
+        if (incoming && effectsEnabled) {
+          if (Date.now() >= feedbackCooldown.current) {
+            setAlertFeedback(incoming);
+            feedbackCooldown.current = Date.now() + 6000;
+          } else {
+            setAlertFeedback((previous) =>
+              previous
+                ? {
+                    ...incoming,
+                    count: previous.count + incoming.count,
+                    severity: Math.min(
+                      previous.severity ?? 5,
+                      incoming.severity ?? 5,
+                    ),
+                    items: [...previous.items, ...incoming.items].slice(-200),
+                  }
+                : incoming,
+            );
+          }
+        }
+        setError("");
+      } catch (e) {
+        setError((e as Error).message);
+      }
+    },
+    [
+      session,
+      page,
+      filter,
+      severity,
+      range,
+      extraFilters,
+      auditEvent,
+      api,
+      requestKey,
+      effectsEnabled,
+    ],
+  );
+  const loadAlerts = useRef(refreshAlerts);
+  loadAlerts.current = refreshAlerts;
+  const queued = useRef(false);
+  const liveQueue = useRef(new Set<number>());
+  const scheduleAlerts = useCallback(async (liveId?: number) => {
+    if (liveId !== undefined) liveQueue.current.add(liveId);
+    queued.current = true;
+    if (refreshing.current) return;
     refreshing.current = true;
-    setLoading(true);
+    try {
+      while (queued.current) {
+        queued.current = false;
+        const ids = liveQueue.current;
+        liveQueue.current = new Set();
+        await loadAlerts.current(ids);
+      }
+    } finally {
+      refreshing.current = false;
+    }
+  }, []);
+  const refreshOther = useCallback(async () => {
+    if (!session) return;
     try {
       const results = await Promise.all([
-        api(
-          `/api/alerts/search?${extraFilters}&limit=25&offset=${page * 25}&search=${encodeURIComponent(filter)}${severity ? `&severity=${severity}` : ""}`,
-        ),
-        api(
-          `/api/stats?range=${range}${tracker.current.cursor() === null ? "" : `&after_alert_id=${tracker.current.cursor()}`}`,
-        ),
         api("/api/blocked-ips"),
         api(
           `/api/audit${auditEvent !== null ? `?event_id=${auditEvent}` : ""}`,
@@ -304,59 +390,47 @@ function App() {
         api("/api/status"),
       ]);
       if (latestKey.current !== requestKey) return;
-      setAlerts(results[0].items);
-      setTotalAlerts(results[0].total);
-      setStats(results[1]);
-      const incoming = tracker.current.accept(results[1].alert_updates);
-      if (incoming && effectsEnabled) {
-        if (Date.now() >= feedbackCooldown.current) {
-          setAlertFeedback(incoming);
-          feedbackCooldown.current = Date.now() + 6000;
-        } else {
-          setAlertFeedback((previous) =>
-            previous
-              ? {
-                  ...incoming,
-                  count: previous.count + incoming.count,
-                  severity: Math.min(
-                    previous.severity ?? 5,
-                    incoming.severity ?? 5,
-                  ),
-                  items: [...previous.items, ...incoming.items].slice(-200),
-                }
-              : incoming,
-          );
-        }
-      }
-      setBlocked(results[2]);
-      setAudit(results[3]);
-      setRules(results[4]);
-      setHealth(results[5]);
-      setUpdated(new Date().toLocaleTimeString("vi-VN", { hour12: false }));
-      setError("");
+      setBlocked(results[0]);
+      setAudit(results[1]);
+      setRules(results[2]);
+      setHealth(results[3]);
     } catch (e) {
       setError((e as Error).message);
-    } finally {
-      refreshing.current = false;
-      setLoading(false);
     }
-  }, [
-    session,
-    page,
-    filter,
-    severity,
-    range,
-    extraFilters,
-    auditEvent,
-    api,
-    requestKey,
-    effectsEnabled,
-  ]);
+  }, [session, api, auditEvent, requestKey]);
+  const refresh = useCallback(async () => {
+    await Promise.all([scheduleAlerts(), refreshOther()]);
+  }, [scheduleAlerts, refreshOther]);
   useEffect(() => {
-    void refresh();
-    const timer = setInterval(() => void refresh(), 5000);
+    void scheduleAlerts();
+  }, [refreshAlerts, scheduleAlerts]);
+  useEffect(() => {
+    if (!session) return;
+    const ctl = new AbortController();
+    void followAlerts(
+      session.token,
+      ctl.signal,
+      (id) => {
+        void scheduleAlerts(id ?? undefined);
+      },
+      () => {
+        if (!ctl.signal.aborted) setSession(null);
+      },
+      setStreamState,
+    );
+    // Reconcile only alert data if a notification was lost or suppressed by PostgreSQL.
+    const reconcile = setInterval(() => void scheduleAlerts(), 55000);
+    return () => {
+      clearInterval(reconcile);
+      ctl.abort();
+      liveQueue.current.clear();
+    };
+  }, [session, scheduleAlerts]);
+  useEffect(() => {
+    void refreshOther();
+    const timer = setInterval(() => void refreshOther(), 60000);
     return () => clearInterval(timer);
-  }, [refresh]);
+  }, [refreshOther]);
   async function login(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoginBusy(true);
@@ -406,7 +480,7 @@ function App() {
       setBlocked(null);
       setAudit([]);
       setHealth(null);
-      setUpdated(null);
+      setStreamState("connecting");
     }
   }
   async function action(address: string, unblock = false) {
@@ -642,17 +716,26 @@ function App() {
                   ? "Hệ thống sẵn sàng"
                   : "Cần kiểm tra hệ thống"}
             </span>
-            <p className="muted updated-at">
-              <Icon name="clock" />
-              {updated
-                ? `${tab === "application-audit" ? "Dữ liệu chung (không gồm Audit)" : "Dashboard tải dữ liệu thành công"}: ${updated}`
-                : "Đang tải dữ liệu"}
-            </p>
+            <div className="realtime-header">
+              <RealtimeClock />
+              <span role="status" className={`sse-state sse-${streamState}`}>
+                SSE ·{" "}
+                {
+                  {
+                    connecting: "Đang kết nối",
+                    connected: "Đã kết nối",
+                    reconnecting: "Đang kết nối lại",
+                    disconnected: "Mất kết nối",
+                  }[streamState]
+                }
+              </span>
+            </div>
             <button
               onClick={() => {
                 if (tab === "application-audit")
                   setApplicationAuditRefresh((value) => value + 1);
-                void refresh();
+                setLoading(true);
+                void refresh().finally(() => setLoading(false));
               }}
               disabled={loading}
             >
@@ -699,7 +782,9 @@ function App() {
         {tab === "overview" && (
           <div className="overview-layout">
             <section className="panel overview-toolbar">
-              <span>DB / Firewall <FirewallSync compact report={health?.sync} /></span>
+              <span>
+                DB / Firewall <FirewallSync compact report={health?.sync} />
+              </span>
               <label>
                 Khoảng thời gian
                 <select
@@ -1362,8 +1447,16 @@ function App() {
                 <Icon name="network" />
                 Danh sách từ DB và kernel
               </h2>
-              {blocked?.sync?.scope === "inet ws_native_lab_peer/edge_peers" && <p>PostgreSQL: blocked_ips còn hiệu lực. Kernel: edge_peers cho BLOCK_IP tại Edge LAN. Hai danh sách có phạm vi riêng.</p>}
-              {blocked && !blocked.database && <p>Chưa đọc được danh sách DB.</p>}
+              {blocked?.sync?.scope ===
+                "inet ws_native_lab_peer/edge_peers" && (
+                <p>
+                  PostgreSQL: blocked_ips còn hiệu lực. Kernel: edge_peers cho
+                  BLOCK_IP tại Edge LAN. Hai danh sách có phạm vi riêng.
+                </p>
+              )}
+              {blocked && !blocked.database && (
+                <p>Chưa đọc được danh sách DB.</p>
+              )}
               {Array.from(
                 new Set([
                   ...(blocked?.database?.map((b) => b.ip) ?? []),
@@ -1380,11 +1473,11 @@ function App() {
                           ? "Có trong DB · Chưa xác định trong kernel"
                           : blocked.database == null
                             ? "Có trong kernel · Chưa đọc được DB"
-                          : row && blocked.kernel.includes(address)
-                            ? "Có trong cả DB và kernel"
-                            : row
-                              ? "Chỉ có trong DB"
-                              : "Chỉ có trong kernel"}
+                            : row && blocked.kernel.includes(address)
+                              ? "Có trong cả DB và kernel"
+                              : row
+                                ? "Chỉ có trong DB"
+                                : "Chỉ có trong kernel"}
                       </p>
                       <p>Lý do: {row?.reason ?? "Không có bản ghi DB"}</p>
                       <small>
@@ -1701,11 +1794,15 @@ function App() {
                   </div>
                 ))}
                 <div className="service-item">
-                  <span>DB / Firewall</span><FirewallSync compact report={health?.sync} />
+                  <span>DB / Firewall</span>
+                  <FirewallSync compact report={health?.sync} />
                 </div>
               </div>
               {health?.operations?.native_authorization && (
-                <p>Chế độ cấp quyền Native: {health.operations.native_authorization}</p>
+                <p>
+                  Chế độ cấp quyền Native:{" "}
+                  {health.operations.native_authorization}
+                </p>
               )}
               <p className="muted">
                 Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến trình
@@ -1770,124 +1867,130 @@ function App() {
                 </p>
               </article>
               <div className="source-health-grid">
-                {["NGINX", "SURICATA_LUA", "STUDENT_AUDIT"].map(
-                  (name) => {
-                    const watcher = health?.watchers[name];
-                    const collection = health?.collection?.[name];
-                    const time = (value: string | null | undefined) =>
-                      value
-                        ? new Date(value).toLocaleString("vi-VN", {
-                            hour12: false,
-                          })
-                        : "Chưa ghi nhận";
-                    return (
-                      <article
-                        className={`panel source-health source-${name}`}
-                        key={name}
+                {["NGINX", "SURICATA_LUA", "STUDENT_AUDIT"].map((name) => {
+                  const watcher = health?.watchers[name];
+                  const collection = health?.collection?.[name];
+                  const time = (value: string | null | undefined) =>
+                    value
+                      ? new Date(value).toLocaleString("vi-VN", {
+                          hour12: false,
+                        })
+                      : "Chưa ghi nhận";
+                  return (
+                    <article
+                      className={`panel source-health source-${name}`}
+                      key={name}
+                    >
+                      <h3 className="source-label">
+                        {name === "STUDENT_AUDIT"
+                          ? "Student Audit — Tầng ứng dụng"
+                          : name}
+                      </h3>
+                      <p
+                        className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
                       >
-                        <h3 className="source-label">
-                          {name === "STUDENT_AUDIT"
-                            ? "Student Audit — Tầng ứng dụng"
-                            : name}
-                        </h3>
-                        <p
-                          className={`badge ${watcher?.state === "error" ? "danger" : watcher?.state === "watching" ? "good" : "warn"}`}
-                        >
-                          {watcher?.state === "error"
-                            ? "Lỗi đọc / xử lý nguồn log"
-                            : watcher?.state === "watching"
-                              ? watcher.last_data_at
-                                ? "Đọc log thành công"
-                                : "Chưa có dữ liệu"
-                              : watcher?.state === "NOT_STARTED"
-                                ? "NGINX Edge chưa khởi động"
-                                : name === "STUDENT_AUDIT" && health && !watcher
-                                  ? "Chưa cấu hình nguồn log"
-                                  : "Chưa có kết quả kiểm tra"}
-                        </p>
-                        {watcher?.error && (
-                          <p className="error">{watcher.error}</p>
-                        )}
-                        <p role="status">
-                          {freshness(watcher?.last_data_at, health?.checked_at)}
-                        </p>
-                        <dl className="detail-fields">
-                          <div>
-                            <dt>{name === "SURICATA_LUA" ? "Lần lưu bằng chứng Lua vào DB" : "Lần lưu sự kiện vào DB"}</dt>
-                            <dd>{time(collection?.last_ingested_at)}</dd>
-                          </div>
-                          <div>
-                            <dt>Thời gian sự kiện vừa lưu</dt>
-                            <dd>{name === "SURICATA_LUA" ? "Lua không cung cấp mốc này" : time(collection?.last_ingested_event_at)}</dd>
-                          </div>
-                          <div>
-                            <dt>Lần đọc thành công</dt>
-                            <dd>{time(watcher?.last_success_at)}</dd>
-                          </div>
-                          <div>
-                            <dt>Lần thấy dữ liệu mới</dt>
-                            <dd>{time(watcher?.last_data_at)}</dd>
-                          </div>
-                          <div>
-                            <dt>Lần lưu cảnh báo</dt>
-                            <dd>{time(collection?.last_alert_at)}</dd>
-                          </div>
-                          <div>
-                            <dt>Log còn chờ</dt>
-                            <dd>
-                              {watcher?.pending_bytes == null
-                                ? "Chưa xác định"
-                                : `${fmt(watcher.pending_bytes)} byte`}
-                            </dd>
-                          </div>
-                          <div>
-                            <dt>Dòng sai định dạng</dt>
-                            <dd>
-                              {collection
-                                ? fmt(collection.error_count)
-                                : "Chưa tải được"}
-                            </dd>
-                          </div>
-                          <div>
-                            <dt>Lỗi phân tích gần nhất</dt>
-                            <dd>
-                              {collection?.last_error ? (
-                                <>
-                                  {time(collection.last_error.at)}
-                                  <br />
-                                  {collection.last_error.reason}
-                                </>
-                              ) : collection ? (
-                                "Chưa ghi nhận"
-                              ) : (
-                                "Chưa tải được"
-                              )}
-                            </dd>
-                          </div>
-                        </dl>
-                        {!watcher?.last_data_at &&
-                          watcher?.state === "watching" && (
-                            <p className="muted">
-                              Đọc được file nhưng chưa quan sát thấy dữ liệu
-                              trong phiên backend này.
-                            </p>
-                          )}
-                        {name === "STUDENT_AUDIT" && (
+                        {watcher?.state === "error"
+                          ? "Lỗi đọc / xử lý nguồn log"
+                          : watcher?.state === "watching"
+                            ? watcher.last_data_at
+                              ? "Đọc log thành công"
+                              : "Chưa có dữ liệu"
+                            : watcher?.state === "NOT_STARTED"
+                              ? "NGINX Edge chưa khởi động"
+                              : name === "STUDENT_AUDIT" && health && !watcher
+                                ? "Chưa cấu hình nguồn log"
+                                : "Chưa có kết quả kiểm tra"}
+                      </p>
+                      {watcher?.error && (
+                        <p className="error">{watcher.error}</p>
+                      )}
+                      <p role="status">
+                        {freshness(watcher?.last_data_at, health?.checked_at)}
+                      </p>
+                      <dl className="detail-fields">
+                        <div>
+                          <dt>
+                            {name === "SURICATA_LUA"
+                              ? "Lần lưu bằng chứng Lua vào DB"
+                              : "Lần lưu sự kiện vào DB"}
+                          </dt>
+                          <dd>{time(collection?.last_ingested_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Thời gian sự kiện vừa lưu</dt>
+                          <dd>
+                            {name === "SURICATA_LUA"
+                              ? "Lua không cung cấp mốc này"
+                              : time(collection?.last_ingested_event_at)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Lần đọc thành công</dt>
+                          <dd>{time(watcher?.last_success_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Lần thấy dữ liệu mới</dt>
+                          <dd>{time(watcher?.last_data_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Lần lưu cảnh báo</dt>
+                          <dd>{time(collection?.last_alert_at)}</dd>
+                        </div>
+                        <div>
+                          <dt>Log còn chờ</dt>
+                          <dd>
+                            {watcher?.pending_bytes == null
+                              ? "Chưa xác định"
+                              : `${fmt(watcher.pending_bytes)} byte`}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Dòng sai định dạng</dt>
+                          <dd>
+                            {collection
+                              ? fmt(collection.error_count)
+                              : "Chưa tải được"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Lỗi phân tích gần nhất</dt>
+                          <dd>
+                            {collection?.last_error ? (
+                              <>
+                                {time(collection.last_error.at)}
+                                <br />
+                                {collection.last_error.reason}
+                              </>
+                            ) : collection ? (
+                              "Chưa ghi nhận"
+                            ) : (
+                              "Chưa tải được"
+                            )}
+                          </dd>
+                        </div>
+                      </dl>
+                      {!watcher?.last_data_at &&
+                        watcher?.state === "watching" && (
                           <p className="muted">
-                            {health && !watcher
-                              ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
-                              : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                            Đọc được file nhưng chưa quan sát thấy dữ liệu trong
+                            phiên backend này.
                           </p>
                         )}
-                      </article>
-                    );
-                  },
-                )}
+                      {name === "STUDENT_AUDIT" && (
+                        <p className="muted">
+                          {health && !watcher
+                            ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
+                            : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                        </p>
+                      )}
+                    </article>
+                  );
+                })}
               </div>
               <p className="muted">
-                Mốc đọc và nhận dữ liệu tính từ lần khởi động backend, kể cả dữ liệu
-                đã có khi mở file. Cảnh báo và lỗi lấy từ lịch sử DB. Byte chờ
-                gồm cả dòng chưa kết thúc và loại trừ file .gz.
+                Mốc đọc và nhận dữ liệu tính từ lần khởi động backend, kể cả dữ
+                liệu đã có khi mở file. Cảnh báo và lỗi lấy từ lịch sử DB. Byte
+                chờ gồm cả dòng chưa kết thúc và loại trừ file .gz.
               </p>
             </section>
             <section className="panel">

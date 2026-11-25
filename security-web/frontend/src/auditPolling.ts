@@ -3,7 +3,7 @@ export function startAuditPolling({
   load,
   visible,
   subscribe,
-  schedule = (callback: () => void) => setTimeout(callback, 5000),
+  schedule = (callback: () => void) => setTimeout(callback, 60000),
   cancel = (timer: ReturnType<typeof setTimeout>) => clearTimeout(timer),
 }: {
   load: (signal: AbortSignal) => Promise<void>;

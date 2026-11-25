@@ -2230,3 +2230,42 @@ td button {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.realtime-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.realtime-header time {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.realtime-header time strong {
+  color: var(--text);
+  margin-right: 0.3rem;
+}
+.sse-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.sse-state::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sse-connected {
+  color: #65dfb1;
+}
+.sse-reconnecting,
+.sse-connecting {
+  color: #e9bd78;
+}
+.sse-disconnected {
+  color: #ff9e9e;
+}
