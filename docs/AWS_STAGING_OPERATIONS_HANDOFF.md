@@ -1,5 +1,7 @@
 # AWS staging — Vận hành và bàn giao
 
+[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình ứng dụng đang triển khai, cách truy cập và rollback.
+
 Bắt đầu với [kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) và [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
 
 ## Kiến trúc
