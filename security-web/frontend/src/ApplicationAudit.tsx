@@ -156,7 +156,7 @@ export function ApplicationAudit({
             Mỗi dòng là một lần quan sát theo Schema v1. Mặc định hiển thị
             Student audit trong 24 giờ qua. Thời gian theo múi giờ trình duyệt (
             {Intl.DateTimeFormat().resolvedOptions().timeZone}). Tự tải lại sau
-            mỗi 5 giây khi lần tải trước hoàn tất và trang đang hiển thị. Bạn
+            mỗi 60 giây khi lần tải trước hoàn tất và trang đang hiển thị. Bạn
             vẫn có thể bấm Tải lại audit hoặc Làm mới.
           </p>
         </div>

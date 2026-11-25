@@ -1,0 +1,14 @@
+[Unit]
+Description=Evaluate explicitly authorized native prevention window
+Requires=ws-native-plan.socket
+After=ws-native-security.service ws-native-plan.socket
+[Service]
+Type=oneshot
+User=ws-native-actuator
+Group=ws-native-evidence
+ExecStart=/usr/bin/python3 -B /opt/ws-native/runtime-fix/worker.py tick
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/ws-native/approval /run/ws-native-leases
+ProtectHome=yes
+UMask=0077

@@ -1,0 +1,5 @@
+[Socket]
+ListenStream=/run/ws-native-plan.sock
+SocketUser=ws-native-actuator
+SocketMode=0600
+Accept=yes

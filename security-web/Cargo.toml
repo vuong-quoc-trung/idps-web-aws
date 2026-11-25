@@ -4,9 +4,13 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
 
+[features]
+dev-hybrid-review = []
+
 [dependencies]
 anyhow = "1"
 axum = "0.8"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
 chrono = { version = "0.4", features = ["serde"] }
 dotenvy = "0.15"
 regex = "1"

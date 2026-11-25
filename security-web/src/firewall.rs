@@ -21,6 +21,29 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
     if action != "list-json" {
         prevention::require_execution()?;
     }
+    if action == "list-json" {
+        anyhow::ensure!(action == "list-json", "BLOCK_IP requires approved cutover");
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        return timeout(Duration::from_secs(4), async {
+            let mut stream = tokio::net::UnixStream::connect("/run/ws-native-fw-status.sock")
+                .await
+                .context("ACTUATOR_OFFLINE")?;
+            stream.write_all(b"STATUS\n").await?;
+            stream.shutdown().await?;
+            let mut reply = String::new();
+            stream.take(262145).read_to_string(&mut reply).await?;
+            anyhow::ensure!(reply.len() <= 262144, "ACTUATOR_ERROR");
+            match reply.trim() {
+                "SCOPE_UNVERIFIED" => bail!("FIREWALL_SCOPE_UNVERIFIED"),
+                "SCOPE_MISMATCH" => bail!("FIREWALL_SCOPE_MISMATCH"),
+                "UNINITIALIZED" => bail!("FIREWALL_UNINITIALIZED"),
+                _ if !reply.starts_with('{') => bail!("ACTUATOR_ERROR"),
+                _ => Ok(reply),
+            }
+        })
+        .await
+        .context("ACTUATOR_TIMEOUT")?;
+    }
     let mut command = Command::new("sudo");
     command.arg("-n").arg(cmd).arg(action);
     if let Some(ip) = ip {
@@ -41,14 +64,29 @@ pub async fn run(cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) 
     Ok(String::from_utf8(out.stdout)?)
 }
 pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
+    parse_named_set(text, false)
+}
+
+fn parse_named_set(text: &str, native: bool) -> Result<BTreeSet<String>> {
     let value: serde_json::Value = serde_json::from_str(text)?;
     let items = value["nftables"]
         .as_array()
         .context("Missing nftables array")?;
     let set = items
         .iter()
-        .find_map(|item| item.get("set").filter(|s| s["name"] == "blocked_ips"))
-        .context("Missing blocked_ips set")?;
+        .find_map(|item| {
+            item.get("set").filter(|s| {
+                if native {
+                    s["family"] == "inet"
+                        && s["table"] == "ws_native_lab_peer"
+                        && s["name"] == "edge_peers"
+                        && s["type"] == "ipv4_addr"
+                } else {
+                    s["name"] == "blocked_ips"
+                }
+            })
+        })
+        .context("Missing expected nftables set")?;
     let mut ips = BTreeSet::new();
     if let Some(elements) = set.get("elem") {
         for value in elements
@@ -106,8 +144,8 @@ pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
     }
     Ok(ips)
 }
-pub async fn kernel(state: &AppState) -> Result<BTreeSet<String>> {
-    parse_set(&run(&state.firewall_cmd, "list-json", None, None).await?)
+pub fn native_status() -> bool {
+    env::var("WS_NATIVE_FIREWALL_SOCKET").as_deref() == Ok("1")
 }
 pub async fn enqueue(
     pool: &PgPool,
@@ -309,19 +347,136 @@ pub async fn worker(state: AppState) {
         tokio::time::sleep(Duration::from_secs(1)).await;
     }
 }
+#[derive(Deserialize)]
+struct Lease {
+    ip: String,
+    rid: String,
+    issued: i64,
+    expires: i64,
+}
+
+fn reconcile(
+    db_read: bool,
+    kernel: Option<&BTreeSet<String>>,
+    leases: Option<&[Lease]>,
+    tags: &serde_json::Value,
+    bound: bool,
+) -> serde_json::Value {
+    use serde_json::json;
+    let scope = if native_status() {
+        "inet ws_native_lab_peer/edge_peers"
+    } else {
+        "legacy"
+    };
+    let result = |status, reason, differences: Vec<String>| {
+        json!({
+            "status":status, "reason":reason, "scope":scope, "differences":differences
+        })
+    };
+    let unknown = |reason| result("UNVERIFIED", reason, vec![]);
+    let Some(actual) = kernel else {
+        return unknown("KERNEL_UNAVAILABLE");
+    };
+    if !db_read {
+        return unknown("DATABASE_UNAVAILABLE");
+    }
+    let Some(leases) = leases else {
+        return unknown("JOURNAL_UNAVAILABLE");
+    };
+    if !bound {
+        return unknown("DATABASE_BINDING_UNVERIFIED");
+    }
+    let mut expected = BTreeSet::new();
+    let mut differences = Vec::new();
+    for lease in leases {
+        if lease.expires <= Utc::now().timestamp() + 1 || !expected.insert(lease.ip.clone()) {
+            return unknown("LEASE_TRANSITION");
+        }
+        if !actual.contains(&lease.ip) {
+            differences.push(format!(
+                "{} · DB và journal có lease đã ACK; thiếu IP trong kernel",
+                lease.ip
+            ));
+        } else {
+            match tags[&lease.ip].as_str() {
+                None => return unknown("KERNEL_LEASE_BINDING_UNVERIFIED"),
+                Some(tag) if tag != lease.rid => differences.push(format!(
+                    "{} · Request ID của kernel khác lease đã ACK",
+                    lease.ip
+                )),
+                _ => {}
+            }
+        }
+    }
+    for ip in actual.difference(&expected) {
+        differences.push(format!(
+            "{ip} · có trong kernel; thiếu lease BLOCK_IP hiệu lực trong journal"
+        ));
+    }
+    if differences.is_empty() {
+        result("SYNCED", "MATCH", differences)
+    } else {
+        result("OUT_OF_SYNC", "DIFFERENCE", differences)
+    }
+}
+
+pub async fn observation(state: &AppState) -> serde_json::Value {
+    use serde_json::{Value, json};
+    // blocked_ips has no native table/chain or request ID. Keep its rows for
+    // inspection; the native worker persists applied leases in SQLite instead.
+    let rows=sqlx::query_as::<_,BlockedIpRow>("SELECT host(ip)::text ip,reason,blocked_at,unblocked_at,active FROM blocked_ips WHERE active AND (expires_at IS NULL OR expires_at>now()) ORDER BY blocked_at DESC")
+        .fetch_all(&state.pool).await.ok();
+    let snapshot = run(&state.firewall_cmd, "list-json", None, None)
+        .await
+        .and_then(|s| {
+            let ips = parse_named_set(&s, native_status())?;
+            Ok((ips, serde_json::from_str::<Value>(&s)?))
+        });
+    let mut tags = json!({});
+    let mut leases = None;
+    if let Ok((_, ref value)) = snapshot
+        && native_status()
+    {
+        leases = serde_json::from_value::<Vec<Lease>>(value["worker_leases"].clone()).ok();
+        for item in value["nftables"].as_array().into_iter().flatten() {
+            let set = &item["set"];
+            if set["family"] == "inet"
+                && set["table"] == "ws_native_lab_peer"
+                && set["name"] == "edge_peers"
+            {
+                for elem in set["elem"].as_array().into_iter().flatten() {
+                    if let Some(ip) = elem["elem"]["val"].as_str() {
+                        tags[ip] = elem["elem"]["comment"].clone();
+                    }
+                }
+            }
+        }
+    }
+    let mut bound = rows.is_some();
+    // Legacy blocked_ips rows do not describe the native scope. For a
+    // native ACK, bind the trigger back to one Student Audit transaction.
+    if bound && let Some(records) = &leases {
+        for lease in records {
+            let matched=sqlx::query_scalar::<_,bool>("SELECT count(*)=1 FROM normalized_events WHERE source='STUDENT_AUDIT' AND request_id=$1 AND occurred_at BETWEEN to_timestamp($2::bigint)-interval '62 seconds' AND to_timestamp($2::bigint)+interval '2 seconds'")
+                .bind(&lease.rid).bind(lease.issued).fetch_one(&state.pool).await;
+            if !matches!(matched, Ok(true)) {
+                bound = false;
+                break;
+            }
+        }
+    }
+    let kernel = snapshot.as_ref().ok().map(|(ips, _)| ips);
+    let sync = reconcile(rows.is_some(), kernel, leases.as_deref(), &tags, bound);
+    let compatible = match sync["status"].as_str() {
+        Some("SYNCED") => Some(true),
+        Some("OUT_OF_SYNC") => Some(false),
+        _ => None,
+    };
+    json!({"database":rows,"kernel":kernel,"sync":sync,"in_sync":compatible,
+        "error":snapshot.as_ref().err().map(ToString::to_string)})
+}
 pub async fn list(State(state): State<AppState>) -> Result<Json<serde_json::Value>, ApiError> {
-    let rows=sqlx::query_as::<_,BlockedIpRow>("SELECT host(ip)::text ip,reason,blocked_at,unblocked_at,active FROM blocked_ips WHERE active ORDER BY blocked_at DESC")
-        .fetch_all(&state.pool).await.map_err(api_error)?;
-    let result = kernel(&state).await;
-    let desired: BTreeSet<String> = rows.iter().map(|r| r.ip.clone()).collect();
-    Ok(Json(match result {
-        Ok(actual) => {
-            serde_json::json!({"database":rows,"kernel":actual,"in_sync":desired==actual,"error":null})
-        }
-        Err(e) => {
-            serde_json::json!({"database":rows,"kernel":null,"in_sync":false,"error":e.to_string()})
-        }
-    }))
+    Ok(Json(observation(&state).await))
 }
 #[derive(Deserialize)]
 pub struct AuditQuery {
@@ -338,6 +493,69 @@ pub async fn audit(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn sync_api_contract() {
+        let empty = BTreeSet::new();
+        let ip = "192.168.1.19".to_string();
+        let actual = BTreeSet::from([ip.clone()]);
+        let tags = serde_json::json!({&ip:"request"});
+        let live = [Lease {
+            ip: ip.clone(),
+            rid: "request".into(),
+            issued: Utc::now().timestamp(),
+            expires: Utc::now().timestamp() + 15,
+        }];
+        assert_eq!(
+            reconcile(true, Some(&empty), None, &tags, true)["status"],
+            "UNVERIFIED"
+        );
+        assert_eq!(
+            reconcile(true, Some(&actual), Some(&live), &tags, true)["status"],
+            "SYNCED"
+        );
+        for (kernel, journal) in [(&empty, live.as_slice()), (&actual, &[][..])] {
+            let report = reconcile(true, Some(kernel), Some(journal), &tags, true);
+            assert_eq!(report["status"], "OUT_OF_SYNC");
+            assert!(report["differences"][0].as_str().unwrap().contains(&ip));
+        }
+        assert_eq!(
+            reconcile(false, Some(&empty), Some(&[]), &tags, true)["status"],
+            "UNVERIFIED"
+        );
+        assert_eq!(
+            reconcile(true, None, Some(&[]), &tags, true)["status"],
+            "UNVERIFIED"
+        );
+        assert_eq!(
+            reconcile(true, Some(&actual), Some(&live), &tags, false)["status"],
+            "UNVERIFIED"
+        );
+        // OFF/CONTINUOUS and the timer are not execution evidence.
+        assert_eq!(
+            reconcile(true, Some(&empty), Some(&[]), &tags, true)["status"],
+            "SYNCED"
+        );
+    }
+    #[test]
+    fn native_peer_set_status() {
+        let mut snapshot = serde_json::json!({"nftables":[{"set":{
+            "family":"inet","table":"ws_native_lab_peer","type":"ipv4_addr","name":"edge_peers"
+        }}]});
+        assert!(
+            parse_named_set(&snapshot.to_string(), true)
+                .unwrap()
+                .is_empty()
+        );
+        let elements = serde_json::json!([{"elem":{"val":"192.168.1.19","expires":7000}}]);
+        snapshot["nftables"][0]["set"]["elem"] = elements;
+        assert!(
+            parse_named_set(&snapshot.to_string(), true)
+                .unwrap()
+                .contains("192.168.1.19")
+        );
+        snapshot["nftables"][0]["set"]["table"] = "other".into();
+        assert!(parse_named_set(&snapshot.to_string(), true).is_err());
+    }
     #[test]
     fn empty_and_populated_sets() {
         assert!(

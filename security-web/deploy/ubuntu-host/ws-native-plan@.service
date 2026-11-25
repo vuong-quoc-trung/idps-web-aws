@@ -1,0 +1,12 @@
+[Service]
+User=ws-native-security
+EnvironmentFile=/etc/ws-native/security.env
+Environment=PGOPTIONS=-cdefault_transaction_read_only=on
+ExecStart=/usr/bin/python3 -IB /opt/ws-native/runtime-fix/native-plan.py
+StandardInput=socket
+StandardOutput=socket
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RuntimeMaxSec=8s

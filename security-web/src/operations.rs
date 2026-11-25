@@ -27,13 +27,61 @@ async fn service(unit: &str) -> Value {
         _ => json!({"load":"unknown","active":"unknown","sub":"unknown"}),
     }
 }
+async fn native_mode() -> &'static str {
+    let bytes = match tokio::fs::read("/etc/ws-native/approval.json").await {
+        Ok(bytes) => bytes,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return "OFF",
+        Err(_) => return "UNVERIFIED",
+    };
+    let Ok(policy) = serde_json::from_slice::<Value>(&bytes) else {
+        return "UNVERIFIED";
+    };
+    let Some(start) = policy["start"].as_i64() else {
+        return "UNVERIFIED";
+    };
+    let now = Utc::now().timestamp();
+    let Some(actions) = policy["actions"].as_object() else {
+        return "UNVERIFIED";
+    };
+    if actions.is_empty() || start > now {
+        return "OFF";
+    }
+    let mode = match policy.get("mode").and_then(Value::as_str).unwrap_or("LAB") {
+        "LAB" => match policy["end"].as_i64() {
+            Some(end) if end > start && end.saturating_sub(start) <= 600 => {
+                if now >= end {
+                    return "OFF";
+                }
+                "LAB"
+            }
+            _ => return "UNVERIFIED",
+        },
+        "CONTINUOUS" => {
+            if service("ws-native-continuous.service").await["active"] != "active" {
+                return "UNVERIFIED";
+            }
+            "CONTINUOUS"
+        }
+        _ => return "UNVERIFIED",
+    };
+    match service("ws-native-worker.timer").await["active"].as_str() {
+        Some("active") => mode,
+        Some("inactive") => "OFF",
+        _ => "UNVERIFIED",
+    }
+}
+
 pub async fn monitor() {
     let path = env::var("SURICATA_RULES_DEPLOYED_PATH")
         .unwrap_or("/var/lib/suricata/rules/pbl4.rules".into());
     loop {
         let (receiver, sensor) = tokio::join!(
             service("pbl4-audit-receiver.service"),
-            service("suricata.service")
+            service(if firewall::native_status() {
+                "ws-native-sensor.service"
+            } else {
+                "suricata.service"
+            })
         );
         // Bound the read even if the configured path unexpectedly points to a large file.
         use tokio::io::AsyncReadExt;
@@ -53,6 +101,7 @@ pub async fn monitor() {
             _ => None,
         };
         *sample().write().await = json!({
+            "native_authorization":if firewall::native_status() { Some(native_mode().await) } else { None },
             "sampled_at":Utc::now(), "receiver":receiver, "suricata":sensor,
             "sender":{"active":"unknown","reason":"Remote sender is not probed from Security host"},
             "suricata_rules_file":{"path":path,"matches_build":matches},

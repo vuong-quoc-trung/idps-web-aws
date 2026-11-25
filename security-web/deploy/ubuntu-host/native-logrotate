@@ -1,0 +1,26 @@
+/var/lib/ws-native/edge/access.jsonl /var/lib/ws-native/edge/error.log {
+    weekly
+    rotate 4
+    missingok
+    notifempty
+    nocompress
+    su ws-native-edge ws-native-evidence
+    create 0640 ws-native-edge ws-native-evidence
+    sharedscripts
+    postrotate
+        if systemctl is-active --quiet ws-native-edge; then /usr/sbin/nginx -s reopen -c /etc/ws-native/nginx.conf; fi
+    endscript
+}
+/var/lib/ws-native/sensor/eve.json /var/lib/ws-native/sensor/chain.tsv {
+    weekly
+    rotate 4
+    missingok
+    notifempty
+    nocompress
+    su ws-native-sensor ws-native-evidence
+    create 0640 ws-native-sensor ws-native-evidence
+    sharedscripts
+    postrotate
+        systemctl try-restart ws-native-sensor.service
+    endscript
+}

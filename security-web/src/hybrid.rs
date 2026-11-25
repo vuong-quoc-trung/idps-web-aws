@@ -166,13 +166,31 @@ pub fn evaluate(
     decision
 }
 
-async fn refresh(state: &AppState, config: &Config) -> Result<()> {
+async fn refresh(
+    state: &AppState,
+    config: &Config,
+    #[cfg(feature = "dev-hybrid-review")] review: Option<&hybrid_review::Policy>,
+) -> Result<()> {
     let rows: Vec<Value> = sqlx::query_scalar(include_str!("detector_view.sql"))
         .bind(None::<String>)
         .bind(128_i64)
         .fetch_all(&state.pool)
         .await?;
     let worker:bool=sqlx::query_scalar("SELECT COALESCE((SELECT received_at>now()-interval '10 seconds' AND observed_at>now()-interval '10 seconds' AND report->>'status'='READY' FROM ai_shadow_worker WHERE singleton),false)").fetch_one(&state.pool).await?;
+    #[cfg(feature = "dev-hybrid-review")]
+    let app = if review.is_some() {
+        let ids: Vec<_> = rows
+            .iter()
+            .filter_map(|r| r["request_id"].as_str())
+            .collect();
+        hybrid_review::application_evidence(&state.pool, &ids)
+            .await
+            .map_err(|e| {
+                tracing::warn!(error=%e, "Student review evidence unavailable");
+            })
+    } else {
+        Ok(Default::default())
+    };
     for row in rows {
         let Some(rid) = row["request_id"].as_str() else {
             continue;
@@ -220,6 +238,21 @@ async fn refresh(state: &AppState, config: &Config) -> Result<()> {
                 );
             }
         }
+        #[cfg(feature = "dev-hybrid-review")]
+        if let Some(policy) = review {
+            // The guest ingress relay terminates the client connection. No verified
+            // enforcement identity exists at this boundary, even for matched flows.
+            let audit = app
+                .as_ref()
+                .ok()
+                .and_then(|rows| rows.get(rid))
+                .map(Vec::as_slice)
+                .unwrap_or(&[]);
+            let mut result =
+                policy.assess(&row, audit, Utc::now(), hybrid_review::Target::Unverified);
+            result["student_query_available"] = json!(app.is_ok());
+            decision["dev_prevention"] = result;
+        }
         let fingerprint = hash(&decision);
         let mut tx = state.pool.begin().await?;
         sqlx::query("SELECT pg_advisory_xact_lock(hashtextextended($1,14))")
@@ -248,8 +281,23 @@ pub async fn worker(state: AppState) {
             return;
         }
     };
+    #[cfg(feature = "dev-hybrid-review")]
+    let review = match hybrid_review::Policy::load() {
+        Ok(policy) => policy,
+        Err(error) => {
+            tracing::error!(%error, "Development review disabled; baseline Hybrid remains active");
+            None
+        }
+    };
     loop {
-        if let Err(e) = refresh(&state, &config).await {
+        if let Err(e) = refresh(
+            &state,
+            &config,
+            #[cfg(feature = "dev-hybrid-review")]
+            review.as_ref(),
+        )
+        .await
+        {
             tracing::error!(error=%e,"Hybrid policy refresh failed; no response enqueued");
         }
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -361,6 +409,145 @@ pub async fn approve(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(feature = "dev-hybrid-review")]
+    #[sqlx::test]
+    async fn dev_review_persists_only_correlated_evidence_and_never_enqueues(pool: PgPool) {
+        let state = integration_tests::state(pool.clone());
+        let rid = "a".repeat(32);
+        let at = Utc::now();
+        sqlx::query("INSERT INTO normalized_events(event_key,schema_version,source,source_instance,source_event_id,occurred_at,request_id,event_type,canonical) VALUES('evt','1.0','STUDENT_AUDIT','student','evt',$1,$2,'audit',$3)")
+            .bind(at).bind(&rid).bind(json!({"schema_version":"1.0","role":"STAFF","user_id":format!("hmac-sha256:{}","b".repeat(64)),"session_hmac":format!("hmac-sha256:{}","c".repeat(64))})).execute(&pool).await.unwrap();
+        for key in ["evt:APP-1013", "other:APP-1013"] {
+            sqlx::query("INSERT INTO security_alerts(event_key,occurred_at,source,event_type,rule_name,signature,category,severity,action,evidence) VALUES($1,$2,'STUDENT_AUDIT','alert','test','APP-1013','Application Security Decision',1,'ALERT',$3)")
+                .bind(key).bind(at).bind(json!({"request_id":rid,"source_instance":"student"}).to_string()).execute(&pool).await.unwrap();
+        }
+        let policy = serde_json::from_value(json!({"rules":[{"source":"STUDENT_AUDIT","rule":"APP-1013","weight":95,"standalone":true,"max_severity":1}],"combined":120,"standalone":90,"fresh_seconds":12,"r37_weight":50})).unwrap();
+        for _ in 0..2 {
+            refresh(&state, &Config::default(), Some(&policy))
+                .await
+                .unwrap();
+        }
+        let result: Value = sqlx::query_scalar(
+            "SELECT decision->'dev_prevention' FROM hybrid_incidents WHERE request_id=$1",
+        )
+        .bind(&rid)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(result["evidence_alert_ids"].as_array().unwrap().len(), 1);
+        assert_eq!(result["evidence_eligible"], true);
+        assert_eq!(result["action"], "REVIEW");
+        assert_eq!(result["execution_allowed"], false);
+        let counts:(i64,i64,i64)=sqlx::query_as("SELECT (SELECT count(*) FROM hybrid_decision_audit),(SELECT count(*) FROM firewall_actions),(SELECT count(*) FROM security_alerts)").fetch_one(&pool).await.unwrap();
+        assert_eq!(counts, (1, 0, 2));
+        let allowed = vec!["APP-1013".to_owned(), "APP-1012".to_owned()];
+        assert!(
+            hybrid_review::auto_canary(&pool, &allowed, &[])
+                .await
+                .unwrap()
+                .is_none()
+        );
+        assert!(
+            hybrid_review::auto_canary(&pool, &allowed, &allowed[..1])
+                .await
+                .unwrap()
+                .is_some()
+        );
+        // Distinct IDs with the same operation do not escalate a retry.
+        let second = "d".repeat(32);
+        sqlx::query("INSERT INTO normalized_events(event_key,schema_version,source,source_instance,source_event_id,occurred_at,request_id,event_type,canonical) SELECT 'evt2',schema_version,source,source_instance,'evt2',occurred_at,$1,event_type,canonical FROM normalized_events WHERE event_key='evt'").bind(&second).execute(&pool).await.unwrap();
+        let alert_id: i64 = sqlx::query_scalar("INSERT INTO security_alerts(event_key,occurred_at,source,event_type,rule_name,signature,category,severity,action,evidence) SELECT 'evt2:APP-1013',occurred_at,source,event_type,rule_name,signature,category,severity,action,jsonb_set(evidence::jsonb,'{request_id}',to_jsonb($1::text))::text FROM security_alerts WHERE event_key='evt:APP-1013' RETURNING id").bind(&second).fetch_one(&pool).await.unwrap();
+        sqlx::query("INSERT INTO hybrid_incidents(request_id,evidence_fingerprint,policy_version,observed_at,decision) SELECT $1,evidence_fingerprint,policy_version,observed_at,jsonb_set(jsonb_set(decision,'{dev_prevention,request_id}',to_jsonb($1::text)),'{dev_prevention,evidence_alert_ids}',jsonb_build_array($2::bigint)) FROM hybrid_incidents WHERE request_id=$3").bind(&second).bind(alert_id).bind(&rid).execute(&pool).await.unwrap();
+        assert!(
+            hybrid_review::auto_canary(&pool, &allowed, &[])
+                .await
+                .unwrap()
+                .is_none()
+        );
+        let native = hybrid_review::NativeThreshold {
+            action: "BLOCK_REQUEST".into(),
+            window_seconds: 30,
+            events: 2,
+            ttl: 8,
+            source_instance: "student".into(),
+        };
+        assert!(
+            hybrid_review::adaptive_plan(&pool, &allowed, &[], Some(&native))
+                .await
+                .unwrap()
+                .is_none()
+        );
+        for (key, object) in [("evt", "1"), ("evt2", "2")] {
+            sqlx::query("UPDATE normalized_events SET canonical=jsonb_set(canonical,'{security}',jsonb_build_object('object_hmac',$1::text)) WHERE event_key=$2")
+                .bind(format!("hmac-sha256:{}",object.repeat(64))).bind(key).execute(&pool).await.unwrap();
+        }
+        use hmac::{Hmac, Mac};
+        let mut mac = Hmac::<sha2::Sha256>::new_from_slice("a".repeat(64).as_bytes()).unwrap();
+        mac.update(format!("session:{}", "1".repeat(32)).as_bytes());
+        let tag = format!("{:x}", mac.finalize().into_bytes());
+        sqlx::query("UPDATE normalized_events SET canonical=jsonb_set(canonical,'{session_hmac}',to_jsonb($1::text)) WHERE event_key IN ('evt','evt2')")
+            .bind(format!("hmac-sha256:{tag}")).execute(&pool).await.unwrap();
+        let distinct = hybrid_review::adaptive_plan(&pool, &allowed, &[], Some(&native))
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(distinct["selector"], format!("request-{tag}"));
+        assert_eq!(distinct["rules"], json!(["APP-1013", "APP-1013"]));
+        sqlx::query(
+            "UPDATE security_alerts SET signature='APP-1012',event_key='evt2:APP-1012' WHERE id=$1",
+        )
+        .bind(alert_id)
+        .execute(&pool)
+        .await
+        .unwrap();
+        sqlx::query("UPDATE hybrid_incidents SET decision=jsonb_set(decision,'{dev_prevention,policy,rules,0,rule}',to_jsonb('APP-1012'::text)) WHERE request_id=$1").bind(&second).execute(&pool).await.unwrap();
+        let window = hybrid_review::auto_canary(&pool, &allowed, &[])
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(window["evidence"].as_array().unwrap().len(), 2);
+        let canary = hybrid_review::action_plan(&pool, &rid, "BLOCK_REQUEST")
+            .await
+            .unwrap();
+        assert_eq!(canary["selector"], "dev-canary");
+        assert!(
+            hybrid_review::action_plan(&pool, &rid, "BLOCK_IP")
+                .await
+                .is_err()
+        );
+        let account = hybrid_review::action_plan(&pool, &rid, "BLOCK_ACCOUNT")
+            .await
+            .unwrap();
+        assert_eq!(account["selector"], format!("account-{}", "b".repeat(64)));
+        let plan = hybrid_review::session_plan(&pool, &rid).await.unwrap();
+        assert_eq!(plan["selector"], format!("{}.{tag}", "b".repeat(64)));
+        assert_eq!(
+            plan,
+            hybrid_review::session_plan(&pool, &rid).await.unwrap()
+        );
+        if let Ok(binary) = std::env::var("WS_TEST_HTTPS_BINARY") {
+            let status = std::process::Command::new("python3")
+                .args(["-B", "deploy/dev-i5/adaptive/test_edge.py", &binary])
+                .env("WS_TEST_NATIVE", "1")
+                .env("WS_TEST_CANARY_PLAN", distinct.to_string())
+                .env("WS_TEST_AUTO_START", distinct["oldest"].to_string())
+                .status()
+                .unwrap();
+            assert!(status.success());
+        }
+        sqlx::query(
+            "UPDATE normalized_events SET canonical=canonical-'role' WHERE event_key='evt'",
+        )
+        .execute(&pool)
+        .await
+        .unwrap();
+        assert!(hybrid_review::session_plan(&pool, &rid).await.is_err());
+        assert!(
+            hybrid_review::action_plan(&pool, &rid, "BLOCK_ACCOUNT")
+                .await
+                .is_err()
+        );
+    }
     fn row() -> Value {
         json!({"request_id":"a".repeat(32),"rules":[],"request_ai":{"status":"SCORED","model_version":"request-intelligence-v2-frozen-step3072","manifest_sha256":"b90383c55d943414ba5f185e1779914df163dec81f8b7fcf8f8f6b9ecc0ae96c","feature_profile":"selected_headers_no_body","score":0.99,"threshold":0.8826237916946411,"event_id":"b".repeat(32)},"correlation":{"status":"MATCHED","late_event":false}})
     }

@@ -1,0 +1,18 @@
+# Include inside the test Edge server only. Existing Edge locations are untouched.
+location = /__ws_dev__/canary {
+    set $ws_main_request_id $request_id;
+    auth_request /__ws_dev_gate_check;
+    proxy_pass http://ws_dev_canary_origin;
+}
+location = /__ws_dev_gate_check {
+    internal;
+    proxy_pass_request_body off;
+    proxy_pass_request_headers off;
+    proxy_set_header Content-Length "";
+    proxy_set_header X-WS-Request-Id $ws_main_request_id;
+    proxy_set_header X-WS-Selector dev-canary;
+    proxy_connect_timeout 100ms;
+    proxy_read_timeout 100ms;
+    proxy_next_upstream off;
+    proxy_pass http://unix:@GATE_SOCKET@:/check;
+}
