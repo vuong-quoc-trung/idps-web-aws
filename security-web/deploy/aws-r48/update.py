@@ -28,6 +28,7 @@ SITE = Path("/etc/nginx/conf.d/websentinel-staging.conf")
 KEY = Path("/run/websentinel-r48-key/secret/key.json")
 SCORER_SOCKET = Path("/run/websentinel-r47-scorer/receiver.sock")
 SEC = "websentinel-r47-security.service"
+STUDENT = "websentinel-r47-student.service"
 SCORE = "websentinel-r47-scorer.service"
 SENSOR = "websentinel-r48-sensor.service"
 CORR = "websentinel-r48-correlator.service"
@@ -35,6 +36,7 @@ ROTATE = "websentinel-r48-rotate.timer"
 KEY_UNIT = "websentinel-r48-key.service"
 EDGE_UNIT = SYSTEM / "nginx.service.d/48-proof-key.conf"
 SCORE_LIMIT = SYSTEM / (SCORE + ".d/48-receipt-size.conf")
+STUDENT_READY = SYSTEM / (STUDENT + ".d/48-readiness.conf")
 AUDIT = Path("/var/lib/websentinel-r47/student/audit.jsonl")
 ENV = R47 / "security.env"
 UNITS = [SENSOR, CORR, ROTATE]
@@ -45,6 +47,28 @@ DB_FILES = {
     "ws_r47_student": ("flyway_schema_history", 2),
     "ws_r47_security": ("_sqlx_migrations", 20),
 }
+
+
+def boot_dropins():
+    return {
+        EDGE_UNIT: f"[Unit]\nRequires={KEY_UNIT}\nAfter={KEY_UNIT} {STUDENT}\n",
+        STUDENT_READY: ("[Service]\nTimeoutStartSec=155s\n"
+                       f"ExecStartPost=/usr/bin/python3 -B {KIT}/update.py student-ready\n"),
+    }
+
+
+def student_ready():
+    client = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    deadline = time.monotonic() + 145
+    while time.monotonic() < deadline:
+        try:
+            with client.open("http://127.0.0.1:8080/api/auth/csrf", timeout=2) as response:
+                if response.status == 200 and response.headers.get("Set-Cookie"):
+                    return
+        except OSError:
+            pass
+        time.sleep(0.7)
+    raise RuntimeError("Student HTTPS upstream did not become ready")
 
 
 def run(*args, timeout=35, check=True, stdout=None, cwd=None):
@@ -263,7 +287,7 @@ def setup(source):
     if set(manifest) != set(FILES) or any(not (source / p).is_file()
             or (source / p).is_symlink() or sha(source / p) != manifest[p] for p in FILES):
         raise ValueError("Staged kit checksum failed")
-    if any(p.exists() for p in (CONFIG, STATE, KIT.parent, EDGE_UNIT, SCORE_LIMIT,
+    if any(p.exists() for p in (CONFIG, STATE, KIT.parent, EDGE_UNIT, SCORE_LIMIT, STUDENT_READY,
                                 *(SYSTEM / name for name in units()))):
         raise RuntimeError("Existing R48 paths require reviewed rollback or update")
     # The update service deliberately runs with umask 0077. The owners of the
@@ -317,6 +341,7 @@ def rollback(snapshot):
     replace(ENV, (snapshot / "security.env").read_bytes())
     EDGE_UNIT.unlink(missing_ok=True)
     SCORE_LIMIT.unlink(missing_ok=True)
+    STUDENT_READY.unlink(missing_ok=True)
     run("systemctl", "disable", "--now", *UNITS, check=False)
     run("systemctl", "daemon-reload")
     run("nginx", "-t")
@@ -333,10 +358,9 @@ def update(source, snapshot):
     try:
         for name, code in units().items():
             replace(SYSTEM / name, code, 0o644)
-        for path, content in (
-            (EDGE_UNIT, f"[Unit]\nRequires={KEY_UNIT}\nAfter={KEY_UNIT}\n"),
-            (SCORE_LIMIT, "[Service]\nLimitFSIZE=128M\nLimitCORE=0\n"),
-        ):
+        for path, content in (boot_dropins() | {
+            SCORE_LIMIT: "[Service]\nLimitFSIZE=128M\nLimitCORE=0\n",
+        }).items():
             path.parent.mkdir(exist_ok=True, mode=0o755)
             replace(path, content, 0o644)
         run("systemd-analyze", "verify", *(SYSTEM / p for p in units()))
@@ -377,12 +401,14 @@ SURICATA_TRUSTED_EDGE_CONFIRMED=false
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("update", "rollback", "key"))
+    parser.add_argument("action", choices=("update", "rollback", "key", "student-ready"))
     parser.add_argument("--bundle", type=Path)
     parser.add_argument("--backup", type=Path, default=Path("/var/backups/websentinel-r48"))
     args = parser.parse_args()
     if args.action == "key":
         rotate_key()
+    elif args.action == "student-ready":
+        student_ready()
     elif args.action == "rollback":
         rollback(args.backup)
     elif args.bundle is None:
