@@ -6,6 +6,10 @@ ROUTES = {
     ("GET", "/api/auth/me"),
     ("POST", "/api/auth/login"),
     ("POST", "/api/auth/logout"),
+    ("GET", "/api/profile-options"),
+    ("GET", "/api/faculties"),
+    ("GET", "/api/majors"),
+    ("GET", "/api/training-programs"),
 }
 SOURCE = "127.77.0.1"
 EGRESS = "127.77.0.2"
@@ -21,7 +25,9 @@ def render(base, kit, key, key_gid, edge_log, scorer_socket):
         "__SOCKET__", str(scorer_socket)
     )
     routes = "".join(f'    "{method}:{path}" 1;\n' for method, path in sorted(ROUTES))
-    http = f"""# WebSentinel R48 passive HTTPS evidence
+    paths = "".join(f'    "{path}" "{path}";\n' for path in sorted({path for _, path in ROUTES}))
+    http = f"""# WebSentinel R49 passive HTTPS evidence
+include {kit}/pbl4-access.conf;
 js_import r48proof from {kit}/proof-probe.js;
 js_shared_dict_zone zone=nonces:1m timeout=65s;
 js_var $probe_key_gid {key_gid};
@@ -32,9 +38,23 @@ js_set $probe_verified r48proof.verify;
 map "$request_method:$request_uri" $r48_observed {{
     default 0;
 {routes}}}
+map $uri $r49_log_path {{
+    default /api/[redacted];
+{paths}}}
+map $r48_observed $r49_log_dispatch {{
+    default "";
+    1 $r35_dispatch;
+}}
+map $r48_observed $r49_log_host {{
+    default $host;
+    1 $http_host;
+}}
 log_format r48_access escape=json '{{"timestamp":"$time_iso8601","request_id":"$request_id",'
-    '"client_ip":"$remote_addr","http_method":"$request_method","uri_path":"$uri",'
-    '"status":$status,"dispatch":"$r35_dispatch","http_host":"$http_host"}}';
+    '"client_ip":"$remote_addr","http_method":"$request_method","uri_path":"$r49_log_path",'
+    '"status":$status,"dispatch":"$r49_log_dispatch","http_host":"$r49_log_host",'
+    '"latency_seconds":$request_time,"request_bytes":$request_length,"response_bytes":$body_bytes_sent,'
+    '"rule_signals":{{"SQLI":$pbl4_host_sqli,"XSS":$pbl4_host_xss,'
+    '"PATH_TRAVERSAL":$pbl4_host_traversal,"COMMAND_INJECTION":$pbl4_host_command}}}}';
 
 server {{
     listen {EGRESS}:{PORT};
@@ -105,6 +125,7 @@ server {{
     location /api/ {{
         error_page 418 = @r48_observed;
         if ($r48_observed = 1) {{ return 418; }}
+        access_log {edge_log} r48_access;
         proxy_pass http://127.0.0.1:8080;"""
     return http + base.replace(original, student)
 

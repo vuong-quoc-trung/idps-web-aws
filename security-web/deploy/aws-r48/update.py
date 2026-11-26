@@ -42,7 +42,7 @@ ENV = R47 / "security.env"
 UNITS = [SENSOR, CORR, ROTATE]
 FILES = ("gateway.py", "correlate.py", "update.py", "proof-probe.js",
          "https-shadow-mirror.conf", "transaction-evidence.lua",
-         "run-suricata-generation.py", "pbl4.rules")
+         "run-suricata-generation.py", "pbl4.rules", "pbl4-access.conf")
 DB_FILES = {
     "ws_r47_student": ("flyway_schema_history", 2),
     "ws_r47_security": ("_sqlx_migrations", 20),
