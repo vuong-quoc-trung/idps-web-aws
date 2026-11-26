@@ -4,6 +4,17 @@ A comprehensive monitoring, early warning, and attack prevention system for AWS 
 
 [Chỉ mục dự án](docs/PROJECT_INDEX.md) · [Local Beta R42](docs/126_T09_R42_FINAL_LOCAL_HANDOFF.md) · [Bàn giao AWS](docs/127_T09_AWS_MIGRATION_HANDOFF.md)
 
+## WebSentinel trên AWS staging
+
+WebSentinel giám sát các ứng dụng web đi qua NGINX HTTPS. Suricata quan sát
+nhánh HTTP nội bộ, Student Audit ghi kết quả nghiệp vụ và Rust hợp nhất bằng
+chứng theo request ID. Security Web hiển thị cảnh báo, quyết định Hybrid và
+cập nhật qua SSE. Mô hình đang phục vụ là HistGradientBoosting URI100
+`r37-hgb-uri100-v1`, giữ vai trò tư vấn. Public enforcement và AI auto-ban tắt.
+
+[Kết quả nghiệm thu R57 và sơ đồ](docs/143_T09_R57_FINAL_PROJECT_COMPLETION.md) ·
+[Runbook AWS staging](docs/AWS_STAGING_OPERATIONS_HANDOFF.md)
+
 ## AI offline và bàn giao nhóm
 
 Frozen Research MVP v1.0 gồm GLU207 và Request Intelligence v2. Xem

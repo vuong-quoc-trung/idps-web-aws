@@ -428,3 +428,33 @@ sudo python3 -B /opt/websentinel-r48/runtime/r56.py rollback
 ```
 
 Runner rollback kiểm manifest backup tại `/var/backups/websentinel-r56` và khôi phục binary R55. Kiểm lại HTTPS, Dashboard và trạng thái monitoring sau restart. [Stage runner](../security-web/deploy/aws-r48/r56_stage.sh) · [Deployment runner](../security-web/deploy/aws-r48/r56.py)
+
+## 19. R57 — Vận hành Dashboard AI và rollback
+
+Mục **AI** hiển thị model URI100 đang dùng trên staging, trạng thái service và
+mẫu heartbeat systemd. Cửa sổ 15 phút lấy request ID trên nhánh NGINX đã ký và
+receipt hợp lệ của model hiện tại. Các trạng thái là đã có điểm, chưa có kết
+quả, không đủ dữ liệu đúng hạn, xung đột và lỗi suy luận. Một lần ghi nhận
+heartbeat xác nhận watchdog có tín hiệu. Hãy xem giờ nhận điểm và request ID
+để kiểm tra suy luận riêng. Sau restart, đăng nhập lại bằng tài khoản quản trị
+Security Web. Profile AWS chỉ nhận Admin. Student Web tiếp tục dùng hệ quyền
+riêng của ứng dụng. [Kiểm thử R57](143_T09_R57_FINAL_PROJECT_COMPLETION.md)
+
+Runner tạo bản sao release, hai DB, cấu hình và SHA ở
+`/var/backups/websentinel-r57`. Bản cài giữ model, threshold, policy và
+migration hiện tại. Hai file scorer đổi cách phân loại lỗi, vì vậy
+`RELEASE_SHA256` được cập nhật để khớp manifest mới. Runner kiểm identity
+instance, model SHA, môi trường public OFF và checksum trước khi cài, sau đó
+xác minh health của Security Web, AI và Student HTTPS. [Runner R57](../security-web/deploy/aws-r48/r57.py)
+
+Rollback ứng dụng R57 chỉ khôi phục binary, index, hai file scorer, manifest và
+pin đã backup. Qua SSM và bằng quyền quản trị của staging, chạy:
+
+```sh
+cd /opt/websentinel-r48/runtime
+sudo -n python3 -B r57.py rollback
+```
+
+Sau rollback, kiểm lại HTTPS hai hostname, health scorer, nguồn log và trạng
+thái thực thi. Việc khôi phục dữ liệu PostgreSQL là thủ tục riêng. Các file
+asset có hash đã tạo có thể cùng tồn tại với bản cũ để giữ khả năng quay lui.

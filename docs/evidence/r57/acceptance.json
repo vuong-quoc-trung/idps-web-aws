@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-26",
+  "result": "PARTIAL",
+  "baseline": {
+    "observations_24h": {
+      "NGINX": 512,
+      "SURICATA": 382,
+      "STUDENT_AUDIT": 711
+    },
+    "stored_alerts_24h": {
+      "NGINX": 0,
+      "SURICATA": 16,
+      "STUDENT_AUDIT": 0
+    }
+  },
+  "aws": {
+    "region": "ap-southeast-1",
+    "instance_status": "running",
+    "instance_status_checks": {
+      "system": "ok",
+      "instance": "ok",
+      "storage": "ok"
+    },
+    "public_https_status": {
+      "student-dut.duckdns.org": 200,
+      "websentinal.duckdns.org": 200
+    },
+    "tls_verify_result": 0,
+    "http_redirect": 308,
+    "active_units": 7,
+    "limits": {
+      "cpu_max": "25000 100000",
+      "memory_max_bytes": 805306368,
+      "swap_max_bytes": 0,
+      "pids_max": 64,
+      "watchdog_seconds": 3,
+      "oom_kills": 0
+    },
+    "records": {
+      "students": 55,
+      "users": 56
+    },
+    "backup_and_unrelated_config_match": true,
+    "transfer_cleanup": true,
+    "request": {
+      "request_id": "c24901392f208f0772ef71c519106358",
+      "correlation": "MATCHED",
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "late": false,
+      "eligible": true,
+      "model": "r37-hgb-uri100-v1",
+      "ai": "SCORED",
+      "score": 0.1253570318222046,
+      "threshold": 0.7664756774902344,
+      "proof_ms": 2.7698,
+      "hybrid": "LOG_ONLY",
+      "automatic_block": false,
+      "incidents": 1,
+      "firewall_actions": 0
+    },
+    "deployment": {
+      "serving_sha": "bebda62ca01e6e6d85ffddd3ea5bd2f7d19aeb171c70ee23e440dfc9a44249bb",
+      "index_sha": "95b899efb7623be5fd378f8fd2201b6228ee816ec3bf43635519952cd9ec70d6",
+      "backup_sha": "f7726d37b601b875d0662eebe2b884ab418bcf713b564bacf473bb87b0f719b2",
+      "scorer_manifest_sha": "a030a13faa65aedd49dfc024f035b269d9bfce58c639502ba6ec14c828e51a5e"
+    },
+    "lab": {
+      "namespace": "net:[4026532600]",
+      "peer": "10.254.56.2",
+      "block": 1,
+      "unblock": 2,
+      "ttl": 3,
+      "audit": "3 SUCCESS",
+      "rule_alert": 1,
+      "rule_sid": 156001,
+      "restart": "PASS",
+      "protected_scope": "PASS",
+      "rbac": [
+        401,
+        403
+      ],
+      "offline_refused": "PASS",
+      "db_kernel": "SYNCED_EMPTY"
+    },
+    "lab_cleanup": true
+  },
+  "sha256": {
+    "production_bundle": "a37a5f406799ec810b389f6fa979749eabafc0138c43c4f8ca5518bd189266f6",
+    "isolated_bundle": "d589a613292d0608f225cbaf42e104919adea95c9a4fb029edad4f3a783e2a4e",
+    "isolated_binary": "906a1af0520807c85cd6381d789b54ac8d0b497597db30edc2c99c66aceede88",
+    "ai_model": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff"
+  },
+  "public_enforcement": "OFF",
+  "ai_auto_ban": "OFF",
+  "independent_native_ai_quality": "BLOCKED_NO_QUALIFIED_COHORT"
+}
