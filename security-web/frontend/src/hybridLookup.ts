@@ -11,6 +11,10 @@ type Incident = {
   https_research?: Research | null;
   policy_action: string;
   automatic_block: boolean;
+  final_risk?: number;
+  rule_sources?: string[];
+  correlation_confidence?: string;
+  evidence_ids?: string[];
 };
 
 export async function lookupHybrid(
@@ -43,7 +47,14 @@ export async function lookupHybrid(
       ],
       ["Threshold", research?.threshold?.toString() ?? "—"],
       ["Hybrid Policy", incident.policy_action],
+      ["Điểm rủi ro", incident.final_risk?.toString() ?? "—"],
+      ["Nguồn cảnh báo", incident.rule_sources?.join(", ") || "Chưa có"],
+      ["Tương quan", incident.correlation_confidence ?? "—"],
       ["automatic_block", String(incident.automatic_block)],
     ],
+    alertIds: [...new Set(incident.evidence_ids ?? [])]
+      .filter((id) => /^alert:[1-9]\d*$/.test(id))
+      .map((id) => Number(id.slice("alert:".length)))
+      .filter(Number.isSafeInteger),
   };
 }

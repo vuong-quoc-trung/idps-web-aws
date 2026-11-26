@@ -7,6 +7,10 @@ const row = {
   request_id: id,
   policy_action: "LOG_ONLY",
   automatic_block: false,
+  final_risk: 45,
+  rule_sources: ["NGINX", "SURICATA"],
+  correlation_confidence: "REQUEST_TRANSACTION_MATCHED",
+  evidence_ids: ["alert:17", "alert:18", "alert:17", "ai:18"],
   https_research: {
     request_id: id,
     model_id: "r37-hgb-uri100-v1",
@@ -36,8 +40,12 @@ test("R37 lookup shows the exact incident and its Hybrid policy", async () => {
     "AI Score": "0.125357",
     Threshold: String(row.https_research.threshold),
     "Hybrid Policy": "LOG_ONLY",
+    "Điểm rủi ro": "45",
+    "Nguồn cảnh báo": "NGINX, SURICATA",
+    "Tương quan": "REQUEST_TRANSACTION_MATCHED",
     automatic_block: "false",
   });
+  assert.deepEqual(result.alertIds, [17, 18]);
 });
 test("missing incident, missing evidence and conflicting ID stay distinct", async () => {
   assert.match((await query([])).message, /Chưa có quyết định/);

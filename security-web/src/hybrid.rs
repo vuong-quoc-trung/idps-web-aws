@@ -706,4 +706,32 @@ mod tests {
             0
         );
     }
+
+    #[test]
+    fn multiple_request_bound_alerts_keep_identity_and_only_highest_rule_risk() {
+        let mut r = row();
+        r["rules"] = json!([
+            {"id":1,"source":"NGINX","severity":2,"basis":"REQUEST_ID"},
+            {"id":2,"source":"SURICATA","severity":1,"basis":"SENSOR_TRANSACTION"},
+            {"id":3,"source":"STUDENT_AUDIT","severity":2,"basis":"REQUEST_ID"},
+            {"id":2,"source":"SURICATA","severity":1,"basis":"SENSOR_TRANSACTION"},
+            {"id":4,"source":"SURICATA","severity":1,"basis":"FLOW_CONTEXT"}
+        ]);
+        let result = evaluate(&r, &Config::default(), true, None, 0, 0, false);
+        assert_eq!(
+            result["rule_sources"],
+            json!(["NGINX", "STUDENT_AUDIT", "SURICATA"])
+        );
+        assert_eq!(result["rule_risk_component"], 90);
+        assert_eq!(result["final_risk"], 90);
+        assert_eq!(result["policy_action"], "REVIEW");
+        assert_eq!(result["automatic_block"], false);
+        let alerts: Vec<_> = result["evidence_ids"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|id| id.as_str()?.strip_prefix("alert:"))
+            .collect();
+        assert_eq!(alerts, ["1", "2", "3"]);
+    }
 }

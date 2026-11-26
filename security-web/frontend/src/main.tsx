@@ -146,7 +146,7 @@ type Health = {
   };
   healthy: boolean;
   monitoring_ready?: boolean;
-  prevention_state?: "DISABLED" | "UNAVAILABLE" | "READY";
+  prevention_state?: "DISABLED" | "UNAVAILABLE" | "READY" | "BLOCKED";
   database: boolean;
   firewall: boolean;
   kernel_blocked_count?: number | null;
@@ -198,6 +198,13 @@ function firewallMessage(code?: string | null) {
   if (code === "ACTUATOR_OFFLINE") return "Actuator chưa hoạt động";
   if (code === "FIREWALL_UNINITIALIZED") return "Chưa khởi tạo bảng chặn";
   return code;
+}
+
+function preventionMessage(state: Health["prevention_state"]) {
+  if (state === "DISABLED") return "Thực thi chặn IP đang tắt.";
+  if (state === "BLOCKED") return "Thực thi chặn IP đang bị khóa (C2).";
+  if (state === "READY") return "Thực thi chặn IP đã sẵn sàng.";
+  return "Chưa xác minh khả năng chặn IP.";
 }
 
 function App() {
@@ -565,11 +572,9 @@ function App() {
       <main className="login">
         <form onSubmit={login}>
           <div className="login-emblem">
-            <img src={securityLogo} alt="" width="64" height="64" />
+            <img src={securityLogo} alt="WebSentinel" width="64" height="64" />
           </div>
-          <p className="eyebrow">PBL4 / SECURITY PLATFORM</p>
           <h1>Đăng nhập giám sát</h1>
-          <p className="muted">Theo dõi cảnh báo và quản lý bảo vệ website.</p>
           <label>
             Tên đăng nhập
             <input
@@ -610,6 +615,7 @@ function App() {
   };
   const admin = session.user.role === "admin";
   const monitoringReady = health?.monitoring_ready ?? health?.healthy;
+  const preventionReady = health?.prevention_state === "READY";
   const tabs = [
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
@@ -639,11 +645,8 @@ function App() {
           <span className="brand-mark">
             <img src={securityLogo} alt="" width="46" height="46" />
           </span>
-          <span className="brand-wordmark">
-            WebSentinel <span>Security Operations</span>
-          </span>
+          <span className="brand-wordmark">WebSentinel</span>
         </a>
-        <p className="eyebrow">ĐIỀU HÀNH BẢO MẬT</p>
         <button
           className="mobile-menu"
           aria-expanded={menuOpen}
@@ -690,7 +693,6 @@ function App() {
       <main id="dashboard-content" tabIndex={-1}>
         <header>
           <div>
-            <p className="eyebrow">SECURITY OPERATIONS</p>
             <h1>
               <span className="heading-icon">
                 <Icon name={tab} />
@@ -781,7 +783,9 @@ function App() {
         {tab === "application-audit" && (
           <ApplicationAudit api={api} refreshSignal={applicationAuditRefresh} />
         )}
-        {tab === "ai-shadow" && <AiShadow api={api} />}
+        {tab === "ai-shadow" && (
+          <AiShadow api={api} onAlert={setSelectedAlert} />
+        )}
         {tab === "overview" && (
           <div className="overview-layout">
             <section className="panel overview-toolbar">
@@ -892,8 +896,7 @@ function App() {
                 Diễn biến cảnh báo
               </h2>
               <p className="muted">
-                Trong khoảng thời gian đã chọn · số cảnh báo đã lưu trong
-                database
+                Số cảnh báo đã lưu trong khoảng thời gian đã chọn
               </p>
               <AlertTrend points={stats?.trend} range={range} />
             </section>
@@ -1408,12 +1411,13 @@ function App() {
               </h2>
               <FirewallSync report={blocked?.sync} />
               {blocked?.error && <p>{firewallMessage(blocked.error)}</p>}
+              <p>{preventionMessage(health?.prevention_state)}</p>
               <p>
                 IP thực tế:{" "}
                 {blocked?.kernel?.join(", ") ||
                   (blocked?.kernel ? "Không có" : "Chưa đọc được")}
               </p>
-              {admin && (
+              {admin && preventionReady && (
                 <form
                   className="filters"
                   onSubmit={(e) => {
@@ -1492,7 +1496,7 @@ function App() {
                           : "Không xác định"}
                       </small>
                     </div>
-                    {admin && (
+                    {admin && preventionReady && (
                       <button
                         disabled={busy}
                         onClick={() => void action(address, true)}
@@ -1801,11 +1805,7 @@ function App() {
                   <span
                     className={`badge ${health?.prevention_state === "READY" ? "good" : "warn"}`}
                   >
-                    {health?.prevention_state === "DISABLED"
-                      ? "Đã tắt theo cấu hình"
-                      : health?.prevention_state === "READY"
-                        ? "Sẵn sàng"
-                        : "Chưa xác minh sẵn sàng"}
+                    {preventionMessage(health?.prevention_state)}
                   </span>
                 </div>
                 <div className="service-item">
@@ -2132,7 +2132,7 @@ function App() {
             onChanged={() => void refresh()}
             api={api}
             onBlock={
-              admin
+              admin && preventionReady
                 ? async (alert) => {
                     if (!alert.src_ip) return;
                     const reason = window.prompt(

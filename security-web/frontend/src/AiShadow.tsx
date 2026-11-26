@@ -105,9 +105,11 @@ type Report = {
 function HybridLookup({
   api,
   requestId,
+  onAlert,
 }: {
   api: (path: string, options?: RequestInit) => Promise<unknown>;
   requestId: string;
+  onAlert: (id: number) => void;
 }) {
   const [result, setResult] =
     useState<Awaited<ReturnType<typeof lookupHybrid>>>();
@@ -151,14 +153,30 @@ function HybridLookup({
             : "Nhập Request ID để xem điểm HTTPS và quyết định Hybrid."}
         </p>
       )}
+      {!!result?.alertIds?.length && (
+        <details>
+          <summary>Cảnh báo nguồn ({result.alertIds.length})</summary>
+          <ul>
+            {result.alertIds.map((id) => (
+              <li key={id}>
+                <button type="button" onClick={() => onAlert(id)}>
+                  Cảnh báo #{id}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </section>
   );
 }
 
 export function AiShadow({
   api,
+  onAlert,
 }: {
   api: (path: string, options?: RequestInit) => Promise<unknown>;
+  onAlert: (id: number) => void;
 }) {
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState("");
@@ -250,7 +268,12 @@ export function AiShadow({
           Xem mới nhất
         </button>
       </form>
-      <HybridLookup key={filter} requestId={filter} api={api} />
+      <HybridLookup
+        key={filter}
+        requestId={filter}
+        api={api}
+        onAlert={onAlert}
+      />
       <h3>AI Shadow v2 / GLU207</h3>
       <p className="muted">
         Score nghiên cứu, không phải xác suất tấn công hoặc Ground Truth. Cảnh
