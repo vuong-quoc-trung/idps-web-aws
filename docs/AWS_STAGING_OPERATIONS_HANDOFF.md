@@ -385,6 +385,22 @@ Lệnh gateway xác minh backup và khôi phục NGINX/correlator R51. Lệnh St
 
 R53 giữ public Prevention OFF. Dashboard báo `ACTUATOR_OFFLINE` vì binary serving không có native status socket. Có thể kiểm monitoring và blocker thực thi riêng bằng `/api/ready/monitoring` và `/api/ready` qua một phiên Security Web xác thực. [Nghiệm thu R53](139_T09_R53_FINAL_PROJECT_COMPLETION.md)
 
+## 16. R54 — Rollback ứng dụng và danh mục
+
+R54 cập nhật hai frontend và Security API trên release hiện có. PostgreSQL thêm 117 dòng danh mục trong một transaction sau khi kiểm toàn vẹn và diễn tập chạy lại. Vào tab **Lớp** để xem `CNTT Đặc thù K2024 - Lớp 01`. Vào **AI Shadow → Tra cứu** để xem nguồn, risk, correlation và advisory theo request ID trong báo cáo. [Nghiệm thu R54](140_T09_R54_FINAL_SYSTEM_COMPLETION.md)
+
+Để rollback phần ứng dụng trên đúng staging EC2 qua SSM, kiểm tra phạm vi bảo trì rồi chạy:
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/r54.py rollback
+```
+
+Runner kiểm SHA backup, khôi phục hai index và Security binary từ `/var/backups/websentinel-r54`, restart Security API và kiểm tra health. Assets có hash được giữ cho phiên browser đang hoạt động. Sau rollback, kiểm lại HTTPS hai host, monitoring, SSE và trạng thái Prevention.
+
+Backup root-only chứa cả hai database dump. Import đã commit độc lập với phiên bản UI. Nếu cần đảo dữ liệu danh mục, đối chiếu trên DB tạm trước và kiểm quan hệ với các bản ghi được tạo sau R54. Chỉ phục hồi toàn bộ database khi có quyết định bảo trì riêng. Chỉ dùng seed đã duyệt, giữ chế độ insert-only và SHA manifest.
+
+Public Prevention và AI auto-ban ở OFF. Nếu MANUAL được cấu hình khi C2 vẫn đóng, trạng thái Prevention là `BLOCKED` dù monitor đã sẵn sàng. Kiểm readiness, danh tính direct peer và phạm vi actuator độc lập trước khi đánh giá thực thi.
+
 Harness runtime nhận ba đối số gồm thư mục staging tạm, thư mục PostgreSQL mới do `postgres` sở hữu, và network namespace ID của host. Chạy qua SSM trong một unit duy nhất với `PrivateNetwork=yes`, thời hạn 150 s, `CPUQuota=160%`, `MemoryMax=1536M`, `TasksMax=125` và `PYTHONPATH=/opt/websentinel-r48/runtime`. Nó kiểm namespace riêng và một interface loopback trước khi tạo DB. Lấy output chứa request ID, SID, Hybrid, score, SSE và kết quả triage. Dọn hai thư mục tạm do mình tạo sau khi unit thoát. [Harness](../security-web/deploy/aws-r48/r53_runtime_lab.py)
 
 Harness actuator yêu cầu hai namespace tách biệt và chạy các probe kết nối trên veth lab. Chế độ `--private-systemd-unit` xác minh cgroup riêng, `PrivateNetwork=yes`, namespace khác PID 1, loopback ban đầu và kernel table rỗng. Chạy thử firewall bằng chính actuator thủ công đã có. Cổng C2 của Rust và cấu hình serving vẫn giữ khóa. [Actuator acceptance](../security-web/deploy/local-r38/firewall_acceptance.py)
