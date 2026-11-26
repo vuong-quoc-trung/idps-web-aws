@@ -21,16 +21,25 @@ def run(*argv, check=True):
     return sp.run(argv, check=check, capture_output=True, text=True, timeout=6)
 
 
-def acceptance(host_ns, output, *, review_block=None):
+def acceptance(host_ns, output, *, review_block=None, private_systemd_unit=None):
+    ns = os.readlink("/proc/self/ns/net")
+    rootless = Path("/proc/self/uid_map").read_text().split()[1] != "0"
+    if private_systemd_unit:
+        expected_group = f"0::/system.slice/{private_systemd_unit}"
+        if (not private_systemd_unit.startswith("websentinel-r53-actuator-")
+            or Path("/proc/self/cgroup").read_text().strip() != expected_group
+            or run("systemctl", "show", private_systemd_unit, "-p", "PrivateNetwork", "--value").stdout.strip() != "yes"
+            or ns == os.readlink("/proc/1/ns/net")
+            or run("ip", "route", "show", "default").stdout.strip()):
+            raise RuntimeError("Expected the owned, isolated systemd unit")
     if (
         os.geteuid() != 0
-        or os.readlink("/proc/self/ns/net") == host_ns
-        or Path("/proc/self/uid_map").read_text().split()[1] == "0"
+        or ns == host_ns
+        or not (rootless or private_systemd_unit)
         or socket.if_nameindex() != [(1, "lo")]
         or run("nft", "list", "tables").stdout.strip()
     ):
-        raise RuntimeError("A fresh rootless network namespace is required")
-    ns = os.readlink("/proc/self/ns/net")
+        raise RuntimeError("A fresh isolated network namespace is required")
     with contextlib.ExitStack() as cleanup:
         peer = sp.Popen(["unshare", "-n", "sleep", "55"])
 
@@ -148,7 +157,7 @@ def acceptance(host_ns, output, *, review_block=None):
     output.write_text(
         json.dumps(
             dict(
-                scope="two fresh rootless network namespaces, no default routes",
+                scope="two fresh network namespaces, no default routes",
                 policy="shipped pbl4.nft and pbl4-firewall-policy.py",
                 connect_before=True,
                 peer_blocked=True,
@@ -174,5 +183,6 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("host_ns")
     p.add_argument("output", type=Path)
+    p.add_argument("--private-systemd-unit")
     a = p.parse_args()
-    acceptance(a.host_ns, a.output)
+    acceptance(a.host_ns, a.output, private_systemd_unit=a.private_systemd_unit)
