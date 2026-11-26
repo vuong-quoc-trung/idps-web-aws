@@ -249,8 +249,14 @@ async fn save_alert(
         && event.suricata_origin.as_ref().is_none_or(|o| !o.post_proxy)
         && age >= chrono::Duration::seconds(-5)
         && age <= chrono::Duration::seconds(state.ingestion.max_response_age_seconds);
+    // The persisted verification column is reserved for post-proxy attribution.
+    // The isolated build keeps direct-peer evidence in the canonical observation.
+    let post_proxy_verified = event
+        .suricata_origin
+        .as_ref()
+        .map(|o| o.post_proxy && o.client_ip_verified);
     let id = sqlx::query_scalar::<_, i64>("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,dest_ip,proto,rule_name,signature,category,severity,action,evidence,event_key,client_ip,network_src_ip,client_ip_verified,suricata_post_proxy) VALUES($1,$2,'alert',$3::inet,$4::inet,$5,$6,$6,$7,$8,'ALERT',$9,$10,$11::inet,$12::inet,$13,$14) ON CONFLICT(event_key) DO NOTHING RETURNING id")
-        .bind(event.timestamp).bind(&event.source).bind(event.client_ip.map(|p|p.to_string())).bind(event.dest_ip.map(|p|p.to_string())).bind(&event.transport).bind(&name).bind(category).bind(severity).bind(evidence).bind(key).bind(event.suricata_origin.as_ref().and(event.client_ip).map(|p|p.to_string())).bind(event.suricata_origin.as_ref().and_then(|o|o.network_src_ip).map(|p|p.to_string())).bind(event.suricata_origin.as_ref().map(|o|o.client_ip_verified)).bind(event.suricata_origin.as_ref().map(|o|o.post_proxy)).fetch_optional(&mut **tx).await?;
+        .bind(event.timestamp).bind(&event.source).bind(event.client_ip.map(|p|p.to_string())).bind(event.dest_ip.map(|p|p.to_string())).bind(&event.transport).bind(&name).bind(category).bind(severity).bind(evidence).bind(key).bind(event.suricata_origin.as_ref().and(event.client_ip).map(|p|p.to_string())).bind(event.suricata_origin.as_ref().and_then(|o|o.network_src_ip).map(|p|p.to_string())).bind(post_proxy_verified).bind(event.suricata_origin.as_ref().map(|o|o.post_proxy)).fetch_optional(&mut **tx).await?;
     // Strict request-ID link for application rules; Suricata transaction metadata is
     // reconciled below from its parsed native tx, never from IP/time proximity.
     sqlx::query("INSERT INTO detector_alert_links(alert_id,request_id,source_instance,flow_id,link_basis) SELECT id,$2,$3,$4,$5 FROM security_alerts WHERE event_key=$1 ON CONFLICT DO NOTHING")

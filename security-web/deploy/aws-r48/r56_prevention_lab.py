@@ -274,7 +274,8 @@ def main(root, pg, host):
                        "-XAt", "-c", sql)
         native_alert = int(wait_for(lambda: query(
             "SELECT id FROM security_alerts WHERE rule_name LIKE 'SURICATA: SID 156001:%'"
-            " AND client_ip_verified AND network_src_ip='10.254.56.2' AND NOT suricata_post_proxy"
+            " AND client_ip_verified IS FALSE AND network_src_ip='10.254.56.2' AND NOT suricata_post_proxy"
+            " AND evidence::jsonb#>>'{suricata_origin,client_ip_verified}'='true'"
         )))
         third = mutate(endpoint, "POST", block | {"ttl_seconds": 6, "event_id": native_alert})
         assert synced(True) and not connects()

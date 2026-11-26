@@ -523,16 +523,19 @@ async fn block_ip(
         return Err(bad_request("TTL must be between 1 and 300 seconds"));
     }
     if let Some(event_id) = req.event_id {
-        let matches: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM security_alerts WHERE id=$1 AND client_ip=$2::inet AND client_ip_verified AND source='SURICATA' AND occurred_at BETWEEN now()-interval '120 seconds' AND now())",
-        )
-        .bind(event_id)
-        .bind(ip.to_string())
-        .fetch_one(&state.pool)
-        .await
-        .map_err(api_error)?;
-        if !matches {
-            return Err(bad_request("Source alert does not match IP"));
+        #[cfg(not(feature = "isolated-c2"))]
+        {
+            let _ = event_id;
+            return Err(bad_request("Isolated rule attribution is unavailable"));
+        }
+        #[cfg(feature = "isolated-c2")]
+        if !firewall::lab_rule_matches(&state.pool, event_id, ip)
+            .await
+            .map_err(api_error)?
+        {
+            return Err(bad_request(
+                "Source alert does not match the verified lab peer",
+            ));
         }
     }
     let mut tx = state.pool.begin().await.map_err(api_error)?;

@@ -7,6 +7,26 @@ pub const LAB_SOCKET: &str = "/run/websentinel-r56-lab/actuator.sock";
 #[cfg(feature = "isolated-c2")]
 pub const LAB_PEER: &str = "10.254.56.2";
 
+#[cfg(feature = "isolated-c2")]
+pub async fn lab_rule_matches(pool: &sqlx::PgPool, event_id: i64, ip: IpAddr) -> Result<bool> {
+    prevention::require_execution()?;
+    Ok(sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM security_alerts
+          WHERE id=$1 AND client_ip=$2::inet AND network_src_ip=$2::inet
+            AND source='SURICATA' AND suricata_post_proxy IS FALSE
+            AND occurred_at BETWEEN now()-interval '120 seconds' AND now()
+            AND rule_code LIKE 'SID %'
+            AND evidence::jsonb->>'flow_id' IS NOT NULL
+            AND evidence::jsonb#>>'{suricata_origin,tx_id}' IS NOT NULL
+            AND evidence::jsonb->'suricata_origin' @> jsonb_build_object(
+                'network_src_ip',host($2::inet),'client_ip_verified',true,'post_proxy',false))",
+    )
+    .bind(event_id)
+    .bind(ip.to_string())
+    .fetch_one(pool)
+    .await?)
+}
+
 pub async fn admit_manual(state: &AppState) -> Result<()> {
     prevention::require_execution()?;
     anyhow::ensure!(state.safety.mode == "MANUAL", "Manual mode required");
