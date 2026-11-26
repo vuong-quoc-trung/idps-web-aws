@@ -53,7 +53,7 @@ def request(port, path, method="GET", payload=None, token=None, tls=None, header
         return response.status, response.getheader("X-Request-Id"), response.read()
 
 
-def main(root, pgdata, outer_namespace):
+def main(root, pgdata, outer_namespace, extra_checks=None):
     if os.geteuid() != 0 or os.readlink("/proc/self/ns/net") == outer_namespace or socket.if_nameindex() != [(1, "lo")]:
         raise RuntimeError("A private loopback-only network namespace is required")
     if run("ip", "route", "show", "default"):
@@ -220,6 +220,8 @@ def main(root, pgdata, outer_namespace):
                           "risk": proof["hybrid"]["final_risk"], "alerts": proof["alerts"], "firewall_actions": 0,
                           "forwarded_header_ignored": True, "enforcement_target": None, "sse": "alert.created",
                           "triage": ["viewer403", "admin200", "stale409"], "triage_history": 1}), flush=True)
+        if extra_checks is not None:
+            extra_checks(rid, alert_id, token, viewer, sql, stream)
 
 
 if __name__ == "__main__":
