@@ -10,6 +10,21 @@ ROUTES = {
     ("GET", "/api/faculties"),
     ("GET", "/api/majors"),
     ("GET", "/api/training-programs"),
+    ("GET", "/api/classes"),
+    ("GET", "/api/me/completion"),
+}
+
+# Known business routes for metadata-only logging. The label carries no IDs or query values.
+EDGE_COLLECTIONS = ("access-logs", "classes", "faculties", "majors", "students", "training-programs", "users")
+EDGE_CONTACTS = ("addresses", "emergency-contacts", "family-members", "post-graduation-contacts")
+EDGE_EXACT = {
+    f"/api/{route}" for route in EDGE_COLLECTIONS
+} | {
+    f"/api/me/{route}" for route in EDGE_CONTACTS
+} | {
+    "/api/auth/activate", "/api/auth/activation/verify", "/api/auth/activation/send",
+    "/api/auth/change-password", "/api/auth/forgot-password", "/api/auth/reset-password",
+    "/api/me/academic", "/api/me/academic/classmates", "/api/me/profile",
 }
 SOURCE = "127.77.0.1"
 EGRESS = "127.77.0.2"
@@ -25,8 +40,17 @@ def render(base, kit, key, key_gid, edge_log, scorer_socket):
         "__SOCKET__", str(scorer_socket)
     )
     routes = "".join(f'    "{method}:{path}" 1;\n' for method, path in sorted(ROUTES))
-    paths = "".join(f'    "{path}" "{path}";\n' for path in sorted({path for _, path in ROUTES}))
-    http = f"""# WebSentinel R49 passive HTTPS evidence
+    paths = "".join(f'    "{path}" "{path}";\n' for path in sorted({path for _, path in ROUTES} | EDGE_EXACT))
+    paths += "".join(f'    ~^/api/{route}/[0-9]+$ "/api/{route}/[id]";\n' for route in EDGE_COLLECTIONS)
+    for route in EDGE_CONTACTS:
+        paths += f'    ~^/api/me/{route}/[0-9]+$ "/api/me/{route}/[id]";\n'
+        paths += f'    ~^/api/students/[0-9]+/{route}$ "/api/students/[id]/{route}";\n'
+        paths += f'    ~^/api/students/[0-9]+/{route}/[0-9]+$ "/api/students/[id]/{route}/[id]";\n'
+    paths += '''    ~^/api/students/[0-9]+/completion$ "/api/students/[id]/completion";
+    ~^/api/users/[0-9]+/enabled$ "/api/users/[id]/enabled";
+    ~^/api/users/[0-9]+/activation-token$ "/api/users/[id]/activation-token";
+'''
+    http = f"""# WebSentinel R50 passive HTTPS evidence
 include {kit}/pbl4-access.conf;
 js_import r48proof from {kit}/proof-probe.js;
 js_shared_dict_zone zone=nonces:1m timeout=65s;
@@ -88,6 +112,12 @@ server {{
 
 """
     student = f"""{mirror}
+    location ~ ^/(?:activate|forgot-password|reset-password)$ {{
+        access_log off;
+        error_log /dev/null crit;
+        try_files $uri $uri/ /index.html;
+    }}
+
     location @r48_observed {{
         set $probe_key_file {key};
         set $r35_id $request_id;
@@ -126,6 +156,7 @@ server {{
         error_page 418 = @r48_observed;
         if ($r48_observed = 1) {{ return 418; }}
         access_log {edge_log} r48_access;
+        error_log /dev/null crit;
         proxy_pass http://127.0.0.1:8080;"""
     return http + base.replace(original, student)
 
