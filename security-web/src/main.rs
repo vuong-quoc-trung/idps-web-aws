@@ -4,6 +4,7 @@ mod ai_verdict_contract;
 mod application_audit;
 mod application_detection;
 mod auth;
+mod aws_firewall;
 #[cfg(feature = "isolated-c2")]
 mod c2_ingress;
 mod controlled_prevention;
@@ -342,8 +343,9 @@ async fn main() -> Result<()> {
     {
         anyhow::ensure!(
             env::var("AUTO_BLOCK").unwrap_or("false".into()) == "false"
-                && env::var("ENFORCEMENT_MODE").unwrap_or("OFF".into()) == "OFF",
-            "Lua shadow requires enforcement OFF"
+                && (env::var("ENFORCEMENT_MODE").unwrap_or("OFF".into()) == "OFF"
+                    || aws_firewall::configured()),
+            "Lua shadow requires enforcement OFF or the dedicated AWS manual scope"
         );
         sources.push(("SURICATA_LUA", path));
     }
@@ -541,6 +543,9 @@ async fn block_ip(
         return Err(bad_request("Reason must contain 1–500 characters"));
     }
     let ttl = req.ttl_seconds.unwrap_or(60);
+    if aws_firewall::configured() && ttl > aws_firewall::MAX_TTL {
+        return Err(bad_request("Thời hạn tối đa cho ingress riêng là 60 giây"));
+    }
     if !(1..=300).contains(&ttl) {
         return Err(bad_request("TTL must be between 1 and 300 seconds"));
     }

@@ -90,8 +90,11 @@ pub(crate) fn assess(state: &AppState, alert: &Value) -> Value {
     result
 }
 
-/// Only the separately built isolated profile can acquire a capability.
+/// Execution requires a trusted actuator for an explicitly authorized scope.
 pub fn execution_enabled() -> bool {
+    if aws_firewall::configured() {
+        return aws_firewall::available();
+    }
     #[cfg(feature = "isolated-c2")]
     {
         use std::os::unix::fs::{FileTypeExt, MetadataExt};

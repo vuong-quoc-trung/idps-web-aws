@@ -36,6 +36,12 @@ pub async fn admit_manual(state: &AppState) -> Result<()> {
 
 pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
     let ip = state.safety.validate(value)?;
+    if aws_firewall::configured() {
+        anyhow::ensure!(
+            ip.to_string() == aws_firewall::PEER,
+            "IP ngoài phạm vi ingress riêng"
+        );
+    }
     #[cfg(feature = "isolated-c2")]
     if prevention::execution_enabled() {
         anyhow::ensure!(
@@ -54,6 +60,9 @@ pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
     Ok(ip)
 }
 pub async fn run(_cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<String> {
+    if aws_firewall::configured() {
+        return aws_firewall::run(action, ip, ttl).await;
+    }
     #[cfg(feature = "isolated-c2")]
     if prevention::execution_enabled() {
         return lab_call(action, ip, ttl).await;
@@ -412,7 +421,10 @@ where
     Ok(true)
 }
 pub async fn restore_jobs(pool: &PgPool) -> Result<()> {
-    if !prevention::execution_enabled() || cfg!(feature = "isolated-c2") {
+    if !prevention::execution_enabled()
+        || cfg!(feature = "isolated-c2")
+        || aws_firewall::configured()
+    {
         return Ok(());
     }
     sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,expires_at) SELECT b.ip,'BLOCK','RESTORE','Restore active block after backend restart','PENDING','system',b.expires_at FROM blocked_ips b WHERE b.active AND b.expires_at > now() AND NOT EXISTS (SELECT 1 FROM firewall_actions a WHERE a.ip=b.ip AND a.status='PENDING')")
@@ -420,7 +432,7 @@ pub async fn restore_jobs(pool: &PgPool) -> Result<()> {
     Ok(())
 }
 pub async fn worker(state: AppState) {
-    if !prevention::execution_enabled() {
+    if !prevention::execution_enabled() && !aws_firewall::configured() {
         return;
     }
     loop {
@@ -603,6 +615,27 @@ pub async fn observation(state: &AppState) -> serde_json::Value {
     };
     #[cfg(not(feature = "isolated-c2"))]
     let sync = reconcile(rows.is_some(), kernel, leases.as_deref(), &tags, bound);
+    let sync = if aws_firewall::configured() {
+        match (&rows, kernel) {
+            (Some(db), Some(actual)) => {
+                let expected: BTreeSet<_> = db.iter().map(|row| row.ip.clone()).collect();
+                let audit = sqlx::query_scalar::<_, bool>("SELECT NOT EXISTS (SELECT 1 FROM blocked_ips b WHERE b.active AND b.expires_at>now() AND NOT EXISTS (SELECT 1 FROM firewall_actions a WHERE a.ip=b.ip AND a.action='BLOCK' AND a.source='API' AND a.status='SUCCESS' AND a.expires_at=b.expires_at))")
+                    .fetch_one(&state.pool).await;
+                let (status, reason) = match audit {
+                    Ok(true) if expected == *actual => ("SYNCED", "AWS_DB_AUDIT_KERNEL"),
+                    Ok(_) => ("OUT_OF_SYNC", "AWS_LEASE_MISMATCH"),
+                    Err(_) => ("UNVERIFIED", "AUDIT_UNAVAILABLE"),
+                };
+                json!({"status":status,"reason":reason,"scope":aws_firewall::SCOPE,
+                    "differences": expected.symmetric_difference(actual).collect::<Vec<_>>()})
+            }
+            _ => {
+                json!({"status":"UNVERIFIED","reason":"READBACK_UNAVAILABLE","scope":aws_firewall::SCOPE,"differences":[]})
+            }
+        }
+    } else {
+        sync
+    };
     let compatible = match sync["status"].as_str() {
         Some("SYNCED") => Some(true),
         Some("OUT_OF_SYNC") => Some(false),

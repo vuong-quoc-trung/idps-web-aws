@@ -92,8 +92,9 @@ impl Policy {
         if p.post_proxy {
             anyhow::ensure!(
                 env::var("AUTO_BLOCK").unwrap_or_else(|_| "false".into()) == "false"
-                    && env::var("ENFORCEMENT_MODE").unwrap_or_else(|_| "OFF".into()) == "OFF",
-                "Post-proxy phase 1 requires AUTO_BLOCK=false and ENFORCEMENT_MODE=OFF"
+                    && (env::var("ENFORCEMENT_MODE").unwrap_or_else(|_| "OFF".into()) == "OFF"
+                        || aws_firewall::configured()),
+                "Post-proxy capture requires OFF or the dedicated AWS manual scope with AUTO_BLOCK=false"
             );
         }
         Ok(p)

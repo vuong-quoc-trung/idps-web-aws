@@ -1,0 +1,29 @@
+[Unit]
+Description=WebSentinel actuator for the dedicated EC2 ingress
+After=network.target
+Before=websentinel-r47-security.service
+
+[Service]
+Type=exec
+User=root
+Group=ws-r47-evidence
+Slice=websentinelr47.slice
+UMask=0077
+RuntimeDirectory=websentinel-aws-prevention
+RuntimeDirectoryMode=0750
+ExecStartPre=+/usr/bin/python3 -IB /opt/websentinel-final/scoped_actuator.py setup
+ExecStart=/usr/bin/python3 -IB /opt/websentinel-final/scoped_actuator.py serve
+ExecStopPost=+/usr/bin/python3 -IB /opt/websentinel-final/scoped_actuator.py cleanup
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK AF_INET AF_INET6
+CPUQuota=10%
+MemoryMax=64M
+MemorySwapMax=0
+TasksMax=8
+TimeoutStartSec=20s
+TimeoutStopSec=12s
+
+[Install]
+WantedBy=multi-user.target
