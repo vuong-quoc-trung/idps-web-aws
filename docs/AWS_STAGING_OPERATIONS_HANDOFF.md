@@ -1,6 +1,6 @@
 # AWS staging — Vận hành và bàn giao
 
-[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình ứng dụng đang triển khai, cách truy cập và rollback.
+[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình nền, cách truy cập và rollback. [Nghiệm thu R49](135_T09_R49_FINAL_PROJECT_COMPLETION.md) ghi phạm vi quan sát đang phục vụ và request IDs để tra cứu.
 
 Bắt đầu với [kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) và [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
 
@@ -326,3 +326,15 @@ Cấu hình thử theo systemd với `MemoryHigh` dưới `MemoryMax`, swap hạ
 2. Đo cold/warm load và tải đồng thời benign có kiểm soát. Ghi CPU throttling, RSS, `memory.peak`, PSI CPU/memory/I/O, `memory.events`, OOM, p95/p99, free disk và log rate. Xác định ngưỡng admission disk/PSI theo baseline đo và restore budget, ưu tiên quota local cùng log rotation trước khi xuất log.
 3. Kiểm watchdog theo heartbeat thật của tiến trình và IPC timeout. Đặt timeout theo phần còn lại của cutoff 1.000 ms, giữ guard 1 ms. Kiểm scorer chậm, chết, restart, OOM và missing response đều cho ABSTAIN/fallback hợp lệ. Scorer failure không làm mất request ID hoặc cho phép vượt kiểm soát ứng dụng.
 4. Kiểm khả năng quản trị qua SSM trong các bài pressure có giới hạn. Diễn tập graceful Stop và khôi phục vị trí journal sau boot. Kiểm scoring shadow trên giao dịch benign trước khi mở rộng workload. Giữ C2 đóng, AI auto-ban OFF và registry R37/R36 theo R42.
+
+## 11. R49 — Phạm vi quan sát và rollback
+
+Gateway ký proof cho bốn thao tác auth của R48 và bốn GET đọc danh mục của R49 với request target chính xác. Student API ngoài danh sách vẫn phục vụ qua origin. Journal ghi metadata đã ẩn query/body cho NGINX, khi thiếu proof thì giữ ở nguồn NGINX. Xem một mẫu qua **AI Shadow → Tra cứu** bằng trusted request ID trong báo cáo. Public enforcement và AI auto-ban ở `OFF`. [Bảng bằng chứng R49](135_T09_R49_FINAL_PROJECT_COMPLETION.md#bằng-chứng-aws)
+
+Để rollback riêng R49, kết nối đúng EC2 qua SSM, kiểm tra backup root-only và chạy:
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/refresh.py rollback
+```
+
+Lệnh xác minh staging, SHA backup và gateway R48 trước khi nạp lại cấu hình. Sau đó xác nhận `nginx -t`, hoạt động của correlator và HTTPS smoke. Lần update R49 bảo toàn database, TLS và ba file môi trường của dịch vụ. Logical dumps thuộc phạm vi backup và chỉ dùng khi có quy trình phục hồi riêng. [Vận hành EC2](#2-vận-hành-ec2)
