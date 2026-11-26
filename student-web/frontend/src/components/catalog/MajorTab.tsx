@@ -54,8 +54,7 @@ export default function MajorTab() {
 
   function openAdd() { setForm(EMPTY); setFieldErr({}); setFormErr(null); setModal({ mode: 'add' }); }
   function openEdit(item: Major) {
-    // Backend summary DTOs expose `code`, not `shortCode`. Fall back to code so the field is never blank.
-    setForm({ shortCode: item.code ?? item.shortCode ?? '', name: item.name, description: item.description ?? '', active: item.active, facultyId: item.facultyId });
+    setForm({ shortCode: item.shortCode ?? item.code?.replace(/^MAJ-/, '') ?? '', name: item.name, description: item.description ?? '', active: item.active, facultyId: item.facultyId });
     setFieldErr({}); setFormErr(null); setModal({ mode: 'edit', item });
   }
   function closeModal() { setModal(null); }
