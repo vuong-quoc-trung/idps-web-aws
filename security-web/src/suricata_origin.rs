@@ -113,6 +113,23 @@ impl Policy {
             tx_id: v["tx_id"].as_u64(),
         };
         if !post {
+            // This direct identity is limited to the private, capability-bound test build.
+            #[cfg(feature = "isolated-c2")]
+            if crate::prevention::execution_enabled()
+                && self.interface == "r56-edge"
+                && self.server_ip.to_string() == "10.254.56.1"
+                && self.server_port == 18456
+                && network.is_some_and(|ip| ip.to_string() == crate::firewall::LAB_PEER)
+                && v["in_iface"] == "r56-edge"
+                && v["dest_ip"] == "10.254.56.1"
+                && v["dest_port"] == 18456
+                && v["proto"] == "TCP"
+                && v["event_type"] == "alert"
+                && v["flow_id"].as_u64().is_some()
+                && o.tx_id.is_some()
+            {
+                o.client_ip_verified = true;
+            }
             return (network, o);
         } // Legacy: observed source, NOT verified XFF.
         let kind = v["event_type"].as_str().unwrap_or("");

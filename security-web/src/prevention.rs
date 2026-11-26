@@ -90,8 +90,34 @@ pub(crate) fn assess(state: &AppState, alert: &Value) -> Value {
     result
 }
 
-/// Closed in this source revision, independent of runtime flags or approval rows.
+/// Only the separately built isolated profile can acquire a capability.
 pub fn execution_enabled() -> bool {
+    #[cfg(feature = "isolated-c2")]
+    {
+        use std::os::unix::fs::{FileTypeExt, MetadataExt};
+        let root = std::path::Path::new("/run/websentinel-r56-lab");
+        let attestation = root.join("host-netns");
+        let private = std::fs::symlink_metadata(root)
+            .is_ok_and(|st| st.is_dir() && st.uid() == 0 && st.mode() & 0o022 == 0)
+            && std::fs::symlink_metadata(&attestation).is_ok_and(|st| {
+                st.is_file() && st.uid() == 0 && st.mode() & 0o022 == 0 && st.len() < 64
+            })
+            && std::fs::metadata("/proc/self/ns/net")
+                .ok()
+                .zip(
+                    std::fs::read_to_string(attestation)
+                        .ok()
+                        .and_then(|s| s.trim().parse::<u64>().ok()),
+                )
+                .is_some_and(|(current, host)| host != 0 && current.ino() != host);
+        return private
+            && env::var("ENFORCEMENT_MODE").as_deref() == Ok("MANUAL")
+            && env::var("AUTO_BLOCK").as_deref() == Ok("false")
+            && std::fs::symlink_metadata(firewall::LAB_SOCKET).is_ok_and(|st| {
+                st.uid() == 0 && st.file_type().is_socket() && st.mode() & 0o007 == 0
+            });
+    }
+    #[cfg(not(feature = "isolated-c2"))]
     false
 }
 pub fn require_execution() -> Result<()> {

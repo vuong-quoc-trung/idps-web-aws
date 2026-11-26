@@ -676,6 +676,7 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
             ip: "127.0.0.1".into(),
             reason: "test protected".into(),
             event_id: Some(id),
+            ttl_seconds: None,
         }),
     )
     .await;
@@ -688,6 +689,7 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
             ip: "192.168.1.51".into(),
             reason: "mismatched alert".into(),
             event_id: Some(id),
+            ttl_seconds: None,
         }),
     )
     .await;
@@ -699,6 +701,7 @@ async fn app_manual_response_links_actor_and_alert_without_auto_mode(pool: PgPoo
             ip: "192.168.1.50".into(),
             reason: "APP-1001 reviewed manually".into(),
             event_id: Some(id),
+            ttl_seconds: None,
         }),
     )
     .await;

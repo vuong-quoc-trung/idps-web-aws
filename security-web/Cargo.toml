@@ -6,6 +6,7 @@ rust-version = "1.88"
 
 [features]
 dev-hybrid-review = []
+isolated-c2 = []
 
 [dependencies]
 anyhow = "1"

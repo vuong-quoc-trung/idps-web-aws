@@ -1,4 +1,3 @@
-mod realtime;
 mod ai_shadow;
 #[cfg(test)]
 mod ai_verdict_contract;
@@ -22,6 +21,7 @@ mod operations;
 mod prevention;
 #[cfg(test)]
 mod prevention_simulation;
+mod realtime;
 mod security_detection;
 mod suricata_origin;
 mod three_source;
@@ -178,6 +178,7 @@ struct BlockRequest {
     ip: String,
     reason: String,
     event_id: Option<i64>,
+    ttl_seconds: Option<u64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -506,14 +507,18 @@ async fn block_ip(
     Extension(actor): Extension<auth::Identity>,
     Json(req): Json<BlockRequest>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
-    prevention::require_execution().map_err(bad_request)?;
+    firewall::admit_manual(&state).await.map_err(bad_request)?;
     let ip = firewall::validate(&state, &req.ip).map_err(bad_request)?;
     if req.reason.trim().is_empty() || req.reason.len() > 500 {
         return Err(bad_request("Reason must contain 1–500 characters"));
     }
+    let ttl = req.ttl_seconds.unwrap_or(60);
+    if !(1..=300).contains(&ttl) {
+        return Err(bad_request("TTL must be between 1 and 300 seconds"));
+    }
     if let Some(event_id) = req.event_id {
         let matches: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM security_alerts WHERE id=$1 AND src_ip=$2::inet)",
+            "SELECT EXISTS(SELECT 1 FROM security_alerts WHERE id=$1 AND client_ip=$2::inet AND client_ip_verified AND source='SURICATA' AND occurred_at BETWEEN now()-interval '120 seconds' AND now())",
         )
         .bind(event_id)
         .bind(ip.to_string())
@@ -524,16 +529,19 @@ async fn block_ip(
             return Err(bad_request("Source alert does not match IP"));
         }
     }
-    let id = firewall::enqueue(
-        &state.pool,
+    let mut tx = state.pool.begin().await.map_err(api_error)?;
+    let id = firewall::enqueue_tx(
+        &mut tx,
         ip,
         "BLOCK",
         &actor.username,
         &req.reason,
         req.event_id,
+        ttl,
     )
     .await
     .map_err(api_error)?;
+    tx.commit().await.map_err(api_error)?;
     Ok((
         StatusCode::ACCEPTED,
         Json(serde_json::json!({"id":id,"status":"PENDING"})),
@@ -544,8 +552,8 @@ async fn unblock_ip(
     Extension(actor): Extension<auth::Identity>,
     Path(ip): Path<String>,
 ) -> Result<(StatusCode, Json<serde_json::Value>), ApiError> {
-    prevention::require_execution().map_err(bad_request)?;
-    let ip = network::Safety::parse_host(&ip).map_err(bad_request)?;
+    firewall::admit_manual(&state).await.map_err(bad_request)?;
+    let ip = firewall::validate(&state, &ip).map_err(bad_request)?;
     let id = firewall::enqueue(
         &state.pool,
         ip,
