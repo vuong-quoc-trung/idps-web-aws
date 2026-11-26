@@ -5,6 +5,7 @@ use serde_json::json;
 
 #[derive(FromRow)]
 struct Observation {
+    event_key: String,
     occurred_at: DateTime<Utc>,
     signals: sqlx::types::Json<SecuritySignals>,
     status_code: i32,
@@ -69,7 +70,7 @@ pub async fn observe(
         };
         let watermark: DateTime<Utc> = sqlx::query_scalar("SELECT max(occurred_at) FROM application_security_observations WHERE source_instance=$1 AND (CASE WHEN $2 THEN actor_hmac=$3 ELSE host(client_ip)=$3 END)")
             .bind(&event.source_instance).bind(actor_group).bind(&subject).fetch_one(&mut **tx).await?;
-        let rows=sqlx::query_as::<_,Observation>("SELECT occurred_at,signals,status_code FROM application_security_observations WHERE source_instance=$1 AND (CASE WHEN $2 THEN actor_hmac=$3 ELSE host(client_ip)=$3 END) AND occurred_at>$4 AND occurred_at<=$5 ORDER BY occurred_at")
+        let rows=sqlx::query_as::<_,Observation>("SELECT event_key,occurred_at,signals,status_code FROM application_security_observations WHERE source_instance=$1 AND (CASE WHEN $2 THEN actor_hmac=$3 ELSE host(client_ip)=$3 END) AND occurred_at>$4 AND occurred_at<=$5 ORDER BY occurred_at")
             .bind(&event.source_instance).bind(actor_group).bind(&subject).bind(watermark-chrono::Duration::seconds(rule.seconds)).bind(watermark).fetch_all(&mut **tx).await?;
         let rows: Vec<_> = rows
             .iter()
@@ -98,7 +99,11 @@ pub async fn observe(
         } else {
             2
         };
-        let evidence = json!({"rule_code":rule.code,"source":"STUDENT_AUDIT","source_instance":event.source_instance,"subject_hmac_or_ip":subject,"first_seen":rows[0].occurred_at,"last_seen":watermark,"event_count":rows.len(),"window_event_count":rows.len(),"distinct_count":distinct.len(),"window_seconds":rule.seconds,"uri_path":event.uri_path,"request_id":event.request_id,"reason":format!("{}: {} server-confirmed {} in {} seconds; no IP/account auto-block",rule.name,count,if actor_group {"distinct objects"} else if rule.code=="APP-1011" {"attempted account pseudonyms"} else {"denials"},rule.seconds),"security_reasons":signals.reasons,"forbidden_fields":signals.forbidden_fields,"recommended_action":"ALERT_ONLY","action_mode":"ALERT_ONLY"});
+        let trigger = event.request_id.as_deref().filter(|_| {
+            event.timestamp.timestamp_micros() == watermark.timestamp_micros()
+                && rows.iter().any(|o| o.event_key == key)
+        });
+        let evidence = json!({"rule_code":rule.code,"source":"STUDENT_AUDIT","source_instance":event.source_instance,"subject_hmac_or_ip":subject,"first_seen":rows[0].occurred_at,"last_seen":watermark,"event_count":rows.len(),"window_event_count":rows.len(),"distinct_count":distinct.len(),"window_seconds":rule.seconds,"uri_path":event.uri_path,"request_id":trigger,"reason":format!("{}: {} server-confirmed {} in {} seconds; no IP/account auto-block",rule.name,count,if actor_group {"distinct objects"} else if rule.code=="APP-1011" {"attempted account pseudonyms"} else {"denials"},rule.seconds),"security_reasons":signals.reasons,"forbidden_fields":signals.forbidden_fields,"recommended_action":"ALERT_ONLY","action_mode":"ALERT_ONLY"});
         // Include a future episode for out-of-order arrival so late data never creates a second episode.
         let existing:Option<(i64,String)>=sqlx::query_as("SELECT id,evidence FROM security_alerts WHERE source='STUDENT_AUDIT' AND signature=$1 AND evidence::jsonb->>'source_instance'=$2 AND evidence::jsonb->>'subject_hmac_or_ip'=$3 AND occurred_at>$4 AND occurred_at<$5 ORDER BY occurred_at DESC LIMIT 1 FOR UPDATE")
             .bind(rule.code).bind(&event.source_instance).bind(&subject).bind(watermark-chrono::Duration::seconds(rule.seconds)).bind(watermark+chrono::Duration::seconds(rule.seconds)).fetch_optional(&mut **tx).await?;
@@ -122,8 +127,8 @@ pub async fn observe(
                 .execute(&mut **tx)
                 .await?;
         } else {
-            sqlx::query("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,'STUDENT_AUDIT','alert',$2::inet,'HTTP',$3,$4,'Application Security Decision',$5,'ALERT',$6,$7) ON CONFLICT(event_key) DO NOTHING")
-                .bind(watermark).bind(event.client_ip.map(|ip|ip.to_string())).bind(format!("{}: {}",rule.code,rule.name)).bind(rule.code).bind(severity).bind(evidence.to_string()).bind(format!("{key}:{}",rule.code)).execute(&mut **tx).await?;
+            sqlx::query("WITH alert AS (INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,'STUDENT_AUDIT','alert',$2::inet,'HTTP',$3,$4,'Application Security Decision',$5,'ALERT',$6,$7) ON CONFLICT(event_key) DO NOTHING RETURNING id) INSERT INTO detector_alert_links(alert_id,request_id,source_instance,link_basis) SELECT id,$8,$9,'REQUEST_ID' FROM alert WHERE $8::text IS NOT NULL")
+                .bind(watermark).bind(event.client_ip.map(|ip|ip.to_string())).bind(format!("{}: {}",rule.code,rule.name)).bind(rule.code).bind(severity).bind(evidence.to_string()).bind(format!("{key}:{}",rule.code)).bind(trigger).bind(&event.source_instance).execute(&mut **tx).await?;
         }
     }
     Ok(())
@@ -162,8 +167,9 @@ mod tests {
             for n in 0..threshold {
                 let mut e = event(reason, n, status);
                 e.source_instance = code.into();
+                e.request_id = Some(format!("{n:032x}"));
                 // A late final observation must complete the window, not be discarded.
-                if n == threshold - 1 {
+                if code != "APP-1011" && n == threshold - 1 {
                     e.timestamp -= chrono::Duration::seconds(1);
                 }
                 if code == "APP-1012" {
@@ -188,6 +194,10 @@ mod tests {
                 .await
                 .unwrap();
         assert_eq!(actions, vec!["ALERT"]);
+        let links: Vec<String> = sqlx::query_scalar(
+            "SELECT l.request_id FROM detector_alert_links l JOIN security_alerts a ON l.alert_id=a.id WHERE a.signature IN ('APP-1011','APP-1012')"
+        ).fetch_all(&pool).await.unwrap();
+        assert_eq!(links, vec![format!("{:032x}", 7)]);
     }
     #[test]
     fn new_rules_require_confirmed_reason_and_status() {

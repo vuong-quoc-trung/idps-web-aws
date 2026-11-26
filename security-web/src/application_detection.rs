@@ -130,6 +130,7 @@ pub const RULES: [Rule; 19] = [
 ];
 #[derive(FromRow)]
 struct Observation {
+    event_key: String,
     occurred_at: DateTime<Utc>,
     uri_path: Option<String>,
     status_code: Option<i32>,
@@ -255,10 +256,11 @@ pub async fn observe(
     if event.timestamp < watermark - chrono::Duration::seconds(120) {
         return Ok(());
     }
-    let rows=sqlx::query_as::<_,Observation>("SELECT occurred_at,uri_path,status_code,outcome,http_method FROM application_observations WHERE source_instance=$1 AND client_ip=$2::inet AND occurred_at>$3 AND occurred_at<=$4 ORDER BY occurred_at")
+    let rows=sqlx::query_as::<_,Observation>("SELECT event_key,occurred_at,uri_path,status_code,outcome,http_method FROM application_observations WHERE source_instance=$1 AND client_ip=$2::inet AND occurred_at>$3 AND occurred_at<=$4 ORDER BY occurred_at")
         .bind(&event.source_instance).bind(ip.to_string()).bind(watermark-chrono::Duration::seconds(120)).bind(watermark).fetch_all(&mut **tx).await?;
     for (index, rule) in RULES.iter().take(10).enumerate() {
         let current = Observation {
+            event_key: key.to_owned(),
             occurred_at: event.timestamp,
             uri_path: event.uri_path.clone(),
             status_code: event.status_code.map(i32::from),
@@ -348,7 +350,11 @@ pub async fn observe(
         let name = format!("{}: {}", rule.code, rule.name);
         let existing:Option<(i64,i16,String)>=sqlx::query_as("SELECT id,severity,evidence FROM security_alerts WHERE source='STUDENT_AUDIT' AND rule_name=$1 AND src_ip=$2::inet AND evidence::jsonb->>'source_instance'=$3 AND evidence::jsonb->>'group_endpoint'=$4 AND occurred_at<=$5 AND occurred_at>$6 ORDER BY occurred_at DESC,id DESC LIMIT 1 FOR UPDATE")
             .bind(&name).bind(ip.to_string()).bind(&event.source_instance).bind(group).bind(watermark).bind(watermark-chrono::Duration::seconds(rule.seconds)).fetch_optional(&mut **tx).await?;
-        let mut evidence = json!({"rule_code":rule.code,"source":"STUDENT_AUDIT","source_instance":event.source_instance,"first_seen":matching[0].occurred_at,"last_seen":matching.last().unwrap().occurred_at,"event_count":matching.len(),"window_event_count":matching.len(),"distinct_endpoints":endpoints.len(),"window_seconds":rule.seconds,"group_endpoint":group,"uri_path":event.uri_path,"endpoints":endpoints.into_iter().take(10).collect::<Vec<_>>(),"status_codes":matching.iter().filter_map(|o|o.status_code).collect::<std::collections::BTreeSet<_>>(),"reason":format!("{}: {} {} in {} seconds (threshold {})",rule.name,count,if index==2 {"distinct endpoints"} else {"observations"},rule.seconds,rule.threshold),"recommended_action":recommendation,"request_id":event.request_id,"action_mode":"ALERT_ONLY"});
+        let trigger = event.request_id.as_deref().filter(|_| {
+            event.timestamp.timestamp_micros() == watermark.timestamp_micros()
+                && matching.iter().any(|o| o.event_key == key)
+        });
+        let mut evidence = json!({"rule_code":rule.code,"source":"STUDENT_AUDIT","source_instance":event.source_instance,"first_seen":matching[0].occurred_at,"last_seen":matching.last().unwrap().occurred_at,"event_count":matching.len(),"window_event_count":matching.len(),"distinct_endpoints":endpoints.len(),"window_seconds":rule.seconds,"group_endpoint":group,"uri_path":event.uri_path,"endpoints":endpoints.into_iter().take(10).collect::<Vec<_>>(),"status_codes":matching.iter().filter_map(|o|o.status_code).collect::<std::collections::BTreeSet<_>>(),"reason":format!("{}: {} {} in {} seconds (threshold {})",rule.name,count,if index==2 {"distinct endpoints"} else {"observations"},rule.seconds,rule.threshold),"recommended_action":recommendation,"request_id":trigger,"action_mode":"ALERT_ONLY"});
         evidence["http_methods"] = json!(methods);
         evidence["distinct_methods"] = json!(methods.len());
         if index == 5 {
@@ -377,8 +383,8 @@ pub async fn observe(
                 .execute(&mut **tx)
                 .await?;
         } else {
-            sqlx::query("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,'STUDENT_AUDIT','alert',$2::inet,'HTTP',$3,$4,'Application Behavior',$5,'ALERT',$6,$7) ON CONFLICT(event_key) DO NOTHING")
-                .bind(watermark).bind(ip.to_string()).bind(&name).bind(rule.code).bind(severity).bind(evidence.to_string()).bind(format!("{key}:{}:{group}",rule.code)).execute(&mut **tx).await?;
+            sqlx::query("WITH alert AS (INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,'STUDENT_AUDIT','alert',$2::inet,'HTTP',$3,$4,'Application Behavior',$5,'ALERT',$6,$7) ON CONFLICT(event_key) DO NOTHING RETURNING id) INSERT INTO detector_alert_links(alert_id,request_id,source_instance,link_basis) SELECT id,$8,$9,'REQUEST_ID' FROM alert WHERE $8::text IS NOT NULL")
+                .bind(watermark).bind(ip.to_string()).bind(&name).bind(rule.code).bind(severity).bind(evidence.to_string()).bind(format!("{key}:{}:{group}",rule.code)).bind(trigger).bind(&event.source_instance).execute(&mut **tx).await?;
         }
     }
     Ok(())
@@ -389,6 +395,7 @@ mod tests {
     use super::*;
     fn observation(path: &str, method: Option<&str>, status: i32) -> Observation {
         Observation {
+            event_key: String::new(),
             occurred_at: Utc::now(),
             uri_path: Some(path.into()),
             status_code: Some(status),

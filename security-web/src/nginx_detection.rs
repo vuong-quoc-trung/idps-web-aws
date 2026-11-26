@@ -166,9 +166,13 @@ pub async fn observe(
         if existing {
             continue;
         }
-        let evidence = json!({"rule_code":code,"source_instance":e.source_instance,"subject":subject,"window_seconds":seconds,"event_count":count,"response_bytes":bytes.to_string(),"last_seen":watermark,"recommended_action":"ALERT_ONLY","scope":if global {"proxy"} else {"client_ip"},"reason":if global {"Upstream availability issue; not proof of an attack"} else {"Lab threshold exceeded; investigate before enforcement"}});
-        sqlx::query("INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,'NGINX','alert',$2::inet,'HTTP',$3,$4,'Proxy Behavior',2,'ALERT',$5,$6) ON CONFLICT(event_key) DO NOTHING")
-            .bind(watermark).bind(if global {None} else {e.client_ip.map(|v|v.to_string())}).bind(format!("NGINX: {name}")).bind(code).bind(evidence.to_string()).bind(format!("{key}:{code}")).execute(&mut **tx).await?;
+        let trigger = e
+            .request_id
+            .as_deref()
+            .filter(|_| !global && e.timestamp.timestamp_micros() == watermark.timestamp_micros());
+        let evidence = json!({"rule_code":code,"source_instance":e.source_instance,"subject":subject,"window_seconds":seconds,"event_count":count,"response_bytes":bytes.to_string(),"last_seen":watermark,"request_id":trigger,"recommended_action":"ALERT_ONLY","scope":if global {"proxy"} else {"client_ip"},"reason":if global {"Upstream availability issue; not proof of an attack"} else {"Threshold exceeded; investigate before enforcement"}});
+        sqlx::query("WITH alert AS (INSERT INTO security_alerts(occurred_at,source,event_type,src_ip,proto,rule_name,signature,category,severity,action,evidence,event_key) VALUES($1,'NGINX','alert',$2::inet,'HTTP',$3,$4,'Proxy Behavior',2,'ALERT',$5,$6) ON CONFLICT(event_key) DO NOTHING RETURNING id) INSERT INTO detector_alert_links(alert_id,request_id,source_instance,link_basis) SELECT id,$7,$8,'REQUEST_ID' FROM alert WHERE $7::text IS NOT NULL")
+            .bind(watermark).bind(if global {None} else {e.client_ip.map(|v|v.to_string())}).bind(format!("NGINX: {name}")).bind(code).bind(evidence.to_string()).bind(format!("{key}:{code}")).bind(trigger).bind(&e.source_instance).execute(&mut **tx).await?;
     }
     Ok(())
 }
@@ -262,7 +266,8 @@ mod tests {
                     .parse()
                     .unwrap(),
                 );
-                if i == n - 1 {
+                e.request_id = Some(format!("{i:032x}"));
+                if code != "HTTP_REQUEST_BURST" && i == n - 1 {
                     e.timestamp -= chrono::Duration::seconds(1);
                 }
                 let key = format!("{code}-{i}");
@@ -280,5 +285,9 @@ mod tests {
         }
         let count:i64=sqlx::query_scalar("SELECT count(*) FROM security_alerts WHERE action!='ALERT' OR (signature='GATEWAY_ERROR_BURST' AND src_ip IS NOT NULL)").fetch_one(&pool).await.unwrap();
         assert_eq!(count, 0);
+        let links: Vec<String> = sqlx::query_scalar(
+            "SELECT l.request_id FROM detector_alert_links l JOIN security_alerts a ON l.alert_id=a.id WHERE a.source='NGINX'"
+        ).fetch_all(&pool).await.unwrap();
+        assert_eq!(links, vec![format!("{:032x}", 119)]);
     }
 }

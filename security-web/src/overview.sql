@@ -20,7 +20,8 @@ WITH bounds AS (
     SELECT rule_name AS name, count(*) AS count FROM events
     GROUP BY rule_name ORDER BY count DESC, name LIMIT 8
 ), sources AS (
-    SELECT source AS name, count(*) AS count FROM events GROUP BY source ORDER BY count DESC, name
+    SELECT CASE WHEN source='APPLICATION' THEN 'STUDENT_AUDIT' ELSE source END AS name,
+           count(*) AS count FROM events GROUP BY name ORDER BY count DESC, name
 ), severities AS (
     SELECT severity, count(*) AS count FROM events GROUP BY severity ORDER BY severity
 ), source_ips AS (

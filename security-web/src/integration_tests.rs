@@ -1013,7 +1013,7 @@ async fn collection_status_empty_partial_error_and_recovery(pool: PgPool) {
 
 #[sqlx::test(migrations = "./migrations")]
 async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
-    for source in ["SURICATA", "NGINX", "STUDENT_AUDIT"] {
+    for source in ["SURICATA", "NGINX", "STUDENT_AUDIT", "APPLICATION"] {
         sqlx::query("INSERT INTO security_alerts (occurred_at,source,event_type,rule_name,severity,action,evidence) VALUES (now()-interval '2 minutes',$1,'alert','fixture',2,'ALERT','{}')")
             .bind(source).execute(&pool).await.unwrap();
     }
@@ -1024,7 +1024,7 @@ async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
         .fetch_one(&pool)
         .await
         .unwrap();
-    assert_eq!(report["alert_updates"]["count"], 3);
+    assert_eq!(report["alert_updates"]["count"], 4);
     assert_eq!(report["alert_updates"]["severity"], 2);
     let points = report["trend"].as_array().unwrap();
     assert_eq!(points.iter().filter(|p| p["count"] == 0).count(), 11);
@@ -1034,9 +1034,23 @@ async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
                 .iter()
                 .map(|p| p["sources"][source].as_i64().unwrap())
                 .sum::<i64>(),
-            1
+            if source == "STUDENT_AUDIT" { 2 } else { 1 }
         );
     }
+    assert!(
+        report["sources"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|s| s["name"] == "STUDENT_AUDIT" && s["count"] == 2)
+    );
+    assert!(
+        !report["sources"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|s| s["name"] == "APPLICATION")
+    );
     let cursor = report["alert_updates"]["watermark"].as_i64().unwrap();
     let again = sqlx::query_scalar::<_, serde_json::Value>(include_str!("overview.sql"))
         .bind(604800_i64)

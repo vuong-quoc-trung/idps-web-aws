@@ -7,7 +7,7 @@ WITH filtered AS MATERIALIZED (
  AND ($4::smallint IS NULL OR severity = $4)
  AND ($5::timestamptz IS NULL OR occurred_at >= $5)
  AND ($6::timestamptz IS NULL OR occurred_at < $6)
- AND ($7::text IS NULL OR source = $7)
+ AND ($7::text IS NULL OR source = $7 OR ($7 = 'STUDENT_AUDIT' AND source = 'APPLICATION'))
  AND ($8::text IS NULL OR action = $8)
  AND ($9::text IS NULL OR dest_ip = $9::inet)
  AND ($10::text IS NULL OR triage_status = $10)
