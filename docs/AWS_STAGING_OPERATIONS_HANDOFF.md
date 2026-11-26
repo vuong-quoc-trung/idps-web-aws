@@ -380,3 +380,11 @@ sudo python3 -B /opt/websentinel-r48/runtime/r52_student_ui.py rollback
 ```
 
 Lệnh gateway xác minh backup và khôi phục NGINX/correlator R51. Lệnh Student UI khôi phục index để tải lại build cũ. Assets có hash của hai build được giữ để trình duyệt đang hoạt động tải nốt phiên hiện tại. Các lệnh đọc health sau rollback và giữ database/Gmail.
+
+## 15. R53 — Nghiệm thu Prevention cô lập
+
+R53 giữ public Prevention OFF. Dashboard báo `ACTUATOR_OFFLINE` vì binary serving không có native status socket. Có thể kiểm monitoring và blocker thực thi riêng bằng `/api/ready/monitoring` và `/api/ready` qua một phiên Security Web xác thực. [Nghiệm thu R53](139_T09_R53_FINAL_PROJECT_COMPLETION.md)
+
+Harness runtime nhận ba đối số gồm thư mục staging tạm, thư mục PostgreSQL mới do `postgres` sở hữu, và network namespace ID của host. Chạy qua SSM trong một unit duy nhất với `PrivateNetwork=yes`, thời hạn 150 s, `CPUQuota=160%`, `MemoryMax=1536M`, `TasksMax=125` và `PYTHONPATH=/opt/websentinel-r48/runtime`. Nó kiểm namespace riêng và một interface loopback trước khi tạo DB. Lấy output chứa request ID, SID, Hybrid, score, SSE và kết quả triage. Dọn hai thư mục tạm do mình tạo sau khi unit thoát. [Harness](../security-web/deploy/aws-r48/r53_runtime_lab.py)
+
+Harness actuator yêu cầu hai namespace tách biệt và chạy các probe kết nối trên veth lab. Chế độ `--private-systemd-unit` xác minh cgroup riêng, `PrivateNetwork=yes`, namespace khác PID 1, loopback ban đầu và kernel table rỗng. Chạy thử firewall bằng chính actuator thủ công đã có. Cổng C2 của Rust và cấu hình serving vẫn giữ khóa. [Actuator acceptance](../security-web/deploy/local-r38/firewall_acceptance.py)
