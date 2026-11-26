@@ -464,6 +464,19 @@ pub fn parse_with_origin(
             );
             event.client_ip = ip(&value, "client_ip")?;
             event.request_id = text(&value, "request_id").filter(|s| valid_request_id(s));
+            // R51 logs exactly one main-request observation. A physical replay
+            // after rotation must preserve its identity even at another offset.
+            if let Some(id) = event.request_id.as_deref().filter(|id| {
+                id.len() == 32
+                    && id
+                        .bytes()
+                        .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+            }) {
+                let stable = format!("r51-main-{id}");
+                if value["event_id"].as_str() == Some(stable.as_str()) {
+                    event.event_id = stable;
+                }
+            }
             event.http_method = text(&value, "http_method");
             let path = text(&value, "uri_path").context("Missing Nginx path")?;
             target = Some(match text(&value, "query_string") {

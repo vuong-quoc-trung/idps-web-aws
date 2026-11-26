@@ -208,6 +208,10 @@ class Handler(BaseHTTPRequestHandler):
 
 
 class Receiver(socketserver.UnixStreamServer):
+    # The socket drains through one scorer and SQLite writer. An explicit
+    # bounded backlog absorbs short edge bursts without parallel model state.
+    request_queue_size = 16
+
     def verify_request(self, sock, address):
         sock.settimeout(1)
         _, uid, _ = struct.unpack("3i", sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))

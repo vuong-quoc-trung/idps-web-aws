@@ -26,6 +26,14 @@ EDGE_EXACT = {
     "/api/auth/change-password", "/api/auth/forgot-password", "/api/auth/reset-password",
     "/api/me/academic", "/api/me/academic/classmates", "/api/me/profile",
 }
+ROUTE_GROUPS = {
+    "identity": r"auth/(csrf|login|logout|me)$",
+    "account_recovery": r"auth/(activate|activation/(verify|send)|forgot-password|reset-password|change-password)$",
+    "catalog": r"(classes|faculties|majors|training-programs|profile-options)(/|$)",
+    "student_self_service": r"me(/|$)",
+    "student_administration": r"students(/|$)",
+    "security_administration": r"(users|access-logs)(/|$)",
+}
 SOURCE = "127.77.0.1"
 EGRESS = "127.77.0.2"
 PORT = 18080
@@ -50,7 +58,8 @@ def render(base, kit, key, key_gid, edge_log, scorer_socket):
     ~^/api/users/[0-9]+/enabled$ "/api/users/[id]/enabled";
     ~^/api/users/[0-9]+/activation-token$ "/api/users/[id]/activation-token";
 '''
-    http = f"""# WebSentinel R50 passive HTTPS evidence
+    groups = "".join(f"    ~^/api/{prefix} {group};\n" for group, prefix in ROUTE_GROUPS.items())
+    http = f"""# WebSentinel R51 passive HTTPS evidence
 include {kit}/pbl4-access.conf;
 js_import r48proof from {kit}/proof-probe.js;
 js_shared_dict_zone zone=nonces:1m timeout=65s;
@@ -65,6 +74,13 @@ map "$request_method:$request_uri" $r48_observed {{
 map $uri $r49_log_path {{
     default /api/[redacted];
 {paths}}}
+map $uri $r51_route_group {{
+    default unclassified;
+{groups}}}
+map $r48_observed $r51_leg {{
+    default direct;
+    1 signed;
+}}
 map $r48_observed $r49_log_dispatch {{
     default "";
     1 $r35_dispatch;
@@ -74,8 +90,10 @@ map $r48_observed $r49_log_host {{
     1 $http_host;
 }}
 log_format r48_access escape=json '{{"timestamp":"$time_iso8601","request_id":"$request_id",'
+    '"event_id":"r51-main-$request_id",'
     '"client_ip":"$remote_addr","http_method":"$request_method","uri_path":"$r49_log_path",'
     '"status":$status,"dispatch":"$r49_log_dispatch","http_host":"$r49_log_host",'
+    '"route_group":"$r51_route_group","observation_leg":"$r51_leg",'
     '"latency_seconds":$request_time,"request_bytes":$request_length,"response_bytes":$body_bytes_sent,'
     '"rule_signals":{{"SQLI":$pbl4_host_sqli,"XSS":$pbl4_host_xss,'
     '"PATH_TRAVERSAL":$pbl4_host_traversal,"COMMAND_INJECTION":$pbl4_host_command}}}}';
