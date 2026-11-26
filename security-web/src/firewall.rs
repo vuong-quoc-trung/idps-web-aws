@@ -86,7 +86,6 @@ pub async fn run(_cmd: &str, action: &str, ip: Option<IpAddr>, ttl: Option<u64>)
 
 #[cfg(feature = "isolated-c2")]
 async fn lab_call(action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<String> {
-    use tokio::io::{AsyncReadExt, AsyncWriteExt};
     let request = match (action, ip, ttl) {
         ("list-json", None, None) => "STATUS\n".to_owned(),
         ("block", Some(target), Some(seconds))
@@ -99,6 +98,14 @@ async fn lab_call(action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<
         }
         _ => bail!("C2_SCOPE_MISMATCH"),
     };
+    let response = lab_request(request, 32768).await?;
+    lab_set(&response)?;
+    Ok(response)
+}
+
+#[cfg(feature = "isolated-c2")]
+pub async fn lab_request(request: String, limit: u64) -> Result<String> {
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
     timeout(Duration::from_secs(4), async {
         let mut stream = tokio::net::UnixStream::connect(LAB_SOCKET)
             .await
@@ -107,28 +114,33 @@ async fn lab_call(action: &str, ip: Option<IpAddr>, ttl: Option<u64>) -> Result<
         stream.write_all(request.as_bytes()).await?;
         stream.shutdown().await?;
         let mut response = String::new();
-        stream.take(32_769).read_to_string(&mut response).await?;
-        anyhow::ensure!(
-            response.len() <= 32_768 && response.starts_with('{'),
-            "C2_ACTUATOR_REFUSED"
-        );
-        let snapshot: serde_json::Value = serde_json::from_str(&response)?;
-        anyhow::ensure!(
-            snapshot["nftables"]
-                .as_array()
-                .is_some_and(|items| items.iter().any(|item| {
-                    let set = &item["set"];
-                    set["family"] == "inet"
-                        && set["table"] == "r56_prevention"
-                        && set["name"] == "blocked_ips"
-                        && set["type"] == "ipv4_addr"
-                })),
-            "C2_SCOPE_MISMATCH"
-        );
+        stream.take(limit + 1).read_to_string(&mut response).await?;
+        anyhow::ensure!(response.len() as u64 <= limit, "C2_ACTUATOR_REFUSED");
         Ok(response)
     })
     .await
     .context("ACTUATOR_TIMEOUT")?
+}
+
+#[cfg(feature = "isolated-c2")]
+pub fn lab_set(response: &str) -> Result<BTreeSet<String>> {
+    anyhow::ensure!(response.starts_with('{'), "C2_ACTUATOR_REFUSED");
+    let snapshot: serde_json::Value = serde_json::from_str(response)?;
+    anyhow::ensure!(
+        snapshot["nftables"].as_array().is_some_and(|items| {
+            let mut sets = items.iter().filter_map(|item| item.get("set"));
+            sets.next().is_some_and(|set| {
+                set["family"] == "inet"
+                    && set["table"] == "r56_prevention"
+                    && set["name"] == "blocked_ips"
+                    && set["type"] == "ipv4_addr"
+            }) && sets.next().is_none()
+        }),
+        "C2_SCOPE_MISMATCH"
+    );
+    let ips = parse_set(response)?;
+    anyhow::ensure!(ips.iter().all(|ip| ip == LAB_PEER), "C2_SCOPE_MISMATCH");
+    Ok(ips)
 }
 pub fn parse_set(text: &str) -> Result<BTreeSet<String>> {
     parse_named_set(text, false)
@@ -246,13 +258,43 @@ pub async fn enqueue_tx(
         .execute(&mut **tx)
         .await?;
     if action == "BLOCK" {
-        let duplicate:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM blocked_ips WHERE ip=$1::inet AND active AND expires_at>now()) OR EXISTS(SELECT 1 FROM firewall_actions WHERE ip=$1::inet AND action='BLOCK' AND (status='PENDING' OR created_at>now()-interval '30 seconds'))").bind(ip.to_string()).fetch_one(&mut **tx).await?;
-        anyhow::ensure!(!duplicate, "Duplicate block or response cooldown");
-        let rate:i64=sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE action='BLOCK' AND created_at>now()-interval '60 seconds'").fetch_one(&mut **tx).await?;
-        anyhow::ensure!(rate < 10, "Response rate limit reached");
+        anyhow::ensure!(
+            block_budget(tx, ip).await?,
+            "Duplicate block, response cooldown or rate limit"
+        );
     }
     Ok(sqlx::query_scalar("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,event_id,expires_at) VALUES($1::inet,$2,'API',$3,'PENDING',$4,$5,now()+make_interval(secs=>$6)) RETURNING id")
         .bind(ip.to_string()).bind(action).bind(reason).bind(actor).bind(event).bind(ttl as f64).fetch_one(&mut **tx).await?)
+}
+
+async fn block_budget(tx: &mut sqlx::Transaction<'_, sqlx::Postgres>, ip: IpAddr) -> Result<bool> {
+    let duplicate:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM blocked_ips WHERE ip=$1::inet AND active AND expires_at>now()) OR EXISTS(SELECT 1 FROM firewall_actions WHERE ip=$1::inet AND action='BLOCK' AND (status='PENDING' OR created_at>now()-interval '30 seconds'))").bind(ip.to_string()).fetch_one(&mut **tx).await?;
+    let rate:i64=sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE action='BLOCK' AND created_at>now()-interval '60 seconds'").fetch_one(&mut **tx).await?;
+    Ok(!duplicate && rate < 10)
+}
+
+#[cfg(feature = "isolated-c2")]
+pub async fn enqueue_canary(
+    tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+    proof: &c2_ingress::Proof,
+) -> Result<Option<i64>> {
+    if !c2_ingress::enabled() {
+        return Ok(None);
+    }
+    let Some(source) = proof.source() else {
+        return Ok(None);
+    };
+    sqlx::query("SELECT pg_advisory_xact_lock(7272402)")
+        .execute(&mut **tx)
+        .await?;
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM firewall_actions WHERE source IN ('CANARY_RULE','CANARY_HYBRID') AND reason=$1)")
+        .bind(&proof.request_id).fetch_one(&mut **tx).await?;
+    if exists || !block_budget(tx, proof.ip).await? {
+        return Ok(None);
+    }
+    Ok(Some(sqlx::query_scalar("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,expires_at) VALUES($1::inet,'BLOCK',$2,$3,'PENDING','system',now()+make_interval(secs=>$4)) RETURNING id")
+        .bind(proof.ip.to_string()).bind(source.as_str()).bind(&proof.request_id)
+        .bind(c2_ingress::MAX_TTL as f64).fetch_one(&mut **tx).await?))
 }
 #[derive(FromRow)]
 struct Job {
@@ -284,6 +326,12 @@ where
     let Some(job) = job else {
         return Ok(false);
     };
+    #[cfg(feature = "isolated-c2")]
+    let canary = c2_ingress::Source::parse(&job.source);
+    #[cfg(feature = "isolated-c2")]
+    let canary_allowed = canary.is_some() && job.action == "BLOCK" && c2_ingress::enabled();
+    #[cfg(not(feature = "isolated-c2"))]
+    let canary_allowed = false;
     let validation = validate(state, &job.ip);
     let approved_restore = if job.action == "BLOCK" && job.source == "RESTORE" {
         sqlx::query_scalar::<_,bool>("SELECT EXISTS(SELECT 1 FROM firewall_actions WHERE ip=$1::inet AND source='API' AND action='BLOCK' AND status='SUCCESS' AND expires_at=$2)")
@@ -291,9 +339,14 @@ where
     } else {
         false
     };
-    let validation = if job.action == "BLOCK"
+    let validation = if job.source.starts_with("CANARY_") && !canary_allowed {
+        Err(anyhow::anyhow!("C2_CANARY_SCOPE_UNVERIFIED"))
+    } else if job.action == "BLOCK"
         && ((job.source == "AUTO" && !prevention::automatic_execution_enabled(&state.safety.mode))
-            || (state.safety.mode == "MANUAL" && job.source != "API" && !approved_restore))
+            || (state.safety.mode == "MANUAL"
+                && job.source != "API"
+                && !approved_restore
+                && !canary_allowed))
     {
         Err(anyhow::anyhow!("Automatic BLOCK capability not available"))
     } else if job.action == "BLOCK" && state.safety.discover_before_apply {
@@ -323,6 +376,10 @@ where
         None
     };
     let result = match validation {
+        #[cfg(feature = "isolated-c2")]
+        Ok(ip) if let Some(source) = canary => {
+            c2_ingress::apply(source, &job.reason, ip, ttl).await
+        }
         Ok(ip) => execute(job.action.to_lowercase(), ip, ttl).await,
         Err(e) => Err(e),
     };

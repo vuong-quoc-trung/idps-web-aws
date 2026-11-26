@@ -217,6 +217,14 @@ async fn refresh(
         } else {
             None
         };
+        #[cfg(feature = "isolated-c2")]
+        let canary = c2_ingress::verified(state, rid).await?;
+        #[cfg(feature = "isolated-c2")]
+        let ip = if c2_ingress::enabled() {
+            canary.as_ref().map(|_| firewall::LAB_PEER)
+        } else {
+            ip
+        };
         let protected = ip.is_none_or(|ip| crate::firewall::validate(state, ip).is_err());
         let actual_at:Option<DateTime<Utc>>=sqlx::query_scalar("SELECT max(occurred_at) FROM normalized_events WHERE request_id=$1 AND source IN ('NGINX','STUDENT_AUDIT')").bind(rid).fetch_one(&state.pool).await?;
         let at = actual_at.unwrap_or_else(|| {
@@ -265,12 +273,22 @@ async fn refresh(
             result["student_query_available"] = json!(app.is_ok());
             decision["dev_prevention"] = result;
         }
+        #[cfg(feature = "isolated-c2")]
+        if let Some(proof) = &canary {
+            decision["ingress_attestation"] = proof.evidence();
+        }
         let fingerprint = hash(&decision);
         let mut tx = state.pool.begin().await?;
         sqlx::query("SELECT pg_advisory_xact_lock(hashtextextended($1,14))")
             .bind(rid)
             .execute(&mut *tx)
             .await?;
+        #[cfg(feature = "isolated-c2")]
+        if let Some(proof) = &canary {
+            // Authorization comes from the native, namespace-bound evidence.
+            // No AI result or threshold contributes to the canary action.
+            firewall::enqueue_canary(&mut tx, proof).await?;
+        }
         sqlx::query("INSERT INTO hybrid_incidents(request_id,evidence_fingerprint,policy_version,observed_at,decision) VALUES($1,$2,$3,$4,$5) ON CONFLICT(request_id) DO UPDATE SET evidence_fingerprint=$2,policy_version=$3,observed_at=$4,decision=$5,updated_at=now() WHERE hybrid_incidents.evidence_fingerprint<>$2")
             .bind(rid).bind(&fingerprint).bind(decision["policy_version"].as_str().unwrap()).bind(at).bind(&decision).execute(&mut *tx).await?;
         sqlx::query("INSERT INTO hybrid_decision_audit(request_id,evidence_fingerprint,decision) VALUES($1,$2,$3) ON CONFLICT DO NOTHING").bind(rid).bind(&fingerprint).bind(&decision).execute(&mut *tx).await?;

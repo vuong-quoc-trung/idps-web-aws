@@ -4,6 +4,8 @@ mod ai_verdict_contract;
 mod application_audit;
 mod application_detection;
 mod auth;
+#[cfg(feature = "isolated-c2")]
+mod c2_ingress;
 mod controlled_prevention;
 mod detection;
 mod events;

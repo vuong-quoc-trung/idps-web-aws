@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import secrets
 import select
 import socket
 import ssl
@@ -22,6 +23,7 @@ from r56_prevention_lab import PEER, PORT, SERVER, TABLE, main, run, wait_for
 PATH = "/r56-health"
 PROOF_SECONDS = 10
 SHIPPER_IP = "192.0.2.60"  # Test-only header value from the documentation network.
+CANARY = {"/health": (161001, 204), "/api/profile": (161002, 403)}
 
 
 def parse_endpoint(value):
@@ -42,10 +44,10 @@ def established(rows, owned_inodes, local, remote):
     return matches[0]
 
 
-def same_request(row, request_id, local, remote):
+def same_request(row, request_id, local, remote, status=204):
     # The tuple comes from socket readback. Request ID links observations only.
     return (bool(re.fullmatch(r"[a-f0-9]{32}", request_id))
-            and row == {"request_id": request_id, "peer": list(remote), "local": list(local), "status": 204})
+            and row == {"request_id": request_id, "peer": list(remote), "local": list(local), "status": status})
 
 
 def nginx_socket(pid, local, remote):
@@ -65,18 +67,21 @@ def nginx_socket(pid, local, remote):
         return established(table, inodes, local, remote)
 
 
-def marked_client(cert):
+def marked_client(cert, path=PATH, status="204"):
     """Hold the same connection open for before-and-after kernel reads."""
     context = ssl.create_default_context(cafile=cert)
     with socket.create_connection((SERVER, PORT), timeout=5) as tcp:
         with context.wrap_socket(tcp, server_hostname="localhost") as tls:
             print(tls.getsockname()[1], flush=True)
-            assert sys.stdin.readline() == "GET\n"
-            tls.sendall(f"GET {PATH} HTTP/1.1\r\nHost: localhost\r\n"
-                        f"X-Forwarded-For: {SHIPPER_IP}\r\nX-Request-ID: {'f' * 32}\r\n\r\n".encode())
+            command, session = sys.stdin.readline().split()
+            assert command == "GET"
+            assert path == PATH or path in CANARY
+            tls.sendall(f"GET {path} HTTP/1.1\r\nHost: localhost\r\n"
+                        f"X-Forwarded-For: {SHIPPER_IP}\r\nX-Request-ID: {'f' * 32}\r\n"
+                        f"X-Lab-Session: {session}\r\n\r\n".encode())
             with http.client.HTTPResponse(tls) as response:
                 response.begin()
-                assert response.status == 204 and response.read() == b""
+                assert response.status == int(status) and response.read() == b""
                 assert not response.will_close
                 print(response.getheader("X-Request-Id"), flush=True)
                 sys.stdin.readline()
@@ -92,12 +97,16 @@ def read_line(process):
 
 
 class Ingress:
+    canary = False
+
     def __init__(self):
         self.application = {}
         self.active = None
+        self.active_receipt = None
 
     def start(self, root, start, cleanup, client):
         self.root, self.client = root, client
+        self.lab_session = secrets.token_urlsafe(32)
         self.cert = root / "tls.crt"
         key = root / "tls.key"
         run("openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1", "-subj", "/CN=localhost",
@@ -109,10 +118,17 @@ class Ingress:
             protocol_version = "HTTP/1.1"
 
             def do_GET(handler):
-                if handler.path == PATH:
+                # The protected test resource checks an ephemeral application
+                # session independent of the URI-based marker rule.
+                denied = (self.canary and handler.path == "/api/profile"
+                          and not secrets.compare_digest(handler.headers.get("X-Lab-Session", ""), self.lab_session))
+                status = 403 if denied else 204
+                if handler.path == PATH or self.canary and handler.path in CANARY:
                     request_id = handler.headers["X-Request-Id"]
-                    self.application[request_id] = (handler.client_address, handler.headers["X-Forwarded-For"])
-                handler.send_response(204)
+                    self.application[request_id] = (handler.client_address, handler.headers["X-Forwarded-For"], denied)
+                handler.send_response(status)
+                if denied:
+                    handler.send_header("Content-Length", "0")
                 handler.send_header("Connection", "close")
                 handler.end_headers()
 
@@ -129,6 +145,12 @@ class Ingress:
             directory = root / name
             directory.mkdir()
             paths.append(f"{name}_temp_path {directory};")
+        canary_log = ""
+        if self.canary:
+            canary_log = f'''log_format observe escape=json
+                '{{"timestamp":"$time_iso8601","request_id":"$request_id","event_id":"r51-main-$request_id",'
+                '"client_ip":"$remote_addr","uri_path":"$uri","http_method":"$request_method","status":$status}}';
+                access_log {root / 'edge.jsonl'} observe;'''
         cfg.write_text(f'''master_process off;
         pid {root / 'nginx.pid'};
         events {{ worker_connections 64; }}
@@ -137,6 +159,7 @@ class Ingress:
             log_format ingress escape=json '{{"request_id":"$request_id","peer":["$remote_addr",$remote_port],'
                 '"local":["$server_addr",$server_port],"status":$status}}';
             access_log {self.log} ingress;
+            {canary_log}
             server {{
                 listen {SERVER}:{PORT} ssl;
                 server_name localhost;
@@ -170,17 +193,18 @@ class Ingress:
         created, local, remote, inode = self.active
         return time.monotonic() - created <= PROOF_SECONDS and nginx_socket(self.nginx.pid, local, remote) == inode
 
-    def sensor_pair(self, backend):
+    def sensor_pair(self, backend, path=PATH, sid=156001):
         with (self.root / "eve.json").open() as eve:
             rows = [json.loads(line) for line in eve if line.endswith("\n")]
-        http = [row for row in rows if row["event_type"] == "http" and row.get("http", {}).get("url") == PATH
-                and (row.get("src_ip"), row.get("src_port")) == backend
-                and (row.get("dest_ip"), row.get("dest_port")) == (EGRESS, BACKEND_PORT)]
+        transaction = [row for row in rows if row.get("proto") == "TCP" and row.get("in_iface") == "lo"
+                       and (row.get("src_ip"), row.get("src_port")) == backend
+                       and (row.get("dest_ip"), row.get("dest_port")) == (EGRESS, BACKEND_PORT)]
+        http = [row for row in transaction if row["event_type"] == "http" and row.get("http", {}).get("url") == path]
         if len(http) > 1:
             raise RuntimeError("Ambiguous Suricata backend transaction")
         if http:
             flow = (http[0]["flow_id"], http[0]["tx_id"])
-            alerts = [row for row in rows if row["event_type"] == "alert" and row["alert"]["signature_id"] == 156001
+            alerts = [row for row in transaction if row["event_type"] == "alert" and row["alert"]["signature_id"] == sid
                       and (row.get("flow_id"), row.get("tx_id")) == flow]
             if len(alerts) > 1:
                 raise RuntimeError("Duplicate rule alert on the backend transaction")
@@ -188,30 +212,38 @@ class Ingress:
                 return flow
 
     @contextmanager
-    def proof(self):
-        with sp.Popen([*self.client, sys.executable, "-B", __file__, "--client", self.cert],
+    def proof(self, path=PATH, *, publish=True, authorized_session=False):
+        sid, status = CANARY.get(path, (156001, 204))
+        if authorized_session:
+            assert self.canary and path == "/api/profile"
+            status = 204
+        with sp.Popen([*self.client, sys.executable, "-B", __file__, "--client", self.cert, path, str(status)],
                       stdin=sp.PIPE, stdout=sp.PIPE, text=True, bufsize=1) as process:
             try:
                 local = SERVER, PORT
                 remote = PEER, int(read_line(process))
                 inode = wait_for(lambda: nginx_socket(self.nginx.pid, local, remote))
                 observed_at = time.monotonic()
-                process.stdin.write("GET\n")
+                process.stdin.write(f"GET {self.lab_session if authorized_session else '-'}\n")
                 request_id = read_line(process)
                 assert request_id != "f" * 32
                 assert nginx_socket(self.nginx.pid, local, remote) == inode
                 rows = [json.loads(line) for line in self.log.read_text().splitlines()]
                 matching = [row for row in rows if row["request_id"] == request_id]
-                assert len(matching) == 1 and same_request(matching[0], request_id, local, remote)
-                backend, forwarded_ip = self.application.pop(request_id)
+                assert len(matching) == 1 and same_request(matching[0], request_id, local, remote, status)
+                backend, forwarded_ip, denied = self.application.pop(request_id)
                 assert forwarded_ip == remote[0] and backend[0] == SOURCE
-                flow, tx = wait_for(lambda: self.sensor_pair(backend))
+                flow, tx = wait_for(lambda: self.sensor_pair(backend, path, sid))
                 self.active = observed_at, local, remote, inode
                 assert self.authorized(), "Ingress proof expired or socket changed"
-                yield {"request_id": request_id, "status": 204, "local": list(local), "peer": list(remote),
+                if self.canary and path in CANARY and publish:
+                    self.active_receipt = {"request_id": request_id, "ip": remote[0], "path": path, "status": status,
+                                           "flow_id": flow, "tx_id": tx, "sid": sid, "application_denied": denied}
+                yield {"request_id": request_id, "status": status, "local": list(local), "peer": list(remote),
                        "socket_inode": inode, "backend": list(backend), "suricata_flow": flow, "suricata_tx": tx,
-                       "rule_sid": 156001}
+                       "rule_sid": sid}
             finally:
+                self.active_receipt = None
                 self.active = None
                 process.stdin.close()
                 try:
@@ -261,7 +293,7 @@ class Ingress:
 
 if __name__ == "__main__":
     if sys.argv[1] == "--client":
-        marked_client(sys.argv[2])
+        marked_client(*sys.argv[2:])
     else:
         os.umask(0o077)
         main(Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3]), ingress=Ingress())

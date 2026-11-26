@@ -40,7 +40,7 @@ def validate_scope(host):
         raise RuntimeError("Isolated interface or route identity differs")
 
 
-def respond(conn, uid, host, authorize_block):
+def respond(conn, uid, host, authorize_block, ingress=None):
     conn.settimeout(1)
     pid, actual_uid, _ = struct.unpack("3i", conn.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
     if (actual_uid != uid
@@ -52,10 +52,25 @@ def respond(conn, uid, host, authorize_block):
         if not piece:
             break
         line.extend(piece)
-    verb = re.fullmatch(rb"(?:STATUS|BLOCK 10\.254\.56\.2 [1-9][0-9]{0,2}|UNBLOCK 10\.254\.56\.2)\n", line)
-    if not verb:
+    proof = None
+    auto = re.fullmatch(rb"APPLY (CANARY_RULE|CANARY_HYBRID) ([0-9a-f]{32}) ([1-6])\n", line)
+    lookup = re.fullmatch(rb"PROOF ([0-9a-f]{32})\n", line)
+    if ingress and (auto or lookup):
+        validate_scope(host)
+        rid = (auto[2] if auto else lookup[1]).decode()
+        proof = ingress.receipt(rid)
+        if proof is None:
+            return
+        if lookup:
+            conn.sendall(json.dumps(proof).encode())
+            return
+        expected = b"CANARY_HYBRID" if proof["application_denied"] else b"CANARY_RULE"
+        if auto[1] != expected:
+            return
+    elif not re.fullmatch(rb"(?:STATUS|BLOCK 10\.254\.56\.2 [1-9][0-9]{0,2}|UNBLOCK 10\.254\.56\.2)\n", line):
         return
-    validate_scope(host)
+    else:
+        validate_scope(host)
     parts = bytes(line).decode().split()
     original = json.loads(run("nft", "-j", "list", "set", *SET))
     contents = next(item["set"] for item in original["nftables"] if "set" in item)
@@ -63,18 +78,27 @@ def respond(conn, uid, host, authorize_block):
     if any((item if isinstance(item, str) else item.get("elem", {}).get("val")) != PEER
            for item in entries):
         raise RuntimeError("Unexpected lease target")
-    if parts[0] == "BLOCK":
-        seconds = int(parts[2])
+    changed = False
+    if parts[0] in ("BLOCK", "APPLY"):
+        seconds = int(parts[-1])
         if not authorize_block() or not 1 <= seconds <= 300:
+            return
+        if proof and (entries or ingress.receipt(proof["request_id"]) != proof):
             return
         if not entries:
             run("nft", "add", "element", *SET, "{", PEER, "timeout", f"{seconds}s", "}")
+            changed = True
     elif parts[0] == "UNBLOCK" and entries:
         run("nft", "delete", "element", *SET, "{", PEER, "}")
-    conn.sendall(run("nft", "-j", "list", "set", *SET).encode())
+    try:
+        conn.sendall(run("nft", "-j", "list", "set", *SET).encode())
+    except (OSError, sp.SubprocessError):
+        if changed:
+            run("nft", "delete", "element", *SET, "{", PEER, "}")
+        raise
 
 
-def serve(listener, uid, host, authorize_block, stop):
+def serve(listener, uid, host, authorize_block, stop, ingress=None):
     listener.settimeout(.2)
     while not stop.is_set():
         try:
@@ -83,7 +107,7 @@ def serve(listener, uid, host, authorize_block, stop):
             continue
         with conn:
             try:
-                respond(conn, uid, host, authorize_block)
+                respond(conn, uid, host, authorize_block, ingress)
             except (OSError, RuntimeError, ValueError, sp.SubprocessError):
                 # An empty response is a denial to the caller.
                 print("Actuator refused a request or lost readback", file=sys.stderr, flush=True)
@@ -175,6 +199,11 @@ def main(root, pg, host, *, browser_check=None, ingress=None):
         assert capability_dir.st_uid == 0 and capability_dir.st_mode & 0o022 == 0
         (CAPABILITY / "host-netns").write_text(str(host) + "\n")
         (CAPABILITY / "host-netns").chmod(0o644)
+        canary = ingress if ingress and ingress.canary else None
+        if canary:
+            approval = CAPABILITY / "ingress-canary"
+            approval.write_text("R61-v1\n")
+            approval.chmod(0o644)
         sock = cleanup.enter_context(socket.socket(socket.AF_UNIX))
         socket_path = CAPABILITY / "actuator.sock"
         sock.bind(str(socket_path))
@@ -182,7 +211,7 @@ def main(root, pg, host, *, browser_check=None, ingress=None):
         socket_path.chmod(0o660)
         sock.listen(8)
         stopped = Event()
-        thread = Thread(target=serve, args=(sock, actor.pw_uid, host, authorize_block, stopped), daemon=True)
+        thread = Thread(target=serve, args=(sock, actor.pw_uid, host, authorize_block, stopped, canary), daemon=True)
         thread.start()
         cleanup.callback(thread.join, 4)
         cleanup.callback(stopped.set)
@@ -214,6 +243,7 @@ def main(root, pg, host, *, browser_check=None, ingress=None):
         (root / "pbl4.rules").write_text(
             'alert http any any -> $HOME_NET $HTTP_PORTS (msg:"R56 benign rule marker"; '
             'flow:established,to_server; http.uri; content:"/r56-health"; startswith; endswith; sid:156001; rev:1;)\n'
+            + (canary.sensor_rules() if canary else "")
         )
         with (root / "sensor.log").open("w") as log:
             start(["suricata", "-c", str(config), f"--af-packet={interface}", "--runmode", "single"],
@@ -233,6 +263,9 @@ def main(root, pg, host, *, browser_check=None, ingress=None):
             # backend EVE directly for the lab proof. The manual API has no feed
             # from that sensor and cannot promote its addresses into targets.
             env["SURICATA_EVE_PATH"] = str(root / "manual-eve.json")
+        if canary:
+            env["WS_C2_INGRESS_CANARY"] = "1"
+            env["COLLECT_ALL_EVENTS"] = "true"
 
         def launch():
             child, stop = start(["runuser", "-u", actor.pw_name, "--",
