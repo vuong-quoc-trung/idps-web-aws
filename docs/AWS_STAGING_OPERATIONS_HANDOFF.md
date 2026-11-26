@@ -367,3 +367,16 @@ sudo python3 -B /opt/websentinel-r48/runtime/r51.py rollback
 ```
 
 Lệnh xác minh SHA backup rồi khôi phục gateway, Security UI/binary và runtime pin của scorer về R50. NGINX reload và Security, scorer, correlator restart. Phiên đăng nhập Security cần được tạo lại sau restart. Gmail, DB và Student Web dùng cấu hình hiện có. [Cập nhật R51](../security-web/deploy/aws-r48/r51.py)
+
+## 14. R52 — Catalog observation và Student UI
+
+Các GET detail theo ID số và phân trang số của Khoa, Ngành, Chương trình và Lớp có signed observation. Tra API thật bằng request ID trong [nghiệm thu R52](138_T09_R52_FINAL_FUNCTIONAL_CLOSURE.md). Quan sát direct vẫn giữ cho đường có query tự do và nghiệp vụ nhạy cảm.
+
+Rollback độc lập qua SSM đúng EC2 staging:
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/r52.py rollback
+sudo python3 -B /opt/websentinel-r48/runtime/r52_student_ui.py rollback
+```
+
+Lệnh gateway xác minh backup và khôi phục NGINX/correlator R51. Lệnh Student UI khôi phục index để tải lại build cũ. Assets có hash của hai build được giữ để trình duyệt đang hoạt động tải nốt phiên hiện tại. Các lệnh đọc health sau rollback và giữ database/Gmail.
