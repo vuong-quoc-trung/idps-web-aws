@@ -1,6 +1,6 @@
 # AWS staging — Vận hành và bàn giao
 
-[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình nền, cách truy cập và rollback. [Nghiệm thu R50](136_T09_R50_FINAL_PROJECT_ACCEPTANCE.md) ghi luồng email, phạm vi quan sát đang phục vụ và request IDs để tra cứu.
+[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình nền, cách truy cập và rollback. [Nghiệm thu R51](137_T09_R51_FINAL_COMPLETION.md) ghi luồng giám sát và hướng dẫn demo. [Nghiệm thu R50](136_T09_R50_FINAL_PROJECT_ACCEPTANCE.md) ghi bằng chứng email.
 
 Bắt đầu với [kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) và [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
 
@@ -353,3 +353,17 @@ sudo python3 -B /opt/websentinel-r48/runtime/mail_config.py rollback
 ```
 
 Rollback gateway phục hồi cấu hình R49 và restart correlator. Rollback mail phục hồi file Student trước R50, tắt email theo baseline và restart Java. Sau mỗi rollback, kiểm tra HTTPS và unit health. Backup root-only có manifest SHA và bản logical dump. [Bằng chứng AWS R50](136_T09_R50_FINAL_PROJECT_ACCEPTANCE.md#evidence-theo-trusted-request-id)
+
+## 13. R51 — Giám sát và demo
+
+Qua session Security Web đã xác thực, dùng `/api/ready/monitoring` để kiểm DB và watcher. `/api/ready` vẫn kiểm toàn bộ profile có firewall. Trong chế độ observation, màn hình trạng thái hiển thị Prevention `DISABLED` và giữ lỗi readback `ACTUATOR_OFFLINE` ở dòng Firewall. Một source missing hoặc late thuộc evidence của request và cần tra theo request ID. [Nghiệm thu R51](137_T09_R51_FINAL_COMPLETION.md)
+
+Mục **AI Shadow → R51 · Demo fixture từ lab cô lập** phát lại bằng chứng rule, correlation và incident từ bài test PostgreSQL. Dùng một request ID AWS trong báo cáo để tra live. SSE của live và snapshot lab được kiểm qua hai luồng riêng.
+
+Rollback R51 trên đúng EC2 thông qua SSM:
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/r51.py rollback
+```
+
+Lệnh xác minh SHA backup rồi khôi phục gateway, Security UI/binary và runtime pin của scorer về R50. NGINX reload và Security, scorer, correlator restart. Phiên đăng nhập Security cần được tạo lại sau restart. Gmail, DB và Student Web dùng cấu hình hiện có. [Cập nhật R51](../security-web/deploy/aws-r48/r51.py)
