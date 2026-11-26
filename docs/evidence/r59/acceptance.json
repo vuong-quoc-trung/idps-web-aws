@@ -1,0 +1,170 @@
+{
+  "result": "PARTIAL",
+  "scope": "AWS_STAGING",
+  "region": "ap-southeast-1",
+  "https": {
+    "websentinal.duckdns.org": {
+      "http_status": 200,
+      "tls_verify": 0
+    },
+    "student-dut.duckdns.org": {
+      "http_status": 200,
+      "tls_verify": 0
+    }
+  },
+  "ec2": {
+    "state": "running",
+    "status": {
+      "system": "ok",
+      "instance": "ok",
+      "storage": "ok"
+    }
+  },
+  "ec2_ingress": [
+    {
+      "Protocol": "tcp",
+      "From": 80,
+      "To": 80,
+      "AnyIPv4": true,
+      "AnyIPv6": false
+    },
+    {
+      "Protocol": "tcp",
+      "From": 443,
+      "To": 443,
+      "AnyIPv4": true,
+      "AnyIPv6": false
+    }
+  ],
+  "before": {
+    "checked_at": "2026-11-26T15:59:20.369909+00:00",
+    "configuration": {
+      "AUTO_BLOCK": "false",
+      "ENFORCEMENT_MODE": "OFF",
+      "SURICATA_CAPTURE_MODE": "post-proxy",
+      "SURICATA_POST_PROXY_INTERFACE": "lo",
+      "WS_NATIVE_FIREWALL_SOCKET": null
+    },
+    "frontend_index_sha256": "876b73f3eafcb3811ca7f2f5a6abc8975c35194ddb023b9f5bdd35c715364e38",
+    "kernel_readback": {
+      "native_lab_table_present": false,
+      "r56_lab_table_present": false,
+      "readable": true,
+      "table_count": 0
+    },
+    "lab_runtime_present": false,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "native_local_policy_file_present": false,
+    "native_status_socket_present": false,
+    "request": {
+      "active_database_leases": 0,
+      "ai": "SCORED",
+      "ai_proof_ms": 4.091487,
+      "ai_threshold": 0.7664756774902344,
+      "automatic_block": false,
+      "correlation": "MATCHED",
+      "edge_audit_agree": true,
+      "edge_ip_present": true,
+      "hybrid": "LOG_ONLY",
+      "incidents": 1,
+      "late": false,
+      "model": "r37-hgb-uri100-v1",
+      "pending_actions": 0,
+      "request_id": "1cbf5fcc75bd154ab78f4c605736d5ab",
+      "sensor_transaction_on_loopback": true,
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "total_actions": 0,
+      "trusted_hybrid_target": false
+    },
+    "rollback_backup_manifest_sha256": "a183a10503f6d963e183934f4c0dd3ee09655b9f6133163e76be1b9532091d04",
+    "security_binary_sha256": "28a22a7a3521c6cba82dee2736ad902cb0a06700c3ed6b6e108b2f69b1ae5797",
+    "services": {
+      "nginx.service": "active",
+      "postgresql@18-main.service": "active",
+      "websentinel-r47-scorer.service": "active",
+      "websentinel-r47-security.service": "active",
+      "websentinel-r47-student.service": "active",
+      "websentinel-r48-correlator.service": "active",
+      "websentinel-r48-sensor.service": "active"
+    }
+  },
+  "after": {
+    "checked_at": "2026-11-26T16:03:07.920157+00:00",
+    "configuration": {
+      "AUTO_BLOCK": "false",
+      "ENFORCEMENT_MODE": "OFF",
+      "SURICATA_CAPTURE_MODE": "post-proxy",
+      "SURICATA_POST_PROXY_INTERFACE": "lo",
+      "WS_NATIVE_FIREWALL_SOCKET": null
+    },
+    "frontend_index_sha256": "876b73f3eafcb3811ca7f2f5a6abc8975c35194ddb023b9f5bdd35c715364e38",
+    "kernel_readback": {
+      "native_lab_table_present": false,
+      "r56_lab_table_present": false,
+      "readable": true,
+      "table_count": 0
+    },
+    "lab_runtime_present": false,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "native_local_policy_file_present": false,
+    "native_status_socket_present": false,
+    "request": {
+      "active_database_leases": 0,
+      "ai": "SCORED",
+      "ai_proof_ms": 2.335223,
+      "ai_threshold": 0.7664756774902344,
+      "automatic_block": false,
+      "correlation": "MATCHED",
+      "edge_audit_agree": true,
+      "edge_ip_present": true,
+      "hybrid": "LOG_ONLY",
+      "hybrid_advisory_reason": true,
+      "incidents": 1,
+      "late": false,
+      "model": "r37-hgb-uri100-v1",
+      "pending_actions": 0,
+      "request_id": "9196ad0d4b696cfaf877c73f56032c2d",
+      "sensor_transaction_on_loopback": true,
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "total_actions": 0,
+      "trusted_hybrid_target": false
+    },
+    "rollback_backup_manifest_sha256": "a183a10503f6d963e183934f4c0dd3ee09655b9f6133163e76be1b9532091d04",
+    "security_binary_sha256": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c",
+    "services": {
+      "nginx.service": "active",
+      "postgresql@18-main.service": "active",
+      "websentinel-r47-scorer.service": "active",
+      "websentinel-r47-security.service": "active",
+      "websentinel-r47-student.service": "active",
+      "websentinel-r48-correlator.service": "active",
+      "websentinel-r48-sensor.service": "active"
+    }
+  },
+  "deployment": {
+    "serving_sha": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c",
+    "index_sha": "876b73f3eafcb3811ca7f2f5a6abc8975c35194ddb023b9f5bdd35c715364e38",
+    "backup_sha": "16b5fb6e1c64806c4fa045cd9300d128f8ee5e9ed20ad84dbc3135ea9531ce89",
+    "bundle_sha256": "0fee37d4d4f6bafcb223be8d0d564863b59a5acec0e588c5f88eaf5795a1b27a",
+    "backup_verified": true,
+    "cleanup": "PASS"
+  },
+  "test_executions": {
+    "targeted_default": 18,
+    "isolated_c2": 4,
+    "default_queue_final": 4
+  },
+  "manual_prevention": "R58_ISOLATED_BROWSER_PASS_INHERITED",
+  "public_actuator": "BLOCKED_NO_PUBLIC_CAPABILITY",
+  "public_enforcement": "OFF",
+  "ai_autoban": "OFF",
+  "independent_ai_release": "BLOCKED_NO_ELIGIBLE_NATIVE_COHORT"
+}

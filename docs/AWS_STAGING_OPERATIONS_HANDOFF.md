@@ -486,3 +486,22 @@ Sau rollback, xác minh HTTPS hai hostname, trang AI, trạng thái SSE, model S
 và trạng thái thực thi. Public firewall enforcement và AI auto-ban vẫn tắt.
 Đối soát khả năng chặn công khai cần thiết kế và phê duyệt riêng cho nguồn IP,
 phạm vi và khôi phục. [Báo cáo R58](144_T09_R58_FINAL_PROJECT_COMPLETION.md)
+
+## 21. R59 — Giám sát và điều kiện Prevention
+
+Bản R59 thêm guard ở lúc lưu tác vụ và trước lúc thực thi. Giữ chế độ
+`ENFORCEMENT_MODE=OFF` và `AUTO_BLOCK=false` cho public. Một request khớp
+NSA trên loopback đủ làm bằng chứng tương quan. Để xác minh danh tính
+cưỡng chế cần chứng minh peer TCP tại chính điểm kernel áp dụng lease.
+Không dùng table, socket hoặc capability dành cho lab trên host public.
+
+Qua SSM, bản vá có thể quay lại binary R58 đã xác minh.
+
+```sh
+cd /opt/websentinel-r48/runtime
+sudo -n python3 -B r59_deploy.py rollback
+```
+
+Sau rollback kiểm HTTPS hai hostname, health Security Web, model SHA,
+trạng thái public OFF và đối chiếu một request lành tính. Giữ nguyên
+database và các bản backup. [Nghiệm thu và các gate R59](145_T09_R59_FINAL_PROJECT_COMPLETION.md)
