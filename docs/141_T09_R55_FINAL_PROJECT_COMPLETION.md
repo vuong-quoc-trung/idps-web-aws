@@ -1,0 +1,27 @@
+# R55 — Nghiệm thu Dashboard AWS và dữ liệu trình diễn
+
+**R55_FINAL_COMPLETION = PARTIAL.** Dashboard và Security API R55 đang chạy trên AWS staging. Dữ liệu trình diễn đã nhập PostgreSQL và được xác minh trên Student Web. Luồng ghi từ API sang kernel vẫn bị khóa C2.
+
+| Hạng mục | Kết quả và bằng chứng |
+|---|---|
+| Source sync | PASS. HEAD đồng nghiệp `798e66a462dd29426772146bff7c02ad6acead1f` đã là ancestor của nhánh tích hợp. Hai checkout khác được giữ nguyên. |
+| AWS configuration và service health | PASS AWS theo mẫu. Profile `WS_OPERATIONS_PROFILE=aws-staging` đọc NGINX, Student Web, PostgreSQL, Suricata, correlator và R37 từ các unit đang phục vụ. Student Audit dùng tệp trên EC2. Hybrid hiển thị lần refresh thành công gần nhất. Watcher giữ mốc đọc từng nguồn. Bảy unit AWS active, năm cgroup không ghi nhận OOM kill. |
+| Dashboard network metrics | PASS AWS qua API và Firefox. Kernel chọn tuyến IPv4 mặc định đi qua `enp39s0`. Mẫu lúc chạy lab ghi RX 4.284 B/s, TX 13.571 B/s, CPU 87,5%, RAM 23%, đĩa khả dụng 36,53 GB trên tổng 40,42 GB. CPU là chênh lệch giữa hai mẫu `/proc/stat`. RX/TX là lưu lượng EC2 của interface đã chọn. |
+| UI cleanup | PASS AWS theo mẫu. Gỡ thông báo `ATTACKER_IFACE`, interface `vmnet2` và đường truyền RELP khỏi màn hình AWS. Duy trì trạng thái firewall offline, OFF và thông tin watcher. Đường cấu hình Local dùng profile cũ. |
+| Request coverage | PARTIAL. Giữ phân nhóm 89 cặp method/route và phạm vi signed R54, gồm danh tính, đọc danh mục và endpoint completion. Hồ sơ, thông tin liên hệ, quản trị tài khoản và khôi phục mật khẩu giữ direct. Suricata/R37 chỉ nhận request đủ điều kiện quan sát. [Bảng bao phủ R54](140_T09_R54_FINAL_SYSTEM_COMPLETION.md#prevention-hybrid-và-phạm-vi-quan-sát) |
+| Correlator và Hybrid | PASS AWS theo mẫu. Request `943dcc184ac6268522d4f640bbeaf2d1` có `MATCHED` từ NGINX, Student Audit và Suricata, `late=false`, R37 `SCORED`, Hybrid `LOG_ONLY`. Firefox tra đúng request và SSE `Đã kết nối`. |
+| Multi-source alerts | PASS AWS cô lập cho kết hợp bằng chứng. Request `1e88fc9bd2cfcd4870ea480276a25aaa` có Suricata marker thực và hai cảnh báo fixture NGINX/Student Audit. Sau replay vẫn đúng ba cảnh báo, hai SSE mới và một incident. Policy chuyển từ `ALERT` risk 45 sang `REVIEW` risk 90. R37 `LOG_ONLY` và số firewall action bằng 0. Hai nguồn fixture chỉ xác minh aggregation, dedup và SSE. |
+| Manual Prevention / C2 | BLOCKED luồng Dashboard → API → kernel. AWS cô lập kiểm POST Block và DELETE Unblock, cả hai nhận 401 khi chưa đăng nhập, 403 với viewer và 400 `C2_EXECUTION_DISABLED` với admin. Admin đọc proposal được và viewer nhận 403. Kiểm thử Block/Unblock/TTL tại kernel của R53 vẫn là bằng chứng riêng. |
+| Rule-based Prevention | PASS AWS cô lập tới Hybrid `REVIEW`. Thực thi BLOCKED. C2 hiện hành luôn đóng. API legacy cần capability thực thi và actuator native yêu cầu direct peer đã duyệt, binding listener/interface và readback. EC2 hiện dùng sensor sau proxy cho correlation, thiếu binding thực thi native. |
+| Public enforcement / AI | OFF / Advisory. Socket native không tồn tại trên serving, 0 bản ghi firewall action. SHA R37 `91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff` giữ nguyên, cùng threshold, scoring, policy và R36 rollback. |
+| Student Web | PASS AWS theo mẫu Firefox. Tìm `DEMO-R55-001`, mở hồ sơ và kiểm thông tin liên hệ khẩn cấp. Màn hình quản trị hiển thị tài khoản mẫu `Đã tắt`. Các thao tác ghi đã nghiệm thu ở R54. |
+| Giảng viên | NOT SUPPORTED. Schema hiện có `ADMIN`, `STAFF` và `STUDENT`. Chưa có bảng giảng viên hay quan hệ giảng dạy. Giữ tài khoản STAFF theo đúng vai trò nghiệp vụ hiện tại. |
+
+## Dữ liệu và vận hành
+
+- `SQL_IMPORT = PASS AWS`. Seed `020` sinh 52 hồ sơ giả lập phân vào 3 lớp, 52 tài khoản tắt và 52 liên hệ khẩn cấp. Email dùng `example.invalid`, số thử thuộc dải dành cho ví dụ. Hồ sơ thiếu trường xác minh giữ `INCOMPLETE`. Lượt diễn tập trên PostgreSQL tạm thêm 52/52/52, chạy lại thêm 0/0/0. PostgreSQL staging tăng **3 → 55 sinh viên**, **4 → 56 tài khoản**, không có sai lệch lớp/ngành/chương trình trong cohort. Số liệu danh mục R54 giữ nguyên. [Seed SQL](../student-web/backend/docs/sql/020_seed_r55_demo_students.sql)
+- `AWS_DEPLOYMENT = PASS`. Unit `websentinel-r55-deploy.service` exit 0. Binary SHA `96681283805c457ec7ab02278deefc419897d871659c2cceb405536373b8f960`, Security index SHA `5f5f27726dd427afb5dc80f8aeb1b5bec91d16471d16a5b6142f37d404f6e5d7`. Ba file env, NGINX và model kiểm byte/SHA sau deployment.
+- Backup `/var/backups/websentinel-r55` gồm hai PostgreSQL logical dump, cấu hình và active release. SHA manifest `d98c9871c275ffb002ef685f4d0db112cd2b91fa93b1b925417f1e8df177b0af`. Rollback ứng dụng khôi phục binary, index R54 và gỡ riêng drop-in profile R55. [Runbook](AWS_STAGING_OPERATIONS_HANDOFF.md#17-r55--dashboard-aws-và-dữ-liệu-trình-diễn)
+- `websentinel-r55-runtime-lab.service`, invocation `d7cfa0f1f6734815a3bd36d29ac0792b`, exit 0, peak 521,9 MiB. Lab có namespace riêng và PostgreSQL tạm, cleanup đã đọc lại. Build Rust và frontend PASS. 19 test frontend, 4 test resource metrics/readiness và 6 test correlator PASS. EC2 tiếp tục RUNNING, status checks 3/3.
+
+`GIT_PUSH`: các commit R55 nằm trên nhánh tích hợp `feature/ai-idps-https-ml-integration`. Hạng mục còn mở là capability C2 cho luồng quản trị cô lập, gắn direct peer và đối soát DB/audit/kernel cùng TTL/rollback. Native alert dương tính của cả ba detector trên cùng request vẫn chưa được chứng minh. [Nghiệm thu R54](140_T09_R54_FINAL_SYSTEM_COMPLETION.md)

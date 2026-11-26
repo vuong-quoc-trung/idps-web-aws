@@ -401,6 +401,18 @@ Backup root-only chứa cả hai database dump. Import đã commit độc lập 
 
 Public Prevention và AI auto-ban ở OFF. Nếu MANUAL được cấu hình khi C2 vẫn đóng, trạng thái Prevention là `BLOCKED` dù monitor đã sẵn sàng. Kiểm readiness, danh tính direct peer và phạm vi actuator độc lập trước khi đánh giá thực thi.
 
+## 17. R55 — Dashboard AWS và dữ liệu trình diễn
+
+Security Web dùng systemd drop-in `55-operations-profile.conf` để chọn `aws-staging`. Dashboard đọc trạng thái unit AWS và bộ đếm của interface IPv4 có tuyến mặc định. Student Audit dùng file trên cùng EC2. Vào **Trạng thái hệ thống** để xem CPU, RAM, đĩa, RX/TX, watcher và Prevention. Trên Student Web, tìm `DEMO-R55-001` để mở hồ sơ và liên hệ mẫu. [Bằng chứng R55](141_T09_R55_FINAL_PROJECT_COMPLETION.md)
+
+Qua SSM trên đúng staging EC2, khôi phục ứng dụng về bản R54 bằng:
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/r55.py rollback
+```
+
+Runner kiểm SHA backup `/var/backups/websentinel-r55`, khôi phục binary và index Security, gỡ đúng drop-in R55 rồi xác minh health sau restart. Dữ liệu demo có khóa `DEMO-R55-001` đến `DEMO-R55-052` và tài khoản tắt. Rollback ứng dụng giữ các bản ghi này. Nếu cần đảo phần import, đối chiếu identity và dependency trên DB tạm từ backup rồi thực hiện riêng trong cửa sổ bảo trì.
+
 Harness runtime nhận ba đối số gồm thư mục staging tạm, thư mục PostgreSQL mới do `postgres` sở hữu, và network namespace ID của host. Chạy qua SSM trong một unit duy nhất với `PrivateNetwork=yes`, thời hạn 150 s, `CPUQuota=160%`, `MemoryMax=1536M`, `TasksMax=125` và `PYTHONPATH=/opt/websentinel-r48/runtime`. Nó kiểm namespace riêng và một interface loopback trước khi tạo DB. Lấy output chứa request ID, SID, Hybrid, score, SSE và kết quả triage. Dọn hai thư mục tạm do mình tạo sau khi unit thoát. [Harness](../security-web/deploy/aws-r48/r53_runtime_lab.py)
 
 Harness actuator yêu cầu hai namespace tách biệt và chạy các probe kết nối trên veth lab. Chế độ `--private-systemd-unit` xác minh cgroup riêng, `PrivateNetwork=yes`, namespace khác PID 1, loopback ban đầu và kernel table rỗng. Chạy thử firewall bằng chính actuator thủ công đã có. Cổng C2 của Rust và cấu hình serving vẫn giữ khóa. [Actuator acceptance](../security-web/deploy/local-r38/firewall_acceptance.py)
