@@ -505,3 +505,29 @@ sudo -n python3 -B r59_deploy.py rollback
 Sau rollback kiểm HTTPS hai hostname, health Security Web, model SHA,
 trạng thái public OFF và đối chiếu một request lành tính. Giữ nguyên
 database và các bản backup. [Nghiệm thu và các gate R59](145_T09_R59_FINAL_PROJECT_COMPLETION.md)
+
+## 22. R60 — Xác minh ingress TLS cho Prevention
+
+R60 thử bằng veth và namespace riêng trên EC2 hiện có. Trong profile
+lab, BLOCK đòi hỏi socket NGINX còn tồn tại và proof đúng tuple TCP,
+được đối chiếu với HTTP trên backend. API manual, actuator và DB lab
+có vòng đời riêng. Dashboard public tiếp tục đọc trạng thái OFF của
+runtime hiện hành. [Nghiệm thu R60](146_T09_R60_FINAL_PROJECT_COMPLETION.md)
+
+Runner nhận bundle cùng SHA-256 và kiểm digest từng binary trước khi
+boot unit. Đóng gói `baseline.sha256`, `lab.sha256`, `lab.zst` là delta
+zstd từ binary serving tương ứng, cùng `r53_runtime_lab.py`,
+`r56_prevention_lab.py` và `r60_ingress.py`. Build bản lab với Cargo
+feature `isolated-c2`. Chạy script qua phiên SSM trên đúng host staging
+theo runbook. `websentinel-r56-prevention.service` phải rảnh và
+`/run/websentinel-r56-lab` phải chưa tồn tại. [Runner và giới hạn](../security-web/deploy/aws-r48/r60_stage.sh)
+
+```bash
+sudo -n bash r60_stage.sh /absolute/path/bundle.tgz <bundle-sha256>
+```
+
+Không dùng attestation thử nghiệm để cấp quyền chặn công khai. Khi
+xem xét public, kiểm tra riêng quyền quản trị, attestation phát từ
+đúng worker ingress, nhiều client dùng chung IP, phạm vi nftables,
+readback và rollback. Giữ AI ở Advisory đến khi có đánh giá độc lập
+thỏa T07.

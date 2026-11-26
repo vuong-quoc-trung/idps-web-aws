@@ -1,0 +1,167 @@
+{
+  "result": "PARTIAL",
+  "instance": "i-0b6f2e4f3ed32f514",
+  "region": "ap-southeast-1",
+  "scope": "PRIVATE_NETWORK_NAMESPACE_ON_EXISTING_AWS_STAGING",
+  "git_base": "c4cde1c47bcf37001b53a8a5b065dfea0799e8a1",
+  "code_commit": "38d82424e74d50d44d092b52bb1ff5aab7722f62",
+  "bundle_sha256": "37a5e68c5191a78c6076caa7913d4b6eaee94e5e270c806188bc2aab8050ea57",
+  "lab_binary_sha256": "5bb288811431f6a2c75ce6a60ca511559c8c9c2a5606c4f06663124389498f54",
+  "source_sha256": {
+    "r53_runtime_lab.py": "6460ba9a4b49141593c0ea839dc77d2ae80993dca6017df7764bbc8b2b08ccd1",
+    "r56_prevention_lab.py": "36f3361c854f59ac3cb1beee4a39993c9e17516aafc17583a8acf15ade627194",
+    "r60_ingress.py": "0333736e25b8e87a1c7d0a2bb86424e1bea148b9717ed2784872252fc1e91515",
+    "r60_stage.sh": "90fde056a14d63d786d746c5cc1fa7c4e76805342426a13ea0bd8de22e8fa0a3",
+    "test_r60_ingress.py": "961e50a4cd7ca75d836ea50e3a3763cafe00d4555abf09017f2decc2c81ee9eb"
+  },
+  "lab": {
+    "proofs": [
+      {
+        "request_id": "340ebb4332ceab979ecc47efc32d0b7d",
+        "status": 204,
+        "local": [
+          "10.254.56.1",
+          18456
+        ],
+        "peer": [
+          "10.254.56.2",
+          47060
+        ],
+        "socket_inode": 722990,
+        "backend": [
+          "127.77.0.1",
+          52926
+        ],
+        "suricata_flow": 837539597293324,
+        "suricata_tx": 0,
+        "rule_sid": 156001
+      },
+      {
+        "request_id": "0ec2e849c54149d5ac58ccca2a1633e3",
+        "status": 204,
+        "local": [
+          "10.254.56.1",
+          18456
+        ],
+        "peer": [
+          "10.254.56.2",
+          35010
+        ],
+        "socket_inode": 723335,
+        "backend": [
+          "127.77.0.1",
+          34232
+        ],
+        "suricata_flow": 1549408308218594,
+        "suricata_tx": 0,
+        "rule_sid": 156001
+      }
+    ],
+    "lab_namespace": "net:[4026532598]",
+    "unit": "websentinel-r56-prevention.service",
+    "proof_max_age_s": 10,
+    "manual_block": 2,
+    "manual_unblock": 3,
+    "ttl": 4,
+    "ttl_seconds": 6,
+    "restart": "PASS",
+    "db_kernel": "SYNCED_EMPTY",
+    "audit": "3 SUCCESS, 1 ERROR",
+    "rbac": [
+      401,
+      403
+    ],
+    "protected_scope": "PASS",
+    "forwarded_header_ignored": true,
+    "unproven_peer_refused": 1,
+    "nginx_tls": true,
+    "suricata_capture": "AF_PACKET post-proxy loopback; observer readback only",
+    "application": "isolated HTTP probe, independent from public Student Web",
+    "kernel_drop_counter_nonzero": true,
+    "negative_scope": "server IP rejected (HTTP 400)",
+    "network_scope": {
+      "interface": "r56-edge",
+      "protocol": "tcp",
+      "port": 18456,
+      "default_route": false
+    },
+    "cleanup": "PASS",
+    "offline_actuator_refused": true,
+    "runtime": {
+      "invocation": "07f22fa6801b4c00aaa645714b5f2459",
+      "exit_code": 0,
+      "wall_seconds": 79.435,
+      "cpu_seconds": 2.412,
+      "memory_peak_mib": 168.6,
+      "cpu_quota_percent": 100,
+      "memory_limit_mib": 512,
+      "tasks_limit": 80
+    }
+  },
+  "setup_retries": [
+    {
+      "invocation": "db05144b6a0b460e90a9a8cb8391157f",
+      "error": "R53 helper absent from bundle"
+    },
+    {
+      "invocation": "e4c67dc8a084435bbbc477f1a31ccb82",
+      "error": "Rust post-proxy ingestion refused with MANUAL mode",
+      "kernel_cleanup": "PASS"
+    },
+    {
+      "invocation": "380578762e6e4e098fd877ebdaf1c10b",
+      "error": "Existing per-target cooldown counts failed BLOCK",
+      "kernel_cleanup": "PASS"
+    }
+  ],
+  "regression": {
+    "python_passed": 9,
+    "bash_syntax": "PASS",
+    "isolated_c2_build": "PASS"
+  },
+  "aws_after": {
+    "auto_block": false,
+    "checked_at": "2026-11-26T16:24:09.860012+00:00",
+    "enforcement_mode": "OFF",
+    "kernel_tables": [],
+    "lab_cgroup_present": false,
+    "lab_runtime_present": false,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "native_policy_present": false,
+    "native_status_socket_present": false,
+    "public_db_firewall": "0|0",
+    "scratch_directories": [],
+    "security_binary_sha256": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c",
+    "services": {
+      "nginx.service": "active",
+      "postgresql@18-main.service": "active",
+      "websentinel-r47-scorer.service": "active",
+      "websentinel-r47-security.service": "active",
+      "websentinel-r47-student.service": "active",
+      "websentinel-r48-correlator.service": "active",
+      "websentinel-r48-sensor.service": "active"
+    },
+    "instance_state": "running",
+    "instance_status": {
+      "system": "ok",
+      "instance": "ok",
+      "attached_ebs": "ok"
+    },
+    "https": {
+      "student": {
+        "http": 200,
+        "tls_verify": 0
+      },
+      "security": {
+        "http": 200,
+        "tls_verify": 0
+      }
+    }
+  },
+  "blocked": {
+    "rule_based_auto": "No C2 automatic authorization; the lab rule emitted a native alert only",
+    "hybrid_adaptive": "No trusted Rust proof ingestion or automatic capability; advisory retained",
+    "public_enforcement": "No production proof and approval for a deployment scope",
+    "ai_quality": "No eligible independent native two-class T07 evaluation cohort"
+  }
+}
