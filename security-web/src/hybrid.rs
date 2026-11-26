@@ -179,12 +179,14 @@ async fn refresh(
     config: &Config,
     #[cfg(feature = "dev-hybrid-review")] review: Option<&hybrid_review::Policy>,
 ) -> Result<()> {
+    let use_legacy = !operations::aws_staging();
     let rows: Vec<Value> = sqlx::query_scalar(include_str!("detector_view.sql"))
         .bind(None::<String>)
         .bind(128_i64)
+        .bind(use_legacy)
         .fetch_all(&state.pool)
         .await?;
-    let worker:bool=sqlx::query_scalar("SELECT COALESCE((SELECT received_at>now()-interval '10 seconds' AND observed_at>now()-interval '10 seconds' AND report->>'status'='READY' FROM ai_shadow_worker WHERE singleton),false)").fetch_one(&state.pool).await?;
+    let worker = use_legacy && sqlx::query_scalar::<_, bool>("SELECT COALESCE((SELECT received_at>now()-interval '10 seconds' AND observed_at>now()-interval '10 seconds' AND report->>'status'='READY' FROM ai_shadow_worker WHERE singleton),false)").fetch_one(&state.pool).await?;
     #[cfg(feature = "dev-hybrid-review")]
     let app = if review.is_some() {
         let ids: Vec<_> = rows

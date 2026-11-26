@@ -37,20 +37,20 @@ export async function lookupHybrid(
   return {
     fields: [
       ["Request ID", incident.request_id],
-      ["Model", research?.model_id ?? "—"],
-      ["Trạng thái", research?.status ?? "Chưa có bằng chứng HTTPS scorer"],
+      ["Mô hình", research?.model_id ?? "—"],
+      ["Trạng thái", research?.status ?? "Chưa có kết quả AI"],
       [
-        "AI Score",
+        "Điểm bất thường",
         research?.status === "SCORED"
           ? (research.score?.toFixed(6) ?? "—")
           : "—",
       ],
-      ["Threshold", research?.threshold?.toString() ?? "—"],
-      ["Hybrid Policy", incident.policy_action],
+      ["Ngưỡng", research?.threshold?.toString() ?? "—"],
+      ["Quyết định Hybrid", incident.policy_action],
       ["Điểm rủi ro", incident.final_risk?.toString() ?? "—"],
       ["Nguồn cảnh báo", incident.rule_sources?.join(", ") || "Chưa có"],
       ["Tương quan", incident.correlation_confidence ?? "—"],
-      ["automatic_block", String(incident.automatic_block)],
+      ["Chặn tự động", incident.automatic_block ? "Có" : "Không"],
     ],
     alertIds: [...new Set(incident.evidence_ids ?? [])]
       .filter((id) => /^alert:[1-9]\d*$/.test(id))

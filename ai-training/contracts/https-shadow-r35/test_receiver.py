@@ -49,6 +49,7 @@ def test_partial_worker_response_abstains_within_deadline(tmp_path):
     started = time.monotonic()
     try:
         assert scorer.score("GET", "/api/auth/me") is None
+        assert scorer.last_inference_error
         assert time.monotonic() - started < 1.5
     finally:
         scorer.close()

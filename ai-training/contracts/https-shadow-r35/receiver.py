@@ -101,6 +101,7 @@ class Scorer:
         raise ValueError("Scorer frame too large")
 
     def score(self, method, target):
+        self.last_inference_error = False
         try:
             if not self.worker or self.worker.poll() is not None:
                 self.close()
@@ -113,6 +114,8 @@ class Scorer:
                 )
             frame = dict(schema=SCHEMA, mode=MODE, method=method, target=target)
             row = self.exchange(json.dumps(frame).encode() + b"\n")
+            if not isinstance(row, dict):
+                raise ValueError("Expected a scorer result object")
             if row.get("status") == "ABSTAIN":
                 return None
             vector = row["features"]
@@ -136,6 +139,7 @@ class Scorer:
                 },
             )
         except (OSError, ValueError, KeyError, TypeError):
+            self.last_inference_error = True
             self.close()
             return None
 
@@ -190,7 +194,7 @@ class Handler(BaseHTTPRequestHandler):
             clock="EDGE_RECEIVER_SAME_KERNEL",
             availability=state,
             model_sha256=scorer.sha,
-            status="ABSTAIN",
+            status="INFERENCE_ERROR" if scorer.last_inference_error else "ABSTAIN",
             vector_sha256=None,
             label=None,
             hybrid_allowed=False,

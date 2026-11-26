@@ -82,6 +82,13 @@ def drain(db, stream, registry):
         obs = json.loads(data)
         identity = registry[obs["model_sha256"]]
         scored = obs["status"] == "SCORED" and obs["availability"] == "AVAILABLE" and not conflict
+        status = "ABSTAIN"
+        if conflict:
+            status = "CONFLICT"
+        elif scored:
+            status = "SCORED"
+        elif obs["status"] == "INFERENCE_ERROR":
+            status = "INFERENCE_ERROR"
         entry = dict(
             request_id=rid,
             version=identity["version"],
@@ -92,7 +99,7 @@ def drain(db, stream, registry):
             available_ns=obs["available_ns"],
             cutoff_ns=obs["cutoff_ns"],
             guard_ns=obs["guard_ns"],
-            status="CONFLICT" if conflict else ("SCORED" if scored else "ABSTAIN"),
+            status=status,
             score=obs["score"] if scored else None,
             threshold=identity["threshold"],
             enforcement=False,

@@ -35,7 +35,12 @@ pub struct Auth {
 impl Auth {
     pub fn from_env() -> anyhow::Result<Self> {
         let mut users = Vec::new();
-        for (prefix, role) in [("ADMIN", "admin"), ("VIEWER", "viewer")] {
+        let roles = if crate::operations::aws_staging() {
+            &[("ADMIN", "admin")][..]
+        } else {
+            &[("ADMIN", "admin"), ("VIEWER", "viewer")][..]
+        };
+        for &(prefix, role) in roles {
             let hash = std::env::var(format!("{prefix}_PASSWORD_HASH")).unwrap_or_default();
             if hash.is_empty() && role == "viewer" {
                 continue;

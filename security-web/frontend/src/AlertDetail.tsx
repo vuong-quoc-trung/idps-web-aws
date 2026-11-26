@@ -146,7 +146,7 @@ export function AlertDetail({
               "Thời gian": `${new Date(a.occurred_at).toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
               UTC: new Date(a.occurred_at).toISOString(),
               Nguồn: a.source,
-              "Lua Shadow (không xác minh IP)":
+              "Quan sát Lua (chưa xác minh IP)":
                 data.lua_shadow?.status ?? "Chưa có",
               "Mức độ": `Severity ${a.severity}`,
               "IP nguồn": sourceIpLabel(a),

@@ -43,6 +43,8 @@ pub struct CanonicalEvent {
     pub suricata_origin: Option<crate::suricata_origin::Origin>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub security: Option<SecuritySignals>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub ai_projection: bool,
     pub schema_version: String,
     pub event_id: String,
     pub source: String,
@@ -92,6 +94,7 @@ impl CanonicalEvent {
         Self {
             suricata_origin: None,
             security: None,
+            ai_projection: false,
             schema_version: SCHEMA_VERSION.into(),
             event_id: String::new(),
             source: source.into(),
@@ -475,6 +478,17 @@ pub fn parse_with_origin(
                 let stable = format!("r51-main-{id}");
                 if value["event_id"].as_str() == Some(stable.as_str()) {
                     event.event_id = stable;
+                    event.ai_projection = value["observation_leg"] == "signed"
+                        && value["dispatch"].as_str().is_some_and(|stamp| {
+                            stamp.split_once('.').is_some_and(|(seconds, millis)| {
+                                (1..=12).contains(&seconds.len())
+                                    && millis.len() == 3
+                                    && seconds
+                                        .bytes()
+                                        .chain(millis.bytes())
+                                        .all(|c| c.is_ascii_digit())
+                            })
+                        });
                 }
             }
             event.http_method = text(&value, "http_method");

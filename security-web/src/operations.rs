@@ -34,7 +34,11 @@ async fn aws_services() -> Value {
 async fn service(unit: &str) -> Value {
     let mut command = tokio::process::Command::new("systemctl");
     command
-        .args(["show", unit, "--property=LoadState,ActiveState,SubState"])
+        .args([
+            "show",
+            unit,
+            "--property=LoadState,ActiveState,SubState,WatchdogTimestampMonotonic",
+        ])
         .kill_on_drop(true);
     match tokio::time::timeout(std::time::Duration::from_secs(2), command.output()).await {
         Ok(Ok(output)) if output.status.success() => {
@@ -45,7 +49,15 @@ async fn service(unit: &str) -> Value {
                     .unwrap_or("unknown")
                     .to_owned()
             };
-            json!({"load":field("LoadState="),"active":field("ActiveState="),"sub":field("SubState=")})
+            let watchdog_us = field("WatchdogTimestampMonotonic=").parse::<u64>().ok();
+            let uptime = tokio::fs::read_to_string("/proc/uptime").await.ok();
+            let watchdog_age_seconds = uptime
+                .as_deref()
+                .and_then(|s| s.split_whitespace().next()?.parse::<f64>().ok())
+                .zip(watchdog_us.filter(|t| *t > 0))
+                .map(|(up, stamp)| (up - stamp as f64 / 1_000_000.0).max(0.0));
+            json!({"load":field("LoadState="),"active":field("ActiveState="),"sub":field("SubState="),
+                "watchdog_age_seconds":watchdog_age_seconds})
         }
         _ => json!({"load":"unknown","active":"unknown","sub":"unknown"}),
     }

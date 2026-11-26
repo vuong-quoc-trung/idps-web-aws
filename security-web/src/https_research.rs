@@ -57,7 +57,9 @@ fn parse(raw: &[u8]) -> Result<Observation> {
                 && r.available_ns <= Utc::now().timestamp_nanos_opt().unwrap_or(0) + 1_000_000,
             "Invalid score availability"
         ),
-        "ABSTAIN" | "CONFLICT" => anyhow::ensure!(r.score.is_none(), "Unusable score"),
+        "ABSTAIN" | "CONFLICT" | "INFERENCE_ERROR" => {
+            anyhow::ensure!(r.score.is_none(), "Unusable score")
+        }
         _ => anyhow::bail!("Unknown research state"),
     }
     Ok(r)
@@ -91,17 +93,82 @@ pub fn advisory(row: &Value) -> Option<Value> {
             .as_f64()
             .zip(v["threshold"].as_f64())
             .is_some_and(|(s, t)| s > t);
+    let status = if scored {
+        "SCORED"
+    } else if v["status"] == "INFERENCE_ERROR" {
+        "INFERENCE_ERROR"
+    } else {
+        "ABSTAIN"
+    };
     Some(
         json!({"request_id":row["request_id"],"model_id":v["version"],"model_sha256":v["model_sha256"],
-        "status":if scored {"SCORED"} else {"ABSTAIN"}, "score":if scored {v["score"].clone()} else {Value::Null},
+        "status":status, "score":if scored {v["score"].clone()} else {Value::Null},
         "threshold":v["threshold"],"signal":if !scored {"ABSTAIN"} else if high {"PUBLISHER_ABOVE"} else {"PUBLISHER_BELOW"},
         "action":if high {"ALERT"} else {"LOG_ONLY"},"enforcement":false}),
     )
 }
 
+pub async fn report(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
+    let slot = &SLOTS["slots"]["candidate"];
+    let summary: Value = sqlx::query_scalar(include_str!("ai_report.sql"))
+        .bind(
+            slot["version"]
+                .as_str()
+                .expect("compiled candidate version"),
+        )
+        .bind(slot["sha256"].as_str().expect("compiled candidate digest"))
+        .fetch_one(&state.pool)
+        .await
+        .map_err(api_error)?;
+    let operations = operations::snapshot().await;
+    Ok(Json(json!({
+        "model":slot["version"], "schema":SLOTS["abi"], "threshold":slot["threshold"],
+        "summary":summary, "service":operations["services"]["r37"], "sampled_at":operations["sampled_at"],
+    })))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[sqlx::test(migrations = "./migrations")]
+    async fn recent_report_distinguishes_bound_results_and_unresolved_requests(pool: PgPool) {
+        let slot = &SLOTS["slots"]["candidate"];
+        for (i, status, score) in [
+            (1, "SCORED", json!(0.9)),
+            (2, "INFERENCE_ERROR", Value::Null),
+            (3, "ABSTAIN", Value::Null),
+            (4, "CONFLICT", Value::Null),
+        ] {
+            sqlx::query("INSERT INTO https_research_observations(request_id,observation,conflicted) VALUES($1,$2,$3)")
+                .bind(format!("{i:032x}")).bind(json!({"version":slot["version"],"model_sha256":slot["sha256"],
+                    "status":status,"score":score,"threshold":slot["threshold"]})).bind(status=="CONFLICT")
+                .execute(&pool).await.unwrap();
+        }
+        for (i, expected) in [(1, true), (5, true), (6, false)] {
+            let rid = format!("{i:032x}");
+            sqlx::query("INSERT INTO normalized_events(event_key,schema_version,source,source_instance,source_event_id,occurred_at,request_id,event_type,canonical) VALUES($1,'1.0','NGINX','fixture',$1,now(),$1,'http',$2)")
+                .bind(rid).bind(json!({"schema_version":"1.0","ai_projection":expected})).execute(&pool).await.unwrap();
+        }
+        let report: Value = sqlx::query_scalar(include_str!("ai_report.sql"))
+            .bind(slot["version"].as_str().unwrap())
+            .bind(slot["sha256"].as_str().unwrap())
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(report["eligible"], 5);
+        for key in [
+            "scored",
+            "anomalous",
+            "pending",
+            "abstained",
+            "conflicts",
+            "inference_errors",
+        ] {
+            assert_eq!(report[key], 1, "{key}");
+        }
+        assert_eq!(report["recent"].as_array().unwrap().len(), 5);
+    }
+
     #[test]
     fn r36_pinned_request_time_and_observation_only() {
         let s = &SLOTS["slots"]["candidate"];

@@ -353,7 +353,8 @@ async fn main() -> Result<()> {
     {
         sources.push(("HTTPS_RESEARCH", path));
     }
-    if let Ok(path) = env::var("AI_SHADOW_RESULTS_PATH")
+    if !operations::aws_staging()
+        && let Ok(path) = env::var("AI_SHADOW_RESULTS_PATH")
         && !path.trim().is_empty()
     {
         sources.push(("AI_SHADOW", path));
@@ -363,7 +364,8 @@ async fn main() -> Result<()> {
     {
         sources.push(("THREE_SOURCE", path));
     }
-    if let Ok(path) = env::var("GLU207_RESULTS_PATH")
+    if !operations::aws_staging()
+        && let Ok(path) = env::var("GLU207_RESULTS_PATH")
         && !path.trim().is_empty()
     {
         sources.push(("GLU207_SHADOW", path));
@@ -421,22 +423,26 @@ fn router(state: AppState) -> Router {
             "/api/prevention/proposals/{id}/review",
             post(prevention::review),
         )
-        .route(
-            "/api/prevention/ai-verdict",
-            post(controlled_prevention::intake),
-        )
         .route("/api/blocked-ips", get(firewall::list).post(block_ip))
         .route("/api/blocked-ips/{ip}", delete(unblock_ip))
         .route("/api/audit", get(firewall::audit))
         .route("/api/application-audit", get(application_audit::list))
-        .route("/api/ai-shadow", get(ai_shadow::list))
+        .route("/api/ai", get(https_research::report))
         .route("/api/hybrid-incidents", get(hybrid::list))
         .route("/api/hybrid-proposals/{id}/approve", post(hybrid::approve))
         .route(
             "/api/application-audit/{id}",
             get(application_audit::detail),
+        );
+    let api = if operations::aws_staging() {
+        api
+    } else {
+        api.route("/api/ai-shadow", get(ai_shadow::list)).route(
+            "/api/prevention/ai-verdict",
+            post(controlled_prevention::intake),
         )
-        .route_layer(middleware::from_fn_with_state(state.clone(), auth::guard));
+    };
+    let api = api.route_layer(middleware::from_fn_with_state(state.clone(), auth::guard));
     Router::new()
         .merge(api)
         .route("/api/auth/login", post(auth::login))

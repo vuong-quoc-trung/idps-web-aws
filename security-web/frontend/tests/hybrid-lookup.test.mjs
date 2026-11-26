@@ -35,15 +35,15 @@ test("R37 lookup shows the exact incident and its Hybrid policy", async () => {
   const result = await query([{ ...row, request_id: "other" }, row]);
   assert.deepEqual(Object.fromEntries(result.fields), {
     "Request ID": id,
-    Model: "r37-hgb-uri100-v1",
+    "Mô hình": "r37-hgb-uri100-v1",
     "Trạng thái": "SCORED",
-    "AI Score": "0.125357",
-    Threshold: String(row.https_research.threshold),
-    "Hybrid Policy": "LOG_ONLY",
+    "Điểm bất thường": "0.125357",
+    Ngưỡng: String(row.https_research.threshold),
+    "Quyết định Hybrid": "LOG_ONLY",
     "Điểm rủi ro": "45",
     "Nguồn cảnh báo": "NGINX, SURICATA",
     "Tương quan": "REQUEST_TRANSACTION_MATCHED",
-    automatic_block: "false",
+    "Chặn tự động": "Không",
   });
   assert.deepEqual(result.alertIds, [17, 18]);
 });
@@ -52,8 +52,8 @@ test("missing incident, missing evidence and conflicting ID stay distinct", asyn
   const fields = Object.fromEntries(
     (await query([{ ...row, https_research: null }])).fields,
   );
-  assert.match(fields["Trạng thái"], /Chưa có bằng chứng/);
-  assert.equal(fields["AI Score"], "—");
+  assert.match(fields["Trạng thái"], /Chưa có kết quả AI/);
+  assert.equal(fields["Điểm bất thường"], "—");
   assert.match(
     (
       await query([

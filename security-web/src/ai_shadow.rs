@@ -213,6 +213,7 @@ pub async fn list(
     let detectors: Vec<Value> = sqlx::query_scalar(include_str!("detector_view.sql"))
         .bind(q.request_id.as_deref())
         .bind(q.limit.unwrap_or(50))
+        .bind(true)
         .fetch_all(&state.pool)
         .await
         .map_err(api_error)?;
@@ -223,8 +224,10 @@ pub async fn list(
 
 pub async fn prune(state: &AppState) -> Result<()> {
     sqlx::query("DELETE FROM https_research_observations WHERE received_at < now()-interval '7 days' OR request_id IN (SELECT request_id FROM https_research_observations ORDER BY received_at DESC OFFSET 10000)").execute(&state.pool).await?;
-    sqlx::query("DELETE FROM ai_shadow_results WHERE created_at < now()-interval '7 days' OR id IN (SELECT id FROM ai_shadow_results ORDER BY id DESC OFFSET 10000)")
+    if !operations::aws_staging() {
+        sqlx::query("DELETE FROM ai_shadow_results WHERE created_at < now()-interval '7 days' OR id IN (SELECT id FROM ai_shadow_results ORDER BY id DESC OFFSET 10000)")
         .execute(&state.pool).await?;
+    }
     Ok(())
 }
 

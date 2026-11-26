@@ -23,7 +23,7 @@ import { createRoot } from "react-dom/client";
 import "./style.css";
 import { AlertDetail } from "./AlertDetail";
 import { ApplicationAudit } from "./ApplicationAudit";
-import { AiShadow } from "./AiShadow";
+import { Ai } from "./Ai";
 import { Icon } from "./Icon";
 import { EmptyState } from "./UiState";
 import { AlertTrend, type TrendPoint } from "./AlertTrend";
@@ -640,7 +640,7 @@ function App() {
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
     ["application-audit", "Audit ứng dụng"],
-    ["ai-shadow", "AI shadow"],
+    ["ai-shadow", "AI"],
     ["blocked", "IP bị chặn"],
     ["audit", "Nhật ký thao tác"],
     ["rules", "Luật phát hiện"],
@@ -701,7 +701,7 @@ function App() {
             </span>
             <div>
               <strong>{session.user.username}</strong>
-              <p>{admin ? "Quản trị viên" : "Chỉ xem"}</p>
+              <p>{admin ? "Quản trị viên" : "Tài khoản"}</p>
             </div>
           </div>
           <button onClick={() => void logout()}>
@@ -803,9 +803,7 @@ function App() {
         {tab === "application-audit" && (
           <ApplicationAudit api={api} refreshSignal={applicationAuditRefresh} />
         )}
-        {tab === "ai-shadow" && (
-          <AiShadow api={api} onAlert={setSelectedAlert} />
-        )}
+        {tab === "ai-shadow" && <Ai api={api} onAlert={setSelectedAlert} />}
         {tab === "overview" && (
           <div className="overview-layout">
             <section className="panel overview-toolbar">
@@ -1110,11 +1108,14 @@ function App() {
                   new Set([
                     "NGINX",
                     "SURICATA",
+                    "STUDENT_AUDIT",
                     ...(stats?.sources.map((x) => x.name) ?? []),
                   ]),
                 ).map((name) => (
                   <div className="type-row" key={name}>
-                    <strong>{name}</strong>
+                    <strong>
+                      {name === "STUDENT_AUDIT" ? "Student Audit" : name}
+                    </strong>
                     <span className="count-pill">
                       {stats
                         ? (stats.sources.find((x) => x.name === name)?.count ??
@@ -1853,7 +1854,7 @@ function App() {
                       ["student", "Student Web"],
                       ["postgresql", "PostgreSQL"],
                       ["correlator", "Correlator"],
-                      ["r37", "AI R37"],
+                      ["r37", "AI"],
                     ].map(([key, label]) => (
                       <div key={key}>
                         <dt>{label}</dt>
@@ -1879,70 +1880,9 @@ function App() {
                   </p>
                 </article>
               ) : (
-                <>
-                  <p className="muted">
-                    Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến
-                    trình Nginx/Suricata/Student Web hoặc đường truyền RELP đang
-                    hoạt động. Không có cảnh báo mới có thể là bình thường.
-                  </p>
-                  <article className="panel">
-                    <h3>Đường truyền Student Audit</h3>
-                    <p>
-                      Web VM → RELP receiver → file local → Rust ingest → DB →
-                      Dashboard
-                    </p>
-                    <dl className="detail-fields">
-                      <div>
-                        <dt>Sender trên Web VM</dt>
-                        <dd>
-                          Chưa xác minh từ host; kiểm tra
-                          pbl4-audit-sender.service trên VM.
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Receiver trên host</dt>
-                        <dd>
-                          {health?.operations?.receiver
-                            ? `${health.operations.receiver.active} / ${health.operations.receiver.sub}`
-                            : "Chưa có mẫu kiểm tra"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Sensor Suricata trên host</dt>
-                        <dd>
-                          {health?.operations?.suricata
-                            ? `${health.operations.suricata.active} / ${health.operations.suricata.sub}`
-                            : "Chưa có mẫu kiểm tra"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Mẫu kiểm tra dịch vụ</dt>
-                        <dd>
-                          {health?.operations?.sampled_at
-                            ? new Date(
-                                health.operations.sampled_at,
-                              ).toLocaleString("vi-VN")
-                            : "Chưa có"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Lưu audit đầy đủ</dt>
-                        <dd>
-                          {health?.dataset_collection == null
-                            ? "Chưa xác định"
-                            : health.dataset_collection
-                              ? "Đang bật"
-                              : "Đang tắt — mốc DB có thể là lịch sử"}
-                        </dd>
-                      </div>
-                    </dl>
-                    <p className="muted">
-                      Service active không chứng minh kết nối RELP hay dữ liệu
-                      đầu cuối đang hoạt động. Không thực hiện SSH hoặc restart
-                      dịch vụ từ dashboard.
-                    </p>
-                  </article>
-                </>
+                <p className="muted">
+                  Theo dõi thời điểm nhận log và lỗi phân tích của từng nguồn.
+                </p>
               )}
               <div className="source-health-grid">
                 {["NGINX", "SURICATA_LUA", "STUDENT_AUDIT"].map((name) => {
@@ -2060,7 +2000,7 @@ function App() {
                             ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
                             : cloud
                               ? "Nguồn Student Audit được đọc trực tiếp từ tệp trên EC2."
-                              : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                              : "Theo dõi thời điểm dữ liệu Student Audit được backend đọc."}
                         </p>
                       )}
                     </article>

@@ -173,6 +173,7 @@ mod tests {
             sqlx::query_scalar::<_, Value>(include_str!("detector_view.sql"))
                 .bind(Some(id))
                 .bind(50_i64)
+                .bind(true)
         };
         let before = view(rid.clone()).fetch_one(&pool).await.unwrap();
         assert_eq!(before["status"], "INCOMPLETE_DETECTOR_EVIDENCE");

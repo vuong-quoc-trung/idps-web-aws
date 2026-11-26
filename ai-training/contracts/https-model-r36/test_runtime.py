@@ -48,3 +48,23 @@ def test_incomplete_journal_record_is_separated_before_replay(tmp_path):
     with path.open("a+b") as stream:
         resume_journal(stream)
     assert path.read_bytes() == committed + tail + b'\n{"id":"interrupted"}\n'
+
+
+def test_error_and_abstention_remain_distinct_without_scores(tmp_path):
+    with sqlite3.connect(":memory:") as db:
+        initialize_journal(db)
+        release = slot(None)
+        for index, status in enumerate(("ABSTAIN", "INFERENCE_ERROR")):
+            assert record(db, dict(
+                request_id=str(index) * 32, lineage="test",
+                dispatch_ns=1, receipt_ns=2, available_ns=3,
+                cutoff_ns=1_000_000_001, guard_ns=1_000_000,
+                model_sha256=release["sha256"], vector_sha256=None,
+                availability="AVAILABLE", status=status,
+            )) == "COMMITTED"
+        with (tmp_path / "events").open("ab") as stream:
+            drain(db, stream, {release["sha256"]: release})
+    rows = [json.loads(line) for line in (tmp_path / "events").read_text().splitlines()]
+    assert [(r["status"], r["score"], r["enforcement"]) for r in rows] == [
+        ("ABSTAIN", None, False), ("INFERENCE_ERROR", None, False)
+    ]
