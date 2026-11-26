@@ -329,7 +329,20 @@ pub async fn list(
     {
         return Err(bad_request("Invalid request ID"));
     }
-    let incidents:Vec<Value>=sqlx::query_scalar("SELECT decision||jsonb_build_object('fingerprint',evidence_fingerprint,'updated_at',updated_at) FROM hybrid_incidents WHERE ($1::text IS NULL OR request_id=$1) ORDER BY observed_at DESC LIMIT 100").bind(q.request_id).fetch_all(&state.pool).await.map_err(api_error)?;
+    let mut incidents:Vec<Value>=sqlx::query_scalar("SELECT decision||jsonb_build_object('fingerprint',evidence_fingerprint,'updated_at',updated_at) FROM hybrid_incidents WHERE ($1::text IS NULL OR request_id=$1) ORDER BY observed_at DESC LIMIT 100").bind(q.request_id).fetch_all(&state.pool).await.map_err(api_error)?;
+    if operations::aws_staging() {
+        for incident in &mut incidents {
+            if let Some(fields) = incident.as_object_mut() {
+                fields.remove("control_ai");
+                if !https_research::current_result(
+                    fields.get("https_research").unwrap_or(&Value::Null),
+                ) {
+                    fields.remove("https_research");
+                    fields.remove("ai");
+                }
+            }
+        }
+    }
     let proposals:Vec<Value>=sqlx::query_scalar("SELECT jsonb_build_object('id',id,'request_id',request_id,'ip',host(ip),'status',status,'created_at',created_at,'approved_by',approved_by,'action_id',action_id) FROM hybrid_proposals ORDER BY id DESC LIMIT 100").fetch_all(&state.pool).await.map_err(api_error)?;
     Ok(Json(
         json!({"incidents":incidents,"proposals":proposals,"automatic_block":false,"enforcement_mode":state.safety.mode}),

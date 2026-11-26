@@ -2242,3 +2242,41 @@ td button {
 .sse-disconnected {
   color: #ff9e9e;
 }
+
+.ai-analysis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.25rem;
+  align-items: center;
+  margin: 1.25rem 0;
+}
+.ai-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+}
+.ai-counts div {
+  display: grid;
+  gap: 0.4rem;
+}
+.ai-counts strong {
+  font-size: 1.65rem;
+  font-variant-numeric: tabular-nums;
+}
+.ai-figure {
+  margin: 0;
+}
+.ai-figure meter {
+  width: 100%;
+  accent-color: #f49b71;
+}
+.ai-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+.ai-search {
+  align-items: end;
+}

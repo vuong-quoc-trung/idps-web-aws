@@ -32,8 +32,9 @@ use anyhow::{Context, Result, bail};
 use axum::{
     Extension, Json, Router,
     extract::{Path, Query, State},
-    http::StatusCode,
+    http::{StatusCode, header},
     middleware,
+    response::Response,
     routing::{delete, get, post},
 };
 use chrono::{DateTime, Utc};
@@ -157,6 +158,7 @@ struct BlockedIpRow {
     blocked_at: DateTime<Utc>,
     unblocked_at: Option<DateTime<Utc>>,
     active: bool,
+    expires_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -451,10 +453,26 @@ fn router(state: AppState) -> Router {
             get(|| async { Json(serde_json::json!({"status":"alive"})) }),
         )
         .fallback_service(ServeDir::new("frontend/dist").append_index_html_on_directories(true))
+        .layer(middleware::map_response(html_cache_control))
         .layer(axum::extract::DefaultBodyLimit::max(16 * 1024))
         .layer(TraceLayer::new_for_http())
         .with_state(state)
 }
+async fn html_cache_control(mut response: Response) -> Response {
+    let headers = response.headers_mut();
+    if headers
+        .get(header::CONTENT_TYPE)
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|value| value.split(';').next() == Some("text/html"))
+    {
+        headers.insert(
+            header::CACHE_CONTROL,
+            header::HeaderValue::from_static("no-cache"),
+        );
+    }
+    response
+}
+
 async fn search_alerts(
     State(state): State<AppState>,
     Query(q): Query<AlertQuery>,
@@ -481,6 +499,7 @@ async fn search_alerts(
         .bind(q.action)
         .bind(q.dest_ip.map(|ip| ip.to_string()))
         .bind(q.triage_status)
+        .bind(operations::aws_staging())
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
@@ -500,6 +519,7 @@ async fn alert_detail(
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_detail.sql"))
         .bind(id)
+        .bind(operations::aws_staging())
         .fetch_optional(&state.pool)
         .await
         .map_err(api_error)?;

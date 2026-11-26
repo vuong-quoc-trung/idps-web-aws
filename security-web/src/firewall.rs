@@ -487,7 +487,7 @@ pub async fn observation(state: &AppState) -> serde_json::Value {
     use serde_json::{Value, json};
     // blocked_ips has no native table/chain or request ID. Keep its rows for
     // inspection; the native worker persists applied leases in SQLite instead.
-    let rows=sqlx::query_as::<_,BlockedIpRow>("SELECT host(ip)::text ip,reason,blocked_at,unblocked_at,active FROM blocked_ips WHERE active AND (expires_at IS NULL OR expires_at>now()) ORDER BY blocked_at DESC")
+    let rows=sqlx::query_as::<_,BlockedIpRow>("SELECT host(ip)::text ip,reason,blocked_at,unblocked_at,active,expires_at FROM blocked_ips WHERE active AND (expires_at IS NULL OR expires_at>now()) ORDER BY blocked_at DESC")
         .fetch_all(&state.pool).await.ok();
     let snapshot = run(&state.firewall_cmd, "list-json", None, None)
         .await

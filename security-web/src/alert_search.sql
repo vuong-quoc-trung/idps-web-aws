@@ -3,7 +3,8 @@ WITH filtered AS MATERIALIZED (
         host(client_ip) AS client_ip, host(network_src_ip) AS network_src_ip, client_ip_verified, suricata_post_proxy,
         proto, rule_name, signature, category, severity, action, evidence, triage_status, triage_version, triage_actor, triage_updated_at
  FROM security_alerts
- WHERE ($3::text IS NULL OR rule_name ILIKE '%' || $3 || '%' OR host(src_ip) ILIKE '%' || $3 || '%' OR host(network_src_ip) ILIKE '%' || $3 || '%')
+ WHERE (NOT $11::boolean OR source <> 'AI_SHADOW')
+ AND ($3::text IS NULL OR rule_name ILIKE '%' || $3 || '%' OR host(src_ip) ILIKE '%' || $3 || '%' OR host(network_src_ip) ILIKE '%' || $3 || '%')
  AND ($4::smallint IS NULL OR severity = $4)
  AND ($5::timestamptz IS NULL OR occurred_at >= $5)
  AND ($6::timestamptz IS NULL OR occurred_at < $6)

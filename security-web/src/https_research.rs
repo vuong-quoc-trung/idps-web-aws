@@ -79,6 +79,11 @@ pub async fn ingest(
     Ok(())
 }
 
+pub fn current_result(value: &Value) -> bool {
+    let slot = &SLOTS["slots"]["candidate"];
+    value["model_id"] == slot["version"] && value["model_sha256"] == slot["sha256"]
+}
+
 pub fn advisory(row: &Value) -> Option<Value> {
     let v = &row["https_research"];
     if v.is_null() {
@@ -108,21 +113,45 @@ pub fn advisory(row: &Value) -> Option<Value> {
     )
 }
 
-pub async fn report(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
+#[derive(Deserialize)]
+pub struct ReportQuery {
+    request_id: Option<String>,
+}
+
+pub async fn report(
+    State(state): State<AppState>,
+    Query(query): Query<ReportQuery>,
+) -> Result<Json<Value>, ApiError> {
     let slot = &SLOTS["slots"]["candidate"];
+    let version = slot["version"]
+        .as_str()
+        .expect("compiled candidate version");
+    let digest = slot["sha256"].as_str().expect("compiled candidate digest");
+    if let Some(request_id) = query.request_id {
+        if request_id.len() != 32
+            || !request_id
+                .bytes()
+                .all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
+        {
+            return Err(bad_request("Request ID không hợp lệ"));
+        }
+        let result: Option<Value> = sqlx::query_scalar(include_str!("ai_lookup.sql"))
+            .bind(request_id)
+            .bind(version)
+            .bind(digest)
+            .fetch_optional(&state.pool)
+            .await
+            .map_err(api_error)?;
+        return Ok(Json(json!({"result": result})));
+    }
     let summary: Value = sqlx::query_scalar(include_str!("ai_report.sql"))
-        .bind(
-            slot["version"]
-                .as_str()
-                .expect("compiled candidate version"),
-        )
-        .bind(slot["sha256"].as_str().expect("compiled candidate digest"))
+        .bind(version)
+        .bind(digest)
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
     let operations = operations::snapshot().await;
     Ok(Json(json!({
-        "model":slot["version"], "schema":SLOTS["abi"], "threshold":slot["threshold"],
         "summary":summary, "service":operations["services"]["r37"], "sampled_at":operations["sampled_at"],
     })))
 }
@@ -167,6 +196,43 @@ mod tests {
             assert_eq!(report[key], 1, "{key}");
         }
         assert_eq!(report["recent"].as_array().unwrap().len(), 5);
+    }
+
+    #[sqlx::test(migrations = "./migrations")]
+    async fn lookup_requires_active_digest_and_matching_hybrid(pool: PgPool) {
+        let candidate = &SLOTS["slots"]["candidate"];
+        let rollback = &SLOTS["slots"]["rollback"];
+        for (id, slot) in [("a".repeat(32), candidate), ("b".repeat(32), rollback)] {
+            sqlx::query("INSERT INTO https_research_observations(request_id,observation) VALUES($1,$2)")
+                .bind(&id).bind(json!({"version":slot["version"],"model_sha256":slot["sha256"],"status":"SCORED","score":0.42}))
+                .execute(&pool).await.unwrap();
+            sqlx::query("INSERT INTO hybrid_incidents(request_id,evidence_fingerprint,policy_version,observed_at,decision) VALUES($1,'fixture','fixture',now(),$2)")
+                .bind(id).bind(json!({"policy_action":"LOG_ONLY","https_research":{"model_id":slot["version"],"model_sha256":slot["sha256"]}}))
+                .execute(&pool).await.unwrap();
+        }
+        let lookup = |key: String| {
+            sqlx::query_scalar::<_, Value>(include_str!("ai_lookup.sql"))
+                .bind(key)
+                .bind(candidate["version"].as_str().unwrap())
+                .bind(candidate["sha256"].as_str().unwrap())
+        };
+        let current = lookup("a".repeat(32)).fetch_one(&pool).await.unwrap();
+        assert_eq!(
+            current,
+            json!({"request_id":"a".repeat(32),"status":"SCORED","score":0.42,"hybrid":"LOG_ONLY"})
+        );
+        assert!(
+            lookup("b".repeat(32))
+                .fetch_optional(&pool)
+                .await
+                .unwrap()
+                .is_none()
+        );
+        sqlx::query("UPDATE hybrid_incidents SET decision=decision-'https_research'")
+            .execute(&pool)
+            .await
+            .unwrap();
+        assert!(lookup("a".repeat(32)).fetch_one(&pool).await.unwrap()["hybrid"].is_null());
     }
 
     #[test]

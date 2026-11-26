@@ -1,0 +1,14 @@
+-- Match the active artifact before reading any historical result.
+SELECT jsonb_build_object(
+    'request_id', a.request_id,
+    'status', CASE WHEN a.conflicted OR c.result->>'status'='AMBIGUOUS'
+        THEN 'CONFLICT' ELSE a.observation->>'status' END,
+    'score', CASE WHEN NOT a.conflicted AND c.result->>'status' IS DISTINCT FROM 'AMBIGUOUS'
+        AND a.observation->>'status'='SCORED' THEN a.observation->'score' END,
+    'hybrid', CASE WHEN i.decision#>>'{https_research,model_id}'=$2
+        AND i.decision#>>'{https_research,model_sha256}'=$3 THEN i.decision->>'policy_action' END
+)
+FROM https_research_observations a
+LEFT JOIN request_correlations c USING (request_id)
+LEFT JOIN hybrid_incidents i USING (request_id)
+WHERE a.request_id=$1 AND a.observation->>'version'=$2 AND a.observation->>'model_sha256'=$3

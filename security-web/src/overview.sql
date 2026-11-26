@@ -1,8 +1,10 @@
 WITH bounds AS (
     SELECT now() AS until, now() - make_interval(secs => $1::double precision) AS since,
            make_interval(secs => ($1 / $2)::double precision) AS step
+), visible AS NOT MATERIALIZED (
+    SELECT * FROM security_alerts WHERE NOT $4::boolean OR source <> 'AI_SHADOW'
 ), events AS MATERIALIZED (
-    SELECT a.* FROM security_alerts a, bounds b
+    SELECT a.* FROM visible a, bounds b
     WHERE a.occurred_at >= b.since AND a.occurred_at < b.until
 ), buckets AS (
     SELECT h FROM bounds b, LATERAL generate_series(b.since, b.until - b.step, b.step) h
@@ -22,6 +24,9 @@ WITH bounds AS (
 ), sources AS (
     SELECT CASE WHEN source='APPLICATION' THEN 'STUDENT_AUDIT' ELSE source END AS name,
            count(*) AS count FROM events GROUP BY name ORDER BY count DESC, name
+), observation_counts AS (
+    SELECT source, count(*) AS count FROM normalized_events, bounds b
+    WHERE occurred_at >= b.since AND occurred_at < b.until GROUP BY source
 ), severities AS (
     SELECT severity, count(*) AS count FROM events GROUP BY severity ORDER BY severity
 ), source_ips AS (
@@ -41,11 +46,11 @@ WITH bounds AS (
 )
 SELECT jsonb_build_object(
     'alert_updates', jsonb_build_object(
-      'watermark', (SELECT COALESCE(max(id), 0) FROM security_alerts),
-      'count', (SELECT count(*) FROM security_alerts WHERE id > $3::bigint),
-      'severity', (SELECT min(severity) FROM security_alerts WHERE id > $3::bigint),
+      'watermark', (SELECT COALESCE(max(id), 0) FROM visible),
+      'count', (SELECT count(*) FROM visible WHERE id > $3::bigint),
+      'severity', (SELECT min(severity) FROM visible WHERE id > $3::bigint),
       'items', COALESCE((SELECT jsonb_agg(to_jsonb(n)) FROM (
-        SELECT id, severity FROM security_alerts WHERE id > $3::bigint ORDER BY id DESC LIMIT 100
+        SELECT id, severity FROM visible WHERE id > $3::bigint ORDER BY id DESC LIMIT 100
       ) n), '[]'::jsonb)
     ),
     'from', (SELECT since FROM bounds), 'to', (SELECT until FROM bounds),
@@ -57,6 +62,7 @@ SELECT jsonb_build_object(
     'trend', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM trend t), '[]'::jsonb),
     'types', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM types t), '[]'::jsonb),
     'sources', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM sources t), '[]'::jsonb),
+    'observation_counts', COALESCE((SELECT jsonb_object_agg(source,count) FROM observation_counts), '{}'::jsonb),
     'severities', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM severities t), '[]'::jsonb),
     'source_ips', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM source_ips t), '[]'::jsonb),
     'destination_ips', COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM destination_ips t), '[]'::jsonb),

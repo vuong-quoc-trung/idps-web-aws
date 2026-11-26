@@ -198,6 +198,7 @@ pub async fn stats(
         .bind(seconds)
         .bind(buckets)
         .bind(query.after_alert_id)
+        .bind(operations::aws_staging())
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;

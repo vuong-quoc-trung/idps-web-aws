@@ -806,6 +806,7 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
             .bind(seconds)
             .bind(buckets)
             .bind(None::<i64>)
+            .bind(false)
             .fetch_one(&pool)
             .await
             .unwrap();
@@ -857,6 +858,7 @@ async fn overview_time_windows_and_aggregates(pool: PgPool) {
         .bind(3600_i64)
         .bind(12_i64)
         .bind(None::<i64>)
+        .bind(false)
         .fetch_one(&pool)
         .await
         .unwrap();
@@ -1021,6 +1023,7 @@ async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
         .bind(3600_i64)
         .bind(12_i64)
         .bind(0_i64)
+        .bind(false)
         .fetch_one(&pool)
         .await
         .unwrap();
@@ -1056,11 +1059,37 @@ async fn overview_source_buckets_and_alert_cursor(pool: PgPool) {
         .bind(604800_i64)
         .bind(7_i64)
         .bind(cursor)
+        .bind(false)
         .fetch_one(&pool)
         .await
         .unwrap();
     assert_eq!(again["alert_updates"]["count"], 0);
     assert_eq!(again["trend"].as_array().unwrap().len(), 7);
+}
+
+#[sqlx::test(migrations = "./migrations")]
+async fn overview_public_counts_observations_and_hides_archived_ai(pool: PgPool) {
+    for source in ["NGINX", "AI_SHADOW"] {
+        sqlx::query("INSERT INTO security_alerts(occurred_at,source,event_type,rule_name,severity,action,evidence) VALUES(now()-interval '2 seconds',$1,'alert','fixture',2,'ALERT','{}')")
+            .bind(source).execute(&pool).await.unwrap();
+    }
+    sqlx::query("INSERT INTO normalized_events(event_key,schema_version,source,source_instance,source_event_id,occurred_at,event_type,canonical) VALUES('fixture','1.0','NGINX','fixture','fixture',now()-interval '2 seconds','http','{\"schema_version\":\"1.0\"}')")
+        .execute(&pool).await.unwrap();
+    let report: serde_json::Value = sqlx::query_scalar(include_str!("overview.sql"))
+        .bind(3600_i64)
+        .bind(12_i64)
+        .bind(0_i64)
+        .bind(true)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(report["observation_counts"]["NGINX"], 1);
+    assert_eq!(report["total_alerts"], 1);
+    assert_eq!(report["alert_updates"]["count"], 1);
+    assert_eq!(
+        report["sources"],
+        serde_json::json!([{"name":"NGINX","count":1}])
+    );
 }
 
 #[sqlx::test(migrations = "./migrations")]

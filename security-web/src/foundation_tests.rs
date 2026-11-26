@@ -884,6 +884,7 @@ async fn post_proxy_origin_persists_replay_restart_search_and_stats(pool: PgPool
             .bind(None::<String>)
             .bind(None::<String>)
             .bind(None::<String>)
+            .bind(false)
             .fetch_one(&s.pool)
             .await
             .unwrap();
@@ -897,6 +898,7 @@ async fn post_proxy_origin_persists_replay_restart_search_and_stats(pool: PgPool
         .bind(86400_i64)
         .bind(24_i64)
         .bind(0_i64)
+        .bind(false)
         .fetch_one(&s.pool)
         .await
         .unwrap();
@@ -915,6 +917,7 @@ async fn post_proxy_origin_persists_replay_restart_search_and_stats(pool: PgPool
             .unwrap();
     let detail: serde_json::Value = sqlx::query_scalar(include_str!("alert_detail.sql"))
         .bind(id)
+        .bind(false)
         .fetch_one(&s.pool)
         .await
         .unwrap();

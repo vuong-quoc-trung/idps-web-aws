@@ -152,13 +152,6 @@ export function ApplicationAudit({
       <div className="application-audit-heading">
         <div>
           <h2 id="audit-title">Sự kiện ứng dụng & traffic</h2>
-          <p className="muted">
-            Mỗi dòng là một lần quan sát theo Schema v1. Mặc định hiển thị
-            Student audit trong 24 giờ qua. Thời gian theo múi giờ trình duyệt (
-            {Intl.DateTimeFormat().resolvedOptions().timeZone}). Tự tải lại sau
-            mỗi 60 giây khi lần tải trước hoàn tất và trang đang hiển thị. Bạn
-            vẫn có thể bấm Tải lại audit hoặc Làm mới.
-          </p>
         </div>
         <button onClick={() => poller.current?.refresh()} disabled={loading}>
           <Icon name="refresh" className={loading ? "is-spinning" : ""} />
@@ -173,15 +166,10 @@ export function ApplicationAudit({
           <p>
             <span className={`badge ${collection.enabled ? "good" : "warn"}`}>
               {collection.enabled ? "Thu thập đang bật" : "Thu thập đang tắt"}
-            </span>{" "}
-            Lưu tối đa {collection.retention_days} ngày /{" "}
-            {collection.max_events.toLocaleString("vi-VN")} sự kiện.
+            </span>
           </p>
           {!collection.enabled && (
-            <p className="notice">
-              Các bản ghi cũ vẫn xem được. Chế độ thu thập dataset đang tắt nên
-              bảng này không nhận thêm quan sát mới.
-            </p>
+            <p className="notice">Chỉ có thể xem các bản ghi đã lưu.</p>
           )}
           <ul className="audit-watchers">
             {sources.map((source) => {
@@ -548,9 +536,7 @@ function AuditDetail({
       {!data && !error && <p role="status">Đang tải chi tiết…</p>}
       {data && canonical && (
         <>
-          <p className="muted">
-            Bản ghi Schema v1 đã che query, định danh và dữ liệu nhạy cảm.
-          </p>
+          <p className="muted">Dữ liệu nhạy cảm đã được che.</p>
           <dl className="detail-fields">
             {Object.entries({
               "Thời điểm (UTC)": data.occurred_at,
@@ -571,7 +557,7 @@ function AuditDetail({
               </div>
             ))}
           </dl>
-          <h3>Canonical JSON</h3>
+          <h3>Dữ liệu đã che</h3>
           <pre tabIndex={0} aria-label="Canonical JSON đã che dữ liệu">
             {JSON.stringify(canonical, null, 2)}
           </pre>

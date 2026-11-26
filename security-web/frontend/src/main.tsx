@@ -64,6 +64,7 @@ type Stats = {
   unknown_destinations: number;
   unique_sources: number;
   sources: { name: string; count: number }[];
+  observation_counts?: Record<string, number>;
   severities: { severity: number; count: number }[];
   source_ips: IpSummary[];
   destination_ips: IpSummary[];
@@ -93,7 +94,14 @@ type Stats = {
   };
 };
 type Blocked = {
-  database: { ip: string; reason: string; blocked_at: string }[] | null;
+  database:
+    | {
+        ip: string;
+        reason: string;
+        blocked_at: string;
+        expires_at?: string | null;
+      }[]
+    | null;
   kernel: string[] | null;
   sync?: SyncReport;
   error: string | null;
@@ -200,14 +208,14 @@ function firewallMessage(code?: string | null) {
     return "Bảng đã khởi tạo, chưa xác minh cấu hình";
   if (code === "FIREWALL_SCOPE_MISMATCH")
     return "Bảng đã khởi tạo, cấu hình khác phạm vi đã duyệt";
-  if (code === "ACTUATOR_OFFLINE") return "Actuator chưa hoạt động";
+  if (code === "ACTUATOR_OFFLINE") return "Dịch vụ chặn IP chưa kết nối";
   if (code === "FIREWALL_UNINITIALIZED") return "Chưa khởi tạo bảng chặn";
   return code;
 }
 
 function preventionMessage(state: Health["prevention_state"]) {
-  if (state === "DISABLED") return "Thực thi chặn IP đang tắt.";
-  if (state === "BLOCKED") return "Thực thi chặn IP đang bị khóa (C2).";
+  if (state === "DISABLED") return "Chặn IP đang tắt theo cấu hình.";
+  if (state === "BLOCKED") return "Chặn IP đang bị khóa an toàn.";
   if (state === "READY") return "Thực thi chặn IP đã sẵn sàng.";
   return "Chưa xác minh khả năng chặn IP.";
 }
@@ -272,6 +280,7 @@ function App() {
   const [streamState, setStreamState] = useState<StreamState>("connecting");
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
+  const [ttl, setTtl] = useState("60");
   const tracker = useRef(createAlertTracker());
   const [alertFeedback, setAlertFeedback] = useState<AlertUpdates | null>(null);
   const feedbackCooldown = useRef(0);
@@ -508,6 +517,13 @@ function App() {
     }
   }
   async function action(address: string, unblock = false) {
+    if (
+      !unblock &&
+      (!Number.isInteger(Number(ttl)) || Number(ttl) < 1 || Number(ttl) > 300)
+    ) {
+      setError("Thời hạn chặn phải từ 1 đến 300 giây.");
+      return;
+    }
     if (unblock && !window.confirm(`Bỏ chặn ${address}?`)) return;
     setBusy(true);
     setNotice("");
@@ -520,7 +536,13 @@ function App() {
         {
           method: unblock ? "DELETE" : "POST",
           ...(!unblock
-            ? { body: JSON.stringify({ ip: address, reason }) }
+            ? {
+                body: JSON.stringify({
+                  ip: address,
+                  reason,
+                  ttl_seconds: Number(ttl),
+                }),
+              }
             : {}),
         },
       );
@@ -640,7 +662,7 @@ function App() {
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
     ["application-audit", "Audit ứng dụng"],
-    ["ai-shadow", "AI"],
+    ["ai", "AI"],
     ["blocked", "IP bị chặn"],
     ["audit", "Nhật ký thao tác"],
     ["rules", "Luật phát hiện"],
@@ -803,7 +825,7 @@ function App() {
         {tab === "application-audit" && (
           <ApplicationAudit api={api} refreshSignal={applicationAuditRefresh} />
         )}
-        {tab === "ai-shadow" && <Ai api={api} onAlert={setSelectedAlert} />}
+        {tab === "ai" && <Ai api={api} />}
         {tab === "overview" && (
           <div className="overview-layout">
             <section className="panel overview-toolbar">
@@ -920,9 +942,6 @@ function App() {
             </section>
             <section className="panel overview-recent">
               <h2>10 cảnh báo mới nhất trong khoảng đã chọn</h2>
-              <p className="muted">
-                Mở từng cảnh báo để xem IP, hành động và bằng chứng gốc.
-              </p>
               {stats?.recent.map((a) => (
                 <details
                   className={`overview-alert ${feedbackClass(a.id)}`}
@@ -1015,6 +1034,12 @@ function App() {
                             ? "Lỗi đọc log"
                             : "Chưa xác định"}
                     </span>
+                    <small>
+                      {stats
+                        ? fmt(stats.observation_counts?.[source] ?? 0)
+                        : "—"}{" "}
+                      quan sát
+                    </small>
                     <small>
                       Dữ liệu gần nhất:{" "}
                       {w?.last_data_at
@@ -1238,7 +1263,6 @@ function App() {
                   <option value="">Tất cả</option>
                   <option>NGINX</option>
                   <option>SURICATA</option>
-                  <option>AI_SHADOW</option>
                   <option value="STUDENT_AUDIT">Student Audit</option>
                 </select>
               </label>
@@ -1431,7 +1455,9 @@ function App() {
                 Trạng thái firewall
               </h2>
               <FirewallSync report={blocked?.sync} />
-              {blocked?.error && <p>{firewallMessage(blocked.error)}</p>}
+              {blocked?.error && health?.prevention_state !== "DISABLED" && (
+                <p>{firewallMessage(blocked.error)}</p>
+              )}
               <p>{preventionMessage(health?.prevention_state)}</p>
               <p>
                 IP thực tế:{" "}
@@ -1461,6 +1487,18 @@ function App() {
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                       maxLength={500}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Thời hạn (giây)
+                    <input
+                      type="number"
+                      min={1}
+                      max={300}
+                      step={1}
+                      value={ttl}
+                      onChange={(e) => setTtl(e.target.value)}
                       required
                     />
                   </label>
@@ -1508,8 +1546,14 @@ function App() {
                                 : "Chỉ có trong kernel"}
                       </p>
                       <p>Lý do: {row?.reason ?? "Không có bản ghi DB"}</p>
+                      {row?.expires_at && (
+                        <p>
+                          Hết hạn{" "}
+                          {new Date(row.expires_at).toLocaleString("vi-VN")}
+                        </p>
+                      )}
                       <small>
-                        Thời điểm chặn (DB):{" "}
+                        Thời điểm chặn:{" "}
                         {row
                           ? new Date(row.blocked_at).toLocaleString("vi-VN", {
                               hour12: false,
@@ -1626,10 +1670,6 @@ function App() {
               <Icon name="rules" />
               Luật và chính sách hiện tại
             </h2>
-            <p className="muted">
-              Chính sách được cấu hình trên server. Danh mục dưới đây mô tả bộ
-              rule đi kèm dự án.
-            </p>
             <div
               className="rule-source-picker"
               role="group"
@@ -1708,13 +1748,6 @@ function App() {
                     ? "Web/Proxy — NGINX"
                     : "Ứng dụng — Student Audit"}
               </h3>
-              <p className="muted">
-                {ruleSource === "SURICATA"
-                  ? "Phát hiện từ gói tin và giao thức, bao gồm HTTP. Danh mục này không xác nhận Suricata đã nạp các luật trên máy chạy sensor."
-                  : ruleSource === "NGINX"
-                    ? "Phân tích HTTP request/access log đã thực sự tới reverse proxy. Các luật chạy trong Rust trên dữ liệu NGINX, không phải luật Suricata."
-                    : "Phân tích audit do Student Web ghi nhận, tổng hợp nhiều request theo cửa sổ thời gian. Khuyến nghị chặn không đồng nghĩa tự động chặn."}
-              </p>
               {!rules.some(
                 (r) =>
                   (r.source === "APPLICATION" ? "STUDENT_AUDIT" : r.source) ===
@@ -1811,7 +1844,10 @@ function App() {
                     "Firewall",
                     health?.firewall,
                     `Sẵn sàng · ${health?.kernel_blocked_count ?? "?"} IP đang chặn`,
-                    firewallMessage(health?.firewall_status) ?? "Chưa sẵn sàng",
+                    health?.prevention_state === "DISABLED"
+                      ? "Đang tắt"
+                      : (firewallMessage(health?.firewall_status) ??
+                        "Chưa sẵn sàng"),
                   ],
                 ].map(([label, ready, yes, no]) => (
                   <div className="service-item" key={String(label)}>
@@ -1842,7 +1878,7 @@ function App() {
               )}
               {cloud ? (
                 <article className="panel">
-                  <h3>Luồng giám sát AWS staging</h3>
+                  <h3>Dịch vụ giám sát</h3>
                   <p>
                     Student Web ghi Student Audit trên EC2. Security Web đọc tệp
                     audit tại chỗ.
@@ -1874,10 +1910,6 @@ function App() {
                       </dd>
                     </div>
                   </dl>
-                  <p className="muted">
-                    Trạng thái tiến trình từ systemd. Xem thời điểm nhận log của
-                    từng nguồn bên dưới.
-                  </p>
                 </article>
               ) : (
                 <p className="muted">
@@ -1885,7 +1917,7 @@ function App() {
                 </p>
               )}
               <div className="source-health-grid">
-                {["NGINX", "SURICATA_LUA", "STUDENT_AUDIT"].map((name) => {
+                {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
                   const collection = health?.collection?.[name];
                   const time = (value: string | null | undefined) =>
@@ -1920,27 +1952,15 @@ function App() {
                                 : "Chưa có kết quả kiểm tra"}
                       </p>
                       {watcher?.error && (
-                        <p className="error">{watcher.error}</p>
+                        <p className="error">Không đọc được nhật ký nguồn.</p>
                       )}
                       <p role="status">
                         {freshness(watcher?.last_data_at, health?.checked_at)}
                       </p>
                       <dl className="detail-fields">
                         <div>
-                          <dt>
-                            {name === "SURICATA_LUA"
-                              ? "Lần lưu bằng chứng Lua vào DB"
-                              : "Lần lưu sự kiện vào DB"}
-                          </dt>
+                          <dt>Lần lưu quan sát</dt>
                           <dd>{time(collection?.last_ingested_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Thời gian sự kiện vừa lưu</dt>
-                          <dd>
-                            {name === "SURICATA_LUA"
-                              ? "Lua không cung cấp mốc này"
-                              : time(collection?.last_ingested_event_at)}
-                          </dd>
                         </div>
                         <div>
                           <dt>Lần đọc thành công</dt>
@@ -1953,14 +1973,6 @@ function App() {
                         <div>
                           <dt>Lần lưu cảnh báo</dt>
                           <dd>{time(collection?.last_alert_at)}</dd>
-                        </div>
-                        <div>
-                          <dt>Log còn chờ</dt>
-                          <dd>
-                            {watcher?.pending_bytes == null
-                              ? "Chưa xác định"
-                              : `${fmt(watcher.pending_bytes)} byte`}
-                          </dd>
                         </div>
                         <div>
                           <dt>Dòng sai định dạng</dt>
@@ -1987,34 +1999,13 @@ function App() {
                           </dd>
                         </div>
                       </dl>
-                      {!watcher?.last_data_at &&
-                        watcher?.state === "watching" && (
-                          <p className="muted">
-                            Đọc được file nhưng chưa quan sát thấy dữ liệu trong
-                            phiên backend này.
-                          </p>
-                        )}
-                      {name === "STUDENT_AUDIT" && (
-                        <p className="muted">
-                          {health && !watcher
-                            ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
-                            : cloud
-                              ? "Nguồn Student Audit được đọc trực tiếp từ tệp trên EC2."
-                              : "Theo dõi thời điểm dữ liệu Student Audit được backend đọc."}
-                        </p>
-                      )}
                     </article>
                   );
                 })}
               </div>
-              <p className="muted">
-                Mốc đọc và nhận dữ liệu tính từ lần khởi động backend, kể cả dữ
-                liệu đã có khi mở file. Cảnh báo và lỗi lấy từ lịch sử DB. Byte
-                chờ gồm cả dòng chưa kết thúc và loại trừ file .gz.
-              </p>
             </section>
             <section className="panel">
-              <h2>Tài nguyên máy chạy backend</h2>
+              <h2>Tài nguyên hệ thống</h2>
               <p>
                 Máy:{" "}
                 <strong>{stats?.system.hostname ?? "Chưa xác định"}</strong> ·
@@ -2028,7 +2019,6 @@ function App() {
                       hour12: false,
                     })
                   : "Đang chờ mẫu đầu tiên"}{" "}
-                · Dữ liệu hiện tại, không theo bộ lọc thời gian Tổng quan.
               </p>
               {stats?.system.network_error && (
                 <p className="error">{stats.system.network_error}.</p>
@@ -2103,12 +2093,6 @@ function App() {
                   </strong>
                 </article>
               </div>
-              <p className="muted">
-                RX/TX là trung bình giữa hai mẫu liên tiếp; cần hai mẫu để tính,
-                reset bộ đếm sẽ chờ mẫu mới. Đĩa là filesystem chứa đường dẫn
-                trên; không đại diện dung lượng DB nếu DB ở máy hoặc volume
-                khác.
-              </p>
               <p>
                 Lần thấy log mới:{" "}
                 {["NGINX", "SURICATA", "STUDENT_AUDIT"]
@@ -2117,10 +2101,6 @@ function App() {
                       `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString("vi-VN", { hour12: false }) : "chưa ghi nhận"}`,
                   )
                   .join(" · ")}
-              </p>
-              <p className="muted">
-                Dashboard tải thành công chỉ xác nhận lấy được API; không có
-                nghĩa nguồn log vừa nhận dữ liệu mới.
               </p>
             </section>
           </>

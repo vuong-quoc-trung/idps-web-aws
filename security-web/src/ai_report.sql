@@ -19,7 +19,8 @@ WITH expected AS MATERIALIZED (
            END AS status,
            (h.observation->>'score')::double precision AS score,
            (h.observation->>'threshold')::double precision AS threshold,
-           i.decision->>'policy_action' AS hybrid
+           CASE WHEN i.decision#>>'{https_research,model_id}'=$1
+               AND i.decision#>>'{https_research,model_sha256}'=$2 THEN i.decision->>'policy_action' END AS hybrid
     FROM expected e FULL JOIN receipts h USING(request_id)
     LEFT JOIN request_correlations c ON c.request_id=COALESCE(e.request_id,h.request_id)
     LEFT JOIN hybrid_incidents i ON i.request_id=COALESCE(e.request_id,h.request_id)
