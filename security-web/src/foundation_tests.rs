@@ -286,7 +286,7 @@ fn nft_timeout_elements_are_understood() {
 }
 
 #[sqlx::test(migrations = "./migrations")]
-async fn extended_sensor_rules_use_audited_bounded_response_only_when_enabled(pool: PgPool) {
+async fn extended_sensor_rules_never_queue_without_automatic_capability(pool: PgPool) {
     let mut s = state(pool, true);
     let sids = vec![1000008, 1000010, 1000011, 1000012, 1000013, 1000014];
     let logs = Logs::new();
@@ -310,45 +310,37 @@ async fn extended_sensor_rules_use_audited_bounded_response_only_when_enabled(po
     assert_eq!(count(&s.pool, "firewall_actions").await, 0);
 
     s.policy = PolicyEngine::new(true, sids.clone(), false);
-    Arc::make_mut(&mut s.safety).mode = "OFF".into();
-    for sid in sids {
-        append(
-            &s,
-            "SURICATA",
-            &path,
-            &format!(
-                "{}\n",
-                json!({
-                    "timestamp":Utc::now(), "event_type":"alert", "src_ip":"192.168.1.50",
-                    "alert":{"signature_id":sid,"severity":1}
-                })
-            ),
-        )
-        .await;
-    }
-    assert_eq!(count(&s.pool, "firewall_actions").await, 6);
-    assert!(
-        !firewall::process_one(&s, |_, _, _| async { panic!("OFF must not call a helper") })
-            .await
-            .unwrap()
-    );
-
-    Arc::make_mut(&mut s.safety).mode = "ENFORCE".into();
-    for _ in 0..6 {
+    for mode in ["OFF", "MANUAL", "ENFORCE"] {
+        Arc::make_mut(&mut s.safety).mode = mode.into();
+        for sid in &sids {
+            assert_eq!(
+                s.policy.evaluate_suricata(Some(*sid)),
+                EventPolicyDecision::EligibleForAutoBlock
+            );
+            append(
+                &s,
+                "SURICATA",
+                &path,
+                &format!(
+                    "{}\n",
+                    json!({
+                        "timestamp":Utc::now(), "event_type":"alert", "src_ip":"192.168.1.50",
+                        "alert":{"signature_id":sid,"severity":1}
+                    })
+                ),
+            )
+            .await;
+        }
+        assert_eq!(count(&s.pool, "firewall_actions").await, 0, "{mode}");
         assert!(
             !firewall::process_one(&s, |_, _, _| async {
-                panic!("C2 must not execute even in ENFORCE")
+                panic!("The closed C2 worker must never call a helper")
             })
             .await
             .unwrap()
         );
     }
-    let pending: i64 =
-        sqlx::query_scalar("SELECT count(*) FROM firewall_actions WHERE status='PENDING'")
-            .fetch_one(&s.pool)
-            .await
-            .unwrap();
-    assert_eq!(pending, 6);
+    assert_eq!(count(&s.pool, "security_alerts").await, 24);
     let blocked: i64 =
         sqlx::query_scalar("SELECT count(*) FROM security_alerts WHERE action='AUTO-BLOCK'")
             .fetch_one(&s.pool)
@@ -363,14 +355,12 @@ async fn historical_alerts_and_expired_pending_jobs_never_enforce(pool: PgPool) 
     s.policy = PolicyEngine::new(true, vec![1000002], true);
     let logs = Logs::new();
     let path = logs.path("eve.json");
-    for (index, time) in [Utc::now() - chrono::Duration::hours(1), Utc::now()]
-        .into_iter()
-        .enumerate()
-    {
+    for time in [Utc::now() - chrono::Duration::hours(1), Utc::now()] {
         append(&s,"SURICATA",&path,&format!("{}\n",json!({"timestamp":time,"event_type":"alert","src_ip":"192.168.1.50","alert":{"signature_id":1000002,"severity":1}}))).await;
-        assert_eq!(count(&s.pool, "firewall_actions").await, index as i64);
+        assert_eq!(count(&s.pool, "firewall_actions").await, 0);
     }
-    sqlx::query("UPDATE firewall_actions SET expires_at=now()-interval '1 second'")
+    // Preserve the worker regression using a synthetic persisted legacy job.
+    sqlx::query("INSERT INTO firewall_actions(ip,action,source,reason,status,actor,expires_at) VALUES ('192.168.1.50','BLOCK','AUTO','fixture','PENDING','system',now()-interval '1 second')")
         .execute(&s.pool)
         .await
         .unwrap();

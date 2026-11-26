@@ -134,13 +134,16 @@ pub fn evaluate(
         "LOG_ONLY"
     };
     let mut reasons = Vec::new();
+    let research = crate::https_research::advisory(row);
     if rule_risk > 0 {
         reasons.push("REQUEST_BOUND_RULE_EVIDENCE");
     }
     if above {
         reasons.push("UNCALIBRATED_AI_ABOVE_FROZEN_OPERATING_POINT");
     }
-    if !compatible {
+    if research.as_ref().is_some_and(|r| r["status"] == "SCORED") {
+        reasons.push("REQUEST_BOUND_HTTPS_AI_ADVISORY");
+    } else if !compatible {
         reasons.push("AI_UNAVAILABLE_OR_FEATURE_UNSUPPORTED");
     }
     if behavior {
@@ -158,7 +161,6 @@ pub fn evaluate(
     if !matched {
         reasons.push("INCOMPLETE_OR_LATE_SENSOR_EVIDENCE");
     }
-    let research = crate::https_research::advisory(row);
     let action =
         if action == "LOG_ONLY" && research.as_ref().is_some_and(|r| r["action"] == "ALERT") {
             "ALERT"
@@ -365,7 +367,7 @@ pub async fn approve(
             "Manual mode, admin approval and bounded TTL required",
         ));
     }
-    prevention::require_execution().map_err(api_error)?;
+    firewall::admit_manual(&state).await.map_err(bad_request)?;
     let mut tx = state.pool.begin().await.map_err(api_error)?;
     let proposed_rid: Option<String> =
         sqlx::query_scalar("SELECT request_id FROM hybrid_proposals WHERE id=$1")

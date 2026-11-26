@@ -125,6 +125,12 @@ pub fn require_execution() -> Result<()> {
     Ok(())
 }
 
+pub fn automatic_execution_enabled(mode: &str) -> bool {
+    // C2 currently grants only a namespace-bound MANUAL capability.
+    // Policy flags alone must never create an actionable automatic job.
+    mode == "ENFORCE" && execution_enabled()
+}
+
 #[derive(serde::Deserialize)]
 pub struct ProposalRequest {
     alert_id: i64,

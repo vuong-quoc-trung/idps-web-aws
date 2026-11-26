@@ -599,13 +599,16 @@ async fn unblock_ip(
     ))
 }
 async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>> {
+    let automatic = prevention::automatic_execution_enabled(&state.safety.mode);
     let mut rules: Vec<_> = suricata_rule_catalog(&state.policy)
         .into_iter()
         .map(|r| {
             let mut v = serde_json::to_value(&r).expect("rule metadata");
+            let eligible = automatic && r.auto_block_eligible;
+            v["auto_block_eligible"] = serde_json::json!(eligible);
             v["code"] = serde_json::json!(format!("SID {}", r.sid));
             v["source"] = serde_json::json!("SURICATA");
-            v["action_mode"] = serde_json::json!(if r.auto_block_eligible {
+            v["action_mode"] = serde_json::json!(if eligible {
                 "POLICY_CONTROLLED"
             } else {
                 "ALERT_ONLY"
@@ -648,7 +651,8 @@ async fn api_rules(State(state): State<AppState>) -> Json<Vec<serde_json::Value>
             2,
         ),
     ] {
-        let eligible = code == "SQLI"
+        let eligible = automatic
+            && code == "SQLI"
             && state.policy.evaluate_nginx() == EventPolicyDecision::EligibleForAutoBlock;
         let mut rule = serde_json::json!({
             "sid":null,"code":code,"source":"NGINX","name":name,

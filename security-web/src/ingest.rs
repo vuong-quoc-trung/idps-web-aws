@@ -246,7 +246,11 @@ async fn save_alert(
     let name: String = name.chars().take(160).collect();
     let age = Utc::now() - event.timestamp;
     let auto = auto
-        && event.suricata_origin.as_ref().is_none_or(|o| !o.post_proxy)
+        && prevention::automatic_execution_enabled(&state.safety.mode)
+        && event
+            .suricata_origin
+            .as_ref()
+            .is_some_and(|o| o.client_ip_verified && !o.post_proxy)
         && age >= chrono::Duration::seconds(-5)
         && age <= chrono::Duration::seconds(state.ingestion.max_response_age_seconds);
     // The persisted verification column is reserved for post-proxy attribution.

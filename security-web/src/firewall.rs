@@ -292,11 +292,10 @@ where
         false
     };
     let validation = if job.action == "BLOCK"
-        && state.safety.mode == "MANUAL"
-        && job.source != "API"
-        && !approved_restore
+        && ((job.source == "AUTO" && !prevention::automatic_execution_enabled(&state.safety.mode))
+            || (state.safety.mode == "MANUAL" && job.source != "API" && !approved_restore))
     {
-        Err(anyhow::anyhow!("Automatic BLOCK disabled in MANUAL mode"))
+        Err(anyhow::anyhow!("Automatic BLOCK capability not available"))
     } else if job.action == "BLOCK" && state.safety.discover_before_apply {
         match network::discover().await {
             Ok(protected) if protected.contains(&job.ip.parse::<IpAddr>()?) => {

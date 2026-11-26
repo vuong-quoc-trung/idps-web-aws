@@ -262,6 +262,9 @@ mod tests {
         assert_eq!(d["ai"]["model_id"], s["version"]);
         assert_eq!(d["policy_action"], "ALERT");
         assert_eq!(d["ai_risk_component"], 0);
+        let reasons = d["policy_reason"].as_array().unwrap();
+        assert!(reasons.contains(&json!("REQUEST_BOUND_HTTPS_AI_ADVISORY")));
+        assert!(!reasons.contains(&json!("AI_UNAVAILABLE_OR_FEATURE_UNSUPPORTED")));
         assert_eq!(d["automatic_block"], false);
         row["correlation"]["status"] = json!("AMBIGUOUS");
         assert_eq!(policy(&row)["ai"]["status"], "ABSTAIN");
