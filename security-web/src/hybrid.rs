@@ -409,6 +409,79 @@ pub async fn approve(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[sqlx::test(migrations = "./migrations")]
+    async fn r51_labeled_demo_matches_dashboard_snapshot(pool: PgPool) {
+        let fixture: Value =
+            serde_json::from_str(include_str!("../frontend/src/r51-demo.json")).unwrap();
+        let rid = fixture["request_id"].as_str().unwrap();
+        let mut state = integration_tests::state(pool.clone());
+        state.policy = PolicyEngine::new(false, vec![], false);
+        let at = Utc::now();
+        let dir = env::temp_dir().join(format!("ws-r51-fixture-{}", rand::random::<u64>()));
+        std::fs::create_dir(&dir).unwrap();
+        let log = dir.join("nginx.jsonl");
+        let line = json!({"timestamp":at,"source_instance":"r51-lab-fixture","client_ip":"192.0.2.51","request_id":rid,"event_id":format!("r51-main-{rid}"),"http_method":"GET","uri_path":"/api/classes","status":200,"rule_signals":{"SQLI":1}});
+        std::fs::write(&log, format!("{line}\n{line}\n")).unwrap();
+        let ingest = crate::ingest::process_file(&state, "NGINX", &log).await;
+        std::fs::remove_file(&log).unwrap();
+        std::fs::remove_dir(&dir).unwrap();
+        ingest.unwrap();
+
+        let proof = json!({"schema_version":"three-source-1","request_id":rid,"sensor_instance":"a".repeat(32),"observed_at":at,"status":"MATCHED","sources":fixture["sources"],"flow_id":"5151","tx_id":0,"duplicate_events":0,"flow_context_alerts":0,"late_event":false,"basis":"EDGE_RESPONSE_ID_AND_HTTP_CONSISTENCY","proof_sha256":"b".repeat(64),"glu":null,"enforcement_actions":0});
+        let registry: Value = serde_json::from_str(include_str!(
+            "../../ai-training/contracts/quality-freeze-r37/slots.json"
+        ))
+        .unwrap();
+        let model = &registry["slots"]["candidate"];
+        let now = at.timestamp_nanos_opt().unwrap();
+        let advisory = json!({"request_id":rid,"version":model["version"],"model_sha256":model["sha256"],"schema":registry["abi"],"dispatch_ns":now-3_000_000,"receipt_ns":now-2_000_000,"available_ns":now-1_000_000,"cutoff_ns":now+997_000_000,"guard_ns":1_000_000,"status":"SCORED","threshold":model["threshold"],"score":0.90,"enforcement":false});
+        let mut tx = pool.begin().await.unwrap();
+        crate::three_source::ingest(&mut tx, "r51-proof", &serde_json::to_vec(&proof).unwrap())
+            .await
+            .unwrap();
+        crate::https_research::ingest(
+            &mut tx,
+            "r51-score",
+            &serde_json::to_vec(&advisory).unwrap(),
+        )
+        .await
+        .unwrap();
+        tx.commit().await.unwrap();
+        for _ in 0..2 {
+            refresh(
+                &state,
+                &Config::default(),
+                #[cfg(feature = "dev-hybrid-review")]
+                None,
+            )
+            .await
+            .unwrap();
+        }
+        let decision: Value =
+            sqlx::query_scalar("SELECT decision FROM hybrid_incidents WHERE request_id=$1")
+                .bind(rid)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+        assert_eq!(decision["policy_action"], fixture["decision"]);
+        assert_eq!(decision["https_research"]["action"], fixture["advisory"]);
+        assert_eq!(
+            decision["correlation_confidence"],
+            "REQUEST_TRANSACTION_MATCHED"
+        );
+        assert_eq!(decision["automatic_block"], false);
+        let actual: (i64,i64,i64,i64) = sqlx::query_as("SELECT (SELECT count(*) FROM security_alerts),(SELECT count(*) FROM hybrid_incidents),(SELECT count(*) FROM hybrid_decision_audit),(SELECT count(*) FROM firewall_actions)").fetch_one(&pool).await.unwrap();
+        assert_eq!(
+            json!([actual.0, actual.1, actual.2, actual.3]),
+            json!([
+                fixture["source_alerts"],
+                fixture["hybrid_incidents"],
+                fixture["decision_audit"],
+                fixture["firewall_actions"]
+            ])
+        );
+    }
     #[cfg(feature = "dev-hybrid-review")]
     #[sqlx::test]
     async fn dev_review_persists_only_correlated_evidence_and_never_enqueues(pool: PgPool) {

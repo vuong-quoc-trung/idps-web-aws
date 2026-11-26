@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { lookupHybrid } from "./hybridLookup";
+import demo from "./r51-demo.json";
 
 type Score = {
   event_id: string;
@@ -197,6 +198,31 @@ export function AiShadow({
         <h2 id="ai-title">AI Shadow</h2>
         <span className="badge">Enforcement: DISABLED</span>
       </div>
+      <details>
+        <summary>{demo.label}</summary>
+        <p>
+          Bản phát lại từ kiểm thử cô lập. Dữ liệu này nằm ngoài luồng alert, bộ
+          đếm và SSE đang chạy trên AWS.
+        </p>
+        <dl>
+          <dt>Request ID của fixture</dt>
+          <dd>
+            <code>{demo.request_id}</code>
+          </dd>
+          <dt>Rule và nguồn quan sát</dt>
+          <dd>
+            {demo.source_alerts} cảnh báo nguồn · {demo.sources.join(" / ")} ·{" "}
+            {demo.correlation}
+          </dd>
+          <dt>R37 advisory và Hybrid</dt>
+          <dd>
+            {demo.advisory} → {demo.decision} · {demo.hybrid_incidents} incident
+            · {demo.decision_audit} quyết định đã lưu
+          </dd>
+          <dt>Prevention</dt>
+          <dd>{demo.firewall_actions} hành động firewall</dd>
+        </dl>
+      </details>
       <form
         className="filters"
         onSubmit={(event) => {

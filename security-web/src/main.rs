@@ -410,6 +410,7 @@ fn router(state: AppState) -> Router {
         .route("/api/events", get(realtime::events))
         .route("/api/status", get(metrics::status))
         .route("/api/ready", get(metrics::readiness))
+        .route("/api/ready/monitoring", get(metrics::monitoring_readiness))
         .route("/api/rules", get(api_rules))
         .route(
             "/api/prevention/proposals",

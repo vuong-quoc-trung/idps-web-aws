@@ -1,0 +1,12 @@
+{
+  "label": "R51 · Demo fixture từ lab cô lập",
+  "request_id": "51515151515151515151515151515151",
+  "sources": ["NGINX", "STUDENT_AUDIT", "SURICATA"],
+  "source_alerts": 1,
+  "hybrid_incidents": 1,
+  "decision_audit": 1,
+  "correlation": "MATCHED",
+  "advisory": "ALERT",
+  "decision": "REVIEW",
+  "firewall_actions": 0
+}

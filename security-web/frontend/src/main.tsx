@@ -145,6 +145,8 @@ type Health = {
     suricata?: { active: string; load: string; sub: string };
   };
   healthy: boolean;
+  monitoring_ready?: boolean;
+  prevention_state?: "DISABLED" | "UNAVAILABLE" | "READY";
   database: boolean;
   firewall: boolean;
   kernel_blocked_count?: number | null;
@@ -607,6 +609,7 @@ function App() {
       : "";
   };
   const admin = session.user.role === "admin";
+  const monitoringReady = health?.monitoring_ready ?? health?.healthy;
   const tabs = [
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
@@ -708,13 +711,13 @@ function App() {
               Hiệu ứng cảnh báo mới
             </label>
             <span
-              className={`badge status-badge ${!error && health?.healthy ? "good" : "warn"}`}
+              className={`badge status-badge ${!error && monitoringReady ? "good" : "warn"}`}
             >
               {error
                 ? "Mất kết nối / dữ liệu có thể cũ"
-                : health?.healthy
-                  ? "Hệ thống sẵn sàng"
-                  : "Cần kiểm tra hệ thống"}
+                : monitoringReady
+                  ? "Giám sát sẵn sàng"
+                  : "Cần kiểm tra giám sát"}
             </span>
             <div className="realtime-header">
               <RealtimeClock />
@@ -1793,6 +1796,18 @@ function App() {
                     </span>
                   </div>
                 ))}
+                <div className="service-item">
+                  <span>Prevention</span>
+                  <span
+                    className={`badge ${health?.prevention_state === "READY" ? "good" : "warn"}`}
+                  >
+                    {health?.prevention_state === "DISABLED"
+                      ? "Đã tắt theo cấu hình"
+                      : health?.prevention_state === "READY"
+                        ? "Sẵn sàng"
+                        : "Chưa xác minh sẵn sàng"}
+                  </span>
+                </div>
                 <div className="service-item">
                   <span>DB / Firewall</span>
                   <FirewallSync compact report={health?.sync} />

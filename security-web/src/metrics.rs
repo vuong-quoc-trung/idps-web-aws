@@ -136,7 +136,37 @@ pub async fn status(state: State<AppState>) -> Json<Value> {
     readiness(state).await.1
 }
 
-// Monitoring clients can use the HTTP code to check readiness.
+pub async fn monitoring_readiness(state: State<AppState>) -> (StatusCode, Json<Value>) {
+    let (_, report) = readiness(state).await;
+    let ready = report["monitoring_ready"].as_bool() == Some(true);
+    (
+        if ready {
+            StatusCode::OK
+        } else {
+            StatusCode::SERVICE_UNAVAILABLE
+        },
+        report,
+    )
+}
+
+fn readiness_state(
+    database: bool,
+    watchers_ready: bool,
+    mode: &str,
+    verified: bool,
+) -> (bool, &'static str) {
+    let monitoring_ready = database && watchers_ready;
+    let prevention = if mode == "OFF" {
+        "DISABLED"
+    } else if monitoring_ready && verified {
+        "READY"
+    } else {
+        "UNAVAILABLE"
+    };
+    (monitoring_ready, prevention)
+}
+
+// Legacy full-profile readiness still requires firewall readback.
 pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value>) {
     let database = sqlx::query("SELECT 1").execute(&state.pool).await.is_ok();
     let fw = firewall::observation(&state).await;
@@ -163,11 +193,13 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
         Some("FIREWALL_SCOPE_MISMATCH" | "FIREWALL_SCOPE_UNVERIFIED") => Some(true),
         _ => None,
     };
-    let healthy = database
-        && readable
-        && in_sync != Some(false)
-        && !watchers.is_empty()
-        && watchers.values().all(|s| s.state == "watching");
+    let (monitoring_ready, prevention_state) = readiness_state(
+        database,
+        !watchers.is_empty() && watchers.values().all(|s| s.state == "watching"),
+        &state.safety.mode,
+        readable && in_sync == Some(true) && state.safety.discovery_ok,
+    );
+    let healthy = monitoring_ready && readable && in_sync != Some(false);
     (
         if healthy {
             StatusCode::OK
@@ -175,7 +207,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
             StatusCode::SERVICE_UNAVAILABLE
         },
         Json(
-            json!({"checked_at":Utc::now(),"operations":operations,"healthy":healthy,"database":database,"firewall":readable,"firewall_status":fw["error"].as_str().unwrap_or("READY"),"firewall_initialized":firewall_initialized,"kernel_blocked_count":fw["kernel"].as_array().map(Vec::len),"sync":fw["sync"],"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
+            json!({"checked_at":Utc::now(),"operations":operations,"healthy":healthy,"monitoring_ready":monitoring_ready,"prevention_state":prevention_state,"database":database,"firewall":readable,"firewall_status":fw["error"].as_str().unwrap_or("READY"),"firewall_initialized":firewall_initialized,"kernel_blocked_count":fw["kernel"].as_array().map(Vec::len),"sync":fw["sync"],"firewall_in_sync":in_sync,"watchers":watchers,"collection":collection,"ingestion_errors":ingestion_errors,"dataset_collection":state.ingestion.collect_all,"schema_version":events::SCHEMA_VERSION,"enforcement_mode":state.safety.mode,"safety_discovery":state.safety.discovery_ok}),
         ),
     )
 }
@@ -183,6 +215,29 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
 #[cfg(test)]
 mod resource_tests {
     use super::*;
+    #[test]
+    fn monitoring_and_prevention_have_independent_status() {
+        assert_eq!(
+            readiness_state(true, true, "OFF", false),
+            (true, "DISABLED")
+        );
+        assert_eq!(
+            readiness_state(true, true, "MANUAL", false),
+            (true, "UNAVAILABLE")
+        );
+        assert_eq!(
+            readiness_state(true, true, "ENFORCE", true),
+            (true, "READY")
+        );
+        assert_eq!(
+            readiness_state(false, true, "ENFORCE", true),
+            (false, "UNAVAILABLE")
+        );
+        assert_eq!(
+            readiness_state(true, false, "OFF", true),
+            (false, "DISABLED")
+        );
+    }
     #[tokio::test]
     async fn sampler_publishes_context() {
         let task = tokio::spawn(sample_resources());
