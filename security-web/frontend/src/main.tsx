@@ -76,7 +76,7 @@ type Stats = {
   types: { name: string; count: number }[];
   system: {
     hostname?: string | null;
-    interface?: string;
+    interface?: string | null;
     sampled_at?: string;
     interface_tx_bytes?: number | null;
     rx_bytes_per_second?: number | null;
@@ -86,6 +86,7 @@ type Stats = {
     disk?: { total_bytes: number; available_bytes: number } | null;
     disk_error?: string | null;
     load_average_1m: number | null;
+    cpu_percent?: number | null;
     memory_percent: number | null;
     interface_rx_bytes: number | null;
     established_tcp_connections: number | null;
@@ -135,14 +136,18 @@ type Rule = {
   severity: number;
   auto_block_eligible: boolean;
 };
+type UnitStatus = { active: string; load: string; sub: string };
 type Health = {
   checked_at?: string;
   dataset_collection?: boolean;
   operations?: {
     native_authorization?: string | null;
     sampled_at?: string;
-    receiver?: { active: string; load: string; sub: string };
-    suricata?: { active: string; load: string; sub: string };
+    profile?: string;
+    receiver?: UnitStatus;
+    suricata?: UnitStatus;
+    services?: Record<string, UnitStatus>;
+    hybrid_last_success_at?: string | null;
   };
   healthy: boolean;
   monitoring_ready?: boolean;
@@ -205,6 +210,16 @@ function preventionMessage(state: Health["prevention_state"]) {
   if (state === "BLOCKED") return "Thực thi chặn IP đang bị khóa (C2).";
   if (state === "READY") return "Thực thi chặn IP đã sẵn sàng.";
   return "Chưa xác minh khả năng chặn IP.";
+}
+
+function serviceLabel(status?: UnitStatus) {
+  if (!status || status.active === "unknown") return "Chưa xác minh";
+  if (status.load === "not-found") return "Chưa cài đặt";
+  if (status.active === "active" && status.sub === "running")
+    return "Đang chạy";
+  if (status.active === "failed") return "Lỗi";
+  if (status.active === "inactive") return "Đã dừng";
+  return `${status.active} / ${status.sub}`;
 }
 
 function App() {
@@ -616,6 +631,11 @@ function App() {
   const admin = session.user.role === "admin";
   const monitoringReady = health?.monitoring_ready ?? health?.healthy;
   const preventionReady = health?.prevention_state === "READY";
+  const cloud = health?.operations?.profile === "aws-staging";
+  const hybridSample = health?.operations?.hybrid_last_success_at;
+  const hybridAge =
+    Date.parse(health?.checked_at ?? "") - Date.parse(hybridSample ?? "");
+  const hybridCurrent = hybridAge >= 0 && hybridAge < 15_000;
   const tabs = [
     ["overview", "Tổng quan"],
     ["alerts", "Cảnh báo"],
@@ -1819,68 +1839,111 @@ function App() {
                   {health.operations.native_authorization}
                 </p>
               )}
-              <p className="muted">
-                Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến trình
-                Nginx/Suricata/Student Web hoặc đường truyền RELP đang hoạt
-                động. Không có cảnh báo mới có thể là bình thường.
-              </p>
-              <article className="panel">
-                <h3>Đường truyền Student Audit</h3>
-                <p>
-                  Web VM → RELP receiver → file local → Rust ingest → DB →
-                  Dashboard
-                </p>
-                <dl className="detail-fields">
-                  <div>
-                    <dt>Sender trên Web VM</dt>
-                    <dd>
-                      Chưa xác minh từ host; kiểm tra pbl4-audit-sender.service
-                      trên VM.
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Receiver trên host</dt>
-                    <dd>
-                      {health?.operations?.receiver
-                        ? `${health.operations.receiver.active} / ${health.operations.receiver.sub}`
-                        : "Chưa có mẫu kiểm tra"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Sensor Suricata trên host</dt>
-                    <dd>
-                      {health?.operations?.suricata
-                        ? `${health.operations.suricata.active} / ${health.operations.suricata.sub}`
-                        : "Chưa có mẫu kiểm tra"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Mẫu kiểm tra dịch vụ</dt>
-                    <dd>
-                      {health?.operations?.sampled_at
-                        ? new Date(health.operations.sampled_at).toLocaleString(
-                            "vi-VN",
-                          )
-                        : "Chưa có"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Lưu audit đầy đủ</dt>
-                    <dd>
-                      {health?.dataset_collection == null
-                        ? "Chưa xác định"
-                        : health.dataset_collection
-                          ? "Đang bật"
-                          : "Đang tắt — mốc DB có thể là lịch sử"}
-                    </dd>
-                  </div>
-                </dl>
-                <p className="muted">
-                  Service active không chứng minh kết nối RELP hay dữ liệu đầu
-                  cuối đang hoạt động. Không thực hiện SSH hoặc restart dịch vụ
-                  từ dashboard.
-                </p>
-              </article>
+              {cloud ? (
+                <article className="panel">
+                  <h3>Luồng giám sát AWS staging</h3>
+                  <p>
+                    Student Web ghi Student Audit trên EC2. Security Web đọc tệp
+                    audit tại chỗ.
+                  </p>
+                  <dl className="detail-fields">
+                    {[
+                      ["nginx", "NGINX"],
+                      ["suricata", "Suricata"],
+                      ["student", "Student Web"],
+                      ["postgresql", "PostgreSQL"],
+                      ["correlator", "Correlator"],
+                      ["r37", "AI R37"],
+                    ].map(([key, label]) => (
+                      <div key={key}>
+                        <dt>{label}</dt>
+                        <dd>
+                          {serviceLabel(health?.operations?.services?.[key])}
+                        </dd>
+                      </div>
+                    ))}
+                    <div>
+                      <dt>Hybrid</dt>
+                      <dd>
+                        {hybridCurrent
+                          ? "Đã xử lý thành công gần đây"
+                          : hybridSample
+                            ? "Mẫu xử lý đã cũ"
+                            : "Chưa ghi nhận xử lý thành công"}
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className="muted">
+                    Trạng thái tiến trình từ systemd. Xem thời điểm nhận log của
+                    từng nguồn bên dưới.
+                  </p>
+                </article>
+              ) : (
+                <>
+                  <p className="muted">
+                    Watcher chỉ xác nhận khả năng đọc log; không xác nhận tiến
+                    trình Nginx/Suricata/Student Web hoặc đường truyền RELP đang
+                    hoạt động. Không có cảnh báo mới có thể là bình thường.
+                  </p>
+                  <article className="panel">
+                    <h3>Đường truyền Student Audit</h3>
+                    <p>
+                      Web VM → RELP receiver → file local → Rust ingest → DB →
+                      Dashboard
+                    </p>
+                    <dl className="detail-fields">
+                      <div>
+                        <dt>Sender trên Web VM</dt>
+                        <dd>
+                          Chưa xác minh từ host; kiểm tra
+                          pbl4-audit-sender.service trên VM.
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Receiver trên host</dt>
+                        <dd>
+                          {health?.operations?.receiver
+                            ? `${health.operations.receiver.active} / ${health.operations.receiver.sub}`
+                            : "Chưa có mẫu kiểm tra"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Sensor Suricata trên host</dt>
+                        <dd>
+                          {health?.operations?.suricata
+                            ? `${health.operations.suricata.active} / ${health.operations.suricata.sub}`
+                            : "Chưa có mẫu kiểm tra"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Mẫu kiểm tra dịch vụ</dt>
+                        <dd>
+                          {health?.operations?.sampled_at
+                            ? new Date(
+                                health.operations.sampled_at,
+                              ).toLocaleString("vi-VN")
+                            : "Chưa có"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Lưu audit đầy đủ</dt>
+                        <dd>
+                          {health?.dataset_collection == null
+                            ? "Chưa xác định"
+                            : health.dataset_collection
+                              ? "Đang bật"
+                              : "Đang tắt — mốc DB có thể là lịch sử"}
+                        </dd>
+                      </div>
+                    </dl>
+                    <p className="muted">
+                      Service active không chứng minh kết nối RELP hay dữ liệu
+                      đầu cuối đang hoạt động. Không thực hiện SSH hoặc restart
+                      dịch vụ từ dashboard.
+                    </p>
+                  </article>
+                </>
+              )}
               <div className="source-health-grid">
                 {["NGINX", "SURICATA_LUA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
@@ -1995,7 +2058,9 @@ function App() {
                         <p className="muted">
                           {health && !watcher
                             ? "Backend chưa có watcher Student Audit. Kiểm tra STUDENT_AUDIT_LOG_PATH."
-                            : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
+                            : cloud
+                              ? "Nguồn Student Audit được đọc trực tiếp từ tệp trên EC2."
+                              : "Theo dõi file audit local mà backend đọc. Đọc được file không chứng minh Web VM đang gửi log mới qua RELP."}
                         </p>
                       )}
                     </article>
@@ -2017,11 +2082,6 @@ function App() {
                 <strong>{stats?.system.interface ?? "Chưa xác định"}</strong>
               </p>
               <p className="muted">
-                Số liệu của môi trường chạy backend, không mặc nhiên là Security
-                VM. Nếu chạy trong container, một số số liệu có thể thuộc
-                container hoặc host tùy cách triển khai.
-              </p>
-              <p className="muted">
                 Mẫu mạng/đĩa:{" "}
                 {stats?.system.sampled_at
                   ? new Date(stats.system.sampled_at).toLocaleString("vi-VN", {
@@ -2031,18 +2091,18 @@ function App() {
                 · Dữ liệu hiện tại, không theo bộ lọc thời gian Tổng quan.
               </p>
               {stats?.system.network_error && (
-                <p className="error">
-                  {stats.system.network_error}. Kiểm tra ATTACKER_IFACE.
-                </p>
+                <p className="error">{stats.system.network_error}.</p>
               )}
               {stats?.system.disk_error && (
                 <p className="error">{stats.system.disk_error}</p>
               )}
               <div className="cards">
                 <article>
-                  <p>Load average 1 phút</p>
-                  <strong>{fmt(stats?.system.load_average_1m)}</strong>
-                  <small>Không phải phần trăm CPU</small>
+                  <p>CPU đang dùng</p>
+                  <strong>{fmt(stats?.system.cpu_percent, "%")}</strong>
+                  <small>
+                    Tải trung bình 1 phút: {fmt(stats?.system.load_average_1m)}
+                  </small>
                 </article>
                 <article>
                   <p>Bộ nhớ đang dùng</p>

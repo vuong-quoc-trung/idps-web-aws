@@ -4,6 +4,14 @@ use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 
 const VERSION: &str = "hybrid-local-v1";
+static LAST_REFRESH: std::sync::atomic::AtomicI64 = std::sync::atomic::AtomicI64::new(0);
+
+pub fn last_successful_refresh() -> Option<DateTime<Utc>> {
+    let seconds = LAST_REFRESH.load(std::sync::atomic::Ordering::Relaxed);
+    (seconds > 0)
+        .then(|| DateTime::from_timestamp(seconds, 0))
+        .flatten()
+}
 #[derive(Clone, Deserialize, Serialize, Debug)]
 #[serde(default, deny_unknown_fields)]
 pub struct Config {
@@ -299,6 +307,8 @@ pub async fn worker(state: AppState) {
         .await
         {
             tracing::error!(error=%e,"Hybrid policy refresh failed; no response enqueued");
+        } else {
+            LAST_REFRESH.store(Utc::now().timestamp(), std::sync::atomic::Ordering::Relaxed);
         }
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }

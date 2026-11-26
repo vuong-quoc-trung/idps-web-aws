@@ -8,6 +8,29 @@ fn sample() -> &'static RwLock<Value> {
 pub async fn snapshot() -> Value {
     sample().read().await.clone()
 }
+pub fn aws_staging() -> bool {
+    env::var("WS_OPERATIONS_PROFILE").as_deref() == Ok("aws-staging")
+}
+
+const AWS_UNITS: [(&str, &str); 6] = [
+    ("nginx", "nginx.service"),
+    ("student", "websentinel-r47-student.service"),
+    ("postgresql", "postgresql@18-main.service"),
+    ("suricata", "websentinel-r48-sensor.service"),
+    ("correlator", "websentinel-r48-correlator.service"),
+    ("r37", "websentinel-r47-scorer.service"),
+];
+
+async fn aws_services() -> Value {
+    let probes = futures_util::future::join_all(
+        AWS_UNITS
+            .iter()
+            .map(|(key, unit)| async { (key.to_string(), service(unit).await) }),
+    )
+    .await;
+    Value::Object(probes.into_iter().collect())
+}
+
 async fn service(unit: &str) -> Value {
     let mut command = tokio::process::Command::new("systemctl");
     command
@@ -72,17 +95,31 @@ async fn native_mode() -> &'static str {
 }
 
 pub async fn monitor() {
-    let path = env::var("SURICATA_RULES_DEPLOYED_PATH")
-        .unwrap_or("/var/lib/suricata/rules/pbl4.rules".into());
+    let cloud = aws_staging();
+    let path = env::var("SURICATA_RULES_DEPLOYED_PATH").unwrap_or_else(|_| {
+        if cloud {
+            "/opt/websentinel-r48/runtime/pbl4.rules"
+        } else {
+            "/var/lib/suricata/rules/pbl4.rules"
+        }
+        .into()
+    });
     loop {
-        let (receiver, sensor) = tokio::join!(
-            service("pbl4-audit-receiver.service"),
-            service(if firewall::native_status() {
-                "ws-native-sensor.service"
-            } else {
-                "suricata.service"
-            })
-        );
+        let services = if cloud {
+            let units = aws_services().await;
+            json!({"profile":"aws-staging","services":units,"suricata":units["suricata"]})
+        } else {
+            let (receiver, sensor) = tokio::join!(
+                service("pbl4-audit-receiver.service"),
+                service(if firewall::native_status() {
+                    "ws-native-sensor.service"
+                } else {
+                    "suricata.service"
+                })
+            );
+            json!({"profile":"local","receiver":receiver,"suricata":sensor,
+                "sender":{"active":"unknown","reason":"Remote sender is not probed from Security host"}})
+        };
         // Bound the read even if the configured path unexpectedly points to a large file.
         use tokio::io::AsyncReadExt;
         let file = tokio::time::timeout(std::time::Duration::from_secs(2), async {
@@ -100,13 +137,16 @@ pub async fn monitor() {
             }
             _ => None,
         };
-        *sample().write().await = json!({
-            "native_authorization":if firewall::native_status() { Some(native_mode().await) } else { None },
-            "sampled_at":Utc::now(), "receiver":receiver, "suricata":sensor,
-            "sender":{"active":"unknown","reason":"Remote sender is not probed from Security host"},
-            "suricata_rules_file":{"path":path,"matches_build":matches},
-            "suricata_loaded_rules_verified":false
+        let mut report = services;
+        report["native_authorization"] = json!(if !cloud && firewall::native_status() {
+            Some(native_mode().await)
+        } else {
+            None
         });
+        report["sampled_at"] = json!(Utc::now());
+        report["suricata_rules_file"] = json!({"path":path,"matches_build":matches});
+        report["suricata_loaded_rules_verified"] = json!(false);
+        *sample().write().await = report;
         tokio::time::sleep(std::time::Duration::from_secs(15)).await;
     }
 }

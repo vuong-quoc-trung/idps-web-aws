@@ -46,21 +46,102 @@ fn parse_disk(text: &str) -> Option<Value> {
     Some(json!({"total_bytes":fields.first()?.parse::<u64>().ok()?,
         "available_bytes":fields.get(1)?.parse::<u64>().ok()?}))
 }
+fn default_interface(routes: &str) -> Option<String> {
+    let routes = routes.lines().skip(1).filter_map(|line| {
+        let parts: Vec<_> = line.split_whitespace().collect();
+        let flags = u32::from_str_radix(parts.get(3)?, 16).ok()?;
+        if parts[1] != "00000000"
+            || *parts.get(7)? != "00000000"
+            || flags & 1 == 0
+            || flags & 0x200 != 0
+            || parts[0] == "lo"
+        {
+            return None;
+        }
+        Some((parts.get(6)?.parse::<u32>().ok()?, parts[0]))
+    });
+    let mut best = None;
+    let mut ambiguous = false;
+    for (metric, interface) in routes {
+        match best {
+            None => best = Some((metric, interface)),
+            Some((m, _)) if metric < m => {
+                best = Some((metric, interface));
+                ambiguous = false;
+            }
+            Some((m, i)) if metric == m && i != interface => ambiguous = true,
+            _ => {}
+        }
+    }
+    if ambiguous {
+        None
+    } else {
+        best.map(|(_, name)| name.to_owned())
+    }
+}
+
+fn cpu_ticks(stat: &str) -> Option<(u64, u64)> {
+    let mut cpu = stat.lines().next()?.split_whitespace();
+    if cpu.next()? != "cpu" {
+        return None;
+    }
+    // guest and guest_nice are already counted in user and nice.
+    let ticks = cpu
+        .take(8)
+        .map(str::parse::<u64>)
+        .collect::<Result<Vec<_>, _>>()
+        .ok()?;
+    let idle = ticks.get(3)?.checked_add(*ticks.get(4)?)?;
+    Some((ticks.iter().sum(), idle))
+}
+
+fn cpu_percent(previous: (u64, u64), current: (u64, u64)) -> Option<f64> {
+    let total = current.0.checked_sub(previous.0)?;
+    let idle = current.1.checked_sub(previous.1)?;
+    let active = total.checked_sub(idle)?;
+    (total > 0).then(|| active as f64 * 100.0 / total as f64)
+}
+
 pub async fn sample_resources() {
-    let iface = env::var("ATTACKER_IFACE").unwrap_or("vmnet2".into());
+    let cloud = operations::aws_staging();
+    let configured = if cloud {
+        env::var("METRICS_INTERFACE").ok()
+    } else {
+        Some(env::var("ATTACKER_IFACE").unwrap_or("vmnet2".into()))
+    };
     let disk_path = env::var("METRICS_DISK_PATH").unwrap_or("/".into());
-    let mut previous: Option<(std::time::Instant, u64, u64)> = None;
+    let mut previous: Option<(String, std::time::Instant, u64, u64)> = None;
+    let mut previous_cpu = None;
     loop {
         let now = std::time::Instant::now();
-        let counters = network_bytes(&iface);
-        let (rx_rate, tx_rate) = match (previous, counters) {
-            (Some((at, rx, tx)), Some((new_rx, new_tx))) => (
-                rate(rx, new_rx, now.duration_since(at).as_secs_f64()),
-                rate(tx, new_tx, now.duration_since(at).as_secs_f64()),
-            ),
+        let iface = configured.clone().or_else(|| {
+            std::fs::read_to_string("/proc/net/route")
+                .ok()
+                .and_then(|routes| default_interface(&routes))
+        });
+        let counters = iface.as_deref().and_then(network_bytes);
+        let (rx_rate, tx_rate) = match (&previous, &iface, counters) {
+            (Some((old_iface, at, rx, tx)), Some(name), Some((new_rx, new_tx)))
+                if old_iface == name =>
+            {
+                (
+                    rate(*rx, new_rx, now.duration_since(*at).as_secs_f64()),
+                    rate(*tx, new_tx, now.duration_since(*at).as_secs_f64()),
+                )
+            }
             _ => (None, None),
         };
-        previous = counters.map(|(rx, tx)| (now, rx, tx));
+        previous = iface
+            .clone()
+            .zip(counters)
+            .map(|(name, (rx, tx))| (name, now, rx, tx));
+        let current_cpu = std::fs::read_to_string("/proc/stat")
+            .ok()
+            .and_then(|value| cpu_ticks(&value));
+        let cpu = previous_cpu
+            .zip(current_cpu)
+            .and_then(|(old, current)| cpu_percent(old, current));
+        previous_cpu = current_cpu;
         let mut command = tokio::process::Command::new("df");
         command
             .args(["-B1", "--output=size,avail", "--", &disk_path])
@@ -76,10 +157,10 @@ pub async fn sample_resources() {
         let hostname = std::fs::read_to_string("/proc/sys/kernel/hostname")
             .ok()
             .map(|s| s.trim().to_owned());
-        *resource_sample().write().await = json!({"hostname":hostname,"interface":iface,"sampled_at":Utc::now(),
+        *resource_sample().write().await = json!({"hostname":hostname,"interface":iface,"sampled_at":Utc::now(),"cpu_percent":cpu,
             "interface_rx_bytes":counters.map(|c|c.0),"interface_tx_bytes":counters.map(|c|c.1),
             "rx_bytes_per_second":rx_rate,"tx_bytes_per_second":tx_rate,
-            "network_error":if counters.is_none() {Some("Không đọc được interface đã cấu hình")} else {None},
+            "network_error":if iface.is_none() {Some("Chưa xác định được giao diện mạng từ tuyến mặc định")} else if counters.is_none() {Some("Không đọc được bộ đếm của giao diện mạng")} else {None},
             "disk_path":disk_path,"disk":disk,"disk_error":if disk.is_none() {Some("Không đọc được dung lượng filesystem")} else {None}});
         tokio::time::sleep(std::time::Duration::from_secs(2)).await;
     }
@@ -188,7 +269,11 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
           'last_error', (SELECT jsonb_build_object('at',created_at,'reason',reason) FROM ingestion_errors e WHERE e.source=s.source ORDER BY created_at DESC,event_key DESC LIMIT 1)
         )) FROM (VALUES ('NGINX'),('SURICATA'),('STUDENT_AUDIT'),('SURICATA_LUA')) s(source)
     "#).fetch_one(&state.pool).await.ok();
-    let operations = operations::snapshot().await;
+    let mut operations = operations::snapshot().await;
+    if operations::aws_staging() {
+        operations["profile"] = json!("aws-staging");
+    }
+    operations["hybrid_last_success_at"] = json!(hybrid::last_successful_refresh());
     let in_sync = fw["in_sync"].as_bool();
     let firewall_initialized = match fw["error"].as_str() {
         None if readable => Some(true),
@@ -276,5 +361,24 @@ mod resource_tests {
             400
         );
         assert!(parse_disk("invalid").is_none());
+    }
+
+    #[test]
+    fn host_metrics_require_a_valid_default_route_and_two_cpu_samples() {
+        let routes = concat!(
+            "Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT\n",
+            "lo 00000000 00000000 0001 0 0 0 00000000 0 0 0\n",
+            "ens9 00000000 00000001 0002 0 0 0 00000000 0 0 0\n",
+            "enp1s0 00000000 00000001 0003 0 0 100 00000000 0 0 0\n",
+            "enp2s0 00000000 00000001 0003 0 0 10 00000000 0 0 0\n",
+        );
+        assert_eq!(default_interface(routes).as_deref(), Some("enp2s0"));
+        let tie = format!("{routes}enp3s0 00000000 00000001 0003 0 0 10 00000000 0 0 0\n");
+        assert!(default_interface(&tie).is_none());
+        let old = cpu_ticks("cpu 10 0 0 90 0 0 0 0 9 0\n").unwrap();
+        let new = cpu_ticks("cpu 35 0 0 165 0 0 0 0 20 0\n").unwrap();
+        assert_eq!(cpu_percent(old, new), Some(25.0));
+        assert_eq!(cpu_percent(old, old), None);
+        assert_eq!(cpu_percent(new, old), None);
     }
 }
