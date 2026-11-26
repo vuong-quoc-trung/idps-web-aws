@@ -1,5 +1,7 @@
 """Render the cloud beta gateway from the verified R47 configuration."""
 
+import re
+
 
 ROUTES = {
     ("GET", "/api/auth/csrf"),
@@ -13,6 +15,22 @@ ROUTES = {
     ("GET", "/api/classes"),
     ("GET", "/api/me/completion"),
 }
+
+CATALOG_COLLECTIONS = ("classes", "faculties", "majors", "training-programs")
+CATALOG_BASE = rf"/api/({'|'.join(CATALOG_COLLECTIONS)})"
+CATALOG_PAGE = rf"{CATALOG_BASE}\?(page=[0-9]{{1,6}}(&size=[0-9]{{1,3}})?|size=[0-9]{{1,3}}(&page=[0-9]{{1,6}})?)"
+CATALOG_DETAIL = rf"{CATALOG_BASE}/[1-9][0-9]{{0,8}}"
+
+
+def observed_label(method, target):
+    """Label a signed wire target without retaining catalog IDs or query values."""
+    if (method, target) in ROUTES:
+        return target
+    if method == "GET" and re.fullmatch(CATALOG_PAGE, target):
+        return target.split("?", 1)[0]
+    if method == "GET" and re.fullmatch(CATALOG_DETAIL, target):
+        return target.rsplit("/", 1)[0] + "/[id]"
+    return None
 
 # Known business routes for metadata-only logging. The label carries no IDs or query values.
 EDGE_COLLECTIONS = ("access-logs", "classes", "faculties", "majors", "students", "training-programs", "users")
@@ -48,6 +66,7 @@ def render(base, kit, key, key_gid, edge_log, scorer_socket):
         "__SOCKET__", str(scorer_socket)
     )
     routes = "".join(f'    "{method}:{path}" 1;\n' for method, path in sorted(ROUTES))
+    routes += "".join(f'    "~^GET:{pattern}$" 2;\n' for pattern in (CATALOG_PAGE, CATALOG_DETAIL))
     paths = "".join(f'    "{path}" "{path}";\n' for path in sorted({path for _, path in ROUTES} | EDGE_EXACT))
     paths += "".join(f'    ~^/api/{route}/[0-9]+$ "/api/{route}/[id]";\n' for route in EDGE_COLLECTIONS)
     for route in EDGE_CONTACTS:
@@ -59,7 +78,7 @@ def render(base, kit, key, key_gid, edge_log, scorer_socket):
     ~^/api/users/[0-9]+/activation-token$ "/api/users/[id]/activation-token";
 '''
     groups = "".join(f"    ~^/api/{prefix} {group};\n" for group, prefix in ROUTE_GROUPS.items())
-    http = f"""# WebSentinel R51 passive HTTPS evidence
+    http = f"""# WebSentinel R52 passive HTTPS evidence
 include {kit}/pbl4-access.conf;
 js_import r48proof from {kit}/proof-probe.js;
 js_shared_dict_zone zone=nonces:1m timeout=65s;
@@ -68,9 +87,15 @@ js_var $probe_receipt;
 js_set $probe_signed r48proof.sign;
 js_set $probe_verified r48proof.verify;
 
-map "$request_method:$request_uri" $r48_observed {{
+map "$request_method:$request_uri" $r52_candidate {{
     default 0;
 {routes}}}
+map "$r52_candidate:$http_content_length:$http_transfer_encoding" $r48_observed {{
+    default 0;
+    ~^1: 1;
+    "2::" 1;
+    "2:0:" 1;
+}}
 map $uri $r49_log_path {{
     default /api/[redacted];
 {paths}}}

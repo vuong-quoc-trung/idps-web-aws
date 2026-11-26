@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 import correlate
-from gateway import EGRESS, PORT, SOURCE
+from gateway import EGRESS, PORT, SOURCE, observed_label
 
 
 class CorrelationTest(unittest.TestCase):
@@ -28,9 +28,13 @@ class CorrelationTest(unittest.TestCase):
                     "in_iface": "lo", "proto": "TCP", "event_type": "http",
                     "host": "ws-generation-" + self.generation, "flow_id": 1, "tx_id": 0,
                     "timestamp": date, "http": {"http_method": "GET", "url": self.route, "status": 200}}
+        self.bind_target(self.route)
+
+    def bind_target(self, target):
+        self.eve["http"]["url"] = target
         ms = self.started // 1_000_000
         fields = [1, self.material["kid"], self.material["epoch"], "e" * 32, self.edge["client_ip"],
-                  self.rid, "GET", "https", self.edge["http_host"], correlate.sha(self.route.encode()),
+                  self.rid, "GET", "https", self.edge["http_host"], correlate.sha(target.encode()),
                   ms, ms + 60000]
         proof = self.wire("ws-request-v1:", fields)
         receipt = self.wire("ws-receipt-v1:", fields[:4] + [correlate.sha(proof.encode()), "accepted", ms])
@@ -62,6 +66,34 @@ class CorrelationTest(unittest.TestCase):
         self.assertEqual(row["sources"], ["NGINX", "STUDENT_AUDIT", "SURICATA"])
         self.assertFalse(row["late_event"])
         self.assertEqual(self.rows(), [])
+
+    def test_catalog_label_never_replaces_wire_identity(self):
+        for target, label in [("/api/classes/42", "/api/classes/[id]"),
+                              ("/api/classes?size=20&page=0", "/api/classes")]:
+            with self.subTest(target=target):
+                self.model = correlate.Correlator()
+                self.edge["uri_path"] = self.audit["uri_path"] = label
+                self.bind_target(target)
+                self.batch()
+                row, = self.rows()
+                self.assertEqual(row["status"], "MATCHED")
+                self.model = correlate.Correlator()
+                self.eve["http"]["url"] = target[:-1] + "1"
+                self.batch()
+                conflict, = self.rows()
+                self.assertEqual(conflict["status"], "AMBIGUOUS")
+                self.assertEqual(conflict["sources"], [])
+
+    def test_private_and_unbounded_targets_are_outside_catalog_projection(self):
+        for method, target in [("GET", "/api/classes?search=fixture"),
+                               ("GET", "/api/classes?page=0&token=fixture"),
+                               ("GET", "/api/classes?page=0&page=1"),
+                               ("GET", "/api/classes/1234567890"),
+                               ("GET", "/api/students/42"),
+                               ("GET", "/api/me/profile"),
+                               ("POST", "/api/classes/42"),
+                               ("POST", "/api/auth/reset-password")]:
+            self.assertIsNone(observed_label(method, target))
 
     def test_wrong_sensor_and_bad_mac_do_not_join(self):
         self.eve["host"] = "ws-generation-" + "f" * 32

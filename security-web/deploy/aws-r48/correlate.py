@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 import time
 
-from gateway import EGRESS, PORT, ROUTES, SOURCE
+from gateway import CATALOG_COLLECTIONS, EGRESS, PORT, ROUTES, SOURCE, observed_label
 
 GUARD_NS = 1_000_000
 CUTOFF_NS = 1_000_000_000
@@ -21,6 +21,7 @@ MAX_AGE_NS = 65_000_000_000
 CHUNK = 128 * 1024
 MAX_ROWS = 2048
 Event = namedtuple("Event", "value digest received")
+CATALOG_LABELS = frozenset(f"/api/{name}/[id]" for name in CATALOG_COLLECTIONS)
 
 
 class ProofError(ValueError):
@@ -85,7 +86,8 @@ def decode(kind, line, now):
     rid = row["request_id"]
     method, path = row["http_method"], row["uri_path"]
     status = row["status"] if kind == "edge" else row["status_code"]
-    if not hex_id(rid) or (method, path) not in ROUTES or type(status) is not int:
+    if (not hex_id(rid) or type(status) is not int
+        or ((method, path) not in ROUTES and not (method == "GET" and path in CATALOG_LABELS))):
         raise ValueError("Invalid request metadata")
     client = str(ipaddress.ip_address(row["client_ip"]))
     if kind == "edge":
@@ -119,7 +121,8 @@ def match(rid, edge, lua, eve, audit, material, now):
     secret = bytes.fromhex(material["key"])
     p = verify_wire(proof, "ws-request-v1:", secret)
     q = verify_wire(receipt, "ws-receipt-v1:", secret)
-    expected = [client, rid, method, "https", host, sha(path.encode())]
+    actual_target = eve.value[1]
+    expected = [client, rid, method, "https", host, sha(actual_target.encode())]
     if (len(p) != 12 or p[:3] != [1, material["kid"], material["epoch"]]
         or not hex_id(p[3]) or p[4:10] != expected
         or type(p[10]) is not int or type(p[11]) is not int
@@ -129,7 +132,7 @@ def match(rid, edge, lua, eve, audit, material, now):
         or len(q) != 7 or q[:6] != p[:4] + [sha(proof.encode()), "accepted"]
         or type(q[6]) is not int or not p[10] <= q[6] <= p[11]):
         raise ValueError("Proof and receipt do not bind the same request")
-    if (eve.value[:3] != (method, path, status)
+    if (eve.value[0] != method or eve.value[2] != status or observed_label(method, actual_target) != path
         or audit.value[:4] != (method, path, status, client)
         or not all(dispatch - GUARD_NS <= value <= now + GUARD_NS for value in (
             eve.value[3], audit.value[4], q[6] * 1_000_000
