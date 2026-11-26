@@ -89,7 +89,7 @@ def serve(listener, uid, host, peer_seen, stop):
                 print("Actuator refused a request or lost readback", file=sys.stderr, flush=True)
 
 
-def main(root, pg, host):
+def main(root, pg, host, *, browser_check=None):
     if (os.geteuid() != 0 or os.stat("/proc/self/ns/net").st_ino == host
             or os.stat("/proc/1/ns/net").st_ino != host
             or socket.if_nameindex() != [(1, "lo")] or run("nft", "list", "tables")
@@ -98,7 +98,7 @@ def main(root, pg, host):
         raise RuntimeError("Expected the owned systemd unit and a fresh network namespace")
     actor = pwd.getpwnam("ws-r47-security")
     binary = root / "lab-bin"
-    password = secrets.token_urlsafe(24)
+    password = (root / "browser.password").read_text().strip() if browser_check else secrets.token_urlsafe(24)
     phc = run(binary, "--hash-password", input=password + "\n")
     with ExitStack() as cleanup:
         def start(args, **kwargs):
@@ -218,7 +218,7 @@ def main(root, pg, host):
         def launch():
             child, stop = start(["runuser", "-u", actor.pw_name, "--",
                                  "setpriv", "--no-new-privs", str(binary)],
-                                cwd="/opt/websentinel-r47/current/security", env=env)
+                                cwd=root if browser_check else "/opt/websentinel-r47/current/security", env=env)
             wait_for(lambda: request(API_PORT, "/health")[0] == 200)
             assert child.poll() is None
             return stop
@@ -258,46 +258,49 @@ def main(root, pg, host):
         assert call(endpoint, "POST", block, viewer)[0] == 403
         assert call(endpoint, "POST", block | {"ip": SERVER})[0] == 400
         assert call(endpoint, "POST", block | {"event_id": 1})[0] == 400
-        first = mutate(endpoint, "POST", block)
-        assert synced(True) and not connects()
-        assert re.search(r"counter packets [1-9][0-9]*", run("nft", "list", "table", "inet", TABLE))
-        stop_api()
-        launch()
-        admin = token("admin")
-        assert synced(True) and not connects() and audit(first)["status"] == "SUCCESS"
-        second = mutate(endpoint + "/" + PEER, "DELETE")
-        assert synced(False) and connects()
-        time.sleep(31)
-        assert connects("/r56-health")
-        def query(sql):
-            return run(PG / "psql", "-h", "127.0.0.1", "-p", "55456", "-U", "postgres",
-                       "-XAt", "-c", sql)
-        native_alert = int(wait_for(lambda: query(
-            "SELECT id FROM security_alerts WHERE rule_name LIKE 'SURICATA: SID 156001:%'"
-            " AND client_ip_verified IS FALSE AND network_src_ip='10.254.56.2' AND NOT suricata_post_proxy"
-            " AND evidence::jsonb#>>'{suricata_origin,client_ip_verified}'='true'"
-        )))
-        third = mutate(endpoint, "POST", block | {"ttl_seconds": 6, "event_id": native_alert})
-        assert synced(True) and not connects()
-        time.sleep(7)
-        wait_for(lambda: synced(False))
-        assert connects() and audit(third)["status"] == "SUCCESS"
-        assert audit(third)["event_id"] == native_alert
-        assert {row["id"] for row in call("/api/audit")[1]} == {first, second, third}
-        assert run(PG / "psql", "-h", "127.0.0.1", "-p", "55456", "-U", "postgres",
-                   "-XAt", "-c", "SELECT count(*) FROM blocked_ips WHERE active") == "0"
-        stopped.set()
-        thread.join(4)
-        assert not thread.is_alive()
-        sock.close()
-        assert call(endpoint, "POST", block)[0] == 400
-        assert call(endpoint)[1]["sync"]["status"] == "UNVERIFIED"
-        assert len(call("/api/audit")[1]) == 3 and connects()
-        print(json.dumps({"namespace": os.readlink("/proc/self/ns/net"), "peer": PEER,
-                          "block": first, "unblock": second, "ttl": third, "audit": "3 SUCCESS",
-                          "rule_alert": native_alert, "rule_sid": 156001,
-                          "restart": "PASS", "protected_scope": "PASS", "rbac": [401, 403],
-                          "offline_refused": "PASS", "db_kernel": "SYNCED_EMPTY"}), flush=True)
+        if browser_check:
+            browser_check(call, synced, connects, audit)
+        else:
+            first = mutate(endpoint, "POST", block)
+            assert synced(True) and not connects()
+            assert re.search(r"counter packets [1-9][0-9]*", run("nft", "list", "table", "inet", TABLE))
+            stop_api()
+            launch()
+            admin = token("admin")
+            assert synced(True) and not connects() and audit(first)["status"] == "SUCCESS"
+            second = mutate(endpoint + "/" + PEER, "DELETE")
+            assert synced(False) and connects()
+            time.sleep(31)
+            assert connects("/r56-health")
+            def query(sql):
+                return run(PG / "psql", "-h", "127.0.0.1", "-p", "55456", "-U", "postgres",
+                           "-XAt", "-c", sql)
+            native_alert = int(wait_for(lambda: query(
+                "SELECT id FROM security_alerts WHERE rule_name LIKE 'SURICATA: SID 156001:%'"
+                " AND client_ip_verified IS FALSE AND network_src_ip='10.254.56.2' AND NOT suricata_post_proxy"
+                " AND evidence::jsonb#>>'{suricata_origin,client_ip_verified}'='true'"
+            )))
+            third = mutate(endpoint, "POST", block | {"ttl_seconds": 6, "event_id": native_alert})
+            assert synced(True) and not connects()
+            time.sleep(7)
+            wait_for(lambda: synced(False))
+            assert connects() and audit(third)["status"] == "SUCCESS"
+            assert audit(third)["event_id"] == native_alert
+            assert {row["id"] for row in call("/api/audit")[1]} == {first, second, third}
+            assert run(PG / "psql", "-h", "127.0.0.1", "-p", "55456", "-U", "postgres",
+                       "-XAt", "-c", "SELECT count(*) FROM blocked_ips WHERE active") == "0"
+            stopped.set()
+            thread.join(4)
+            assert not thread.is_alive()
+            sock.close()
+            assert call(endpoint, "POST", block)[0] == 400
+            assert call(endpoint)[1]["sync"]["status"] == "UNVERIFIED"
+            assert len(call("/api/audit")[1]) == 3 and connects()
+            print(json.dumps({"namespace": os.readlink("/proc/self/ns/net"), "peer": PEER,
+                              "block": first, "unblock": second, "ttl": third, "audit": "3 SUCCESS",
+                              "rule_alert": native_alert, "rule_sid": 156001,
+                              "restart": "PASS", "protected_scope": "PASS", "rbac": [401, 403],
+                              "offline_refused": "PASS", "db_kernel": "SYNCED_EMPTY"}), flush=True)
     assert not run("nft", "list", "tables")
     print("R56_KERNEL_CLEANUP=PASS", flush=True)
 
