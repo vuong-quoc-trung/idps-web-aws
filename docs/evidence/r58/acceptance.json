@@ -1,0 +1,141 @@
+{
+  "date": "2026-11-26",
+  "result": "PASS_MONITORING_AND_ISOLATED_SCOPE",
+  "aws": {
+    "region": "ap-southeast-1",
+    "state": "running",
+    "status_checks": {
+      "system": "ok",
+      "instance": "ok",
+      "storage": "ok"
+    },
+    "https": {
+      "student-dut.duckdns.org": 200,
+      "websentinal.duckdns.org": 200
+    },
+    "tls_verify_result": 0,
+    "active_units": 7,
+    "html_cache_control": "no-cache",
+    "previous_index_js_status": 404,
+    "legacy_api_status": 404,
+    "current_api_unauthenticated_status": 401,
+    "deployment": {
+      "serving_sha": "28a22a7a3521c6cba82dee2736ad902cb0a06700c3ed6b6e108b2f69b1ae5797",
+      "index_sha": "876b73f3eafcb3811ca7f2f5a6abc8975c35194ddb023b9f5bdd35c715364e38",
+      "assets": {
+        "assets/index-2ItA9aSI.js": "19aa2a5661b72c3143e6455439eb51d5cb3c57e8794f97b30364e80049129270",
+        "assets/index-BSvqNyR_.css": "81f0693bfb9dea79fd99ae0c442e639d6361c663df0a079dd366af1251bd66ad",
+        "assets/logo-security-BhrcspKL.png": "9eba611a2b8eb255098df122dbd1694d9e7de60b7cebaf7446f92914471c08f6"
+      },
+      "backup_sha": "a183a10503f6d963e183934f4c0dd3ee09655b9f6133163e76be1b9532091d04",
+      "scorer_manifest_sha": "a030a13faa65aedd49dfc024f035b269d9bfce58c639502ba6ec14c828e51a5e"
+    },
+    "bundle_sha256": "17939e013f5842584a292e5c4f64ca8b5a060fa220f5e041182c82ce84d3ab31",
+    "configuration_and_backup_checks": "PASS",
+    "request": {
+      "request_id": "0b350ae6ef5a802fb6fc2496c9c5d8d7",
+      "correlation": "MATCHED",
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "late": false,
+      "eligible": true,
+      "model": "r37-hgb-uri100-v1",
+      "ai": "SCORED",
+      "score": 0.1253570318222046,
+      "threshold": 0.7664756774902344,
+      "proof_ms": 1.9323,
+      "hybrid": "LOG_ONLY",
+      "automatic_block": false,
+      "incidents": 1,
+      "firewall_actions": 0
+    },
+    "resource_readback": {
+      "cpu_max": "25000 100000",
+      "memory_max_bytes": 805306368,
+      "memory_swap_max": 0,
+      "pids_max": 64,
+      "oom_kills": 0
+    },
+    "database": {
+      "students": 55,
+      "accounts": 56
+    },
+    "browser_observation_24h": {
+      "NGINX": 515,
+      "SURICATA": 385,
+      "STUDENT_AUDIT": 714
+    },
+    "browser_alerts_24h": {
+      "NGINX": 0,
+      "SURICATA": 16,
+      "STUDENT_AUDIT": 0
+    },
+    "fresh_browser": {
+      "title": "Đăng nhập giám sát",
+      "scripts": [
+        "/assets/index-2ItA9aSI.js"
+      ]
+    },
+    "authenticated_browser": {
+      "ai_menu": "AI",
+      "scorer": "Đang hoạt động",
+      "scored": 1,
+      "anomalous": 0,
+      "hybrid": "LOG_ONLY",
+      "score_display": 0.125357,
+      "sse": "Đã kết nối"
+    }
+  },
+  "detection_lab": {
+    "alerts": {
+      "APP-1018": 1,
+      "SID 153001": 1,
+      "GATEWAY_ERROR_BURST": 1
+    },
+    "stats": [
+      {
+        "count": 1,
+        "name": "NGINX"
+      },
+      {
+        "count": 1,
+        "name": "STUDENT_AUDIT"
+      },
+      {
+        "count": 1,
+        "name": "SURICATA"
+      }
+    ],
+    "observations": {
+      "NGINX": 16,
+      "STUDENT_AUDIT": 7,
+      "SURICATA": 2
+    },
+    "audit_request": "4a11a8b1ef94aea75a80ce59fbe812c3",
+    "correlation_request": "457d936c22ae8d1432a597f01260658e",
+    "proxy_episode_unlinked": true
+  },
+  "prevention_browser": {
+    "actions": [
+      1,
+      2,
+      3
+    ],
+    "audit_success": 3,
+    "db_kernel": "SYNCED_EMPTY",
+    "peer_restored_after_ttl": true,
+    "cleanup": "PASS"
+  },
+  "public_enforcement": "OFF",
+  "ai_auto_ban": "OFF",
+  "independent_native_ai_quality": "BLOCKED_NO_QUALIFIED_COHORT",
+  "rust_test_executions": 18,
+  "frontend_tests": 19,
+  "cleanup": "PASS",
+  "image_sha256": {
+    "aws-login.png": "0f87b8884cbd814a5939d4c49197506ce3579ef761596ed5c2478ec7708f2a40"
+  }
+}

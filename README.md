@@ -12,7 +12,7 @@ chứng theo request ID. Security Web hiển thị cảnh báo, quyết định 
 cập nhật qua SSE. Mô hình đang phục vụ là HistGradientBoosting URI100
 `r37-hgb-uri100-v1`, giữ vai trò tư vấn. Public enforcement và AI auto-ban tắt.
 
-[Kết quả nghiệm thu R57 và sơ đồ](docs/143_T09_R57_FINAL_PROJECT_COMPLETION.md) ·
+[Nghiệm thu R58 và sơ đồ triển khai](docs/144_T09_R58_FINAL_PROJECT_COMPLETION.md) ·
 [Runbook AWS staging](docs/AWS_STAGING_OPERATIONS_HANDOFF.md)
 
 ## AI offline và bàn giao nhóm

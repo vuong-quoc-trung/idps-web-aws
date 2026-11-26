@@ -458,3 +458,31 @@ sudo -n python3 -B r57.py rollback
 Sau rollback, kiểm lại HTTPS hai hostname, health scorer, nguồn log và trạng
 thái thực thi. Việc khôi phục dữ liệu PostgreSQL là thủ tục riêng. Các file
 asset có hash đã tạo có thể cùng tồn tại với bản cũ để giữ khả năng quay lui.
+
+## 20. R58 — Dashboard và đóng băng
+
+Security Web phục vụ HTML và build Vite từ thư mục làm việc của unit Rust.
+NGINX chuyển tiếp cả HTML và API. HTML có `Cache-Control: no-cache` để trình
+duyệt xác thực lại khi tải trang. Một tab JavaScript đã mở cần tải lại trang sau
+khi cập nhật. Assets của build cũ được chuyển khỏi static root và lưu cho rollback.
+
+Mục **AI** có số liệu 15 phút và tra cứu Request ID. Chỉ receipt khớp SHA và
+version của model đang phục vụ mới được hiển thị. Quyết định Hybrid hiển thị
+khi kết quả lưu cùng model. Quan sát trong **Nguồn dữ liệu** đếm bản ghi
+request trong PostgreSQL. **Nguồn phát hiện** đếm cảnh báo. Một nguồn hoạt động
+có thể có nhiều quan sát và 0 cảnh báo.
+
+Runner R58 khóa SHA bản R57, cài đúng bộ HTML, assets và binary, rồi qua
+NGINX kiểm lại HTML cùng từng asset trước khi báo thành công. Backup đầy đủ
+nằm tại `/var/backups/websentinel-r58`. Nếu cần quay lại bản R57, chạy qua SSM
+bằng quyền staging đã cấp.
+
+```sh
+cd /opt/websentinel-r48/runtime
+sudo -n python3 -B r58.py rollback
+```
+
+Sau rollback, xác minh HTTPS hai hostname, trang AI, trạng thái SSE, model SHA
+và trạng thái thực thi. Public firewall enforcement và AI auto-ban vẫn tắt.
+Đối soát khả năng chặn công khai cần thiết kế và phê duyệt riêng cho nguồn IP,
+phạm vi và khôi phục. [Báo cáo R58](144_T09_R58_FINAL_PROJECT_COMPLETION.md)
