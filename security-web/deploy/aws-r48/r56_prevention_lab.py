@@ -40,7 +40,7 @@ def validate_scope(host):
         raise RuntimeError("Isolated interface or route identity differs")
 
 
-def respond(conn, uid, host, peer_seen):
+def respond(conn, uid, host, authorize_block):
     conn.settimeout(1)
     pid, actual_uid, _ = struct.unpack("3i", conn.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
     if (actual_uid != uid
@@ -65,7 +65,7 @@ def respond(conn, uid, host, peer_seen):
         raise RuntimeError("Unexpected lease target")
     if parts[0] == "BLOCK":
         seconds = int(parts[2])
-        if not peer_seen.is_set() or not 1 <= seconds <= 300:
+        if not authorize_block() or not 1 <= seconds <= 300:
             return
         if not entries:
             run("nft", "add", "element", *SET, "{", PEER, "timeout", f"{seconds}s", "}")
@@ -74,7 +74,7 @@ def respond(conn, uid, host, peer_seen):
     conn.sendall(run("nft", "-j", "list", "set", *SET).encode())
 
 
-def serve(listener, uid, host, peer_seen, stop):
+def serve(listener, uid, host, authorize_block, stop):
     listener.settimeout(.2)
     while not stop.is_set():
         try:
@@ -83,13 +83,13 @@ def serve(listener, uid, host, peer_seen, stop):
             continue
         with conn:
             try:
-                respond(conn, uid, host, peer_seen)
+                respond(conn, uid, host, authorize_block)
             except (OSError, RuntimeError, ValueError, sp.SubprocessError):
                 # An empty response is a denial to the caller.
                 print("Actuator refused a request or lost readback", file=sys.stderr, flush=True)
 
 
-def main(root, pg, host, *, browser_check=None):
+def main(root, pg, host, *, browser_check=None, ingress=None):
     if (os.geteuid() != 0 or os.stat("/proc/self/ns/net").st_ino == host
             or os.stat("/proc/1/ns/net").st_ino != host
             or socket.if_nameindex() != [(1, "lo")] or run("nft", "list", "tables")
@@ -126,6 +126,11 @@ def main(root, pg, host, *, browser_check=None):
             assert not run(*prefix, "ip", "route", "show", "default")
         validate_scope(host)
         assert not run("ip", "-4", "route", "show", "default")
+        def verify_table_cleanup():
+            assert not run("nft", "list", "tables")
+            print(f"{'R60' if ingress else 'R56'}_KERNEL_CLEANUP=PASS", flush=True)
+
+        cleanup.callback(verify_table_cleanup)
         run("nft", "-f", "-", input=f"""
             table inet {TABLE} {{
                 set blocked_ips {{ type ipv4_addr; flags timeout; }}
@@ -150,11 +155,6 @@ def main(root, pg, host, *, browser_check=None):
             def log_message(self, *_):
                 pass
 
-        listener = cleanup.enter_context(HTTPServer((SERVER, PORT), Probe))
-        probe_thread = Thread(target=listener.serve_forever, daemon=True)
-        probe_thread.start()
-        cleanup.callback(listener.shutdown)
-
         def connects(path="/"):
             code = sp.run([*client, "curl", "-fsS", "--max-time", "0.5", "-o", "/dev/null",
                            f"http://{SERVER}:{PORT}{path}"], stdout=sp.DEVNULL, stderr=sp.DEVNULL,
@@ -162,7 +162,15 @@ def main(root, pg, host, *, browser_check=None):
             assert code in (0, 28), f"Unexpected probe error {code}"
             return code == 0
 
-        assert connects() and observed.is_set()
+        authorize_block = observed.is_set
+        if ingress:
+            connects, authorize_block = ingress.start(root, start, cleanup, client)
+        else:
+            listener = cleanup.enter_context(HTTPServer((SERVER, PORT), Probe))
+            probe_thread = Thread(target=listener.serve_forever, daemon=True)
+            probe_thread.start()
+            cleanup.callback(listener.shutdown)
+        assert connects() and (ingress or observed.is_set())
         capability_dir = CAPABILITY.stat()
         assert capability_dir.st_uid == 0 and capability_dir.st_mode & 0o022 == 0
         (CAPABILITY / "host-netns").write_text(str(host) + "\n")
@@ -174,7 +182,7 @@ def main(root, pg, host, *, browser_check=None):
         socket_path.chmod(0o660)
         sock.listen(8)
         stopped = Event()
-        thread = Thread(target=serve, args=(sock, actor.pw_uid, host, observed, stopped), daemon=True)
+        thread = Thread(target=serve, args=(sock, actor.pw_uid, host, authorize_block, stopped), daemon=True)
         thread.start()
         cleanup.callback(thread.join, 4)
         cleanup.callback(stopped.set)
@@ -186,15 +194,21 @@ def main(root, pg, host, *, browser_check=None):
                stdout=sp.DEVNULL, check=True, timeout=12)
         cleanup.callback(run, "runuser", "-u", "postgres", "--", PG / "pg_ctl",
                          "-D", pg / "data", "-m", "fast", "-w", "stop")
-        for name in ("edge.jsonl", "eve.json"):
+        evidence_files = ["edge.jsonl", "eve.json"]
+        if ingress:
+            evidence_files.append("manual-eve.json")
+        for name in evidence_files:
             (root / name).touch()
             (root / name).chmod(0o644)
         from gateway import sensor_config
         sensor = sensor_config(root, root)
         sensor = sensor.split("  - lua:", 1)[0] + "unix-command:\n  enabled: no\n"
-        sensor = (sensor.replace("127.77.0.1", PEER).replace("127.77.0.2", SERVER)
-                  .replace("18080", str(PORT)).replace("interface: lo", "interface: r56-edge")
-                  .replace("filemode: 640", "filemode: 644").replace("checksum-validation: yes", "checksum-validation: no"))
+        interface = "lo" if ingress else "r56-edge"
+        if not ingress:
+            sensor = (sensor.replace("127.77.0.1", PEER).replace("127.77.0.2", SERVER)
+                      .replace("18080", str(PORT)).replace("interface: lo", f"interface: {interface}"))
+        sensor = (sensor.replace("filemode: 640", "filemode: 644")
+                  .replace("checksum-validation: yes", "checksum-validation: no"))
         config = root / "sensor.yaml"
         config.write_text(sensor)
         (root / "pbl4.rules").write_text(
@@ -202,7 +216,7 @@ def main(root, pg, host, *, browser_check=None):
             'flow:established,to_server; http.uri; content:"/r56-health"; startswith; endswith; sid:156001; rev:1;)\n'
         )
         with (root / "sensor.log").open("w") as log:
-            start(["suricata", "-c", str(config), "--af-packet=r56-edge", "--runmode", "single"],
+            start(["suricata", "-c", str(config), f"--af-packet={interface}", "--runmode", "single"],
                   stdout=log, stderr=sp.STDOUT)
         wait_for(lambda: "engine started" in (root / "sensor.log").read_text().lower())
         env = {"PATH": "/usr/sbin:/usr/bin:/bin", "RUST_LOG": "warn",
@@ -214,13 +228,22 @@ def main(root, pg, host, *, browser_check=None):
                "SURICATA_EVE_PATH": str(root / "eve.json"),
                "SURICATA_CAPTURE_MODE": "pre-proxy", "SURICATA_WEB_IP": SERVER,
                "SURICATA_WEB_PORT": str(PORT), "SURICATA_POST_PROXY_INTERFACE": "r56-edge"}
+        if ingress:
+            # Post-proxy ingestion requires OFF mode. The root observer reads the
+            # backend EVE directly for the lab proof. The manual API has no feed
+            # from that sensor and cannot promote its addresses into targets.
+            env["SURICATA_EVE_PATH"] = str(root / "manual-eve.json")
 
         def launch():
             child, stop = start(["runuser", "-u", actor.pw_name, "--",
                                  "setpriv", "--no-new-privs", str(binary)],
                                 cwd=root if browser_check else "/opt/websentinel-r47/current/security", env=env)
-            wait_for(lambda: request(API_PORT, "/health")[0] == 200)
-            assert child.poll() is None
+            def healthy():
+                if child.poll() is not None:
+                    raise RuntimeError(f"Isolated Prevention API exited with status {child.returncode}")
+                return request(API_PORT, "/health")[0] == 200
+
+            wait_for(healthy)
             return stop
 
         def token(user):
@@ -261,12 +284,26 @@ def main(root, pg, host, *, browser_check=None):
         if browser_check:
             browser_check(call, synced, connects, audit)
         else:
+            def restart():
+                nonlocal admin, stop_api
+                stop_api()
+                stop_api = launch()
+                admin = token("admin")
+
+            if ingress:
+                ingress.verify(call, mutate, synced, audit, connects, restart, block, authorize_block)
+                stopped.set()
+                thread.join(4)
+                assert not thread.is_alive()
+                sock.close()
+                assert call(endpoint, "POST", block)[0] == 400
+                assert call(endpoint)[1]["sync"]["status"] == "UNVERIFIED" and connects()
+                print("R60_ACTUATOR_OFFLINE_REFUSED=PASS", flush=True)
+                return
             first = mutate(endpoint, "POST", block)
             assert synced(True) and not connects()
             assert re.search(r"counter packets [1-9][0-9]*", run("nft", "list", "table", "inet", TABLE))
-            stop_api()
-            launch()
-            admin = token("admin")
+            restart()
             assert synced(True) and not connects() and audit(first)["status"] == "SUCCESS"
             second = mutate(endpoint + "/" + PEER, "DELETE")
             assert synced(False) and connects()
@@ -301,8 +338,6 @@ def main(root, pg, host, *, browser_check=None):
                               "rule_alert": native_alert, "rule_sid": 156001,
                               "restart": "PASS", "protected_scope": "PASS", "rbac": [401, 403],
                               "offline_refused": "PASS", "db_kernel": "SYNCED_EMPTY"}), flush=True)
-    assert not run("nft", "list", "tables")
-    print("R56_KERNEL_CLEANUP=PASS", flush=True)
 
 
 if __name__ == "__main__":
