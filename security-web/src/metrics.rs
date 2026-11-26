@@ -154,10 +154,13 @@ fn readiness_state(
     watchers_ready: bool,
     mode: &str,
     verified: bool,
+    execution_enabled: bool,
 ) -> (bool, &'static str) {
     let monitoring_ready = database && watchers_ready;
     let prevention = if mode == "OFF" {
         "DISABLED"
+    } else if !execution_enabled {
+        "BLOCKED"
     } else if monitoring_ready && verified {
         "READY"
     } else {
@@ -198,6 +201,7 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Value
         !watchers.is_empty() && watchers.values().all(|s| s.state == "watching"),
         &state.safety.mode,
         readable && in_sync == Some(true) && state.safety.discovery_ok,
+        prevention::execution_enabled(),
     );
     let healthy = monitoring_ready && readable && in_sync != Some(false);
     (
@@ -218,24 +222,28 @@ mod resource_tests {
     #[test]
     fn monitoring_and_prevention_have_independent_status() {
         assert_eq!(
-            readiness_state(true, true, "OFF", false),
+            readiness_state(true, true, "OFF", false, false),
             (true, "DISABLED")
         );
         assert_eq!(
-            readiness_state(true, true, "MANUAL", false),
+            readiness_state(true, true, "MANUAL", false, true),
             (true, "UNAVAILABLE")
         );
         assert_eq!(
-            readiness_state(true, true, "ENFORCE", true),
+            readiness_state(true, true, "ENFORCE", true, true),
             (true, "READY")
         );
         assert_eq!(
-            readiness_state(false, true, "ENFORCE", true),
+            readiness_state(false, true, "ENFORCE", true, true),
             (false, "UNAVAILABLE")
         );
         assert_eq!(
-            readiness_state(true, false, "OFF", true),
+            readiness_state(true, false, "OFF", true, false),
             (false, "DISABLED")
+        );
+        assert_eq!(
+            readiness_state(true, true, "MANUAL", true, false),
+            (true, "BLOCKED")
         );
     }
     #[tokio::test]
