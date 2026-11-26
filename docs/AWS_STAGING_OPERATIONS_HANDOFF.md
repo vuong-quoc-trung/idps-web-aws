@@ -1,6 +1,6 @@
 # AWS staging — Vận hành và bàn giao
 
-[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình nền, cách truy cập và rollback. [Nghiệm thu R49](135_T09_R49_FINAL_PROJECT_COMPLETION.md) ghi phạm vi quan sát đang phục vụ và request IDs để tra cứu.
+[Cloud Beta R48](133_T09_R48_AWS_CLOUD_BETA.md) ghi cấu hình nền, cách truy cập và rollback. [Nghiệm thu R50](136_T09_R50_FINAL_PROJECT_ACCEPTANCE.md) ghi luồng email, phạm vi quan sát đang phục vụ và request IDs để tra cứu.
 
 Bắt đầu với [kết quả R46](131_T09_R46_AWS_WEB_INFRASTRUCTURE_SETUP.md) và [nghiệm thu R45](130_T09_R45_AWS_INFRASTRUCTURE_ACCEPTANCE.md) để biết kết quả và quyền còn thiếu. Đọc [handoff AWS](127_T09_AWS_MIGRATION_HANDOFF.md) và [Local Beta.2](126_T09_R42_FINAL_LOCAL_HANDOFF.md) trước khi lên kế hoạch triển khai. R45 xác minh hạ tầng staging. State của AWS và các thành phần ứng dụng phải được nghiệm thu riêng trên đúng host. Không dùng tài khoản root cho các thao tác dưới đây.
 
@@ -338,3 +338,18 @@ sudo python3 -B /opt/websentinel-r48/runtime/refresh.py rollback
 ```
 
 Lệnh xác minh staging, SHA backup và gateway R48 trước khi nạp lại cấu hình. Sau đó xác nhận `nginx -t`, hoạt động của correlator và HTTPS smoke. Lần update R49 bảo toàn database, TLS và ba file môi trường của dịch vụ. Logical dumps thuộc phạm vi backup và chỉ dùng khi có quy trình phục hồi riêng. [Vận hành EC2](#2-vận-hành-ec2)
+
+## 12. R50 — Gmail và kiểm tra readiness
+
+Student Web dùng STARTTLS tới `smtp.gmail.com` trên TCP 587. Cấu hình SMTP nằm trong `/etc/websentinel-r47/student.env` quyền `0600`. Biến `PUBLIC_APP_URL` trỏ domain Student HTTPS. Cả thư kích hoạt và thư khôi phục đi qua Gmail và đã được xác nhận từ Inbox. Tra bằng request ID trong báo cáo và kiểm riêng `SMTP_AUTHENTICATION_FAILED`, `MAIL_PREPARATION_FAILED` hoặc `SMTP_DELIVERY_FAILED` trong journal nếu có lỗi. Giữ giá trị bí mật giữa Gmail và secret file trên staging. [Nghiệm thu email R50](136_T09_R50_FINAL_PROJECT_ACCEPTANCE.md#gmail-và-xác-thực-tài-khoản)
+
+Security `/api/status` và SSE phản ánh DB và các watcher quan sát đang hoạt động. `/api/ready` kiểm thêm actuator. Khi profile observation đặt `OFF`, endpoint này trả HTTP 503 với `ACTUATOR_OFFLINE`. Theo dõi health quan sát bằng status của database và sáu watcher; dùng `/api/ready` để đánh giá profile có actuator. [Readiness implementation](../security-web/src/metrics.rs)
+
+Rollback độc lập trong SSM của đúng staging EC2, chọn lệnh phù hợp:
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/r50_gateway.py rollback
+sudo python3 -B /opt/websentinel-r48/runtime/mail_config.py rollback
+```
+
+Rollback gateway phục hồi cấu hình R49 và restart correlator. Rollback mail phục hồi file Student trước R50, tắt email theo baseline và restart Java. Sau mỗi rollback, kiểm tra HTTPS và unit health. Backup root-only có manifest SHA và bản logical dump. [Bằng chứng AWS R50](136_T09_R50_FINAL_PROJECT_ACCEPTANCE.md#evidence-theo-trusted-request-id)
