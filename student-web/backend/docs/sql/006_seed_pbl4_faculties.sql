@@ -1,5 +1,6 @@
 -- Apply after 005. Internal PBL4 names/codes, not official institutional codes.
 -- No automatic merge/delete of existing faculties; IDs/FKs are preserved.
+-- Set websentinel.catalog_insert_only=on to validate matches and preserve existing values.
 BEGIN;
 LOCK TABLE public.faculties IN SHARE ROW EXCLUSIVE MODE;
 DO $$
@@ -49,15 +50,17 @@ BEGIN
                            lower('Faculty of ' || item.english_name), lower(item.english_name))) THEN
                 RAISE EXCEPTION 'Code % is already assigned to a different faculty (id=%). Review manually.', item.short_code, target_id;
             END IF;
-            UPDATE public.faculties f
-            SET short_code = item.short_code,
-                faculty_code = 'FAC-' || item.short_code,
-                faculty_name = 'Khoa ' || item.vietnamese_name,
-                description = CASE
-                    WHEN position(english_description IN coalesce(f.description, '')) > 0 THEN f.description
-                    ELSE concat_ws(E'\n', nullif(f.description, ''), english_description)
-                END
-            WHERE f.id = target_id;
+            IF current_setting('websentinel.catalog_insert_only', true) IS DISTINCT FROM 'on' THEN
+                UPDATE public.faculties f
+                SET short_code = item.short_code,
+                    faculty_code = 'FAC-' || item.short_code,
+                    faculty_name = 'Khoa ' || item.vietnamese_name,
+                    description = CASE
+                        WHEN position(english_description IN coalesce(f.description, '')) > 0 THEN f.description
+                        ELSE concat_ws(E'\n', nullif(f.description, ''), english_description)
+                    END
+                WHERE f.id = target_id;
+            END IF;
             -- Preserve active state and existing description, appending English once.
         ELSE
             INSERT INTO public.faculties (short_code, faculty_code, faculty_name, description, active)

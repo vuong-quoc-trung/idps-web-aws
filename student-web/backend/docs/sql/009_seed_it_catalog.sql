@@ -13,7 +13,8 @@ DECLARE
     generated_code TEXT;
 BEGIN
     SELECT id INTO faculty_key FROM public.faculties
-    WHERE faculty_code = 'FAC-IT' AND short_code = 'IT' AND faculty_name = 'Khoa Công nghệ Thông tin' AND active;
+    WHERE faculty_code = 'FAC-IT' AND short_code = 'IT'
+      AND lower(trim(faculty_name)) = lower('Khoa Công nghệ Thông tin') AND active;
     IF faculty_key IS NULL THEN
         RAISE EXCEPTION 'Active FAC-IT / Khoa Công nghệ Thông tin is required. Apply 006 and review faculty first.';
     END IF;
