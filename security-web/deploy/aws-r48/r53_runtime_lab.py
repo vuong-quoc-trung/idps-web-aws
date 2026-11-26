@@ -53,7 +53,7 @@ def request(port, path, method="GET", payload=None, token=None, tls=None, header
         return response.status, response.getheader("X-Request-Id"), response.read()
 
 
-def main(root, pgdata, outer_namespace, extra_checks=None):
+def main(root, pgdata, outer_namespace, extra_checks=None, *, extra_nginx_location=""):
     if os.geteuid() != 0 or os.readlink("/proc/self/ns/net") == outer_namespace or socket.if_nameindex() != [(1, "lo")]:
         raise RuntimeError("A private loopback-only network namespace is required")
     if run("ip", "route", "show", "default"):
@@ -110,6 +110,7 @@ def main(root, pgdata, outer_namespace, extra_checks=None):
     ssl_certificate {crt};
     ssl_certificate_key {tlskey};
     add_header X-Request-Id $request_id always;
+    {extra_nginx_location}
     location /api/ {{
         proxy_pass http://127.0.0.1:8080;
         proxy_set_header X-Request-Id $request_id;
