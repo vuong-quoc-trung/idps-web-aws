@@ -12,7 +12,8 @@ for (const compact of [true,false]) {
       assert.match(html,/Chưa xác minh/);
       assert.doesNotMatch(html,/class="error"|Chưa đồng bộ/);
     }
-    assert.match(render({status:"SYNCED",differences:[]}),/Đồng bộ/);
+    assert.match(render({status:"SYNCED",differences:[]}),/Đã xác minh và đồng bộ/);
+    assert.match(render({status:"OUT_OF_SYNC",differences:[]}),/Chưa đồng bộ/);
     const html = render({status:"OUT_OF_SYNC",differences:["192.168.1.19 · thiếu trong kernel"]});
     assert.match(html,/Chưa đồng bộ/);
     assert.match(html,/192.168.1.19/);

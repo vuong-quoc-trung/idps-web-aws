@@ -7,11 +7,6 @@ import {
 import { applicationEvidence } from "./applicationEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
-  lua_shadow?: {
-    status: string;
-    client_ip_verified: false;
-    duplicate_count: number;
-  } | null;
   triage_history: TriageHistory[];
   alert: TriageAlert & {
     id: number;
@@ -55,23 +50,14 @@ function evidenceInfo(raw: string) {
     const parsed = JSON.parse(raw);
     const http = parsed?.http;
     return {
-      pretty: JSON.stringify(parsed, null, 2),
-      method: http?.http_method,
-      url: http?.url,
-      agent: http?.http_user_agent,
-      status: http?.status,
+      method: parsed?.http_method ?? http?.http_method,
+      url:
+        parsed?.uri_path ??
+        (typeof http?.url === "string" ? http.url.split(/[?#]/, 1)[0] : null),
+      status: parsed?.status_code ?? http?.status,
     };
   } catch {
-    const match = raw.match(
-      /"(\S+)\s+(.*?)\s+HTTP\/[\d.]+"\s+(\d{3})\s+\S+\s+"(?:[^"\\]|\\.)*"\s+"((?:[^"\\]|\\.)*)"/,
-    );
-    return {
-      pretty: raw,
-      method: match?.[1],
-      url: match?.[2],
-      status: match?.[3],
-      agent: match?.[4],
-    };
+    return {};
   }
 }
 export function AlertDetail({
@@ -97,7 +83,6 @@ export function AlertDetail({
   const [data, setData] = useState<Detail | null>(null);
   const [error, setError] = useState("");
   const [blocking, setBlocking] = useState(false);
-  const [copied, setCopied] = useState("");
   useEffect(() => {
     dialog.current?.showModal();
   }, []);
@@ -105,7 +90,6 @@ export function AlertDetail({
     let active = true;
     setData(null);
     setError("");
-    setCopied("");
     api(`/api/alerts/${id}`)
       .then((value) => {
         if (active) setData(value);
@@ -143,15 +127,10 @@ export function AlertDetail({
         <>
           <dl className="detail-fields">
             {Object.entries({
-              "Thời gian": `${new Date(a.occurred_at).toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
-              UTC: new Date(a.occurred_at).toISOString(),
+              "Thời gian": new Date(a.occurred_at).toLocaleString("vi-VN"),
               Nguồn: a.source,
-              "Quan sát Lua (chưa xác minh IP)":
-                data.lua_shadow?.status ?? "Chưa có",
-              "Mức độ": `Severity ${a.severity}`,
+              "Mức độ": `S${a.severity}`,
               "IP nguồn": sourceIpLabel(a),
-              "Network Source IP":
-                a.network_src_ip ?? (a.source === "SURICATA" ? a.src_ip : null),
               "Xác minh Client IP":
                 a.source === "SURICATA"
                   ? a.client_ip_verified
@@ -160,9 +139,8 @@ export function AlertDetail({
                   : "Theo nguồn ứng dụng",
               "IP đích": a.dest_ip,
               "Giao thức": a.proto,
-              Rule: a.rule_name,
-              Signature: a.signature,
-              Category: a.category,
+              "Luật phát hiện": a.rule_name,
+              Nhóm: a.category,
               "Hành động": a.action,
             }).map(([label, value]) => (
               <div key={label}>
@@ -190,10 +168,7 @@ export function AlertDetail({
                 Lần đầu: {new Date(app.first).toLocaleString()} · Gần nhất:{" "}
                 {new Date(app.last).toLocaleString()}
               </p>
-              <p>
-                Đề xuất: {app.recommendation}. Chế độ: chỉ cảnh báo, không tự
-                chặn.
-              </p>
+              <p>{app.recommendation}</p>
             </section>
           )}
           {onBlock && a.src_ip && (
@@ -216,9 +191,8 @@ export function AlertDetail({
           <h3>Request HTTP</h3>
           <dl className="detail-fields">
             {Object.entries({
-              Method: evidence.method,
-              URL: evidence.url,
-              "User-Agent": evidence.agent,
+              "Phương thức": evidence.method,
+              "Đường dẫn": evidence.url,
               "Mã phản hồi": evidence.status,
             }).map(([label, value]) => (
               <div key={label}>
@@ -229,27 +203,7 @@ export function AlertDetail({
               </div>
             ))}
           </dl>
-          <h3>Bằng chứng gốc</h3>
-          <button
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(a.evidence);
-                setCopied("Đã sao chép bằng chứng gốc.");
-              } catch {
-                setCopied(
-                  "Không thể sao chép tự động. Bạn có thể chọn văn bản bên dưới để sao chép.",
-                );
-              }
-            }}
-          >
-            Sao chép
-          </button>
-          <p role="status">{copied}</p>
-          <pre>{evidence.pretty}</pre>
           <h3>Cảnh báo khác cùng IP nguồn</h3>
-          <p className="muted">
-            Tối đa 10 cảnh báo gần nhất, toàn bộ thời gian.
-          </p>
           {data.related.map((r) => (
             <button
               className="related-alert"
@@ -305,15 +259,10 @@ export function AlertDetail({
                   ? new Date(f.completed_at).toLocaleString()
                   : "Chưa hoàn tất"}
               </p>
-              {f.details && <pre>{f.details}</pre>}
+              {f.details && f.status === "ERROR" && <p>{f.details}</p>}
             </article>
           ))}
-          {!data.firewall.length && (
-            <p>
-              Không có tác vụ liên kết với cảnh báo này. Điều này không xác định
-              IP hiện có bị chặn hay không.
-            </p>
-          )}
+          {!data.firewall.length && <p>Chưa có tác vụ liên kết.</p>}
         </>
       )}
     </dialog>

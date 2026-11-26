@@ -458,7 +458,7 @@ mod tests {
     #[sqlx::test(migrations = "./migrations")]
     async fn r51_labeled_demo_matches_dashboard_snapshot(pool: PgPool) {
         let fixture: Value =
-            serde_json::from_str(include_str!("../frontend/src/r51-demo.json")).unwrap();
+            serde_json::from_str(include_str!("../tests/fixtures/r51-demo.json")).unwrap();
         let rid = fixture["request_id"].as_str().unwrap();
         let mut state = integration_tests::state(pool.clone());
         state.policy = PolicyEngine::new(false, vec![], false);

@@ -149,7 +149,6 @@ type Health = {
   checked_at?: string;
   dataset_collection?: boolean;
   operations?: {
-    native_authorization?: string | null;
     sampled_at?: string;
     profile?: string;
     receiver?: UnitStatus;
@@ -214,10 +213,10 @@ function firewallMessage(code?: string | null) {
 }
 
 function preventionMessage(state: Health["prevention_state"]) {
-  if (state === "DISABLED") return "Chặn IP đang tắt theo cấu hình.";
-  if (state === "BLOCKED") return "Chặn IP đang bị khóa an toàn.";
-  if (state === "READY") return "Thực thi chặn IP đã sẵn sàng.";
-  return "Chưa xác minh khả năng chặn IP.";
+  if (state === "DISABLED") return "Đang tắt";
+  if (state === "BLOCKED") return "Tạm khóa";
+  if (state === "READY") return "Đã kích hoạt";
+  return "Chưa sẵn sàng";
 }
 
 function serviceLabel(status?: UnitStatus) {
@@ -653,6 +652,7 @@ function App() {
   const admin = session.user.role === "admin";
   const monitoringReady = health?.monitoring_ready ?? health?.healthy;
   const preventionReady = health?.prevention_state === "READY";
+  const dedicatedIngress = health?.sync?.scope === "aws-private-ingress";
   const cloud = health?.operations?.profile === "aws-staging";
   const hybridSample = health?.operations?.hybrid_last_success_at;
   const hybridAge =
@@ -803,9 +803,8 @@ function App() {
                 : "Có cảnh báo mới"}
             </strong>
             <p>
-              {alertFeedback.count} cảnh báo mới toàn hệ thống · Severity cao
-              nhất: {alertFeedback.severity ?? "—"}. Chưa khẳng định tấn công
-              thành công hoặc IP đã bị chặn.
+              {alertFeedback.count} cảnh báo mới toàn hệ thống · Mức cao nhất: S
+              {alertFeedback.severity ?? "—"}
             </p>
             <button onClick={() => setAlertFeedback(null)}>
               Đóng thông báo
@@ -847,8 +846,6 @@ function App() {
                 </select>
               </label>
               <p className="muted">
-                Số cảnh báo không phải số cuộc tấn công: một request có thể được
-                nhiều nguồn phát hiện.
                 {stats && (
                   <small>
                     {new Date(stats.from).toLocaleString("vi-VN", {
@@ -858,7 +855,6 @@ function App() {
                     {new Date(stats.to).toLocaleString("vi-VN", {
                       hour12: false,
                     })}{" "}
-                    · giờ địa phương
                   </small>
                 )}
                 {!stats && (
@@ -977,7 +973,6 @@ function App() {
                   <button onClick={() => setSelectedAlert(a.id)}>
                     Mở chi tiết điều tra
                   </button>
-                  <pre>{a.evidence}</pre>
                 </details>
               ))}
               {stats?.recent.length === 0 && (
@@ -1459,6 +1454,9 @@ function App() {
                 <p>{firewallMessage(blocked.error)}</p>
               )}
               <p>{preventionMessage(health?.prevention_state)}</p>
+              {dedicatedIngress && (
+                <p>Phạm vi chặn: ingress riêng, IP 10.254.63.2.</p>
+              )}
               <p>
                 IP thực tế:{" "}
                 {blocked?.kernel?.join(", ") ||
@@ -1477,7 +1475,9 @@ function App() {
                     <input
                       value={ip}
                       onChange={(e) => setIp(e.target.value)}
-                      placeholder="192.168.10.10"
+                      placeholder={
+                        dedicatedIngress ? "10.254.63.2" : "Địa chỉ IPv4"
+                      }
                       required
                     />
                   </label>
@@ -1495,7 +1495,7 @@ function App() {
                     <input
                       type="number"
                       min={1}
-                      max={300}
+                      max={dedicatedIngress ? 60 : 300}
                       step={1}
                       value={ttl}
                       onChange={(e) => setTtl(e.target.value)}
@@ -1513,13 +1513,6 @@ function App() {
                 <Icon name="network" />
                 Danh sách từ DB và kernel
               </h2>
-              {blocked?.sync?.scope ===
-                "inet ws_native_lab_peer/edge_peers" && (
-                <p>
-                  PostgreSQL: blocked_ips còn hiệu lực. Kernel: edge_peers cho
-                  BLOCK_IP tại Edge LAN. Hai danh sách có phạm vi riêng.
-                </p>
-              )}
               {blocked && !blocked.database && (
                 <p>Chưa đọc được danh sách DB.</p>
               )}
@@ -1684,7 +1677,7 @@ function App() {
                 {
                   source: "NGINX",
                   title: "Web/Proxy",
-                  label: "NGINX · Phân tích HTTP/access log",
+                  label: "NGINX · Lưu lượng web",
                 },
                 {
                   source: "STUDENT_AUDIT",
@@ -1843,7 +1836,7 @@ function App() {
                   [
                     "Firewall",
                     health?.firewall,
-                    `Sẵn sàng · ${health?.kernel_blocked_count ?? "?"} IP đang chặn`,
+                    `Đang hoạt động · ${health?.kernel_blocked_count ?? "?"} IP đang chặn`,
                     health?.prevention_state === "DISABLED"
                       ? "Đang tắt"
                       : (firewallMessage(health?.firewall_status) ??
@@ -1865,24 +1858,17 @@ function App() {
                     {preventionMessage(health?.prevention_state)}
                   </span>
                 </div>
+                {dedicatedIngress && (
+                  <small>Chặn thủ công trên ingress riêng.</small>
+                )}
                 <div className="service-item">
                   <span>DB / Firewall</span>
                   <FirewallSync compact report={health?.sync} />
                 </div>
               </div>
-              {health?.operations?.native_authorization && (
-                <p>
-                  Chế độ cấp quyền Native:{" "}
-                  {health.operations.native_authorization}
-                </p>
-              )}
               {cloud ? (
                 <article className="panel">
                   <h3>Dịch vụ giám sát</h3>
-                  <p>
-                    Student Web ghi Student Audit trên EC2. Security Web đọc tệp
-                    audit tại chỗ.
-                  </p>
                   <dl className="detail-fields">
                     {[
                       ["nginx", "NGINX"],
@@ -1890,7 +1876,7 @@ function App() {
                       ["student", "Student Web"],
                       ["postgresql", "PostgreSQL"],
                       ["correlator", "Correlator"],
-                      ["r37", "AI"],
+                      ["ai", "AI"],
                     ].map(([key, label]) => (
                       <div key={key}>
                         <dt>{label}</dt>
@@ -1911,11 +1897,7 @@ function App() {
                     </div>
                   </dl>
                 </article>
-              ) : (
-                <p className="muted">
-                  Theo dõi thời điểm nhận log và lỗi phân tích của từng nguồn.
-                </p>
-              )}
+              ) : null}
               <div className="source-health-grid">
                 {["NGINX", "SURICATA", "STUDENT_AUDIT"].map((name) => {
                   const watcher = health?.watchers[name];
@@ -2087,21 +2069,12 @@ function App() {
                   </small>
                 </article>
                 <article>
-                  <p>Kết nối TCP established</p>
+                  <p>Kết nối TCP đang mở</p>
                   <strong>
                     {fmt(stats?.system.established_tcp_connections)}
                   </strong>
                 </article>
               </div>
-              <p>
-                Lần thấy log mới:{" "}
-                {["NGINX", "SURICATA", "STUDENT_AUDIT"]
-                  .map(
-                    (name) =>
-                      `${name}: ${health?.watchers[name]?.last_data_at ? new Date(health.watchers[name].last_data_at!).toLocaleString("vi-VN", { hour12: false }) : "chưa ghi nhận"}`,
-                  )
-                  .join(" · ")}
-              </p>
             </section>
           </>
         )}

@@ -152,7 +152,7 @@ pub async fn report(
         .map_err(api_error)?;
     let operations = operations::snapshot().await;
     Ok(Json(json!({
-        "summary":summary, "service":operations["services"]["r37"], "sampled_at":operations["sampled_at"],
+        "summary":summary, "service":operations["services"]["ai"], "sampled_at":operations["sampled_at"],
     })))
 }
 

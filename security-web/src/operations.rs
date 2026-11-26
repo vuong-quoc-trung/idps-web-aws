@@ -18,7 +18,7 @@ const AWS_UNITS: [(&str, &str); 6] = [
     ("postgresql", "postgresql@18-main.service"),
     ("suricata", "websentinel-r48-sensor.service"),
     ("correlator", "websentinel-r48-correlator.service"),
-    ("r37", "websentinel-r47-scorer.service"),
+    ("ai", "websentinel-r47-scorer.service"),
 ];
 
 async fn aws_services() -> Value {

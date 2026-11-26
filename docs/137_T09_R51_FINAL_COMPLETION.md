@@ -31,7 +31,7 @@ Mười cặp đủ điều kiện leg ký giữ cùng contract với R50. Nhóm
 
 ## Trình diễn và bàn giao
 
-Trong Security Web mở **AI Shadow → R51 · Demo fixture từ lab cô lập**. Demo replay công khai nguồn dữ liệu lab trong UI. ID `51515151515151515151515151515151` thuộc fixture PostgreSQL riêng. Một rule tạo alert từ metadata NGINX fixture và Rust ghép receipt correlation cùng ID, nhận advisory R37 fixture và ghi một incident `REVIEW`. Fixture chạy re-ingest để kiểm đếm trùng. Replay trong UI tách khỏi DB thật, bộ đếm và SSE AWS. Kiểm SSE `alert.created` dùng lab, SSE `resync` kiểm bằng HTTPS thật. [Demo fixture](../security-web/frontend/src/r51-demo.json) · [Security Web](https://websentinal.duckdns.org/)
+Trong Security Web mở **AI Shadow → R51 · Demo fixture từ lab cô lập**. Demo replay công khai nguồn dữ liệu lab trong UI. ID `51515151515151515151515151515151` thuộc fixture PostgreSQL riêng. Một rule tạo alert từ metadata NGINX fixture và Rust ghép receipt correlation cùng ID, nhận advisory R37 fixture và ghi một incident `REVIEW`. Fixture chạy re-ingest để kiểm đếm trùng. Replay trong UI tách khỏi DB thật, bộ đếm và SSE AWS. Kiểm SSE `alert.created` dùng lab, SSE `resync` kiểm bằng HTTPS thật. [Demo fixture](../security-web/tests/fixtures/r51-demo.json) · [Security Web](https://websentinal.duckdns.org/)
 
 Các phép thử chọn lọc gồm Student API CRUD, permission, session và completion với 9 test. Security frontend đạt 19 test view model, bộ lọc, session SSE và Hybrid lookup. Python scorer và correlator bao phủ cutoff, conflict, partial worker response, missing health và recovery. Lab Prevention dùng namespace cô lập để kiểm Block, Unblock, TTL và cleanup. Model inference thực tế được đối chiếu riêng với fixture advisory của demo.
 

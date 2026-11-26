@@ -64,13 +64,11 @@ export function ApplicationAudit({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filterError, setFilterError] = useState("");
-  const [loadedAt, setLoadedAt] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     const params = auditQuery(filters, offset);
     setData(null);
-    setLoadedAt("");
     const polling = startAuditPolling({
       visible: () => document.visibilityState === "visible",
       subscribe: (callback) => {
@@ -89,7 +87,6 @@ export function ApplicationAudit({
             });
             if (!signal.aborted) {
               setData(page);
-              setLoadedAt(time(new Date().toISOString()));
               setError("");
             }
           } catch (e) {
@@ -348,7 +345,7 @@ export function ApplicationAudit({
         className="muted audit-result-count"
       >
         {data
-          ? `${data.total.toLocaleString("vi-VN")} sự kiện khớp bộ lọc · Audit tải thành công lúc ${loadedAt}${loading ? " · Đang cập nhật…" : ""}`
+          ? `${data.total.toLocaleString("vi-VN")} sự kiện${loading ? " · Đang cập nhật…" : ""}`
           : loading
             ? "Đang tải sự kiện…"
             : "Chưa tải được dữ liệu."}
@@ -536,20 +533,14 @@ function AuditDetail({
       {!data && !error && <p role="status">Đang tải chi tiết…</p>}
       {data && canonical && (
         <>
-          <p className="muted">Dữ liệu nhạy cảm đã được che.</p>
           <dl className="detail-fields">
             {Object.entries({
               "Thời điểm (UTC)": data.occurred_at,
-              "Thu thập (UTC)": data.observed_at,
               Nguồn: canonical.source,
-              Instance: canonical.source_instance,
               "Request ID": canonical.request_id,
               "IP client": canonical.client_ip,
-              "User HMAC": canonical.user_id,
-              "Username HMAC": canonical.username,
-              Role: canonical.role,
-              "User-Agent": canonical.user_agent,
-              "Outcome HTTP": canonical.outcome,
+              "Vai trò": canonical.role,
+              "Kết quả HTTP": canonical.outcome,
             }).map(([label, value]) => (
               <div key={label}>
                 <dt>{label}</dt>
@@ -557,20 +548,12 @@ function AuditDetail({
               </div>
             ))}
           </dl>
-          <h3>Dữ liệu đã che</h3>
-          <pre tabIndex={0} aria-label="Canonical JSON đã che dữ liệu">
-            {JSON.stringify(canonical, null, 2)}
-          </pre>
           <h3>Quan sát cùng Request ID</h3>
           {canonical.request_id ? (
             <>
               <button onClick={() => onCorrelate(canonical.request_id!)}>
                 Lọc tất cả nguồn theo Request ID này
               </button>
-              <p className="muted">
-                Tối đa 10 quan sát khác gần nhất có cùng Request ID; mỗi nguồn
-                có thể ghi riêng một sự kiện.
-              </p>
               {data.related.length === 0 && (
                 <p>Chưa có quan sát khác cùng Request ID.</p>
               )}

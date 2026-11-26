@@ -86,7 +86,7 @@ export function Ai({ api }: { api: Api }) {
   return (
     <section className="panel ai-panel" aria-label="Kết quả AI">
       <div className="application-audit-heading">
-        <h2>Kết quả phân tích</h2>
+        <h2>AI</h2>
         <span className={`badge ${ready ? "good" : "warn"}`}>
           {ready
             ? "Đang hoạt động"
