@@ -416,3 +416,15 @@ Runner kiểm SHA backup `/var/backups/websentinel-r55`, khôi phục binary và
 Harness runtime nhận ba đối số gồm thư mục staging tạm, thư mục PostgreSQL mới do `postgres` sở hữu, và network namespace ID của host. Chạy qua SSM trong một unit duy nhất với `PrivateNetwork=yes`, thời hạn 150 s, `CPUQuota=160%`, `MemoryMax=1536M`, `TasksMax=125` và `PYTHONPATH=/opt/websentinel-r48/runtime`. Nó kiểm namespace riêng và một interface loopback trước khi tạo DB. Lấy output chứa request ID, SID, Hybrid, score, SSE và kết quả triage. Dọn hai thư mục tạm do mình tạo sau khi unit thoát. [Harness](../security-web/deploy/aws-r48/r53_runtime_lab.py)
 
 Harness actuator yêu cầu hai namespace tách biệt và chạy các probe kết nối trên veth lab. Chế độ `--private-systemd-unit` xác minh cgroup riêng, `PrivateNetwork=yes`, namespace khác PID 1, loopback ban đầu và kernel table rỗng. Chạy thử firewall bằng chính actuator thủ công đã có. Cổng C2 của Rust và cấu hình serving vẫn giữ khóa. [Actuator acceptance](../security-web/deploy/local-r38/firewall_acceptance.py)
+
+## 18. R56 — Capability Prevention cô lập
+
+R56 dùng hai bản build. Bản mặc định phục vụ AWS public và giữ C2 đóng. Bản `isolated-c2` chỉ dùng trong unit PrivateNetwork riêng với database tạm. Stage bundle đúng SHA qua SSM và chạy lab trước deployment. Hãy đối chiếu các gate R56 trong tài liệu nghiệm thu. [Kiến trúc và nghiệm thu R56](142_T09_R56_FINAL_ARCHITECTURE_AND_ACCEPTANCE.md)
+
+Runner `r56_stage.sh` nhận chế độ, đường dẫn tuyệt đối tới bundle và SHA-256. Chế độ `lab` dựng lại binary từ bản R55, tạo unit có quota, thực thi lab và dọn tài nguyên tạm. Chế độ `deploy` dùng binary mặc định, tạo backup R55 rồi restart Security Web và kiểm tra health. Khi đã deploy R56, lệnh rollback qua SSM như sau.
+
+```bash
+sudo python3 -B /opt/websentinel-r48/runtime/r56.py rollback
+```
+
+Runner rollback kiểm manifest backup tại `/var/backups/websentinel-r56` và khôi phục binary R55. Kiểm lại HTTPS, Dashboard và trạng thái monitoring sau restart. [Stage runner](../security-web/deploy/aws-r48/r56_stage.sh) · [Deployment runner](../security-web/deploy/aws-r48/r56.py)
