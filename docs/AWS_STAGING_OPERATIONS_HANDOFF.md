@@ -550,3 +550,21 @@ sau khi đối chiếu invocation đang chạy của phiên mình. Kiểm tra un
 `/run/websentinel-r56-lab`, cgroup và table nftables phía host đã sạch.
 Không cài capability canary vào service serving. Bản đóng băng giữ
 Dashboard public ở Monitoring, AI Advisory và chặn công khai OFF.
+
+## 24. R62 — Gói Prevention đã cài trên EC2
+
+Thư mục `/opt/websentinel-r62/prevention-r61` thuộc root và chứa bundle
+đã đối chiếu SHA với nghiệm thu R61 cùng runner hiện có. Gọi runner qua
+SSM khi cần chạy trong phạm vi C2. Lệnh dưới đây thực hiện lại canary
+trong namespace riêng, nên chỉ dùng khi có nhu cầu kiểm chứng mới.
+
+```bash
+sudo -n bash /opt/websentinel-r62/prevention-r61/r60_stage.sh \
+  /opt/websentinel-r62/prevention-r61/bundle.tgz \
+  b0f41ac44a87081f4046d15400a30d8a66bebf5575418b99b4193fd0cf573925 r61
+```
+
+Để thu hồi gói, xác nhận unit lab đã dừng, rồi đổi tên thư mục release
+sang một tên backup chưa tồn tại trong cùng thư mục root. Khôi phục bằng
+cách đổi tên lại. Quy trình này độc lập với hai website đang phục vụ.
+[Báo cáo R62](148_T09_R62_FINAL_DEPLOYMENT_AND_ACTIVATION.md)

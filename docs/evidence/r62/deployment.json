@@ -1,0 +1,127 @@
+{
+  "result": "PARTIAL",
+  "instance": "i-0b6f2e4f3ed32f514",
+  "region": "ap-southeast-1",
+  "release": "/opt/websentinel-r62/prevention-r61",
+  "scope": "ON_DEMAND_ISOLATED_C2",
+  "bundle_sha256": "b0f41ac44a87081f4046d15400a30d8a66bebf5575418b99b4193fd0cf573925",
+  "lab_sha256": "d68a81c3a3cd8a22550e9c8fed0a5dcde9fd161a5312e07c84908f705497968b",
+  "runner_sha256": "18594ad2499d64accdff2f50a106e1e606e10a02c38fc8dae1a2b492bd354010",
+  "installer_sha256": "8ff524606a78ba4714f76ad29f3435c98b01ef759e4986066a9308a5cb912de7",
+  "execution_evidence": {
+    "reused": "../r61/acceptance.json",
+    "manual": "32b8e2c133634e8dab9e7aa1aa1362e8",
+    "automatic": "8740626a84f94ba681a75913205f1938",
+    "repeated_in_r62": false
+  },
+  "public_activation": "BLOCKED",
+  "public_db_firewall": "UNVERIFIED",
+  "public_blocker": "No request-to-socket attestation from the serving ingress and no dedicated verified external canary peer for scoped rollback",
+  "browser_sse_evidence": "Inherited from R61, serving binary remains identical",
+  "ec2": {
+    "state": "running",
+    "instance": "ok",
+    "system": "ok",
+    "attached_ebs": "ok"
+  },
+  "https": {
+    "student-dut.duckdns.org": {
+      "http": 200,
+      "tls_verify": 0
+    },
+    "websentinal.duckdns.org": {
+      "http": 200,
+      "tls_verify": 0
+    }
+  },
+  "before": {
+    "auto_block": false,
+    "client_port_in_access_log": false,
+    "connection_id_in_access_log": false,
+    "enforcement_mode": "OFF",
+    "host_nftables": [],
+    "incoming_count": 0,
+    "isolated_release_present": false,
+    "lab_cgroup_present": false,
+    "lab_runtime_present": false,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "public_action_and_active_lease_counts": "0|0",
+    "public_approval": false,
+    "public_logging_variables": [
+      "$body_bytes_sent",
+      "$pbl4_host_command",
+      "$pbl4_host_sqli",
+      "$pbl4_host_traversal",
+      "$pbl4_host_xss",
+      "$r49_log_dispatch",
+      "$r49_log_host",
+      "$r49_log_path",
+      "$r51_leg",
+      "$r51_route_group",
+      "$remote_addr",
+      "$request_id",
+      "$request_length",
+      "$request_method",
+      "$request_time",
+      "$status",
+      "$time_iso8601"
+    ],
+    "public_status_socket": false,
+    "real_ip_config_present": false,
+    "service_states": {
+      "nginx": "active",
+      "postgresql@18-main": "active",
+      "websentinel-r47-scorer": "active",
+      "websentinel-r47-security": "active",
+      "websentinel-r47-student": "active",
+      "websentinel-r48-correlator": "active",
+      "websentinel-r48-sensor": "active"
+    },
+    "serving_sha256": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c"
+  },
+  "after": {
+    "auto_block": false,
+    "client_port_in_access_log": false,
+    "connection_id_in_access_log": false,
+    "enforcement_mode": "OFF",
+    "host_nftables": [],
+    "incoming_count": 0,
+    "isolated_release_present": true,
+    "lab_cgroup_present": false,
+    "lab_runtime_present": false,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "public_action_and_active_lease_counts": "0|0",
+    "public_approval": false,
+    "public_logging_variables": [
+      "$body_bytes_sent",
+      "$pbl4_host_command",
+      "$pbl4_host_sqli",
+      "$pbl4_host_traversal",
+      "$pbl4_host_xss",
+      "$r49_log_dispatch",
+      "$r49_log_host",
+      "$r49_log_path",
+      "$r51_leg",
+      "$r51_route_group",
+      "$remote_addr",
+      "$request_id",
+      "$request_length",
+      "$request_method",
+      "$request_time",
+      "$status",
+      "$time_iso8601"
+    ],
+    "public_status_socket": false,
+    "real_ip_config_present": false,
+    "service_states": {
+      "nginx": "active",
+      "postgresql@18-main": "active",
+      "websentinel-r47-scorer": "active",
+      "websentinel-r47-security": "active",
+      "websentinel-r47-student": "active",
+      "websentinel-r48-correlator": "active",
+      "websentinel-r48-sensor": "active"
+    },
+    "serving_sha256": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c"
+  }
+}
