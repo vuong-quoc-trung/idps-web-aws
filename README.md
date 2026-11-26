@@ -10,7 +10,9 @@ WebSentinel giám sát các ứng dụng web đi qua NGINX HTTPS. Suricata quan 
 nhánh HTTP nội bộ, Student Audit ghi kết quả nghiệp vụ và Rust hợp nhất bằng
 chứng theo request ID. Security Web hiển thị cảnh báo, quyết định Hybrid và
 cập nhật qua SSE. Mô hình đang phục vụ là HistGradientBoosting URI100
-`r37-hgb-uri100-v1`, giữ vai trò tư vấn. Public enforcement và AI auto-ban tắt.
+`r37-hgb-uri100-v1`, giữ vai trò tư vấn. Chặn thủ công và TTL đã hoạt động
+trên ingress dành riêng cho một peer do EC2 quản lý. Public enforcement
+và AI auto-ban tắt.
 
 [Nghiệm thu R58 và sơ đồ triển khai](docs/144_T09_R58_FINAL_PROJECT_COMPLETION.md) ·
 [Runbook AWS staging](docs/AWS_STAGING_OPERATIONS_HANDOFF.md)

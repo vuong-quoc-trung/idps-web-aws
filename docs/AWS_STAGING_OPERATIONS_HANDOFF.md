@@ -568,3 +568,21 @@ sudo -n bash /opt/websentinel-r62/prevention-r61/r60_stage.sh \
 sang một tên backup chưa tồn tại trong cùng thư mục root. Khôi phục bằng
 cách đổi tên lại. Quy trình này độc lập với hai website đang phục vụ.
 [Báo cáo R62](148_T09_R62_FINAL_DEPLOYMENT_AND_ACTIVATION.md)
+
+## Prevention trên bản AWS đang phục vụ
+
+Security Web kết nối tới `websentinel-aws-prevention.service` qua Unix socket
+do root quản lý. Chỉ quản trị viên có thể chặn `10.254.63.2` trong tối đa
+60 giây. Table `inet ws_aws_prevention` chỉ áp dụng trên interface `ws-c2-edge`
+và cổng HTTPS của ingress riêng. Dashboard đọc PostgreSQL, lịch sử tác vụ
+và nftables để hiển thị trạng thái. Rule-based và Hybrid Adaptive vẫn giới
+hạn ở canary R61. Luồng public tiếp tục giám sát và AI Advisory.
+
+Dừng actuator để thu hồi đường ghi. Script dưới đây phục hồi cùng lúc backend,
+frontend và cấu hình Prevention từ bản backup đã kiểm SHA.
+
+```bash
+sudo -n systemctl stop websentinel-aws-prevention.service
+sudo -n env PYTHONPATH=/opt/websentinel-r48/runtime python3 -B \
+  /opt/websentinel-final/final_deploy.py rollback
+```

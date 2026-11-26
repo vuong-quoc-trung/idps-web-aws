@@ -1,0 +1,66 @@
+{
+  "profile": "AWS_STAGING",
+  "ec2": {
+    "state": "running",
+    "instance": "ok",
+    "system": "ok",
+    "attachedEbs": "ok"
+  },
+  "services_active": 8,
+  "sites": {
+    "student-dut.duckdns.org": {
+      "http": 200,
+      "tls_verify": 0
+    },
+    "websentinal.duckdns.org": {
+      "http": 200,
+      "tls_verify": 0
+    }
+  },
+  "release": {
+    "backend_sha256": "41a205b12bdf6049c6458602d4ca1daaef3a05fed55a534c7e6b299a2bf3e992",
+    "frontend_sha256": "0632ad43cdf8ed169161f336a60d9bec03753a76fb84ba9a75567f7b682e4790",
+    "rollback": "/var/backups/websentinel-final",
+    "unit": "websentinel-aws-prevention.service"
+  },
+  "api": {
+    "firewall": true,
+    "prevention": "READY",
+    "scope": "aws-private-ingress",
+    "db_audit_kernel": "SYNCED",
+    "block_id": 1,
+    "unblock_id": 2,
+    "ttl_id": 3,
+    "peer_tls": "PASS",
+    "protected_target_http": 400,
+    "anonymous_http": 401,
+    "current_ai_http": 200,
+    "legacy_http": 404,
+    "sse": "RESYNC_200"
+  },
+  "browser": {
+    "tabs": [
+      "Tổng quan",
+      "Cảnh báo",
+      "Audit ứng dụng",
+      "AI",
+      "IP bị chặn",
+      "Nhật ký thao tác",
+      "Luật phát hiện",
+      "Trạng thái hệ thống"
+    ],
+    "firewall": "ACTIVE",
+    "prevention": "ENABLED",
+    "sync": "VERIFIED_SYNCED",
+    "scope": "DEDICATED_EC2_PEER",
+    "sse": "CONNECTED",
+    "legacy_visible": false,
+    "alert_detail_checked": true,
+    "legacy_api_requested": false,
+    "asset": "/assets/index-1kQtDCbX.js"
+  },
+  "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+  "public_enforcement": "OFF",
+  "rule_and_hybrid_automatic": "R61_CANARY_ONLY",
+  "public_blocker": "Serving ingress lacks request-bound kernel socket attestation and an exclusive verified public canary peer."
+}
