@@ -531,3 +531,22 @@ xem xét public, kiểm tra riêng quyền quản trị, attestation phát từ
 đúng worker ingress, nhiều client dùng chung IP, phạm vi nftables,
 readback và rollback. Giữ AI ở Advisory đến khi có đánh giá độc lập
 thỏa T07.
+
+## 23. R61 — Canary chạy Rule và Hybrid trên EC2
+
+R61 dùng cùng runner, cgroup và namespace như R60. Build với
+`isolated-c2`, đưa thêm `r61_canary.py` vào bundle SHA-pinned và chọn
+profile `r61`. Trong profile này, chỉ marker `/health` và `/api/profile`
+trên listener lab đủ phạm vi. Backend dùng session tạm và không truy cập
+Student Web hay database phục vụ. Kernel được đọc lại sau khi áp dụng
+mỗi lease. [Nghiệm thu và bằng chứng](147_T09_R61_FINAL_ACTIVATION_AND_PROJECT_FREEZE.md)
+
+```bash
+sudo -n bash r60_stage.sh /absolute/path/bundle.tgz <bundle-sha256> r61
+```
+
+Để dừng canary, dùng `systemctl stop websentinel-r56-prevention.service`
+sau khi đối chiếu invocation đang chạy của phiên mình. Kiểm tra unit,
+`/run/websentinel-r56-lab`, cgroup và table nftables phía host đã sạch.
+Không cài capability canary vào service serving. Bản đóng băng giữ
+Dashboard public ở Monitoring, AI Advisory và chặn công khai OFF.

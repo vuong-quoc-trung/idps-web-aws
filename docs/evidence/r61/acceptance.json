@@ -1,0 +1,296 @@
+{
+  "result": "PARTIAL",
+  "scope": "AWS_STAGING_PRIVATE_NETNS_CANARY",
+  "region": "ap-southeast-1",
+  "instance": "i-0b6f2e4f3ed32f514",
+  "ec2": {
+    "state": "running",
+    "instance": "ok",
+    "system": "ok",
+    "attachedEbs": "ok"
+  },
+  "source_commit": "87f19a1fa206accd839274a82f66ff821af141b4",
+  "bundle_sha256": "b0f41ac44a87081f4046d15400a30d8a66bebf5575418b99b4193fd0cf573925",
+  "lab_binary_sha256": "d68a81c3a3cd8a22550e9c8fed0a5dcde9fd161a5312e07c84908f705497968b",
+  "setup_attempt": {
+    "invocation": "64a2840b93b84703bc668bd34a151165",
+    "exit_code": 1,
+    "cause": "unknown route segments sanitized by the existing redaction contract",
+    "kernel_cleanup": "PASS"
+  },
+  "canary": {
+    "automatic": [
+      {
+        "request_id": "daf524ab80a16a3ed81672d7b6014f31",
+        "status": 204,
+        "local": [
+          "10.254.56.1",
+          18456
+        ],
+        "peer": [
+          "10.254.56.2",
+          34100
+        ],
+        "socket_inode": 739736,
+        "backend": [
+          "127.77.0.1",
+          40106
+        ],
+        "suricata_flow": 1723932621310424,
+        "suricata_tx": 0,
+        "rule_sid": 161001,
+        "action_id": 1,
+        "source": "CANARY_RULE"
+      },
+      {
+        "request_id": "fa3af2ddc0b33586383626288c5b6530",
+        "status": 403,
+        "local": [
+          "10.254.56.1",
+          18456
+        ],
+        "peer": [
+          "10.254.56.2",
+          33956
+        ],
+        "socket_inode": 740484,
+        "backend": [
+          "127.77.0.1",
+          33294
+        ],
+        "suricata_flow": 218316125862448,
+        "suricata_tx": 0,
+        "rule_sid": 161002,
+        "action_id": 3,
+        "source": "CANARY_HYBRID"
+      }
+    ],
+    "missing_attestation": {
+      "request_id": "25249309f6b72472bf64f395e19a450d",
+      "status": 204,
+      "local": [
+        "10.254.56.1",
+        18456
+      ],
+      "peer": [
+        "10.254.56.2",
+        34072
+      ],
+      "socket_inode": 738837,
+      "backend": [
+        "127.77.0.1",
+        40082
+      ],
+      "suricata_flow": 1067938830516845,
+      "suricata_tx": 0,
+      "rule_sid": 161001
+    },
+    "authorized_session": {
+      "request_id": "a5facc1fe26641b893797f4984f9301d",
+      "status": 204,
+      "local": [
+        "10.254.56.1",
+        18456
+      ],
+      "peer": [
+        "10.254.56.2",
+        34086
+      ],
+      "socket_inode": 739700,
+      "backend": [
+        "127.77.0.1",
+        40102
+      ],
+      "suricata_flow": 1548791897699292,
+      "suricata_tx": 0,
+      "rule_sid": 161002
+    },
+    "negative_result": "NO_ACTION",
+    "manual_unblock": 2,
+    "max_ttl_seconds": 6,
+    "db_kernel": "SYNCED_EMPTY",
+    "audit": "3 SUCCESS",
+    "restart_without_replay": true,
+    "protected_scope": "PASS",
+    "rbac": [
+      401,
+      403
+    ],
+    "invocation": "8740626a84f94ba681a75913205f1938",
+    "exit_code": 0,
+    "cleanup": "PASS",
+    "offline_refused": true,
+    "wall_seconds": 52.969,
+    "cpu_seconds": 3.05,
+    "peak_memory_mib": 179.1
+  },
+  "manual_current_build": {
+    "proofs": [
+      {
+        "request_id": "8a69e8f27121b4edf1811db7b8bcaed1",
+        "status": 204,
+        "local": [
+          "10.254.56.1",
+          18456
+        ],
+        "peer": [
+          "10.254.56.2",
+          47478
+        ],
+        "socket_inode": 743709,
+        "backend": [
+          "127.77.0.1",
+          42022
+        ],
+        "suricata_flow": 1283900365604724,
+        "suricata_tx": 0,
+        "rule_sid": 156001
+      },
+      {
+        "request_id": "1222d90446a1f53c76379a118279352e",
+        "status": 204,
+        "local": [
+          "10.254.56.1",
+          18456
+        ],
+        "peer": [
+          "10.254.56.2",
+          53060
+        ],
+        "socket_inode": 744536,
+        "backend": [
+          "127.77.0.1",
+          49076
+        ],
+        "suricata_flow": 11196155622210,
+        "suricata_tx": 0,
+        "rule_sid": 156001
+      }
+    ],
+    "lab_namespace": "net:[4026532598]",
+    "unit": "websentinel-r56-prevention.service",
+    "proof_max_age_s": 10,
+    "manual_block": 2,
+    "manual_unblock": 3,
+    "ttl": 4,
+    "ttl_seconds": 6,
+    "restart": "PASS",
+    "db_kernel": "SYNCED_EMPTY",
+    "audit": "3 SUCCESS, 1 ERROR",
+    "rbac": [
+      401,
+      403
+    ],
+    "protected_scope": "PASS",
+    "forwarded_header_ignored": true,
+    "unproven_peer_refused": 1,
+    "invocation": "32b8e2c133634e8dab9e7aa1aa1362e8",
+    "exit_code": 0,
+    "cleanup": "PASS",
+    "offline_refused": true,
+    "wall_seconds": 79.637,
+    "cpu_seconds": 2.5,
+    "peak_memory_mib": 169.3
+  },
+  "published_snapshot": {
+    "checked_at": "2026-11-26T16:47:33.064473+00:00",
+    "configuration": {
+      "AUTO_BLOCK": "false",
+      "ENFORCEMENT_MODE": "OFF",
+      "SURICATA_CAPTURE_MODE": "post-proxy",
+      "SURICATA_POST_PROXY_INTERFACE": "lo",
+      "WS_NATIVE_FIREWALL_SOCKET": null
+    },
+    "frontend_index_sha256": "876b73f3eafcb3811ca7f2f5a6abc8975c35194ddb023b9f5bdd35c715364e38",
+    "kernel_readback": {
+      "native_lab_table_present": false,
+      "r56_lab_table_present": false,
+      "readable": true,
+      "table_count": 0
+    },
+    "lab_runtime_present": true,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "native_local_policy_file_present": false,
+    "native_status_socket_present": false,
+    "request": {
+      "active_database_leases": 0,
+      "ai": "SCORED",
+      "ai_proof_ms": 2.153554,
+      "ai_threshold": 0.7664756774902344,
+      "automatic_block": false,
+      "correlation": "MATCHED",
+      "edge_audit_agree": true,
+      "edge_ip_present": true,
+      "hybrid": "LOG_ONLY",
+      "hybrid_advisory_reason": true,
+      "incidents": 1,
+      "late": false,
+      "model": "r37-hgb-uri100-v1",
+      "pending_actions": 0,
+      "request_id": "37a7a368aeeb37f4abbff6b432f37acb",
+      "sensor_transaction_on_loopback": true,
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "total_actions": 0,
+      "trusted_hybrid_target": false
+    },
+    "rollback_backup_manifest_sha256": "a183a10503f6d963e183934f4c0dd3ee09655b9f6133163e76be1b9532091d04",
+    "security_binary_sha256": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c",
+    "services": {
+      "nginx.service": "active",
+      "postgresql@18-main.service": "active",
+      "websentinel-r47-scorer.service": "active",
+      "websentinel-r47-security.service": "active",
+      "websentinel-r47-student.service": "active",
+      "websentinel-r48-correlator.service": "active",
+      "websentinel-r48-sensor.service": "active"
+    }
+  },
+  "public_dashboard": {
+    "source": "observed signed-in AWS browser tab",
+    "sse": "CONNECTED",
+    "firewall": "OFF",
+    "prevention": "OFF",
+    "db_firewall": "UNVERIFIED"
+  },
+  "after": {
+    "auto_block": false,
+    "checked_at": "2026-11-26T16:50:50.539156+00:00",
+    "enforcement_mode": "OFF",
+    "kernel_tables": [],
+    "lab_cgroup_present": false,
+    "lab_runtime_present": false,
+    "model_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "native_policy_present": false,
+    "native_status_socket_present": false,
+    "public_db_firewall": "0|0",
+    "scratch_directories": [],
+    "security_binary_sha256": "64299518c6f18fbcc9d7ab54a304996e938e7463d0624765f892eee505a0935c",
+    "services": {
+      "nginx.service": "active",
+      "postgresql@18-main.service": "active",
+      "websentinel-r47-scorer.service": "active",
+      "websentinel-r47-security.service": "active",
+      "websentinel-r47-student.service": "active",
+      "websentinel-r48-correlator.service": "active",
+      "websentinel-r48-sensor.service": "active"
+    }
+  },
+  "regression": {
+    "python_passed": 9,
+    "rust_canary_passed": 1,
+    "rust_default_passed": 1,
+    "bash": "PASS"
+  },
+  "public_scope": {
+    "deployment": "MONITORING_AND_AI_ADVISORY",
+    "public_enforcement": "OFF",
+    "missing": [
+      "attested public NGINX worker and request binding",
+      "exclusive external canary peer, scoped readback and rollback evidence"
+    ]
+  }
+}
