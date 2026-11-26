@@ -14,7 +14,7 @@ cập nhật qua SSE. Mô hình đang phục vụ là HistGradientBoosting URI10
 trên ingress dành riêng cho một peer do EC2 quản lý. Public enforcement
 và AI auto-ban tắt.
 
-[Nghiệm thu R58 và sơ đồ triển khai](docs/144_T09_R58_FINAL_PROJECT_COMPLETION.md) ·
+[Kiến trúc bàn giao PBL4](docs/WEBSENTINEL_PBL4_ARCHITECTURE.md) ·
 [Runbook AWS staging](docs/AWS_STAGING_OPERATIONS_HANDOFF.md)
 
 ## AI offline và bàn giao nhóm

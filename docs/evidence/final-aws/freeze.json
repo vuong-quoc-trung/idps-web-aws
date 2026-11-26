@@ -1,0 +1,236 @@
+{
+  "project_final_status": "READY_FOR_PBL4_HANDOFF_SCOPED_AWS_STAGING",
+  "application_baseline": "d10f1f36f95b069ea0294b93c5178b7b2254dedb",
+  "checked_at_local": "2026-11-27T06:34:22.007809+07:00",
+  "ec2": {
+    "state": "running",
+    "instance": "ok",
+    "system": "ok",
+    "ebs": "ok"
+  },
+  "sites": {
+    "student-dut.duckdns.org": {
+      "http": 200,
+      "tls_verify": 0
+    },
+    "websentinal.duckdns.org": {
+      "http": 200,
+      "tls_verify": 0
+    }
+  },
+  "runtime": {
+    "checked_at": "2026-11-26T23:34:22.007809+00:00",
+    "services": {
+      "nginx.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "MainPID": "1416",
+        "NRestarts": "0"
+      },
+      "postgresql@18-main.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled-runtime",
+        "MainPID": "729",
+        "NRestarts": "0"
+      },
+      "websentinel-r47-student.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "MainPID": "35298",
+        "NRestarts": "0"
+      },
+      "websentinel-r47-security.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "MainPID": "133103",
+        "NRestarts": "0"
+      },
+      "websentinel-r47-scorer.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "MainPID": "90389",
+        "NRestarts": "0"
+      },
+      "websentinel-r48-correlator.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "MainPID": "38233",
+        "NRestarts": "0"
+      },
+      "websentinel-r48-sensor.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled",
+        "MainPID": "31355",
+        "NRestarts": "0"
+      },
+      "websentinel-aws-prevention.service": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "disabled",
+        "MainPID": "133024",
+        "NRestarts": "0"
+      }
+    },
+    "runtime": {
+      "WS_OPERATIONS_PROFILE": "aws-staging",
+      "ENFORCEMENT_MODE": "MANUAL",
+      "AUTO_BLOCK": "false",
+      "WS_AWS_SCOPED_PREVENTION": "1",
+      "ENFORCE_ALLOWED_SUBNETS": "10.254.63.2/32"
+    },
+    "backend_sha256": "41a205b12bdf6049c6458602d4ca1daaef3a05fed55a534c7e6b299a2bf3e992",
+    "front_sha256": "0632ad43cdf8ed169161f336a60d9bec03753a76fb84ba9a75567f7b682e4790",
+    "ai_sha256": "91fe8bad280f7c103adc3601579e350fccd1e3b0de65d43c062aec5b34e60aff",
+    "student_bundle_sha256": "54c5415982a3792a98502678ac43fd72a0db5a47fc06454c147d84fe79afa7aa",
+    "student_backend_sha256": "3e5fc58174c3793956f80238efe334a525e9dc4ea485c0a34d4bd97192add7af",
+    "rollback_sha_verified": true,
+    "backup_files": 6,
+    "student_db": {
+      "students": 55,
+      "users": 56,
+      "invalid_public_indexes": 0
+    },
+    "security_db": {
+      "active_leases": 0,
+      "pending_actions": 0,
+      "audit_actions": [
+        {
+          "id": 1,
+          "action": "BLOCK",
+          "status": "SUCCESS"
+        },
+        {
+          "id": 2,
+          "action": "UNBLOCK",
+          "status": "SUCCESS"
+        },
+        {
+          "id": 3,
+          "action": "BLOCK",
+          "status": "SUCCESS"
+        }
+      ],
+      "invalid_public_indexes": 0
+    },
+    "sync": {
+      "differences": [],
+      "reason": "AWS_DB_AUDIT_KERNEL",
+      "scope": "aws-private-ingress",
+      "status": "SYNCED"
+    },
+    "nginx_tls": true,
+    "sse": "RESYNC_200",
+    "request": {
+      "late": false,
+      "model": "r37-hgb-uri100-v1",
+      "hybrid": "LOG_ONLY",
+      "sources": [
+        "NGINX",
+        "STUDENT_AUDIT",
+        "SURICATA"
+      ],
+      "threshold": 0.7664756774902344,
+      "request_id": "c4c89f32f657aa71b4d811f9e0eb3900",
+      "correlation": "MATCHED",
+      "enforcement": false,
+      "score_status": "SCORED"
+    },
+    "resources": {
+      "vcpu": 2,
+      "cpu_used_percent": 12.48,
+      "load_1m": 0.28125,
+      "ram_total_mib": 7775,
+      "ram_available_mib": 6238,
+      "disk_free_gib": 30.02,
+      "disk_total_gib": 37.65,
+      "network": {
+        "rx_bytes": 1634374700,
+        "tx_bytes": 308753209,
+        "rx_errors": 0,
+        "tx_errors": 0,
+        "rx_dropped": 0,
+        "tx_dropped": 0,
+        "interface": "enp39s0",
+        "operstate": "up"
+      }
+    }
+  },
+  "installed_from_repository_sha256": {
+    "final_deploy.py": "08dc3eb5599f785fe68fa259d0d1ad4fa35ec07da31c3774b7860b8cac9e98cb",
+    "scoped_actuator.py": "7d104d41d250aa3cb6497cb17ecc51d0ab9b64581e1e30c32451368a1f257100",
+    "websentinel-aws-prevention.service": "212f7f9b1914815595b022d5502798b82a45eb591ab38e45507848ed9afad8c2"
+  },
+  "browser": {
+    "security": {
+      "tabs": [
+        "Tổng quan",
+        "Cảnh báo",
+        "Audit ứng dụng",
+        "AI",
+        "IP bị chặn",
+        "Nhật ký thao tác",
+        "Luật phát hiện",
+        "Trạng thái hệ thống"
+      ],
+      "alert_detail": true,
+      "alert_filter": true,
+      "ai_lookup": true,
+      "legacy_api_calls": 0,
+      "asset": "/assets/index-1kQtDCbX.js",
+      "sse": "CONNECTED"
+    },
+    "student": {
+      "admin_routes": [
+        "/",
+        "/students",
+        "/students/:id",
+        "/catalog",
+        "/admin",
+        "/admin?tab=logs",
+        "/change-password",
+        "/forgot-password",
+        "/activate"
+      ],
+      "catalog_tabs": 4,
+      "search": true,
+      "pagination": true,
+      "profile_protected": true,
+      "asset": "/assets/index-B5neaMCM.js",
+      "mutations": false
+    }
+  },
+  "secret_scan": {
+    "tool": "Gitleaks 8.16.0 (Ubuntu package)",
+    "scope": "tracked snapshot and Git history reachable from baseline",
+    "generic_matches": {
+      "snapshot": 655,
+      "history": 656
+    },
+    "review": "Checksums, hashes or observation identifiers, and an intentional test canary. No confirmed credentials."
+  },
+  "prevention_scope": {
+    "manual": "10.254.63.2/32 via ws-c2-edge to 10.254.63.1:443",
+    "max_ttl_seconds": 60,
+    "readback": "SYNCED",
+    "mutation_acceptance": "acceptance.json",
+    "automatic_public": "OFF",
+    "ai_auto_ban": "OFF"
+  },
+  "unchanged": [
+    "Application binaries and model",
+    "Student business data",
+    "AWS infrastructure"
+  ],
+  "limits": [
+    "Read-only business workflow smoke",
+    "Backup checksum verified without rollback or reboot",
+    "Rule-based and Hybrid Adaptive validated only in isolated canary"
+  ]
+}

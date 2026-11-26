@@ -571,6 +571,9 @@ cách đổi tên lại. Quy trình này độc lập với hai website đang ph
 
 ## Prevention trên bản AWS đang phục vụ
 
+Xem kiến trúc và phạm vi đã xác minh trong [tài liệu bàn giao PBL4](WEBSENTINEL_PBL4_ARCHITECTURE.md).
+Security Web kéo actuator theo dependency systemd khi khởi động.
+
 Security Web kết nối tới `websentinel-aws-prevention.service` qua Unix socket
 do root quản lý. Chỉ quản trị viên có thể chặn `10.254.63.2` trong tối đa
 60 giây. Table `inet ws_aws_prevention` chỉ áp dụng trên interface `ws-c2-edge`
