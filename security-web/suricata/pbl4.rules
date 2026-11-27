@@ -3,8 +3,8 @@
 # Rules observe configured HOME_NET servers on whichever interfaces the sensor captures.
 # ==============================================================================
 
-# 1. SYN burst is a rate observation, not proof of a multi-port scan.
-alert tcp any any -> $HOME_NET any (msg:"PBL4 NIDS: TCP SYN Burst Threshold"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:4;)
+# 1. SYN burst measures ingress connection rate. Exclude loopback proxy hops.
+alert tcp ![127.0.0.0/8,::1] any -> $HOME_NET any (msg:"PBL4 NIDS: TCP SYN Burst Threshold"; flags:S; flow:stateless; threshold:type both, track by_src, count 10, seconds 5; classtype:attempted-recon; priority:2; sid:1000001; rev:5;)
 
 # 2. Web Attack: SQL Injection - Boolean or Union Based
 alert http any any -> $HTTP_SERVERS any (msg:"PBL4 NIDS: SQL Injection - Boolean or Union Attempt"; flow:established,to_server; http.uri; pcre:"/(union(?:[+\s]|\/\*.*?\*\/)+(?:all(?:[+\s]|\/\*.*?\*\/)+)?select|(?:\x27|%27|\x22|%22)(?:[+\s]|\/\*.*?\*\/)*(?:or|and)(?:[+\s]|\/\*.*?\*\/)+(?:\d+[+\s]*=[+\s]*\d+|(?:\x27|\x22)\w+(?:\x27|\x22)[+\s]*=[+\s]*(?:\x27|\x22)\w+))/i"; classtype:web-application-attack; priority:1; sid:1000002; rev:4;)

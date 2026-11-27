@@ -1,5 +1,6 @@
 """Render the cloud beta gateway from the verified R47 configuration."""
 
+from ipaddress import IPv4Address
 import re
 
 
@@ -204,12 +205,31 @@ server {{
     return http + base.replace(original, student)
 
 
-def sensor_config(kit, state):
+def sensor_config(kit, state, *, ingress=None):
+    home_net = f"{EGRESS}/32"
+    ingress_capture = ""
+    capture_options = ""
+    if ingress:
+        interface, address = ingress
+        address = IPv4Address(address)
+        if not re.fullmatch(r"[A-Za-z0-9_.-]{1,15}", interface) or interface == "lo" or address.is_loopback or address.is_unspecified:
+            raise ValueError("Expected a physical ingress interface and its IPv4 address")
+        home_net += f",{address}/32"
+        capture_options = "capture:\n  disable-offloading: false\n"
+        ingress_capture = f"""
+  - interface: {interface}
+    threads: 1
+    cluster-id: 199
+    cluster-type: cluster_flow
+    use-mmap: yes
+    disable-promisc: yes
+    bpf-filter: "ip and tcp and dst host {address} and (dst port 80 or dst port 443) and tcp[tcpflags] & (tcp-syn|tcp-ack) = tcp-syn"
+"""
     return f"""%YAML 1.1
 ---
 vars:
   address-groups:
-    HOME_NET: "[{EGRESS}/32]"
+    HOME_NET: "[{home_net}]"
     EXTERNAL_NET: "!$HOME_NET"
     HTTP_SERVERS: "[{EGRESS}/32]"
   port-groups:
@@ -223,7 +243,7 @@ af-packet:
     defrag: yes
     use-mmap: yes
     bpf-filter: "tcp and ((src host {SOURCE} and dst host {EGRESS} and dst port {PORT}) or (src host {EGRESS} and src port {PORT} and dst host {SOURCE}))"
-stream:
+{ingress_capture}{capture_options}stream:
   inline: no
   checksum-validation: yes
 stats:
