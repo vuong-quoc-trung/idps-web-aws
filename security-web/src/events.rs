@@ -219,14 +219,7 @@ impl CanonicalEvent {
         .into_iter()
         .flatten()
         {
-            anyhow::ensure!(
-                value
-                    .strip_prefix("hmac-sha256:")
-                    .is_some_and(|h| h.len() == 64
-                        && h.bytes()
-                            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())),
-                "Identity must be an HMAC pseudonym"
-            );
+            anyhow::ensure!(valid_hmac(value), "Identity must be an HMAC pseudonym");
         }
         anyhow::ensure!(
             self.role
@@ -367,65 +360,135 @@ pub struct ParsedEvent {
     pub sensor_tx_id: Option<i64>,
 }
 
-/// Public projection of stored evidence. Keep the original database value intact.
-pub fn alert_evidence_view(mut value: Value) -> Option<Value> {
-    let evidence = value.as_object_mut()?;
-    evidence.retain(|key, field| {
-        key == "suricata_origin"
-            || (!field.is_array()
-                && !field.is_object()
-                && matches!(
-                    key.as_str(),
-                    "schema_version"
-                        | "source"
-                        | "source_instance"
-                        | "event_id"
-                        | "timestamp"
-                        | "event_type"
-                        | "request_id"
-                        | "client_ip"
-                        | "peer_ip"
-                        | "dest_ip"
-                        | "src_port"
-                        | "dest_port"
-                        | "transport"
-                        | "flow_id"
-                        | "http_method"
-                        | "uri_path"
-                        | "status_code"
-                        | "latency_ms"
-                        | "outcome"
-                        | "request_bytes"
-                        | "response_bytes"
-                        | "role"
-                        | "rule_code"
-                        | "event_count"
-                        | "window_event_count"
-                        | "window_seconds"
-                        | "first_seen"
-                        | "last_seen"
-                        | "reason"
-                        | "recommended_action"
-                        | "redacted"
-                        | "truncated"
-                ))
-    });
-    if let Some(path) = evidence.get_mut("uri_path")
-        && let Some(target) = path.as_str()
-    {
-        *path = Value::String(detection::redact_target(target).0);
-    }
-    if let Some(origin) = evidence.get_mut("suricata_origin") {
-        *origin = serde_json::from_value::<crate::suricata_origin::Origin>(origin.take())
-            .ok()
-            .and_then(|origin| serde_json::to_value(origin).ok())
-            .unwrap_or(Value::Null);
-    }
-    Some(value)
+/// Validate the stored event and reapply display redaction without filling in absent keys.
+pub fn canonical_evidence(mut stored: Value) -> Result<Value> {
+    let event: CanonicalEvent = serde_json::from_value(stored.clone())?;
+    let safe = serde_json::to_value(event.display_view()?)?;
+    redact_canonical_values(&mut stored, &safe);
+    Ok(stored)
 }
 
-pub fn alert_evidence_text(raw: &str) -> Option<String> {
-    alert_evidence_view(serde_json::from_str(raw).ok()?).map(|value| value.to_string())
+fn redact_canonical_values(stored: &mut Value, safe: &Value) {
+    if let (Value::Object(stored), Value::Object(safe)) = (&mut *stored, safe) {
+        for (key, value) in stored {
+            if let Some(redacted) = safe.get(key) {
+                redact_canonical_values(value, redacted);
+            }
+        }
+    } else {
+        *stored = safe.clone();
+    }
+}
+
+pub fn alert_evidence(raw: &str, source: &str) -> Option<Value> {
+    if source == "AI_SHADOW" {
+        return crate::ai_shadow::alert_evidence(raw);
+    }
+    let mut stored: Value = serde_json::from_str(raw).ok()?;
+    if stored.get("schema_version").is_some() && stored["source"] == source {
+        return canonical_evidence(stored).ok();
+    }
+    // Only generated detector summaries are eligible. Older untyped payloads
+    // cannot be safely republished as raw evidence.
+    let code = stored["rule_code"].as_str()?;
+    let trusted = match source {
+        "STUDENT_AUDIT" | "APPLICATION" => crate::application_detection::RULES
+            .iter()
+            .any(|rule| rule.code == code),
+        "NGINX" => crate::nginx_detection::RULES
+            .iter()
+            .any(|rule| rule.0 == code),
+        _ => false,
+    };
+    if !trusted {
+        return None;
+    }
+    redact_detection_values("", &mut stored);
+    Some(stored)
+}
+
+fn redact_detection_values(key: &str, value: &mut Value) {
+    match value {
+        Value::Object(fields) => {
+            fields.retain(|name, child| {
+                let key: String = name
+                    .bytes()
+                    .filter(u8::is_ascii_alphanumeric)
+                    .map(|c| char::from(c.to_ascii_lowercase()))
+                    .collect();
+                if [
+                    "password",
+                    "passwd",
+                    "credential",
+                    "secret",
+                    "token",
+                    "authorization",
+                    "cookie",
+                    "apikey",
+                    "sessionid",
+                    "sessionkey",
+                ]
+                .iter()
+                .any(|pattern| key.contains(pattern))
+                    || matches!(
+                        key.as_str(),
+                        "raw"
+                            | "rawevidence"
+                            | "rawrequest"
+                            | "rawresponse"
+                            | "payload"
+                            | "body"
+                            | "requestbody"
+                            | "responsebody"
+                            | "headers"
+                            | "requestheaders"
+                            | "responseheaders"
+                            | "rawheaders"
+                    )
+                {
+                    return false;
+                }
+                redact_detection_values(name, child);
+                true
+            });
+        }
+        Value::Array(items) => {
+            for item in items {
+                redact_detection_values(key, item);
+            }
+        }
+        Value::String(s) => {
+            if matches!(key, "uri_path" | "group_endpoint" | "endpoints") && s.starts_with('/') {
+                *s = detection::redact_target(s).0;
+            } else if matches!(key, "subject_hmac_or_ip" | "subject")
+                && s != "proxy"
+                && s.parse::<IpAddr>().is_err()
+                && !valid_hmac(s)
+            {
+                *value = Value::Null;
+            } else if matches!(
+                key,
+                "user_id" | "username" | "session_hmac" | "account_hmac" | "object_hmac"
+            ) && !valid_hmac(s)
+            {
+                *value = Value::Null;
+            } else if key == "query_string" {
+                *s = "[REDACTED]".into();
+            } else if key == "user_agent" {
+                *s = detection::redact_text(s, 1024);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn valid_hmac(value: &str) -> bool {
+    value.strip_prefix("hmac-sha256:").is_some_and(|id| {
+        id.len() == 64
+            && id
+                .bytes()
+                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+    })
 }
 
 fn text(value: &Value, key: &str) -> Option<String> {
@@ -857,19 +920,45 @@ mod tests {
 
     #[test]
     fn alert_evidence_projection_keeps_provenance_and_hides_sensitive_input() {
-        let raw = serde_json::json!({
-            "uri_path": "/api/students/123?token=private", "flow_id": "123",
-            "query_string": "token=private", "cookie": "private", "user_id": "private",
-            "suricata_origin": {"network_src_ip":"127.77.0.1","client_ip_verified":false,
-                "post_proxy":true,"tx_id":0,"interface":"lo"},
+        let evidence = serde_json::json!({
+            "rule_code": "APP-1012", "uri_path": "/api/students/123?token=private",
+            "request_id": null, "action_mode": "ALERT_ONLY", "user_id": "private",
+            "security_reasons": ["OBJECT_ACCESS_DENIED"],
+            "extensions": {"status_codes":[403, null], "cookie": "private",
+                           "nested":[{"accessToken":"private", "ok":true}]},
         });
-        let display = alert_evidence_text(&raw.to_string()).unwrap();
-        let view: Value = serde_json::from_str(&display).unwrap();
+        let view = alert_evidence(&evidence.to_string(), "STUDENT_AUDIT").unwrap();
         assert_eq!(view["uri_path"], "/api/students/[id]");
+        assert!(
+            view.as_object().unwrap().contains_key("request_id") && view["request_id"].is_null()
+        );
+        assert_eq!(
+            view["extensions"]["status_codes"],
+            serde_json::json!([403, null])
+        );
+        assert_eq!(
+            view["extensions"]["nested"],
+            serde_json::json!([{"ok":true}])
+        );
+        assert_eq!(view["security_reasons"], evidence["security_reasons"]);
+        assert!(!view.to_string().contains("private"));
+        assert!(alert_evidence("unstructured legacy content", "STUDENT_AUDIT").is_none());
+
+        let mut normalized =
+            serde_json::to_value(CanonicalEvent::new("SURICATA", Utc::now())).unwrap();
+        normalized["event_id"] = "sensor-event".into();
+        normalized["suricata_origin"] = serde_json::json!({
+            "network_src_ip":"127.77.0.1","client_ip_verified":false,"post_proxy":true,"tx_id":0,"interface":"lo"
+        });
+        normalized["flow"] = serde_json::json!({"bytes_to_server":42, "bytes_to_client":null});
+        normalized["flow_id"] = "18446744073709551615".into();
+        normalized["session_hmac"] = format!("hmac-sha256:{}", "a".repeat(64)).into();
+        let view = canonical_evidence(normalized.clone()).unwrap();
         assert_eq!(view["suricata_origin"]["interface"], "lo");
-        assert_eq!(view["flow_id"], "123");
-        assert!(!display.contains("private") && !display.contains("cookie"));
-        assert!(alert_evidence_text("unstructured legacy content").is_none());
+        assert_eq!(view["flow"], normalized["flow"]);
+        assert_eq!(view["flow_id"], normalized["flow_id"]);
+        assert_eq!(view["session_hmac"], normalized["session_hmac"]);
+        assert!(view.as_object().unwrap().contains_key("client_ip") && view["client_ip"].is_null());
     }
 
     #[test]

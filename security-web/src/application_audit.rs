@@ -164,18 +164,61 @@ pub async fn detail(
         )
     })?;
     let event = row.safe_event()?;
-    let related = if let Some(request_id) = &event.request_id {
+    let request_id = if event.source == "SURICATA" {
+        sqlx::query_scalar::<_, String>(
+            "SELECT s.request_id FROM suricata_lua_shadow s JOIN request_correlations c USING (request_id)
+             WHERE s.generation=$1 AND s.flow_id=$2 AND s.tx_id=$3
+               AND s.proof_present AND s.receipt_present AND NOT s.mismatched
+               AND c.result->>'status'='MATCHED' AND c.result->>'sensor_instance'=s.generation
+               AND c.result->>'flow_id'=s.flow_id AND c.result->>'tx_id'=s.tx_id::text",
+        )
+        .bind(event.source_instance.strip_prefix("suricata-"))
+        .bind(&event.flow_id)
+        .bind(event.suricata_origin.as_ref().and_then(|o| i64::try_from(o.tx_id?).ok()))
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(api_error)?
+    } else {
+        event.request_id.clone()
+    };
+    let related = if let Some(request_id) = &request_id {
         sqlx::query_as::<_, StoredEvent>("SELECT id,occurred_at,observed_at,canonical FROM normalized_events WHERE request_id=$1 AND id<>$2 ORDER BY occurred_at DESC,id DESC LIMIT 10")
             .bind(request_id).bind(id).fetch_all(&state.pool).await.map_err(api_error)?
             .iter().map(StoredEvent::summary).collect::<Result<Vec<_>, _>>()?
     } else {
         Vec::new()
     };
-    // Retain the existing API's already-masked query projection.
-    let mut canonical = crate::events::alert_evidence_view(json!(event)).unwrap_or_default();
-    canonical["query_string"] = json!(event.query_string);
+    let detections: Vec<(i64, String, i16, String)> = sqlx::query_as(
+        "SELECT a.id,a.rule_name,a.severity,a.evidence FROM security_alerts a
+         LEFT JOIN detector_alert_links l ON l.alert_id=a.id
+         WHERE a.source=$1 AND (
+           (l.link_basis='REQUEST_ID' AND l.request_id=$2 AND l.source_instance=$3)
+           OR ($1='SURICATA' AND a.event_key=(SELECT event_key FROM normalized_events WHERE id=$4)||':SURICATA')
+         )
+         ORDER BY a.id DESC LIMIT 10",
+    )
+    .bind(&event.source)
+    .bind(&request_id)
+    .bind(&event.source_instance)
+    .bind(id)
+    .fetch_all(&state.pool)
+    .await
+    .map_err(api_error)?;
+    let detections: Vec<_> = detections
+        .into_iter()
+        .map(|(id, rule, severity, raw)| {
+            let record = crate::events::alert_evidence(&raw, &event.source);
+            let evidence = record
+                .filter(|value| value.get("schema_version").is_none())
+                .and_then(|value| serde_json::to_string_pretty(&value).ok());
+            json!({"id":id,"rule":rule,"severity":severity,"evidence_json":evidence})
+        })
+        .collect();
+    let canonical = crate::events::canonical_evidence(row.canonical).map_err(api_error)?;
+    let canonical_json = serde_json::to_string_pretty(&canonical).map_err(api_error)?;
     Ok(Json(
         json!({"id":id,"occurred_at":row.occurred_at,"observed_at":row.observed_at,
-        "canonical":canonical,"related":related}),
+        "canonical":canonical,"canonical_json":canonical_json,"analysis_request_id":request_id,
+        "detections":detections,"related":related}),
     ))
 }

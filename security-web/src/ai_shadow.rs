@@ -152,6 +152,10 @@ fn decode(raw: &[u8]) -> Result<Record> {
     Ok(r)
 }
 
+pub(crate) fn alert_evidence(raw: &str) -> Option<Value> {
+    serde_json::to_value(decode(raw.as_bytes()).ok()?).ok()
+}
+
 pub async fn ingest(
     tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
     key: &str,

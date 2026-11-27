@@ -17,6 +17,9 @@ export type AiResult = {
   status_code?: number | null;
   latency_ms?: number | null;
   receipt?: Record<string, unknown> | null;
+  receipt_json?: string | null;
+  correlation_json?: string | null;
+  hybrid_json?: string | null;
 };
 
 export async function lookupHybrid(

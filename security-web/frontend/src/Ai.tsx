@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { lookupHybrid, type AiResult } from "./hybridLookup";
-import { AnalysisFields, SavedEvidence } from "./RequestEvidence";
+import {
+  AnalysisEvidence,
+  AnalysisFields,
+  RawEvidenceAvailability,
+} from "./RequestEvidence";
 
 type Api = (path: string, options?: RequestInit) => Promise<unknown>;
 type Report = {
@@ -161,14 +165,11 @@ export function Ai({ api }: { api: Api }) {
         ) : match?.value ? (
           <>
             <AnalysisFields result={match.value} />
-            <SavedEvidence
+            <AnalysisEvidence
               key={match.value.request_id}
-              text={
-                match.value.receipt
-                  ? JSON.stringify(match.value.receipt, null, 2)
-                  : ""
-              }
+              result={match.value}
             />
+            <RawEvidenceAvailability />
           </>
         ) : (
           <p role="status">

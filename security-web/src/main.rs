@@ -514,11 +514,13 @@ async fn search_alerts(
 }
 pub(crate) fn sanitize_alert_evidence(alert: &mut serde_json::Value) {
     alert["evidence"] = serde_json::Value::String(
-        alert["evidence"]
-            .as_str()
-            .and_then(events::alert_evidence_text)
+        alert_display_evidence(alert)
+            .map(|record| record.to_string())
             .unwrap_or_default(),
     );
+}
+fn alert_display_evidence(alert: &serde_json::Value) -> Option<serde_json::Value> {
+    events::alert_evidence(alert["evidence"].as_str()?, alert["source"].as_str()?)
 }
 // Preserve the original array response for existing clients.
 async fn list_alerts(
@@ -540,7 +542,30 @@ async fn alert_detail(
         .map_err(api_error)?;
     result
         .map(|mut detail| {
-            sanitize_alert_evidence(&mut detail["alert"]);
+            let stored = alert_display_evidence(&detail["alert"]);
+            let is_canonical = stored
+                .as_ref()
+                .is_some_and(|v| v["schema_version"] == "1.0");
+            let related = detail
+                .as_object_mut()
+                .and_then(|fields| fields.remove("linked_normalized"))
+                .filter(|value| !value.is_null())
+                .and_then(|value| events::canonical_evidence(value).ok());
+            let normalized = if is_canonical {
+                stored.as_ref()
+            } else {
+                related.as_ref()
+            };
+            detail["normalized_json"] =
+                serde_json::json!(normalized.and_then(|v| serde_json::to_string_pretty(v).ok()));
+            detail["detection_json"] = serde_json::json!(
+                stored
+                    .as_ref()
+                    .filter(|_| !is_canonical)
+                    .and_then(|v| serde_json::to_string_pretty(v).ok())
+            );
+            detail["alert"]["evidence"] =
+                serde_json::json!(stored.map(|v| v.to_string()).unwrap_or_default());
             Json(detail)
         })
         .ok_or((

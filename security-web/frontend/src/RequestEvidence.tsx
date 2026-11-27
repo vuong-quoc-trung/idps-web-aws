@@ -18,15 +18,23 @@ export function EvidenceFields({
   );
 }
 
-export function SavedEvidence({ text }: { text: string }) {
+export function JsonEvidence({
+  title,
+  text,
+  initiallyOpen = false,
+}: {
+  title: string;
+  text?: string | null;
+  initiallyOpen?: boolean;
+}) {
   const [feedback, setFeedback] = useState("");
   return (
-    <details>
-      <summary>Bằng chứng gốc</summary>
+    <details className="json-evidence" open={initiallyOpen}>
+      <summary>{title}</summary>
       {text ? (
         <>
-          <p className="muted">Bản ghi đã lưu, đã lọc thông tin nhạy cảm.</p>
           <button
+            type="button"
             onClick={async () => {
               try {
                 await navigator.clipboard.writeText(text);
@@ -36,15 +44,47 @@ export function SavedEvidence({ text }: { text: string }) {
               }
             }}
           >
-            Sao chép
+            Sao chép toàn bộ JSON
           </button>
           <p role="status">{feedback}</p>
-          <pre tabIndex={0}>{text}</pre>
+          <pre tabIndex={0} aria-label={title}>
+            {text}
+          </pre>
         </>
       ) : (
-        <p>Không có bằng chứng để hiển thị.</p>
+        <p className="muted">Không có bản ghi được lưu để hiển thị.</p>
       )}
     </details>
+  );
+}
+
+export function RawEvidenceAvailability() {
+  return (
+    <details className="json-evidence">
+      <summary>Bằng chứng gốc</summary>
+      <p className="muted">
+        Hệ thống không lưu bản ghi nguồn thô kèm sự kiện này.
+      </p>
+    </details>
+  );
+}
+
+export function AnalysisEvidence({ result }: { result: AiResult }) {
+  return (
+    <>
+      <JsonEvidence
+        title="Bằng chứng tương quan đa nguồn (JSON)"
+        text={result.correlation_json}
+      />
+      <JsonEvidence
+        title="Biên nhận AI đã lưu (JSON)"
+        text={result.receipt_json}
+      />
+      <JsonEvidence
+        title="Quyết định Hybrid đã lưu (JSON)"
+        text={result.hybrid_json}
+      />
+    </>
   );
 }
 
@@ -102,7 +142,10 @@ export function RequestAnalysis({
     <>
       <h3>Phân tích request</h3>
       {result ? (
-        <AnalysisFields result={result} />
+        <>
+          <AnalysisFields result={result} />
+          <AnalysisEvidence result={result} />
+        </>
       ) : (
         <p role="status">
           {failed

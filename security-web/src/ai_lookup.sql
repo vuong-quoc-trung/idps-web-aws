@@ -16,8 +16,11 @@ SELECT jsonb_build_object(
     'hybrid_reason', CASE WHEN i.decision#>>'{https_research,model_id}'=$2
         AND i.decision#>>'{https_research,model_sha256}'=$3 THEN i.decision->'policy_reason' END,
     'receipt', CASE WHEN NOT a.conflicted AND c.result->>'status' IS DISTINCT FROM 'AMBIGUOUS'
-        THEN jsonb_build_object('request_id',a.request_id,'status',a.observation->'status',
-            'score',a.observation->'score','threshold',a.observation->'threshold','received_at',a.received_at) END
+        THEN a.observation || jsonb_build_object('request_id',a.request_id,'received_at',a.received_at) END,
+    'receipt_json', CASE WHEN NOT a.conflicted AND c.result->>'status' IS DISTINCT FROM 'AMBIGUOUS'
+        THEN jsonb_pretty(a.observation) END,
+    'hybrid_json', CASE WHEN i.decision#>>'{https_research,model_id}'=$2
+        AND i.decision#>>'{https_research,model_sha256}'=$3 THEN jsonb_pretty(i.decision-'control_ai') END
 ) AS result
 FROM https_research_observations a
 LEFT JOIN request_correlations c USING (request_id)
@@ -31,7 +34,8 @@ SELECT jsonb_build_object(
     'threshold', NULL,
     'anomalous', NULL,
     'hybrid', i.decision->>'policy_action',
-    'hybrid_reason', i.decision->'policy_reason'
+    'hybrid_reason', i.decision->'policy_reason',
+    'hybrid_json', jsonb_pretty(i.decision-'control_ai'-'ai'-'https_research')
 )
 FROM hybrid_incidents i
 WHERE i.request_id=$1
@@ -44,6 +48,7 @@ SELECT COALESCE(m.result,jsonb_build_object('request_id',$1,'status','NO_AI_RECE
         'score',NULL,'threshold',NULL,'anomalous',NULL,'hybrid',NULL))
     || jsonb_build_object(
         'correlation_status', c.result->>'status', 'sources', c.result->'sources',
+        'correlation_json', jsonb_pretty(c.result),
         'late', c.result->'late_event', 'flow_id', c.result->>'flow_id', 'tx_id', c.result->'tx_id',
         'client_ip', host(n.client_ip), 'http_method', n.http_method, 'uri_path', n.uri_path,
         'status_code', n.status_code, 'latency_ms', n.canonical->'latency_ms'

@@ -6,12 +6,15 @@ import {
 import { applicationEvidence } from "./applicationEvidence";
 import {
   EvidenceFields,
+  JsonEvidence,
+  RawEvidenceAvailability,
   RequestAnalysis,
-  SavedEvidence,
 } from "./RequestEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
   triage_history: TriageHistory[];
+  normalized_json?: string | null;
+  detection_json?: string | null;
   rule_id?: string | null;
   link?: {
     basis: string;
@@ -31,6 +34,8 @@ export type Detail = {
     latency_ms: number | null;
     correlation_status: string;
     sources: string[];
+    correlation_json?: string | null;
+    sensor_proof_json?: string | null;
   }[];
   alert: TriageAlert & {
     id: number;
@@ -185,6 +190,7 @@ export function AlertDetail({
       {!a && !error && <p role="status">Đang tải chi tiết…</p>}
       {a && evidence && (
         <>
+          <h3>Thông tin tổng quan và mạng</h3>
           <dl className="detail-fields">
             {Object.entries({
               "Thời gian": new Date(a.occurred_at).toLocaleString("vi-VN"),
@@ -291,7 +297,9 @@ export function AlertDetail({
               Yêu cầu chặn thủ công từ cảnh báo
             </button>
           )}
-          <h3>Bằng chứng của cảnh báo</h3>
+          <h3>
+            {networkOnly ? "Bằng chứng của cảnh báo" : "Chi tiết HTTP Request"}
+          </h3>
           <EvidenceFields
             values={{
               "Request ID": requestId ?? evidence.requestId,
@@ -319,28 +327,55 @@ export function AlertDetail({
                 cảnh báo TCP được xác minh riêng.
               </p>
               {flowHttp.map((http) => (
-                <EvidenceFields
-                  key={http.request_id}
-                  values={{
-                    "Client IP từ NGINX": http.client_ip,
-                    "Phương thức": http.http_method,
-                    "Đường dẫn": http.uri_path,
-                    "Mã phản hồi": http.status_code,
-                    "Thời gian xử lý (ms)": http.latency_ms,
-                    "Request ID": http.request_id,
-                    "Flow ID": http.flow_id,
-                    "Transaction ID": http.tx_id,
-                    "Tương quan request": http.correlation_status,
-                    "Nguồn liên kết": http.sources?.join(", "),
-                  }}
-                />
+                <div key={http.request_id}>
+                  <EvidenceFields
+                    values={{
+                      "Client IP từ NGINX": http.client_ip,
+                      "Phương thức": http.http_method,
+                      "Đường dẫn": http.uri_path,
+                      "Mã phản hồi": http.status_code,
+                      "Thời gian xử lý (ms)": http.latency_ms,
+                      "Request ID": http.request_id,
+                      "Flow ID": http.flow_id,
+                      "Transaction ID": http.tx_id,
+                      "Tương quan request": http.correlation_status,
+                      "Nguồn liên kết": http.sources?.join(", "),
+                    }}
+                  />
+                  <JsonEvidence
+                    title="Tương quan của HTTP cùng flow (JSON)"
+                    text={http.correlation_json}
+                  />
+                  <JsonEvidence
+                    title="Biên nhận Suricata của HTTP cùng flow (JSON)"
+                    text={http.sensor_proof_json}
+                  />
+                </div>
               ))}
             </>
           )}
           {requestId && /^[a-f0-9]{32}$/.test(requestId) && (
             <RequestAnalysis key={requestId} api={api} requestId={requestId} />
           )}
-          <SavedEvidence key={a.id} text={a.evidence} />
+          {directHttp && (
+            <JsonEvidence
+              title="Biên nhận Suricata (JSON)"
+              text={directHttp.sensor_proof_json}
+            />
+          )}
+          <JsonEvidence
+            key={`event-${a.id}`}
+            title="Sự kiện chuẩn hóa (JSON)"
+            text={data.normalized_json}
+            initiallyOpen={!!data.normalized_json}
+          />
+          <JsonEvidence
+            key={`detection-${a.id}`}
+            title="Bằng chứng phát hiện đã lưu (JSON)"
+            text={data.detection_json}
+            initiallyOpen={!!data.detection_json}
+          />
+          <RawEvidenceAvailability />
           <h3>Cảnh báo khác cùng IP nguồn</h3>
           {data.related.map((r) => (
             <button

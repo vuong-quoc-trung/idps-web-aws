@@ -1029,6 +1029,26 @@ details > ul {
   max-height: 360px;
   overflow: auto;
 }
+.json-evidence {
+  margin-block: 12px;
+}
+.json-evidence summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding-block: 8px;
+}
+.json-evidence pre {
+  white-space: pre;
+  overflow: auto;
+  max-height: 360px;
+  background: var(--surface-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.alert-drawer .json-evidence pre {
+  white-space: pre;
+}
 .related-alert {
   display: block;
   width: 100%;

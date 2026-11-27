@@ -2,8 +2,9 @@ import { startAuditPolling } from "./auditPolling";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   EvidenceFields,
+  JsonEvidence,
+  RawEvidenceAvailability,
   RequestAnalysis,
-  SavedEvidence,
 } from "./RequestEvidence";
 import { Icon } from "./Icon";
 import { EmptyState } from "./UiState";
@@ -482,6 +483,14 @@ type Detail = {
   occurred_at: string;
   observed_at: string;
   canonical: Record<string, unknown> & { request_id: string | null };
+  canonical_json: string;
+  analysis_request_id: string | null;
+  detections: {
+    id: number;
+    rule: string;
+    severity: number;
+    evidence_json: string | null;
+  }[];
   related: Observation[];
 };
 function AuditDetail({
@@ -517,6 +526,7 @@ function AuditDetail({
     return () => controller.abort();
   }, [api, id]);
   const canonical = data?.canonical;
+  const analysisRequestId = data?.analysis_request_id;
   const origin = canonical?.suricata_origin as
     | {
         network_src_ip?: string;
@@ -546,13 +556,16 @@ function AuditDetail({
       {!data && !error && <p role="status">Đang tải chi tiết…</p>}
       {data && canonical && (
         <>
+          <h3>Thông tin tổng quan và mạng</h3>
           <dl className="detail-fields">
             {Object.entries({
               "Thời điểm (UTC)": data.occurred_at,
               Nguồn: canonical.source,
               "Request ID": canonical.request_id,
               "Client IP":
-                canonical.client_ip ?? (origin ? "Chưa xác minh" : null),
+                origin && !origin.client_ip_verified
+                  ? "Chưa xác minh"
+                  : canonical.client_ip,
               "Bằng chứng Client IP": origin
                 ? origin.client_ip_verified
                   ? "Đã xác minh từ proxy tin cậy"
@@ -583,29 +596,55 @@ function AuditDetail({
           {(canonical.http_method != null ||
             canonical.uri_path != null ||
             canonical.status_code != null) && (
-            <EvidenceFields
-              values={{
-                "Phương thức": canonical.http_method as string | undefined,
-                "Đường dẫn": canonical.uri_path as string | undefined,
-                "Mã phản hồi": canonical.status_code as number | undefined,
-                "Thời gian xử lý (ms)": canonical.latency_ms as
-                  number | undefined,
-              }}
+            <>
+              <h3>Chi tiết HTTP Request</h3>
+              <EvidenceFields
+                values={{
+                  "Phương thức": canonical.http_method as string | undefined,
+                  "Đường dẫn": canonical.uri_path as string | undefined,
+                  "Mã phản hồi": canonical.status_code as number | undefined,
+                  "Thời gian xử lý (ms)": canonical.latency_ms as
+                    number | undefined,
+                }}
+              />
+            </>
+          )}
+          {analysisRequestId && /^[a-f0-9]{32}$/.test(analysisRequestId) && (
+            <RequestAnalysis
+              key={analysisRequestId}
+              api={api}
+              requestId={analysisRequestId}
             />
           )}
-          {canonical.request_id &&
-            /^[a-f0-9]{32}$/.test(canonical.request_id) && (
-              <RequestAnalysis
-                key={canonical.request_id}
-                api={api}
-                requestId={canonical.request_id}
-              />
-            )}
-          <SavedEvidence key={id} text={JSON.stringify(canonical, null, 2)} />
-          <h3>Quan sát cùng Request ID</h3>
-          {canonical.request_id ? (
+          {!!data.detections?.length && (
             <>
-              <button onClick={() => onCorrelate(canonical.request_id!)}>
+              <h3>Thông tin phát hiện</h3>
+              {data.detections.map((item) => (
+                <div key={item.id}>
+                  <p>
+                    #{item.id} · {item.rule} · S{item.severity}
+                  </p>
+                  {item.evidence_json && (
+                    <JsonEvidence
+                      title="Bằng chứng phát hiện đã lưu (JSON)"
+                      text={item.evidence_json}
+                    />
+                  )}
+                </div>
+              ))}
+            </>
+          )}
+          <JsonEvidence
+            key={id}
+            title="Sự kiện chuẩn hóa (JSON)"
+            text={data.canonical_json}
+            initiallyOpen
+          />
+          <RawEvidenceAvailability />
+          <h3>Quan sát cùng Request ID</h3>
+          {analysisRequestId ? (
+            <>
+              <button onClick={() => onCorrelate(analysisRequestId)}>
                 Lọc tất cả nguồn theo Request ID này
               </button>
               {data.related.length === 0 && (
@@ -627,7 +666,7 @@ function AuditDetail({
             </>
           ) : (
             <p className="muted">
-              Sự kiện này không có Request ID để liên kết.
+              Chưa có Request ID đủ căn cứ để liên kết sự kiện này.
             </p>
           )}
         </>
