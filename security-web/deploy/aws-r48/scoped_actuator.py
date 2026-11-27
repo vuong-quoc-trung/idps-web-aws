@@ -54,7 +54,10 @@ def nft(*args, **kwargs):
 
 
 def fingerprint():
-    return hashlib.sha256(nft("-st", "list", "table", "inet", TABLE).encode()).hexdigest()
+    rules = nft("-st", "list", "table", "inet", TABLE)
+    # nft 1.1.6 appends live occupancy to set size even with --terse.
+    rules = re.sub(r"(?m)^(\s*size \d+)[ \t]+# count \d+[ \t]*$", r"\1", rules)
+    return hashlib.sha256(rules.encode()).hexdigest()
 
 
 def public_profile():

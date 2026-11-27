@@ -203,9 +203,14 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
     );
   }
 }
-function firewallMessage(code?: string | null) {
-  if (code === "Target outside ENFORCE_ALLOWED_SUBNETS")
-    return "IP nằm ngoài phạm vi chặn đã được phép.";
+function firewallMessage(code?: string | null, publicManual = false) {
+  if (
+    code === "Target outside ENFORCE_ALLOWED_SUBNETS" ||
+    code === "IP ngoài phạm vi chặn thủ công AWS"
+  )
+    return publicManual
+      ? "EC2 chỉ chặn IPv4 công khai hoặc peer 10.254.63.2. Nếu máy truy cập qua NAT, dùng IPv4 công khai mà AWS quan sát."
+      : "IP nằm ngoài phạm vi chặn đã được phép.";
   if (code === "FIREWALL_SCOPE_UNVERIFIED")
     return "Bảng đã khởi tạo, chưa xác minh cấu hình";
   if (code === "FIREWALL_SCOPE_MISMATCH")
@@ -279,6 +284,7 @@ function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [pendingActionId, setPendingActionId] = useState<number | null>(null);
   const [streamState, setStreamState] = useState<StreamState>("connecting");
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
@@ -466,6 +472,52 @@ function App() {
     const timer = setInterval(() => void refreshOther(), 60000);
     return () => clearInterval(timer);
   }, [refreshOther]);
+  useEffect(() => {
+    if (!session || pendingActionId === null) return;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let timer: ReturnType<typeof setTimeout>;
+    const stop = setTimeout(() => {
+      controller.abort();
+      setPendingActionId(null);
+      setNotice(
+        `Chưa nhận được kết quả cuối của yêu cầu #${pendingActionId}. Xem Nhật ký thao tác.`,
+      );
+    }, 20000);
+    async function checkAction() {
+      let record: Audit | undefined;
+      try {
+        const rows: Audit[] = await api("/api/audit", { signal });
+        record = rows.find((row) => row.id === pendingActionId);
+      } catch {
+        // Keep the queue state until a terminal result is observed or polling times out.
+      }
+      if (signal.aborted) return;
+      if (record?.status === "SUCCESS" || record?.status === "ERROR") {
+        clearTimeout(stop);
+        setPendingActionId(null);
+        if (record.status === "SUCCESS") {
+          setNotice(
+            `Yêu cầu #${pendingActionId} đã hoàn tất và được firewall xác nhận.`,
+          );
+        } else {
+          setNotice("");
+          setError(
+            `Yêu cầu #${pendingActionId} thất bại. ${firewallMessage(record.details) ?? "Xem Nhật ký thao tác."}`,
+          );
+        }
+        void refreshOther();
+      } else {
+        timer = setTimeout(() => void checkAction(), 1000);
+      }
+    }
+    void checkAction();
+    return () => {
+      clearTimeout(stop);
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [api, pendingActionId, refreshOther, session]);
   async function login(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoginBusy(true);
@@ -514,6 +566,7 @@ function App() {
       setStats(null);
       setBlocked(null);
       setAudit([]);
+      setPendingActionId(null);
       setHealth(null);
       setStreamState("connecting");
     }
@@ -564,9 +617,8 @@ function App() {
             : {}),
         },
       );
-      setNotice(
-        `Yêu cầu #${result.id} đã được tiếp nhận. Xem kết quả trong Nhật ký thao tác.`,
-      );
+      setNotice(`Yêu cầu #${result.id} đang chờ xác nhận từ firewall.`);
+      setPendingActionId(result.id);
       if (!unblock) {
         setIp("");
         setReason("");
@@ -574,7 +626,7 @@ function App() {
       await refresh();
     } catch (e) {
       const message = (e as Error).message;
-      setError(firewallMessage(message) ?? message);
+      setError(firewallMessage(message, publicManual) ?? message);
     } finally {
       setBusy(false);
     }
