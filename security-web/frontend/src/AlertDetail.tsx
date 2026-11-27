@@ -67,7 +67,7 @@ export function AlertDetail({
   onSelect,
   onAudit,
   onBlock,
-  blockUnavailable,
+  manualPeer,
   onOpenManualBlock,
   admin,
   onChanged,
@@ -80,7 +80,7 @@ export function AlertDetail({
   onSelect: (id: number) => void;
   onAudit: (id: number) => void;
   onBlock?: (alert: Detail["alert"]) => Promise<void>;
-  blockUnavailable?: string;
+  manualPeer?: string;
   onOpenManualBlock?: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -108,6 +108,12 @@ export function AlertDetail({
   const a = data?.alert;
   const evidence = a ? evidenceInfo(a.evidence) : null;
   const app = a ? applicationEvidence(a.evidence) : null;
+  const source =
+    a?.source === "SURICATA"
+      ? a.client_ip_verified
+        ? a.client_ip
+        : null
+      : a?.src_ip;
   return (
     <dialog
       ref={dialog}
@@ -175,12 +181,18 @@ export function AlertDetail({
               <p>{app.recommendation}</p>
             </section>
           )}
-          {blockUnavailable && <p className="muted">{blockUnavailable}</p>}
-          {onOpenManualBlock && (
-            <button onClick={onOpenManualBlock}>
-              Mở mục chặn ingress riêng
-            </button>
-          )}
+          {manualPeer &&
+            (source === manualPeer && onOpenManualBlock ? (
+              <button onClick={onOpenManualBlock}>
+                Mở form chặn {manualPeer}
+              </button>
+            ) : (
+              <p className="muted">
+                {source === manualPeer
+                  ? "Chặn thủ công tạm thời chưa sẵn sàng."
+                  : `Cảnh báo này không đủ điều kiện chặn. Firewall AWS chỉ nhận yêu cầu cho peer ingress riêng ${manualPeer}.`}
+              </p>
+            ))}
           {onBlock && a.src_ip && (
             <button
               disabled={blocking}

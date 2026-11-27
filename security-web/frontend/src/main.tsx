@@ -663,9 +663,10 @@ function App() {
   const admin = session.user.role === "admin";
   const monitoringReady = health?.monitoring_ready ?? health?.healthy;
   const preventionReady = health?.prevention_state === "READY";
+  const cloud = health?.operations?.profile === "aws-staging";
   const dedicatedIngress =
     (health?.sync?.scope ?? blocked?.sync?.scope) === "aws-private-ingress";
-  const cloud = health?.operations?.profile === "aws-staging";
+  const scopedAws = cloud || dedicatedIngress;
   const hybridSample = health?.operations?.hybrid_last_success_at;
   const hybridAge =
     Date.parse(health?.checked_at ?? "") - Date.parse(hybridSample ?? "");
@@ -1474,7 +1475,7 @@ function App() {
                 {blocked?.kernel?.join(", ") ||
                   (blocked?.kernel ? "Không có" : "Chưa đọc được")}
               </p>
-              {admin && preventionReady && (
+              {admin && preventionReady && (!scopedAws || dedicatedIngress) && (
                 <form
                   className="filters"
                   onSubmit={(e) => {
@@ -2097,22 +2098,19 @@ function App() {
             admin={admin}
             onChanged={() => void refresh()}
             api={api}
-            blockUnavailable={
-              admin && dedicatedIngress
-                ? "IP trên cảnh báo là bằng chứng quan sát. Bạn có thể chặn peer đã xác minh trong mục IP bị chặn."
-                : undefined
-            }
+            manualPeer={scopedAws ? dedicatedPeer : undefined}
             onOpenManualBlock={
               admin && preventionReady && dedicatedIngress
                 ? () => {
                     setSelectedAlert(null);
                     setError("");
+                    setReason(`Rà soát cảnh báo #${selectedAlert}`);
                     setTab("blocked");
                   }
                 : undefined
             }
             onBlock={
-              admin && preventionReady && !dedicatedIngress
+              admin && preventionReady && !scopedAws
                 ? async (alert) => {
                     if (!alert.src_ip) return;
                     const reason = window.prompt(

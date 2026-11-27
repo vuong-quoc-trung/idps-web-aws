@@ -102,6 +102,9 @@ export function Ai({ api }: { api: Api }) {
               : "Chưa xác minh hoạt động"}
         </span>
       </div>
+      <p className="muted">
+        Auto-ban AI đang tắt. Điểm AI dùng để tư vấn cho Hybrid.
+      </p>
       {report?.failed && <p role="status">Không cập nhật được kết quả AI.</p>}
       <div className="ai-analysis">
         <div className="ai-counts">
