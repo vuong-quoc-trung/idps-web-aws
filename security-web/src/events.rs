@@ -367,6 +367,67 @@ pub struct ParsedEvent {
     pub sensor_tx_id: Option<i64>,
 }
 
+/// Public projection of stored evidence. Keep the original database value intact.
+pub fn alert_evidence_view(mut value: Value) -> Option<Value> {
+    let evidence = value.as_object_mut()?;
+    evidence.retain(|key, field| {
+        key == "suricata_origin"
+            || (!field.is_array()
+                && !field.is_object()
+                && matches!(
+                    key.as_str(),
+                    "schema_version"
+                        | "source"
+                        | "source_instance"
+                        | "event_id"
+                        | "timestamp"
+                        | "event_type"
+                        | "request_id"
+                        | "client_ip"
+                        | "peer_ip"
+                        | "dest_ip"
+                        | "src_port"
+                        | "dest_port"
+                        | "transport"
+                        | "flow_id"
+                        | "http_method"
+                        | "uri_path"
+                        | "status_code"
+                        | "latency_ms"
+                        | "outcome"
+                        | "request_bytes"
+                        | "response_bytes"
+                        | "role"
+                        | "rule_code"
+                        | "event_count"
+                        | "window_event_count"
+                        | "window_seconds"
+                        | "first_seen"
+                        | "last_seen"
+                        | "reason"
+                        | "recommended_action"
+                        | "redacted"
+                        | "truncated"
+                ))
+    });
+    if let Some(path) = evidence.get_mut("uri_path")
+        && let Some(target) = path.as_str()
+    {
+        *path = Value::String(detection::redact_target(target).0);
+    }
+    if let Some(origin) = evidence.get_mut("suricata_origin") {
+        *origin = serde_json::from_value::<crate::suricata_origin::Origin>(origin.take())
+            .ok()
+            .and_then(|origin| serde_json::to_value(origin).ok())
+            .unwrap_or(Value::Null);
+    }
+    Some(value)
+}
+
+pub fn alert_evidence_text(raw: &str) -> Option<String> {
+    alert_evidence_view(serde_json::from_str(raw).ok()?).map(|value| value.to_string())
+}
+
 fn text(value: &Value, key: &str) -> Option<String> {
     value.get(key)?.as_str().map(str::to_owned)
 }
@@ -793,6 +854,23 @@ pub fn parse_with_origin(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn alert_evidence_projection_keeps_provenance_and_hides_sensitive_input() {
+        let raw = serde_json::json!({
+            "uri_path": "/api/students/123?token=private", "flow_id": "123",
+            "query_string": "token=private", "cookie": "private", "user_id": "private",
+            "suricata_origin": {"network_src_ip":"127.77.0.1","client_ip_verified":false,
+                "post_proxy":true,"tx_id":0,"interface":"lo"},
+        });
+        let display = alert_evidence_text(&raw.to_string()).unwrap();
+        let view: Value = serde_json::from_str(&display).unwrap();
+        assert_eq!(view["uri_path"], "/api/students/[id]");
+        assert_eq!(view["suricata_origin"]["interface"], "lo");
+        assert_eq!(view["flow_id"], "123");
+        assert!(!display.contains("private") && !display.contains("cookie"));
+        assert!(alert_evidence_text("unstructured legacy content").is_none());
+    }
 
     #[test]
     fn native_generation_is_opt_in_per_record_not_current_epoch() {

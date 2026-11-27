@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { lookupHybrid, type AiResult } from "./hybridLookup";
+import { AnalysisFields, SavedEvidence } from "./RequestEvidence";
 
 type Api = (path: string, options?: RequestInit) => Promise<unknown>;
 type Report = {
@@ -158,28 +159,17 @@ export function Ai({ api }: { api: Api }) {
         (match?.failed ? (
           <p role="status">Không tra cứu được kết quả.</p>
         ) : match?.value ? (
-          <dl className="detail-fields">
-            <div>
-              <dt>Request ID</dt>
-              <dd>{match.value.request_id}</dd>
-            </div>
-            <div>
-              <dt>Trạng thái</dt>
-              <dd>{resultLabel(match.value)}</dd>
-            </div>
-            <div>
-              <dt>Ngưỡng AI</dt>
-              <dd>{match.value.threshold?.toFixed(6) ?? "—"}</dd>
-            </div>
-            <div>
-              <dt>Điểm bất thường</dt>
-              <dd>{match.value.score?.toFixed(6) ?? "—"}</dd>
-            </div>
-            <div>
-              <dt>Hybrid</dt>
-              <dd>{match.value.hybrid ?? "Chưa có quyết định"}</dd>
-            </div>
-          </dl>
+          <>
+            <AnalysisFields result={match.value} />
+            <SavedEvidence
+              key={match.value.request_id}
+              text={
+                match.value.receipt
+                  ? JSON.stringify(match.value.receipt, null, 2)
+                  : ""
+              }
+            />
+          </>
         ) : (
           <p role="status">
             {match?.value === null

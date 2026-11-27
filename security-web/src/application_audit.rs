@@ -171,8 +171,11 @@ pub async fn detail(
     } else {
         Vec::new()
     };
+    // Retain the existing API's already-masked query projection.
+    let mut canonical = crate::events::alert_evidence_view(json!(event)).unwrap_or_default();
+    canonical["query_string"] = json!(event.query_string);
     Ok(Json(
         json!({"id":id,"occurred_at":row.occurred_at,"observed_at":row.observed_at,
-        "canonical":event,"related":related}),
+        "canonical":canonical,"related":related}),
     ))
 }

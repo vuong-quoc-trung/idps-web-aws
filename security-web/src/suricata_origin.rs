@@ -28,6 +28,8 @@ pub fn http_context(v: &Value) -> bool {
 #[serde(deny_unknown_fields)]
 pub struct Origin {
     pub network_src_ip: Option<IpAddr>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub interface: Option<String>,
     pub client_ip_verified: bool,
     pub post_proxy: bool,
     pub tx_id: Option<u64>,
@@ -109,6 +111,15 @@ impl Policy {
             || network.is_some_and(|ip| ip.is_loopback());
         let mut o = Origin {
             network_src_ip: network,
+            interface: v["in_iface"]
+                .as_str()
+                .filter(|name| {
+                    (1..=15).contains(&name.len())
+                        && name
+                            .bytes()
+                            .all(|c| c.is_ascii_alphanumeric() || b"._-".contains(&c))
+                })
+                .map(str::to_owned),
             client_ip_verified: false,
             post_proxy: post,
             tx_id: v["tx_id"].as_u64(),

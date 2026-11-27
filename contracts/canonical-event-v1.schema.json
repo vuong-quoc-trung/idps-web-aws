@@ -398,6 +398,10 @@
             "null"
           ]
         },
+        "interface": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]{1,15}$"
+        },
         "client_ip_verified": {
           "type": "boolean"
         },

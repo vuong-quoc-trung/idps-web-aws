@@ -241,10 +241,14 @@ mod tests {
         };
         let current = lookup("a".repeat(32)).fetch_one(&pool).await.unwrap();
         assert_eq!(
-            current,
-            json!({"request_id":"a".repeat(32),"status":"SCORED","score":0.42,
-                "threshold":null,"anomalous":null,"hybrid":"LOG_ONLY"})
+            current["request_id"],
+            "a".repeat(32)
         );
+        assert_eq!(current["status"], "SCORED");
+        assert_eq!(current["score"], 0.42);
+        assert_eq!(current["hybrid"], "LOG_ONLY");
+        assert_eq!(current["receipt"]["request_id"], current["request_id"]);
+        assert!(current["threshold"].is_null() && current["anomalous"].is_null());
         assert!(
             lookup("b".repeat(32))
                 .fetch_optional(&pool)

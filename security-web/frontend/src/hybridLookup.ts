@@ -5,6 +5,18 @@ export type AiResult = {
   threshold?: number | null;
   anomalous?: boolean | null;
   hybrid: string | null;
+  hybrid_reason?: string[] | null;
+  correlation_status?: string | null;
+  sources?: string[] | null;
+  late?: boolean | null;
+  flow_id?: string | null;
+  tx_id?: number | null;
+  client_ip?: string | null;
+  http_method?: string | null;
+  uri_path?: string | null;
+  status_code?: number | null;
+  latency_ms?: number | null;
+  receipt?: Record<string, unknown> | null;
 };
 
 export async function lookupHybrid(

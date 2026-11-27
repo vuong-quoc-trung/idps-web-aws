@@ -1,5 +1,10 @@
 import { startAuditPolling } from "./auditPolling";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  EvidenceFields,
+  RequestAnalysis,
+  SavedEvidence,
+} from "./RequestEvidence";
 import { Icon } from "./Icon";
 import { EmptyState } from "./UiState";
 import {
@@ -512,6 +517,14 @@ function AuditDetail({
     return () => controller.abort();
   }, [api, id]);
   const canonical = data?.canonical;
+  const origin = canonical?.suricata_origin as
+    | {
+        network_src_ip?: string;
+        tx_id?: number;
+        interface?: string;
+        client_ip_verified?: boolean;
+      }
+    | undefined;
   return (
     <dialog
       ref={dialog}
@@ -538,7 +551,26 @@ function AuditDetail({
               "Thời điểm (UTC)": data.occurred_at,
               Nguồn: canonical.source,
               "Request ID": canonical.request_id,
-              "IP client": canonical.client_ip,
+              "Client IP":
+                canonical.client_ip ?? (origin ? "Chưa xác minh" : null),
+              "Bằng chứng Client IP": origin
+                ? origin.client_ip_verified
+                  ? "Đã xác minh từ proxy tin cậy"
+                  : "Chưa xác minh"
+                : canonical.client_ip
+                  ? `Theo bản ghi ${canonical.source}`
+                  : null,
+              "IP nguồn mạng":
+                origin?.network_src_ip ??
+                canonical.peer_ip ??
+                (canonical.source === "NGINX" ? canonical.client_ip : null),
+              "Cổng nguồn": canonical.src_port,
+              "IP đích quan sát": canonical.dest_ip,
+              "Cổng đích": canonical.dest_port,
+              "Giao thức": canonical.transport,
+              "Giao diện mạng": origin?.interface,
+              "Flow ID": canonical.flow_id,
+              "Transaction ID": origin?.tx_id,
               "Vai trò": canonical.role,
               "Kết quả HTTP": canonical.outcome,
             }).map(([label, value]) => (
@@ -548,6 +580,28 @@ function AuditDetail({
               </div>
             ))}
           </dl>
+          {(canonical.http_method != null ||
+            canonical.uri_path != null ||
+            canonical.status_code != null) && (
+            <EvidenceFields
+              values={{
+                "Phương thức": canonical.http_method as string | undefined,
+                "Đường dẫn": canonical.uri_path as string | undefined,
+                "Mã phản hồi": canonical.status_code as number | undefined,
+                "Thời gian xử lý (ms)": canonical.latency_ms as
+                  number | undefined,
+              }}
+            />
+          )}
+          {canonical.request_id &&
+            /^[a-f0-9]{32}$/.test(canonical.request_id) && (
+              <RequestAnalysis
+                key={canonical.request_id}
+                api={api}
+                requestId={canonical.request_id}
+              />
+            )}
+          <SavedEvidence key={id} text={JSON.stringify(canonical, null, 2)} />
           <h3>Quan sát cùng Request ID</h3>
           {canonical.request_id ? (
             <>

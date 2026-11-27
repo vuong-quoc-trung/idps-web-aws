@@ -202,6 +202,9 @@ pub async fn stats(
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
+    for alert in report["recent"].as_array_mut().into_iter().flatten() {
+        crate::sanitize_alert_evidence(alert);
+    }
     report["range"] = json!(range);
     let load = std::fs::read_to_string("/proc/loadavg")
         .ok()

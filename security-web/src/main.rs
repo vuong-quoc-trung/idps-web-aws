@@ -492,7 +492,7 @@ async fn search_alerts(
     {
         return Err(bad_request("Trạng thái xử lý không hợp lệ"));
     }
-    let result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_search.sql"))
+    let mut result = sqlx::query_scalar::<_, serde_json::Value>(include_str!("alert_search.sql"))
         .bind(q.limit.unwrap_or(50).clamp(1, 200))
         .bind(q.offset.unwrap_or(0).max(0))
         .bind(q.search)
@@ -507,7 +507,18 @@ async fn search_alerts(
         .fetch_one(&state.pool)
         .await
         .map_err(api_error)?;
+    for alert in result["items"].as_array_mut().into_iter().flatten() {
+        sanitize_alert_evidence(alert);
+    }
     Ok(Json(result))
+}
+pub(crate) fn sanitize_alert_evidence(alert: &mut serde_json::Value) {
+    alert["evidence"] = serde_json::Value::String(
+        alert["evidence"]
+            .as_str()
+            .and_then(events::alert_evidence_text)
+            .unwrap_or_default(),
+    );
 }
 // Preserve the original array response for existing clients.
 async fn list_alerts(
@@ -527,10 +538,15 @@ async fn alert_detail(
         .fetch_optional(&state.pool)
         .await
         .map_err(api_error)?;
-    result.map(Json).ok_or((
-        StatusCode::NOT_FOUND,
-        Json(serde_json::json!({"message":"Không tìm thấy cảnh báo"})),
-    ))
+    result
+        .map(|mut detail| {
+            sanitize_alert_evidence(&mut detail["alert"]);
+            Json(detail)
+        })
+        .ok_or((
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"message":"Không tìm thấy cảnh báo"})),
+        ))
 }
 async fn block_ip(
     State(state): State<AppState>,

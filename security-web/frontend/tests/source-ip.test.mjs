@@ -14,7 +14,15 @@ test("post-proxy source never silently falls back to proxy", () => {
       client_ip: "192.168.10.10",
       client_ip_verified: true,
     }),
-    "192.168.10.10 (Verified)",
+    "192.168.10.10 (Đã xác minh)",
+  );
+  assert.equal(
+    sourceIpLabel({ ...a, network_src_ip: "127.77.0.1" }),
+    "Chưa xác minh",
+  );
+  assert.equal(
+    sourceIpLabel({ ...a, network_src_ip: "192.0.2.12" }),
+    "192.0.2.12 (IP mạng)",
   );
   assert.equal(
     sourceIpLabel({

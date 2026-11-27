@@ -1,11 +1,16 @@
 SELECT jsonb_build_object(
  'alert', to_jsonb(a) || jsonb_build_object('src_ip',host(a.src_ip),'dest_ip',host(a.dest_ip),'client_ip',host(a.client_ip),'network_src_ip',host(a.network_src_ip)),
+ 'link', (SELECT jsonb_build_object('basis',link_basis,'request_id',request_id,'flow_id',flow_id,'tx_id',tx_id)
+          FROM detector_alert_links WHERE alert_id=a.id),
+ 'rule_id', COALESCE(substring(a.rule_name FROM 'SID ([1-9][0-9]*):'),
+   CASE WHEN a.event_key ~ '^[a-f0-9]{64}:[A-Z_]+$' AND a.source <> 'SURICATA' THEN split_part(a.event_key,':',2) END),
  'lua_shadow', (SELECT to_jsonb(s)-'alert_id' FROM suricata_lua_alert_status s WHERE s.alert_id=a.id),
  'suricata_http', COALESCE((
    SELECT jsonb_agg(to_jsonb(h) ORDER BY h.tx_id)
    FROM (
      SELECT l.link_basis AS basis, s.request_id, s.flow_id, s.tx_id,
-            host(n.client_ip) AS client_ip, n.http_method, n.uri_path, n.status_code
+            host(n.client_ip) AS client_ip, n.http_method, n.uri_path, n.status_code, n.latency_ms,
+            c.result->>'status' AS correlation_status, c.result->'sources' AS sources
      FROM detector_alert_links l
      JOIN suricata_lua_shadow s ON s.generation = substring(l.source_instance FROM 10)
        AND s.flow_id = l.flow_id
@@ -17,7 +22,8 @@ SELECT jsonb_build_object(
        AND c.result->>'flow_id' = s.flow_id
        AND c.result->>'tx_id' = s.tx_id::text
      JOIN LATERAL (
-       SELECT client_ip, http_method, uri_path, status_code, count(*) OVER () AS observations
+       SELECT client_ip, http_method, uri_path, status_code, canonical->'latency_ms' AS latency_ms,
+              count(*) OVER () AS observations
        FROM normalized_events
        WHERE request_id = s.request_id AND source = 'NGINX' AND canonical @> '{"ai_projection":true}'
      ) n ON n.observations = 1 AND n.client_ip IS NOT NULL

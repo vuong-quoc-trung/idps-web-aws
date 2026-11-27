@@ -1,13 +1,24 @@
-import { sourceIpLabel } from "./sourceIp";
 import {
   AlertTriage,
   type TriageAlert,
   type TriageHistory,
 } from "./AlertTriage";
 import { applicationEvidence } from "./applicationEvidence";
+import {
+  EvidenceFields,
+  RequestAnalysis,
+  SavedEvidence,
+} from "./RequestEvidence";
 import { useEffect, useRef, useState } from "react";
 export type Detail = {
   triage_history: TriageHistory[];
+  rule_id?: string | null;
+  link?: {
+    basis: string;
+    request_id: string | null;
+    flow_id: string | null;
+    tx_id: number | null;
+  } | null;
   suricata_http?: {
     basis: "FLOW_CONTEXT" | "SENSOR_TRANSACTION";
     request_id: string;
@@ -17,6 +28,9 @@ export type Detail = {
     http_method: string | null;
     uri_path: string | null;
     status_code: number | null;
+    latency_ms: number | null;
+    correlation_status: string;
+    sources: string[];
   }[];
   alert: TriageAlert & {
     id: number;
@@ -65,10 +79,14 @@ function evidenceInfo(raw: string) {
         parsed?.uri_path ??
         (typeof http?.url === "string" ? http.url.split(/[?#]/, 1)[0] : null),
       status: parsed?.status_code ?? http?.status,
+      latency: parsed?.latency_ms,
       flowId: parsed?.flow_id,
       srcPort: parsed?.src_port,
       destPort: parsed?.dest_port,
       requestId: parsed?.request_id,
+      txId: parsed?.suricata_origin?.tx_id,
+      interface: parsed?.suricata_origin?.interface,
+      peerIp: parsed?.peer_ip,
     };
   } catch {
     return {};
@@ -101,7 +119,6 @@ export function AlertDetail({
   const [data, setData] = useState<Detail | null>(null);
   const [error, setError] = useState("");
   const [blocking, setBlocking] = useState(false);
-  const [copyStatus, setCopyStatus] = useState("");
   useEffect(() => {
     dialog.current?.showModal();
   }, []);
@@ -109,7 +126,6 @@ export function AlertDetail({
     let active = true;
     setData(null);
     setError("");
-    setCopyStatus("");
     api(`/api/alerts/${id}`)
       .then((value) => {
         if (active) setData(value);
@@ -139,6 +155,15 @@ export function AlertDetail({
     evidence?.method != null ||
     evidence?.url != null ||
     evidence?.status != null;
+  const requestId =
+    directHttp?.request_id ??
+    (a?.source !== "SURICATA" && data?.link?.basis === "REQUEST_ID"
+      ? data.link.request_id
+      : null);
+  const networkOnly =
+    a?.source === "SURICATA" &&
+    !hasHttp &&
+    data?.link?.basis === "FLOW_CONTEXT";
   return (
     <dialog
       ref={dialog}
@@ -165,19 +190,43 @@ export function AlertDetail({
               "Thời gian": new Date(a.occurred_at).toLocaleString("vi-VN"),
               Nguồn: a.source,
               "Mức độ": `S${a.severity}`,
-              "IP nguồn": directHttp?.client_ip ?? sourceIpLabel(a),
-              "Xác minh Client IP":
+              "Client IP":
                 a.source === "SURICATA"
-                  ? a.client_ip_verified || directHttp
-                    ? "Đã xác minh từ proxy tin cậy"
-                    : "Chưa xác minh"
-                  : "Theo nguồn ứng dụng",
+                  ? (directHttp?.client_ip ??
+                    (a.client_ip_verified ? a.client_ip : null) ??
+                    (networkOnly
+                      ? "Không áp dụng cho sự kiện TCP"
+                      : "Chưa xác minh"))
+                  : a.src_ip,
+              "Bằng chứng Client IP":
+                a.source === "SURICATA"
+                  ? directHttp
+                    ? "Khớp giao dịch với NGINX tin cậy"
+                    : a.client_ip_verified
+                      ? "Đã xác minh từ proxy tin cậy"
+                      : networkOnly
+                        ? "Không áp dụng"
+                        : "Chưa xác minh"
+                  : a.src_ip
+                    ? `Theo bản ghi ${a.source}`
+                    : "Chưa xác minh",
               ...(flowHttp.length === 1 && {
                 "Client IP của HTTP cùng flow": flowHttp[0].client_ip,
               }),
-              "IP đích": a.dest_ip,
+              "IP nguồn mạng":
+                a.network_src_ip ??
+                evidence.peerIp ??
+                (a.source === "NGINX" ||
+                (a.source === "SURICATA" && !a.suricata_post_proxy)
+                  ? a.src_ip
+                  : null),
+              "Cổng nguồn": evidence.srcPort,
+              "IP đích quan sát": a.dest_ip,
+              "Cổng đích": evidence.destPort,
               "Giao thức": a.proto,
+              "Giao diện mạng": evidence.interface,
               "Luật phát hiện": a.rule_name,
+              "Rule ID / SID": data.rule_id ?? app?.code,
               Nhóm: a.category,
               "Hành động": a.action,
             }).map(([label, value]) => (
@@ -242,91 +291,56 @@ export function AlertDetail({
               Yêu cầu chặn thủ công từ cảnh báo
             </button>
           )}
-          <h3>{hasHttp ? "Request HTTP" : "Bằng chứng kết nối"}</h3>
-          {!hasHttp && !suricataHttp.length && (
+          <h3>Bằng chứng của cảnh báo</h3>
+          <EvidenceFields
+            values={{
+              "Request ID": requestId ?? evidence.requestId,
+              "Flow ID": data.link?.flow_id ?? evidence.flowId,
+              "Transaction ID": data.link?.tx_id ?? evidence.txId,
+              ...(!networkOnly && {
+                "Phương thức": directHttp?.http_method ?? evidence.method,
+                "Đường dẫn": directHttp?.uri_path ?? evidence.url,
+                "Mã phản hồi": directHttp?.status_code ?? evidence.status,
+                "Thời gian xử lý (ms)":
+                  directHttp?.latency_ms ?? evidence.latency,
+              }),
+            }}
+          />
+          {networkOnly && (
             <p className="muted">
-              Chưa có bằng chứng HTTP khớp với cảnh báo này.
+              Phân tích HTTP không áp dụng cho cảnh báo TCP này.
             </p>
           )}
-          <dl className="detail-fields">
-            {Object.entries(
-              hasHttp
-                ? {
-                    "Phương thức": evidence.method,
-                    "Đường dẫn": evidence.url,
-                    "Mã phản hồi": evidence.status,
-                    "Request ID": evidence.requestId,
-                  }
-                : {
-                    "IP nguồn sensor thấy": a.network_src_ip,
-                    "Cổng nguồn": evidence.srcPort,
-                    "Cổng đích": evidence.destPort,
-                    "Flow ID": evidence.flowId,
-                  },
-            )
-              .filter(([, value]) => value != null)
-              .map(([label, value]) => (
-                <div key={label}>
-                  <dt>{label}</dt>
-                  <dd>
-                    {value == null
-                      ? "Không có trong bằng chứng"
-                      : String(value)}
-                  </dd>
-                </div>
-              ))}
-          </dl>
-          {suricataHttp.length > 0 && (
+          {flowHttp.length > 0 && (
             <>
-              <h3>{directHttp ? "HTTP đã đối chiếu" : "HTTP cùng flow"}</h3>
-              {flowHttp.length > 0 && (
-                <p className="muted">
-                  IP bên dưới thuộc giao dịch HTTP cùng flow. Danh tính nguồn
-                  của cảnh báo TCP được xác minh riêng.
-                </p>
-              )}
-              {suricataHttp.map((http) => (
-                <dl className="detail-fields" key={http.request_id}>
-                  {Object.entries({
+              <h3>HTTP cùng flow</h3>
+              <p className="muted">
+                IP bên dưới thuộc giao dịch HTTP cùng flow. Danh tính nguồn của
+                cảnh báo TCP được xác minh riêng.
+              </p>
+              {flowHttp.map((http) => (
+                <EvidenceFields
+                  key={http.request_id}
+                  values={{
                     "Client IP từ NGINX": http.client_ip,
                     "Phương thức": http.http_method,
                     "Đường dẫn": http.uri_path,
                     "Mã phản hồi": http.status_code,
+                    "Thời gian xử lý (ms)": http.latency_ms,
                     "Request ID": http.request_id,
                     "Flow ID": http.flow_id,
                     "Transaction ID": http.tx_id,
-                  })
-                    .filter(([, value]) => value != null)
-                    .map(([label, value]) => (
-                      <div key={label}>
-                        <dt>{label}</dt>
-                        <dd>{value}</dd>
-                      </div>
-                    ))}
-                </dl>
+                    "Tương quan request": http.correlation_status,
+                    "Nguồn liên kết": http.sources?.join(", "),
+                  }}
+                />
               ))}
             </>
           )}
-          {a.evidence && (
-            <details>
-              <summary>Bằng chứng gốc</summary>
-              <p className="muted">Bản ghi đã lưu của cảnh báo.</p>
-              <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(a.evidence);
-                    setCopyStatus("Đã sao chép bằng chứng.");
-                  } catch {
-                    setCopyStatus("Hãy chọn văn bản bên dưới để sao chép.");
-                  }
-                }}
-              >
-                Sao chép
-              </button>
-              <p role="status">{copyStatus}</p>
-              <pre tabIndex={0}>{a.evidence}</pre>
-            </details>
+          {requestId && /^[a-f0-9]{32}$/.test(requestId) && (
+            <RequestAnalysis key={requestId} api={api} requestId={requestId} />
           )}
+          <SavedEvidence key={a.id} text={a.evidence} />
           <h3>Cảnh báo khác cùng IP nguồn</h3>
           {data.related.map((r) => (
             <button
