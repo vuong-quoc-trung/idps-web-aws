@@ -385,6 +385,11 @@ pub async fn approve(
             "Manual mode, admin approval and bounded TTL required",
         ));
     }
+    if aws_firewall::configured() && !aws_firewall::valid_manual_ttl(a.ttl_seconds) {
+        return Err(bad_request(
+            "Thời hạn chặn trên ingress riêng phải từ 60 đến 300 giây",
+        ));
+    }
     firewall::admit_manual(&state).await.map_err(bad_request)?;
     let mut tx = state.pool.begin().await.map_err(api_error)?;
     let proposed_rid: Option<String> =

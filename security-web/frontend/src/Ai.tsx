@@ -18,7 +18,14 @@ const states: Record<string, string> = {
   ABSTAIN: "Không đủ dữ liệu",
   CONFLICT: "Bằng chứng xung đột",
   INFERENCE_ERROR: "Lỗi suy luận",
+  NO_AI_RECEIPT: "Chưa có kết quả AI cho request này",
 };
+
+function resultLabel(result: AiResult) {
+  if (result.status !== "SCORED" || result.anomalous == null)
+    return states[result.status] ?? "Chưa có kết quả";
+  return result.anomalous ? "Vượt ngưỡng AI" : "Không vượt ngưỡng AI";
+}
 
 function useReport<T>(
   load: (signal: AbortSignal) => Promise<T>,
@@ -103,7 +110,7 @@ export function Ai({ api }: { api: Api }) {
             <strong>{summary ? scored.toLocaleString("vi-VN") : "—"}</strong>
           </div>
           <div>
-            <span>Yêu cầu bất thường</span>
+            <span>Yêu cầu vượt ngưỡng AI</span>
             <strong>{summary ? abnormal.toLocaleString("vi-VN") : "—"}</strong>
           </div>
         </div>
@@ -117,8 +124,8 @@ export function Ai({ api }: { api: Api }) {
               aria-label="Số yêu cầu bất thường trên tổng số đã phân tích"
             />
             <div className="ai-legend">
-              <span>Bất thường · {abnormal}</span>
-              <span>Dưới ngưỡng · {scored - abnormal}</span>
+              <span>Vượt ngưỡng · {abnormal}</span>
+              <span>Không vượt ngưỡng · {scored - abnormal}</span>
             </div>
           </figure>
         )}
@@ -155,7 +162,11 @@ export function Ai({ api }: { api: Api }) {
             </div>
             <div>
               <dt>Trạng thái</dt>
-              <dd>{states[match.value.status] ?? "Chưa có kết quả"}</dd>
+              <dd>{resultLabel(match.value)}</dd>
+            </div>
+            <div>
+              <dt>Ngưỡng AI</dt>
+              <dd>{match.value.threshold?.toFixed(6) ?? "—"}</dd>
             </div>
             <div>
               <dt>Điểm bất thường</dt>
@@ -173,7 +184,7 @@ export function Ai({ api }: { api: Api }) {
               : "Đang tra cứu…"}
           </p>
         ))}
-      <h3>Kết quả gần đây</h3>
+      <h3>50 kết quả AI mới nhất còn lưu</h3>
       {rows.length > 0 ? (
         <div className="table-wrap">
           <table>
@@ -183,6 +194,7 @@ export function Ai({ api }: { api: Api }) {
                 <th>Thời điểm</th>
                 <th>Trạng thái</th>
                 <th>Điểm bất thường</th>
+                <th>Ngưỡng AI</th>
                 <th>Hybrid</th>
               </tr>
             </thead>
@@ -201,8 +213,9 @@ export function Ai({ api }: { api: Api }) {
                     </button>
                   </td>
                   <td>{new Date(row.received_at!).toLocaleString("vi-VN")}</td>
-                  <td>{states[row.status] ?? "Chưa có kết quả"}</td>
+                  <td>{resultLabel(row)}</td>
                   <td>{row.score?.toFixed(6) ?? "—"}</td>
+                  <td>{row.threshold?.toFixed(6) ?? "—"}</td>
                   <td>{row.hybrid ?? "—"}</td>
                 </tr>
               ))}

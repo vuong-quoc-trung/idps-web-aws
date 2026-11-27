@@ -1,6 +1,6 @@
 # WebSentinel PBL4 — Kiến trúc bàn giao
 
-Bản AWS staging dùng mã ứng dụng ở commit `d10f1f36f95b069ea0294b93c5178b7b2254dedb`.
+Bản bàn giao AWS staging lấy mã ứng dụng ở commit `d10f1f36f95b069ea0294b93c5178b7b2254dedb` làm mốc.
 Tài liệu và bằng chứng kiểm tra cuối được cập nhật sau khi đối chiếu bản này.
 [Kiểm tra cuối](evidence/final-aws/freeze.json) · [Nghiệm thu Block/Unblock/TTL](evidence/final-aws/acceptance.json)
 
@@ -34,7 +34,7 @@ flowchart LR
 - C2 Manual dùng Unix socket thuộc root và kiểm danh tính tiến trình gọi.
   Firewall chỉ thực thi trên `ws-c2-edge`, tới HTTPS `10.254.63.1:443`, với
   peer `10.254.63.2` do EC2 quản lý. PostgreSQL và Audit được đối soát với
-  readback nftables. Lease hết hạn trong kernel, TTL tối đa 60 giây.
+  readback nftables. Lease hết hạn trong kernel, yêu cầu chặn thủ công nhận TTL từ 60 đến 300 giây.
 - Các unit systemd có giới hạn tài nguyên. Security Web kéo theo actuator
   lúc khởi động. Bản rollback root-only chứa backend, frontend và checksum.
   Quy trình dừng EC2, SSM và khôi phục nằm trong runbook. [Vận hành EC2](AWS_STAGING_OPERATIONS_HANDOFF.md#2-vận-hành-ec2) · [Prevention và rollback](AWS_STAGING_OPERATIONS_HANDOFF.md#prevention-trên-bản-aws-đang-phục-vụ)

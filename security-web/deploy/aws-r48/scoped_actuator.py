@@ -15,6 +15,7 @@ import sys
 
 EDGE, PEER_IF, NS = "ws-c2-edge", "ws-c2-peer", "ws-c2-peer"
 SERVER, PEER = "10.254.63.1", "10.254.63.2"
+MAX_TTL = 300
 TABLE = "ws_aws_prevention"
 SET = ("inet", TABLE, "blocked_ips")
 RUNTIME = Path("/run/websentinel-aws-prevention")
@@ -143,8 +144,11 @@ def respond(connection, scope, api_uid):
             "0::/websentinelr47.slice/websentinel-r47-security.service"):
         return
     line = connection.makefile("rb").readline(64)
-    verb = re.fullmatch(rb"(STATUS|UNBLOCK 10\.254\.63\.2|BLOCK 10\.254\.63\.2 ([1-9]|[1-5][0-9]|60))\n", line)
+    verb = re.fullmatch(rb"(STATUS|UNBLOCK 10\.254\.63\.2|BLOCK 10\.254\.63\.2 ([1-9][0-9]{0,2}))\n", line)
     if not verb or connection.recv(1):
+        return
+    ttl = int(verb[2]) if verb[2] else None
+    if ttl is not None and ttl > MAX_TTL:
         return
     validate(scope)
     snapshot = nft("-j", "list", "set", *SET)
@@ -153,8 +157,8 @@ def respond(connection, scope, api_uid):
     if len(items) != 1 or any((obj if isinstance(obj, str) else obj.get("elem", {}).get("val")) != PEER for obj in entries):
         raise ValueError("Unexpected kernel set")
     changed = False
-    if verb[2] and not entries:
-        nft("add", "element", *SET, "{", PEER, "timeout", f"{int(verb[2])}s", "}")
+    if ttl is not None and not entries:
+        nft("add", "element", *SET, "{", PEER, "timeout", f"{ttl}s", "}")
         changed = True
     elif verb[1].startswith(b"UNBLOCK") and entries:
         nft("delete", "element", *SET, "{", PEER, "}")

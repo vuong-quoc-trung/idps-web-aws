@@ -575,11 +575,16 @@ Xem kiến trúc và phạm vi đã xác minh trong [tài liệu bàn giao PBL4]
 Security Web kéo actuator theo dependency systemd khi khởi động.
 
 Security Web kết nối tới `websentinel-aws-prevention.service` qua Unix socket
-do root quản lý. Chỉ quản trị viên có thể chặn `10.254.63.2` trong tối đa
-60 giây. Table `inet ws_aws_prevention` chỉ áp dụng trên interface `ws-c2-edge`
+do root quản lý. Chỉ quản trị viên có thể chặn `10.254.63.2`, với thời hạn từ
+60 đến 300 giây. Chọn **IP bị chặn** để gửi yêu cầu cho peer đã xác minh.
+Table `inet ws_aws_prevention` chỉ áp dụng trên interface `ws-c2-edge`
 và cổng HTTPS của ingress riêng. Dashboard đọc PostgreSQL, lịch sử tác vụ
 và nftables để hiển thị trạng thái. Rule-based và Hybrid Adaptive vẫn giới
 hạn ở canary R61. Luồng public tiếp tục giám sát và AI Advisory.
+
+Mục **AI** thống kê 15 phút và hiển thị riêng tối đa 50 kết quả mới nhất còn lưu.
+Tra cứu Request ID có thể trả quyết định Hybrid từ quy tắc và trạng thái chưa có
+receipt AI. Retention hiện hành là tối đa 7 ngày hoặc 10.000 receipt gần nhất.
 
 Dừng actuator để thu hồi đường ghi. Script dưới đây phục hồi cùng lúc backend,
 frontend và cấu hình Prevention từ bản backup đã kiểm SHA.

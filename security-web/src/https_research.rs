@@ -196,6 +196,29 @@ mod tests {
             assert_eq!(report[key], 1, "{key}");
         }
         assert_eq!(report["recent"].as_array().unwrap().len(), 5);
+        sqlx::query("UPDATE https_research_observations SET received_at=now()-interval '2 hours' WHERE request_id=$1")
+            .bind(format!("{:032x}", 2)).execute(&pool).await.unwrap();
+        let older_report: Value = sqlx::query_scalar(include_str!("ai_report.sql"))
+            .bind(slot["version"].as_str().unwrap())
+            .bind(slot["sha256"].as_str().unwrap())
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(older_report["inference_errors"], 0);
+        assert!(
+            older_report["recent"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|row| row["status"] == "INFERENCE_ERROR")
+        );
+        assert!(
+            older_report["recent"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|row| row["anomalous"] == true)
+        );
     }
 
     #[sqlx::test(migrations = "./migrations")]
@@ -219,7 +242,8 @@ mod tests {
         let current = lookup("a".repeat(32)).fetch_one(&pool).await.unwrap();
         assert_eq!(
             current,
-            json!({"request_id":"a".repeat(32),"status":"SCORED","score":0.42,"hybrid":"LOG_ONLY"})
+            json!({"request_id":"a".repeat(32),"status":"SCORED","score":0.42,
+                "threshold":null,"anomalous":null,"hybrid":"LOG_ONLY"})
         );
         assert!(
             lookup("b".repeat(32))
@@ -233,6 +257,11 @@ mod tests {
             .await
             .unwrap();
         assert!(lookup("a".repeat(32)).fetch_one(&pool).await.unwrap()["hybrid"].is_null());
+        sqlx::query("INSERT INTO hybrid_incidents(request_id,evidence_fingerprint,policy_version,observed_at,decision) VALUES($1,'rule','fixture',now(),'{\"policy_action\":\"REVIEW\"}')")
+            .bind("c".repeat(32)).execute(&pool).await.unwrap();
+        let rule_only = lookup("c".repeat(32)).fetch_one(&pool).await.unwrap();
+        assert_eq!(rule_only["status"], "NO_AI_RECEIPT");
+        assert_eq!(rule_only["hybrid"], "REVIEW");
     }
 
     #[test]

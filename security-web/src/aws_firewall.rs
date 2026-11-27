@@ -13,8 +13,13 @@ use tokio::{
 
 pub const PEER: &str = "10.254.63.2";
 pub const SCOPE: &str = "aws-private-ingress";
-pub const MAX_TTL: u64 = 60;
+pub const MIN_MANUAL_TTL: u64 = 60;
+pub const MAX_TTL: u64 = 300;
 const SOCKET: &str = "/run/websentinel-aws-prevention/actuator.sock";
+
+pub fn valid_manual_ttl(ttl: u64) -> bool {
+    (MIN_MANUAL_TTL..=MAX_TTL).contains(&ttl)
+}
 
 pub fn configured() -> bool {
     operations::aws_staging()
@@ -101,6 +106,12 @@ mod tests {
         let peer = Some(PEER.parse().unwrap());
         assert!(operation("block", peer, Some(MAX_TTL)).is_ok());
         assert!(operation("block", peer, Some(MAX_TTL + 1)).is_err());
+        assert!(!valid_manual_ttl(59));
+        assert!(valid_manual_ttl(60));
+        assert!(valid_manual_ttl(300));
+        assert!(!valid_manual_ttl(301));
+        // Workers send the remaining lease, which can be less than one minute.
+        assert!(operation("block", peer, Some(1)).is_ok());
         assert!(operation("block", Some("127.0.0.1".parse().unwrap()), Some(3)).is_err());
         assert!(operation("unblock", Some("10.254.63.1".parse().unwrap()), None).is_err());
         for table in ["r56_prevention", "ws_aws_prevention"] {

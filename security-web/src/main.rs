@@ -543,8 +543,10 @@ async fn block_ip(
         return Err(bad_request("Reason must contain 1–500 characters"));
     }
     let ttl = req.ttl_seconds.unwrap_or(60);
-    if aws_firewall::configured() && ttl > aws_firewall::MAX_TTL {
-        return Err(bad_request("Thời hạn tối đa cho ingress riêng là 60 giây"));
+    if aws_firewall::configured() && !aws_firewall::valid_manual_ttl(ttl) {
+        return Err(bad_request(
+            "Thời hạn chặn trên ingress riêng phải từ 60 đến 300 giây",
+        ));
     }
     if !(1..=300).contains(&ttl) {
         return Err(bad_request("TTL must be between 1 and 300 seconds"));

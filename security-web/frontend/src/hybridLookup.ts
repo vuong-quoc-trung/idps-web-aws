@@ -2,6 +2,8 @@ export type AiResult = {
   request_id: string;
   status: string;
   score: number | null;
+  threshold?: number | null;
+  anomalous?: boolean | null;
   hybrid: string | null;
 };
 

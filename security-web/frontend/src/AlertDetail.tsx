@@ -67,6 +67,8 @@ export function AlertDetail({
   onSelect,
   onAudit,
   onBlock,
+  blockUnavailable,
+  onOpenManualBlock,
   admin,
   onChanged,
 }: {
@@ -78,6 +80,8 @@ export function AlertDetail({
   onSelect: (id: number) => void;
   onAudit: (id: number) => void;
   onBlock?: (alert: Detail["alert"]) => Promise<void>;
+  blockUnavailable?: string;
+  onOpenManualBlock?: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [data, setData] = useState<Detail | null>(null);
@@ -170,6 +174,12 @@ export function AlertDetail({
               </p>
               <p>{app.recommendation}</p>
             </section>
+          )}
+          {blockUnavailable && <p className="muted">{blockUnavailable}</p>}
+          {onOpenManualBlock && (
+            <button onClick={onOpenManualBlock}>
+              Mở mục chặn ingress riêng
+            </button>
           )}
           {onBlock && a.src_ip && (
             <button

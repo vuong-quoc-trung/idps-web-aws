@@ -31,6 +31,7 @@ import { createAlertTracker, type AlertUpdates } from "./alertUpdates";
 
 const securityLogo = new URL("./assets/logo-security.png", import.meta.url)
   .href;
+const dedicatedPeer = "10.254.63.2";
 
 type User = { username: string; role: "admin" | "viewer" };
 type Alert = {
@@ -203,6 +204,8 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   }
 }
 function firewallMessage(code?: string | null) {
+  if (code === "Target outside ENFORCE_ALLOWED_SUBNETS")
+    return "IP nằm ngoài phạm vi chặn đã được phép.";
   if (code === "FIREWALL_SCOPE_UNVERIFIED")
     return "Bảng đã khởi tạo, chưa xác minh cấu hình";
   if (code === "FIREWALL_SCOPE_MISMATCH")
@@ -516,11 +519,18 @@ function App() {
     }
   }
   async function action(address: string, unblock = false) {
+    const minimumTtl = dedicatedIngress ? 60 : 1;
+    if (!unblock && dedicatedIngress && address !== dedicatedPeer) {
+      setError(`Ingress riêng chỉ cho phép chặn ${dedicatedPeer}.`);
+      return;
+    }
     if (
       !unblock &&
-      (!Number.isInteger(Number(ttl)) || Number(ttl) < 1 || Number(ttl) > 300)
+      (!Number.isInteger(Number(ttl)) ||
+        Number(ttl) < minimumTtl ||
+        Number(ttl) > 300)
     ) {
-      setError("Thời hạn chặn phải từ 1 đến 300 giây.");
+      setError(`Thời hạn chặn phải từ ${minimumTtl} đến 300 giây.`);
       return;
     }
     if (unblock && !window.confirm(`Bỏ chặn ${address}?`)) return;
@@ -554,7 +564,8 @@ function App() {
       }
       await refresh();
     } catch (e) {
-      setError((e as Error).message);
+      const message = (e as Error).message;
+      setError(firewallMessage(message) ?? message);
     } finally {
       setBusy(false);
     }
@@ -652,7 +663,8 @@ function App() {
   const admin = session.user.role === "admin";
   const monitoringReady = health?.monitoring_ready ?? health?.healthy;
   const preventionReady = health?.prevention_state === "READY";
-  const dedicatedIngress = health?.sync?.scope === "aws-private-ingress";
+  const dedicatedIngress =
+    (health?.sync?.scope ?? blocked?.sync?.scope) === "aws-private-ingress";
   const cloud = health?.operations?.profile === "aws-staging";
   const hybridSample = health?.operations?.hybrid_last_success_at;
   const hybridAge =
@@ -1455,7 +1467,7 @@ function App() {
               )}
               <p>{preventionMessage(health?.prevention_state)}</p>
               {dedicatedIngress && (
-                <p>Phạm vi chặn: ingress riêng, IP 10.254.63.2.</p>
+                <p>Ingress riêng · chỉ áp dụng cho {dedicatedPeer}.</p>
               )}
               <p>
                 IP thực tế:{" "}
@@ -1467,17 +1479,16 @@ function App() {
                   className="filters"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    void action(ip);
+                    void action(dedicatedIngress ? dedicatedPeer : ip);
                   }}
                 >
                   <label>
                     IP cần chặn
                     <input
-                      value={ip}
+                      value={dedicatedIngress ? dedicatedPeer : ip}
                       onChange={(e) => setIp(e.target.value)}
-                      placeholder={
-                        dedicatedIngress ? "10.254.63.2" : "Địa chỉ IPv4"
-                      }
+                      readOnly={dedicatedIngress}
+                      placeholder="Địa chỉ IPv4"
                       required
                     />
                   </label>
@@ -1491,11 +1502,13 @@ function App() {
                     />
                   </label>
                   <label>
-                    Thời hạn (giây)
+                    {dedicatedIngress
+                      ? "Thời hạn (60–300 giây)"
+                      : "Thời hạn (giây)"}
                     <input
                       type="number"
-                      min={1}
-                      max={dedicatedIngress ? 60 : 300}
+                      min={dedicatedIngress ? 60 : 1}
+                      max={300}
                       step={1}
                       value={ttl}
                       onChange={(e) => setTtl(e.target.value)}
@@ -2084,8 +2097,22 @@ function App() {
             admin={admin}
             onChanged={() => void refresh()}
             api={api}
+            blockUnavailable={
+              admin && dedicatedIngress
+                ? "IP trên cảnh báo là bằng chứng quan sát. Bạn có thể chặn peer đã xác minh trong mục IP bị chặn."
+                : undefined
+            }
+            onOpenManualBlock={
+              admin && preventionReady && dedicatedIngress
+                ? () => {
+                    setSelectedAlert(null);
+                    setError("");
+                    setTab("blocked");
+                  }
+                : undefined
+            }
             onBlock={
-              admin && preventionReady
+              admin && preventionReady && !dedicatedIngress
                 ? async (alert) => {
                     if (!alert.src_ip) return;
                     const reason = window.prompt(
