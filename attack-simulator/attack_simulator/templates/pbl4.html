@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="simulator-token" content="{{ csrf }}">
+  <title>WebSentinel · Trình diễn PBL4</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='pbl4.css') }}">
+  <script src="{{ url_for('static', filename='aws-smoke.js') }}" defer></script>
+</head>
+<body>
+{% macro evidence_card(case) %}
+  {% set source = cases.sources[case.source] %}
+  <article class="demo-case">
+    <p class="demo-scope">Bằng chứng đã lưu · {{ case.scope }}</p>
+    <h3>{{ case.title }}</h3>
+    <p>{{ case.summary }}</p>
+    <p><strong>Dự kiến</strong> · {{ case.expected }}</p>
+    <details>
+      <summary>Xem kết quả đã nghiệm thu</summary>
+      <dl class="demo-result">
+        {% for label, value in case.result.items() %}
+          <div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>
+        {% endfor %}
+      </dl>
+      <a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.label }}</a>
+      {% if source.notes_url %}
+        <a href="{{ source.notes_url }}" target="_blank" rel="noopener noreferrer">Đọc báo cáo nghiệm thu</a>
+      {% endif %}
+    </details>
+  </article>
+{% endmacro %}
+<main class="demo">
+  <header>
+    <div>
+      <h1>WebSentinel · Trình diễn PBL4</h1>
+      <p>Kiểm tra HTTPS trên AWS và trình bày bằng chứng cảnh báo, ngăn chặn từ EC2 cô lập.</p>
+    </div>
+    <a class="demo-link" href="https://websentinal.duckdns.org/" target="_blank" rel="noopener noreferrer">Mở Security Dashboard ↗</a>
+  </header>
+  <nav class="demo-nav" aria-label="Nhóm trình diễn">
+    <a href="#truy-cap">Truy cập bình thường</a>
+    <a href="#canh-bao">Cảnh báo</a>
+    <a href="#ngan-chan">Ngăn chặn</a>
+  </nav>
+  <section id="truy-cap" aria-labelledby="normal-title">
+    <h2 id="normal-title">Truy cập bình thường</h2>
+    <div class="demo-grid">
+      <article class="demo-case demo-live">
+        <p class="demo-scope">AWS · Kiểm tra trực tiếp</p>
+        <h3>Kiểm tra hai website</h3>
+        <p>Gửi một GET lành tính đến Student Web và một GET đến Security Dashboard.</p>
+        <p><strong>Dự kiến</strong> · HTTP 200 và TLS hợp lệ.</p>
+        <button id="aws-smoke" type="button" aria-controls="aws-results">Chạy kiểm tra HTTPS</button>
+        <p id="aws-message" role="status" aria-atomic="true"></p>
+        <div class="table-wrap">
+          <table aria-label="Kết quả HTTPS trực tiếp">
+            <thead><tr><th>Website</th><th>HTTP</th><th>TLS</th><th>Request ID</th><th>Độ trễ</th><th>Kết quả</th></tr></thead>
+            <tbody id="aws-results"></tbody>
+          </table>
+        </div>
+        <p class="muted">Dùng Request ID của Student Web trong <strong>AI → Tra cứu Request ID</strong> để xem điểm và quyết định Hybrid của lượt mới.</p>
+      </article>
+      {% for case in cases.normal %}{{ evidence_card(case) }}{% endfor %}
+    </div>
+  </section>
+  <section id="canh-bao" aria-labelledby="alerts-title">
+    <h2 id="alerts-title">Mô phỏng gây cảnh báo</h2>
+    <p class="muted">Ba ca lấy từ hồ sơ nghiệm thu EC2 cô lập. Các Request ID lab thuộc kho riêng của lượt nghiệm thu.</p>
+    <div class="demo-grid">
+      {% for case in cases.alerts %}{{ evidence_card(case) }}{% endfor %}
+    </div>
+  </section>
+  <section id="ngan-chan" aria-labelledby="prevention-title">
+    <h2 id="prevention-title">Mô phỏng gây ngăn chặn</h2>
+    <p class="muted">Đối chiếu kết quả nftables và Audit của peer đã xác minh trong canary R61.</p>
+    <div class="demo-grid">
+      {% for case in cases.prevention %}{{ evidence_card(case) }}{% endfor %}
+    </div>
+  </section>
+</main>
+</body>
+</html>

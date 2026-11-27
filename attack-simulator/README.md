@@ -1,6 +1,6 @@
-# WebSentinel Attack Simulator — Attacker only
+# WebSentinel Attack Simulator
 
-Python ≥3.10. Công cụ chỉ gửi HTTP request tới target lab và quan sát HTTP response. Defender tự phát hiện và hiển thị kết quả trên WebSentinel; simulator không kết nối Dashboard, không đọc dữ liệu phát hiện và không đánh giá hiệu quả phòng thủ.
+Python ≥3.10. Chế độ PBL4 mở trên laptop để kiểm tra HTTPS AWS và trình bày kết quả đã nghiệm thu. Chế độ lab riêng gửi HTTP request có giới hạn và ghi nhận response.
 
 ## Cài đặt
 
@@ -11,7 +11,7 @@ cd attack-simulator
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[web]'
-python -m attack_simulator --web
+python -m attack_simulator --pbl4
 ```
 
 Windows PowerShell:
@@ -20,10 +20,24 @@ Windows PowerShell:
 cd attack-simulator
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[web]"
-.\.venv\Scripts\python.exe -m attack_simulator --web
+.\.venv\Scripts\python.exe -m attack_simulator --pbl4
 ```
 
-Mở **http://127.0.0.1:8765**. UI chỉ bind localhost, mỗi laptop chạy UI riêng. Chọn target, scenario, giới hạn và xác nhận quyền kiểm thử. Không cần mở Dashboard để gửi request. Stop/Ctrl+C dừng sau request hiện tại, tối đa timeout cấu hình.
+## Trình diễn PBL4
+
+Mở [màn hình PBL4](http://127.0.0.1:8765/pbl4). Simulator chỉ lắng nghe trên loopback.
+
+1. **Truy cập bình thường.** Bấm **Chạy kiểm tra HTTPS** để gửi một GET đến Student Web và một GET đến Security Dashboard. Xem HTTP, TLS, độ trễ và Request ID nếu có. Mở **Security Dashboard → AI → Tra cứu Request ID** với ID của Student Web để đối chiếu kết quả của lượt mới nếu Dashboard đã nhận evidence.
+2. **Cảnh báo.** Mở từng hồ sơ NGINX, Suricata và Student Audit từ lượt R58. Ca Suricata bao gồm trạng thái AI và quyết định Hybrid. [Hồ sơ R58](../docs/evidence/r58/acceptance.json)
+3. **Ngăn chặn.** Mở kết quả Rule-based Prevention, Hybrid Adaptive Prevention, Block/Unblock và TTL. Các nút chỉ đọc bằng chứng của canary EC2 cô lập. Request ID lab thuộc kho của lượt nghiệm thu. [Hồ sơ R61](../docs/evidence/r61/acceptance.json)
+
+Chế độ `--pbl4` chỉ có phép kiểm tra HTTPS cố định và trang bằng chứng. Để mở công cụ lab riêng, dùng `--web` và chỉ chọn target thuộc phạm vi lab đã được cấp phép. Ctrl+C dừng simulator.
+
+Có thể chạy cùng phép kiểm tra từ thư mục `attack-simulator` mà không cần Flask.
+
+```bash
+python3 -m attack_simulator.aws_smoke
+```
 
 CLI dùng standard library, chạy ngay trong `attack-simulator/`, không cần Flask:
 

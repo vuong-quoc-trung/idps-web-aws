@@ -1,8 +1,12 @@
 """Local-only control plane; one bounded job, no persistent credentials."""
 import copy
+from importlib.resources import files
+import json
 import secrets
 import threading
+from time import monotonic
 from flask import Flask, jsonify, request, render_template, Response
+from . import aws_smoke
 from .config import Config
 from .http_client import ValidationError
 from .runner import Runner
@@ -11,18 +15,13 @@ from .scenarios import catalog
 from .reports import render
 
 
-def create_app(defaults=None, port=8765, runner_factory=Runner):
+def create_app(defaults=None, port=8765, runner_factory=Runner, *, demo_only=False):
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 16384
     app.config['TRUSTED_HOSTS'] = ['localhost', '127.0.0.1', '::1']
     csrf = secrets.token_urlsafe(32)
-    lock = threading.Lock()
-    state = {'active': False, 'report': None, 'stop': None, 'thread': None, 'gate': None}
-    defaults = dict(defaults or {})
-    if set(defaults) - set(Config.__dataclass_fields__):
-        raise ValidationError("Config có trường không hỗ trợ.")
-    # Consent must be explicitly given for each UI run, never inherited.
-    for key in ('authorized', 'confirm_multiple', 'fixture_confirmed', 'auth_confirmed', 'write_confirmed', 'safety_contract_confirmed'): defaults.pop(key, None)
+    aws_lock = threading.Lock()
+    aws_next_run = 0.0
 
     @app.before_request
     def protect():
@@ -39,6 +38,41 @@ def create_app(defaults=None, port=8765, runner_factory=Runner):
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['Cache-Control'] = 'no-store'
         return response
+
+    @app.get('/pbl4')
+    def pbl4():
+        archive = files('attack_simulator').joinpath('evidence', 'pbl4.json')
+        cases = json.loads(archive.read_text(encoding='utf-8'))
+        return render_template('pbl4.html', csrf=csrf, cases=cases)
+
+    @app.post('/api/aws-smoke')
+    def aws_health():
+        nonlocal aws_next_run
+        if request.query_string or request.get_data():
+            return jsonify(error='Kiểm tra AWS không nhận URL hoặc tham số.'), 400
+        if not aws_lock.acquire(blocking=False):
+            return jsonify(error='Đang kiểm tra AWS.'), 409
+        try:
+            if monotonic() < aws_next_run:
+                return jsonify(error='Vui lòng đợi 5 giây trước khi chạy lại.'), 429
+            try:
+                return jsonify(results=aws_smoke.check())
+            finally:
+                aws_next_run = monotonic() + 5
+        finally:
+            aws_lock.release()
+
+    if demo_only:
+        app.add_url_rule('/', view_func=pbl4)
+        return app
+
+    lock = threading.Lock()
+    state = {'active': False, 'report': None, 'stop': None, 'thread': None, 'gate': None}
+    defaults = dict(defaults or {})
+    if set(defaults) - set(Config.__dataclass_fields__):
+        raise ValidationError("Config có trường không hỗ trợ.")
+    # Consent must be explicitly given for each UI run, never inherited.
+    for key in ('authorized', 'confirm_multiple', 'fixture_confirmed', 'auth_confirmed', 'write_confirmed', 'safety_contract_confirmed'): defaults.pop(key, None)
 
     @app.get('/')
     def home():
@@ -123,11 +157,14 @@ def create_app(defaults=None, port=8765, runner_factory=Runner):
     return app
 
 
-def serve(defaults, port):
+def serve(defaults, port, *, demo_only=False):
     from werkzeug.serving import make_server
-    app = create_app(defaults, port)
-    print(f'Attack Simulator: http://127.0.0.1:{port} (Ctrl+C to stop)')
+    app = create_app(defaults, port, demo_only=demo_only)
+    print(f'Trình diễn PBL4: http://127.0.0.1:{port}/pbl4 (Ctrl+C để dừng)')
     with make_server('127.0.0.1', port, app, threaded=True) as server:
         try: server.serve_forever()
         except KeyboardInterrupt: pass
-        finally: app.extensions['simulator_shutdown']()
+        finally:
+            shutdown = app.extensions.get('simulator_shutdown')
+            if shutdown is not None:
+                shutdown()

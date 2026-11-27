@@ -16,7 +16,7 @@ web = ["Flask>=3.1,<4"]
 attack-simulator = "attack_simulator.cli:main"
 
 [tool.setuptools.package-data]
-attack_simulator = ["templates/*.html", "static/*.css", "static/*.js"]
+attack_simulator = ["templates/*.html", "static/*.css", "static/*.js", "evidence/*.json"]
 
 [tool.setuptools.packages.find]
 include = ["attack_simulator*"]
