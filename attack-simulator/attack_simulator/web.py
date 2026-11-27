@@ -1,12 +1,10 @@
 """Local-only control plane; one bounded job, no persistent credentials."""
 import copy
-from importlib.resources import files
-import json
 import secrets
 import threading
 from time import monotonic
 from flask import Flask, jsonify, request, render_template, Response
-from . import aws_smoke
+from . import aws_canary, aws_smoke
 from .config import Config
 from .http_client import ValidationError
 from .runner import Runner
@@ -15,7 +13,7 @@ from .scenarios import catalog
 from .reports import render
 
 
-def create_app(defaults=None, port=8765, runner_factory=Runner, *, demo_only=False):
+def create_app(defaults=None, port=8765, runner_factory=Runner, *, demo_only=False, live_key=None):
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 16384
     app.config['TRUSTED_HOSTS'] = ['localhost', '127.0.0.1', '::1']
@@ -41,9 +39,7 @@ def create_app(defaults=None, port=8765, runner_factory=Runner, *, demo_only=Fal
 
     @app.get('/pbl4')
     def pbl4():
-        archive = files('attack_simulator').joinpath('evidence', 'pbl4.json')
-        cases = json.loads(archive.read_text(encoding='utf-8'))
-        return render_template('pbl4.html', csrf=csrf, cases=cases)
+        return render_template('pbl4.html', csrf=csrf, live_enabled=live_key is not None)
 
     @app.post('/api/aws-smoke')
     def aws_health():
@@ -61,6 +57,33 @@ def create_app(defaults=None, port=8765, runner_factory=Runner, *, demo_only=Fal
                 aws_next_run = monotonic() + 5
         finally:
             aws_lock.release()
+
+    if demo_only and live_key is not None:
+        live_lock = threading.Lock()
+        live_next_run = 0.0
+
+        @app.post('/api/pbl4-canary')
+        def pbl4_canary():
+            nonlocal live_next_run
+            access_key = request.headers.get('X-PBL4-Session', '')
+            if not secrets.compare_digest(access_key.encode(), live_key.encode()):
+                return jsonify(error='Mở liên kết phiên live đã in trong Terminal.'), 403
+            if request.query_string or request.get_data():
+                return jsonify(error='Canary chỉ dùng cấu hình EC2 cố định.'), 400
+            if not live_lock.acquire(blocking=False):
+                return jsonify(error='Canary đang chạy.'), 409
+            try:
+                if monotonic() < live_next_run:
+                    return jsonify(error='Chờ hết thời hạn lượt trước rồi chạy lại.'), 429
+                live_next_run = monotonic() + 260
+                try:
+                    result = aws_canary.run()
+                except aws_canary.CanaryError as error:
+                    return jsonify(error=str(error)), 503
+                live_next_run = monotonic() + 10
+                return jsonify(result=result)
+            finally:
+                live_lock.release()
 
     if demo_only:
         app.add_url_rule('/', view_func=pbl4)
@@ -157,11 +180,13 @@ def create_app(defaults=None, port=8765, runner_factory=Runner, *, demo_only=Fal
     return app
 
 
-def serve(defaults, port, *, demo_only=False):
+def serve(defaults, port, *, demo_only=False, live=False):
     from werkzeug.serving import make_server
-    app = create_app(defaults, port, demo_only=demo_only)
-    print(f'Trình diễn PBL4: http://127.0.0.1:{port}/pbl4 (Ctrl+C để dừng)')
+    live_key = secrets.token_urlsafe(32) if live else None
+    app = create_app(defaults, port, demo_only=demo_only, live_key=live_key)
+    fragment = f'#live={live_key}' if live_key else ''
     with make_server('127.0.0.1', port, app, threaded=True) as server:
+        print(f'Trình diễn PBL4: http://127.0.0.1:{port}/pbl4{fragment} (Ctrl+C để dừng)', flush=True)
         try: server.serve_forever()
         except KeyboardInterrupt: pass
         finally:

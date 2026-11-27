@@ -11,7 +11,7 @@ cd attack-simulator
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[web]'
-python -m attack_simulator --pbl4
+python -m attack_simulator --pbl4-live
 ```
 
 Windows PowerShell:
@@ -25,13 +25,15 @@ py -3 -m venv .venv
 
 ## Trình diễn PBL4
 
-Mở [màn hình PBL4](http://127.0.0.1:8765/pbl4). Simulator chỉ lắng nghe trên loopback.
+Mở liên kết phiên live in trong Terminal. Simulator chỉ lắng nghe trên loopback. Mở lại liên kết đó nếu tải lại trang. Để chỉ kiểm tra HTTPS, chạy `--pbl4` rồi mở [màn hình PBL4](http://127.0.0.1:8765/pbl4).
 
 1. **Truy cập bình thường.** Bấm **Chạy kiểm tra HTTPS** để gửi một GET đến Student Web và một GET đến Security Dashboard. Xem HTTP, TLS, độ trễ và Request ID nếu có. Mở **Security Dashboard → AI → Tra cứu Request ID** với ID của Student Web để đối chiếu kết quả của lượt mới nếu Dashboard đã nhận evidence.
-2. **Cảnh báo.** Mở từng hồ sơ NGINX, Suricata và Student Audit từ lượt R58. Ca Suricata bao gồm trạng thái AI và quyết định Hybrid. [Hồ sơ R58](../docs/evidence/r58/acceptance.json)
-3. **Ngăn chặn.** Mở kết quả Rule-based Prevention, Hybrid Adaptive Prevention, Block/Unblock và TTL. Các nút chỉ đọc bằng chứng của canary EC2 cô lập. Request ID lab thuộc kho của lượt nghiệm thu. [Hồ sơ R61](../docs/evidence/r61/acceptance.json)
+2. **Cảnh báo.** Bấm **Chạy cảnh báo và chặn trực tiếp**. Một lượt SSM gửi GET lành tính trong ingress riêng và đọc lại SID Suricata, HTTP và Request ID của lượt mới.
+3. **Ngăn chặn.** Cùng lượt canary kiểm chứng Rule, Hybrid, packet drop, Unblock, TTL và trạng thái DB/nftables. Kết quả xuất hiện trên PBL4 sau cleanup, thường sau khoảng một phút. Dashboard public và canary có kho dữ liệu riêng. [Phạm vi canary](../docs/AWS_STAGING_OPERATIONS_HANDOFF.md#24-r62--gói-prevention-đã-cài-trên-ec2)
 
-Chế độ `--pbl4` chỉ có phép kiểm tra HTTPS cố định và trang bằng chứng. Để mở công cụ lab riêng, dùng `--web` và chỉ chọn target thuộc phạm vi lab đã được cấp phép. Ctrl+C dừng simulator.
+Chế độ live chạy trên Linux hoặc macOS, cần AWS CLI với profile `websecurity-staging` và Session Manager plugin trong `PATH`. Dùng quyền mở phiên SSM hiện có trên EC2 staging, gói R62 đã cài và binary rollback đúng SHA. UI báo lỗi nếu thiếu điều kiện. Nếu mất kết nối trong lượt chạy, kiểm tra phiên SSM trước khi thử lại. Runner EC2 có giới hạn thời gian và cleanup riêng. Ctrl+C dừng simulator local. [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+
+Để mở công cụ lab riêng, dùng `--web` và chỉ chọn target thuộc phạm vi lab đã được cấp phép.
 
 Có thể chạy cùng phép kiểm tra từ thư mục `attack-simulator` mà không cần Flask.
 

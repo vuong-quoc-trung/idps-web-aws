@@ -36,6 +36,7 @@ def main(argv=None):
     web_mode = p.add_mutually_exclusive_group()
     web_mode.add_argument('--web', action='store_true')
     web_mode.add_argument('--pbl4', action='store_true', help='Mở chế độ trình diễn PBL4')
+    web_mode.add_argument('--pbl4-live', action='store_true', help='Mở PBL4 với canary EC2 cô lập qua SSM')
     p.add_argument('--port', type=int, default=8765)
     args = p.parse_args(argv)
     if args.list:
@@ -49,13 +50,13 @@ def main(argv=None):
         for k in Config.__dataclass_fields__:
             value = getattr(args, 'scenario' if k == 'scenarios' else k, None)
             if value is not None: values[k] = value
-        if args.web or args.pbl4:
+        if args.web or args.pbl4 or args.pbl4_live:
             if not 1024 <= args.port <= 65535: raise ValidationError('Port phải trong 1024–65535.')
             try:
                 from .web import serve
             except ImportError:
                 p.error('Web UI cần: python -m pip install -e ".[web]"')
-            serve(values, args.port, demo_only=args.pbl4)
+            serve(values, args.port, demo_only=args.pbl4 or args.pbl4_live, live=args.pbl4_live)
             return 0
         config = Config.load(values)
         stop = threading.Event()
