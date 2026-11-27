@@ -32,8 +32,9 @@ flowchart LR
   Hybrid nhận kết quả Advisory, ghi incident và lưu Audit trong PostgreSQL.
   SSE chuyển cập nhật đã commit tới Security Dashboard.
 - C2 Manual dùng Unix socket thuộc root và kiểm danh tính tiến trình gọi.
-  Firewall chỉ thực thi trên `ws-c2-edge`, tới HTTPS `10.254.63.1:443`, với
-  peer `10.254.63.2` do EC2 quản lý. PostgreSQL và Audit được đối soát với
+  Firewall nhận IPv4 công khai đơn lẻ trên HTTP/HTTPS của interface EC2 đã
+  xác minh. Peer riêng `10.254.63.2` vẫn được xử lý trên `ws-c2-edge` tới
+  `10.254.63.1:443`. PostgreSQL và Audit được đối soát với
   readback nftables. Lease hết hạn trong kernel, yêu cầu chặn thủ công nhận TTL từ 60 đến 300 giây.
 - Các unit systemd có giới hạn tài nguyên. Security Web kéo theo actuator
   lúc khởi động. Bản rollback root-only chứa backend, frontend và checksum.
@@ -45,6 +46,6 @@ flowchart LR
 |---|---|
 | Public HTTPS, Student Web và Security Web | Hai hostname HTTPS 200. Kiểm tra giao diện với tài khoản quản trị có sẵn. |
 | Detection đa nguồn, AI và Hybrid | Request HTTPS lành tính ghép đủ NGINX, Suricata, Student Audit, có điểm AI và quyết định Hybrid. |
-| Firewall, Prevention và DB/Firewall | ACTIVE, ENABLED và SYNCED trên ingress riêng. Block, Unblock và TTL dùng bằng chứng thực thi trước khi đóng băng. |
+| Firewall, Prevention và DB/Firewall | ACTIVE, ENABLED và SYNCED. Quy tắc TCP 80/443, packet drop và TTL đã được kiểm trong namespace cô lập. |
 | Rule-based và Hybrid Adaptive | Đã nghiệm thu trong canary cô lập. Chặn tự động public và AI Auto-ban tắt. |
 | Giới hạn vận hành | Các phép đo là snapshot kiểm tra nhanh. Kiểm tra cuối không reboot EC2, không chạy rollback thực tế và không thay đổi dữ liệu nghiệp vụ. |

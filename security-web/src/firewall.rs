@@ -35,11 +35,18 @@ pub async fn admit_manual(state: &AppState) -> Result<()> {
 }
 
 pub fn validate(state: &AppState, value: &str) -> Result<IpAddr> {
-    let ip = state.safety.validate(value)?;
-    if aws_firewall::configured() {
+    let parsed = network::Safety::parse_host(value)?;
+    let aws = aws_firewall::configured();
+    let public = aws && aws_firewall::public_target(parsed);
+    let ip = if public {
+        state.safety.validate_with_scope(value, false)?
+    } else {
+        state.safety.validate(value)?
+    };
+    if aws {
         anyhow::ensure!(
-            ip.to_string() == aws_firewall::PEER,
-            "IP ngoài phạm vi ingress riêng"
+            ip.to_string() == aws_firewall::PEER || public,
+            "IP ngoài phạm vi chặn thủ công AWS"
         );
     }
     #[cfg(feature = "isolated-c2")]
@@ -626,11 +633,11 @@ pub async fn observation(state: &AppState) -> serde_json::Value {
                     Ok(_) => ("OUT_OF_SYNC", "AWS_LEASE_MISMATCH"),
                     Err(_) => ("UNVERIFIED", "AUDIT_UNAVAILABLE"),
                 };
-                json!({"status":status,"reason":reason,"scope":aws_firewall::SCOPE,
+                json!({"status":status,"reason":reason,"scope":aws_firewall::scope(),
                     "differences": expected.symmetric_difference(actual).collect::<Vec<_>>()})
             }
             _ => {
-                json!({"status":"UNVERIFIED","reason":"READBACK_UNAVAILABLE","scope":aws_firewall::SCOPE,"differences":[]})
+                json!({"status":"UNVERIFIED","reason":"READBACK_UNAVAILABLE","scope":aws_firewall::scope(),"differences":[]})
             }
         }
     } else {

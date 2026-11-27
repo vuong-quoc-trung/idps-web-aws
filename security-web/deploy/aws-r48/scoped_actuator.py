@@ -1,7 +1,8 @@
-"""Manual actuator for a single EC2-owned peer on an isolated ingress interface."""
+"""Manual actuator for the dedicated peer and optional pinned EC2 web ingress."""
 
 import grp
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -23,9 +24,10 @@ SCOPE = RUNTIME / "scope.json"
 SOCKET = RUNTIME / "actuator.sock"
 RULES = f'''create table inet {TABLE}
 table inet {TABLE} {{
-  set blocked_ips {{ type ipv4_addr; flags timeout; }}
+  set blocked_ips {{ type ipv4_addr; flags timeout; size 128; }}
   chain input {{
     type filter hook input priority filter; policy accept;
+    __WEB_SCOPE__
     iifname "{EDGE}" ip saddr {PEER} ip daddr {SERVER} tcp dport 443 ip saddr @blocked_ips counter drop
     iifname "{EDGE}" ip saddr {PEER} ip daddr {SERVER} tcp dport 443 accept
     iifname "{EDGE}" drop
@@ -53,6 +55,42 @@ def nft(*args, **kwargs):
 
 def fingerprint():
     return hashlib.sha256(nft("-st", "list", "table", "inet", TABLE).encode()).hexdigest()
+
+
+def public_profile():
+    if os.environ.get("WS_AWS_MANUAL_PUBLIC_IPV4") != "1":
+        return None
+    device = os.environ["AWS_MANUAL_WEB_INTERFACE"]
+    local = str(ipaddress.IPv4Address(os.environ["AWS_MANUAL_WEB_LOCAL_IP"]))
+    eip = ipaddress.IPv4Address(os.environ["AWS_MANUAL_WEB_EIP"])
+    if not re.fullmatch(r"[a-zA-Z0-9_-]{1,15}", device) or device in {EDGE, "lo"} or not eip.is_global:
+        raise ValueError("Invalid public web scope")
+    routes = ip("route", "show", "default")
+    links = ip("address", "show", "dev", device)
+    if (len(routes) != 1 or routes[0].get("dev") != device or routes[0].get("prefsrc") != local
+            or not routes[0].get("gateway") or len(links) != 1
+            or local not in {addr.get("local") for addr in links[0]["addr_info"]}):
+        raise ValueError("EC2 ingress scope changed")
+    return {"interface": device, "local": local, "eip": str(eip),
+            "ifindex": links[0]["ifindex"], "gateway": routes[0]["gateway"]}
+
+
+def rules_for(public):
+    if public is None:
+        return RULES.replace("__WEB_SCOPE__", "")
+    rule = (f'iifname "{public["interface"]}" ip daddr {public["local"]} '
+            f'ip saddr != {PEER} tcp dport {{ 80, 443 }} ip saddr @blocked_ips counter drop')
+    return RULES.replace("__WEB_SCOPE__", rule)
+
+
+def allowed(target, public):
+    if target == PEER:
+        return True
+    address = ipaddress.IPv4Address(target)
+    if (public is None or not address.is_global or address.is_multicast or address.is_reserved
+            or target in (public["eip"], public["local"], public["gateway"])):
+        return False
+    return all(address not in ipaddress.IPv4Network(network) for network in ("192.0.0.0/24", "192.88.99.0/24"))
 
 
 def identity(*, verify_peer=False):
@@ -94,12 +132,13 @@ def setup():
     routes = ip("route", "get", PEER)
     if len(routes) != 1 or not routes[0].get("gateway"):
         raise RuntimeError("Dedicated peer subnet overlaps an existing route")
+    public = public_profile()
     namespace = edge = table = False
     try:
         run("ip", "netns", "add", NS)
         namespace = True
         # Put filters in place before creating or raising the interface.
-        nft("-f", "-", input=RULES)
+        nft("-f", "-", input=rules_for(public))
         table = True
         run("ip", "link", "add", EDGE, "type", "veth", "peer", "name", PEER_IF, "netns", NS)
         edge = True
@@ -109,7 +148,7 @@ def setup():
         run("ip", "-n", NS, "link", "set", PEER_IF, "up")
         if run("ip", "-n", NS, "route", "show", "default").strip():
             raise RuntimeError("Peer must have no default route")
-        SCOPE.write_text(json.dumps({"identity": identity(verify_peer=True), "table": fingerprint()}))
+        SCOPE.write_text(json.dumps({"identity": identity(verify_peer=True), "table": fingerprint(), "public": public}))
         SCOPE.chmod(0o600)
     except BaseException:
         if edge:
@@ -121,16 +160,18 @@ def setup():
         raise
 
 
-def validate(scope):
+def validate(scope, *, verify_public=True):
     if identity() != scope["identity"] or fingerprint() != scope["table"]:
         raise ValueError("Ingress or firewall scope changed")
+    if verify_public and public_profile() != scope.get("public"):
+        raise ValueError("Public ingress changed")
 
 
 def cleanup():
     if not SCOPE.exists():
         return
     scope = json.loads(SCOPE.read_text())
-    validate(scope)
+    validate(scope, verify_public=False)
     run("ip", "link", "del", EDGE)
     nft("delete", "table", "inet", TABLE)
     run("ip", "netns", "del", NS)
@@ -144,29 +185,33 @@ def respond(connection, scope, api_uid):
             "0::/websentinelr47.slice/websentinel-r47-security.service"):
         return
     line = connection.makefile("rb").readline(64)
-    verb = re.fullmatch(rb"(STATUS|UNBLOCK 10\.254\.63\.2|BLOCK 10\.254\.63\.2 ([1-9][0-9]{0,2}))\n", line)
+    verb = re.fullmatch(rb"(?:(STATUS)|(UNBLOCK|BLOCK) ([0-9.]{7,15})(?: ([1-9][0-9]{0,2}))?)\n", line)
     if not verb or connection.recv(1):
         return
-    ttl = int(verb[2]) if verb[2] else None
-    if ttl is not None and ttl > MAX_TTL:
+    ttl = int(verb[4]) if verb[4] else None
+    target = verb[3].decode() if verb[3] else None
+    public = scope.get("public")
+    if (verb[2] == b"BLOCK") != (ttl is not None) or (ttl and ttl > MAX_TTL):
+        return
+    if target is not None and not allowed(target, public):
         return
     validate(scope)
     snapshot = nft("-j", "list", "set", *SET)
-    items = [item["set"] for item in json.loads(snapshot)["nftables"] if "set" in item]
-    entries = items[0].get("elem", [])
-    if len(items) != 1 or any((obj if isinstance(obj, str) else obj.get("elem", {}).get("val")) != PEER for obj in entries):
+    item, = (item["set"] for item in json.loads(snapshot)["nftables"] if "set" in item)
+    entries = {obj if isinstance(obj, str) else obj.get("elem", {}).get("val") for obj in item.get("elem", [])}
+    if any(not isinstance(entry, str) or not allowed(entry, public) for entry in entries):
         raise ValueError("Unexpected kernel set")
     changed = False
-    if ttl is not None and not entries:
-        nft("add", "element", *SET, "{", PEER, "timeout", f"{ttl}s", "}")
+    if ttl is not None and target not in entries:
+        nft("add", "element", *SET, "{", target, "timeout", f"{ttl}s", "}")
         changed = True
-    elif verb[1].startswith(b"UNBLOCK") and entries:
-        nft("delete", "element", *SET, "{", PEER, "}")
+    elif verb[2] == b"UNBLOCK" and target in entries:
+        nft("delete", "element", *SET, "{", target, "}")
     try:
         connection.sendall(nft("-j", "list", "set", *SET).encode())
     except (OSError, subprocess.SubprocessError):
         if changed:
-            nft("delete", "element", *SET, "{", PEER, "}")
+            nft("delete", "element", *SET, "{", target, "}")
         raise
 
 

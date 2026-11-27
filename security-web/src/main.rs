@@ -545,7 +545,7 @@ async fn block_ip(
     let ttl = req.ttl_seconds.unwrap_or(60);
     if aws_firewall::configured() && !aws_firewall::valid_manual_ttl(ttl) {
         return Err(bad_request(
-            "Thời hạn chặn trên ingress riêng phải từ 60 đến 300 giây",
+            "Thời hạn chặn thủ công AWS phải từ 60 đến 300 giây",
         ));
     }
     if !(1..=300).contains(&ttl) {

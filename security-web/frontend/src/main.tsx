@@ -519,7 +519,7 @@ function App() {
     }
   }
   async function action(address: string, unblock = false) {
-    const minimumTtl = dedicatedIngress ? 60 : 1;
+    const minimumTtl = scopedAws ? 60 : 1;
     if (!unblock && dedicatedIngress && address !== dedicatedPeer) {
       setError(`Ingress riêng chỉ cho phép chặn ${dedicatedPeer}.`);
       return;
@@ -534,6 +534,15 @@ function App() {
       return;
     }
     if (unblock && !window.confirm(`Bỏ chặn ${address}?`)) return;
+    if (
+      !unblock &&
+      publicManual &&
+      address !== dedicatedPeer &&
+      !window.confirm(
+        `Chặn ${address} truy cập cả hai website AWS trong ${ttl} giây?`,
+      )
+    )
+      return;
     setBusy(true);
     setNotice("");
     setError("");
@@ -666,7 +675,9 @@ function App() {
   const cloud = health?.operations?.profile === "aws-staging";
   const dedicatedIngress =
     (health?.sync?.scope ?? blocked?.sync?.scope) === "aws-private-ingress";
-  const scopedAws = cloud || dedicatedIngress;
+  const publicManual =
+    (health?.sync?.scope ?? blocked?.sync?.scope) === "aws-manual-web-ingress";
+  const scopedAws = cloud || dedicatedIngress || publicManual;
   const hybridSample = health?.operations?.hybrid_last_success_at;
   const hybridAge =
     Date.parse(health?.checked_at ?? "") - Date.parse(hybridSample ?? "");
@@ -1470,57 +1481,63 @@ function App() {
               {dedicatedIngress && (
                 <p>Ingress riêng · chỉ áp dụng cho {dedicatedPeer}.</p>
               )}
+              {publicManual && (
+                <p>
+                  Chặn thủ công IPv4 công khai trên HTTP/HTTPS và peer{" "}
+                  {dedicatedPeer}. Địa chỉ hạ tầng được bảo vệ.
+                </p>
+              )}
               <p>
                 IP thực tế:{" "}
                 {blocked?.kernel?.join(", ") ||
                   (blocked?.kernel ? "Không có" : "Chưa đọc được")}
               </p>
-              {admin && preventionReady && (!scopedAws || dedicatedIngress) && (
-                <form
-                  className="filters"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void action(dedicatedIngress ? dedicatedPeer : ip);
-                  }}
-                >
-                  <label>
-                    IP cần chặn
-                    <input
-                      value={dedicatedIngress ? dedicatedPeer : ip}
-                      onChange={(e) => setIp(e.target.value)}
-                      readOnly={dedicatedIngress}
-                      placeholder="Địa chỉ IPv4"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Lý do
-                    <input
-                      value={reason}
-                      onChange={(e) => setReason(e.target.value)}
-                      maxLength={500}
-                      required
-                    />
-                  </label>
-                  <label>
-                    {dedicatedIngress
-                      ? "Thời hạn (60–300 giây)"
-                      : "Thời hạn (giây)"}
-                    <input
-                      type="number"
-                      min={dedicatedIngress ? 60 : 1}
-                      max={300}
-                      step={1}
-                      value={ttl}
-                      onChange={(e) => setTtl(e.target.value)}
-                      required
-                    />
-                  </label>
-                  <button className="primary" disabled={busy}>
-                    Gửi yêu cầu chặn
-                  </button>
-                </form>
-              )}
+              {admin &&
+                preventionReady &&
+                (!scopedAws || dedicatedIngress || publicManual) && (
+                  <form
+                    className="filters"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void action(dedicatedIngress ? dedicatedPeer : ip);
+                    }}
+                  >
+                    <label>
+                      IP cần chặn
+                      <input
+                        value={dedicatedIngress ? dedicatedPeer : ip}
+                        onChange={(e) => setIp(e.target.value)}
+                        readOnly={dedicatedIngress}
+                        placeholder="Địa chỉ IPv4"
+                        required
+                      />
+                    </label>
+                    <label>
+                      Lý do
+                      <input
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        maxLength={500}
+                        required
+                      />
+                    </label>
+                    <label>
+                      {scopedAws ? "Thời hạn (60–300 giây)" : "Thời hạn (giây)"}
+                      <input
+                        type="number"
+                        min={scopedAws ? 60 : 1}
+                        max={300}
+                        step={1}
+                        value={ttl}
+                        onChange={(e) => setTtl(e.target.value)}
+                        required
+                      />
+                    </label>
+                    <button className="primary" disabled={busy}>
+                      Gửi yêu cầu chặn
+                    </button>
+                  </form>
+                )}
             </section>
             <section className="panel">
               <h2>
@@ -1875,6 +1892,9 @@ function App() {
                 {dedicatedIngress && (
                   <small>Chặn thủ công trên ingress riêng.</small>
                 )}
+                {publicManual && (
+                  <small>Chặn thủ công IPv4 trên HTTP/HTTPS của AWS.</small>
+                )}
                 <div className="service-item">
                   <span>DB / Firewall</span>
                   <FirewallSync compact report={health?.sync} />
@@ -2100,10 +2120,11 @@ function App() {
             api={api}
             manualPeer={scopedAws ? dedicatedPeer : undefined}
             onOpenManualBlock={
-              admin && preventionReady && dedicatedIngress
-                ? () => {
+              admin && preventionReady && (dedicatedIngress || publicManual)
+                ? (source) => {
                     setSelectedAlert(null);
                     setError("");
+                    setIp(source ?? "");
                     setReason(`Rà soát cảnh báo #${selectedAlert}`);
                     setTab("blocked");
                   }

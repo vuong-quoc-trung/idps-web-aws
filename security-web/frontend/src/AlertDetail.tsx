@@ -55,6 +55,10 @@ function evidenceInfo(raw: string) {
         parsed?.uri_path ??
         (typeof http?.url === "string" ? http.url.split(/[?#]/, 1)[0] : null),
       status: parsed?.status_code ?? http?.status,
+      flowId: parsed?.flow_id,
+      srcPort: parsed?.src_port,
+      destPort: parsed?.dest_port,
+      requestId: parsed?.request_id,
     };
   } catch {
     return {};
@@ -81,7 +85,7 @@ export function AlertDetail({
   onAudit: (id: number) => void;
   onBlock?: (alert: Detail["alert"]) => Promise<void>;
   manualPeer?: string;
-  onOpenManualBlock?: () => void;
+  onOpenManualBlock?: (source: string | null | undefined) => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [data, setData] = useState<Detail | null>(null);
@@ -114,6 +118,10 @@ export function AlertDetail({
         ? a.client_ip
         : null
       : a?.src_ip;
+  const hasHttp =
+    evidence?.method != null ||
+    evidence?.url != null ||
+    evidence?.status != null;
   return (
     <dialog
       ref={dialog}
@@ -159,6 +167,22 @@ export function AlertDetail({
               </div>
             ))}
           </dl>
+          {manualPeer && onOpenManualBlock && (
+            <>
+              <button onClick={() => onOpenManualBlock(source)}>
+                Mở form chặn thủ công
+              </button>
+              {!source && (
+                <p className="muted">
+                  Chưa xác minh IP client. Hãy nhập IP cần chặn đã được bạn xác
+                  minh.
+                </p>
+              )}
+            </>
+          )}
+          {manualPeer && !onOpenManualBlock && admin && (
+            <p className="muted">Chặn thủ công tạm thời chưa sẵn sàng.</p>
+          )}
           <AlertTriage
             key={a.id}
             initial={a}
@@ -181,18 +205,6 @@ export function AlertDetail({
               <p>{app.recommendation}</p>
             </section>
           )}
-          {manualPeer &&
-            (source === manualPeer && onOpenManualBlock ? (
-              <button onClick={onOpenManualBlock}>
-                Mở form chặn {manualPeer}
-              </button>
-            ) : (
-              <p className="muted">
-                {source === manualPeer
-                  ? "Chặn thủ công tạm thời chưa sẵn sàng."
-                  : `Cảnh báo này không đủ điều kiện chặn. Firewall AWS chỉ nhận yêu cầu cho peer ingress riêng ${manualPeer}.`}
-              </p>
-            ))}
           {onBlock && a.src_ip && (
             <button
               disabled={blocking}
@@ -210,20 +222,39 @@ export function AlertDetail({
               Yêu cầu chặn thủ công từ cảnh báo
             </button>
           )}
-          <h3>Request HTTP</h3>
+          <h3>{hasHttp ? "Request HTTP" : "Bằng chứng kết nối"}</h3>
+          {!hasHttp && (
+            <p className="muted">
+              Cảnh báo này không có giao dịch HTTP liên kết.
+            </p>
+          )}
           <dl className="detail-fields">
-            {Object.entries({
-              "Phương thức": evidence.method,
-              "Đường dẫn": evidence.url,
-              "Mã phản hồi": evidence.status,
-            }).map(([label, value]) => (
-              <div key={label}>
-                <dt>{label}</dt>
-                <dd>
-                  {value == null ? "Không có trong bằng chứng" : String(value)}
-                </dd>
-              </div>
-            ))}
+            {Object.entries(
+              hasHttp
+                ? {
+                    "Phương thức": evidence.method,
+                    "Đường dẫn": evidence.url,
+                    "Mã phản hồi": evidence.status,
+                    "Request ID": evidence.requestId,
+                  }
+                : {
+                    "IP nguồn sensor thấy": a.network_src_ip,
+                    "Cổng nguồn": evidence.srcPort,
+                    "Cổng đích": evidence.destPort,
+                    "Flow ID": evidence.flowId,
+                  },
+            )
+              .filter(([, value]) => value != null)
+              .map(([label, value]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>
+                    {value == null
+                      ? "Không có trong bằng chứng"
+                      : String(value)}
+                  </dd>
+                </div>
+              ))}
           </dl>
           <h3>Cảnh báo khác cùng IP nguồn</h3>
           {data.related.map((r) => (

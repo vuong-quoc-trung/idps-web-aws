@@ -109,6 +109,9 @@ impl Safety {
         Ok(ip)
     }
     pub fn validate(&self, raw: &str) -> Result<IpAddr> {
+        self.validate_with_scope(raw, true)
+    }
+    pub fn validate_with_scope(&self, raw: &str, require_subnet: bool) -> Result<IpAddr> {
         let ip = Self::parse_host(raw)?;
         anyhow::ensure!(
             self.discovery_ok,
@@ -124,7 +127,7 @@ impl Safety {
             "Protected or non-unicast target"
         );
         anyhow::ensure!(
-            self.allowed.iter().any(|n| n.contains(v4)),
+            !require_subnet || self.allowed.iter().any(|n| n.contains(v4)),
             "Target outside ENFORCE_ALLOWED_SUBNETS"
         );
         anyhow::ensure!(

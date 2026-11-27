@@ -575,12 +575,21 @@ Xem kiến trúc và phạm vi đã xác minh trong [tài liệu bàn giao PBL4]
 Security Web kéo actuator theo dependency systemd khi khởi động.
 
 Security Web kết nối tới `websentinel-aws-prevention.service` qua Unix socket
-do root quản lý. Chỉ quản trị viên có thể chặn `10.254.63.2`, với thời hạn từ
-60 đến 300 giây. Chọn **IP bị chặn** để gửi yêu cầu cho peer đã xác minh.
-Table `inet ws_aws_prevention` chỉ áp dụng trên interface `ws-c2-edge`
-và cổng HTTPS của ingress riêng. Dashboard đọc PostgreSQL, lịch sử tác vụ
-và nftables để hiển thị trạng thái. Rule-based và Hybrid Adaptive vẫn giới
-hạn ở canary R61. Luồng public tiếp tục giám sát và AI Advisory.
+do root quản lý. Quản trị viên có thể chặn một IPv4 công khai hoặc peer
+`10.254.63.2` trong 60–300 giây. Chọn **IP bị chặn** để nhập địa chỉ và
+xác nhận. Địa chỉ hệ thống, gateway và các đích được bảo vệ bị từ chối.
+Table `inet ws_aws_prevention` giới hạn luồng công khai theo interface và IP
+nội bộ đã xác minh của EC2, chỉ áp dụng trên TCP 80/443. Peer riêng vẫn áp
+dụng trên interface `ws-c2-edge` và cổng HTTPS. Dashboard đọc PostgreSQL,
+lịch sử tác vụ và nftables. Rule-based và Hybrid Adaptive vẫn giới hạn ở
+canary R61. AI tiếp tục chạy Advisory.
+
+Quyền chặn web công khai được bật riêng bằng `WS_AWS_MANUAL_PUBLIC_IPV4=1`
+trong `/opt/websentinel-final/prevention.env`. Actuator kiểm tra tên interface,
+IPv4 nội bộ và default gateway của EC2 trước khi nhận lệnh. Cấu hình hiện
+hành dùng `AWS_MANUAL_WEB_INTERFACE=enp39s0`,
+`AWS_MANUAL_WEB_LOCAL_IP=172.31.33.245` và `AWS_MANUAL_WEB_EIP=13.229.169.1`.
+Đối chiếu lại các giá trị khi đổi ENI hoặc EIP.
 
 Mục **AI** thống kê 15 phút và hiển thị riêng tối đa 50 kết quả mới nhất còn lưu.
 Tra cứu Request ID có thể trả quyết định Hybrid từ quy tắc và trạng thái chưa có

@@ -387,7 +387,7 @@ pub async fn approve(
     }
     if aws_firewall::configured() && !aws_firewall::valid_manual_ttl(a.ttl_seconds) {
         return Err(bad_request(
-            "Thời hạn chặn trên ingress riêng phải từ 60 đến 300 giây",
+            "Thời hạn chặn thủ công AWS phải từ 60 đến 300 giây",
         ));
     }
     firewall::admit_manual(&state).await.map_err(bad_request)?;

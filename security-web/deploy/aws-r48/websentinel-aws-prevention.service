@@ -11,6 +11,7 @@ Slice=websentinelr47.slice
 UMask=0077
 RuntimeDirectory=websentinel-aws-prevention
 RuntimeDirectoryMode=0750
+EnvironmentFile=-/opt/websentinel-final/prevention.env
 ExecStartPre=+/usr/bin/python3 -IB /opt/websentinel-final/scoped_actuator.py setup
 ExecStart=/usr/bin/python3 -IB /opt/websentinel-final/scoped_actuator.py serve
 ExecStopPost=+/usr/bin/python3 -IB /opt/websentinel-final/scoped_actuator.py cleanup
