@@ -232,7 +232,7 @@ def logrotate():
 {hook}}}
 """
     return (
-        target([STATE / "edge/access.jsonl"], "root",
+        target([STATE / "edge/access.jsonl"], "www-data",
                "    postrotate\n        systemctl kill --kill-whom=main --signal=USR1 nginx.service\n    endscript\n")
         + target([AUDIT], "ws-r47-student")
         + target([STATE / "proof/correlation.jsonl"], "ws-r48-correlator")
@@ -304,9 +304,12 @@ def setup(source):
     run("systemd-sysusers", CONFIG / "sysusers.conf")
     sensor = pwd.getpwnam("ws-r48-sensor")
     corr = pwd.getpwnam("ws-r48-correlator")
-    for name, uid in (("edge", 0), ("sensor", sensor.pw_uid), ("proof", corr.pw_uid)):
+    # NGINX workers run as www-data, outside the collector group. They need
+    # traversal to reopen the access log on USR1; log contents stay at 0640.
+    secure_dir(STATE / "edge", 0, corr.pw_gid, 0o751)
+    for name, uid in (("sensor", sensor.pw_uid), ("proof", corr.pw_uid)):
         secure_dir(STATE / name, uid, corr.pw_gid, 0o750)
-    for path, uid in ((STATE / "edge/access.jsonl", 0),
+    for path, uid in ((STATE / "edge/access.jsonl", pwd.getpwnam("www-data").pw_uid),
                        (STATE / "proof/correlation.jsonl", corr.pw_uid),
                        (STATE / "sensor/eve.json", sensor.pw_uid),
                        (STATE / "sensor/chain.tsv", sensor.pw_uid)):
